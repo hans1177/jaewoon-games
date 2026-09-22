@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { isSafeSecurityRepairFile } from './company-recovery-queue.mjs';
+import { classifySystemAiFailure } from './company-system-ai-failure-classifier.mjs';
 
 const clean=v=>String(v??'').trim();
 const unique=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
@@ -34,7 +35,8 @@ function normalizeTask(row={}){
     acceptanceCriteria:unique(row.acceptanceCriteria),verificationCommands:unique(row.verificationCommands),
     dependencies:unique(row.dependencies),relatedTaskIds:unique(row.relatedTaskIds),blockedTaskIds:unique(row.blockedTaskIds),
     retries:Math.max(0,Number(row.retries||0)),recurrenceCount:Math.max(0,Number(row.recurrenceCount||0)),
-    failureStage:clean(row.failureStage)||null,failureSignature:clean(row.failureSignature)||null,
+    failureStage:clean(row.failureStage)||null,failureSignature:clean(row.failureSignature)||null,failureClass:clean(row.failureClass)||null,
+    handoffCount:Math.max(0,Number(row.handoffCount||0)),previousReservationId:clean(row.previousReservationId)||null,
     blastRadius:clean(row.blastRadius)||null,knownGoodRevision:clean(row.knownGoodRevision||row.knownGoodSourceRevision)||null,
     repairRisk:Math.max(0,Math.min(10,Number(row.repairRisk??1)||0)),
     sourceMutationRequired:row.sourceMutationRequired===true,sourceMutationBaseline:clean(row.sourceMutationBaseline)||null,
@@ -121,14 +123,27 @@ export function reclaimStaleSystemAiReservations(queueInput,{leaseMinutes=30,at=
     const expired=Number.isFinite(reservedMs)&&(at-reservedMs)>=leaseMs;
     if(!missingReservation&&!expired)return task;
     reclaimed+=1;
+    const priorReservation=clean(task.reservationId)||null;
     return{
       ...task,
       status:'queued',
       blocker:'stale-system-ai-reservation-reclaimed',
+      previousReservationId:priorReservation,
+      handoffCount:Math.max(0,Number(task.handoffCount||0))+1,
       reservationId:null,
       reservedAt:null,
       updatedAt:stamp,
-      evidence:unique([...(task.evidence||[]),'system-ai-stale-reservation-reclaimed:YES',missingReservation?'stale-reservation-cause:MISSING_RESERVATION_ID':'stale-reservation-cause:LEASE_EXPIRED','retry-budget-consumed:NO','learning-penalty:NO'])
+      evidence:unique([
+        ...(task.evidence||[]),
+        'system-ai-stale-reservation-reclaimed:YES',
+        missingReservation?'stale-reservation-cause:MISSING_RESERVATION_ID':'stale-reservation-cause:LEASE_EXPIRED',
+        'system-ai-handoff-state:STALE_RECLAIM',
+        ...(priorReservation?['system-ai-handoff-from-reservation:'+priorReservation]:[]),
+        'system-ai-handoff-to-reservation:PENDING',
+        'system-ai-exact-checkpoint-resume:YES',
+        'retry-budget-consumed:NO',
+        'learning-penalty:NO'
+      ])
     };
   });
   return{queue:{...queue,tasks},reclaimed};
@@ -281,10 +296,16 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
   const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
     .sort((a,b)=>(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)||rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
-  const chosen=[];
+  const chosen=[],commonCanarySignatures=new Set();
   for(const task of candidates){
     if(chosen.length>=Math.max(1,Math.floor(Number(max)||16)))break;
     if([...active,...chosen].some(other=>overlap(task,other)))continue;
+    const impact=profiles.get(task.id);
+    const signature=clean(impact?.signature);
+    if(impact?.commonBottleneck===true&&signature){
+      if(commonCanarySignatures.has(signature))continue;
+      commonCanarySignatures.add(signature);
+    }
     chosen.push(task);
   }
   const ids=new Set(chosen.map(x=>x.id)),stamp=now();
@@ -295,7 +316,7 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
     return{
       ...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null,
       impactScore:impact.score,impactComponents:impact.components,
-      evidence:unique([...(t.evidence||[]),`system-ai-impact-score:${impact.score}`,`system-ai-blocked-task-count:${impact.blockedTaskCount}`,`system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`])
+      evidence:unique([...(t.evidence||[]),`system-ai-impact-score:${impact.score}`,`system-ai-blocked-task-count:${impact.blockedTaskCount}`,`system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`,...(impact.commonBottleneck&&impact.signature?[`system-ai-representative-canary:${impact.signature}`]:[]),...(t.previousReservationId?[`system-ai-handoff-to-reservation:${rid}`]:[])])
     };
   });
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
@@ -330,17 +351,71 @@ export function applySystemAiResults(queueInput,results=[]){
     const rowEvidence=unique(row.evidence);
     const mutationEvidence=rowEvidence.some(x=>x.startsWith('source-mutation-sha:'))&&rowEvidence.some(x=>x.startsWith('changed-file:'));
     if(task.sourceMutationRequired===true&&!mutationEvidence&&['PASS','CURRENT_MAIN_SATISFIED'].includes(outcome))outcome='FAIL';
-    const evidence=unique([...(task.evidence||[]),...rowEvidence,...(task.sourceMutationRequired===true&&!mutationEvidence?['source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION']:[])]);
-    if(outcome==='CURRENT_MAIN_SATISFIED')return{...task,status:'done',candidateBranch:null,pullRequestUrl:null,lastOutcome:'DETERMINISTIC_CURRENT_MAIN_SATISFIED',blocker:null,evidence:unique([...evidence,'deterministic-current-main-satisfied','worker-self-acceptance:NO']),updatedAt:stamp,reservationId:null,reservedAt:null};
-    if(outcome==='PASS'&&row.jointAccepted===true&&clean(task.department).toLowerCase()==='planning-growth-marketing')return{...task,status:'done',candidateBranch:null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PRIMARY_AI_VIBE_JOINT_ACCEPTED',blocker:null,evidence:unique([...evidence,'primary-ai-vibe-joint-accept:YES']),updatedAt:stamp,reservationId:null,reservedAt:null};
-    if(outcome==='PASS')return{...task,status:'awaiting-supervisor',candidateBranch:clean(row.candidateBranch)||null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PASS',blocker:'primary-ai-review-pending',evidence,updatedAt:stamp,reservationId:null,reservedAt:null};
-    const retries=task.retries+1;
+    const baseEvidence=unique([...(task.evidence||[]),...rowEvidence,...(task.sourceMutationRequired===true&&!mutationEvidence?['source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION']:[])]);
+    if(outcome==='CURRENT_MAIN_SATISFIED')return{...task,status:'done',candidateBranch:null,pullRequestUrl:null,lastOutcome:'DETERMINISTIC_CURRENT_MAIN_SATISFIED',blocker:null,evidence:unique([...baseEvidence,'deterministic-current-main-satisfied','worker-self-acceptance:NO']),updatedAt:stamp,reservationId:null,reservedAt:null};
+    if(outcome==='PASS'&&row.jointAccepted===true&&clean(task.department).toLowerCase()==='planning-growth-marketing')return{...task,status:'done',candidateBranch:null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PRIMARY_AI_VIBE_JOINT_ACCEPTED',blocker:null,evidence:unique([...baseEvidence,'primary-ai-vibe-joint-accept:YES']),updatedAt:stamp,reservationId:null,reservedAt:null};
+    if(outcome==='PASS')return{...task,status:'awaiting-supervisor',candidateBranch:clean(row.candidateBranch)||null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PASS',blocker:'primary-ai-review-pending',evidence:baseEvidence,updatedAt:stamp,reservationId:null,reservedAt:null};
+
+    const classification=classifySystemAiFailure({task,result:{...row,outcome}});
+    const retryIncrement=classification.retryBudgetConsumed?1:0;
+    const retries=task.retries+retryIncrement;
     const unlimited=task.retryPolicy==='UNLIMITED_CAUSAL_REPAIR';
     const retry=unlimited||retries<=task.maxRetries;
-    return{...task,status:retry?'queued':'failed',retries,lastOutcome:outcome||'FAIL',blocker:task.sourceMutationRequired===true&&!mutationEvidence?'source-mutation-required-before-revalidation':clean(row.blocker)||'system-ai-worker-failed',evidence:unique([...evidence,...(unlimited?['system-ai-retry:UNLIMITED_CAUSAL_REPAIR']:[])]),updatedAt:stamp,reservationId:null,reservedAt:null};
+    const collaborationEvidence=classification.primaryAiCollaborationRequired?[
+      'primary-ai-collaboration:REQUESTED',
+      'primary-ai-collaboration-reason:'+classification.failureClass,
+      'primary-ai-collaboration-task:'+task.id
+    ]:[];
+    const evidence=unique([
+      ...baseEvidence,
+      ...classification.evidence,
+      ...collaborationEvidence,
+      ...(classification.workerHandoffRecommended?['system-ai-handoff-state:REQUEUE_NEW_WORKER','system-ai-exact-checkpoint-resume:YES']:[]),
+      ...(unlimited?['system-ai-retry:UNLIMITED_CAUSAL_REPAIR']:[])
+    ]);
+    const blocker=task.sourceMutationRequired===true&&!mutationEvidence
+      ?'source-mutation-required-before-revalidation'
+      :classification.failureClass==='STALE_QA_CONTRACT'
+        ?'qa-contract-drift-repair-required'
+        :clean(row.blocker)||'system-ai-worker-failed';
+    return{...task,status:retry?'queued':'failed',retries,failureClass:classification.failureClass,lastOutcome:outcome||'FAIL',blocker,evidence,updatedAt:stamp,previousReservationId:classification.workerHandoffRecommended?clean(task.reservationId)||task.previousReservationId:task.previousReservationId,reservationId:null,reservedAt:null};
   })};
   return queue;
 }
+
+export function handoffMissingSystemAiResults(queueInput,{reservationId='',resultTaskIds=[],at=Date.now()}={}){
+  const queue=normalizeSystemAiQueue(queueInput),rid=clean(reservationId);
+  if(!rid)throw new Error('SYSTEM_AI_HANDOFF_RESERVATION_REQUIRED');
+  const completed=new Set(unique(resultTaskIds));
+  const stamp=new Date(at).toISOString();let handedOff=0;
+  const tasks=queue.tasks.map(task=>{
+    if(task.status!=='running'||clean(task.reservationId)!==rid||completed.has(task.id))return task;
+    handedOff+=1;
+    const nextHandoff=Math.max(0,Number(task.handoffCount||0))+1;
+    return{
+      ...task,
+      status:'queued',
+      blocker:'system-ai-worker-missing-result-handoff',
+      previousReservationId:rid,
+      handoffCount:nextHandoff,
+      reservationId:null,
+      reservedAt:null,
+      updatedAt:stamp,
+      evidence:unique([
+        ...(task.evidence||[]),
+        'system-ai-handoff-state:MISSING_RESULT_REQUEUED',
+        'system-ai-handoff-from-reservation:'+rid,
+        'system-ai-handoff-to-reservation:PENDING',
+        'system-ai-exact-checkpoint-resume:YES',
+        'retry-budget-consumed:NO',
+        'learning-penalty:NO',
+        ...(nextHandoff>=2?['primary-ai-collaboration:REQUESTED','primary-ai-collaboration-reason:REPEATED_WORKER_HANDOFF','primary-ai-collaboration-task:'+task.id]:[])
+      ])
+    };
+  });
+  return{queue:{...queue,tasks},handedOff};
+}
+
 export function requeueSystemAiTask(queueInput,{id,reason='primary-ai-rework'}={}){
   const queue=normalizeSystemAiQueue(queueInput),stamp=now();let found=false;
   const tasks=queue.tasks.map(t=>{if(t.id!==clean(id))return t;found=true;return{...t,status:'queued',blocker:clean(reason),candidateBranch:null,pullRequestUrl:null,reservationId:null,reservedAt:null,updatedAt:stamp,evidence:unique([...(t.evidence||[]),`primary-ai-rework:${clean(reason)}`])};});
@@ -396,6 +471,12 @@ export function runSystemAiQueue(args={}){
     const dir=clean(args.results);const rows=[];
     if(dir&&fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort())rows.push(readJson(path.join(dir,name),{}));
     queue=applySystemAiResults(queue,rows);writeJson(file,queue);return{command,queue,results:rows.length};
+  }
+  if(command==='handoff-missing'){
+    const dir=clean(args.results),rows=[];
+    if(dir&&fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort())rows.push(readJson(path.join(dir,name),{}));
+    const result=handoffMissingSystemAiResults(queue,{reservationId:args.reservation,resultTaskIds:rows.map(row=>row.taskId)});
+    writeJson(file,result.queue);return{command,...result};
   }
   if(command==='requeue'){queue=requeueSystemAiTask(queue,{id:args.id,reason:args.reason});writeJson(file,queue);return{command,queue};}
   if(command==='accept'){queue=acceptSystemAiTask(queue,{id:args.id,evidence:unique(clean(args.evidence).split(','))});writeJson(file,queue);return{command,queue};}
