@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -63,12 +63,16 @@
     "exactStageRequired": true,
     "exactSignatureRequired": true,
     "repeatedFailureDedupeRequired": true,
-    "staleFailureMayNotOverrideCurrentRawState": true
+    "staleFailureMayNotOverrideCurrentRawState": true,
+    "classificationRequired": true,
+    "allowedClassSource": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution.failureClassification.classes",
+    "infrastructureFailureSeparatedFromTaskFailure": true
   },
   "completionContract": {
     "structuredEvidenceBeforeCompletion": true,
     "rawLogAloneCannotProvePass": true,
-    "centralPolicyAndArchitectureMustMatchExecution": true
+    "centralPolicyAndArchitectureMustMatchExecution": true,
+    "qaContractRepairRequiresIndependentVerification": true
   },
   "orchestrationLogContract": {
     "primaryAiMarkers": [
@@ -131,7 +135,22 @@
       "SYSTEM_AI_CANDIDATE_BRANCH",
       "SYSTEM_AI_PR_URL",
       "SYSTEM_AI_VERIFICATION",
-      "PRIMARY_AI_REVIEW"
+      "PRIMARY_AI_REVIEW",
+      "SYSTEM_AI_FAILURE_CLASS",
+      "SYSTEM_AI_FAILURE_STAGE",
+      "SYSTEM_AI_FAILURE_SIGNATURE",
+      "SYSTEM_AI_HANDOFF_STATE",
+      "SYSTEM_AI_HANDOFF_FROM_RESERVATION",
+      "SYSTEM_AI_HANDOFF_TO_RESERVATION",
+      "SYSTEM_AI_BOTTLENECK_CLASS",
+      "SYSTEM_AI_BOTTLENECK_IMPACT_SCORE",
+      "SYSTEM_AI_QUEUE_DEPTH",
+      "SYSTEM_AI_RESERVATION_WAIT_MS",
+      "SYSTEM_AI_FAN_IN_WAIT_MS",
+      "SYSTEM_AI_CARETAKER_GAME_ID",
+      "SYSTEM_AI_QA_CONTRACT_DRIFT=YES|NO",
+      "SYSTEM_AI_KNOWLEDGE_IDS",
+      "SYSTEM_AI_KNOWLEDGE_OUTCOME"
     ],
     "rawModelOutputStored": false,
     "rawModelOutputSha256Required": true,
@@ -139,7 +158,23 @@
     "failedVerificationMustRequeueOrFail": true,
     "primaryAiReviewMayAcceptReworkReopenOrRedirect": true,
     "workerWaveMax": 32,
-    "focusedRecruitmentEvidenceRequired": true
+    "focusedRecruitmentEvidenceRequired": true,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution",
+    "evolutionObservability": {
+      "source": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution",
+      "rawPrivateReasoningLogged": false,
+      "requiredDimensions": [
+        "FAILURE_CLASSIFICATION",
+        "WORKER_HANDOFF",
+        "BOTTLENECK_SENSOR",
+        "FOCUSED_CARETAKER",
+        "QA_CONTRACT_DRIFT",
+        "PRIMARY_AI_VIBE_COLLABORATION",
+        "VERIFIED_LEARNING_REUSE"
+      ],
+      "structuredEvidenceRequired": true,
+      "duplicatePersistentLogForbidden": true
+    }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerContextLogContract": {
