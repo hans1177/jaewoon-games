@@ -1,16 +1,40 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
-const checkpoint=name=>({name,at:1,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21});
+const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
-const good={gameId:'cozy-island',placeId:116850096561713,placeVersion:21,requirements:{saveEnabled:true,multiplayerRequired:true},checkpoints:Object.fromEntries(names.map(x=>[x,checkpoint(x)]))};
+const good={gameId:'cozy-island',placeId:116850096561713,placeVersion:21,requirements:{saveEnabled:true,multiplayerRequired:true},checkpoints:Object.fromEntries(names.map((x,index)=>[x,checkpoint(x,index+1)]))};
 
 test('actual Roblox sentinel passes F1 through F8 only for the exact deployed place version',()=>{
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:good,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
  assert.equal(r.runtimeFoundationPassed,true);
  assert.equal(r.runtimeAcceptancePassed,true);
  for(const field of ['f1ServerBootPassed','f2WorldFoundationPassed','f3CharacterFoundationPassed','f4PhysicsAndMovementPassed','f5InputCameraUiPassed','f6CoreServicesPassed','f7MultiplayerFoundationPassed','f8GameplaySystemsPassed'])assert.equal(r[field],true,field);
+});
+
+
+test('foundation sentinel blocks causally out-of-order boot world spawn character evidence',()=>{
+ const broken=structuredClone(good);
+ const worldSequence=broken.checkpoints.WORLD_READY.sequence;
+ broken.checkpoints.WORLD_READY.sequence=broken.checkpoints.SPAWN_READY.sequence;
+ broken.checkpoints.SPAWN_READY.sequence=worldSequence;
+ const r=validateRobloxRuntimeFoundationEvidence({sentinel:broken,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
+ assert.equal(r.checkpointOrderPassed,false);
+ assert.equal(r.runtimeFoundationPassed,false);
+ assert.ok(r.blockers.includes('checkpointOrder'));
+});
+
+test('cozy island runtime probe uses monotonic sentinel sequence and full ground-contact timeout',()=>{
+ const server=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
+ assert.match(server,/data\.sequence=math\.max\(0,math\.floor\(tonumber\(data\.sequence\)or 0\)\)\+1/);
+ assert.match(server,/row\.sequence=data\.sequence/);
+ assert.match(server,/local deadline=os\.clock\(\)\+3/);
+ assert.match(server,/task\.wait\(\.1\)/);
+ assert.match(server,/SPAWN_FOUNDATION_MISSING/);
+ assert.match(server,/INVALID_ROOT_POSITION/);
+ assert.doesNotMatch(server,/task\.delay\(\.6,function\(\)/);
 });
 
 test('foundation sentinel blocks floating character evidence without ground contact',()=>{

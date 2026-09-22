@@ -1,5 +1,5 @@
 {
-  "version": 262,
+  "version": 263,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -4957,7 +4957,26 @@
           ],
           "missingPermissionAction": "FAIL_CLOSED_EXTERNAL_EXECUTION_BLOCKER_NO_RUNTIME_PASS",
           "secret": "ROBLOX_OPEN_CLOUD_API_KEY"
-        }
+        },
+        "checkpointOrderScope": "FOUNDATION_CAUSAL_CHAIN_ONLY",
+        "foundationCausalOrder": [
+          "SERVER_BOOT",
+          "MODULE_GRAPH_READY",
+          "WORLD_READY",
+          "SPAWN_READY",
+          "CHARACTER_READY",
+          "GROUND_CONTACT"
+        ],
+        "parallelRuntimeSignalsMayInterleave": [
+          "CAMERA_READY",
+          "INPUT_READY",
+          "MOVEMENT_CONFIRMED",
+          "REMOTE_ROUNDTRIP",
+          "SAVE_ROUNDTRIP",
+          "MULTIPLAYER_SYNC",
+          "CORE_LOOP_READY"
+        ],
+        "monotonicSequenceRequiredForFoundationOrder": true
       },
       "robloxContract": {
         "sourcePreflight": "HEADLESS_FAST_MVP_RECLASSIFIED_AS_SOURCE_PREFLIGHT_ONLY",
@@ -4980,7 +4999,9 @@
           "timeoutSeconds": 3,
           "downwardRaycastRequired": true,
           "floorMaterialAirAfterTimeoutFails": true,
-          "continuousFreefallFails": true
+          "continuousFreefallFails": true,
+          "pollIntervalSeconds": 0.1,
+          "singleEarlySampleForbidden": true
         },
         "movementProbe": {
           "controlledInputRequired": true,
@@ -5197,7 +5218,9 @@
         "runtimeCandidateStaleEvidenceInvalidation": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "f9UniversePlaceVersionExactBinding": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
-        "robloxMainSourceDriftRebind": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
+        "robloxMainSourceDriftRebind": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "cozyIslandGroundContactTimeoutProbe": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "robloxFoundationSentinelSequenceOrder": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5268,7 +5291,9 @@
           "coreLoopCheckpointRequiresSuccessfulTransition": true,
           "newCandidateClearsPriorReleasePassState": true,
           "f9BindsUniversePlaceVersion": true,
-          "robloxMainSourceDriftRebind": true
+          "robloxMainSourceDriftRebind": true,
+          "cozyIslandGroundContactTimeoutProbe": true,
+          "robloxFoundationSentinelSequenceOrder": true
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",

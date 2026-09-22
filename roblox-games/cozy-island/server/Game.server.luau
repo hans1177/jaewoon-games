@@ -41,11 +41,13 @@ local function foundationCheckpoint(name,p,extra)
  pcall(function()
   foundationStore:UpdateAsync("latest",function(old)
    local data=typeof(old)=="table"and old or{}
-   if tonumber(data.placeVersion)~=game.PlaceVersion or tonumber(data.placeId)~=game.PlaceId or tostring(data.gameId or"")~=tostring(C.GameId)then data.checkpoints={}end
-   data.version=2;data.gameId=C.GameId;data.placeId=game.PlaceId;data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
+   if tonumber(data.placeVersion)~=game.PlaceVersion or tonumber(data.placeId)~=game.PlaceId or tostring(data.gameId or"")~=tostring(C.GameId)then data.checkpoints={};data.sequence=0 end
+   data.version=3;data.gameId=C.GameId;data.placeId=game.PlaceId;data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
    data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
    data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
-   data.checkpoints[name]=payload
+   data.sequence=math.max(0,math.floor(tonumber(data.sequence)or 0))+1
+   local row={};for k,v in pairs(payload)do row[k]=v end;row.sequence=data.sequence
+   data.checkpoints[name]=row
    return data
   end)
  end)
@@ -397,18 +399,27 @@ end)
 local function validateCharacterFoundation(p,c)
  local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
  if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
+ if not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
  h.MaxHealth=100;h.Health=100;h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false
- if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn;c:PivotTo(foundationSpawn.CFrame*CFrame.new(0,4,0))end
- foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand})
- task.delay(.6,function()
-  if not c.Parent or not r.Parent then return end
+ p.RespawnLocation=foundationSpawn;c:PivotTo(foundationSpawn.CFrame*CFrame.new(0,4,0))
+ local pos=r.Position
+ if pos.X~=pos.X or pos.Y~=pos.Y or pos.Z~=pos.Z or math.abs(pos.X)==math.huge or math.abs(pos.Y)==math.huge or math.abs(pos.Z)==math.huge then
+  p:SetAttribute("FoundationFailure","INVALID_ROOT_POSITION");return
+ end
+ foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=pos.X,rootY=pos.Y,rootZ=pos.Z})
+ task.spawn(function()
+  local deadline=os.clock()+3
   local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances={c}
-  local hit=workspace:Raycast(r.Position,Vector3.new(0,-14,0),params)
-  if hit and h.FloorMaterial~=Enum.Material.Air then
-   foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y})
-  else
-   p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
-  end
+  repeat
+   if not c.Parent or not r.Parent then return end
+   local hit=workspace:Raycast(r.Position,Vector3.new(0,-14,0),params)
+   if hit and h.FloorMaterial~=Enum.Material.Air then
+    foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y})
+    return
+   end
+   task.wait(.1)
+  until os.clock()>=deadline
+  p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
  end)
 end
 local function bindPlayer(p)
