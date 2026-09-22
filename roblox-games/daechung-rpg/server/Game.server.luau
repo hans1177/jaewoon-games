@@ -4,6 +4,7 @@ local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
+local AssetService=game:GetService("AssetService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -23,6 +24,8 @@ local parties={}
 local clickTimes={}
 local lastRequest={}
 local lastCombat={}
+local assetCache={}
+local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293}
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
@@ -42,6 +45,64 @@ local function attach(rootPart,name,size,offset,color,material,shape)
  local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x
  return x
 end
+local function stripAsset(root)
+ for _,d in ipairs(root:GetDescendants())do
+  if d:IsA("LuaSourceContainer")or d:IsA("Tool")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")then d:Destroy()
+  elseif d:IsA("BasePart")then d.Anchored=true;d.CanTouch=false end
+ end
+ return root
+end
+local function loadAsset(id)
+ if assetCache[id]then return assetCache[id]end
+ local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
+ if not ok or not result then return nil end
+ stripAsset(result);result.Parent=nil;assetCache[id]=result;return result
+end
+local function chooseMesh(assetId,keywords,seed)
+ local rootAsset=loadAsset(assetId);if not rootAsset then return nil end
+ local preferred,all={},{}
+ for _,d in ipairs(rootAsset:GetDescendants())do
+  if d:IsA("MeshPart")then
+   table.insert(all,d);local low=string.lower(d.Name)
+   for _,k in ipairs(keywords)do if string.find(low,string.lower(k),1,true)then table.insert(preferred,d);break end end
+  end
+ end
+ local pool=#preferred>0 and preferred or all;if #pool==0 then return nil end
+ return pool[((seed or 1)-1)%#pool+1]
+end
+local function assetProp(parent,assetId,keywords,pos,scale,seed,collide)
+ local t=chooseMesh(assetId,keywords,seed);if not t then return nil end
+ local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=collide==true;x.CanTouch=false;x.Size=x.Size*(scale or 1)
+ x.CFrame=CFrame.new(pos)*CFrame.Angles(0,math.rad(((seed or 1)*41)%360),0);x.Parent=parent;return x
+end
+local function wholeAsset(parent,assetId,pos,scale,name)
+ local t=loadAsset(assetId);if not t then return nil end
+ local x=t:Clone();x.Name=name or("AssetModel_"..assetId);stripAsset(x);x.Parent=parent
+ pcall(function()x:ScaleTo(scale or 1)end);pcall(function()x:PivotTo(CFrame.new(pos))end);return x
+end
+local function decorateVillageAssets(parent)
+ task.spawn(function()
+  for i=1,24 do
+   local a=i/24*math.pi*2;local r=94+(i%3)*18
+   assetProp(parent,ASSETS.Nature,{"tree","bush","flower","rock","log"},Vector3.new(math.cos(a)*r,2,math.sin(a)*r),.65+(i%4)*.08,i,false)
+  end
+  for i=1,12 do
+   local a=i/12*math.pi*2
+   assetProp(parent,ASSETS.City,{"bench","lamp","fence","trash","sign","table"},Vector3.new(math.cos(a)*58,2,math.sin(a)*58),.65,i,false)
+  end
+ end)
+end
+local function decorateZoneAssets(parent,z)
+ task.spawn(function()
+  local pack=(z.Theme=="MEADOW"or z.Theme=="SNOW")and ASSETS.Nature or ASSETS.Dungeon
+  local keys=(pack==ASSETS.Nature)and{"tree","bush","rock","log","plant"}or{"rock","rune","pillar","wall","bridge","crate","barrel"}
+  for i=1,34 do
+   local a=i/34*math.pi*2;local r=72+(i%7)*20
+   assetProp(parent,pack,keys,z.Center+Vector3.new(math.cos(a)*r,2,math.sin(a)*r),.7+(i%5)*.07,i,false)
+  end
+ end)
+end
+
 local function label(target,text,color,maxDistance)
  local g=Instance.new("BillboardGui");g.Name="WorldLabel";g.Size=UDim2.fromOffset(128,24);g.StudsOffset=Vector3.new(0,4.8,0)
  g.AlwaysOnTop=false;g.MaxDistance=maxDistance or 34;g.LightInfluence=.35;g.Parent=target
@@ -128,6 +189,7 @@ local function makeVillage()
   local h=ppart(f,"VillageHouse",Vector3.new(20,11,17),pos,Color3.fromRGB(145,108,76),Enum.Material.WoodPlanks)
   ppart(f,"VillageRoof",Vector3.new(23,2,20),h.Position+Vector3.new(0,6.5,0),Color3.fromRGB(78,68,73),Enum.Material.Slate)
  end
+ decorateVillageAssets(f)
  local fountain=ppart(f,"Fountain",Vector3.new(14,3,14),Vector3.new(0,3,0),Color3.fromRGB(90,112,124),Enum.Material.Slate);label(fountain,"마을 광장",Color3.fromRGB(255,232,168),28)
 
  local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
@@ -161,6 +223,7 @@ local function makeVillage()
  for i,z in ipairs(C.Portals)do
   local x=(i-3)*46
   local pad=ppart(f,"Portal"..i,Vector3.new(28,2,20),Vector3.new(x,2,-112),z.Color,Enum.Material.Neon)
+  wholeAsset(f,ASSETS.StonePortal,pad.Position+Vector3.new(0,0,-2),.28,"StonePortalAsset"..i)
   ppart(f,"PortalArchL"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(-11,10,0),z.Color,Enum.Material.Slate)
   ppart(f,"PortalArchR"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(11,10,0),z.Color,Enum.Material.Slate)
   label(pad,i.." · "..z.Name,z.Color,48)
@@ -197,6 +260,7 @@ local function makeZone(z)
   local a=i/8*math.pi*2;local lamp=ppart(f,"Guide"..i,Vector3.new(1.2,8,1.2),z.Center+Vector3.new(math.cos(a)*86,5,math.sin(a)*86),Color3.fromRGB(75,73,76),Enum.Material.Metal)
   local glow=ppart(f,"GuideGlow"..i,Vector3.new(2.2,2.2,2.2),lamp.Position+Vector3.new(0,5,0),z.Color,Enum.Material.Neon);glow.CanCollide=false
  end
+ decorateZoneAssets(f,z)
  local ret=ppart(f,"ReturnPortal",Vector3.new(26,2,18),z.Center+Vector3.new(0,2,190),Color3.fromRGB(112,180,205),Enum.Material.Neon);label(ret,"마을 귀환",Color3.fromRGB(180,235,255),36)
  prompt(ret,"마을","귀환").Triggered:Connect(function(p)
   local combat=os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds
@@ -307,7 +371,7 @@ local function buildWorld()
  Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
  makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
  for _,z in ipairs(C.Portals)do for i=1,10 do spawnEnemy(z,false,i)end;if z.Boss then spawnEnemy(z,true,1)end end
- workspace:SetAttribute("WorldArtPass","RPG_FIVE_PORTAL_WORLD_V1")
+ workspace:SetAttribute("WorldArtPass","RPG_FIVE_PORTAL_ASSET_WORLD_V2")
 end
 
 remote.OnServerEvent:Connect(function(p,a)
