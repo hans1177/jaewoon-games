@@ -429,8 +429,8 @@ qaCaptureRemote.OnServerEvent:Connect(function(p,label,assetId)
 end)
 
 Players.PlayerRemoving:Connect(function(p)
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil
-qaCaptureLast[p]=nil end)
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;qaCaptureLast[p]=nil
+end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 task.spawn(function()
