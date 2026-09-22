@@ -5197,7 +5197,7 @@
         "runtimeCandidateStaleEvidenceInvalidation": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "f9UniversePlaceVersionExactBinding": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
-        "robloxMainSourceDriftRebind": "DESIGNED_IMPLEMENTATION_IN_PROGRESS"
+        "robloxMainSourceDriftRebind": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5268,7 +5268,7 @@
           "coreLoopCheckpointRequiresSuccessfulTransition": true,
           "newCandidateClearsPriorReleasePassState": true,
           "f9BindsUniversePlaceVersion": true,
-          "robloxMainSourceDriftRebind": false
+          "robloxMainSourceDriftRebind": true
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
