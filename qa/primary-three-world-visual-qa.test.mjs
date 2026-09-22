@@ -14,7 +14,7 @@ test('3개 내부 빌드는 공식 CaptureService QA 카메라와 안전한 서�
   const server=read(`roblox-games/${id}/server/Game.server.luau`);
   assert.match(config,/QACameraEnabled=true/);
   assert.match(config,/QACaptureRemoteName="QACaptureReport"/);
-  for(const marker of ['CaptureService','PromptCaptureGalleryPermissionAsync','Enum.CaptureGalleryPermission.ReadAndUpload','TakeScreenshotCaptureAsync','UploadCaptureAsync','Enum.CameraType.Scriptable','UICaptureMode=Enum.UICaptureMode.All','camera.CameraType=saved.cameraType']){
+  for(const marker of ['CaptureService','PromptCaptureGalleryPermissionAsync','Enum.CaptureGalleryPermission.ReadAndUpload','TakeScreenshotCaptureAsync','PromptSaveCapturesToGallery','UploadCaptureAsync','Enum.CameraType.Scriptable','UICaptureMode=Enum.UICaptureMode.All','camera.CameraType=saved.cameraType']){
    assert.match(qa,new RegExp(marker.replaceAll('.','\\.')));
   }
   assert.match(client,/QACamera\.install\(C,gui/);
