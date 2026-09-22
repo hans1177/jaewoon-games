@@ -12,13 +12,14 @@ function args(argv=process.argv.slice(2)){return Object.fromEntries(argv.filter(
 function hash(parts){return crypto.createHash('sha256').update(parts.map(clean).join('|')).digest('hex').slice(0,20);}
 function severity(sig=''){
   const s=upper(sig);
-  if(/CRASH|START_FAILURE|SAVE_CORRUPTION|MULTIPLAYER_STATE_CORRUPTION|RELEASE_BLOCKING_PLATFORM_ERROR/.test(s))return'CRITICAL';
-  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA/.test(s))return'HIGH';
+  if(/CRASH|START_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|SAVE_CORRUPTION|MULTIPLAYER_STATE_CORRUPTION|RELEASE_BLOCKING_PLATFORM_ERROR/.test(s))return'CRITICAL';
+  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|MOVEMENT_FAILURE|CAMERA_FOUNDATION_FAILURE|RUNTIME_FOUNDATION|FOUNDATION_UNVERIFIED|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA/.test(s))return'HIGH';
   if(/UI|AUDIO|PRESENTATION|IMPLEMENTATION|MECHANIC|SYSTEM_COUNT|MUSIC_|MOBILE_|APPROVED_SCOPE_/.test(s))return'MEDIUM';
   return'LOW';
 }
 function category(sig=''){
   const s=upper(sig);
+  if(/FOUNDATION|GROUND_CONTACT|WORLD_READY|SPAWN|CHARACTER/.test(s))return'FOUNDATION';
   if(/CRASH|START|LAUNCH/.test(s))return'STARTUP';
   if(/INPUT|TOUCH|CONTROL|JOYSTICK/.test(s))return'INPUT';
   if(/SAVE|LOAD/.test(s))return'SAVE';
@@ -56,19 +57,34 @@ function webTickets(item={},stamp=''){
 }
 function platformTickets(item={},stamp=''){
   const out=[],gameId=clean(item.gameId),platform=upper(item.selectedPlatform||item.targetPlatform);
-  const add=(stage,sig,evidence=[])=>{
+  const add=(stage,sig,evidence=[],options={})=>{
     if(!clean(stage)&&!clean(sig))return;
     const signature=clean(sig||stage); if(!signature)return;
     out.push({id:'bug-'+hash([gameId,platform,stage,signature]),gameId,surface:platform||'PLATFORM',phase:'NATIVE_RUNTIME_OR_REGRESSION',
-      severity:severity(signature),category:category(signature),signature,reproduction:'RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE',
-      responsibleFiles:responsibleFiles(item,platform),evidence:uniq(evidence),exactFailedStage:clean(stage||'TARGET_PLATFORM_RUNTIME'),
-      route:'FOCUSED_REPAIR_AND_RECOVERY',status:'OPEN',createdAt:stamp,updatedAt:stamp});
+      severity:severity(signature),category:category(signature),signature,
+      reproduction:clean(options.reproduction)||'RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE',
+      responsibleFiles:options.responsibleFiles===false?[]:responsibleFiles(item,platform),evidence:uniq(evidence),exactFailedStage:clean(stage||'TARGET_PLATFORM_RUNTIME'),
+      route:clean(options.route)||'FOCUSED_REPAIR_AND_RECOVERY',repairEligible:options.repairEligible!==false,status:'OPEN',createdAt:stamp,updatedAt:stamp});
   };
   const ex=item.executionEvidence||{};
   if(ex.failureStage)add(ex.failureStage,ex.failureSignature||ex.failureStage,[JSON.stringify(ex)]);
   if(platform==='ROBLOX'){
     const rr=item.robloxRuntimeEvidence||{};
-    if(item.robloxRuntimePassed===false||rr.failure)add('TARGET_PLATFORM_RUNTIME',rr.failure||'ROBLOX_RUNTIME_FAILED',[JSON.stringify(rr)]);
+    const foundation=item.robloxRuntimeFoundationEvidence||{};
+    const candidate=item.robloxRuntimeCandidateEvidence||{};
+    if(candidate.published===true&&item.robloxRuntimeFoundationPassed!==true){
+      if(foundation.state==='BLOCKED'||clean(item.robloxFailureSignature).match(/FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|MOVEMENT_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE/)){
+        add('TARGET_PLATFORM_RUNTIME_FOUNDATION',foundation.failureSignature||item.robloxFailureSignature||'ROBLOX_RUNTIME_FOUNDATION_FAILED',[JSON.stringify(foundation),JSON.stringify(candidate)]);
+      }else{
+        add('TARGET_PLATFORM_RUNTIME_FOUNDATION','ROBLOX_RUNTIME_FOUNDATION_UNVERIFIED',[JSON.stringify(candidate)],{
+          reproduction:'RUN_EXISTING_GAME_TESTER_F0_TO_F4_FOUNDATION_SCENARIO_ON_EXACT_PRIVATE_RUNTIME_CANDIDATE',
+          responsibleFiles:false,
+          route:'GAME_TESTER_FOUNDATION_EXECUTION',
+          repairEligible:false
+        });
+      }
+    }
+    if(item.robloxRuntimePassed===false&&item.robloxRuntimeFoundationPassed!==false||rr.failure)add('TARGET_PLATFORM_RUNTIME',rr.failure||'ROBLOX_RUNTIME_FAILED',[JSON.stringify(rr)]);
     if(item.robloxRegressionPassed===false&&item.robloxRuntimePassed===true)add('REGRESSION','ROBLOX_REGRESSION_FAILED',[JSON.stringify(item.robloxPostRuntimeQaEvidence||{})]);
   }
   if(platform==='UNITY'){
@@ -100,7 +116,7 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
   const tickets=mergeTickets(ticketQueue,incoming);
   let recovery=normalizeRecoveryQueue(recoveryQueue),added=[];
   for(const t of tickets.tickets){
-    if(t.status!=='OPEN'||!['CRITICAL','HIGH','MEDIUM'].includes(t.severity))continue;
+    if(t.status!=='OPEN'||!['CRITICAL','HIGH','MEDIUM'].includes(t.severity)||t.repairEligible===false)continue;
     const rec=enqueueRecovery(recovery,{
       id:'recovery-ticket-'+t.id,priority:['CRITICAL','HIGH'].includes(t.severity)?'critical':'high',
       sourceQueue:'tester-debug',sourceTaskId:t.id,gameId:t.gameId,responsibleFiles:t.responsibleFiles,
