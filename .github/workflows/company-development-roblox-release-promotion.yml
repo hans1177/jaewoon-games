@@ -1,5 +1,5 @@
 # FAST_MVP_INTERNAL_GATE_V2: exact package -> shared preflight -> core headless QA -> private/restricted publish
-# MANUAL_RELEASE_TRIGGER: primary-three patched source continuation
+# MANUAL_RELEASE_TRIGGER: final primary-three design-art-title sync
 name: Company DEVELOPMENT_CONFIRMED Roblox Internal Release Promotion
 
 on:
@@ -587,6 +587,51 @@ jobs:
             test "$pushed" = '1'
           fi
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
+
+      - name: Apply and verify Roblox title description and server size
+        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
+        working-directory: main
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
+          ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
+          SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const launch=JSON.parse(fs.readFileSync(`${process.env.SOURCE_ROOT}/launch-mvp.json`,'utf8'));
+          const displayName=String(launch.robloxTitleKorean||launch.gameName||'').trim();
+          const description=String(launch.robloxDescriptionKorean||'').trim();
+          const serverSize=Number(launch.robloxServerSize||0);
+          if(!displayName)throw new Error('ROBLOX_METADATA_TITLE_MISSING');
+
+          const fields=['displayName','description'];
+          const payload={displayName,description};
+          if(Number.isInteger(serverSize)&&serverSize>0){fields.push('serverSize');payload.serverSize=serverSize;}
+
+          const base=`https://apis.roblox.com/cloud/v2/universes/${process.env.ROBLOX_UNIVERSE_ID}/places/${process.env.ROBLOX_PLACE_ID}`;
+          const headers={'x-api-key':process.env.ROBLOX_OPEN_CLOUD_API_KEY,'content-type':'application/json'};
+          const update=await fetch(`${base}?updateMask=${encodeURIComponent(fields.join(','))}`,{
+            method:'PATCH',headers,body:JSON.stringify(payload),
+          });
+          const updateText=await update.text();
+          if(!update.ok)throw new Error(`ROBLOX_METADATA_UPDATE_FAILED:${update.status}:${updateText}`);
+
+          const verify=await fetch(base,{headers:{'x-api-key':process.env.ROBLOX_OPEN_CLOUD_API_KEY}});
+          const place=await verify.json();
+          if(!verify.ok)throw new Error(`ROBLOX_METADATA_VERIFY_FAILED:${verify.status}`);
+          if(String(place.displayName||'')!==displayName)throw new Error(`ROBLOX_TITLE_VERIFY_MISMATCH:${place.displayName}`);
+          if(description&&String(place.description||'')!==description)throw new Error('ROBLOX_DESCRIPTION_VERIFY_MISMATCH');
+          if(Number.isInteger(serverSize)&&serverSize>0&&Number(place.serverSize)!==serverSize)throw new Error(`ROBLOX_SERVER_SIZE_VERIFY_MISMATCH:${place.serverSize}`);
+
+          console.log(`ROBLOX_EXPERIENCE_TITLE=${displayName}`);
+          console.log(`ROBLOX_EXPERIENCE_DESCRIPTION_LENGTH=${description.length}`);
+          if(serverSize>0)console.log(`ROBLOX_SERVER_SIZE=${serverSize}`);
+          console.log('ROBLOX_EXPERIENCE_METADATA_UPDATE=PASS');
+          NODE
 
       - name: Internal release promotion summary
         if: always()
