@@ -80,6 +80,20 @@ test('homepage Roblox link prefers the dedicated canonical publication target ov
   assert.match(snap.centralPolicyFingerprint,/^[a-f0-9]{64}$/);
 });
 
+test('homepage exposes Unity Web only as a verified validation surface',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
+  assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
+  assert.equal(snap.unityWebEnabled,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(renderer,/Unity Web 테스트/);
+  assert.match(renderer,/unity-web-build\.json/);
+  assert.match(renderer,/unity-web-gameplay-validation\.json/);
+  assert.match(renderer,/unityWebValidationVerified===true/);
+});
+
 test('homepage platform exposure fails closed when central policy adds a platform without an implementation adapter',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const changed=structuredClone(policy);
