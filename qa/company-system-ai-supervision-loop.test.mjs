@@ -434,3 +434,41 @@ test('security recovery review workflow is manual-only, exact-decision, atomic, 
   assert.match(securityReviewWorkflow,/SECURITY_RECOVERY_REVIEW_AUTO_PROMOTION=NO/);
   assert.doesNotMatch(securityReviewWorkflow,/gh pr merge|HEAD:main|refs\/heads\/main/);
 });
+
+
+test('recovery dispatch carries exact failure signature and blocked cohort metadata into System AI repair tasks',()=>{
+  const result=dispatchRecovery({
+    recoveryInput:{tasks:[{
+      id:'portfolio-common',status:'queued',sourceQueue:'vibe2',sourceTaskId:'game-a',relatedTaskIds:['game-a','game-b','game-c'],
+      recoveryOwner:'SYSTEM_AI',recoveryStrategy:'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
+      failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'COMMON_RUNTIME_BINDING_FAILURE',blastRadius:'portfolio:3',
+      responsibleFiles:['tools/demo-runtime.mjs'],contextFiles:['qa/demo-runtime.test.mjs'],
+      verificationPlan:['node --test qa/demo-runtime.test.mjs'],evidence:['primary-ai-collaboration:REQUESTED']
+    }]},
+    gameQueueInput:{tasks:[]},
+    systemAiQueueInput:{tasks:[]},
+    route:'system-ai'
+  });
+  const task=result.systemAi.tasks.find(x=>x.id==='recovery-portfolio-common');
+  assert.ok(task);
+  assert.equal(task.failureStage,'TARGET_PLATFORM_RUNTIME');
+  assert.equal(task.failureSignature,'COMMON_RUNTIME_BINDING_FAILURE');
+  assert.equal(task.blastRadius,'portfolio:3');
+  assert.deepEqual(task.blockedTaskIds,['game-a','game-b','game-c']);
+  assert.equal(task.recurrenceCount,3);
+  assert.ok(task.evidence.includes('recovery-exact-stage:TARGET_PLATFORM_RUNTIME'));
+});
+
+test('System AI immutable result persists failed repair fingerprints and hypothesis falsification into fan-in evidence',()=>{
+  assert.match(workflow,/version:7/);
+  assert.match(workflow,/repairStrategyFingerprint:clean\(worker\.repairStrategyFingerprint\)/);
+  assert.match(workflow,/failed-strategy-fingerprint:/);
+  assert.match(workflow,/selected-hypothesis:/);
+  assert.match(workflow,/hypothesis-rejected:/);
+  assert.match(workflow,/known-good-revision:/);
+  assert.match(queue,/systemAiImpactProfile/);
+  assert.match(queue,/system-ai-impact-score:/);
+  assert.match(worker,/buildNeuralDiagnosis/);
+  assert.match(worker,/CAUSAL HYPOTHESES:/);
+  assert.match(worker,/KNOWN GOOD REVISION:/);
+});
