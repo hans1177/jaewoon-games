@@ -44,8 +44,8 @@ test('클라이언트가 임의 Remote 액션이나 스팸으로 서버 상태�
 
 test('서버가 순간이동 속도조작 맵밖 이동을 되돌린다',()=>{
   assert.match(config,/MaxHorizontalVelocity=92/);
-  assert.match(config,/MaxTeleportStep=36/);
-  assert.match(config,/ArenaLimit=86/);
+  assert.match(config,/MaxTeleportStep=48/);
+  assert.match(config,/ArenaLimit=176/);
   assert.match(server,/horizontal<=C\.MaxHorizontalVelocity/);
   assert.match(server,/Magnitude<=C\.MaxTeleportStep/);
   assert.match(server,/math\.abs\(pos\.X\)<=C\.ArenaLimit/);
@@ -153,4 +153,33 @@ test('1인 얼음 상태는 영구 이동불가가 되지 않고 AI 구조와 �
   assert.match(server,/r\.Anchored=false/);
   assert.match(server,/rescueTarget/);
   for(const gate of ['round-start tag grace','solo player cannot remain permanently frozen','AI survivors rescue frozen human players','movement state restored after thaw/spawn'])assert.ok(launch.releaseGates.includes(gate),gate);
+});
+
+test('심야는 340x340 대형 맵과 목표 탈출 루프를 사용한다',()=>{
+  assert.match(config,/RoundSeconds=180/);
+  assert.match(config,/ArenaLimit=176/);
+  assert.match(config,/ObjectiveCount=4/);
+  assert.match(server,/Vector3\.new\(340,1,340\)/);
+  assert.match(server,/addObjectiveStation/);
+  assert.match(server,/addEscapeGate/);
+  assert.match(server,/workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true/);
+  assert.match(client,/ObjectiveProgress/);
+  assert.match(client,/목표 %d\/%d/);
+  for(const gate of ['340x340 arena footprint','four interactive survivor objectives','escape gate unlock and survivor escape victory'])assert.ok(launch.releaseGates.includes(gate),gate);
+});
+
+test('심야 괴물은 드라큘라 프랑켄슈타인 늑대인간 미라 사신 5종이다',()=>{
+  for(const id of ['DRACULA','FRANKENSTEIN','WEREWOLF','MUMMY','GRIM_REAPER'])assert.match(config,new RegExp('Id="'+id+'"'));
+  for(const name of ['드라큘라','프랑켄슈타인','늑대인간','미라','사신'])assert.match(config,new RegExp(name));
+  for(const id of ['DRACULA','FRANKENSTEIN','WEREWOLF','MUMMY','GRIM_REAPER'])assert.match(server,new RegExp(id));
+  assert.match(server,/legacyMonsterIds/);
+  assert.ok(launch.releaseGates.includes('classic five-monster roster'));
+});
+
+test('심야 환경 에셋은 로딩 후 스크립트를 제거하고 장식으로만 사용한다',()=>{
+  assert.match(server,/AssetService:LoadAssetAsync|AssetService\.LoadAssetAsync/);
+  assert.match(server,/LuaSourceContainer/);
+  assert.match(server,/d:Destroy\(\)/);
+  assert.match(server,/decorateArenaWithOfficialAssets/);
+  assert.ok(launch.releaseGates.includes('asset scripts stripped before world decoration'));
 });
