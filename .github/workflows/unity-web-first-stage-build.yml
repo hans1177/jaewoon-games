@@ -111,9 +111,11 @@ jobs:
                       source = file.read_text(encoding='utf-8', errors='ignore')
                       if not re.search(r'public\s+static\s+void\s+BuildWeb\s*\(', source):
                           continue
+                      namespace = re.search(r'\bnamespace\s+([A-Za-z_][A-Za-z0-9_.]*)', source)
                       classes = re.findall(r'(?:public\s+)?static\s+class\s+([A-Za-z_][A-Za-z0-9_]*)', source)
                       if len(classes) == 1:
-                          candidates.append(f'{classes[0]}.BuildWeb')
+                          prefix = f'{namespace.group(1)}.' if namespace else ''
+                          candidates.append(f'{prefix}{classes[0]}.BuildWeb')
               candidates = sorted(set(candidates))
               if len(candidates) != 1:
                   raise SystemExit(f'BuildWeb method unresolved: {candidates}')
