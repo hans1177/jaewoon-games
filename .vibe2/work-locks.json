@@ -1,5 +1,29 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-chatgpt-direct-native-stale-qa",
+      "worker": "chatgpt",
+      "taskId": "direct-native-stale-qa-sync",
+      "gameId": null,
+      "files": [
+        "roblox-games/cozy-island/default.project.json",
+        "roblox-games/daechung-rpg/default.project.json",
+        "roblox-games/horror-escape-room/default.project.json",
+        "qa/company-homepage-runtime-propagation.test.mjs",
+        "qa/company-central-policy-contract.test.mjs"
+      ],
+      "baseSha": "7a95e7c32c2a58a965002d11015bbb6d7388aa43",
+      "acquiredAt": "2026-09-22T16:28:49.891Z",
+      "expiresAt": "2026-09-22T17:13:49.891Z",
+      "status": "active",
+      "evidence": [
+        "owner-directive:continue-work",
+        "repair-homepage-title-drift",
+        "repair-stale-web-first-records-qa",
+        "central-document-synchronized-before-work"
+      ]
+    }
+  ]
 }
