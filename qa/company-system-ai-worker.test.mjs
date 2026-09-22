@@ -252,7 +252,7 @@ test('System AI reservation prioritizes the repair with the largest downstream b
   ]});
   const impact=systemAiImpactProfile(queue.tasks[1],queue,{at});
   assert.equal(impact.blockedTaskCount,8);
-  assert.equal(impact.commonBottleneck,false);
+  assert.equal(impact.commonBottleneck,true);
   assert.ok(impact.score>systemAiImpactProfile(queue.tasks[0],queue,{at}).score);
   const reserved=reserveSystemAiBatch(queue,{max:1,reservationId:'impact',at});
   assert.deepEqual(reserved.reserved.map(x=>x.id),['portfolio-bottleneck']);
