@@ -493,7 +493,11 @@ jobs:
           const blocker=currentMainSatisfied||candidateOk?'':infrastructureFailure?'system-ai-infrastructure-contract-failed':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
           const executionDisposition=infrastructureFailure?'REPAIR_REQUIRED_INFRASTRUCTURE':security.verdict==='QUARANTINE'?'TERMINATED_QUARANTINED':security.verdict==='REVIEW'?'HELD_FOR_PRIMARY_AI_REVIEW':candidateOk?'VERIFIED_CANDIDATE':'ENDED_WITHOUT_VERIFIED_CANDIDATE';
           const row={
-            version:6,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,jointAccepted,
+            version:7,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,jointAccepted,
+            repairStrategyFingerprint:clean(worker.repairStrategyFingerprint)||null,
+            selectedHypothesisId:clean(worker.selectedHypothesisId)||null,
+            falsifiedHypothesisIds:Array.isArray(worker.falsifiedHypothesisIds)?worker.falsifiedHypothesisIds:[],
+            knownGoodRevision:clean(worker.knownGoodRevision)||null,
             failureClass:infrastructureFailure?'INFRASTRUCTURE_CONTRACT_FAILURE':null,
             ownerRule2:{id:'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION',automaticBinding:true,executionDisposition,candidatePublicationAllowed:!infrastructureFailure&&security.verdict==='PASS',learningCandidate:!infrastructureFailure,reusableLearning:false,requiresIndependentVerification:true,rawExternalOutputStored:false,verifiedDefensiveAbsorptionOnly:true},
             candidateBranch:candidateOk?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:candidateOk?(process.env.PR_URL||null):null,
@@ -511,6 +515,11 @@ jobs:
               clean(worker.model)&&`external-ai-model:${clean(worker.model)}`,
               clean(worker.rawModelOutputSha256)&&`external-ai-raw-output-sha256:${clean(worker.rawModelOutputSha256)}`,
               ...(worker.learningKnowledgeIds||[]).map(x=>`learning-knowledge-id:${x}`),
+              clean(worker.selectedHypothesisId)&&`selected-hypothesis:${clean(worker.selectedHypothesisId)}`,
+              ...(worker.falsifiedHypothesisIds||[]).map(x=>`hypothesis-rejected:${clean(x)}`),
+              clean(worker.knownGoodRevision)&&`known-good-revision:${clean(worker.knownGoodRevision)}`,
+              clean(worker.repairStrategyFingerprint)&&`repair-strategy-fingerprint:${clean(worker.repairStrategyFingerprint)}`,
+              ...(!candidateOk&&!currentMainSatisfied&&clean(worker.repairStrategyFingerprint)?[`failed-strategy-fingerprint:${clean(worker.repairStrategyFingerprint)}`]:[]),
               ...(candidateOk&&mutationRequired&&process.env.CANDIDATE_SHA?[`source-mutation-sha:${process.env.CANDIDATE_SHA}`]:[]),
               ...(mutationRequired?['source-mutation-required:YES']:[]),
               ...(infrastructureFailure?['failure-class:INFRASTRUCTURE_CONTRACT_FAILURE','learning-authority:NONE','retry-budget-consumed:NO','recovery-state:REPAIR_REQUIRED']:[]),
