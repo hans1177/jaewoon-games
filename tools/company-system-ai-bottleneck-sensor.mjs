@@ -64,12 +64,17 @@ export function analyzeSystemAiBottlenecks({
   }
   const commonFailureCohorts=[...signatureGroups.entries()]
     .filter(([,rows])=>rows.length>=2)
-    .map(([signature,rows])=>({
-      signature,
-      size:rows.length,
-      representativeTaskId:chooseRepresentative(rows.filter(t=>clean(t.status).toLowerCase()==='queued')||rows)?.id||null,
-      taskIds:rows.map(t=>clean(t.id)).filter(Boolean)
-    }))
+    .map(([signature,rows])=>{
+      const runningRepresentativeExists=rows.some(t=>clean(t.status).toLowerCase()==='running');
+      const queuedRows=rows.filter(t=>clean(t.status).toLowerCase()==='queued');
+      return{
+        signature,
+        size:rows.length,
+        runningRepresentativeExists,
+        representativeTaskId:runningRepresentativeExists?null:(chooseRepresentative(queuedRows)?.id||null),
+        taskIds:rows.map(t=>clean(t.id)).filter(Boolean)
+      };
+    })
     .sort((a,b)=>b.size-a.size||a.signature.localeCompare(b.signature));
 
   const disjointQueued=[];
