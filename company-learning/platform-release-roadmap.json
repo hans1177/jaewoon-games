@@ -1,5 +1,5 @@
 {
-  "version": 261,
+  "version": 262,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -4793,7 +4793,9 @@
         "safeSpawnMustExistBeforePlayerBinding": true,
         "coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition": true,
         "newRuntimeCandidateInvalidatesPriorReleasePassState": true,
-        "f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion": true
+        "f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion": true,
+        "activeNativeSourceMutationMustRebindFromAnyLifecycleState": true,
+        "unrelatedMainChangesMustNotInvalidateNativeEvidence": true
       },
       "layers": [
         {
@@ -5080,10 +5082,13 @@
           "REVALIDATE_F0_THROUGH_F9_AS_APPLICABLE",
           "CREATE_SAFE_SPAWN_BEFORE_PLAYER_BINDING",
           "EMIT_CORE_LOOP_READY_ONLY_AFTER_SUCCESSFUL_GAME_STATE_TRANSITION",
-          "INVALIDATE_PRIOR_RELEASE_PASS_STATE_ON_NEW_RUNTIME_CANDIDATE"
+          "INVALIDATE_PRIOR_RELEASE_PASS_STATE_ON_NEW_RUNTIME_CANDIDATE",
+          "RECONCILE_CHANGED_GAME_SOURCE_FROM_ANY_ACTIVE_LIFECYCLE_STATE",
+          "INVALIDATE_ALL_DOWNSTREAM_EVIDENCE_ON_SOURCE_REBIND"
         ],
         "currentRepairState": "SOURCE_SPAWN_ORDER_CORE_LOOP_AND_EXACT_CANDIDATE_REPAIRS_IMPLEMENTED_AWAITING_CI_AND_ACTUAL_RUNTIME_OBSERVATION",
-        "secondaryRuntimeRisk": "REPAIRED_SAFE_SPAWN_NOW_CREATED_BEFORE_PLAYER_BINDING"
+        "secondaryRuntimeRisk": "REPAIRED_SAFE_SPAWN_NOW_CREATED_BEFORE_PLAYER_BINDING",
+        "runtimeStateRebindGap": "INTERNAL_PLATFORM_PLAYTEST_STATE_WAS_EXCLUDED_FROM_EXISTING_SOURCE_RECONCILIATION_SO_MAIN_SOURCE_MUTATION_DID_NOT_INVALIDATE_STALE_RUNTIME_RELEASE_STATE"
       },
       "implementationPlan": {
         "phase1": [
@@ -5099,7 +5104,9 @@
           "BLOCK_INTERNAL_RELEASE_WITHOUT_F1_TO_F4_RUNTIME_EVIDENCE",
           "WIRE_FAILURE_TO_SYSTEM_AI",
           "INVALIDATE_STALE_RELEASE_EVIDENCE_ON_EACH_NEW_RUNTIME_CANDIDATE",
-          "BIND_F9_TO_SOURCE_ARTIFACT_UNIVERSE_PLACE_AND_VERSION"
+          "BIND_F9_TO_SOURCE_ARTIFACT_UNIVERSE_PLACE_AND_VERSION",
+          "DETECT_GAME_PATH_DIFF_FROM_BOUND_SHA_ON_EVERY_ROBLOX_RUNTIME_TRIGGER",
+          "REBIND_CHANGED_ACTIVE_GAME_SOURCE_REGARDLESS_OF_CURRENT_LIFECYCLE_STEP"
         ],
         "phase3": [
           "GENERALIZE_PLATFORM_ADAPTER_INTERFACE_FOR_UNITY_AND_UEFN_WITHOUT_FALSE_PASS"
@@ -5172,7 +5179,8 @@
         "cozyIslandSpawnOrderingRaceRepair": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "runtimeCandidateStaleEvidenceInvalidation": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "f9UniversePlaceVersionExactBinding": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
-        "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
+        "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "robloxActiveLifecycleSourceMutationRebind": "DESIGNED_IMPLEMENTATION_IN_PROGRESS"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5242,7 +5250,9 @@
           "cozyIslandSpawnBeforePlayerBinding": true,
           "coreLoopCheckpointRequiresSuccessfulTransition": true,
           "newCandidateClearsPriorReleasePassState": true,
-          "f9BindsUniversePlaceVersion": true
+          "f9BindsUniversePlaceVersion": true,
+          "robloxSourceMutationRebindAcrossLifecycle": false,
+          "unrelatedMainChangePreservesNativeEvidence": false
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
@@ -5275,6 +5285,31 @@
         "missingCompilerEvidenceAction": "F0_BLOCKED",
         "workflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
         "prGate": ".github/workflows/vibe3-engine-contract.yml"
+      },
+      "sourceMutationRebind": {
+        "version": 1,
+        "required": true,
+        "scope": "ACTIVE_DEVELOPMENT_CONFIRMED_GAME_WITH_BOUND_NATIVE_SOURCE_REVISION",
+        "detection": "PATH_DIFF_BETWEEN_BOUND_SOURCE_REVISION_AND_CURRENT_MAIN_FOR_EXACT_GAME_SOURCE_ROOT",
+        "lifecycleStateIndependent": true,
+        "exactGameSourcePathRequired": true,
+        "unrelatedMainChangeDoesNotRebind": true,
+        "actionOnDetectedMutation": "REBIND_SOURCE_AND_INVALIDATE_BUILD_F0_RUNTIME_QA_AND_RELEASE_EVIDENCE",
+        "retainedIdentity": [
+          "PUBLICATION_TARGET"
+        ],
+        "invalidatedEvidence": [
+          "BUILD_PACKAGE",
+          "BUILD_PREFLIGHT",
+          "F0_SOURCE_PREFLIGHT",
+          "RUNTIME_CANDIDATE",
+          "F1_TO_F8_RUNTIME",
+          "INDEPENDENT_QA",
+          "REGRESSION",
+          "F9_FINAL_REVIEW",
+          "INTERNAL_RELEASE"
+        ],
+        "missingBoundRevisionOrDiffFailureAction": "FAIL_CLOSED_SOURCE_REBIND_REQUIRED"
       }
     }
   },
