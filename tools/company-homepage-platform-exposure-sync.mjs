@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { compileHomepageCentralPolicy } from './company-shared-context.mjs';
 
 const clean=v=>String(v??'').trim();
 const bool=v=>v===true;
@@ -58,30 +59,40 @@ function unityState(item={}){
     publicUrl:publicRelease?clean(item.unityPublicUrl||item.unityStoreUrl)||null:null
   };
 }
-export function buildHomepagePlatformExposure({queue={},catalog={}}={}){
+const PLATFORM_STATE_BUILDERS={ROBLOX:robloxState,UNITY:unityState};
+
+export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}){
+  const central=compileHomepageCentralPolicy(policy);
+  if(!central.valid)throw new Error('HOMEPAGE_CENTRAL_POLICY_INVALID:'+central.errors.join('|'));
+  for(const platform of central.supportedPlatforms){
+    if(typeof PLATFORM_STATE_BUILDERS[platform]!=='function')throw new Error('HOMEPAGE_PLATFORM_ADAPTER_MISSING:'+platform);
+  }
   const byId=new Map((catalog.games||[]).map(g=>[clean(g.id),g]));
   const games=(queue.items||[]).map(item=>{
     const gameId=clean(item.gameId); if(!gameId)return null;
-    const r=robloxState(item),u=unityState(item);
-    const externalPublicReleaseState=r.publicRelease||u.publicRelease?'PUBLIC_RELEASE'
-      :(r.publicReleaseReady||u.publicReleaseReady?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY');
+    const platforms=central.supportedPlatforms.map(platform=>PLATFORM_STATE_BUILDERS[platform](item));
+    const externalPublicReleaseState=platforms.some(row=>row.publicRelease)?'PUBLIC_RELEASE'
+      :(platforms.some(row=>row.publicReleaseReady)?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY');
     return{
       gameId,
       gameName:clean(byId.get(gameId)?.name||item.gameName||gameId),
       authority:'company-runtime',
       internalCompanySurface:true,
       externalPublicReleaseState,
-      platforms:[r,u],
+      platforms,
       updatedAt:clean(item.updatedAt)||new Date().toISOString()
     };
   }).filter(Boolean).sort((a,b)=>a.gameId.localeCompare(b.gameId));
   return{
-    version:2,
+    version:3,
     authority:'company-runtime',
+    centralPolicy:'company-learning/platform-release-roadmap.json',
+    centralPolicyFingerprint:central.fingerprint,
+    centralPolicyVersion:central.contract.version,
     publicSafe:true,
     internalCompanySurface:true,
-    supportedPlatforms:['ROBLOX','UNITY'],
-    unityWebEnabled:false,
+    supportedPlatforms:central.supportedPlatforms,
+    unityWebEnabled:central.contract.showUnityWeb===true,
     generatedAt:new Date().toISOString(),
     games
   };
@@ -90,8 +101,11 @@ if(process.argv[1]&&process.argv[1].endsWith('company-homepage-platform-exposure
   const queue=read(process.argv[2]||'development-queue.json');
   const catalog=read(process.argv[3]||'game-catalog.json');
   const output=process.argv[4]||'homepage-platform-exposure.json';
-  write(output,buildHomepagePlatformExposure({queue,catalog}));
+  const policy=read(process.argv[5]||'company-learning/platform-release-roadmap.json');
+  const result=buildHomepagePlatformExposure({queue,catalog,policy});
+  write(output,result);
   console.log('HOMEPAGE_PLATFORM_EXPOSURE_SYNC=PASS');
   console.log('HOMEPAGE_PLATFORM_EXPOSURE_AUTHORITY=company-runtime');
-  console.log('HOMEPAGE_PLATFORM_EXPOSURE_PLATFORMS=ROBLOX,UNITY');
+  console.log('HOMEPAGE_PLATFORM_EXPOSURE_POLICY_SHA256='+result.centralPolicyFingerprint);
+  console.log('HOMEPAGE_PLATFORM_EXPOSURE_PLATFORMS='+result.supportedPlatforms.join(','));
 }
