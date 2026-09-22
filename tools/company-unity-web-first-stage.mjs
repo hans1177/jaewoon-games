@@ -21,7 +21,7 @@ if(!/^[A-Za-z0-9_.]+$/.test(buildMethod))throw new Error(`INVALID_BUILD_METHOD:$
 
 const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const contract=policy?.unityWebFirstStage;
-if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='FIRST_WEB_GAME_STAGE_ONLY')throw new Error('UNITY_WEB_FIRST_STAGE_POLICY_MISSING');
+if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UNITY_WEB_VALIDATION_SURFACE'||contract?.enabled!==true)throw new Error('UNITY_WEB_VALIDATION_SURFACE_POLICY_MISSING');
 if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
 if(contract?.postUnityWebGatePipelineUnchanged!==true)throw new Error('POST_UNITY_WEB_PIPELINE_MUST_REMAIN_UNCHANGED');
 
@@ -84,7 +84,7 @@ if(fs.existsSync(metadataPath)){
 fs.mkdirSync(path.dirname(requestPath),{recursive:true});
 const request={
   version:1,
-  kind:'UNITY_WEB_FIRST_STAGE_BUILD',
+  kind:'UNITY_WEB_VALIDATION_BUILD',
   gameId,
   projectPath:sourceRoot,
   buildMethod,
@@ -94,6 +94,9 @@ const request={
   legacyWebFallbackAllowedDuringMigration:true,
   primitiveSignals,
   primitiveSignalsAreDebugReviewOnly:true,
+  validationSurface:true,
+  releasePlatform:false,
+  nativeGateAuthority:false,
   fullGameplayPassAuthority:false,
   postGatePlatformPipelineChanged:false,
 };
@@ -105,4 +108,4 @@ console.log(`UNITY_WEB_REQUEST=${requestPath}`);
 console.log(`UNITY_WEB_CSHARP_FILES=${scriptFiles.length}`);
 console.log(`UNITY_WEB_BUILD_METHOD=${buildMethod}`);
 console.log(`UNITY_WEB_PRIMITIVE_SIGNALS=${primitiveSignals.length}`);
-console.log('UNITY_WEB_REQUEST_STATUS=READY');
+console.log('UNITY_WEB_VALIDATION_REQUEST_STATUS=READY');
