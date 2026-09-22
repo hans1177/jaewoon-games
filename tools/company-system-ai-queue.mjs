@@ -93,7 +93,7 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
   return{
     score,
     signature,
-    commonBottleneck:Boolean(signature&&(signatureCohort.length>0||explicitCohort>1||task.relatedTaskIds?.length>1)),
+    commonBottleneck:Boolean(signature&&(signatureCohort.length>0||explicitCohort>1||task.relatedTaskIds?.length>1||task.blockedTaskIds?.length>1)),
     blockedTaskCount,
     blockedTaskIds,
     recurrenceCount,
@@ -101,7 +101,7 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
     ageHours:Number(ageHours.toFixed(2)),
     severity,
     repairRisk,
-    cohortSize:Math.max(1,signatureCohort.length+1,explicitCohort),
+    cohortSize:Math.max(1,signatureCohort.length+1,explicitCohort,blockedTaskCount+1),
     components:{severity,blockedTaskCount,recurrenceCount,dependencyCentrality,ageHours:Number(ageHours.toFixed(2)),repairRisk}
   };
 }
