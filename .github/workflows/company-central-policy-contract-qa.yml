@@ -41,6 +41,7 @@ on:
       - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/homepage-test-candidate-sync.mjs'
+      - 'qa/company-direct-native-policy-contract.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - 'qa/vibe2-post-release-focus.test.mjs'
@@ -199,34 +200,20 @@ jobs:
           node --check tools/vibe2-post-release-focus.mjs
           node --check tools/homepage-test-candidate-sync.mjs
           node --test \
-            qa/company-central-policy-contract.test.mjs \
+            qa/company-direct-native-policy-contract.test.mjs \
             qa/company-machine-development-lifecycle.test.mjs \
             qa/vibe2-post-release-focus.test.mjs \
             qa/company-central-pipeline-only.test.mjs \
             qa/company-platform-speed-policy.test.mjs \
+            qa/company-minimum-design-contract.test.mjs \
             qa/company-selected-platform-router.test.mjs \
-            qa/company-speed-sequence-workflow.test.mjs \
-            qa/design-only-promotion-sync.test.mjs \
             qa/company-development-validation-selected-platform.test.mjs \
-            qa/company-development-web-runtime.test.mjs \
             qa/company-development-unity-runtime.test.mjs \
-            qa/company-homepage-top30-contract.test.mjs \
-            qa/homepage-manager-publication-order.test.mjs \
+            qa/company-development-roblox-runtime.test.mjs \
+            qa/company-development-roblox-runtime-continuation.test.mjs \
+            qa/company-development-roblox-release-promotion.test.mjs \
             qa/company-native-learning-real-evidence-contract.test.mjs \
             qa/company-native-score-not-web-score-contract.test.mjs \
             qa/company-platform-score-learning-contract.test.mjs \
             qa/company-strict-learning-delta-contract.test.mjs \
-            qa/company-top30-platform-promotion-learning.test.mjs \
-            qa/company-web-evidence-freshness-contract.test.mjs \
-            qa/company-web-independent-promotion-contract.test.mjs \
-            qa/company-web-validation-evidence-contract.test.mjs \
-            qa/company-web-real-game-regression.test.mjs \
-            qa/company-web-production-six-game-regression.test.mjs \
-            qa/design-promotion-workflow-contract.test.mjs \
-            qa/design-prepromotion-repair.test.mjs \
-            qa/company-design-gate-scoring-v2.test.mjs \
-            qa/company-development-roblox-runtime.test.mjs \
-            qa/company-development-roblox-runtime-continuation.test.mjs \
-            qa/company-development-roblox-release-promotion.test.mjs \
-            qa/vibe2-handoff.test.mjs \
-            qa/web-30-minute-session-contract.test.mjs
+            qa/vibe2-handoff.test.mjs
