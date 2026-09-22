@@ -5208,7 +5208,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -5287,7 +5287,161 @@
     "externalLinksPublicOnlyWhenExplicitPublicEvidencePasses": true,
     "homepageRenderer": "assets/homepage-enhancements.js",
     "edgeRuntime": "_worker.js",
-    "managerWorkflow": ".github/workflows/homepage-manager.yml"
+    "managerWorkflow": ".github/workflows/homepage-manager.yml",
+    "managerContractAuthority": "CENTRAL_ROADMAP_ONLY_DIRECTIVE_IS_COMPATIBILITY_MIRROR",
+    "managerContract": {
+      "mode": "SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR",
+      "manager": "HOMEPAGE",
+      "supervisor": "DIRECTOR",
+      "managerCount": 1,
+      "supervisorCount": 1,
+      "centralPolicyAndEvidenceDrivenSync": true,
+      "managerAutonomousScope": [
+        "HERO_AND_FRONT_PAGE_COMPOSITION",
+        "LAYOUT_AND_TEMPLATE",
+        "CARD_GRID_AND_SECTION_ORDER",
+        "RESPONSIVE_MOBILE_PRESENTATION",
+        "FILTER_NAVIGATION_DISPLAY",
+        "REPRESENTATIVE_IMAGE_PRESENTATION",
+        "ARTBOOK_ENTRY_PRESENTATION",
+        "CANONICAL_STATUS_DISPLAY_SYNC"
+      ],
+      "evidenceBoundPromotionRequired": true,
+      "fixedFunctionProtection": {
+        "ownerLocked": true,
+        "protectedFunctions": [
+          "PWA_APP_INSTALL_AND_OFFLINE_RUNTIME",
+          "PWA_COMMAND_CHAT_WINDOW",
+          "OWNER_FIXED_EXISTING_HOMEPAGE_FUNCTIONS"
+        ],
+        "canonicalPwaFiles": [
+          "manifest.webmanifest",
+          "install.html",
+          "sw.js",
+          "offline.html",
+          "command.html"
+        ],
+        "preserveContracts": [
+          "BEHAVIOR",
+          "USER_ENTRY_POINT",
+          "DOM_OR_API_CONTRACT",
+          "DATA_SOURCE_CONTRACT",
+          "INSTALL_AND_OFFLINE_RUNTIME",
+          "CHAT_INPUT_ATTACHMENT_SEND_AND_DEVICE_REGISTRATION_FLOW"
+        ],
+        "changeRequiresLatestOwnerDirectInstruction": true
+      },
+      "forbiddenAutonomousChanges": [
+        "COMPANY_POLICY_TRUTH",
+        "GAME_PRODUCTION_OR_RELEASE_TRUTH",
+        "UNVERIFIED_DOWNLOAD_OR_PLAY_CLAIM",
+        "GAME_SOURCE_OR_GAMEPLAY",
+        "MONETIZATION_PRIVACY_OR_PAID_SERVICE",
+        "FIXED_FUNCTION_REMOVAL_DISABLEMENT_OR_BEHAVIOR_CHANGE"
+      ],
+      "afterWorkFlow": [
+        "HOMEPAGE_MANAGER_APPLY",
+        "HOMEPAGE_MANAGER_SELF_QA",
+        "DIRECTOR_SINGLE_POST_WORK_SUPERVISION_AND_PUBLICATION",
+        "LIVE_STATUS_CONFIRMATION"
+      ],
+      "secondHomepageManagerForbidden": true,
+      "secondHomepageSupervisorForbidden": true,
+      "supervisorMayVerifyAndBlockButMustNotSilentlyRewriteManagerOutput": true,
+      "developmentProgressDisplay": {
+        "source": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+        "autoRegisterProductionClass": "DEVELOPMENT_CONFIRMED",
+        "requiresHomepageTestEligible": false,
+        "requiresWebValidation": false,
+        "requiresFinalThirtyMinuteContentDepth": false,
+        "requiresArtbook": false,
+        "displayFields": [
+          "status",
+          "currentStep",
+          "concurrentTargetPlatforms",
+          "platformReleaseState"
+        ],
+        "separateFromTop30Promotion": true,
+        "mustNotClaimValidationOrRelease": true,
+        "webTestButtonEnabled": false,
+        "webTestButtonLabel": null,
+        "platformTestButtonEnabled": true,
+        "platformTestButtonLabelMode": "PLATFORM_NAME",
+        "webAndPlatformTestButtonsMustBeSeparate": false,
+        "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
+        "scoreDisplayEnabled": false,
+        "ranking": "CATALOG_ORDER",
+        "unratedGamesLast": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "scoreRequiresInitialCyclePass": false,
+        "scoreRequiresMusicPass": false,
+        "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
+        "reworkOrRevalidationScoresNotShownAsCurrent": false,
+        "scoreRequiresSchema15": false
+      },
+      "autoClassification": {
+        "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
+        "enabled": true,
+        "webGameOnly": false,
+        "explicitOwnerOrCatalogValueWins": true,
+        "overwriteExplicitValue": false,
+        "missingPlatform": "VIBE_AUTO_CLASSIFY",
+        "missingGenre": "VIBE_AUTO_CLASSIFY",
+        "executionPath": "tools/game-catalog-normalization.mjs",
+        "runsInsideExistingCompanyStatusSync": true,
+        "humanDocumentRequired": false,
+        "activePlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ]
+      },
+      "executionPipeline": {
+        "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
+        "jobCount": 2,
+        "separatePublishJobForbidden": true,
+        "duplicateCandidateApplyForbidden": true
+      }
+    },
+    "testingContract": {
+      "minimumWebStrictScore": 80,
+      "hardGatesMustPass": true,
+      "maxVisibleTestCandidates": 30,
+      "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
+      "artbookRequiredForHomepageRegistration": true,
+      "officialCardRequiresPromotion": true
+    },
+    "documentationSyncContract": {
+      "centralPolicyFirst": true,
+      "workDocumentsMustMirrorCurrentCentralPolicy": true,
+      "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
+      "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
+      "workDocumentsCannotOverrideCentralPolicy": true,
+      "centralPolicyPath": "company-learning/platform-release-roadmap.json",
+      "legacyHumanPolicyMirror": "COMPANY_FLOW.md",
+      "legacyMirrorAuthoritative": false,
+      "genrePresentationAndCommercialReadinessMirrored": true,
+      "syncTargets": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
+        "COMPANY_FLOW.md",
+        ".github/agents/planning.agent.md",
+        ".github/agents/development.agent.md",
+        ".github/agents/graphics.agent.md",
+        ".github/agents/qa.agent.md",
+        ".github/agents/balance.agent.md",
+        "tools/vibe2-auto-planner.mjs",
+        "tools/company-selected-platform-router.mjs",
+        "assets/homepage-enhancements.js",
+        "_worker.js"
+      ]
+    },
+    "directiveMirrorRequired": true,
+    "directiveMirrorMayNotOverrideCentral": true,
+    "homepageWorkerMustConsumeCompiledCentralProjection": true,
+    "homepagePolicyFingerprintRequiredAtManagerStart": true,
+    "homepagePolicyFingerprintRequiredAtDirectorStart": true,
+    "homepagePolicyFingerprintMustMatchBeforePublication": true,
+    "staleHomepagePolicyAction": "FAIL_CLOSED_BLOCK_PUBLICATION_AND_REQUEUE_HOMEPAGE_MANAGER"
   },
   "longHorizonVision": {
     "version": 2,
