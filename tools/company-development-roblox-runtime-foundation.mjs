@@ -14,7 +14,16 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   const exactGame=!clean(gameId)||clean(sentinel.gameId)===clean(gameId);
   const exactPlace=clean(sentinel.placeId)===clean(placeId);
   const exactVersion=Number(sentinel.placeVersion)===Number(versionNumber)&&Number(versionNumber)>0;
-  const checkpointPass=Object.fromEntries(required.map(name=>[name,Boolean(checkpoints[name]&&Number(checkpoints[name].at)>0)]));
+  const checkpointPass=Object.fromEntries(required.map(name=>{
+    const row=checkpoints[name];
+    return[name,Boolean(
+      row
+      &&Number(row.at)>0
+      &&(!clean(gameId)||clean(row.gameId)===clean(gameId))
+      &&clean(row.placeId)===clean(placeId)
+      &&Number(row.placeVersion)===Number(versionNumber)
+    )];
+  }));
   const f1=checkpointPass.SERVER_BOOT&&checkpointPass.MODULE_GRAPH_READY;
   const f2=checkpointPass.WORLD_READY&&checkpointPass.SPAWN_READY;
   const f3=checkpointPass.CHARACTER_READY;
