@@ -111,10 +111,11 @@ env:
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
   VIBE2_24H_GEMINI_ALLOWED: 'false'
 
+# Keep each 24H cycle start independent so stale workflow-level concurrency
+# cannot block the continuity chain. Shared control state is serialized in plan.
 concurrency:
-  group: vibe2-24h-cycle-main
+  group: vibe2-24h-cycle-${{ github.run_id }}
   cancel-in-progress: false
-  queue: max
 
 jobs:
   plan:
