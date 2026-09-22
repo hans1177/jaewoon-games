@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "status": "OWNER_DIRECT_LOCKED",
   "recordedAt": "2026-09-12",
   "relationshipToVibe2": "INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE",
@@ -279,5 +279,194 @@
     "internalReleaseFirst": true,
     "externalReleaseIndependent": true,
     "globalGameCountCap": null
+  },
+  "robloxCoDevelopmentDesign": {
+    "version": 1,
+    "status": "DESIGNED_IMPLEMENTATION_PENDING",
+    "recordedAt": "2026-09-22",
+    "policyAuthority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformPlaytestDevelopment",
+    "architectureMirror": "company-learning/company-architecture-map.json#plannedExecutionEnhancements",
+    "objective": "WIRE_EXISTING_VIBE_CAPABILITIES_INTO_ROBLOX_INTERNAL_PLAYTEST_CO_DEVELOPMENT_WITHOUT_A_NEW_PIPELINE_OR_NEW_DEPARTMENTS",
+    "constraints": {
+      "preserveExistingPipelineStages": true,
+      "preserveExistingDepartments": true,
+      "noShadowPipeline": true,
+      "noDuplicateBrain": true,
+      "directMainGameWorkerWriteForbidden": true,
+      "deterministicQaRemainsAcceptanceAuthority": true,
+      "primaryAiIsNonBlockingCoDeveloper": true,
+      "exactResponsibleSourceModificationPreferred": true,
+      "externalRobloxCodeOrAssetExtractionForbidden": true
+    },
+    "implementationBindings": {
+      "currentTruth": {
+        "compiler": "tools/vibe2-central-work-contract.mjs",
+        "inputs": [
+          "CENTRAL_POLICY_SNAPSHOT",
+          "APPROVED_GAME_DESIGN_REFERENCE",
+          "CURRENT_MAIN_SHA",
+          "COMPANY_RUNTIME_GAME_STATE",
+          "ACTIVE_TASK_AND_FAILURE_EVIDENCE",
+          "STYLE_LOCK_WHEN_PRESENT"
+        ],
+        "persistentShadowTruthStore": false
+      },
+      "atomicChangeSet": {
+        "module": "assets/vibe-change-set.js",
+        "targetVersion": 2,
+        "addFields": [
+          "BASE_SOURCE_REVISION",
+          "OWNER_OR_SYSTEM_INTENT",
+          "RESPONSIBLE_SYSTEMS",
+          "AFFECTED_DEPARTMENTS",
+          "PRESERVED_SEMANTICS",
+          "ACCEPTANCE_CONTRACT",
+          "FAILURE_EVIDENCE",
+          "STATUS"
+        ],
+        "deterministicIdentityPreferred": true
+      },
+      "sourceLock": {
+        "module": "assets/vibe-work-lock.js",
+        "reuseExistingBranchAndOverlapRules": true,
+        "changeSetIdBecomesTaskId": true,
+        "overlappingResponsibleFilesRequireLock": true
+      },
+      "capabilityRouter": {
+        "orchestrator": "assets/vibe-orchestrator.js",
+        "targetSupportToAdd": [
+          "ROBLOX"
+        ],
+        "routes": {
+          "visual": [
+            "assets/vibe-character-design-director.js",
+            "assets/vibe-character-asset-director.js",
+            "assets/vibe-art-pipeline.js",
+            "assets/vibe-visual-quality-gate.js"
+          ],
+          "gameplay": [
+            "assets/vibe-project-analyzer.js",
+            "assets/vibe-development-ai.js"
+          ],
+          "repair": [
+            "assets/vibe-project-analyzer.js",
+            "assets/vibe-quality-intelligence.js",
+            "assets/vibe-development-ai.js"
+          ],
+          "learning": [
+            "assets/vibe-experience-memory.js",
+            "tools/vibe2-capability-distillation.mjs"
+          ]
+        },
+        "routerDoesNotReplaceSpecialistDecisionAuthority": true
+      },
+      "internalPlaytestPlanner": {
+        "existingPlanner": "tools/vibe2-auto-planner.mjs",
+        "eligibleState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+        "target": "roblox",
+        "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+        "sourceOfFailureEvidence": "company-runtime:development-queue.json",
+        "generateFocusedRepairOrQualityTaskWithoutRestartingPriorPassedStages": true,
+        "newStandaloneSchedulerForbidden": true
+      },
+      "centralWorkContract": {
+        "module": "tools/vibe2-central-work-contract.mjs",
+        "compile": [
+          "CURRENT_TRUTH",
+          "CHANGE_SET",
+          "ACCEPTANCE_CONTRACT",
+          "IMPACT_SCOPE",
+          "FAILURE_ROUTE",
+          "WORK_LOCK_REQUIREMENT"
+        ],
+        "preserveExactFailureStageResume": true
+      },
+      "acceptanceAndQa": {
+        "impactQa": "tools/vibe2-incremental-qa.mjs",
+        "acceptanceIsObservableResult": true,
+        "markerOnlyPassForbidden": true,
+        "fullFanInRegressionStillRequiredBeforePromotion": true
+      },
+      "patchSaturation": {
+        "module": "assets/vibe-quality-intelligence.js",
+        "threshold": 3,
+        "action": "ROOT_CAUSE_MODE",
+        "microPatchAccumulationStopsAtThreshold": true
+      },
+      "visualRuntime": {
+        "artPipeline": "assets/vibe-art-pipeline.js",
+        "visualGate": "assets/vibe-visual-quality-gate.js",
+        "goldenSceneEvidenceToAdd": true,
+        "primitiveLifecycleToEnforce": true,
+        "assetAcquisitionOrderFromCentralPolicy": true,
+        "visualDebtToTrack": true
+      },
+      "learning": {
+        "internalRoblox": "SOURCE_PLUS_RUNTIME_VERIFIED",
+        "externalRoblox": "BLACK_BOX_RUNTIME_ONLY",
+        "capabilityDistiller": "tools/vibe2-capability-distillation.mjs",
+        "robloxLearningContext": "tools/vibe3-roblox-learning-context.mjs",
+        "addNormalizedRobloxObservationIngest": true,
+        "verifiedTransferRequiresFreshQa": true
+      },
+      "recovery": {
+        "knownGoodSource": "roblox-games/known-good-runtime-evidence.json",
+        "restoreMechanismUsesExistingReleaseAndArtifactPath": true,
+        "currentCandidateRepairBeforeRestore": true,
+        "restoreDoesNotCloseFailedChangeSet": true
+      }
+    },
+    "implementationPhases": [
+      {
+        "id": "PHASE_1_CO_DEVELOPMENT_CORE",
+        "files": [
+          "assets/vibe-change-set.js",
+          "assets/vibe-orchestrator.js",
+          "tools/vibe2-central-work-contract.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "assets/vibe-quality-intelligence.js"
+        ],
+        "outcome": "OWNER_INTERRUPT_SAFE_ATOMIC_ROBLOX_REPAIR_WORK_WITH_CURRENT_TRUTH_ACCEPTANCE_AND_ROOT_CAUSE_ESCALATION"
+      },
+      {
+        "id": "PHASE_2_GRAPHICS_RUNTIME",
+        "files": [
+          "assets/vibe-visual-quality-gate.js",
+          "assets/vibe-art-pipeline.js",
+          "tools/vibe2-incremental-qa.mjs"
+        ],
+        "outcome": "REAL_ASSET_AND_GOLDEN_SCENE_EVIDENCE_DRIVES_GRAPHICS_REPAIR_INSTEAD_OF_MARKER_ONLY_PASS"
+      },
+      {
+        "id": "PHASE_3_ROBLOX_DISTILLATION",
+        "files": [
+          "tools/vibe2-capability-distillation.mjs",
+          "tools/vibe3-roblox-learning-context.mjs"
+        ],
+        "newFileAllowed": "ROBLOX_OBSERVATION_NORMALIZER_ONLY_WITHIN_EXISTING_UNIFIED_LEARNING_PIPELINE",
+        "outcome": "INTERNAL_SOURCE_BACKED_AND_EXTERNAL_BLACK_BOX_ROBLOX_LESSONS_BECOME_RETRIEVABLE_VERIFIED_KNOWLEDGE"
+      },
+      {
+        "id": "PHASE_4_INTERNAL_RECOVERY_AND_END_TO_END",
+        "files": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          "tools/vibe2-auto-planner.mjs",
+          "ROBLOX_RELEVANT_QA_TESTS"
+        ],
+        "outcome": "INTERNAL_RELEASE_PLAYTEST_REPAIR_LOOP_CONTINUES_UNTIL_ACCEPTED_AND_KNOWN_GOOD_RESTORE_REMAINS_A_SAFETY_NET"
+      }
+    ],
+    "verificationPlan": [
+      "CENTRAL_SHARED_CONTEXT_PASS",
+      "CHANGE_SET_AND_WORK_LOCK_UNIT_QA",
+      "CENTRAL_WORK_CONTRACT_QA",
+      "AUTO_PLANNER_INTERNAL_PLAYTEST_TASK_QA",
+      "PATCH_SATURATION_ROOT_CAUSE_QA",
+      "GOLDEN_SCENE_VISUAL_GATE_QA",
+      "ROBLOX_DISTILLATION_BOUNDARY_QA",
+      "VIBE_INTEGRATED_REGRESSION",
+      "ROBLOX_INTERNAL_RELEASE_FLOW_CONTRACT_QA"
+    ],
+    "implementationStateRule": "DO_NOT_MARK_IMPLEMENTED_OR_ACTIVE_UNTIL_THE_RESPONSIBLE_CODE_AND_QA_FOR_THAT_BINDING_PASS_ON_CURRENT_MAIN"
   }
 }
