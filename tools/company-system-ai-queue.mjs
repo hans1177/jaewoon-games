@@ -297,7 +297,7 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
     .sort((a,b)=>(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)||rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
   const requestedBatch=Math.max(0,Math.floor(Number(max)||0));
-  const chosen=[],commonCanarySignatures=new Set();
+  const chosen=[],commonCanarySignatures=new Set(active.map(task=>profiles.get(task.id)).filter(profile=>profile?.commonBottleneck===true&&clean(profile.signature)).map(profile=>clean(profile.signature)));
   for(const task of candidates){
     if(chosen.length>=requestedBatch)break;
     if([...active,...chosen].some(other=>overlap(task,other)))continue;
