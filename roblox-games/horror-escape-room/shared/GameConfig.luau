@@ -2,7 +2,7 @@ local Config={
  PolicySource = "company-learning/platform-release-roadmap.json",
  Platform = "ROBLOX",
  MobileFirst = true,
- GameId="horror-escape-room",GameName="심야 술래잡기",SaveEnabled=true,
+ GameId="horror-escape-room",GameName="심야 감염전 [4대4]",GameNameKorean="심야 감염전 [4대4]",GameNameEnglish="Midnight Infection [4v4]",SaveEnabled=true,
  Genre = "Survival",
  PlayMode = "COMPETITIVE",
  MultiplayerRequired = true,
