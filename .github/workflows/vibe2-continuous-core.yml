@@ -35,6 +35,12 @@ permissions:
   contents: write
   actions: write
 
+# Collapse duplicate fan-in refill events to one pending workflow while never cancelling
+# the currently running control-state mutation.
+concurrency:
+  group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'vibe2-fanin-refill-singleton' || format('vibe2-continuous-{0}', github.run_id) }}
+  cancel-in-progress: false
+
 env:
   VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '1536'
