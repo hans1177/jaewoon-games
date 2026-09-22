@@ -220,3 +220,25 @@ test('System AI binds exact failure stage signature retries and causal evidence 
     assert.match(worker,/Do not repeat a previously failed repair strategy without new causal evidence/);
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
+
+
+test('System AI blocks a repair strategy that already failed for the same failure signature',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    const baseTask={id:'first',status:'running',goal:'repair exact failure',responsibleFiles:['tools/demo.mjs'],failureSignature:'SAME_FAILURE',acceptanceCriteria:['value becomes 2']};
+    write('task.json',JSON.stringify(baseTask));
+    write('response.json',JSON.stringify({summary:'same strategy',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]}));
+    const first=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.match(first.repairStrategyFingerprint,/^[a-f0-9]{64}$/);
+    assert.equal(first.repeatedFailedStrategyBlocked,true);
+
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({...baseTask,id:'retry',failedStrategyFingerprints:[first.repairStrategyFingerprint]}));
+    await assert.rejects(
+      runSystemAiWorker({taskFile:'task.json',outputFile:'result-2.json',responseFile:'response.json'}),
+      /SYSTEM_AI_REPEATED_FAILED_STRATEGY/
+    );
+    assert.match(fs.readFileSync('tools/demo.mjs','utf8'),/value=1/);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
