@@ -367,7 +367,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 51,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -1432,11 +1432,11 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35794255941%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35794255941%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 1,
       "neuronResults": [],
       "companyContext": {
         "stageId": "owner-immediate",
@@ -4993,7 +4993,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 15,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -5453,11 +5453,11 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45%7C35794255941%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45%7C35794255941%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": {
         "stageId": "owner-immediate",
@@ -54935,7 +54935,7 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 11,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -56164,11 +56164,11 @@
         "speculative-variants:2"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/fantasy-survival",
@@ -61811,7 +61811,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=superseded-by:VIBE_WEB_REPAIR\noccurrences=34\nrecoveryGeneration=9\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=superseded-by:VIBE_WEB_REPAIR\noccurrences=34\nrecoveryGeneration=9\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-system-steward.mjs",
         "qa/vibe2-system-steward.test.mjs"
@@ -62326,10 +62326,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-d6f66ec8e7d6-v1%7C35792239629%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-d6f66ec8e7d6-v1%7C35792239629%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": "BLOCKED",
       "reservationId": null,
@@ -62371,7 +62369,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -62382,7 +62382,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=source-candidate-generation-failed\noccurrences=26\nrecoveryGeneration=26\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=source-candidate-generation-failed\noccurrences=26\nrecoveryGeneration=26\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-source-worker.mjs",
         "qa/vibe2-source-worker.test.mjs"
@@ -62830,10 +62830,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35792239629%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35792239629%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": "BLOCKED",
       "reservationId": null,
@@ -62875,7 +62873,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -62886,7 +62886,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=production-authority-inactive:DESIGN_ONLY\noccurrences=7\nrecoveryGeneration=7\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=production-authority-inactive:DESIGN_ONLY\noccurrences=7\nrecoveryGeneration=7\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-system-steward.mjs",
         "qa/vibe2-system-steward.test.mjs"
@@ -62994,10 +62994,8 @@
         "retry-policy:UNLIMITED_OR_WITHIN_BOUND",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -63039,7 +63037,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -63050,7 +63050,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=candidate-awaiting-supervised-review\noccurrences=2\nrecoveryGeneration=2\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=candidate-awaiting-supervised-review\noccurrences=2\nrecoveryGeneration=2\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-system-steward.mjs",
         "qa/vibe2-system-steward.test.mjs"
@@ -63089,10 +63089,8 @@
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -63134,7 +63132,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -63145,7 +63145,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=candidate-awaiting-qa-and-deployment\noccurrences=1\nrecoveryGeneration=20\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=candidate-awaiting-qa-and-deployment\noccurrences=1\nrecoveryGeneration=20\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-queue-control.mjs",
         ".github/workflows/vibe2-continuous-core.yml",
@@ -63475,10 +63475,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35792239629%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35792239629%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": "BLOCKED",
       "reservationId": null,
@@ -63520,7 +63518,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -63531,7 +63531,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=performance-sanity-failed\noccurrences=1\nrecoveryGeneration=19\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=performance-sanity-failed\noccurrences=1\nrecoveryGeneration=19\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-system-steward.mjs",
         "qa/vibe2-system-steward.test.mjs"
@@ -63570,10 +63570,8 @@
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -63615,7 +63613,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -66951,7 +66951,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=work-order-not-runnable\noccurrences=3\nrecoveryGeneration=20\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=work-order-not-runnable\noccurrences=3\nrecoveryGeneration=20\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-system-steward.mjs",
         "qa/vibe2-system-steward.test.mjs"
@@ -66990,10 +66990,8 @@
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -67035,7 +67033,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -68629,7 +68629,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "release-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -68764,11 +68764,11 @@
         "recovery:fan-in-regression-requeue-v1"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "roblox-games/cozy-island",
@@ -68922,7 +68922,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "release-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -69055,11 +69055,11 @@
         "recovery:fan-in-regression-requeue-v1"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 2,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "roblox-games/horror-escape-room",
@@ -71314,7 +71314,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=work-lock-conflict:not-acquired\noccurrences=18\nrecoveryGeneration=20\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=work-lock-conflict:not-acquired\noccurrences=18\nrecoveryGeneration=20\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-system-steward.mjs",
         "qa/vibe2-system-steward.test.mjs"
@@ -71353,10 +71353,8 @@
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -71398,7 +71396,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -72180,7 +72180,7 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -72356,11 +72356,11 @@
         "recovery:fan-in-regression-requeue-v1"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 2,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/cozy-island",
@@ -72640,7 +72640,7 @@
       "department": "system-architecture",
       "type": "implementation",
       "executionLane": "RECOVERY_FAST",
-      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=FAIL\noccurrences=8\nrecoveryGeneration=0\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=FAIL\noccurrences=8\nrecoveryGeneration=0\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
       "responsibleFiles": [
         "tools/vibe2-system-steward.mjs",
         "qa/vibe2-system-steward.test.mjs"
@@ -72679,10 +72679,8 @@
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:rule1QaPass",
-        "architecture-neural-expansion-missing:readinessPass"
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -72724,7 +72722,9 @@
         "BEFORE_AFTER_METRIC_IMPROVED",
         "AUTHORITY_UNCHANGED",
         "GATES_UNCHANGED",
-        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED"
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
       ],
       "shard": "support"
     },
@@ -72745,7 +72745,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -72833,11 +72833,11 @@
         "retry-policy:UNLIMITED_OR_WITHIN_BOUND"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/cozy-island",
@@ -72914,7 +72914,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -73012,11 +73012,11 @@
         "retry-policy:UNLIMITED_OR_WITHIN_BOUND"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35794682023:1",
+      "reservationRunId": "35794682023",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-22T23:08:31Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/cozy-island",
@@ -74747,6 +74747,101 @@
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
       "shard": "web"
+    },
+    {
+      "id": "SYS-ARCH-15987a4bdfb9-v1",
+      "gameId": "__vibe_system__",
+      "target": "system",
+      "department": "system-architecture",
+      "type": "implementation",
+      "executionLane": "RECOVERY_FAST",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=RETRY_AFTER_FAN_IN_REGRESSION_FAILURE\noccurrences=3\nrecoveryGeneration=0\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "responsibleFiles": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "dependencies": [],
+      "priority": "high",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "productionMode": "AUTONOMOUS_VIBE",
+      "supervisionApproved": false,
+      "supervisionContract": null,
+      "supervisionReview": null,
+      "blocker": null,
+      "evidence": [
+        "vibe-self-architecture-evolution",
+        "architecture-proposal-required",
+        "architecture-alternatives-required:2",
+        "architecture-signal:RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
+        "architecture-signal-occurrence-count:3",
+        "architecture-recovery-generation:0",
+        "architecture-total-evolution-generation-limit:NONE",
+        "architecture-busy-loop-forbidden",
+        "architecture-before-after-comparison-required",
+        "architecture-regression-required",
+        "architecture-security-required",
+        "architecture-system-construction-allowed",
+        "architecture-authority-expansion:NO",
+        "architecture-gate-weakening:NO",
+        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
+        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES",
+        "learning-motor-candidate-tournament:repeated-verified-failure"
+      ],
+      "lastOutcome": null,
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
+      "neuronExpectedVariants": 0,
+      "neuronResults": [],
+      "companyContext": null,
+      "sourceRoot": ".",
+      "speculativeEligible": true,
+      "estimatedRisk": "high",
+      "atomicNeuronMode": null,
+      "atomicCompletionRequired": false,
+      "taskWorkUnits": 0,
+      "packageId": null,
+      "packageGoal": null,
+      "packageRole": null,
+      "packageOwner": null,
+      "packageWorkUnits": 0,
+      "packageSize": 0,
+      "packageMinWorkUnits": 0,
+      "packageLongWorkProtected": false,
+      "postReleaseFocused": false,
+      "historicalDeploymentRecovery": false,
+      "focusCycle": 0,
+      "focusPolicyRef": null,
+      "recoveryGeneration": 0,
+      "systemSteward": true,
+      "ownerFocusedCaretaker": false,
+      "packageContext": null,
+      "completionCriteria": [
+        "STRUCTURAL_CAUSE_VERIFIED",
+        "AT_LEAST_TWO_ALTERNATIVES_COMPARED",
+        "DIRECT_RESPONSIBLE_SYSTEM_CHANGED_OR_VERIFIED_NO_CHANGE",
+        "SAME_FAILURE_REPRODUCTION_RECHECKED",
+        "RELATED_REGRESSION_PASS",
+        "SECURITY_PASS",
+        "BEFORE_AFTER_METRIC_IMPROVED",
+        "AUTHORITY_UNCHANGED",
+        "GATES_UNCHANGED",
+        "NEURAL_EXECUTION_AUTHORITY_UNCHANGED",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF",
+        "NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT"
+      ],
+      "shard": "support"
     }
   ]
 }
