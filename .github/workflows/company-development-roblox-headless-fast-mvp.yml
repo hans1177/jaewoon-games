@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test qa/company-development-roblox-f0-fast-mvp.test.mjs
+      - run: node --test qa/company-development-roblox-headless-fast-mvp.test.mjs
       - name: Fetch runtime queue
         run: |
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
@@ -101,7 +101,7 @@ jobs:
           node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --baseline=/tmp/headless/input/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/headless/packages --evidence=/tmp/headless/results/build.json
           rebuilt="$(node -e "const e=require('/tmp/headless/results/build.json');process.stdout.write(e.artifactIdentity)")"
           [ "$rebuilt" = "$EXPECTED_ARTIFACT" ]
-          node tools/company-development-roblox-f0-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --artifact-identity="$EXPECTED_ARTIFACT" --rebuilt-artifact-identity="$rebuilt" --artifact-run-id="$GITHUB_RUN_ID" --output="/tmp/headless/results/$safe.headless.json"
+          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --artifact-identity="$EXPECTED_ARTIFACT" --rebuilt-artifact-identity="$rebuilt" --artifact-run-id="$GITHUB_RUN_ID" --output="/tmp/headless/results/$safe.headless.json"
       - uses: actions/upload-artifact@v4
         with:
           name: development-roblox-package-${{ matrix.gameId }}
