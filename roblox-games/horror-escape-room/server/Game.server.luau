@@ -68,6 +68,7 @@ local function load(p)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0)
+ p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"맵 준비")
  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
@@ -297,7 +298,7 @@ local function makeArena(map)
    arenaPart(f,"ScienceBench",Vector3.new(12,3,5),Vector3.new(90+(i%4)*18,1.7,-92+math.floor((i-1)/4)*32),Color3.fromRGB(110,119,123),Enum.Material.Metal)
   end
   for i=1,5 do arenaPart(f,"AuditoriumSeat",Vector3.new(13,3,5),Vector3.new(78+i*12,1.7,86+(i%2)*18),Color3.fromRGB(118,61,57),Enum.Material.Fabric)end
-  addObjectiveStation(f,"도서관 단말",-Vector3.new(118,-3,70),1)
+  addObjectiveStation(f,"도서관 단말",Vector3.new(-118,3,-70),1)
   addObjectiveStation(f,"과학실 전원",Vector3.new(118,3,-70),2)
   addObjectiveStation(f,"운동장 방송",Vector3.new(-108,3,104),3)
   addObjectiveStation(f,"강당 비상패널",Vector3.new(108,3,104),4)
@@ -475,7 +476,10 @@ local function ensureArena(map)
 end
 
 local function clearBots()
- for _,b in ipairs(bots)do if b.part then b.part:Destroy()end end
+ for _,b in ipairs(bots)do
+  if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
+  if b.part then b.part:Destroy()end
+ end
  bots={};monsterBot=nil
 end
 local function botVisualPart(rootPart,name,size,offset,color,material,shape)
@@ -655,7 +659,12 @@ local function startRound()
  end
  if not arena or workspace:GetAttribute("MapReady")~=true then arena=makeFallbackArena(map,"START_ROUND_NOT_READY")end
  monster,forced=choose(h);if monster then lastMonster=monster.UserId end
- for _,p in ipairs(h)do p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")end
+ objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount
+ escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
+ for _,p in ipairs(h)do
+  p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
+ end
  local si=1
  for _,p in ipairs(h)do
   local role=p==monster and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
@@ -671,7 +680,7 @@ local function endRound(winner)
   p:SetAttribute("Coins",(p:GetAttribute("Coins")or 0)+reward)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   else p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
-  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);speed(p,16)
+  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);speed(p,16)
  end
  clearBots();monster=nil;monsterBot=nil;task.wait(4)
 end
@@ -703,7 +712,7 @@ local function ability(p)
 end
 local function nextMonster(p)
  if state=="RUNNING"then return end
- local xp=p:GetAttribute("MonsterXP")or 0;local cur=p:GetAttribute("MonsterForm")or"DRAK";local idx=1
+ local xp=p:GetAttribute("MonsterXP")or 0;local cur=legacyMonsterIds[p:GetAttribute("MonsterForm")or"DRACULA"]or(p:GetAttribute("MonsterForm")or"DRACULA");local idx=1
  for i,f in ipairs(C.MonsterForms)do if f.Id==cur then idx=i end end
  for n=1,#C.MonsterForms do local j=((idx+n-1)%#C.MonsterForms)+1;local f=C.MonsterForms[j];if xp>=f.UnlockXP then p:SetAttribute("MonsterForm",f.Id);return end end
 end
@@ -829,6 +838,7 @@ task.spawn(function()
       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true and os.clock()>=(tagGraceUntil[p]or 0)then local r=root(p);if r and(r.Position-mp).Magnitude<=C.TagDistance then freezePlayer(p)end end end
       for _,b in ipairs(bots)do if b.role=="SURVIVOR"and not b.frozen and(b.part.Position-mp).Magnitude<=C.TagDistance then b.frozen=true;b.part.Color=Style.Frozen end end
      end
+     if workspace:GetAttribute("SurvivorEscapeTriggered")==true then endRound("SURVIVOR");break end
      local alive=#active()
      if alive==0 then endRound("MONSTER");break end
      for _,p in ipairs(Players:GetPlayers())do
