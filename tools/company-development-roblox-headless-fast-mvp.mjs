@@ -12,11 +12,12 @@ function parsePlayMode(config){const m=config.match(/\bPlayMode\s*=\s*["']([^"']
 function saveEnabled(config){return /\bSaveEnabled\s*=\s*true\b/i.test(config);}
 function multiplayerRequired(config){if(/\bMultiplayerRequired\s*=\s*true\b/i.test(config))return true;return !['','SINGLE'].includes(parsePlayMode(config));}
 
-export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevision='',artifactIdentity='',rebuiltArtifactIdentity='',artifactRunId=0,config='',server='',client='',project=''}={}){
+export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevision='',artifactIdentity='',rebuiltArtifactIdentity='',artifactRunId=0,nativeLanguageCompilePassed=false,nativeCompilerVersion='',config='',server='',client='',project=''}={}){
   const checks={};
   const combined=server+'\n'+client;
   const duplicateLocalFunction=/local\s+function\s+([A-Za-z_][A-Za-z0-9_]*)[^\n]*local\s+function\s+\1\b/.test(server);
   checks.exactSourceRevision=COMMIT.test(clean(sourceRevision));
+  checks.nativeLanguageCompilePassed=nativeLanguageCompilePassed===true;
   checks.exactArtifact=SHA.test(clean(artifactIdentity))&&clean(artifactIdentity).toLowerCase()===clean(rebuiltArtifactIdentity).toLowerCase();
   checks.projectContract=/"\$className"\s*:\s*"DataModel"/.test(project)&&/"\$path"\s*:\s*"server"/.test(project)&&/"\$path"\s*:\s*"client"/.test(project);
   checks.robloxPolicy=/PolicySource\s*=\s*["']company-learning\/platform-release-roadmap\.json["']/i.test(config)&&/Platform\s*=\s*["']ROBLOX["']/i.test(config);
@@ -35,11 +36,12 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.multiplayerSync=!multi||(/Players:GetPlayers\s*\(\)/.test(server)&&/FireAllClients/.test(server)&&/OnClientEvent/.test(client));
   checks.sessionEndRestart=/Players\.PlayerRemoving:Connect/.test(server)&&/Players\.PlayerAdded:Connect/.test(server)&&(!save||/BindToClose/.test(server));
   checks.errorGuards=/pcall\s*\(/.test(server)&&/typeof\s*\(/.test(server);
-  checks.f0SourceIntegrity=checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
+  checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
   const pass=Object.values(checks).every(Boolean)&&Number.isInteger(Number(artifactRunId))&&Number(artifactRunId)>0;
   return Object.freeze({
     version:3,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),
     sourcePath:clean(sourcePath),sourceRevision:clean(sourceRevision),artifactIdentity:clean(artifactIdentity),rebuiltArtifactIdentity:clean(rebuiltArtifactIdentity),artifactRunId:Number(artifactRunId),
+    nativeLanguageCompilePassed:checks.nativeLanguageCompilePassed,nativeCompilerVersion:clean(nativeCompilerVersion)||null,
     playMode:parsePlayMode(config)||null,saveExists:save,multiplayerApplicable:multi,
     sourcePreflightPassed:pass,f0SourceIntegrityPassed:checks.f0SourceIntegrity,
     sourceStartupMarkersPassed:checks.sourceStartupMarkers,
@@ -51,13 +53,13 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
     blockers:Object.freeze(Object.entries(checks).filter(([,v])=>!v).map(([k])=>k)),authority:'roblox-headless-source-preflight-f0'
   });
 }
-export function inspectHeadlessExactRevision({repoRoot='.',gameId='',sourcePath='',sourceRevision='',artifactIdentity='',rebuiltArtifactIdentity='',artifactRunId=0}={}){
+export function inspectHeadlessExactRevision({repoRoot='.',gameId='',sourcePath='',sourceRevision='',artifactIdentity='',rebuiltArtifactIdentity='',artifactRunId=0,nativeLanguageCompilePassed=false,nativeCompilerVersion=''}={}){
   const root=clean(sourcePath);
   if(root!=='roblox-games/'+clean(gameId))throw new Error('source path mismatch: '+root);
   if(!COMMIT.test(clean(sourceRevision)))throw new Error('exact source revision required');
-  return inspectHeadlessSourceTexts({gameId,sourcePath,sourceRevision,artifactIdentity,rebuiltArtifactIdentity,artifactRunId,config:show(repoRoot,sourceRevision,root+'/shared/GameConfig.luau'),server:show(repoRoot,sourceRevision,root+'/server/Game.server.luau'),client:show(repoRoot,sourceRevision,root+'/client/Game.client.luau'),project:show(repoRoot,sourceRevision,root+'/default.project.json')});
+  return inspectHeadlessSourceTexts({gameId,sourcePath,sourceRevision,artifactIdentity,rebuiltArtifactIdentity,artifactRunId,nativeLanguageCompilePassed,nativeCompilerVersion,config:show(repoRoot,sourceRevision,root+'/shared/GameConfig.luau'),server:show(repoRoot,sourceRevision,root+'/server/Game.server.luau'),client:show(repoRoot,sourceRevision,root+'/client/Game.client.luau'),project:show(repoRoot,sourceRevision,root+'/default.project.json')});
 }
 function args(argv){const o={};for(let i=0;i<argv.length;i++){const x=argv[i];if(!x.startsWith('--'))continue;const [k,v]=x.slice(2).split('=',2);o[k]=v??argv[++i];}return o;}
-function main(){const a=args(process.argv.slice(2));const result=inspectHeadlessExactRevision({repoRoot:a['repo-root']||'.',gameId:a['game-id'],sourcePath:a['source-path'],sourceRevision:a['source-revision'],artifactIdentity:a['artifact-identity'],rebuiltArtifactIdentity:a['rebuilt-artifact-identity'],artifactRunId:Number(a['artifact-run-id'])});if(!a.output)throw new Error('output required');fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');console.log('ROBLOX_FOUNDATION_F0_SOURCE_PREFLIGHT='+(result.pass?'PASS':'BLOCKED')+':'+result.gameId);if(!result.pass)process.exitCode=2;}
+function main(){const a=args(process.argv.slice(2));const result=inspectHeadlessExactRevision({repoRoot:a['repo-root']||'.',gameId:a['game-id'],sourcePath:a['source-path'],sourceRevision:a['source-revision'],artifactIdentity:a['artifact-identity'],rebuiltArtifactIdentity:a['rebuilt-artifact-identity'],artifactRunId:Number(a['artifact-run-id']),nativeLanguageCompilePassed:clean(a['native-language-compile-passed']).toLowerCase()==='true',nativeCompilerVersion:a['native-compiler-version']});if(!a.output)throw new Error('output required');fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');console.log('ROBLOX_FOUNDATION_F0_SOURCE_PREFLIGHT='+(result.pass?'PASS':'BLOCKED')+':'+result.gameId);if(!result.pass)process.exitCode=2;}
 const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
 if(isMain){try{main();}catch(e){console.error(e.stack||e);process.exitCode=1;}}
