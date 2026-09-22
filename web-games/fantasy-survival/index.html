@@ -1196,8 +1196,16 @@ function renderChest(){
  if(!stored.length)html+='<div class="info">상자가 비어 있어.</div>';
  for(const [id,n] of stored){const r=item(id);if(r)html+='<button class="invItem" data-chest-take="'+id+'"><b>'+r.name+' ×'+n+'</b><small>1개 꺼내기</small></button>'}
  html+='</div>';ui.sheetBody.innerHTML=html;
- ui.sheetBody.querySelectorAll('[data-chest-put]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.chestPut;if(invCount(id)<1)return;p.inventory[id]--;ch.storage[id]=(Number(ch.storage[id])||0)+1;state.dirty=true;renderChest();saveGame(false)}));
- ui.sheetBody.querySelectorAll('[data-chest-take]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.chestTake,n=Number(ch.storage[id])||0;if(n<1)return;ch.storage[id]=n-1;addInv(id,1);state.dirty=true;renderChest();saveGame(false)}))
+ ui.sheetBody.querySelectorAll('[data-chest-put]').forEach(b=>b.addEventListener('click',()=>{
+  const id=b.dataset.chestPut;if(invCount(id)<1)return;
+  p.inventory[id]--;if(p.inventory[id]<=0)delete p.inventory[id];
+  ch.storage[id]=(Number(ch.storage[id])||0)+1;state.dirty=true;syncStructureEdit('chest',ch);renderChest();saveGame(false)
+ }));
+ ui.sheetBody.querySelectorAll('[data-chest-take]').forEach(b=>b.addEventListener('click',()=>{
+  const id=b.dataset.chestTake,n=Number(ch.storage[id])||0;if(n<1)return;
+  ch.storage[id]=n-1;if(ch.storage[id]<=0)delete ch.storage[id];
+  addInv(id,1);state.dirty=true;syncStructureEdit('chest',ch);renderChest();saveGame(false)
+ }))
 }
 function openChest(ch){state.activeChestId=ch.id;state.panelMode='chest';ui.sheet.classList.add('open');renderChest()}
 const WALL_UPGRADE_COSTS={iron:{ironIngot:5},gold:{goldIngot:5}};
@@ -1222,22 +1230,26 @@ function renderWallManage(){
  if(bi)bi.addEventListener('click',()=>upgradeWall('iron'));if(bg)bg.addEventListener('click',()=>upgradeWall('gold'));if(bd)bd.addEventListener('click',deleteActiveWall)
 }
 function mergeRefund(base,extra){const out={...(base||{})};for(const [k,v] of Object.entries(normalizeCost(extra)))if(v)out[k]=(Number(out[k])||0)+v;return out}
-function syncWallEdit(action,w){
+function syncStructureEdit(action,b){
  if(!multiplayer.connected)return;
  if(multiIsHost()){multiplayer.worldAt=0;return}
- multiSend('structure-edit',{action,id:w?.id||state.activeWallId,material:w?.material,refund:w?.refund})
+ const payload={action,id:b?.id||state.activeWallId};
+ if(action==='upgrade'){payload.material=b?.material;payload.refund=b?.refund}
+ else if(action==='door')payload.open=!!b?.open;
+ else if(action==='chest')payload.storage=b?.storage&&typeof b.storage==='object'?{...b.storage}:{};
+ multiSend('structure-edit',payload)
 }
 function upgradeWall(target){
  const w=wallById(state.activeWallId);if(!w||!['iron','gold'].includes(target))return;
  const current=['wood','iron','gold'].includes(w.material)?w.material:'wood';
  if(current==='gold'||(current==='iron'&&target==='iron'))return;
  const cost=WALL_UPGRADE_COSTS[target];if(!canPay(cost)){showNotice('업그레이드 재료가 부족해');return}
- pay(cost);w.material=target;w.refund=mergeRefund(w.refund&&typeof w.refund==='object'?w.refund:{wood:5},cost);state.dirty=true;syncWallEdit('upgrade',w);showNotice(wallMaterialName(target)+' 업그레이드 완료');saveGame(false);renderWallManage()
+ pay(cost);w.material=target;w.refund=mergeRefund(w.refund&&typeof w.refund==='object'?w.refund:{wood:5},cost);state.dirty=true;syncStructureEdit('upgrade',w);showNotice(wallMaterialName(target)+' 업그레이드 완료');saveGame(false);renderWallManage()
 }
 function deleteActiveWall(){
  const id=state.activeWallId,i=state.walls.findIndex(w=>w.id===id);if(i<0)return;const w=state.walls[i],refund=w.refund&&typeof w.refund==='object'?w.refund:{wood:5};
  for(const [k,v] of Object.entries(refund))if(Number(v)>0)addMaterial(k,Number(v));
- state.walls.splice(i,1);state.activeWallId=null;state.dirty=true;syncWallEdit('delete',{id});ui.sheet.classList.remove('open');showNotice('벽 삭제 · 사용한 재료 반환');updateHud();saveGame(false)
+ state.walls.splice(i,1);state.activeWallId=null;state.dirty=true;syncStructureEdit('delete',{id});ui.sheet.classList.remove('open');showNotice('벽 삭제 · 사용한 재료 반환');updateHud();saveGame(false)
 }
 function interactBed(b){
  const p=state.player;state.respawnPos={x:b.x,y:b.y};state.dirty=true;
@@ -1444,9 +1456,24 @@ function hostApplyStructurePlace(payload){
  rememberItem(id);state.dirty=true;multiplayer.worldAt=0;saveGame(false)
 }
 function hostApplyStructureEdit(payload){
- if(!multiIsHost()||!payload)return;const id=String(payload.id||''),i=state.walls.findIndex(w=>w.id===id);if(i<0)return;
- if(payload.action==='delete')state.walls.splice(i,1);
- else if(payload.action==='upgrade'){const w=state.walls[i],mat=String(payload.material||'');if(['wood','iron','gold'].includes(mat))w.material=mat;if(payload.refund&&typeof payload.refund==='object')w.refund={...payload.refund}}
+ if(!multiIsHost()||!payload)return;
+ const id=String(payload.id||''),action=String(payload.action||'');
+ if(action==='delete'){
+  const i=state.walls.findIndex(w=>w.id===id);if(i<0)return;state.walls.splice(i,1)
+ }else if(action==='upgrade'){
+  const w=state.walls.find(w=>w.id===id);if(!w)return;
+  const mat=String(payload.material||'');if(['wood','iron','gold'].includes(mat))w.material=mat;
+  if(payload.refund&&typeof payload.refund==='object')w.refund={...payload.refund}
+ }else if(action==='door'){
+  const d=state.doors.find(d=>d.id===id);if(!d)return;d.open=!!payload.open
+ }else if(action==='chest'){
+  const ch=state.chests.find(ch=>ch.id===id);if(!ch||!payload.storage||typeof payload.storage!=='object')return;
+  const storage={};
+  for(const [itemId,count] of Object.entries(payload.storage)){
+   const n=Math.floor(Number(count)||0);if(n>0&&n<=9999&&item(itemId))storage[itemId]=n
+  }
+  ch.storage=storage
+ }else return;
  state.dirty=true;multiplayer.worldAt=0;saveGame(false)
 }
 function multiEnemyPlayerTarget(e){
@@ -2035,7 +2062,7 @@ function handleWorldTap(e){
   const pb=playerBuildingAt(wx,wy);
   if(pb){
    if(pb.type==='wall'){wallTapForManage(pb.b,now);return}
-   if(pb.type==='door'){doubleTapTarget('door:'+pb.b.id,now,()=>{pb.b.open=!pb.b.open;state.dirty=true;showNotice(pb.b.open?'문을 열었어':'문을 닫았어');saveGame(false)});return}
+   if(pb.type==='door'){doubleTapTarget('door:'+pb.b.id,now,()=>{pb.b.open=!pb.b.open;state.dirty=true;syncStructureEdit('door',pb.b);showNotice(pb.b.open?'문을 열었어':'문을 닫았어');saveGame(false)});return}
    if(pb.type==='chest'){doubleTapTarget('chest:'+pb.b.id,now,()=>openChest(pb.b));return}
    if(pb.type==='bed'){doubleTapTarget('bed:'+pb.b.id,now,()=>interactBed(pb.b));return}
   }
