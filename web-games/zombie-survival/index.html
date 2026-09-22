@@ -24,14 +24,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .joy.left{left:18px}.joy.right{right:18px}
 .knob{position:absolute;left:36px;top:36px;width:46px;height:46px;border-radius:50%;background:rgba(238,245,239,.42);border:2px solid rgba(255,255,255,.5);transform:translate(0,0)}
 .actionStack{position:absolute;right:18px;bottom:152px;display:grid;gap:8px;pointer-events:auto}
-.actionStack button,.reloadBtn{min-width:92px;min-height:46px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(16,22,18,.88);color:#fff;font-weight:900}
-.actionStack button:active,.reloadBtn:active{transform:scale(.97)}
-.reloadBtn{position:absolute;right:128px;bottom:max(42px,calc(env(safe-area-inset-bottom) + 42px));pointer-events:auto;min-width:74px}
+.actionStack button{min-width:94px;min-height:44px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(16,22,18,.9);color:#fff;font-weight:900}
+.actionStack button:active{transform:scale(.97)}
 .desktopHelp{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:11px;color:#b9c2bb;background:rgba(9,12,10,.72);padding:6px 10px;border-radius:9px;pointer-events:none}
-.panel{position:absolute;left:50%;top:50%;z-index:9;transform:translate(-50%,-50%);width:min(92vw,410px);padding:16px;border-radius:18px;background:#121814;border:1px solid #39463d;box-shadow:0 22px 70px rgba(0,0,0,.55);display:none}
+.panel{position:absolute;left:50%;top:50%;z-index:9;transform:translate(-50%,-50%);width:min(92vw,430px);max-height:82vh;overflow:auto;padding:16px;border-radius:18px;background:#121814;border:1px solid #39463d;box-shadow:0 22px 70px rgba(0,0,0,.55);display:none}
 .panel.open{display:block}
 .panel h2{margin:0 0 6px;font-size:21px}.panel p{margin:0 0 12px;color:#b9c4bc;font-size:12px;line-height:1.45}
-.upgrades{display:grid;gap:8px}.upgrades button{min-height:54px;border:1px solid #344139;border-radius:12px;background:#1b241e;color:#fff;text-align:left;padding:9px 11px}.upgrades b,.upgrades span{display:block}.upgrades span{margin-top:3px;font-size:11px;color:#b8c4bc}
+.upgrades,.inventoryGrid,.weaponGrid{display:grid;gap:8px}.upgrades button,.inventoryItem,.weaponItem{min-height:54px;border:1px solid #344139;border-radius:12px;background:#1b241e;color:#fff;text-align:left;padding:9px 11px}.upgrades b,.upgrades span,.inventoryItem b,.inventoryItem span,.weaponItem b,.weaponItem span{display:block}.upgrades span,.inventoryItem span,.weaponItem span{margin-top:3px;font-size:11px;color:#b8c4bc}.inventorySection{margin-top:12px}.inventorySection h3{margin:0 0 7px;font-size:14px}.ammoGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.ammoCell{padding:8px;border:1px solid #303b34;border-radius:10px;background:#172019;font-size:11px}.ammoCell b{display:block;margin-top:2px;font-size:14px}.weaponItem.equipped{outline:2px solid #dcebd9}.weaponItem[disabled]{opacity:.42}
 .close{width:100%;min-height:44px;margin-top:10px;border:0;border-radius:11px;background:#e7eee9;color:#142018;font-weight:900}
 .overlay{position:absolute;inset:0;z-index:12;display:none;place-items:center;background:rgba(3,5,4,.76);padding:22px;text-align:center}
 .overlay.show{display:grid}.overlay .box{width:min(92vw,420px);padding:22px;border-radius:20px;background:#121814;border:1px solid #38463c}.overlay h1{margin:0 0 8px}.overlay p{color:#bac5bd;font-size:13px;line-height:1.5}.overlay button{width:100%;min-height:50px;border:0;border-radius:12px;background:#edf4ef;color:#102016;font-weight:1000}
@@ -39,7 +38,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .loot.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(min-width:760px){.joy{opacity:.35}.desktopHelp{display:block}}
 @media(max-width:759px){.desktopHelp{display:none}}
-@media(max-width:390px){.joy{width:108px;height:108px}.knob{left:31px;top:31px}.actionStack{bottom:136px}.reloadBtn{right:112px}.weapon{min-width:122px}.card{padding:7px 8px}}
+@media(max-width:390px){.joy{width:108px;height:108px}.knob{left:31px;top:31px}.actionStack{bottom:136px}.weapon{min-width:122px}.card{padding:7px 8px}}
 </style>
 </head>
 <body>
@@ -54,21 +53,21 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
     <span>부품</span><b id="parts">0</b>
     <div class="bar" style="grid-column:1/-1"><i id="hpBar"></i></div>
   </div>
-  <div class="card weapon"><b id="weapon">권총 Lv.1</b><span id="ammo">12 / 48</span></div>
+  <div class="card weapon"><b id="weapon">권총 Lv.1</b><span id="ammo">권총탄 50/50</span></div>
 </div>
 
-<div class="tip" id="tip">왼쪽 이동 · 오른쪽 스틱 360도 조준/사격 · 건물은 드물게 보여</div>
+<div class="tip" id="tip">총알은 총마다 따로 있어. 0발이면 같은 종류 탄약을 찾아야 해.</div>
 <div class="loot" id="loot"></div>
 
 <div class="controls">
   <div class="joy left" id="moveJoy"><div class="knob"></div></div>
   <div class="joy right" id="aimJoy"><div class="knob"></div></div>
   <div class="actionStack">
-    <button id="interact" type="button">상자 열기</button>
+    <button id="interact" type="button">주변 조사</button>
+    <button id="inventory" type="button">인벤토리</button>
     <button id="upgrade" type="button">총 업글</button>
   </div>
-  <button class="reloadBtn" id="reload" type="button">재장전</button>
-  <div class="desktopHelp">WASD 이동 · 마우스 360도 조준 · 클릭 사격 · E 상자 · R 재장전</div>
+  <div class="desktopHelp">WASD 이동 · 마우스 360도 조준/사격 · E 주변 조사 · I 인벤토리</div>
 </div>
 
 <div class="panel" id="upgradePanel">
@@ -77,9 +76,30 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   <div class="upgrades">
     <button type="button" data-up="damage"><b>공격력 강화</b><span id="damageCost"></span></button>
     <button type="button" data-up="rate"><b>연사 강화</b><span id="rateCost"></span></button>
-    <button type="button" data-up="mag"><b>탄창 강화</b><span id="magCost"></span></button>
+    <button type="button" data-up="speed"><b>탄환 속도 강화</b><span id="speedCost"></span></button>
   </div>
   <button class="close" id="closeUpgrade" type="button">닫기</button>
+</div>
+
+<div class="panel" id="inventoryPanel">
+  <h2>인벤토리</h2>
+  <p>총은 한 번 눌러 장착. 음식과 붕대는 빠르게 2번 눌러 사용해.</p>
+  <div class="inventorySection">
+    <h3>보유 총</h3>
+    <div class="weaponGrid" id="weaponGrid"></div>
+  </div>
+  <div class="inventorySection">
+    <h3>소모품</h3>
+    <div class="inventoryGrid">
+      <button class="inventoryItem" type="button" data-item="food"><b>음식 <span id="foodCount">0개</span></b><span>2번 클릭: 체력 20 회복</span></button>
+      <button class="inventoryItem" type="button" data-item="bandage"><b>붕대 <span id="bandageCount">0개</span></b><span>2번 클릭: 최대 체력의 45% 회복</span></button>
+    </div>
+  </div>
+  <div class="inventorySection">
+    <h3>총알</h3>
+    <div class="ammoGrid" id="ammoGrid"></div>
+  </div>
+  <button class="close" id="closeInventory" type="button">닫기</button>
 </div>
 
 <div class="overlay" id="dead">
@@ -96,7 +116,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 'use strict';
 
 // 파일명: web-games/zombie-survival/index.html
-// 메인: 5배 맵 / 360도 조준 / 야외 좀비 2종 / 건물 전용 좀비 2종 / 건물 5종
+// 메인: 5배 맵 / 360도 조준 / 4종 좀비 / 건물별 전리품 / 총별 50발 탄약 / 총 교체 인벤토리
 
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d',{alpha:false});
@@ -110,13 +130,14 @@ const keys=new Set();
 const pointer={x:0,y:0,down:false,active:false};
 const moveInput={x:0,y:0};
 const aimInput={x:0,y:0};
-let lootTimer=0,tipTimer=0,waveClock=0,spawnClock=0;
+let lootTimer=0,tipTimer=0,waveClock=0,spawnClock=0,lastLockerTap=0,lastConsumableTap={item:null,time:0};
 
 const WEAPONS={
-  pistol:{name:'권총',damage:24,rate:3.5,mag:12,reserve:48,speed:1000,spread:.025,pellets:1,reload:1.0,color:'#ffd45d'},
-  smg:{name:'기관단총',damage:15,rate:10,mag:28,reserve:112,speed:1080,spread:.07,pellets:1,reload:1.25,color:'#f6de73'},
-  rifle:{name:'소총',damage:35,rate:5.2,mag:20,reserve:80,speed:1250,spread:.018,pellets:1,reload:1.45,color:'#ffef9b'},
-  shotgun:{name:'산탄총',damage:14,rate:1.45,mag:6,reserve:36,speed:900,spread:.22,pellets:7,reload:1.65,color:'#ffd07b'}
+  pistol:{name:'권총',ammoName:'권총탄',damage:24,rate:3.5,speed:1000,spread:.025,pellets:1,color:'#ffd45d'},
+  smg:{name:'기관단총',ammoName:'기관단총탄',damage:15,rate:10,speed:1080,spread:.07,pellets:1,color:'#f6de73'},
+  rifle:{name:'소총',ammoName:'소총탄',damage:35,rate:5.2,speed:1250,spread:.018,pellets:1,color:'#ffef9b'},
+  shotgun:{name:'산탄총',ammoName:'산탄',damage:14,rate:1.45,speed:900,spread:.22,pellets:7,color:'#ffd07b'},
+  m4:{name:'M4',ammoName:'5.56탄',damage:30,rate:1/0.7,speed:1320,spread:.02,pellets:1,color:'#f0efb2'}
 };
 
 const ZOMBIE_TYPES={
@@ -135,21 +156,40 @@ const BUILDING_TYPES={
 };
 
 function makeGun(id){
-  const b=WEAPONS[id];
-  return{id,level:1,damageLv:0,rateLv:0,magLv:0,ammo:b.mag,reserve:b.reserve,lastShot:0,reloading:0};
+  return{id,level:1,damageLv:0,rateLv:0,speedLv:0,lastShot:0};
 }
 
 const player={
   x:2500,y:1750,r:16,hp:100,maxHp:100,speed:230,
   gun:makeGun('pistol'),parts:0,kills:0,invuln:0,
-  aimX:1,aimY:0
+  aimX:1,aimY:0,
+  inventory:{food:0,bandage:0},
+  weapons:{},
+  ammo:{pistol:50,smg:0,rifle:0,shotgun:0,m4:0}
 };
+player.weapons.pistol=player.gun;
 
 const bullets=[];
 const zombies=[];
 const particles=[];
 const buildings=[];
 const chests=[];
+const groundItems=[];
+const gunLockers=[];
+
+function addChest(building,x,y){
+  chests.push({x,y,r:18,opened:false,buildingId:building.id});
+}
+
+function addWorldItem(kind,x,y,data={}){
+  groundItems.push({
+    kind,x,y,r:14,collected:false,
+    amount:data.amount||1,
+    ammoKey:data.ammoKey||null,
+    label:data.label||kind,
+    random:data.random||false
+  });
+}
 
 function addBuilding(id,type,x,y,w,h,doorSide='bottom'){
   const config=BUILDING_TYPES[type];
@@ -164,15 +204,37 @@ function addBuilding(id,type,x,y,w,h,doorSide='bottom'){
   b.doorX=doorX;
   b.doorY=doorY;
 
-  chests.push({
-    x:x+w/2+(doorSide==='left'?60:doorSide==='right'?-60:0),
-    y:y+h/2+(doorSide==='top'?55:doorSide==='bottom'?-55:0),
-    r:18,opened:false,buildingId:id
-  });
+  if(type==='house')addChest(b,x+w/2,y+h/2);
+
+  if(type==='warehouse'){
+    addChest(b,x+w*.36,y+h*.52);
+    addChest(b,x+w*.68,y+h*.52);
+  }
+
+  if(type==='store'){
+    addWorldItem('food',x+w*.35,y+h*.50,{amount:1,label:'통조림'});
+    addWorldItem('food',x+w*.52,y+h*.55,{amount:1,label:'에너지바'});
+    addWorldItem('food',x+w*.68,y+h*.46,{amount:1,label:'음식'});
+  }
+
+  if(type==='clinic'){
+    addWorldItem('bandage',x+w*.40,y+h*.50,{amount:1,label:'붕대'});
+    addWorldItem('bandage',x+w*.62,y+h*.50,{amount:1,label:'붕대'});
+  }
+
+  if(type==='station'){
+    gunLockers.push({x:x+w*.55,y:y+h*.48,w:72,h:46,claimed:false,buildingId:id});
+    const ammoKeys=Object.keys(WEAPONS);
+    ammoKeys.forEach((ammoKey,typeIndex)=>{
+      for(let i=0;i<3;i++){
+        addWorldItem('ammo',x+46+typeIndex*57,y+84+i*50,{
+          ammoKey,amount:10,label:WEAPONS[ammoKey].ammoName
+        });
+      }
+    });
+  }
 }
 
-// 건물 5종. 넓은 맵에 10개만 배치해서 듬성듬성 보이게 함.
-// 좀비를 직접 내보내는 건물은 병원 1개 + 경찰서 1개, 정확히 2개.
 addBuilding('house-a','house',420,420,320,230,'right');
 addBuilding('store-a','store',1500,360,340,240,'bottom');
 addBuilding('station-a','station',4060,470,360,260,'left');
@@ -183,6 +245,14 @@ addBuilding('warehouse-b','warehouse',3350,2080,410,280,'top');
 addBuilding('clinic-a','clinic',1130,2820,370,260,'right');
 addBuilding('house-c','house',4130,2920,320,230,'left');
 addBuilding('warehouse-c','warehouse',2360,3030,400,275,'top');
+
+for(let i=0;i<22;i++){
+  const ammoKeys=Object.keys(WEAPONS);
+  const ammoKey=ammoKeys[Math.floor(Math.random()*ammoKeys.length)];
+  addWorldItem('ammo',rand(180,world.w-180),rand(180,world.h-180),{
+    ammoKey,amount:10,label:WEAPONS[ammoKey].ammoName,random:true
+  });
+}
 
 function resize(){
   dpr=Math.min(2,window.devicePixelRatio||1);
@@ -205,11 +275,9 @@ function gunStats(){
   return{
     damage:b.damage*(1+g.damageLv*.22),
     rate:b.rate*(1+g.rateLv*.16),
-    mag:b.mag+g.magLv*4,
-    speed:b.speed,
+    speed:b.speed*(1+g.speedLv*.12),
     spread:b.spread,
     pellets:b.pellets,
-    reload:Math.max(.55,b.reload*(1-g.rateLv*.035)),
     color:b.color
   };
 }
@@ -294,19 +362,25 @@ function setAim(x,y){
 
 function tryShoot(){
   const g=player.gun,s=gunStats(),now=performance.now()/1000;
-  if(g.reloading>0||g.ammo<=0||now-g.lastShot<1/s.rate)return;
+  const ammo=player.ammo[g.id]||0;
+  if(ammo<=0){
+    if(now-g.lastShot>.8){
+      g.lastShot=now;
+      showTip(WEAPONS[g.id].ammoName+'이 없어. 같은 종류 총알을 찾아야 해.',900);
+    }
+    return;
+  }
+  if(now-g.lastShot<1/s.rate)return;
 
   const n=norm(player.aimX,player.aimY);
   g.lastShot=now;
-  g.ammo--;
+  player.ammo[g.id]=Math.max(0,ammo-1);
 
   for(let i=0;i<s.pellets;i++){
     const a=Math.atan2(n.y,n.x)+rand(-s.spread,s.spread);
     bullets.push({
-      x:player.x+n.x*24,
-      y:player.y+n.y*24,
-      vx:Math.cos(a)*s.speed,
-      vy:Math.sin(a)*s.speed,
+      x:player.x+n.x*24,y:player.y+n.y*24,
+      vx:Math.cos(a)*s.speed,vy:Math.sin(a)*s.speed,
       r:4,life:1.45,damage:s.damage,color:s.color
     });
   }
@@ -320,60 +394,185 @@ function tryShoot(){
     });
   }
 
-  if(g.ammo===0&&g.reserve>0)setTimeout(startReload,150);
+  updateHud();
 }
 
-function startReload(){
-  const g=player.gun,s=gunStats();
-  if(g.reloading>0||g.reserve<=0||g.ammo>=s.mag)return;
-  g.reloading=s.reload;
-  showTip('재장전 중…',700);
+function addWeaponToInventory(id,equip=true){
+  if(!player.weapons[id])player.weapons[id]=makeGun(id);
+  if(equip)player.gun=player.weapons[id];
+  renderInventory();
+  updateHud();
+}
+
+function collectWorldItem(item){
+  if(item.collected)return false;
+  item.collected=true;
+
+  if(item.kind==='food'){
+    player.inventory.food+=item.amount;
+    showLoot(item.label+' 획득 · 인벤토리 +'+item.amount);
+  }else if(item.kind==='bandage'){
+    player.inventory.bandage+=item.amount;
+    showLoot('붕대 획득 · 인벤토리 +'+item.amount);
+  }else if(item.kind==='ammo'){
+    const key=item.ammoKey;
+    const before=player.ammo[key]||0;
+    player.ammo[key]=Math.min(50,before+item.amount);
+    showLoot(WEAPONS[key].ammoName+' +'+(player.ammo[key]-before)+' · '+player.ammo[key]+'/50');
+  }
+
+  renderInventory();
+  updateHud();
+  return true;
+}
+
+function collectNearbyGroundItem(){
+  let best=null,bd=62*62;
+  for(const item of groundItems){
+    if(item.collected)continue;
+    const d=dist2(player,item);
+    if(d<bd){bd=d;best=item}
+  }
+  return best?collectWorldItem(best):false;
 }
 
 function openNearestChest(){
   let best=null,bd=78*78;
-  for(const c of chests){
-    if(c.opened)continue;
-    const d=dist2(player,c);
-    if(d<bd){bd=d;best=c}
+  for(const chest of chests){
+    if(chest.opened)continue;
+    const d=dist2(player,chest);
+    if(d<bd){bd=d;best=chest}
   }
-
-  if(!best){
-    showTip('건물 안 상자 가까이 가야 해');
-    return;
-  }
+  if(!best)return false;
 
   best.opened=true;
   const roll=Math.random();
 
-  if(roll<.58){
+  if(roll<.55){
     const ids=['smg','rifle','shotgun'];
     const id=ids[Math.floor(Math.random()*ids.length)];
-    player.gun=makeGun(id);
-    showLoot(WEAPONS[id].name+' 획득!');
-  }else if(roll<.82){
+    addWeaponToInventory(id,true);
+    player.ammo[id]=Math.min(50,(player.ammo[id]||0)+15);
+    showLoot(WEAPONS[id].name+' 획득 · '+WEAPONS[id].ammoName+' +15');
+  }else{
     const gain=8+Math.floor(Math.random()*9);
     player.parts+=gain;
     showLoot('총기 부품 +'+gain);
-  }else{
-    const heal=35;
-    player.hp=Math.min(player.maxHp,player.hp+heal);
-    showLoot('응급치료 +'+heal);
   }
 
+  renderInventory();
   updateHud();
+  return true;
+}
+
+function nearbyLocker(){
+  return gunLockers.find(locker=>!locker.claimed&&
+    player.x>=locker.x-70&&player.x<=locker.x+locker.w+70&&
+    player.y>=locker.y-70&&player.y<=locker.y+locker.h+70);
+}
+
+function interactGunLocker(locker){
+  if(!locker||locker.claimed)return false;
+  const now=performance.now();
+  if(now-lastLockerTap<=450){
+    locker.claimed=true;
+    lastLockerTap=0;
+    addWeaponToInventory('m4',true);
+    player.ammo.m4=50;
+    showLoot('M4 획득! 데미지 30 · 공격 간격 0.7초 · 5.56탄 50발');
+  }else{
+    lastLockerTap=now;
+    showTip('총 창고를 한 번 더 빠르게 눌러 M4를 꺼내');
+  }
+  return true;
+}
+
+function interactNearby(){
+  if(collectNearbyGroundItem())return;
+  const locker=nearbyLocker();
+  if(locker){interactGunLocker(locker);return}
+  if(openNearestChest())return;
+  showTip('조사할 물건이 가까이 없어');
+}
+
+function useConsumable(item){
+  const now=performance.now();
+  if(lastConsumableTap.item!==item||now-lastConsumableTap.time>450){
+    lastConsumableTap={item,time:now};
+    showTip(item==='food'?'음식을 한 번 더 빠르게 눌러 먹어':'붕대를 한 번 더 빠르게 눌러 사용해',700);
+    return;
+  }
+
+  lastConsumableTap={item:null,time:0};
+
+  if(player.inventory[item]<=0){
+    showLoot(item==='food'?'음식이 없어':'붕대가 없어');
+    return;
+  }
+
+  if(player.hp>=player.maxHp){
+    showLoot('체력이 이미 가득 찼어');
+    return;
+  }
+
+  player.inventory[item]--;
+  const heal=item==='bandage'?Math.ceil(player.maxHp*.45):20;
+  player.hp=Math.min(player.maxHp,player.hp+heal);
+  showLoot((item==='bandage'?'붕대 사용':'음식 섭취')+' · 체력 +'+heal);
+  renderInventory();
+  updateHud();
+}
+
+function equipWeapon(id){
+  if(!player.weapons[id])return;
+  player.gun=player.weapons[id];
+  showLoot(WEAPONS[id].name+' 장착');
+  renderInventory();
+  updateHud();
+}
+
+function renderInventory(){
+  const weaponGrid=$('weaponGrid');
+  if(weaponGrid){
+    weaponGrid.innerHTML='';
+    Object.keys(WEAPONS).forEach(id=>{
+      const owned=!!player.weapons[id];
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='weaponItem'+(player.gun.id===id?' equipped':'');
+      button.disabled=!owned;
+      const gun=player.weapons[id];
+      button.innerHTML='<b>'+WEAPONS[id].name+(player.gun.id===id?' · 장착중':'')+'</b><span>'+(owned?'Lv.'+gun.level+' · '+WEAPONS[id].ammoName+' '+(player.ammo[id]||0)+'/50':'미획득')+'</span>';
+      if(owned)button.addEventListener('click',()=>equipWeapon(id));
+      weaponGrid.appendChild(button);
+    });
+  }
+
+  $('foodCount').textContent=player.inventory.food+'개';
+  $('bandageCount').textContent=player.inventory.bandage+'개';
+
+  const ammoGrid=$('ammoGrid');
+  if(ammoGrid){
+    ammoGrid.innerHTML='';
+    Object.keys(WEAPONS).forEach(id=>{
+      const cell=document.createElement('div');
+      cell.className='ammoCell';
+      cell.innerHTML=WEAPONS[id].ammoName+'<b>'+(player.ammo[id]||0)+'/50</b>';
+      ammoGrid.appendChild(cell);
+    });
+  }
 }
 
 function upgradeCost(kind){
   const g=player.gun;
-  const l=kind==='damage'?g.damageLv:kind==='rate'?g.rateLv:g.magLv;
+  const l=kind==='damage'?g.damageLv:kind==='rate'?g.rateLv:g.speedLv;
   return 8+l*7;
 }
 
 function refreshUpgradePanel(){
   $('damageCost').textContent='부품 '+upgradeCost('damage')+' · 현재 +'+Math.round(player.gun.damageLv*22)+'%';
   $('rateCost').textContent='부품 '+upgradeCost('rate')+' · 현재 +'+Math.round(player.gun.rateLv*16)+'%';
-  $('magCost').textContent='부품 '+upgradeCost('mag')+' · 현재 +'+(player.gun.magLv*4)+'발';
+  $('speedCost').textContent='부품 '+upgradeCost('speed')+' · 현재 +'+Math.round(player.gun.speedLv*12)+'%';
 }
 
 function buyUpgrade(kind){
@@ -386,13 +585,11 @@ function buyUpgrade(kind){
   player.parts-=cost;
   if(kind==='damage')player.gun.damageLv++;
   if(kind==='rate')player.gun.rateLv++;
-  if(kind==='mag'){
-    player.gun.magLv++;
-    player.gun.ammo=Math.min(gunStats().mag,player.gun.ammo+4);
-  }
+  if(kind==='speed')player.gun.speedLv++;
 
-  player.gun.level=1+player.gun.damageLv+player.gun.rateLv+player.gun.magLv;
+  player.gun.level=1+player.gun.damageLv+player.gun.rateLv+player.gun.speedLv;
   refreshUpgradePanel();
+  renderInventory();
   updateHud();
   showLoot('업그레이드 완료');
 }
@@ -404,9 +601,9 @@ function updateHud(){
   $('kills').textContent=player.kills;
   $('parts').textContent=player.parts;
 
-  const s=gunStats(),g=player.gun;
+  const g=player.gun;
   $('weapon').textContent=WEAPONS[g.id].name+' Lv.'+g.level;
-  $('ammo').textContent=(g.reloading>0?'재장전 ':g.ammo+' / '+g.reserve)+' · 탄창 '+s.mag;
+  $('ammo').textContent=WEAPONS[g.id].ammoName+' '+(player.ammo[g.id]||0)+'/50';
 }
 
 function update(dt){
@@ -446,16 +643,8 @@ function update(dt){
   }
   if(pointer.down)tryShoot();
 
-  const g=player.gun;
-  if(g.reloading>0){
-    g.reloading-=dt;
-    if(g.reloading<=0){
-      const need=gunStats().mag-g.ammo;
-      const take=Math.min(need,g.reserve);
-      g.ammo+=take;
-      g.reserve-=take;
-      g.reloading=0;
-    }
+  for(const item of groundItems){
+    if(!item.collected&&dist2(player,item)<34*34)collectWorldItem(item);
   }
 
   for(let i=bullets.length-1;i>=0;i--){
@@ -663,6 +852,29 @@ function draw(){
     }
   }
 
+  for(const item of groundItems){
+    if(item.collected)continue;
+    if(item.kind==='bandage'){
+      ctx.fillStyle='#f0ece6';ctx.fillRect(item.x-10,item.y-7,20,14);
+      ctx.fillStyle='#cc5f5f';ctx.fillRect(item.x-3,item.y-7,6,14);ctx.fillRect(item.x-10,item.y-3,20,6);
+    }else if(item.kind==='food'){
+      ctx.fillStyle='#d59c4a';ctx.fillRect(item.x-10,item.y-9,20,18);
+      ctx.fillStyle='#efe2a7';ctx.fillRect(item.x-8,item.y-6,16,4);
+    }else{
+      ctx.fillStyle='#7e8a80';ctx.fillRect(item.x-12,item.y-7,24,14);
+      ctx.fillStyle='#d6c57a';ctx.fillRect(item.x-8,item.y-3,16,6);
+    }
+  }
+
+  for(const locker of gunLockers){
+    ctx.fillStyle=locker.claimed?'#3d443f':'#243842';
+    ctx.fillRect(locker.x,locker.y,locker.w,locker.h);
+    ctx.strokeStyle=locker.claimed?'#626b65':'#8eb1c3';
+    ctx.lineWidth=3;ctx.strokeRect(locker.x,locker.y,locker.w,locker.h);
+    ctx.fillStyle='#d6e2e8';ctx.font='bold 11px system-ui';
+    ctx.fillText(locker.claimed?'총 창고 비어있음':'M4 총 창고',locker.x+6,locker.y+27);
+  }
+
   for(const p of particles){
     ctx.globalAlpha=clamp(p.life*5,0,1);
     ctx.fillStyle=p.color;
@@ -714,7 +926,10 @@ function draw(){
   ctx.restore();
   ctx.restore();
 
-  $('interact').style.opacity=chests.some(c=>!c.opened&&dist2(player,c)<78*78)?'1':'.55';
+  const nearbyThing=chests.some(c=>!c.opened&&dist2(player,c)<78*78)||
+    groundItems.some(item=>!item.collected&&dist2(player,item)<62*62)||
+    !!nearbyLocker();
+  $('interact').style.opacity=nearbyThing?'1':'.55';
 }
 
 function loop(t){
@@ -739,6 +954,9 @@ function restart(){
   player.parts=0;
   player.kills=0;
   player.gun=makeGun('pistol');
+  player.weapons={pistol:player.gun};
+  player.ammo={pistol:50,smg:0,rifle:0,shotgun:0,m4:0};
+  player.inventory={food:0,bandage:0};
   player.invuln=0;
   player.aimX=1;
   player.aimY=0;
@@ -747,6 +965,8 @@ function restart(){
   zombies.length=0;
   particles.length=0;
   chests.forEach(c=>c.opened=false);
+  groundItems.forEach(item=>item.collected=false);
+  gunLockers.forEach(locker=>locker.claimed=false);
   buildings.forEach(b=>{if(b.spawnType)b.spawnCooldown=rand(3,6)});
 
   waveClock=0;
@@ -844,8 +1064,11 @@ addEventListener('pointerup',e=>{
 
 addEventListener('keydown',e=>{
   keys.add(e.code);
-  if(e.code==='KeyE')openNearestChest();
-  if(e.code==='KeyR')startReload();
+  if(e.code==='KeyE')interactNearby();
+  if(e.code==='KeyI'){
+    $('inventoryPanel').classList.add('open');
+    renderInventory();
+  }
   if(e.code==='KeyU'){
     $('upgradePanel').classList.add('open');
     refreshUpgradePanel();
@@ -854,19 +1077,32 @@ addEventListener('keydown',e=>{
 
 addEventListener('keyup',e=>keys.delete(e.code));
 
-$('interact').addEventListener('click',openNearestChest);
-$('reload').addEventListener('click',startReload);
+$('interact').addEventListener('click',interactNearby);
+$('inventory').addEventListener('click',()=>{
+  $('inventoryPanel').classList.add('open');
+  renderInventory();
+});
 $('upgrade').addEventListener('click',()=>{
   $('upgradePanel').classList.add('open');
   refreshUpgradePanel();
 });
 $('closeUpgrade').addEventListener('click',()=>$('upgradePanel').classList.remove('open'));
+$('closeInventory').addEventListener('click',()=>$('inventoryPanel').classList.remove('open'));
 document.querySelectorAll('[data-up]').forEach(button=>{
   button.addEventListener('click',()=>buyUpgrade(button.dataset.up));
 });
+document.querySelectorAll('[data-item]').forEach(button=>{
+  button.addEventListener('click',()=>useConsumable(button.dataset.item));
+});
 $('restart').addEventListener('click',restart);
 
-showTip('맵 약 5배 확장 · 오른쪽 스틱은 360도 조준/사격 · 건물은 듬성듬성 있어',4200);
+canvas.addEventListener('click',()=>{
+  const locker=nearbyLocker();
+  if(locker)interactGunLocker(locker);
+});
+
+showTip('병원 붕대 2개 · 경찰서 M4 총창고/모든 탄약 · 편의점 음식 · I 인벤토리',4200);
+renderInventory();
 updateHud();
 })();
 </script>
