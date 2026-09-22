@@ -868,17 +868,17 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "INTERNAL_PLATFORM_RELEASE",
+      "canonicalState": "HEADLESS_FAST_MVP_PASSED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-internal-release-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-22T16:40:13.616Z",
+      "updatedAt": "2026-09-22T16:41:50.593Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "f736cb13a07039bdab572d00be3f684c5d208b9b",
@@ -888,8 +888,8 @@
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "robloxFailureStage": "INTERNAL_PLATFORM_RELEASE",
+      "robloxFailureSignature": "ROBLOX_INTERNAL_RELEASE_PENDING",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "f736cb13a07039bdab572d00be3f684c5d208b9b",
@@ -967,18 +967,18 @@
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "robloxStudioEvidenceRequired": false,
-      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpPassed": true,
       "robloxHeadlessFastMvpEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_FAST_MVP",
-        "checkedAt": "2026-09-22T14:42:39.308Z",
+        "checkedAt": "2026-09-22T16:41:35.947Z",
         "sourcePath": "roblox-games/horror-escape-room",
         "sourceRevision": "f736cb13a07039bdab572d00be3f684c5d208b9b",
         "artifactIdentity": "sha256:8a9b388135ecb2601c8bfc7c5a3859d998e9c38aa1b4698218838b78d67ee4ac",
         "rebuiltArtifactIdentity": "sha256:8a9b388135ecb2601c8bfc7c5a3859d998e9c38aa1b4698218838b78d67ee4ac",
-        "artifactRunId": 35741854836,
+        "artifactRunId": 35755451437,
         "playMode": "COMPETITIVE",
         "saveExists": true,
         "multiplayerApplicable": true,
@@ -1018,7 +1018,7 @@
         "authority": "roblox-headless-fast-mvp"
       },
       "robloxHeadlessFinalReviewPassed": true,
-      "robloxHeadlessPassedAt": "2026-09-22T14:42:53.854Z",
+      "robloxHeadlessPassedAt": "2026-09-22T16:41:50.593Z",
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
@@ -3908,7 +3908,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T16:40:13.616Z",
+  "updatedAt": "2026-09-22T16:41:50.593Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
