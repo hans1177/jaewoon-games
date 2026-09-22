@@ -215,11 +215,64 @@ RunService.RenderStepped:Connect(function()
  playerDot.BackgroundColor3=p:GetAttribute("Frozen")==true and Color3.fromRGB(117,210,255)or p:GetAttribute("Role")=="MONSTER"and Color3.fromRGB(255,83,97)or Color3.fromRGB(105,225,255)
 end)
 
+-- 로비 규칙 안내: 5초 안에 핵심 루프를 읽을 수 있게 3단계만 표시
+local ruleCard=Instance.new("Frame")
+ruleCard.Name="RuleGuide"
+ruleCard.AnchorPoint=Vector2.new(.5,.5)
+ruleCard.Position=UDim2.fromScale(.5,.27)
+ruleCard.Size=UDim2.fromOffset(310,118)
+ruleCard.BackgroundColor3=Color3.fromRGB(20,23,30)
+ruleCard.BackgroundTransparency=.05
+ruleCard.ZIndex=10
+ruleCard.Parent=gui
+roundify(ruleCard,14);outline(ruleCard,.4)
+
+local ruleTitle=Instance.new("TextLabel")
+ruleTitle.Size=UDim2.new(1,-16,0,24)
+ruleTitle.Position=UDim2.fromOffset(8,6)
+ruleTitle.BackgroundTransparency=1
+ruleTitle.Text="심야 술래잡기 · 게임 방법"
+ruleTitle.TextColor3=Color3.fromRGB(255,225,160)
+ruleTitle.TextSize=15
+ruleTitle.Font=Enum.Font.GothamBold
+ruleTitle.ZIndex=11
+ruleTitle.Parent=ruleCard
+
+local survivorRule=Instance.new("TextLabel")
+survivorRule.Size=UDim2.new(1,-16,0,50)
+survivorRule.Position=UDim2.fromOffset(8,31)
+survivorRule.BackgroundColor3=Color3.fromRGB(37,67,75)
+survivorRule.BackgroundTransparency=.18
+survivorRule.TextColor3=Color3.fromRGB(224,241,244)
+survivorRule.TextSize=12
+survivorRule.TextWrapped=true
+survivorRule.TextXAlignment=Enum.TextXAlignment.Left
+survivorRule.Font=Enum.Font.GothamBold
+survivorRule.Text="생존자  1 패널 4개 작동  →  2 얼은 친구 구조  →  3 탈출구로 탈출"
+survivorRule.ZIndex=11
+survivorRule.Parent=ruleCard
+roundify(survivorRule,8)
+
+local monsterRule=Instance.new("TextLabel")
+monsterRule.Size=UDim2.new(1,-16,0,26)
+monsterRule.Position=UDim2.fromOffset(8,85)
+monsterRule.BackgroundColor3=Color3.fromRGB(80,35,45)
+monsterRule.BackgroundTransparency=.16
+monsterRule.TextColor3=Color3.fromRGB(250,218,222)
+monsterRule.TextSize=11
+monsterRule.TextWrapped=true
+monsterRule.TextXAlignment=Enum.TextXAlignment.Left
+monsterRule.Font=Enum.Font.GothamBold
+monsterRule.Text="괴물  생존자를 터치해 얼리고 전부 얼리면 승리"
+monsterRule.ZIndex=11
+monsterRule.Parent=ruleCard
+roundify(monsterRule,8)
+
 -- 로비 선택 패널
 local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
-setupPanel.Position=UDim2.fromScale(.5,.56)
+setupPanel.Position=UDim2.fromScale(.5,.62)
 setupPanel.Size=UDim2.fromOffset(286,164)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
@@ -291,7 +344,7 @@ abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Pla
 local function monsterName()
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f.Name end end
- return"드라크"
+ return"드라큘라"
 end
 
 local function render()
@@ -308,13 +361,23 @@ local function render()
  mapPanel.Visible=running
 
  mapLine.Text=mapName..(eventName~=""and(" · "..eventName)or"")
- roleLine.Text=string.format("%s · %s · 생존 %d / 얼음 %d",role,frozen and"얼음"or"정상",p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
+ local roleText=role=="MONSTER"and"괴물"or role=="SURVIVOR"and"생존자"or"대기"
+ roleLine.Text=string.format("%s · %s · 생존 %d / 얼음 %d",roleText,frozen and"얼음"or"정상",p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
  local done=p:GetAttribute("ObjectivesDone")or 0;local total=p:GetAttribute("ObjectivesTotal")or C.ObjectiveCount
- objectiveLine.Text=workspace:GetAttribute("EscapeUnlocked")==true and"목표 완료 · 비상 탈출구로 이동"or string.format("목표 %d/%d · 패널을 찾아 작동",done,total)
+ if role=="MONSTER"then
+  objectiveLine.Text="괴물 목표 · 생존자를 찾아 모두 얼려라"
+ elseif frozen then
+  objectiveLine.Text="얼음 상태 · 친구 구조를 기다려"
+ elseif workspace:GetAttribute("EscapeUnlocked")==true then
+  objectiveLine.Text="3단계 · 비상 탈출구로 이동"
+ else
+  objectiveLine.Text=string.format("1단계 · 패널 작동 %d/%d  |  얼은 친구는 구출",done,total)
+ end
  roundLine.Text=running and(string.format("%d초",seconds))or round
 
  if round:find("^RESULT_") then setupChosen=false end
  setupPanel.Visible=not setupChosen and not running and not round:find("^RESULT_")
+ ruleCard.Visible=setupPanel.Visible
  actionDock.Visible=running
  mapPanel.Visible=running
  rescueButton.Visible=running and role=="SURVIVOR"and not frozen
