@@ -23,7 +23,8 @@ test('포근섬은 넓은 기본섬과 채집/NPC/몹 밀도를 가진다',()=>{
  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
  const server=read('roblox-games/cozy-island/server/Game.server.luau');
  assert.match(style,/Size=Vector3\.new\(176,10,176\)/);
- for(const marker of ['ManualGatherForest','ManualGatherFarm','WoodNode','FoodNode','HomeNPCs','HomeMobs','WildBoar','IslandRaider','COZY_ASSET_GATHER_WORLD_V6','terrain:FillBlock','Enum.Material.Water','seaLevel','ChiefHat','StrawHat','VillageBoat'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
+ for(const marker of ['ManualGatherForest','ManualGatherFarm','WoodNode','FoodNode','HomeNPCs','HomeMobs','WildBoar','IslandRaider','COZY_STYLIZED_ASSET_WORLD_V7','terrain:FillBlock','Enum.Material.Water','seaLevel','ChiefHat','StrawHat','VillageBoat','BoarBody','BoarSnout'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
+ assert.doesNotMatch(server,/CreateHumanoidModelFromDescription/);
  assert.doesNotMatch(server,/part\(world,"Sea"/);
 });
 
@@ -31,13 +32,12 @@ test('대충 RPG는 작은 단일 필드가 아니라 5개 대형 지역과 인�
  const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
  const config=read('roblox-games/daechung-rpg/shared/GameConfig.luau');
  assert.match(server,/Vector3\.new\(440,2,440\)/);
- assert.match(server,/for i=1,28 do themedProp/);
+ assert.match(server,/for i=1,34 do themedProp/);
  assert.match(server,/for i=1,10 do spawnEnemy/);
  assert.match(server,/AIUsers/);
  assert.match(server,/VillageHouse/);
- assert.match(server,/CreateHumanoidModelFromDescription/);
- assert.match(server,/Enemy_/);
- for(const marker of ['RPG_FIVE_PORTAL_ASSET_WORLD_V2','ChiefCape','SwordGuard','HealerHood','MarketStall','BeastFur','BeastMuzzle','BeastClawL'])assert.match(server,new RegExp(marker));
+ assert.doesNotMatch(server,/CreateHumanoidModelFromDescription/);
+ for(const marker of ['RPG_FIVE_PORTAL_STYLIZED_WORLD_V3','ChiefCape','SwordGuard','HealerHood','MarketStall','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
  assert.doesNotMatch(server,/local r=ppart\(parent,name,Vector3\.new\(3\.1,4\.2,2\.1\)\*scale/);
  assert.equal((config.match(/Class="(?:NONE|HEALER|WARRIOR|ARCHER)"/g)||[]).length,10);
 });
@@ -46,9 +46,9 @@ test('심야는 이동 가능한 어둠과 지도별 시각 기준점을 가진�
  const client=read('roblox-games/horror-escape-room/client/Game.client.luau');
  const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
  for(const marker of ['MiniMap','PlayerDot','mapLayouts','RunService.RenderStepped','CurrentMapId','MidnightArena','MapReady'])assert.match(client,new RegExp(marker.replaceAll('.','\\.')));
- for(const marker of ['HallGuideStrip','HospitalGuideStrip','ParkLandmarkSign','ASSET_ESCAPE_V7','AssetService','ObjectivePrompt','EscapePrompt','LibraryWing','EmergencyWing','ArcadeZone','MapReady'])assert.match(server,new RegExp(marker));
+ for(const marker of ['HallGuideStrip','HospitalGuideStrip','ParkLandmarkSign','INTERIOR_ESCAPE_V8','AssetService','ObjectivePrompt','EscapePrompt','LibraryWing','EmergencyWing','ArcadeZone','MapReady','SchoolMainRoof','ClassDoorGlass','LibraryShelfExtra'])assert.match(server,new RegExp(marker));
  assert.match(server,/Vector3\.new\(340,1,340\)/);
- assert.match(server,/Lighting\.Brightness=1\.55/);
+ assert.match(server,/Lighting\.Brightness=map\.Id=="SCHOOL"and 1\.82 or 1\.65/);
  assert.match(server,/MainHallCeiling/);
  assert.match(server,/LibraryCeiling/);
  assert.match(server,/lamp\.Transparency=\.12;glow\(lamp,Style\.SafeLight,18,\.72\)/);
