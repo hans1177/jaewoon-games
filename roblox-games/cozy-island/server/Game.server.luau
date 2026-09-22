@@ -171,5 +171,5 @@ qaCaptureRemote.OnServerEvent:Connect(function(p,label,assetId)
  p:SetAttribute("QALastCaptureStored",ok)
 end)
 
-Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;BattleVisual.cleanup(p)qaCaptureLast[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;BattleVisual.cleanup(p);qaCaptureLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
