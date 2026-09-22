@@ -161,6 +161,76 @@ export function compileHomepageCentralPolicy(policy={}){
   return{valid:errors.length===0,errors,fingerprint:textSha256(JSON.stringify(contract)),supportedPlatforms,contract};
 }
 
+
+export function compileCentralArchitectureProjection(policy={}){
+  const errors=[];
+  const constitution=compileOwnerCanonicalConstitution(policy);
+  const sync=policy?.centralDocumentation?.machineProjectionSynchronization||{};
+  const lifecycle=policy?.developmentLifecycleMachine||{};
+  const shared=lifecycle?.sharedWorkerContext||{};
+  const projectionCfg=shared?.compiledArchitectureProjection||{};
+  const foundation=lifecycle?.nativeGameFoundationValidationStack||{};
+  const homepage=policy?.serverHomepageIntegration||{};
+  const systemAi=policy?.aiExecutionEfficiency?.systemAiBottleneckResilience||{};
+  const security=lifecycle?.securityImmuneSystem||{};
+  const primaryAi=lifecycle?.primaryAiOrchestration||{};
+  if(projectionCfg.required===true){
+    if(clean(sync.mode)!=='COMPILE_AT_EXECUTION_NO_MANUAL_MIRROR_REQUIRED')errors.push('ARCHITECTURE_PROJECTION_MODE');
+    if(sync.centralPolicyIsOnlyMutablePolicySource!==true)errors.push('ARCHITECTURE_POLICY_AUTHORITY');
+    if(sync.architectureProjectionGeneratedAtRuntime!==true)errors.push('ARCHITECTURE_RUNTIME_PROJECTION');
+    if(sync.architectureMapMayNotOverrideProjection!==true)errors.push('ARCHITECTURE_MAP_OVERRIDE');
+    if(sync.workContractGeneratedFromSameProjection!==true||sync.sharedContextGeneratedFromSameProjection!==true)errors.push('ARCHITECTURE_SHARED_PROJECTION');
+    if(sync.policyChangeAutomaticallyChangesArchitectureFingerprint!==true||sync.policyChangeAutomaticallyChangesWorkContractFingerprint!==true)errors.push('ARCHITECTURE_AUTO_FINGERPRINT');
+    if(sync.staleArchitectureProjectionMayNotStartWork!==true||sync.staleWorkContractMayNotCompleteWork!==true)errors.push('ARCHITECTURE_STALE_GUARD');
+    if(clean(projectionCfg.compiler)!=='tools/company-shared-context.mjs::compileCentralArchitectureProjection')errors.push('ARCHITECTURE_COMPILER_BINDING');
+    if(projectionCfg.fingerprintBoundToExecutionEvidence!==true||projectionCfg.workContractMustUseSameFingerprint!==true)errors.push('ARCHITECTURE_FINGERPRINT_BINDING');
+  }
+  const contract={
+    version:1,
+    sourceOfTruth:DEFAULT_POLICY,
+    policyVersion:Number(policy?.version)||0,
+    authorityOrder:['OWNER_CANONICAL_CONSTITUTION','CENTRAL_POLICY','COMPILED_CENTRAL_ARCHITECTURE_PROJECTION','WORK_CONTRACT','VERIFIED_RUNTIME_EVIDENCE','RUNTIME_STATE'],
+    constitution:{fingerprint:constitution.fingerprint,orderedRuleIds:constitution.orderedRuleIds},
+    workerSynchronization:{
+      requiredForAllWorkers:shared?.requiredForAllWorkers===true,
+      syncMode:clean(shared?.syncMode)||null,
+      staleContextMayNotStartWork:shared?.staleContextMayNotStartWork===true,
+      staleContextMayNotCompleteWork:shared?.staleContextMayNotCompleteWork===true
+    },
+    implementationOwnership:{
+      gameImplementationOwner:primaryAi?.gameImplementationOwner||null,
+      primaryAiRole:clean(primaryAi?.role)||null,
+      securityPolicy:clean(security?.policyFile)||null
+    },
+    nativeFoundation:foundation?.version?{
+      version:Number(foundation.version)||0,
+      status:clean(foundation.status)||null,
+      scope:foundation.scope||null,
+      executionOwner:clean(foundation?.ownership?.executionOwner)||null,
+      testerTicketState:clean(foundation?.ownership?.testerTicketState)||null,
+      runtimePlaytestOwner:clean(foundation?.ownership?.runtimePlaytestOwner)||null,
+      platformQaOwner:clean(foundation?.ownership?.platformQaOwner)||null,
+      deterministicVerdictAuthority:clean(foundation?.ownership?.deterministicVerdictAuthority)||null,
+      newDepartmentCreated:foundation?.ownership?.newDepartmentCreated===true,
+      duplicateFoundationDepartmentForbidden:foundation?.departmentReuse?.duplicateFoundationDepartmentForbidden===true,
+      testerQaFlow:Array.isArray(foundation?.testerQaFlow)?foundation.testerQaFlow.map(clean).filter(Boolean):[],
+      requiredFoundationLayers:Array.isArray(foundation?.layers)?foundation.layers.filter(row=>row?.alwaysRequired===true).map(row=>clean(row?.id)).filter(Boolean):[],
+      releaseSequence:Array.isArray(foundation?.releaseGate?.canonicalSequence)?foundation.releaseGate.canonicalSequence.map(clean).filter(Boolean):[]
+    }:null,
+    systemAi:{
+      implementationState:clean(systemAi?.implementationState)||null,
+      impactAwareScheduling:systemAi?.impactAwareScheduling?.enabled===true,
+      multiHypothesisCausalRepair:systemAi?.multiHypothesisCausalRepair?.enabled===true
+    },
+    homepage:{
+      version:Number(homepage?.version)||0,
+      managerContractAuthority:clean(homepage?.managerContractAuthority)||null,
+      supportedPlatforms:Array.isArray(homepage?.supportedPlatforms)?homepage.supportedPlatforms.map(clean).filter(Boolean):[]
+    }
+  };
+  return{valid:errors.length===0,errors,fingerprint:textSha256(JSON.stringify(contract)),contract};
+}
+
 export function validateSharedWorkerContext({
   policyFile=DEFAULT_POLICY,
   logMapFile=DEFAULT_LOG_MAP,
@@ -173,6 +243,8 @@ export function validateSharedWorkerContext({
   const policy=readJson(policyFile),logMap=readJson(logMapFile),architecture=readJson(architectureFile),securityPolicy=readJson(securityPolicyFile);
   const constitution=compileOwnerCanonicalConstitution(policy);
   if(!constitution.valid)fail(`OWNER_CANONICAL_CONSTITUTION:${constitution.errors.join('|')||'UNKNOWN'}`);
+  const architectureProjection=compileCentralArchitectureProjection(policy);
+  if(policy?.developmentLifecycleMachine?.sharedWorkerContext?.compiledArchitectureProjection?.required===true&&!architectureProjection.valid)fail(`CENTRAL_ARCHITECTURE_PROJECTION:${architectureProjection.errors.join('|')||'UNKNOWN'}`);
   const homepage=compileHomepageCentralPolicy(policy);
   if(requireHomepagePolicy===true&&!homepage.valid)fail(`HOMEPAGE_CENTRAL_POLICY:${homepage.errors.join('|')||'UNKNOWN'}`);
   const contract=policy?.developmentLifecycleMachine?.sharedWorkerContext;
@@ -203,6 +275,12 @@ export function validateSharedWorkerContext({
   if(logMap?.requiredForAllWorkers!==true||architecture?.requiredForAllWorkers!==true)fail('MAP_REQUIRED_FOR_ALL_WORKERS');
   if(!sameList(architecture?.sharedContextLoadOrder,[policyFile,logMapFile,architectureFile,securityPolicyFile]))fail('ARCHITECTURE_LOAD_ORDER');
   if(architecture?.workerSynchronization?.documentIsCode!==true)fail('ARCHITECTURE_DOCUMENT_CODE');
+  if(policy?.developmentLifecycleMachine?.sharedWorkerContext?.compiledArchitectureProjection?.required===true){
+    if(architecture?.centralArchitectureProjection?.required!==true)fail('ARCHITECTURE_PROJECTION_REGISTRY_REQUIRED');
+    if(clean(architecture?.centralArchitectureProjection?.compiler)!=='tools/company-shared-context.mjs::compileCentralArchitectureProjection')fail('ARCHITECTURE_PROJECTION_REGISTRY_COMPILER');
+    if(architecture?.centralArchitectureProjection?.generatedAtExecutionTime!==true||architecture?.centralArchitectureProjection?.manualSemanticMirrorRequired!==false)fail('ARCHITECTURE_PROJECTION_RUNTIME_MODE');
+    if(architecture?.centralArchitectureProjection?.thisFileMayNotOverrideCompiledProjection!==true)fail('ARCHITECTURE_PROJECTION_OVERRIDE_BOUNDARY');
+  }
   if(architecture?.workerSynchronization?.launcherValidationRequired!==true)fail('ARCHITECTURE_LAUNCHER_VALIDATION');
   if(clean(architecture?.workerSynchronization?.validator)!=='tools/company-shared-context.mjs')fail('ARCHITECTURE_VALIDATOR_BINDING');
   if(!sameList(architecture?.workerSynchronization?.launcherWorkflows,launchers))fail('ARCHITECTURE_LAUNCHER_REGISTRY');
@@ -268,6 +346,7 @@ export function validateSharedWorkerContext({
     files:{policy:policyFile,logMap:logMapFile,architecture:architectureFile,securityPolicy:securityPolicyFile},
     hashes,policyVersion:Number(policy.version||0),
     constitution:{version:constitution.version,authority:constitution.authority,constitutionalAuthority:constitution.constitutionalAuthority,fingerprint:constitution.fingerprint,orderedRuleIds:constitution.orderedRuleIds,ruleCount:constitution.rules.length,automaticContractBinding:constitution.binding?.automaticContractBinding===true},
+    architectureProjection:{valid:architectureProjection.valid,errors:architectureProjection.errors,fingerprint:architectureProjection.fingerprint,contract:architectureProjection.contract},
     homepage:{valid:homepage.valid,errors:homepage.errors,fingerprint:homepage.fingerprint,supportedPlatforms:homepage.supportedPlatforms,contract:homepage.contract},
     documentIsCode:true,roadmapSynchronized:true,workerLaunchersValidated:launchers.length,
     primaryAiOrchestrator:orchestration.orchestrator,primaryAiReviewRequired:false,autonomous24hWorkersContinue:true,internalVibeAiCollaboration:'SYNCED',
@@ -297,6 +376,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`WORKER_CONTEXT_CONSTITUTION_SHA256=${result.constitution.fingerprint}`);
     console.log(`WORKER_CONTEXT_CONSTITUTION_RULES=${result.constitution.orderedRuleIds.join(',')}`);
     console.log(`WORKER_CONTEXT_CONSTITUTION_AUTO_BIND=${result.constitution.automaticContractBinding===true?'YES':'NO'}`);
+    console.log(`WORKER_CONTEXT_ARCHITECTURE_PROJECTION_SHA256=${result.architectureProjection.fingerprint}`);
+    console.log(`WORKER_CONTEXT_ARCHITECTURE_PROJECTION_SYNC=${result.architectureProjection.valid===true?'PASS':'FAIL'}`);
     console.log(`WORKER_CONTEXT_HOMEPAGE_POLICY_SHA256=${result.homepage.fingerprint||'INVALID'}`);
     console.log(`WORKER_CONTEXT_HOMEPAGE_PLATFORMS=${(result.homepage.supportedPlatforms||[]).join(',')}`);
     console.log(`WORKER_CONTEXT_LAUNCHERS=${result.workerLaunchersValidated}`);
