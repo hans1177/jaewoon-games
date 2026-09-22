@@ -33,6 +33,7 @@ local Config={
  AIStyles={"AGGRESSIVE","PROTECT","CONTROL"},
  Relics={"FURY","GUARD","CONTROL"},
  Actions={ATTACK="ATTACK",SKILL="SKILL",DODGE="DODGE",NEXT_CLASS="NEXT_CLASS",NEXT_AI="NEXT_AI",NEXT_RELIC="NEXT_RELIC",UPGRADE_WEAPON="UPGRADE_WEAPON"},
+ QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
  OwnerDirectDevelopment=true,
 }
 return table.freeze(Config)
