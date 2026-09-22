@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
-const checkpoint=name=>({name,at:1,userId:1});
+const checkpoint=name=>({name,at:1,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
 const good={gameId:'cozy-island',placeId:116850096561713,placeVersion:21,requirements:{saveEnabled:true,multiplayerRequired:true},checkpoints:Object.fromEntries(names.map(x=>[x,checkpoint(x)]))};
 
@@ -34,4 +34,15 @@ test('runtime acceptance stays pending until actual gameplay core-loop action oc
 test('foundation sentinel blocks stale evidence from another published version',()=>{
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:good,gameId:'cozy-island',placeId:'116850096561713',versionNumber:22});
  assert.equal(r.runtimeFoundationPassed,false);assert.equal(r.runtimeAcceptancePassed,false);assert.ok(r.blockers.includes('exactVersion'));
+});
+
+
+test('foundation sentinel rejects checkpoints carried over from an older published place version',()=>{
+ const stale=structuredClone(good);
+ stale.placeVersion=22;
+ for(const row of Object.values(stale.checkpoints))row.placeVersion=21;
+ const r=validateRobloxRuntimeFoundationEvidence({sentinel:stale,gameId:'cozy-island',placeId:'116850096561713',versionNumber:22});
+ assert.equal(r.runtimeFoundationPassed,false);
+ assert.equal(r.runtimeAcceptancePassed,false);
+ assert.ok(r.blockers.includes('checkpoint:SERVER_BOOT'));
 });
