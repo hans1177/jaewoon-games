@@ -66,7 +66,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T20:55:46.925Z",
+      "updatedAt": "2026-09-22T22:58:13.207Z",
       "robloxSourceCommit": "017415a22acb8f921db48a0a41e04dc2e09db32e",
       "robloxSourceBootstrapPassedAt": "2026-09-22T20:24:48.922Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -74,7 +74,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-acceptance-awaiting-tester-actions"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -192,7 +192,7 @@
           "SAVE_ROUNDTRIP": true,
           "MULTIPLAYER_SYNC": false
         },
-        "checkpointOrderPassed": true,
+        "checkpointOrderPassed": false,
         "foundationCausalOrder": [
           "SERVER_BOOT",
           "MODULE_GRAPH_READY",
@@ -209,11 +209,12 @@
         "f6CoreServicesPassed": true,
         "f7MultiplayerFoundationPassed": false,
         "f8GameplaySystemsPassed": false,
-        "runtimeFoundationPassed": true,
+        "runtimeFoundationPassed": false,
         "runtimeAcceptancePassed": false,
         "actualRuntimeEvidence": true,
-        "state": "FOUNDATION_PASS_ACCEPTANCE_PENDING",
+        "state": "BLOCKED",
         "blockers": [
+          "checkpointOrder",
           "checkpoint:CORE_LOOP_READY",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
@@ -223,8 +224,8 @@
         "artifactRunId": 35780441879,
         "universeId": "10767445741",
         "candidateVersionNumber": 21,
-        "observedAt": "2026-09-22T20:55:46.925Z",
-        "workflowRunId": 35781055337,
+        "observedAt": "2026-09-22T22:58:13.207Z",
+        "workflowRunId": 35795015674,
         "runtimePassed": false,
         "serverClientBoundaryPassed": true,
         "datastoreRejoinPassed": true,
@@ -244,8 +245,8 @@
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_ACCEPTANCE",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_ACCEPTANCE_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "multiplayerSupported": true,
       "soloPlayable": true,
       "multiplayerMode": "COOP",
@@ -536,7 +537,7 @@
         "publishedAt": "2026-09-22T20:33:19.923Z",
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
-      "robloxRuntimeFoundationPassed": true,
+      "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": {
         "version": 3,
         "platform": "ROBLOX",
@@ -580,7 +581,7 @@
           "SAVE_ROUNDTRIP": true,
           "MULTIPLAYER_SYNC": false
         },
-        "checkpointOrderPassed": true,
+        "checkpointOrderPassed": false,
         "foundationCausalOrder": [
           "SERVER_BOOT",
           "MODULE_GRAPH_READY",
@@ -597,11 +598,12 @@
         "f6CoreServicesPassed": true,
         "f7MultiplayerFoundationPassed": false,
         "f8GameplaySystemsPassed": false,
-        "runtimeFoundationPassed": true,
+        "runtimeFoundationPassed": false,
         "runtimeAcceptancePassed": false,
         "actualRuntimeEvidence": true,
-        "state": "FOUNDATION_PASS_ACCEPTANCE_PENDING",
+        "state": "BLOCKED",
         "blockers": [
+          "checkpointOrder",
           "checkpoint:CORE_LOOP_READY",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
@@ -611,8 +613,8 @@
         "artifactRunId": 35780441879,
         "universeId": "10767445741",
         "candidateVersionNumber": 21,
-        "observedAt": "2026-09-22T20:55:46.925Z",
-        "workflowRunId": 35781055337
+        "observedAt": "2026-09-22T22:58:13.207Z",
+        "workflowRunId": 35795015674
       },
       "robloxF9ReleaseRegressionPassed": false,
       "robloxF9ReleaseRegressionEvidence": null
@@ -3973,7 +3975,7 @@
       "robloxReleasePublishedAt": null
     }
   ],
-  "updatedAt": "2026-09-22T20:55:46.925Z",
+  "updatedAt": "2026-09-22T22:58:13.207Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
