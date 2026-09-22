@@ -46,7 +46,10 @@ test('central production runtime keeps one direct-native Roblox and Unity chain 
   assert.equal(direct.mode,'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR');
   assert.deepEqual(direct.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.equal(direct.webDevelopmentStageRemoved,true);
-  assert.equal(direct.unityWebEnabled,false);
+  assert.equal(direct.unityWebEnabled,true);
+  assert.equal(direct.unityWebRequired,false);
+  assert.equal(direct.unityWebGateRequired,false);
+  assert.equal(direct.unityWebMode,'VALIDATION_SURFACE_ONLY');
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
   assert.equal(direct.platformSpecificIndependentQaRequired,true);
@@ -57,7 +60,9 @@ test('central production runtime keeps one direct-native Roblox and Unity chain 
   assert.match(development,/DIRECT_NATIVE_MACHINE_CONTRACT=PASS/);
   assert.match(development,/ROBLOX_RUNTIME_DISPATCH=YES/);
   assert.match(development,/UNITY_APP_RUNTIME_DISPATCH=YES/);
-  assert.match(development,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.match(development,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
+  assert.match(development,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.doesNotMatch(development,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
   assert.match(development,/INTERNAL_RELEASE_FIRST=YES/);
   assert.doesNotMatch(development,/company-development-web-bootstrap\.mjs/);
   assert.doesNotMatch(development,/company-development-web-gameplay-validation\.mjs/);
