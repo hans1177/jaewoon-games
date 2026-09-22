@@ -14,7 +14,7 @@ Owner/Vibe game request
 → Roblox native development || Unity app native development
 ```
 
-Unity Web 게임과 Unity Web 관문은 사용하지 않는다.
+Unity WebGL은 개발 진입/출시 관문으로 사용하지 않는다. 대신 동일 `unity-games/<game-id>/` 원본에서 만든 검증된 WebGL 빌드를 홈페이지 소유자 테스트용 validation surface로 사용할 수 있다.
 
 ## 설계
 
@@ -59,4 +59,4 @@ Vibe는 공통 코어 설계를 공유하되 Roblox와 Unity 앱 구현을 각�
 - 공개 출시 준비
 - 공개 출시
 
-서버 상태 파일에는 `development-queue.json`, `game-seed-state.json`, `game-catalog.json`, `company-status.json`, `homepage-platform-exposure.json`이 포함된다. 홈페이지는 Unity Web/Web 플레이 버튼을 신규 개발 경로로 사용하지 않는다.
+서버 상태 파일에는 `development-queue.json`, `game-seed-state.json`, `game-catalog.json`, `company-status.json`, `homepage-platform-exposure.json`이 포함된다. 홈페이지는 검증된 Unity WebGL 빌드가 있을 때 별도 `Unity Web 테스트` 링크를 표시할 수 있다. 이 링크는 테스트 표면이며 Unity 앱 런타임/QA/출시 증거를 대체하지 않는다.
