@@ -115,34 +115,61 @@ local function prompt(target,objectText,actionText)
  local p=Instance.new("ProximityPrompt");p.ObjectText=objectText;p.ActionText=actionText;p.MaxActivationDistance=11;p.HoldDuration=.12
  p.RequiresLineOfSight=false;p.Parent=target;return p
 end
+local function createR15Figure(parent,anchor,name,skin,topColor,bottomColor,scale)
+ local desc=Instance.new("HumanoidDescription")
+ desc.HeightScale=math.clamp(scale or 1,.86,1.12)
+ desc.WidthScale=.94
+ desc.DepthScale=.94
+ desc.HeadScale=.94
+ desc.BodyTypeScale=.4
+ desc.ProportionScale=.5
+ local ok,rig=pcall(function()return Players:CreateHumanoidModelFromDescription(desc,Enum.HumanoidRigType.R15)end)
+ desc:Destroy()
+ if not ok or not rig then return nil end
+ rig.Name=name.."_Rig";rig.Parent=parent;rig:PivotTo(anchor.CFrame)
+ local rr=rig:FindFirstChild("HumanoidRootPart")
+ if not rr then rig:Destroy();return nil end
+ for _,d in ipairs(rig:GetDescendants())do
+  if d:IsA("BasePart")then
+   d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.Massless=true
+   if d.Name=="Head"or d.Name=="LeftLowerArm"or d.Name=="RightLowerArm"or d.Name=="LeftHand"or d.Name=="RightHand"then d.Color=skin
+   elseif d.Name=="UpperTorso"or d.Name=="LowerTorso"or d.Name=="LeftUpperArm"or d.Name=="RightUpperArm"then d.Color=topColor
+   elseif string.find(d.Name,"Leg",1,true)or string.find(d.Name,"Foot",1,true)then d.Color=bottomColor end
+  end
+ end
+ local h=rig:FindFirstChildOfClass("Humanoid")
+ if h then h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None;h.AutoRotate=false;h.WalkSpeed=0;h.JumpPower=0 end
+ rr.Anchored=false
+ local w=Instance.new("WeldConstraint");w.Part0=anchor;w.Part1=rr;w.Parent=rr
+ return rig
+end
 local function humanoidFigure(parent,name,pos,color,accent,scale)
  scale=math.clamp(scale or 1,.74,1.04)
  local skin=Color3.fromRGB(224,190,154)
- local r=ppart(parent,name,Vector3.new(2.7,3.8,1.75)*scale,pos,color,Enum.Material.SmoothPlastic);r.CanCollide=true
- attach(r,"Neck",Vector3.new(.75,.45,.75)*scale,Vector3.new(0,2.15*scale,0),skin)
- attach(r,"Head",Vector3.new(2.15,2.15,2.15)*scale,Vector3.new(0,3.15*scale,0),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- attach(r,"Hair",Vector3.new(2.3,.62,2.3)*scale,Vector3.new(0,4.02*scale,.05*scale),Color3.fromRGB(55,43,38))
- attach(r,"ArmL",Vector3.new(.72,2.95,.72)*scale,Vector3.new(-1.68*scale,-.05*scale,0),color)
- attach(r,"ArmR",Vector3.new(.72,2.95,.72)*scale,Vector3.new(1.68*scale,-.05*scale,0),color)
- attach(r,"LegL",Vector3.new(.88,2.78,.88)*scale,Vector3.new(-.63*scale,-3.08*scale,0),accent)
- attach(r,"LegR",Vector3.new(.88,2.78,.88)*scale,Vector3.new(.63*scale,-3.08*scale,0),accent)
- attach(r,"EyeL",Vector3.new(.22,.24,.12)*scale,Vector3.new(-.4*scale,3.28*scale,-1.08*scale),Color3.fromRGB(25,28,34),Enum.Material.Neon)
- attach(r,"EyeR",Vector3.new(.22,.24,.12)*scale,Vector3.new(.4*scale,3.28*scale,-1.08*scale),Color3.fromRGB(25,28,34),Enum.Material.Neon)
- attach(r,"Belt",Vector3.new(2.85,.28,1.86)*scale,Vector3.new(0,-.76*scale,0),Color3.fromRGB(74,57,45),Enum.Material.Fabric)
+ local r=ppart(parent,name,Vector3.new(2.2,4.8,1.7)*scale,pos,color,Enum.Material.SmoothPlastic);r.CanCollide=true;r.Transparency=1
+ local rig=createR15Figure(parent,r,name,skin,color,accent,scale)
+ if not rig then
+  r.Transparency=0
+  attach(r,"Head",Vector3.new(2.1,2.1,2.1)*scale,Vector3.new(0,3.1*scale,0),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"ArmL",Vector3.new(.7,2.8,.7)*scale,Vector3.new(-1.55*scale,0,0),color)
+  attach(r,"ArmR",Vector3.new(.7,2.8,.7)*scale,Vector3.new(1.55*scale,0,0),color)
+  attach(r,"LegL",Vector3.new(.8,2.7,.8)*scale,Vector3.new(-.55*scale,-3*scale,0),accent)
+  attach(r,"LegR",Vector3.new(.8,2.7,.8)*scale,Vector3.new(.55*scale,-3*scale,0),accent)
+ end
  if name=="VillageChief"then
-  attach(r,"ChiefCape",Vector3.new(2.9,3.1,.22)*scale,Vector3.new(0,.05*scale,.98*scale),Color3.fromRGB(92,56,43),Enum.Material.Fabric)
-  attach(r,"ChiefHat",Vector3.new(2.9,.35,2.9)*scale,Vector3.new(0,4.5*scale,0),Color3.fromRGB(92,66,48),Enum.Material.Fabric)
+  attach(r,"ChiefCape",Vector3.new(2.75,3,.18)*scale,Vector3.new(0,.05*scale,.95*scale),Color3.fromRGB(92,56,43),Enum.Material.Fabric)
+  attach(r,"ChiefHat",Vector3.new(3,.3,3)*scale,Vector3.new(0,4.65*scale,0),Color3.fromRGB(92,66,48),Enum.Material.Fabric)
  elseif name=="WeaponMerchant"then
-  attach(r,"Sword",Vector3.new(.32,4.1,.32)*scale,Vector3.new(2.05*scale,-.25*scale,.25*scale),Color3.fromRGB(170,174,181),Enum.Material.Metal)
-  attach(r,"SwordGuard",Vector3.new(1.35,.28,.35)*scale,Vector3.new(2.05*scale,1.2*scale,.25*scale),Color3.fromRGB(201,157,72),Enum.Material.Metal)
+  attach(r,"Sword",Vector3.new(.28,4,.28)*scale,Vector3.new(1.9*scale,-.2*scale,.2*scale),Color3.fromRGB(170,174,181),Enum.Material.Metal)
+  attach(r,"SwordGuard",Vector3.new(1.3,.24,.3)*scale,Vector3.new(1.9*scale,1.15*scale,.2*scale),Color3.fromRGB(201,157,72),Enum.Material.Metal)
  elseif name=="ArmorMerchant"then
-  attach(r,"ShoulderL",Vector3.new(1.15,.62,1.75)*scale,Vector3.new(-1.48*scale,1.2*scale,0),Color3.fromRGB(102,112,115),Enum.Material.Metal)
-  attach(r,"ShoulderR",Vector3.new(1.15,.62,1.75)*scale,Vector3.new(1.48*scale,1.2*scale,0),Color3.fromRGB(102,112,115),Enum.Material.Metal)
+  attach(r,"ShoulderL",Vector3.new(1.05,.55,1.65)*scale,Vector3.new(-1.35*scale,1.2*scale,0),Color3.fromRGB(102,112,115),Enum.Material.Metal)
+  attach(r,"ShoulderR",Vector3.new(1.05,.55,1.65)*scale,Vector3.new(1.35*scale,1.2*scale,0),Color3.fromRGB(102,112,115),Enum.Material.Metal)
  elseif name=="VillageHealer"then
-  attach(r,"HealerHood",Vector3.new(2.55,1.15,2.55)*scale,Vector3.new(0,4.12*scale,.12*scale),Color3.fromRGB(184,211,226),Enum.Material.Fabric)
-  attach(r,"HealerMark",Vector3.new(.35,1.65,.16)*scale,Vector3.new(0,.35*scale,-.96*scale),Color3.fromRGB(116,202,226),Enum.Material.Neon)
+  attach(r,"HealerHood",Vector3.new(2.65,1.05,2.65)*scale,Vector3.new(0,4.2*scale,.1*scale),Color3.fromRGB(184,211,226),Enum.Material.Fabric)
+  attach(r,"HealerMark",Vector3.new(.3,1.55,.14)*scale,Vector3.new(0,.35*scale,-.9*scale),Color3.fromRGB(116,202,226),Enum.Material.Neon)
  elseif string.find(name,"Resident",1,true)or string.find(name,"AI_",1,true)then
-  attach(r,"Vest",Vector3.new(2.28,2.45,.18)*scale,Vector3.new(0,.1*scale,-.98*scale),accent,Enum.Material.Fabric)
+  attach(r,"Vest",Vector3.new(2.05,2.3,.16)*scale,Vector3.new(0,.1*scale,-.92*scale),accent,Enum.Material.Fabric)
  end
  return r
 end
@@ -322,43 +349,39 @@ local function makeZone(z)
 end
 
 local function enemyModel(parent,z,pos,boss)
- local rootPart=ppart(parent,boss and(z.Boss.Name)or z.Enemy,boss and Vector3.new(6.4,7.4,4.6)or Vector3.new(3.7,4.4,2.7),pos,boss and Color3.fromRGB(66,44,82)or z.Color,boss and Enum.Material.Slate or Enum.Material.SmoothPlastic)
- local scale=boss and 1.35 or 1
- attach(rootPart,"EnemyHead",Vector3.new(2.55,2.35,2.55)*scale,Vector3.new(0,3.3*scale,-.28),boss and Color3.fromRGB(100,72,120)or z.Color,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- attach(rootPart,"EnemyEyeL",Vector3.new(.3,.34,.18)*scale,Vector3.new(-.52,3.45*scale,-1.52*scale),Color3.fromRGB(255,208,96),Enum.Material.Neon)
- attach(rootPart,"EnemyEyeR",Vector3.new(.3,.34,.18)*scale,Vector3.new(.52,3.45*scale,-1.52*scale),Color3.fromRGB(255,208,96),Enum.Material.Neon)
- attach(rootPart,"EnemyArmL",Vector3.new(.78,3.1,.78)*scale,Vector3.new(-2.05*scale,0,0),rootPart.Color)
- attach(rootPart,"EnemyArmR",Vector3.new(.78,3.1,.78)*scale,Vector3.new(2.05*scale,0,0),rootPart.Color)
- attach(rootPart,"EnemyLegL",Vector3.new(.9,2.75,.9)*scale,Vector3.new(-.72*scale,-3.25*scale,0),Color3.fromRGB(50,50,55))
- attach(rootPart,"EnemyLegR",Vector3.new(.9,2.75,.9)*scale,Vector3.new(.72*scale,-3.25*scale,0),Color3.fromRGB(50,50,55))
+ local rootPart=ppart(parent,boss and(z.Boss.Name)or z.Enemy,boss and Vector3.new(5.2,7,3.8)or Vector3.new(3.2,4.8,2.4),pos,boss and Color3.fromRGB(66,44,82)or z.Color,boss and Enum.Material.Slate or Enum.Material.SmoothPlastic)
+ rootPart.CanCollide=true;rootPart.Transparency=1
+ local scale=boss and 1.18 or .92
+ local bodyColor=boss and Color3.fromRGB(100,72,120)or z.Color
+ createR15Figure(parent,rootPart,boss and"Boss"or("Enemy_"..z.Theme),bodyColor,bodyColor,Color3.fromRGB(48,50,57),scale)
  if z.Theme=="MEADOW"and not boss then
-  attach(rootPart,"WolfMuzzle",Vector3.new(1.8,1.2,1.7),Vector3.new(0,3,-2),Color3.fromRGB(104,92,79),Enum.Material.SmoothPlastic)
-  attach(rootPart,"WolfEarL",Vector3.new(.65,1.35,.55),Vector3.new(-.8,5,0),Color3.fromRGB(82,73,66),Enum.Material.Fabric)
-  attach(rootPart,"WolfEarR",Vector3.new(.65,1.35,.55),Vector3.new(.8,5,0),Color3.fromRGB(82,73,66),Enum.Material.Fabric)
-  attach(rootPart,"WolfTail",Vector3.new(.55,2.6,.55),Vector3.new(0,-.6,2),Color3.fromRGB(82,73,66),Enum.Material.Fabric)
+  attach(rootPart,"WolfMuzzle",Vector3.new(1.8,1.25,1.65),Vector3.new(0,3,-1.75),Color3.fromRGB(104,92,79),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(rootPart,"WolfEarL",Vector3.new(.62,1.25,.52),Vector3.new(-.8,4.7,0),Color3.fromRGB(82,73,66),Enum.Material.Fabric)
+  attach(rootPart,"WolfEarR",Vector3.new(.62,1.25,.52),Vector3.new(.8,4.7,0),Color3.fromRGB(82,73,66),Enum.Material.Fabric)
+  attach(rootPart,"WolfTail",Vector3.new(.5,2.5,.5),Vector3.new(0,-.5,1.55),Color3.fromRGB(82,73,66),Enum.Material.Fabric,Enum.PartType.Cylinder)
  elseif z.Theme=="CANYON"and not boss then
-  attach(rootPart,"BanditHood",Vector3.new(2.9,1.15,2.9),Vector3.new(0,4.1,.1),Color3.fromRGB(84,56,45),Enum.Material.Fabric)
-  attach(rootPart,"BanditBlade",Vector3.new(.25,3.2,.3),Vector3.new(2.3,-.2,-.3),Color3.fromRGB(169,169,174),Enum.Material.Metal)
+  attach(rootPart,"BanditHood",Vector3.new(2.8,1.05,2.8),Vector3.new(0,4.05,.05),Color3.fromRGB(84,56,45),Enum.Material.Fabric)
+  attach(rootPart,"BanditBlade",Vector3.new(.24,3.25,.28),Vector3.new(1.9,-.15,-.2),Color3.fromRGB(169,169,174),Enum.Material.Metal)
  elseif z.Theme=="RUINS"and not boss then
-  attach(rootPart,"GolemShoulderL",Vector3.new(1.8,1.6,1.8),Vector3.new(-2.1,1.25,0),Color3.fromRGB(83,79,94),Enum.Material.Rock)
-  attach(rootPart,"GolemShoulderR",Vector3.new(1.8,1.6,1.8),Vector3.new(2.1,1.25,0),Color3.fromRGB(83,79,94),Enum.Material.Rock)
-  attach(rootPart,"GolemCore",Vector3.new(1.1,1.1,.35),Vector3.new(0,.6,-1.5),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
+  attach(rootPart,"GolemShoulderL",Vector3.new(1.65,1.45,1.65),Vector3.new(-1.75,1.2,0),Color3.fromRGB(83,79,94),Enum.Material.Rock,Enum.PartType.Ball)
+  attach(rootPart,"GolemShoulderR",Vector3.new(1.65,1.45,1.65),Vector3.new(1.75,1.2,0),Color3.fromRGB(83,79,94),Enum.Material.Rock,Enum.PartType.Ball)
+  attach(rootPart,"GolemCore",Vector3.new(1.05,1.05,.3),Vector3.new(0,.55,-1.3),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
  elseif z.Theme=="SNOW"and not boss then
-  attach(rootPart,"BeastFur",Vector3.new(4.3,2.25,3.05),Vector3.new(0,.9,.2),Color3.fromRGB(220,231,235),Enum.Material.Fabric)
-  attach(rootPart,"BeastMuzzle",Vector3.new(2.05,1.35,1.7),Vector3.new(0,3,-2),Color3.fromRGB(118,142,151),Enum.Material.SmoothPlastic)
-  attach(rootPart,"BeastEarL",Vector3.new(.7,1.45,.6),Vector3.new(-.9,4.95,0),Color3.fromRGB(115,137,146),Enum.Material.Fabric)
-  attach(rootPart,"BeastEarR",Vector3.new(.7,1.45,.6),Vector3.new(.9,4.95,0),Color3.fromRGB(115,137,146),Enum.Material.Fabric)
-  attach(rootPart,"BeastClawL",Vector3.new(.95,.42,1.55),Vector3.new(-2.05,-1.65,-.8),Color3.fromRGB(225,235,240),Enum.Material.SmoothPlastic)
-  attach(rootPart,"BeastClawR",Vector3.new(.95,.42,1.55),Vector3.new(2.05,-1.65,-.8),Color3.fromRGB(225,235,240),Enum.Material.SmoothPlastic)
+  attach(rootPart,"BeastFur",Vector3.new(3.7,3.1,2.65),Vector3.new(0,.65,.15),Color3.fromRGB(220,231,235),Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(rootPart,"BeastMuzzle",Vector3.new(1.9,1.3,1.6),Vector3.new(0,3,-1.78),Color3.fromRGB(118,142,151),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(rootPart,"BeastEarL",Vector3.new(.62,1.2,.5),Vector3.new(-.8,4.7,0),Color3.fromRGB(115,137,146),Enum.Material.Fabric)
+  attach(rootPart,"BeastEarR",Vector3.new(.62,1.2,.5),Vector3.new(.8,4.7,0),Color3.fromRGB(115,137,146),Enum.Material.Fabric)
+  attach(rootPart,"BeastClawL",Vector3.new(.8,.34,1.35),Vector3.new(-1.7,-1.55,-.7),Color3.fromRGB(225,235,240),Enum.Material.SmoothPlastic)
+  attach(rootPart,"BeastClawR",Vector3.new(.8,.34,1.35),Vector3.new(1.7,-1.55,-.7),Color3.fromRGB(225,235,240),Enum.Material.SmoothPlastic)
  elseif z.Theme=="ABYSS"and not boss then
-  attach(rootPart,"KnightShoulderL",Vector3.new(1.5,.75,1.8),Vector3.new(-2,1.25,0),Color3.fromRGB(57,52,67),Enum.Material.Metal)
-  attach(rootPart,"KnightShoulderR",Vector3.new(1.5,.75,1.8),Vector3.new(2,1.25,0),Color3.fromRGB(57,52,67),Enum.Material.Metal)
-  attach(rootPart,"AbyssBlade",Vector3.new(.35,4.2,.45),Vector3.new(2.45,-.1,-.25),z.Color,Enum.Material.Neon)
+  attach(rootPart,"KnightShoulderL",Vector3.new(1.35,.65,1.65),Vector3.new(-1.65,1.2,0),Color3.fromRGB(57,52,67),Enum.Material.Metal)
+  attach(rootPart,"KnightShoulderR",Vector3.new(1.35,.65,1.65),Vector3.new(1.65,1.2,0),Color3.fromRGB(57,52,67),Enum.Material.Metal)
+  attach(rootPart,"AbyssBlade",Vector3.new(.3,4,.38),Vector3.new(2.05,-.05,-.2),z.Color,Enum.Material.Neon)
  end
  if boss then
-  attach(rootPart,"BossHornL",Vector3.new(.8,4,.8),Vector3.new(-1.7,7,0),z.Color,Enum.Material.Neon)
-  attach(rootPart,"BossHornR",Vector3.new(.8,4,.8),Vector3.new(1.7,7,0),z.Color,Enum.Material.Neon)
-  attach(rootPart,"BossCore",Vector3.new(1.4,1.4,.4),Vector3.new(0,1,-2.45),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
+  attach(rootPart,"BossHornL",Vector3.new(.72,3.5,.72),Vector3.new(-1.35,6.1,0),z.Color,Enum.Material.Neon)
+  attach(rootPart,"BossHornR",Vector3.new(.72,3.5,.72),Vector3.new(1.35,6.1,0),z.Color,Enum.Material.Neon)
+  attach(rootPart,"BossCore",Vector3.new(1.3,1.3,.35),Vector3.new(0,1,-2),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
  end
  label(rootPart,boss and("BOSS · "..z.Boss.Name)or z.Enemy,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
  return rootPart

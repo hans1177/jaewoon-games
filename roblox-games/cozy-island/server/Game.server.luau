@@ -95,35 +95,62 @@ end
 local function prompt(target,objectText,actionText)
  local pr=Instance.new("ProximityPrompt");pr.ObjectText=objectText;pr.ActionText=actionText;pr.MaxActivationDistance=10;pr.HoldDuration=.15;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
 end
+local function createR15Figure(parent,anchor,name,skin,topColor,bottomColor,scale)
+ local desc=Instance.new("HumanoidDescription")
+ desc.HeightScale=math.clamp(scale or 1,.85,1.05)
+ desc.WidthScale=.92
+ desc.DepthScale=.92
+ desc.HeadScale=.95
+ desc.BodyTypeScale=.35
+ desc.ProportionScale=.45
+ local ok,rig=pcall(function()return Players:CreateHumanoidModelFromDescription(desc,Enum.HumanoidRigType.R15)end)
+ desc:Destroy()
+ if not ok or not rig then return nil end
+ rig.Name=name.."_Rig";rig.Parent=parent;rig:PivotTo(anchor.CFrame)
+ local rr=rig:FindFirstChild("HumanoidRootPart")
+ if not rr then rig:Destroy();return nil end
+ for _,d in ipairs(rig:GetDescendants())do
+  if d:IsA("BasePart")then
+   d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.Massless=true
+   if d.Name=="Head"or d.Name=="LeftLowerArm"or d.Name=="RightLowerArm"or d.Name=="LeftHand"or d.Name=="RightHand"then d.Color=skin
+   elseif d.Name=="UpperTorso"or d.Name=="LowerTorso"or d.Name=="LeftUpperArm"or d.Name=="RightUpperArm"then d.Color=topColor
+   elseif string.find(d.Name,"Leg",1,true)or string.find(d.Name,"Foot",1,true)then d.Color=bottomColor end
+  end
+ end
+ local h=rig:FindFirstChildOfClass("Humanoid")
+ if h then h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None;h.AutoRotate=false;h.WalkSpeed=0;h.JumpPower=0 end
+ rr.Anchored=false
+ local w=Instance.new("WeldConstraint");w.Part0=anchor;w.Part1=rr;w.Parent=rr
+ return rig
+end
 local function figure(parent,name,pos,color,accent,scale)
  scale=math.clamp(scale or 1,.72,1.05)
  local skin=Color3.fromRGB(224,190,154)
- local r=part(parent,name,Vector3.new(2.65,3.75,1.7)*scale,pos,color);r.CanCollide=true
- attach(r,"Neck",Vector3.new(.75,.45,.75)*scale,Vector3.new(0,2.15*scale,0),skin)
- attach(r,"Head",Vector3.new(2.15,2.15,2.15)*scale,Vector3.new(0,3.15*scale,0),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- attach(r,"Hair",Vector3.new(2.3,.62,2.3)*scale,Vector3.new(0,4.02*scale,.05*scale),Color3.fromRGB(72,52,38))
- attach(r,"ArmL",Vector3.new(.72,2.9,.72)*scale,Vector3.new(-1.65*scale,-.05*scale,0),color)
- attach(r,"ArmR",Vector3.new(.72,2.9,.72)*scale,Vector3.new(1.65*scale,-.05*scale,0),color)
- attach(r,"LegL",Vector3.new(.86,2.75,.86)*scale,Vector3.new(-.62*scale,-3.05*scale,0),accent)
- attach(r,"LegR",Vector3.new(.86,2.75,.86)*scale,Vector3.new(.62*scale,-3.05*scale,0),accent)
- attach(r,"EyeL",Vector3.new(.22,.24,.12)*scale,Vector3.new(-.4*scale,3.28*scale,-1.08*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
- attach(r,"EyeR",Vector3.new(.22,.24,.12)*scale,Vector3.new(.4*scale,3.28*scale,-1.08*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
- attach(r,"Belt",Vector3.new(2.8,.28,1.82)*scale,Vector3.new(0,-.75*scale,0),Color3.fromRGB(74,57,45),Enum.Material.Fabric)
+ local r=part(parent,name,Vector3.new(2.2,4.7,1.7)*scale,pos,color);r.CanCollide=true;r.Transparency=1
+ local rig=createR15Figure(parent,r,name,skin,color,accent,scale)
+ if not rig then
+  r.Transparency=0
+  attach(r,"Head",Vector3.new(2.1,2.1,2.1)*scale,Vector3.new(0,3.1*scale,0),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"ArmL",Vector3.new(.7,2.8,.7)*scale,Vector3.new(-1.55*scale,0,0),color)
+  attach(r,"ArmR",Vector3.new(.7,2.8,.7)*scale,Vector3.new(1.55*scale,0,0),color)
+  attach(r,"LegL",Vector3.new(.8,2.7,.8)*scale,Vector3.new(-.55*scale,-3*scale,0),accent)
+  attach(r,"LegR",Vector3.new(.8,2.7,.8)*scale,Vector3.new(.55*scale,-3*scale,0),accent)
+ end
  if name=="Chief"then
-  attach(r,"ChiefHat",Vector3.new(2.9,.35,2.9)*scale,Vector3.new(0,4.55*scale,0),Color3.fromRGB(96,65,45),Enum.Material.Fabric)
-  attach(r,"ChiefSash",Vector3.new(.42,3.1,1.82)*scale,Vector3.new(.55*scale,.2*scale,-.03),Color3.fromRGB(214,176,91),Enum.Material.Fabric)
+  attach(r,"ChiefHat",Vector3.new(3.1,.32,3.1)*scale,Vector3.new(0,4.65*scale,0),Color3.fromRGB(96,65,45),Enum.Material.Fabric)
+  attach(r,"ChiefSash",Vector3.new(.36,3.2,1.9)*scale,Vector3.new(.55*scale,.2*scale,-.8*scale),Color3.fromRGB(214,176,91),Enum.Material.Fabric)
  elseif name=="LumberMaster"then
-  attach(r,"LumberCap",Vector3.new(2.55,.35,2.45)*scale,Vector3.new(0,4.42*scale,0),Color3.fromRGB(64,94,58),Enum.Material.Fabric)
-  attach(r,"AxeHandle",Vector3.new(.25,3.2,.25)*scale,Vector3.new(2.05*scale,-.2*scale,0),Color3.fromRGB(112,78,48),Enum.Material.Wood)
-  attach(r,"AxeHead",Vector3.new(1.1,.8,.35)*scale,Vector3.new(2.05*scale,1.15*scale,0),Color3.fromRGB(132,139,145),Enum.Material.Metal)
+  attach(r,"LumberCap",Vector3.new(2.7,.32,2.6)*scale,Vector3.new(0,4.55*scale,0),Color3.fromRGB(64,94,58),Enum.Material.Fabric)
+  attach(r,"AxeHandle",Vector3.new(.22,3.4,.22)*scale,Vector3.new(2*scale,-.2*scale,0),Color3.fromRGB(112,78,48),Enum.Material.Wood)
+  attach(r,"AxeHead",Vector3.new(1.15,.72,.32)*scale,Vector3.new(2*scale,1.2*scale,0),Color3.fromRGB(132,139,145),Enum.Material.Metal)
  elseif name=="Farmer"then
-  attach(r,"StrawHat",Vector3.new(3.15,.3,3.15)*scale,Vector3.new(0,4.45*scale,0),Color3.fromRGB(205,174,91),Enum.Material.Fabric)
-  attach(r,"Apron",Vector3.new(2.2,2.6,.18)*scale,Vector3.new(0,-.05*scale,-.95*scale),Color3.fromRGB(201,188,151),Enum.Material.Fabric)
+  attach(r,"StrawHat",Vector3.new(3.35,.28,3.35)*scale,Vector3.new(0,4.58*scale,0),Color3.fromRGB(205,174,91),Enum.Material.Fabric)
+  attach(r,"Apron",Vector3.new(2.05,2.55,.16)*scale,Vector3.new(0,-.05*scale,-.95*scale),Color3.fromRGB(201,188,151),Enum.Material.Fabric)
  elseif name=="Captain"then
-  attach(r,"ShoulderL",Vector3.new(1.2,.55,1.8)*scale,Vector3.new(-1.45*scale,1.2*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
-  attach(r,"ShoulderR",Vector3.new(1.2,.55,1.8)*scale,Vector3.new(1.45*scale,1.2*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
+  attach(r,"ShoulderL",Vector3.new(1.1,.48,1.7)*scale,Vector3.new(-1.35*scale,1.25*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
+  attach(r,"ShoulderR",Vector3.new(1.1,.48,1.7)*scale,Vector3.new(1.35*scale,1.25*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
  elseif string.find(name,"Villager",1,true)then
-  attach(r,"Vest",Vector3.new(2.25,2.5,.2)*scale,Vector3.new(0,.1*scale,-.96*scale),accent,Enum.Material.Fabric)
+  attach(r,"Vest",Vector3.new(2.05,2.3,.16)*scale,Vector3.new(0,.15*scale,-.92*scale),accent,Enum.Material.Fabric)
  end
  return r
 end
@@ -232,7 +259,8 @@ local function buildWorld()
  terrain.WaterTransparency=.22
  terrain.WaterWaveSize=.14
  terrain.WaterWaveSpeed=9
- terrain:FillBlock(CFrame.new(0,seaLevel-5,0),Vector3.new(940,10,940),Enum.Material.Water)
+ terrain:FillBlock(CFrame.new(0,seaLevel-10,0),Vector3.new(940,20,940),Enum.Material.Water)
+ workspace:SetAttribute("SeaSwimmable",true)
  for index,r in ipairs(Style.Regions)do
   local island=part(world,r.Name,r.Size,r.Pos,r.Color,r.Material);label(island,r.Name,r.Accent,58)
   local topY=r.Pos.Y+r.Size.Y/2
@@ -240,7 +268,7 @@ local function buildWorld()
   part(world,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
   if index~=1 then decorateRemoteIsland(world,r,topY,index)end
   if index==1 then
-   part(world,"BeachShelf",Vector3.new(196,1.6,196),Vector3.new(0,seaLevel-4.8,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
+   part(world,"BeachShelf",Vector3.new(196,1.6,196),Vector3.new(0,seaLevel-12,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
    part(world,"VillagePlaza",Vector3.new(60,1,60),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
    part(world,"FarmPlot",Vector3.new(38,1,28),Vector3.new(-36,topY+.7,-31),Color3.fromRGB(116,91,56),Enum.Material.Ground)
    part(world,"BarracksYard",Vector3.new(40,1,30),Vector3.new(39,topY+.65,-29),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
@@ -333,6 +361,10 @@ end)
 
 RunService.Heartbeat:Connect(function(dt)
  local now=os.clock()
+ for _,p in ipairs(Players:GetPlayers())do
+  local h=hum(p)
+  if h and h.FloorMaterial==Enum.Material.Water and h:GetState()~=Enum.HumanoidStateType.Swimming then h:ChangeState(Enum.HumanoidStateType.Swimming)end
+ end
  for i=#mobs,1,-1 do
   local e=mobs[i]
   if not e.part or not e.part.Parent or e.hp<=0 then table.remove(mobs,i)

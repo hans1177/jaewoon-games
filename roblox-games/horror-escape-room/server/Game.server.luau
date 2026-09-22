@@ -37,10 +37,10 @@ local allowedActions={}
 for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
 local survivorSpawns={
- Vector3.new(-126,3,-118),Vector3.new(126,3,-118),Vector3.new(-126,3,118),
- Vector3.new(126,3,118),Vector3.new(0,3,126),Vector3.new(0,3,-96)
+ Vector3.new(-118,3,-70),Vector3.new(118,3,-70),Vector3.new(-108,3,104),
+ Vector3.new(108,3,104),Vector3.new(0,3,40),Vector3.new(0,3,-40)
 }
-local monsterSpawn=Vector3.new(0,3,-150)
+local monsterSpawn=Vector3.new(0,3,-52)
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
 local escapedPlayers={}
@@ -178,10 +178,25 @@ local function decorateArenaWithOfficialAssets(f,map)
   local city=C.OfficialAssets.CityPack;local dungeon=C.OfficialAssets.DungeonPack;local house=C.OfficialAssets.HouseProps
   local pack=map.Id=="THEME_PARK"and city or map.Id=="HOSPITAL"and house or city
   local keywords=map.Id=="SCHOOL"and{"bench","chair","table","cabinet","plant"}or map.Id=="HOSPITAL"and{"chair","table","cabinet","bed","plant"}or{"bench","lamp","trash","fence","sign"}
-  for i=1,18 do
-   if not f.Parent then return end
-   local angle=i/18*math.pi*2;local radius=105+(i%3)*24
-   spawnOfficialProp(pack,keywords,f,Vector3.new(math.cos(angle)*radius,2,math.sin(angle)*radius),.85+(i%3)*.12,i,false)
+  if map.Id=="SCHOOL"then
+   local spots={
+    Vector3.new(-138,2,-82),Vector3.new(-118,2,-82),Vector3.new(-98,2,-82),
+    Vector3.new(98,2,-82),Vector3.new(118,2,-82),Vector3.new(138,2,-82),
+    Vector3.new(-62,2,35),Vector3.new(-42,2,47),Vector3.new(42,2,37),Vector3.new(60,2,54),
+    Vector3.new(88,2,98),Vector3.new(108,2,118),Vector3.new(128,2,98),
+    Vector3.new(-128,2,100),Vector3.new(-108,2,116),Vector3.new(-88,2,100),
+    Vector3.new(-12,2,-18),Vector3.new(12,2,18)
+   }
+   for i,pos in ipairs(spots)do
+    if not f.Parent then return end
+    spawnOfficialProp(pack,keywords,f,pos,.78+(i%3)*.1,i,false)
+   end
+  else
+   for i=1,18 do
+    if not f.Parent then return end
+    local angle=i/18*math.pi*2;local radius=105+(i%3)*24
+    spawnOfficialProp(pack,keywords,f,Vector3.new(math.cos(angle)*radius,2,math.sin(angle)*radius),.85+(i%3)*.12,i,false)
+   end
   end
   if map.Id=="HOSPITAL"then
    for i=1,10 do spawnOfficialProp(dungeon,{"crate","barrel","rock","rune"},f,Vector3.new(-132+i*25,1.8,122+(i%2)*16),.75,i,false)end
@@ -245,7 +260,9 @@ local function makeArena(map)
  f.Name=old and"MidnightArenaNext"or"MidnightArena"
  f.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
- local floorColor=map.Id=="SCHOOL"and Color3.fromRGB(96,102,111)or map.Id=="HOSPITAL"and Color3.fromRGB(78,92,91)or Color3.fromRGB(70,69,81)
+ local grade=Lighting:FindFirstChild("MidnightColorGrade")or Instance.new("ColorCorrectionEffect")
+ grade.Name="MidnightColorGrade";grade.Brightness=-.02;grade.Contrast=.14;grade.Saturation=-.08;grade.TintColor=Color3.fromRGB(220,229,238);grade.Parent=Lighting
+ local floorColor=map.Id=="SCHOOL"and Color3.fromRGB(36,41,48)or map.Id=="HOSPITAL"and Color3.fromRGB(61,72,72)or Color3.fromRGB(56,55,67)
  local floorMaterial=map.Id=="THEME_PARK"and Enum.Material.Asphalt or Enum.Material.Concrete
  arenaPart(f,"Floor",Vector3.new(340,1,340),Vector3.new(0,0,0),floorColor,floorMaterial)
  for _,x in ipairs({-169,169})do arenaPart(f,"OuterWall",Vector3.new(2,22,340),Vector3.new(x,11,0),Style.Wall,Enum.Material.Concrete)end
@@ -291,6 +308,13 @@ local function makeArena(map)
   for i=1,10 do arenaPart(f,"Locker",Vector3.new(4,8,3),Vector3.new(-12+(i%5)*6,4,-62+math.floor((i-1)/5)*8),Style.Locker,Enum.Material.Metal)end
   for _,z in ipairs({-52,-26,0,26,52})do
    local strip=arenaPart(f,"HallGuideStrip",Vector3.new(12,.18,1.2),Vector3.new(0,.78,z),Color3.fromRGB(87,210,224),Enum.Material.Neon);strip.CanCollide=false
+  end
+  for i,spec in ipairs({
+   {Vector3.new(-118,10.8,-70),Vector3.new(14,.45,3)},{Vector3.new(118,10.8,-70),Vector3.new(14,.45,3)},
+   {Vector3.new(-51,10.8,43),Vector3.new(14,.45,3)},{Vector3.new(50,10.8,48),Vector3.new(14,.45,3)},
+   {Vector3.new(108,10.8,104),Vector3.new(14,.45,3)}
+  })do
+   local roomLight=arenaPart(f,"SchoolRoomLight"..i,spec[2],spec[1],Style.SafeLight,Enum.Material.Neon);roomLight.CanCollide=false;roomLight.Transparency=.18;glow(roomLight,Style.SafeLight,16,.58)
   end
   arenaPart(f,"SchoolNoticeBoard",Vector3.new(12,6,.8),Vector3.new(-16,5,-28),Color3.fromRGB(126,89,54),Enum.Material.WoodPlanks)
   arenaPart(f,"SchoolClock",Vector3.new(4,4,.6),Vector3.new(16,7,-6),Color3.fromRGB(215,220,222),Enum.Material.SmoothPlastic)
