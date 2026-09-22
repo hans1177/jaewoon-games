@@ -193,3 +193,30 @@ test('batch reservation reclaims stale running tasks before selecting work',()=>
   assert.equal(result.reclaimed,1);
   assert.deepEqual(result.reserved.map(x=>x.id).sort(),['queued','stale']);
 });
+
+
+test('System AI binds exact failure stage signature retries and causal evidence into repair context',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({
+      id:'causal-repair',status:'running',goal:'repair exact failure',responsibleFiles:['tools/demo.mjs'],
+      acceptanceCriteria:['failure signature clears'],failureStage:'SOURCE_CANDIDATE_GENERATION',
+      failureSignature:'EDIT_MATCH_TIMEOUT',retries:3,sourceMutationRequired:true,
+      evidence:['failure-stage:SOURCE_CANDIDATE_GENERATION','failure-cause:EDIT_MATCH_TIMEOUT','prior-strategy:wide-context-retry']
+    }));
+    write('response.json',JSON.stringify({summary:'causal edit',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]}));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.equal(result.version,3);
+    assert.equal(result.failureStage,'SOURCE_CANDIDATE_GENERATION');
+    assert.equal(result.failureSignature,'EDIT_MATCH_TIMEOUT');
+    assert.equal(result.retryCount,3);
+    assert.equal(result.sourceMutationRequired,true);
+    assert.equal(result.causalContextBound,true);
+    assert.ok(result.causalEvidenceCount>=3);
+    const worker=fs.readFileSync(path.resolve(prev,'tools/company-system-ai-worker.mjs'),'utf8');
+    assert.match(worker,/FAILURE STAGE:/);
+    assert.match(worker,/FAILURE SIGNATURE:/);
+    assert.match(worker,/Do not repeat a previously failed repair strategy without new causal evidence/);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
