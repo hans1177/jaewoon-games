@@ -21,7 +21,7 @@ local cooldown={}
 local dashCooldown={}
 local arena=nil
 local currentMapIndex=0
-local remoteLast={}
+local lastRequest={}
 local lastValidPosition={}
 local movementGraceUntil={}
 local movementGuardClock=0
@@ -269,9 +269,23 @@ end
 local function validRemoteAction(p,a)
  if typeof(a)~="string"or allowedActions[a]~=true then return false end
  local now=os.clock()
- if now-(remoteLast[p]or 0)<C.RemoteMinInterval then return false end
- remoteLast[p]=now
+ if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return false end
+ lastRequest[p]=now
  return true
+end
+local function broadcastMultiplayerSync(actor)
+ local participants=Players:GetPlayers()
+ local roundScore=0
+ for _,participant in ipairs(participants)do
+  if participant:GetAttribute("Role")=="SURVIVOR"and participant:GetAttribute("Frozen")~=true then roundScore+=1 end
+ end
+ remote:FireAllClients("MULTIPLAYER_SYNC",{
+  ActorUserId=actor and actor.UserId or 0,
+  ParticipantCount=#participants,
+  RoundScore=roundScore,
+  FrozenCount=frozenCount(),
+  TimeLeft=math.max(0,math.ceil(timeLeft)),
+ })
 end
 remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
@@ -283,6 +297,7 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.DASH then survivorDash(p)
  elseif a==C.Actions.ABILITY then ability(p)
  elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)end
+ broadcastMultiplayerSync(p)
 end)
 local function onCharacter(p)
  task.wait(.25)
@@ -291,7 +306,7 @@ end
 Players.PlayerAdded:Connect(function(p)load(p);p.CharacterAdded:Connect(function()onCharacter(p)end)end)
 for _,p in ipairs(Players:GetPlayers())do load(p);p.CharacterAdded:Connect(function()onCharacter(p)end)end
 Players.PlayerRemoving:Connect(function(p)
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;remoteLast[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
