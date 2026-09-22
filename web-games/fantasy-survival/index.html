@@ -495,9 +495,9 @@ const MUSIC_THEMES={
  crystal:{bpm:72,mode:'major',root:174.61,progression:[0,2,5,4,0,6,3,5],riff:[0,5,2,6,4,1,5,3],style:'crystal'},
  underground:{bpm:62,mode:'minor',root:98,progression:[0,5,3,6,0,4,1,5],riff:[0,-2,1,-1,3,0,-3,1],style:'underground'},
  questcave:{bpm:66,mode:'minor',root:92.5,progression:[0,3,1,5,0,6,4,1],riff:[0,1,-2,3,1,-1,2,-3],style:'questcave'},
- battle1:{bpm:138,mode:'minor',root:110,progression:[0,5,6,4,0,3,5,6],riff:[0,3,5,3,6,5,3,0],style:'battle1'},
- battle2:{bpm:154,mode:'minor',root:123.47,progression:[0,3,6,5,0,4,6,3],riff:[0,2,5,6,3,5,1,4],style:'battle2'},
- battle3:{bpm:122,mode:'minor',root:98,progression:[0,1,5,3,0,6,4,1],riff:[0,5,3,1,6,4,2,0],style:'battle3'},
+ battle1:{bpm:168,mode:'minor',root:110,progression:[0,6,5,3,0,1,6,5],riff:[0,3,5,6,5,3,1,6],style:'battle1'},
+ battle2:{bpm:178,mode:'minor',root:123.47,progression:[0,1,6,4,0,5,1,6],riff:[0,5,6,3,5,2,6,4],style:'battle2'},
+ battle3:{bpm:160,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,6,5,3,1,5,4,2],style:'battle3'},
  boss:{bpm:118,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,3,5,1,6,3,1,-2],style:'boss'}
 };
 const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,battleActive:false,battleTheme:null};
@@ -554,9 +554,31 @@ function scheduleBandBeat(key,t,beat,at){
   case'volcano':lowDrum(at,b===0?78:58,b===0?.095:.05,beatDur*.72);if(b===0)padVoice(root,at,beatDur*4,.032,520);if(b===2)smoothVoice(root*1.5,at,beatDur*1.7,.024,'triangle',680,.12);if(b===1||b===3)noiseBrush(at,beatDur*.42,.015,620);break;
   case'crystal':if(b===0)padVoice(root*2,at,beatDur*4,.017,2600);if(b===0||b===2)glassVoice(lead*1.5,at,beatDur*1.8,.020);if(b===3)glassVoice(scaleFreq(t.root,ch+6,minor,1),at,beatDur*2.1,.012);break;
   case'underground':case'questcave':if(b===0)padVoice(root,at,beatDur*4,.03,t.style==='questcave'?540:650);if(b===0||b===3)lowDrum(at,t.style==='questcave'?62:70,.048,beatDur*.8);if(b===2)smoothVoice(lead,at,beatDur*1.6,.016,'sine',900,.18);break;
-  case'battle1':lowDrum(at,b===0?115:82,b===0?.1:.065,beatDur*.45);if(b===1||b===3)noiseBrush(at,beatDur*.25,.023,2100);smoothVoice(root*2,at,beatDur*.7,.035,'triangle',1600,.018);if(b===0||b===2)smoothVoice(lead*2,at,beatDur*.65,.032,'sine',2600,.018);break;
-  case'battle2':lowDrum(at,b===0?130:95,b===0?.09:.055,beatDur*.38);noiseBrush(at+beatDur*.45,beatDur*.16,.016,3000);smoothVoice(lead*2,at,beatDur*.32,.034,'triangle',2200,.012);smoothVoice(scaleFreq(t.root,ch+3,minor,0),at+beatDur*.5,beatDur*.28,.025,'sine',2500,.01);break;
-  case'battle3':if(b===0||b===3)lowDrum(at,b===0?88:70,b===0?.12:.08,beatDur*.65);if(b===0)padVoice(root*2,at,beatDur*4,.034,900);if(b===1||b===2)smoothVoice(lead*1.5,at,beatDur*.95,.038,'triangle',1500,.035);if(b===3)noiseBrush(at,beatDur*.35,.022,1200);break;
+  case'battle1':
+   lowDrum(at,b===0?132:96,b===0?.12:.08,beatDur*.34);
+   lowDrum(at+beatDur*.5,78,.05,beatDur*.22);
+   noiseBrush(at+beatDur*.24,beatDur*.13,.020,2900);
+   noiseBrush(at+beatDur*.72,beatDur*.12,.017,3400);
+   smoothVoice(root*2,at,beatDur*.42,.040,'sawtooth',1850,.008);
+   smoothVoice(lead*2,at+beatDur*.5,beatDur*.38,.036,'triangle',3100,.008);
+   break;
+  case'battle2':
+   lowDrum(at,b===0?145:105,b===0?.115:.072,beatDur*.30);
+   lowDrum(at+beatDur*.5,88,.055,beatDur*.20);
+   noiseBrush(at+beatDur*.16,beatDur*.11,.019,3600);
+   noiseBrush(at+beatDur*.48,beatDur*.10,.018,3000);
+   noiseBrush(at+beatDur*.80,beatDur*.09,.015,4000);
+   smoothVoice(lead*2,at,beatDur*.26,.038,'sawtooth',2700,.006);
+   smoothVoice(scaleFreq(t.root,ch+3,minor,1),at+beatDur*.5,beatDur*.24,.030,'triangle',3300,.006);
+   break;
+  case'battle3':
+   lowDrum(at,b===0?118:86,b===0?.13:.082,beatDur*.36);
+   if(b===0)padVoice(root*2,at,beatDur*2,.025,1000);
+   noiseBrush(at+beatDur*.30,beatDur*.14,.021,2300);
+   noiseBrush(at+beatDur*.74,beatDur*.12,.018,2800);
+   smoothVoice(lead*1.7,at,beatDur*.38,.041,'sawtooth',2000,.008);
+   smoothVoice(scaleFreq(t.root,ch+5,minor,0),at+beatDur*.5,beatDur*.32,.029,'triangle',2400,.008);
+   break;
   case'boss':lowDrum(at,b===0?70:55,b===0?.14:.075,beatDur*.72);if(b===0)padVoice(root,at,beatDur*4,.042,520);if(b===1||b===3)noiseBrush(at,beatDur*.42,.026,900);smoothVoice(lead,at,beatDur*.8,.034,'triangle',1100,.03);break;
  }
 }
