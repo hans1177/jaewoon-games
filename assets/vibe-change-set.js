@@ -5,13 +5,18 @@
 function clean(value) { return String(value ?? '').trim(); }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function clone(value) { return value == null ? value : JSON.parse(JSON.stringify(value)); }
+function stableHash(value = '') { let h = 2166136261; for (const ch of String(value)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+
+const allowedTargets = Object.freeze(['web', 'godot', 'roblox', 'unity']);
+function normalizeTarget(value = 'web') { const target = clean(value).toLowerCase(); return allowedTargets.includes(target) ? target : 'web'; }
+function normalizeAcceptance(input = []) { const rows = Array.isArray(input) ? input : Array.isArray(input?.observable) ? input.observable : []; return Object.freeze({ observable: Object.freeze(unique(rows.map(clean))), runtimeEvidenceRequired: input?.runtimeEvidenceRequired === true, visualRuntimeEvidenceRequired: input?.visualRuntimeEvidenceRequired === true, multiplayerEvidenceRequired: input?.multiplayerEvidenceRequired === true, markerOnlyPassForbidden: input?.markerOnlyPassForbidden !== false }); }
 
 const protectedKeys = Object.freeze(['hp', 'maxHp', 'damage', 'attack', 'waves', 'rewards', 'dropRate', 'saveKey', 'progress']);
 
-export function createVibeChangeSet({ request = '', target = 'web', gameId = null, files = [], edits = [], tests = [], notes = [] } = {}) {
+export function createVibeChangeSet({ id = '', request = '', target = 'web', gameId = null, baseSourceRevision = '', ownerOrSystemIntent = '', responsibleSystems = [], affectedDepartments = [], files = [], edits = [], tests = [], notes = [], preservedSemantics = [], acceptanceContract = [], failureEvidence = [], status = 'ACTIVE' } = {}) {
   const prompt = clean(request);
   if (!prompt) throw new Error('change request required');
-  const normalizedTarget = target === 'godot' ? 'godot' : 'web';
+  const normalizedTarget = normalizeTarget(target);
   const normalizedFiles = unique(files.map(clean));
   const normalizedEdits = edits.map((edit) => ({
     file: clean(edit?.file), area: clean(edit?.area), reason: clean(edit?.reason),
@@ -21,24 +26,34 @@ export function createVibeChangeSet({ request = '', target = 'web', gameId = nul
   })).filter((edit) => edit.file && edit.area);
   const protectedChanges = normalizedEdits.flatMap((edit) => edit.protected).filter((key) => protectedKeys.includes(key));
   return Object.freeze({
-    version: 1,
-    id: `change-${Date.now().toString(36)}`,
+    version: 2,
+    id: clean(id) || `change-${stableHash(JSON.stringify({ request: prompt, target: normalizedTarget, gameId: clean(gameId), baseSourceRevision: clean(baseSourceRevision), files: normalizedFiles, edits: normalizedEdits.map((edit) => [edit.file, edit.area, edit.reason]) }))}`,
     request: prompt,
+    ownerOrSystemIntent: clean(ownerOrSystemIntent) || prompt,
+    baseSourceRevision: clean(baseSourceRevision) || null,
+    responsibleSystems: Object.freeze(unique(responsibleSystems.map(clean))),
+    affectedDepartments: Object.freeze(unique(affectedDepartments.map(clean))),
     target: normalizedTarget,
     gameId: gameId ? clean(gameId) : null,
     files: Object.freeze(normalizedFiles),
     edits: Object.freeze(normalizedEdits.map(clone)),
     tests: Object.freeze(unique(tests.map(clean))),
     notes: Object.freeze(unique(notes.map(clean))),
+    preservedSemantics: Object.freeze(unique(preservedSemantics.map(clean))),
+    acceptanceContract: normalizeAcceptance(acceptanceContract),
+    failureEvidence: Object.freeze(unique(failureEvidence.map(clean))),
+    status: clean(status).toUpperCase() || 'ACTIVE',
     protectedChanges: Object.freeze(unique(protectedChanges)),
-    policy: Object.freeze({ existingGameAutoApply: false, directSourceEdit: true, migrationRequiredOnSaveBreak: true, protectedChangeNeedsExplicitReview: protectedChanges.length > 0 }),
+    policy: Object.freeze({ existingGameAutoApply: false, directSourceEdit: true, workLockRequired: normalizedFiles.length > 0, migrationRequiredOnSaveBreak: true, protectedChangeNeedsExplicitReview: protectedChanges.length > 0 }),
   });
 }
 
 export function canApplyVibeChangeSet(changeSet, { allowProtectedChange = false } = {}) {
-  if (!changeSet || changeSet.version !== 1) return { ok: false, reason: 'invalid-change-set' };
+  if (!changeSet || ![1, 2].includes(changeSet.version)) return { ok: false, reason: 'invalid-change-set' };
   if (!Array.isArray(changeSet.files) || !changeSet.files.length) return { ok: false, reason: 'no-target-files' };
   if (!Array.isArray(changeSet.edits) || !changeSet.edits.length) return { ok: false, reason: 'no-edits' };
+  if (changeSet.version >= 2 && !clean(changeSet.baseSourceRevision)) return { ok: false, reason: 'base-source-revision-required' };
+  if (changeSet.version >= 2 && !changeSet.acceptanceContract?.observable?.length) return { ok: false, reason: 'acceptance-contract-required' };
   if (changeSet.protectedChanges?.length && !allowProtectedChange) return { ok: false, reason: 'protected-change-review-required' };
   return { ok: true, reason: 'ready-for-review' };
 }
