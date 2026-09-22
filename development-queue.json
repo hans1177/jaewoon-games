@@ -66,9 +66,9 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T03:22:44.562Z",
-      "robloxSourceCommit": "1a3158e00a58617e318c86c098bdf2dba3a7280a",
-      "robloxSourceBootstrapPassedAt": "2026-09-22T03:17:22.956Z",
+      "updatedAt": "2026-09-22T03:27:52.990Z",
+      "robloxSourceCommit": "bc9aa1e8605963e98eaf2492ccb24c346516e196",
+      "robloxSourceBootstrapPassedAt": "2026-09-22T03:27:52.990Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -116,7 +116,7 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "multiplayerSupported": true,
@@ -157,7 +157,7 @@
       "fastLaunchPriority": true,
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaPassed": false,
-      "robloxInternalReleaseReady": true,
+      "robloxInternalReleaseReady": false,
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "robloxStudioEvidenceRequired": false,
@@ -263,8 +263,8 @@
         "authority": "roblox-open-cloud-fast-mvp-preserve-visibility"
       },
       "robloxReleaseVersionNumber": 5,
-      "robloxFastMvpPublished": true,
-      "robloxFastMvpPublishedAt": "2026-09-22T03:22:44.562Z",
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
       "robloxFastMvpPublicationEvidence": {
         "version": 1,
         "gameId": "cozy-island",
@@ -315,9 +315,9 @@
       "robloxDedicatedExperiencePublished": true,
       "robloxDedicatedExperiencePublishedAt": "2026-09-22T03:22:44.562Z",
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "d4b199277a8ca4b4979e0cb130ef92a1c89eaacc",
-        "newSourceRevision": "1a3158e00a58617e318c86c098bdf2dba3a7280a",
-        "invalidatedAt": "2026-09-22T03:17:22.956Z"
+        "previousSourceRevision": "1a3158e00a58617e318c86c098bdf2dba3a7280a",
+        "newSourceRevision": "bc9aa1e8605963e98eaf2492ccb24c346516e196",
+        "invalidatedAt": "2026-09-22T03:27:52.990Z"
       }
     },
     {
@@ -3178,7 +3178,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T03:24:30.010Z",
+  "updatedAt": "2026-09-22T03:27:52.990Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
