@@ -186,7 +186,9 @@ assert.match(feeder,/packageRole:'implementation-owner'/);
 assert.match(feeder,/NO_NEW_SOURCE_CYCLE/);
 assert.match(runner,/vibe2-post-release-focus\.mjs/);
 assert.match(runner,/company-runtime:development-queue\.json|origin\/company-runtime:development-queue\.json/);
-assert.match(queue,/postReleaseFocusedSlots: 1/);
+assert.match(queue,/postReleaseFocusedSlots: 3/);
+assert.match(queue,/postReleaseFocusedSlotsScaleWithEligibleGames: true/);
+assert.match(queue,/postReleaseCaretakerMode: 'per-game-persistent'/);
 assert.match(queue,/isPostReleaseFocused/);
 assert.match(queue,/postReleaseFocusedTaskId/);
 
