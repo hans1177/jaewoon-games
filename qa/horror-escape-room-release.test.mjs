@@ -164,7 +164,7 @@ test('심야는 340x340 대형 맵과 목표 탈출 루프를 사용한다',()=>
   assert.match(server,/addEscapeGate/);
   assert.match(server,/workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true/);
   assert.match(client,/ObjectiveProgress/);
-  assert.match(client,/목표 %d\/%d/);
+  assert.match(client,/1단계 · 패널 작동 %d\/%d/);
   for(const gate of ['340x340 arena footprint','four interactive survivor objectives','escape gate unlock and survivor escape victory'])assert.ok(launch.releaseGates.includes(gate),gate);
 });
 
