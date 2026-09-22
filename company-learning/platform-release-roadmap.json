@@ -5219,8 +5219,8 @@
         "f9UniversePlaceVersionExactBinding": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "robloxMainSourceDriftRebind": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
-        "cozyIslandGroundContactTimeoutProbe": "DESIGNED_IMPLEMENTATION_IN_PROGRESS",
-        "robloxFoundationSentinelSequenceOrder": "DESIGNED_IMPLEMENTATION_IN_PROGRESS"
+        "cozyIslandGroundContactTimeoutProbe": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "robloxFoundationSentinelSequenceOrder": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5292,8 +5292,8 @@
           "newCandidateClearsPriorReleasePassState": true,
           "f9BindsUniversePlaceVersion": true,
           "robloxMainSourceDriftRebind": true,
-          "cozyIslandGroundContactTimeoutProbe": false,
-          "robloxFoundationSentinelSequenceOrder": false
+          "cozyIslandGroundContactTimeoutProbe": true,
+          "robloxFoundationSentinelSequenceOrder": true
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
