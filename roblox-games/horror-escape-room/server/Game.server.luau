@@ -64,10 +64,15 @@ local function form(p)
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
  return C.MonsterForms[1]
 end
+local function humanForm(p)
+ local id=p:GetAttribute("HumanForm")or"BROADCAST"
+ for _,f in ipairs(C.HumanForms or{})do if f.Id==id then return f end end
+ return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",Name="방송부"}
+end
 local function load(p)
  p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR")
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
- p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false)
+ p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0)
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
@@ -76,12 +81,13 @@ local function load(p)
  if ok and typeof(d)=="table"then
   for _,k in ipairs({"MonsterXP","Coins","RoundsSinceMonster"})do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end
   if typeof(d.MonsterForm)=="string"then p:SetAttribute("MonsterForm",legacyMonsterIds[d.MonsterForm]or d.MonsterForm)end
+  if typeof(d.HumanForm)=="string"then p:SetAttribute("HumanForm",d.HumanForm)end
  end
 end
 local function save(p)
  pcall(function()store:SetAsync("p:"..p.UserId,{
   MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,
-  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA"
+  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST"
  })end)
 end
 local function arenaPart(f,name,size,pos,color,material)
@@ -591,31 +597,47 @@ local function decorateClassicMonster(anchor,id)
  return visuals
 end
 local function bot(role,pos)
- local p=Instance.new("Part");p.Name=role=="MONSTER"and"AI_MONSTER"or"AI_SURVIVOR";p.Anchored=true;p.Size=Vector3.new(3,5,3);p.Position=pos
- p.Color=role=="MONSTER"and Style.Monsters.DRACULA.Color or Style.Survivor;p.Material=Enum.Material.SmoothPlastic;p.Parent=arena
- local monsterId="DRACULA";local visuals=role=="MONSTER"and decorateClassicMonster(p,monsterId)or{}
- local b={part=p,role=role,frozen=false,speed=role=="MONSTER"and 18 or 13,monsterId=monsterId,visuals=visuals};table.insert(bots,b);return b
+ local p=Instance.new("Part");p.Name=role=="MONSTER"and"AI_MONSTER"or"AI_SURVIVOR";p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.Size=Vector3.new(2.8,3.6,1.9);p.Position=pos
+ p.Color=role=="MONSTER"and Color3.fromRGB(65,34,44)or Color3.fromRGB(66,94,108);p.Material=role=="MONSTER"and Enum.Material.Fabric or Enum.Material.SmoothPlastic;p.Parent=arena
+ local visuals={}
+ if role=="MONSTER"then
+  visuals=decorateClassicMonster(p,"DRACULA")
+ else
+  local function add(name,size,offset,color,material,shape)
+   local x=botVisualPart(p,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset});return x
+  end
+  add("AIHumanHead",Vector3.new(2.05,2.05,1.9),Vector3.new(0,2.8,0),Color3.fromRGB(211,181,153),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  add("AIHumanHair",Vector3.new(2.12,.55,1.95),Vector3.new(0,3.65,.05),Color3.fromRGB(47,38,36),Enum.Material.Fabric)
+  add("AIHumanArmL",Vector3.new(.62,2.7,.72),Vector3.new(-1.7,-.1,0),Color3.fromRGB(66,94,108),Enum.Material.Fabric)
+  add("AIHumanArmR",Vector3.new(.62,2.7,.72),Vector3.new(1.7,-.1,0),Color3.fromRGB(66,94,108),Enum.Material.Fabric)
+  add("AIHumanLegL",Vector3.new(.78,2.85,.9),Vector3.new(-.64,-3.1,0),Color3.fromRGB(42,47,54),Enum.Material.Fabric)
+  add("AIHumanLegR",Vector3.new(.78,2.85,.9),Vector3.new(.64,-3.1,0),Color3.fromRGB(42,47,54),Enum.Material.Fabric)
+  add("AIHumanTool",Vector3.new(.42,1.9,.42),Vector3.new(1.9,-.1,-.65),Color3.fromRGB(91,205,220),Enum.Material.Neon)
+ end
+ local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0}
+ table.insert(bots,b);return b
 end
-local function weightPick(list)
+local function weightPick(list)local function weightPick(list)
  local total=0;for _,p in ipairs(list)do total+=math.max(1,(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
  local r=math.random()*total
  for _,p in ipairs(list)do r-=math.max(1,(p:GetAttribute("RoundsSinceMonster")or 0)+1);if r<=0 then return p end end
  return list[#list]
 end
-local function choose(h)
- local volunteers={}
+local function selectStartingMonsters(h)
+ local preferred,other={},{}
  for _,p in ipairs(h)do
-  if p:GetAttribute("MonsterPreference")=="MONSTER"or(#h==1 and p:GetAttribute("SoloRole")=="MONSTER")then
-   table.insert(volunteers,p)
-  end
+  if p:GetAttribute("MonsterPreference")=="MONSTER"then table.insert(preferred,p)else table.insert(other,p)end
  end
- if #volunteers==0 and #h<C.TargetPopulation then return nil,false end
- local pool=#volunteers>0 and volunteers or h
- local filtered={};for _,p in ipairs(pool)do if p.UserId~=lastMonster then table.insert(filtered,p)end end
- if #filtered>0 then pool=filtered end
- return weightPick(pool),#volunteers==0
+ local selected={};local count=0;local monsterSlots=C.MonsterSlots or 4;local survivorSlots=C.SurvivorSlots or 4
+ for _,p in ipairs(preferred)do if count>=monsterSlots then break end;selected[p]=true;count+=1 end
+ local minimumRealMonsters=math.max(0,#h-survivorSlots)
+ for _,p in ipairs(other)do
+  if count>=minimumRealMonsters or count>=monsterSlots then break end
+  selected[p]=true;count+=1
+ end
+ return selected
 end
-local function clearRoleVisual(p)
+local function clearRoleVisual(p)local function clearRoleVisual(p)
  local c=p.Character;if not c then return end
  for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual"or d:GetAttribute("MonsterCostume")==true then d:Destroy()end end
  local old=c:FindFirstChild("RoleHighlight");if old then old:Destroy()end
@@ -679,113 +701,130 @@ local function setRole(p,r)
 end
 local function active()
  local a={}
- for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then table.insert(a,{p=p})end end
- for _,b in ipairs(bots)do if b.role=="SURVIVOR"and not b.frozen then table.insert(a,{b=b})end end
+ for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"then table.insert(a,{p=p})end end
+ for _,b in ipairs(bots)do if b.role=="SURVIVOR"then table.insert(a,{b=b})end end
  return a
 end
-local function frozenCount()
- local n=0
- for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then n+=1 end end
- for _,b in ipairs(bots)do if b.role=="SURVIVOR"and b.frozen then n+=1 end end
- return n
-end
-local function freezePlayer(p)
- if os.clock()<(tagGraceUntil[p]or 0)then return end
- if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then
-  p:SetAttribute("Frozen",true);p:SetAttribute("FeedbackEvent","FREEZE:"..tostring(math.floor(os.clock()*1000)));speed(p,0)
-  local c=p.Character;if c then local h=c:FindFirstChild("RoleHighlight");if h then h.FillColor=Style.Frozen;h.OutlineColor=Color3.fromRGB(143,215,232)end end
-  -- 1인 플레이는 AI 구조 실패로 영구 정지되지 않게 자동 해동 안전장치를 둔다.
-  if #Players:GetPlayers()==1 then
-   task.delay(2.4,function()
-    if p.Parent and p:GetAttribute("Frozen")==true and state=="RUNNING"then
-     p:SetAttribute("Frozen",false);p:SetAttribute("FeedbackEvent","RESCUE:SOLO_AUTO");restoreMovement(p,16);applyRoleVisual(p,"SURVIVOR");tagGraceUntil[p]=os.clock()+4
-    end
-   end)
-  end
+local function teamCounts()
+ local humans,monsters=0,0
+ for _,p in ipairs(Players:GetPlayers())do
+  if p:GetAttribute("Role")=="SURVIVOR"then humans+=1 elseif p:GetAttribute("Role")=="MONSTER"then monsters+=1 end
  end
+ for _,b in ipairs(bots)do if b.role=="SURVIVOR"then humans+=1 elseif b.role=="MONSTER"then monsters+=1 end end
+ return humans,monsters
 end
-local function thawPlayer(p)
- if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then
-  p:SetAttribute("Frozen",false);p:SetAttribute("FeedbackEvent","RESCUE:"..tostring(math.floor(os.clock()*1000)));restoreMovement(p,16);applyRoleVisual(p,"SURVIVOR");tagGraceUntil[p]=os.clock()+3
+local function monsterPositions()
+ local out={};local now=os.clock()
+ for _,p in ipairs(Players:GetPlayers())do
+  if p:GetAttribute("Role")=="MONSTER"and now>=(p:GetAttribute("InfectionReadyAt")or 0)then local r=root(p);if r then table.insert(out,r.Position)end end
  end
+ for _,b in ipairs(bots)do if b.role=="MONSTER"and now>=(b.infectReadyAt or 0)then table.insert(out,b.part.Position)end end
+ return out
+end
+local function nearestMonsterDistance(pos)
+ local best=math.huge
+ for _,mp in ipairs(monsterPositions())do best=math.min(best,(mp-pos).Magnitude)end
+ return best
+end
+local function infectPlayer(p)
+ if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or os.clock()<(tagGraceUntil[p]or 0)then return false end
+ p:SetAttribute("Infected",true);p:SetAttribute("InfectionReadyAt",os.clock()+2.5);setRole(p,"MONSTER")
+ p:SetAttribute("FeedbackEvent","INFECT:"..tostring(math.floor(os.clock()*1000)));return true
+end
+local function infectBot(b)
+ if not b or b.role~="SURVIVOR"then return false end
+ if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
+ b.role="MONSTER";b.part.Name="AI_MONSTER";b.part.Color=Color3.fromRGB(65,34,44);b.part.Material=Enum.Material.Fabric;b.speed=18;b.infectReadyAt=os.clock()+2.5
+ b.visuals=decorateClassicMonster(b.part,"DRACULA");return true
 end
 local function monsterPos()
- if monster then local r=root(monster);return r and r.Position end
- if monsterBot then return monsterBot.part.Position end
+ local list=monsterPositions();return list[1]
 end
 local function configure(h)
  clearBots()
- local survivorSlots=C.SurvivorSlots or 4
- local humanSurvivors=0
- for _,p in ipairs(h)do if p~=monster then humanSurvivors+=1 end end
- if not monster then monsterBot=bot("MONSTER",monsterSpawn)end
- local survivorNeed=math.max(0,survivorSlots-humanSurvivors)
- for i=1,survivorNeed do
-  local spawnIndex=((humanSurvivors+i-1)%#survivorSpawns)+1
-  bot("SURVIVOR",survivorSpawns[spawnIndex])
- end
- workspace:SetAttribute("ActivePopulation",#h+#bots)
- workspace:SetAttribute("AIBotCount",#bots)
- workspace:SetAttribute("AIMonsterActive",monster==nil)
+ local realHumans,realMonsters=0,0
+ for _,p in ipairs(h)do if p:GetAttribute("Role")=="MONSTER"then realMonsters+=1 elseif p:GetAttribute("Role")=="SURVIVOR"then realHumans+=1 end end
+ local monsterNeed=math.max(0,(C.MonsterSlots or 4)-realMonsters)
+ local humanNeed=math.max(0,(C.SurvivorSlots or 4)-realHumans)
+ for i=1,monsterNeed do bot("MONSTER",monsterSpawn+Vector3.new((i-1)*6-(monsterNeed-1)*3,0,0))end
+ for i=1,humanNeed do bot("SURVIVOR",survivorSpawns[((realHumans+i-1)%#survivorSpawns)+1])end
+ local hc,mc=teamCounts();workspace:SetAttribute("ActivePopulation",hc+mc);workspace:SetAttribute("AIBotCount",#bots);workspace:SetAttribute("HumanCount",hc);workspace:SetAttribute("MonsterCount",mc)
 end
 local function startRound()
- local h=Players:GetPlayers();if #h==0 then return false end
+ local all=Players:GetPlayers();if #all==0 then return false end
+ local h={}
+ for i,p in ipairs(all)do if i<=C.TargetPopulation then table.insert(h,p)else setRole(p,"WAITING");p:SetAttribute("RoundState","SPECTATING")end end
  currentMapIndex=(currentMapIndex%#C.Maps)+1
  local map=C.Maps[currentMapIndex]
  local existing=workspace:FindFirstChild("MidnightArena")
- if existing and workspace:GetAttribute("MapReady")==true and workspace:GetAttribute("CurrentMapId")==map.Id then
-  -- 첫 라운드 학교 맵은 이미 프리로드되어 있으므로 절대 다시 지우지 않는다.
-  arena=existing
- else
-  arena=ensureArena(map)
- end
+ if existing and workspace:GetAttribute("MapReady")==true and workspace:GetAttribute("CurrentMapId")==map.Id then arena=existing else arena=ensureArena(map)end
  if not arena or workspace:GetAttribute("MapReady")~=true then arena=makeFallbackArena(map,"START_ROUND_NOT_READY")end
- monster,forced=choose(h);if monster then lastMonster=monster.UserId end
+ local startingMonsters=selectStartingMonsters(h)
  objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount
  escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
+ local si,mi=1,1
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
- end
- local si=1
- for _,p in ipairs(h)do
-  local role=p==monster and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
-  if role=="MONSTER"then teleport(p,monsterSpawn)else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
+  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
+  local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
+  if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
  configure(h);state="RUNNING";timeLeft=C.RoundSeconds;return true
 end
-local function endRound(winner)
+local function endRound(winner)local function endRound(winner)
  if state~="RUNNING"then return end;state="RESULT"
  for _,p in ipairs(Players:GetPlayers())do
-  local m=p:GetAttribute("Role")=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and not m)
-  local reward=win and 30 or 12;if m and forced then reward=math.floor(reward*1.5)end
+  local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
+  local reward=(role=="MONSTER"or role=="SURVIVOR")and(winner=="DRAW"and 12 or win and 30 or 12)or 0
   p:SetAttribute("Coins",(p:GetAttribute("Coins")or 0)+reward)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
-  else p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
+  elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
   p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);speed(p,16)
  end
- clearBots();monster=nil;monsterBot=nil;task.wait(4)
+ clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0);task.wait(4)
 end
-local function rescue(p)
- if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or p:GetAttribute("Frozen")==true then return end
- local r=root(p);if not r then return end
- for _,o in ipairs(Players:GetPlayers())do
-  if o~=p and o:GetAttribute("Frozen")==true then local q=root(o);if q and(q.Position-r.Position).Magnitude<=C.RescueDistance then thawPlayer(o);p:SetAttribute("FeedbackEvent","RESCUE:"..tostring(math.floor(os.clock()*1000)));return end end
+local purifyCooldown={}
+local function removeBot(target)
+ for i=#bots,1,-1 do
+  if bots[i]==target then
+   local b=bots[i];if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
+   if b.part then b.part:Destroy()end;table.remove(bots,i);return true
+  end
  end
- for _,b in ipairs(bots)do
-  if b.role=="SURVIVOR"and b.frozen and(b.part.Position-r.Position).Magnitude<=C.RescueDistance then b.frozen=false;b.part.Color=Style.Survivor;return end
- end
+ return false
 end
-local function survivorDash(p)
- if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or p:GetAttribute("Frozen")==true then return end
- local now=os.clock();if now-(dashCooldown[p]or 0)<C.SurvivorDashCooldown then return end;dashCooldown[p]=now
- local r=root(p);if r then movementGraceUntil[p]=now+.7;r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
+local function eliminateMonsterPlayer(target)
+ if not target or target:GetAttribute("Role")~="MONSTER"then return false end
+ target:SetAttribute("Role","ELIMINATED");target:SetAttribute("Infected",false);target:SetAttribute("FeedbackEvent","PURIFIED:"..tostring(math.floor(os.clock()*1000)))
+ clearRoleVisual(target);local h=hum(target);local r=root(target);if h then h.WalkSpeed=0;h.JumpPower=0;h.JumpHeight=0 end;if r then r.Anchored=true end
+ return true
+end
+local function purify(p)
+ if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
+ local hf=humanForm(p);local now=os.clock();local cd=math.max(2,(C.PurifyCooldown or 5)+(hf.PurifyCooldownBonus or 0))
+ if now-(purifyCooldown[p]or 0)<cd then return end
+ local r=root(p);if not r then return end;purifyCooldown[p]=now
+ local range=math.max(4,(C.PurifyDistance or 8)+(hf.PurifyRangeBonus or 0));local targetPlayer,targetBot,best=nil,nil,range
+ for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local q=root(other);if q then local d=(q.Position-r.Position).Magnitude;if d<=best then best=d;targetPlayer=other;targetBot=nil end end end end
+ for _,b in ipairs(bots)do if b.role=="MONSTER"then local d=(b.part.Position-r.Position).Magnitude;if d<=best then best=d;targetBot=b;targetPlayer=nil end end end
+ if targetPlayer then eliminateMonsterPlayer(targetPlayer);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))
+ elseif targetBot then removeBot(targetBot);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
+end
+local function survivorDash(p)local function survivorDash(p)
+ if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
+ local hf=humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
+ if now-(dashCooldown[p]or 0)<cd then return end;dashCooldown[p]=now
+ local r=root(p);if r then movementGraceUntil[p]=now+.7;r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
 end
 local function ability(p)
- if state~="RUNNING"or p~=monster then return end
+ if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
  local now=os.clock();if now-(cooldown[p]or 0)<C.MonsterAbilityCooldown then return end;cooldown[p]=now
  local r=root(p);if not r then return end;local f=form(p);movementGraceUntil[p]=now+.8
- if f.Ability=="BAT_DASH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*70+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
+ local infectedAbility=p:GetAttribute("Infected")==true and humanForm(p).InfectedAbility or nil
+ if infectedAbility=="RUSH"or infectedAbility=="BREACH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*82+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
+ elseif infectedAbility=="BLACKOUT"or infectedAbility=="HUNT_FLASH"or infectedAbility=="FALSE_ALARM"then
+  for _,o in ipairs(Players:GetPlayers())do if o:GetAttribute("Role")=="SURVIVOR"then local q=root(o);if q and(q.Position-r.Position).Magnitude<=24 then speed(o,10);task.delay(2.5,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)end end end
+ elseif f.Ability=="BAT_DASH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*70+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
  elseif f.Ability=="POWER_CHARGE"then r.AssemblyLinearVelocity=r.CFrame.LookVector*85+Vector3.new(0,4,0)
  elseif f.Ability=="RAGE_RUN"then speed(p,28);task.delay(3,function()if p.Parent and p:GetAttribute("Role")=="MONSTER"then speed(p,19)end end)
  elseif f.Ability=="CURSE_SLOW"then
@@ -798,6 +837,13 @@ local function nextMonster(p)
  for i,f in ipairs(C.MonsterForms)do if f.Id==cur then idx=i end end
  for n=1,#C.MonsterForms do local j=((idx+n-1)%#C.MonsterForms)+1;local f=C.MonsterForms[j];if xp>=f.UnlockXP then p:SetAttribute("MonsterForm",f.Id);return end end
 end
+local function nextHuman(p)
+ if state=="RUNNING"then return end
+ local list=C.HumanForms or{};if #list==0 then return end
+ local current=p:GetAttribute("HumanForm")or list[1].Id;local idx=1
+ for i,f in ipairs(list)do if f.Id==current then idx=i end end
+ p:SetAttribute("HumanForm",list[idx%#list+1].Id)
+end
 local function validRemoteAction(p,a)
  if typeof(a)~="string"or allowedActions[a]~=true then return false end
  local now=os.clock()
@@ -806,23 +852,10 @@ local function validRemoteAction(p,a)
  return true
 end
 local function broadcastMultiplayerSync(actor)
- local participants=Players:GetPlayers()
- local roundScore=0
- for _,participant in ipairs(participants)do
-  if participant:GetAttribute("Role")=="SURVIVOR"and participant:GetAttribute("Frozen")~=true then roundScore+=1 end
- end
- remote:FireAllClients("MULTIPLAYER_SYNC",{
-  ActorUserId=actor and actor.UserId or 0,
-  ParticipantCount=#participants,
-  ActivePopulation=state=="RUNNING"and(#participants+#bots)or #participants,
-  AICount=#bots,
-  AIMonster=monsterBot~=nil,
-  RoundScore=roundScore,
-  FrozenCount=frozenCount(),
-  TimeLeft=math.max(0,math.ceil(timeLeft)),
- })
+ local participants=Players:GetPlayers();local hc,mc=teamCounts()
+ remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft))})
 end
-remote.OnServerEvent:Connect(function(p,a)
+remote.OnServerEvent:Connect(function(p,a)remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
  if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
   p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");if #Players:GetPlayers()==1 then soloStartRequested=true end
@@ -830,10 +863,11 @@ remote.OnServerEvent:Connect(function(p,a)
   p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");if #Players:GetPlayers()==1 then soloStartRequested=true end
  elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");soloStartRequested=true
  elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");soloStartRequested=true
- elseif a==C.Actions.RESCUE then rescue(p)
+ elseif a==C.Actions.PURIFY or a==C.Actions.RESCUE then purify(p)
  elseif a==C.Actions.DASH then survivorDash(p)
  elseif a==C.Actions.ABILITY then ability(p)
- elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)end
+ elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
+ elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)end
  broadcastMultiplayerSync(p)
 end)
 local function onCharacter(p)
@@ -841,8 +875,9 @@ local function onCharacter(p)
  local readyDeadline=os.clock()+10
  while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
  if state=="RUNNING"then
-  setRole(p,p==monster and"MONSTER"or"SURVIVOR")
-  restoreMovement(p,p==monster and 19 or 16)
+  local role=p:GetAttribute("Role")
+  if role=="MONSTER"or role=="SURVIVOR"then setRole(p,role);restoreMovement(p,role=="MONSTER"and 19 or 16)
+  elseif role=="ELIMINATED"then local rr=root(p);if rr then rr.Anchored=true end end
  else
   -- 1인 플레이는 맵 복제가 끝난 뒤 실제 맵 안에서 시작한다.
   if #Players:GetPlayers()==1 then
@@ -920,21 +955,17 @@ task.spawn(function()
    end
    if startRound()then
     while state=="RUNNING"and timeLeft>0 do
-     local mp=monsterPos()
-     if mp then
-      for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true and os.clock()>=(tagGraceUntil[p]or 0)then local r=root(p);if r and(r.Position-mp).Magnitude<=C.TagDistance then freezePlayer(p)end end end
-      for _,b in ipairs(bots)do if b.role=="SURVIVOR"and not b.frozen and(b.part.Position-mp).Magnitude<=C.TagDistance then b.frozen=true;b.part.Color=Style.Frozen end end
-     end
-     if workspace:GetAttribute("SurvivorEscapeTriggered")==true then endRound("SURVIVOR");break end
-     local alive=#active()
-     if alive==0 then endRound("MONSTER");break end
      for _,p in ipairs(Players:GetPlayers())do
-      p:SetAttribute("TimeLeft",math.ceil(timeLeft));p:SetAttribute("FrozenCount",frozenCount());p:SetAttribute("AliveCount",alive)
-      if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then speed(p,alive==1 and 19 or 16)end
+      if p:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[p]or 0)then local r=root(p);if r and nearestMonsterDistance(r.Position)<=C.TagDistance then infectPlayer(p)end end
      end
+     for _,b in ipairs(bots)do if b.role=="SURVIVOR"and nearestMonsterDistance(b.part.Position)<=C.TagDistance then infectBot(b)end end
+     local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
+     if humans==0 then endRound("MONSTER");break end
+     if monsters==0 then endRound("SURVIVOR");break end
+     for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("TimeLeft",math.ceil(timeLeft));p:SetAttribute("HumanCount",humans);p:SetAttribute("MonsterCount",monsters);p:SetAttribute("AliveCount",humans)end
      task.wait(.25);timeLeft-=.25
     end
-    if state=="RUNNING"then endRound("SURVIVOR")end
+    if state=="RUNNING"then endRound("DRAW")end
    end
   end
  end
@@ -942,37 +973,32 @@ end)
 
 RunService.Heartbeat:Connect(function(dt)
  if state=="RUNNING"then
-  local mp=monsterPos()
   for _,b in ipairs(bots)do
    if b.visuals then for _,v in ipairs(b.visuals)do if v.part and v.part.Parent then v.part.CFrame=b.part.CFrame*CFrame.new(v.offset)end end end
-   if not b.frozen then
-    if b.role=="MONSTER"then
-     local best,bd=nil,math.huge
-     for _,a in ipairs(active())do
-      local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
-      if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
-     end
-     if best then local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)end end
-    else
-     local rescueTarget=nil
-     for _,human in ipairs(Players:GetPlayers())do
-      if human:GetAttribute("Role")=="SURVIVOR"and human:GetAttribute("Frozen")==true then
-       local hr=root(human);if hr and(hr.Position-b.part.Position).Magnitude<62 then rescueTarget=human;break end
-      end
-     end
-     if rescueTarget then
-      local hr=root(rescueTarget);local d=hr and Vector3.new(hr.Position.X-b.part.Position.X,0,hr.Position.Z-b.part.Position.Z)
-      if d and d.Magnitude>C.RescueDistance-1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)
-      elseif hr then thawPlayer(rescueTarget)end
-     elseif mp then
-      local away=b.part.Position-mp;if away.Magnitude<38 then local d=Vector3.new(away.X,0,away.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*b.speed*dt end end
-     end
+   if b.role=="MONSTER"then
+    local best,bd=nil,math.huge
+    for _,a in ipairs(active())do
+     local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
+     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
+    end
+    if best then local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)end end
+   elseif b.role=="SURVIVOR"then
+    local nearest,best=nil,math.huge
+    for _,mpos in ipairs(monsterPositions())do local d=(b.part.Position-mpos).Magnitude;if d<best then best=d;nearest=mpos end end
+    if nearest and best<=C.PurifyDistance and os.clock()>=(b.purifyReadyAt or 0)then
+     local targetPlayer,targetBot=nil,nil;local targetDist=C.PurifyDistance
+     for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local rr=root(other);if rr then local dd=(rr.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetPlayer=other;targetBot=nil end end end end
+     for _,otherBot in ipairs(bots)do if otherBot~=b and otherBot.role=="MONSTER"then local dd=(otherBot.part.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetBot=otherBot;targetPlayer=nil end end end
+     b.purifyReadyAt=os.clock()+6
+     if targetPlayer then eliminateMonsterPlayer(targetPlayer)elseif targetBot then removeBot(targetBot)end
+    elseif nearest and best<46 then
+     local away=b.part.Position-nearest;local d=Vector3.new(away.X,0,away.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*b.speed*dt end
     end
    end
   end
  end
 
- movementGuardClock+=dt
+ movementGuardClock+=dt movementGuardClock+=dt
  if movementGuardClock<.25 then return end
  movementGuardClock=0
  local now=os.clock()

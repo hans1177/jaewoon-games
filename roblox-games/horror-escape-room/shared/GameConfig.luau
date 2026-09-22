@@ -7,7 +7,7 @@ local Config={
  PlayMode = "COMPETITIVE",
  MultiplayerRequired = true,
  SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=2,
- TargetPopulation=5,SurvivorSlots=4,MonsterSlots=1,RoundSeconds=180,IntermissionSeconds=8,TagDistance=5.5,RescueDistance=8,RemoteName="GameAction",
+ TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=48,ArenaLimit=176,
  ObjectiveCount=4,EscapeUnlockObjectives=4,
@@ -49,10 +49,17 @@ local Config={
   {Id="MUMMY",Name="미라",UnlockXP=800,Ability="CURSE_SLOW",Theme="MUMMY",ExternalAssetId=4012084718},
   {Id="GRIM_REAPER",Name="사신",UnlockXP=1200,Ability="SHADOW_STEP",Theme="REAPER",ExternalAssetId=49353603},
  },
+ HumanForms={
+  {Id="BROADCAST",Name="방송부",Tool="신호 송신기",Passive="WIDE_PURIFY",PurifyRangeBonus=3,InfectedAbility="FALSE_ALARM"},
+  {Id="ELECTRICIAN",Name="전기기사",Tool="고압 정화기",Passive="FAST_PURIFY",PurifyCooldownBonus=-2,InfectedAbility="BLACKOUT"},
+  {Id="COURIER",Name="배달부",Tool="긴급 가방",Passive="FAST_DASH",DashCooldownBonus=-2,DashPowerBonus=10,InfectedAbility="RUSH"},
+  {Id="PHOTOGRAPHER",Name="사진가",Tool="플래시 카메라",Passive="FLASH_PURIFY",PurifyRangeBonus=1,PurifyCooldownBonus=-1,InfectedAbility="HUNT_FLASH"},
+  {Id="SECURITY",Name="경비원",Tool="충격봉",Passive="CLOSE_PURIFY",PurifyRangeBonus=-1,PurifyCooldownBonus=-1,InfectedAbility="BREACH"},
+ },
  Actions={
   PREFER_MONSTER="PREFER_MONSTER",PREFER_SURVIVOR="PREFER_SURVIVOR",
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
-  RESCUE="RESCUE",DASH="DASH",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER"
+  PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN"
  },
  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
  OwnerDirectDevelopment=true,
