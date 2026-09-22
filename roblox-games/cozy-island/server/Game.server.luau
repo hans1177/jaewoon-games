@@ -54,6 +54,12 @@ local function buildWorld()
       local beach=part(f,"BeachShelf",Vector3.new(192,2,192),Vector3.new(r.Pos.X,topY-5.2,r.Pos.Z),Color3.fromRGB(220,203,151),Enum.Material.Sand)
       beach.CanCollide=true
       part(f,"VillagePlaza",Vector3.new(54,1,54),Vector3.new(0,topY+.55,5),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
+      part(f,"ForestFloor",Vector3.new(62,1,54),Vector3.new(-47,topY+.55,34),Color3.fromRGB(93,153,91),Enum.Material.Grass)
+      for i=1,9 do
+        local x=-70+((i-1)%3)*20
+        local z=16+math.floor((i-1)/3)*18
+        tree(Vector3.new(x,topY,z),.75+(i%3)*.08)
+      end
       local fountain=part(f,"VillageFountain",Vector3.new(10,2,10),Vector3.new(0,topY+1.6,5),Color3.fromRGB(100,144,160),Enum.Material.SmoothPlastic);fountain.Shape=Enum.PartType.Cylinder
       part(f,"MarketStallA",Vector3.new(14,7,10),Vector3.new(-26,topY+3.5,12),Color3.fromRGB(183,137,82),Enum.Material.WoodPlanks)
       part(f,"MarketAwningA",Vector3.new(16,1,12),Vector3.new(-26,topY+7.2,12),Color3.fromRGB(215,102,82),Enum.Material.Fabric)
@@ -99,14 +105,14 @@ local function buildWorld()
       local lava=part(f,"LavaCrack",Vector3.new(64,.7,8),Vector3.new(r.Pos.X,topY+.4,r.Pos.Z-33),Color3.fromRGB(255,91,30),Enum.Material.Neon);lava.CanCollide=false
     end
   end
-  workspace:SetAttribute("WorldArtPass","STYLIZED_ISLANDS_LIVING_WORLD_V3")
+  workspace:SetAttribute("WorldArtPass","STYLIZED_ISLANDS_AUTO_GATHER_V4")
 end
 buildWorld()
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number" and v or d end
 local function s(p,k,v)p:SetAttribute(k,math.max(0,math.floor(v)))end
 local function msg(p,t)p:SetAttribute("LastActivity",t)end
 local function feedback(p,kind)p:SetAttribute("FeedbackEvent",kind..":"..tostring(math.floor(os.clock()*1000)))end
-local function init(p)for k,v in pairs(C.InitialState)do p:SetAttribute(k,v)end;p:SetAttribute("SupportReady",false);p:SetAttribute("InBattle",false);msg(p,"벌목·식량 수급부터 시작")end
+local function init(p)for k,v in pairs(C.InitialState)do p:SetAttribute(k,v)end;p:SetAttribute("SupportReady",false);p:SetAttribute("InBattle",false);p:SetAttribute("AutoGatherZone","");msg(p,"숲과 농장 근처에서 자원이 자동으로 모여")end
 local function load(p)
   init(p)
   local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
@@ -144,7 +150,7 @@ local function attack(p)
   end)
 end
 local H={
- [C.Actions.CHOP]=chop,[C.Actions.FOOD]=food,[C.Actions.HIRE]=hire,
+ [C.Actions.HIRE]=hire,
  [C.Actions.WOOD_JOB]=function(p)job(p,"WoodWorkers")end,[C.Actions.FOOD_JOB]=function(p)job(p,"Farmers")end,
  [C.Actions.BARRACKS]=barracks,[C.Actions.RECRUIT]=recruit,[C.Actions.ATTACK]=attack,
  [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady") and "원정지원 ON" or "원정지원 OFF")end,
@@ -164,7 +170,46 @@ remote.OnServerEvent:Connect(function(p,a)
  H[a](p)
  broadcastMultiplayerSync(p)
 end)
-task.spawn(function()while true do task.wait(C.AutomationTickSeconds);for _,p in ipairs(Players:GetPlayers())do local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0);if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end;if f>0 then s(p,"Food",n(p,"Food",0)+f)end;if w+f>0 and not battling[p] then msg(p,string.format("주민 자동생산 나무+%d 식량+%d",w,f))end end end end)
+local function horizontalDistance(a,b)
+ local dx=a.X-b.X;local dz=a.Z-b.Z
+ return math.sqrt(dx*dx+dz*dz)
+end
+task.spawn(function()
+ while true do
+  task.wait(C.AutoGatherTickSeconds)
+  local worldFolder=workspace:FindFirstChild("CozyConquestWorld")
+  local forest=worldFolder and worldFolder:FindFirstChild("ForestFloor")
+  local farm=worldFolder and worldFolder:FindFirstChild("FarmPlot")
+  for _,p in ipairs(Players:GetPlayers())do
+   local root=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+   local zone=""
+   if root and not battling[p]then
+    if forest and horizontalDistance(root.Position,forest.Position)<=C.AutoGatherWoodRadius then
+     s(p,"Wood",n(p,"Wood",0)+C.AutoGatherAmount);zone="WOOD"
+    end
+    if farm and horizontalDistance(root.Position,farm.Position)<=C.AutoGatherFoodRadius then
+     s(p,"Food",n(p,"Food",0)+C.AutoGatherAmount);zone=zone==""and"FOOD"or"BOTH"
+    end
+   end
+   if p:GetAttribute("AutoGatherZone")~=zone then
+    p:SetAttribute("AutoGatherZone",zone)
+    if zone=="WOOD"then msg(p,"숲 자동채집 · 나무 +"..C.AutoGatherAmount)
+    elseif zone=="FOOD"then msg(p,"농장 자동채집 · 식량 +"..C.AutoGatherAmount)
+    elseif zone=="BOTH"then msg(p,"자동채집 · 나무/식량 +"..C.AutoGatherAmount)end
+   end
+  end
+ end
+end)
+task.spawn(function()
+ while true do
+  task.wait(C.AutomationTickSeconds)
+  for _,p in ipairs(Players:GetPlayers())do
+   local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0)
+   if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end
+   if f>0 then s(p,"Food",n(p,"Food",0)+f)end
+  end
+ end
+end)
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
  if C.QACameraEnabled~=true then return end
  if typeof(label)~="string"or #label<1 or #label>48 then return end
