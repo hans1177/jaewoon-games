@@ -82,6 +82,8 @@ export function assembleRobloxTechnicalEvidence({build={},runtime={},independent
   const sameArtifact=Boolean(artifactIdentity)&&bindings.every(row=>!clean(row.artifactIdentity||row.placeSha256||row.sha256||row.buildId)||clean(row.artifactIdentity||row.placeSha256||row.sha256||row.buildId)===artifactIdentity);
   const buildOrPackagePassed=passed(build,'buildOrPackagePassed');
   const luauOrSourceValidationPassed=build.luauOrSourceValidationPassed===true||upper(build.sourceValidation)==='PASS';
+  const actualRuntimeEvidence=runtime.actualRuntimeEvidence===true||runtime.actualPlatformRuntime===true;
+  const runtimeFoundationPassed=runtime.runtimeFoundationPassed===true;
   const runtimePassed=runtime.runtimePassed===true||upper(runtime.runtime)==='PASS';
   const serverClientBoundaryPassed=runtime.serverClientBoundaryPassed===true;
   const saveExists=runtime.saveExists===true;
@@ -103,6 +105,8 @@ export function assembleRobloxTechnicalEvidence({build={},runtime={},independent
     buildOrPackagePassed,
     artifactIdentity:artifactIdentity||null,
     luauOrSourceValidationPassed,
+    actualRuntimeEvidence,
+    runtimeFoundationPassed,
     runtimePassed,
     runtime:runtimePassed?'PASS':'FAIL',
     serverClientBoundaryPassed,
