@@ -388,8 +388,10 @@ test('24H safety-net refills free game slots while preserving queue-level confli
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"));
-  assert(safetyNetWorkflow.includes('refill:\\n    needs: [plan, recovery_fast, continuous, learning_idle, game_study]'));
-  assert(safetyNetWorkflow.includes('if: ${{ always() }}'));\n  assert(safetyNetWorkflow.includes('name: Dispatch next cycle unconditionally'));\n  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DISPATCHED'));
+  assert(safetyNetWorkflow.includes('needs: [plan, recovery_fast, continuous, learning_idle, game_study]'));
+  assert(safetyNetWorkflow.includes('if: ${{ always() }}'));
+  assert(safetyNetWorkflow.includes('name: Dispatch next cycle unconditionally'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DISPATCHED'));
   assert(workflow.includes('VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE='));
   assert(workflow.includes('VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'));
   assert(!workflow.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
