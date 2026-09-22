@@ -6,6 +6,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { VIBE_WORK_LOCK_STATE_BRANCH, VIBE_WORK_LOCK_STATE_PATH } from '../assets/vibe-work-lock.js';
+import { compileOwnerCanonicalConstitution } from './company-shared-context.mjs';
 
 export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
@@ -14,6 +15,7 @@ const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const sha256=value=>crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex');
 
 function workerExecutionPolicyProjection(policy={}){
+  const constitution=compileOwnerCanonicalConstitution(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const live=shared?.liveMainFreshness||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
@@ -23,6 +25,15 @@ function workerExecutionPolicyProjection(policy={}){
   return{
     status:clean(policy.status)||null,
     policySource:clean(policy.policySource)||null,
+    ownerCanonicalConstitution:{
+      version:constitution.version,
+      authority:constitution.authority,
+      constitutionalAuthority:constitution.constitutionalAuthority,
+      automaticContractBinding:constitution.binding?.automaticContractBinding===true,
+      fingerprint:constitution.fingerprint,
+      orderedRuleIds:constitution.orderedRuleIds,
+      ruleFingerprints:constitution.rules.map(row=>({number:row.number,id:row.id,fingerprint:row.fingerprint}))
+    },
     sharedWorkerContext:{
       requiredForAllWorkers:shared.requiredForAllWorkers===true,
       centralPolicy:clean(shared.centralPolicy)||null,
@@ -93,12 +104,14 @@ function workerExecutionPolicyProjection(policy={}){
 function workerExecutionPolicyFingerprint(policy={}){return sha256(JSON.stringify(workerExecutionPolicyProjection(policy)));}
 
 function policyValidationErrors(policy={}){
+  const constitution=compileOwnerCanonicalConstitution(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
   const collaboration=policy?.developmentLifecycleMachine?.primaryAiOrchestration?.internalVibeAiCollaboration||{};
   const role=orchestration?.assistantRole||{};
   const boundary=orchestration?.executionBoundary||{};
   const errors=[];
+  if(!constitution.valid)errors.push(...constitution.errors.map(error=>`OWNER_CANONICAL_${error}`));
   if(clean(policy.status)!=='OWNER_DIRECT_LOCKED')errors.push('STATUS');
   if(clean(policy.policySource)!==CANONICAL_VIBE_POLICY_PATH)errors.push('POLICY_SOURCE');
   if(shared.requiredForAllWorkers!==true)errors.push('SHARED_CONTEXT_REQUIRED');
@@ -250,6 +263,7 @@ export function compileVibeCentralWorkContract({
 }={}){
   const source=snapshot||{required:false,present:false,valid:true,path:CANONICAL_VIBE_POLICY_PATH,document:null};
   const policy=source.document||{};
+  const constitution=compileOwnerCanonicalConstitution(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
   const boundary=orchestration?.executionBoundary||{};
@@ -306,6 +320,17 @@ export function compileVibeCentralWorkContract({
     version:2,
     required,
     validAtCompile:source.valid===true,
+    constitution:{
+      version:constitution.version,
+      authority:constitution.authority,
+      constitutionalAuthority:constitution.constitutionalAuthority,
+      fingerprint:constitution.fingerprint,
+      automaticContractBinding:constitution.binding?.automaticContractBinding===true,
+      appliesToAllCurrentAndFutureRegisteredVibeWorkers:constitution.binding?.appliesToAllCurrentAndFutureRegisteredVibeWorkers===true,
+      childContractMayNotOverride:constitution.binding?.childContractMayNotOverride===true,
+      orderedRuleIds:constitution.orderedRuleIds,
+      rules:constitution.rules.map(row=>({key:row.key,number:row.number,id:row.id,label:row.label,authority:row.authority,objective:row.objective,fingerprint:row.fingerprint,contract:row.contract}))
+    },
     policy:{
       path:source.path||CANONICAL_VIBE_POLICY_PATH,
       version:source.version||null,
@@ -398,6 +423,10 @@ export function compiledWorkContractGuidance(contract={}){
   const request=contract.workRequest||{};
   return[
     '[CENTRAL ROADMAP WORK CONTRACT]',
+    '[OWNER CANONICAL CONSTITUTION - HIGHEST WORKER AUTHORITY]',
+    `constitution-sha256=${contract.constitution?.fingerprint||'missing'}; automatic-bind=${contract.constitution?.automaticContractBinding===true?'YES':'NO'}; ordered-rules=${(contract.constitution?.orderedRuleIds||[]).join(' > ')||'NONE'}`,
+    ...(contract.constitution?.rules||[]).map(rule=>`${rule.id} ${rule.label||''}: ${rule.objective||'FULL_CANONICAL_RULE_CONTRACT_BOUND'}`),
+    'Every current and future registered Vibe worker is automatically bound to every enabled canonical rule. No worker, department, child contract, runtime learning, or subordinate policy may opt out or weaken it.',
     `policy=${contract.policy?.path||CANONICAL_VIBE_POLICY_PATH}; version=${contract.policy?.version??'unknown'}; sha256=${contract.policy?.fingerprint||'missing'}; execution-sha256=${contract.policy?.executionFingerprint||'missing'}`,
     contract.freshness?.liveMainRequired===true?`live-main-ref=${contract.freshness?.liveMainRef||'origin/main'}; refresh-before-check=YES`:'',
     `work-key=${request.workKey||'NONE'}; next-gate=${request.nextGate||'NONE'}; dedupe-key=${request.dedupeKey||'NONE'}`,
