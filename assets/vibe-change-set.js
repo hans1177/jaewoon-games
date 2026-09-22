@@ -58,5 +58,15 @@ export function canApplyVibeChangeSet(changeSet, { allowProtectedChange = false 
   return { ok: true, reason: 'ready-for-review' };
 }
 
+export function classifyVibeOwnerInterrupt({ activeChangeSet = null, request = '' } = {}) {
+  const next = clean(request);
+  if (!next) throw new Error('owner interrupt request required');
+  const current = clean(activeChangeSet?.request || activeChangeSet?.ownerOrSystemIntent);
+  const major = new RegExp('장르|핵심\\s*루프|완전히|아예|세계관|전투\\s*방식|게임\\s*방향', 'i').test(next);
+  const repair = new RegExp('버그|오류|안\\s*돼|고장|깨져|복구|수정', 'i').test(next);
+  const sameConcept = !major && Boolean(current);
+  return Object.freeze({ event: 'OWNER_INPUT_RECEIVED', classification: major ? 'MAJOR_DIRECTION_CHANGE' : repair ? 'QUALITY_REPAIR' : sameConcept ? 'SAME_CONCEPT_EXTENSION' : 'LOCAL_FEATURE_CHANGE', action: major ? 'REPRIORITIZE_AND_RECOMPUTE_IMPACT' : 'MERGE_OR_QUEUE_WITHOUT_RESTART', preserveUnaffectedWork: true, latestOwnerDirectivePriority: true });
+}
+
 export function snapshotVibeChangeSet(changeSet) { return clone(changeSet); }
-if (typeof window !== 'undefined') { window.createJaewoonVibeChangeSet = createVibeChangeSet; window.canApplyJaewoonVibeChangeSet = canApplyVibeChangeSet; }
+if (typeof window !== 'undefined') { window.createJaewoonVibeChangeSet = createVibeChangeSet; window.canApplyJaewoonVibeChangeSet = canApplyVibeChangeSet; window.classifyJaewoonVibeOwnerInterrupt = classifyVibeOwnerInterrupt; }
