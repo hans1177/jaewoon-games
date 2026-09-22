@@ -20,11 +20,13 @@ test('심야 술래잡기 외부출시 빌드는 구조가 다른 3개 맵과 �
   assert.ok(launch.releaseGates.includes('three map-specific events per map'));
 });
 
-test('심야 술래잡기 UI는 로비 선택과 라운드 행동을 분리한다',()=>{
-  for(const marker of ['MidnightTopHUD','RoleSetup','RoundActions','친구 구출','대시','괴물 스킬','setupPanel.Visible','actionDock.Visible'])assert.match(client,new RegExp(marker));
+test('심야 술래잡기 UI는 추격 시야를 비우고 상황별 최소 행동만 표시한다',()=>{
+  for(const marker of ['MidnightTopHUD','RoleSetup','RoundActions','친구 구출','대시','괴물 스킬','setupPanel.Visible','actionDock.Visible','CoreUISafeInsets'])assert.match(client,new RegExp(marker));
+  assert.match(client,/hud\.Size=UDim2\.fromOffset\(320,46\)/);
+  assert.match(client,/actionDock\.Size=UDim2\.fromOffset\(224,54\)/);
   assert.match(client,/rescueButton\.Visible=running and role=="SURVIVOR"/);
   assert.match(client,/abilityButton\.Visible=running and role=="MONSTER"/);
-  assert.match(client,/Size=UDim2\.new\(\.48,0,0,76\)/);
+  assert.match(client,/setupChosen=true/);
   assert.ok(launch.releaseGates.includes('start UI collapses after selection'));
 });
 
