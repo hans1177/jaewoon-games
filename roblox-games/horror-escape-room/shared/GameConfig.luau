@@ -17,14 +17,14 @@ local Config={
   Warning="rbxassetid://9043346574",
  },
  Maps={
-  {Id="SCHOOL",Name="학교",Events={
-   {Id="LIGHTS_OUT",Name="복도 소등"},{Id="RED_HALL",Name="비상등 점등"},{Id="FOG_HALL",Name="안개 낀 복도"},
+  {Id="SCHOOL",Name="학교",Difficulty="BEGINNER",Areas={"교실","복도","급식실","체육관"},Events={
+   {Id="LIGHTS_OUT",Name="복도 소등"},{Id="RED_HALL",Name="비상등 점등"},{Id="FIRE_DRILL",Name="비상벨과 체육관 개방"},
   }},
-  {Id="HOSPITAL",Name="폐병원",Events={
-   {Id="POWER_OUTAGE",Name="병동 정전"},{Id="EMERGENCY_LIGHTS",Name="응급등 점등"},{Id="STERILE_FOG",Name="소독 안개"},
+  {Id="HOSPITAL",Name="폐병원",Difficulty="CHASE",Areas={"좁은 복도","병실","수술실","지하실"},Events={
+   {Id="POWER_OUTAGE",Name="병동 정전"},{Id="WARD_LOCKDOWN",Name="병실 문 잠김"},{Id="BASEMENT_FOG",Name="지하실 짙은 안개"},
   }},
-  {Id="THEME_PARK",Name="폐놀이공원",Events={
-   {Id="NEON_SURGE",Name="네온 폭주"},{Id="RIDE_BLACKOUT",Name="놀이기구 정전"},{Id="MIDWAY_FOG",Name="광장 안개"},
+  {Id="THEME_PARK",Name="폐놀이공원",Difficulty="ADVANCED",Areas={"회전목마","귀신의 집","매표소","지하 통로"},Events={
+   {Id="CAROUSEL_START",Name="회전목마 오작동"},{Id="RIDE_BLACKOUT",Name="놀이기구 정전"},{Id="TUNNEL_FOG",Name="지하 통로 안개"},
   }},
  },
  MonsterForms={
