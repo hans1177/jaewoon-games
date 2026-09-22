@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "gameId": "horror-escape-room",
   "gameName": "심야 술래잡기",
   "releaseStrategy": "FAST_MVP",
@@ -19,6 +19,12 @@
     "five classic monsters with distinct abilities",
     "solo AI fill",
     "server-authoritative action validation, multiplayer sync and movement abuse guards",
+    "340x340 expanded map footprint for each map",
+    "four survivor objectives and unlocked escape gate",
+    "180-second objective chase rounds",
+    "classic monster roster: Dracula, Frankenstein, Werewolf, Mummy, Grim Reaper",
+    "Roblox Creator Store environment asset decoration with script stripping",
+    "distinct expanded school hospital and abandoned theme park subzones",
     "solo freeze recovery and AI rescue behavior"
   ],
   "deferredUntilAfterMvp": [
@@ -53,7 +59,13 @@
     "round-start tag grace",
     "solo player cannot remain permanently frozen",
     "AI survivors rescue frozen human players",
-    "movement state restored after thaw/spawn"
+    "movement state restored after thaw/spawn",
+    "340x340 arena footprint",
+    "four interactive survivor objectives",
+    "escape gate unlock and survivor escape victory",
+    "classic five-monster roster",
+    "asset scripts stripped before world decoration",
+    "expanded subzones and route variety"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -66,7 +78,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-22T14:20:00+09:00",
+  "updatedAt": "2026-09-22T15:10:00+09:00",
   "externalReleaseCandidate": true,
   "candidateScopeVersion": 4
 }
