@@ -1,5 +1,5 @@
 {
-  "version": 260,
+  "version": 261,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -5082,8 +5082,8 @@
           "EMIT_CORE_LOOP_READY_ONLY_AFTER_SUCCESSFUL_GAME_STATE_TRANSITION",
           "INVALIDATE_PRIOR_RELEASE_PASS_STATE_ON_NEW_RUNTIME_CANDIDATE"
         ],
-        "currentRepairState": "SOURCE_REPAIRED_AND_SENTINEL_INSTRUMENTED_AWAITING_EXACT_RUNTIME_CANDIDATE_OBSERVATION",
-        "secondaryRuntimeRisk": "SAFE_SPAWN_CREATED_AFTER_PLAYER_BINDING_COULD_ALLOW_EARLY_CHARACTER_VALIDATION_BEFORE_SPAWN_FOUNDATION"
+        "currentRepairState": "SOURCE_SPAWN_ORDER_CORE_LOOP_AND_EXACT_CANDIDATE_REPAIRS_IMPLEMENTED_AWAITING_CI_AND_ACTUAL_RUNTIME_OBSERVATION",
+        "secondaryRuntimeRisk": "REPAIRED_SAFE_SPAWN_NOW_CREATED_BEFORE_PLAYER_BINDING"
       },
       "implementationPlan": {
         "phase1": [
@@ -5169,9 +5169,10 @@
         "unityFoundationAdapter": "PENDING_NO_FALSE_PASS",
         "fortniteUefnFoundationAdapter": "PENDING_OWNER_HOLD_NO_FALSE_PASS",
         "robloxF0NativeLanguageCompile": "IMPLEMENTED_PINNED_OFFICIAL_LUAU_0_739",
-        "cozyIslandSpawnOrderingRaceRepair": "DESIGNED_IMPLEMENTATION_IN_PROGRESS",
-        "runtimeCandidateStaleEvidenceInvalidation": "DESIGNED_IMPLEMENTATION_IN_PROGRESS",
-        "f9UniversePlaceVersionExactBinding": "DESIGNED_IMPLEMENTATION_IN_PROGRESS"
+        "cozyIslandSpawnOrderingRaceRepair": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "runtimeCandidateStaleEvidenceInvalidation": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "f9UniversePlaceVersionExactBinding": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5238,10 +5239,10 @@
           "officialLuauCompilerSha256Verified": true,
           "cozyIslandLuauFilesCompiled": 6,
           "missingCompileEvidenceBlocksF0": true,
-          "cozyIslandSpawnBeforePlayerBinding": false,
-          "coreLoopCheckpointRequiresSuccessfulTransition": false,
-          "newCandidateClearsPriorReleasePassState": false,
-          "f9BindsUniversePlaceVersion": false
+          "cozyIslandSpawnBeforePlayerBinding": true,
+          "coreLoopCheckpointRequiresSuccessfulTransition": true,
+          "newCandidateClearsPriorReleasePassState": true,
+          "f9BindsUniversePlaceVersion": true
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
