@@ -12,11 +12,11 @@
       "lastEvidence": "exp_system_ai_33ca28f6ca53ae6c28806b87"
     },
     "STATE_MACHINE": {
-      "xp": 1863,
+      "xp": 1873,
       "level": 15,
       "verifiedSuccesses": 116,
-      "verifiedFailureLessons": 103,
-      "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
+      "verifiedFailureLessons": 105,
+      "lastEvidence": "capability_ctrace_383f1508b1e716e1b7848811"
     },
     "COMBAT": {
       "xp": 1296,
@@ -68,11 +68,11 @@
       "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
     },
     "DEBUGGING": {
-      "xp": 1875,
+      "xp": 1885,
       "level": 15,
       "verifiedSuccesses": 119,
-      "verifiedFailureLessons": 103,
-      "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
+      "verifiedFailureLessons": 105,
+      "lastEvidence": "capability_ctrace_383f1508b1e716e1b7848811"
     },
     "RECOVERY": {
       "xp": 1231,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 1732,
+      "xp": 1742,
       "level": 15,
       "verifiedSuccesses": 106,
-      "verifiedFailureLessons": 92,
-      "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
+      "verifiedFailureLessons": 94,
+      "lastEvidence": "capability_ctrace_383f1508b1e716e1b7848811"
     },
     "ROBLOX_STUDIO": {
       "xp": 24,
@@ -480,7 +480,9 @@
     "exp_system_ai_1fe92c217a057b5e299553d1",
     "exp_system_ai_8e98199837a1f6d92c39a610",
     "exp_system_ai_33ca28f6ca53ae6c28806b87",
-    "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
+    "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
+    "capability_ctrace_df616abde58641d9847509b9",
+    "capability_ctrace_383f1508b1e716e1b7848811"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -701,8 +703,8 @@
       ]
     },
     "fail_lhx93q": {
-      "count": 9,
-      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed",
+      "count": 11,
+      "lastEvidence": "capability_ctrace_383f1508b1e716e1b7848811",
       "example": "SOURCE_CANDIDATE_GENERATION:DIAGNOSTIC_POSTCONDITION",
       "domains": [
         "CORE_LOOP",
@@ -8484,7 +8486,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-22T23:15:14.858Z",
+    "lastBuiltAt": "2026-09-22T23:16:32.423Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -12549,5 +12551,5 @@
       "knowledge_1l7gk9o"
     ]
   },
-  "updatedAt": "2026-09-22T23:15:14.858Z"
+  "updatedAt": "2026-09-22T23:16:32.423Z"
 }
