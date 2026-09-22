@@ -140,3 +140,17 @@ test('심야는 상세 맵 생성 실패 시 안전한 기본맵으로 자동 �
   assert.match(server,/recordServerQA\("MAP_FALLBACK:"/);
   assert.match(server,/arena=ensureArena\(C\.Maps\[1\]\)/);
 });
+
+test('1인 얼음 상태는 영구 이동불가가 되지 않고 AI 구조와 이동복구를 가진다',()=>{
+  assert.match(server,/local tagGraceUntil=\{\}/);
+  assert.match(server,/tagGraceUntil\[p\]=os\.clock\(\)\+6/);
+  assert.match(server,/if #Players:GetPlayers\(\)==1 then/);
+  assert.match(server,/task\.delay\(2\.4/);
+  assert.match(server,/RESCUE:SOLO_AUTO/);
+  assert.match(server,/local function restoreMovement\(p,v\)/);
+  assert.match(server,/h\.PlatformStand=false/);
+  assert.match(server,/h\.AutoRotate=true/);
+  assert.match(server,/r\.Anchored=false/);
+  assert.match(server,/rescueTarget/);
+  for(const gate of ['round-start tag grace','solo player cannot remain permanently frozen','AI survivors rescue frozen human players','movement state restored after thaw/spawn'])assert.ok(launch.releaseGates.includes(gate),gate);
+});
