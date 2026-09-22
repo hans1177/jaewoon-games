@@ -1,8 +1,8 @@
 {
-  "version": 265,
+  "version": 266,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-22",
+  "recordedAt": "2026-09-23",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -5968,7 +5968,7 @@
         "separateFromTop30Promotion": true,
         "mustNotClaimValidationOrRelease": true,
         "webTestButtonEnabled": true,
-        "webTestButtonLabel": "Unity Web 테스트",
+        "webTestButtonLabel": "Unity Web · 개발중",
         "platformTestButtonEnabled": true,
         "platformTestButtonLabelMode": "PLATFORM_NAME",
         "webAndPlatformTestButtonsMustBeSeparate": true,
@@ -5981,7 +5981,10 @@
         "scoreRequiresMusicPass": false,
         "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
         "reworkOrRevalidationScoresNotShownAsCurrent": false,
-        "scoreRequiresSchema15": false
+        "scoreRequiresSchema15": false,
+        "unityWebHomepageExposureGate": "OUTPUT_INDEX_EXISTS_ONLY",
+        "unityWebQaPassRequiredForHomepageLink": false,
+        "unityWebEvidenceFilesRequiredForHomepageLink": false
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6063,7 +6066,12 @@
         "engine": "UNITY_WEB",
         "bootSmoke": "PASS",
         "initialRealGameplayQa": "PASS"
-      }
+      },
+      "homepageLinkGate": "OUTPUT_INDEX_EXISTS_ONLY",
+      "homepageLinkRequiresExistingIndex": true,
+      "homepageLinkQaPassRequired": false,
+      "homepageLinkEvidenceFilesRequired": false,
+      "validationEvidenceStillRequiredForQaVerdict": true
     }
   },
   "longHorizonVision": {
