@@ -406,9 +406,10 @@ test('free-slot refill keeps learning-idle and game-study gated by an actually i
   assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
 });
 
-test('24H cycle serialization does not reuse the control-state lock',()=>{
-  assert(safetyNetWorkflow.includes('concurrency:\n  group: vibe2-24h-cycle-main\n  cancel-in-progress: false'));
-  assert(!safetyNetWorkflow.includes('concurrency:\n  group: vibe2-control-state-vibe2-unreal-core\n  cancel-in-progress: false\n\njobs:'));
+test('24H cycle start never blocks behind stale workflow-level concurrency',()=>{
+  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
+  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-main'));
+  assert(safetyNetWorkflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   const gameStudyStart=safetyNetWorkflow.indexOf('  game_study:');
   const refillStart=safetyNetWorkflow.indexOf('  refill:');
   assert(gameStudyStart>=0 && refillStart>gameStudyStart);
