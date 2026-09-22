@@ -35,7 +35,7 @@ const multiplayer={client:null,channel:null,room:'',connected:false,playerId:ses
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=39,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=40,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -70,6 +70,10 @@ const STORY_LAB_2={w:6200,h:3400,ladder:{x:420,y:1700},boss:{x:3150,y:1700},shut
 const LAVA_POOLS=[{x:7400,y:3450,r:120},{x:7950,y:4050,r:140},{x:8650,y:3320,r:105},{x:9300,y:3950,r:145},{x:9850,y:3500,r:115},{x:10650,y:4350,r:135},{x:11400,y:3650,r:125},{x:12700,y:4350,r:150}];
 const recipes=[
 {id:'bench',name:'제작대',where:'hand',cost:{wood:10,stone:6,fiber:4},desc:'상위 제작을 위한 기본 제작대',kind:'structure'},
+{id:'storage-chest',name:'상자',where:'hand',cost:{wood:10},desc:'여러 개 설치 가능 · 아이템을 넣고 꺼내는 보관함',kind:'structure'},
+{id:'wood-wall',name:'나무벽',where:'hand',cost:{wood:5},desc:'여러 개 설치 가능 · 이동을 막는 기본 벽',kind:'structure'},
+{id:'wood-door',name:'나무문',where:'hand',cost:{wood:6,fiber:2},desc:'여러 개 설치 가능 · 두 번 눌러 열고 닫기',kind:'structure'},
+{id:'bed',name:'침대',where:'hand',cost:{wood:6,fiber:8},desc:'여러 개 설치 가능 · 리스폰 지점 설정 · 누워있으면 체력 회복',kind:'structure'},
 {id:'wood-spear',name:'나무창',where:'hand',cost:{wood:6,fiber:3},desc:'공격력 10 · 긴 사거리',kind:'weapon',power:10,range:96,cooldown:480},
 {id:'bandage',name:'섬유붕대',where:'hand',cost:{fiber:6},desc:'사용 시 체력 35 회복',kind:'consumable',heal:35},
 {id:'flag',name:'깃발',where:'hand',cost:{wood:5,fiber:4},desc:'설치한 위치가 지도에 표시됨 · 여러 개 설치 가능',kind:'structure'},
@@ -311,7 +315,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,restingBedId:null,bedHealAt:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,cookingStation:null,incubator:null,flags:[],chests:[],walls:[],doors:[],beds:[],respawnPos:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',dirty:false};
 const ACHIEVEMENTS=[
  {id:'strong-body',name:'강력한 신체',desc:'화산 또는 수정 지역 몬스터를 처치'},
  {id:'escape-step',name:'탈출의 1걸음',desc:'무전기 부품을 발견'},
@@ -334,7 +338,7 @@ function unlockAchievement(id,announce=true){
  return true
 }
 function mainStructureCount(){
- return[state.bench,state.furnace,state.ironBench,state.goldBench,state.cookingStation,state.incubator].filter(Boolean).length
+ return[state.bench,state.furnace,state.ironBench,state.goldBench,state.cookingStation,state.incubator].filter(Boolean).length+state.chests.length+state.walls.length+state.doors.length+state.beds.length
 }
 function checkAchievementProgress(announce=true){
  const strongMaterials=['fireWolfFang','burrowerShell','walkerClaw','calmMagmaCore','rageMagmaCore','fireSnakeScale','hardShell','crystalCore'];
@@ -751,7 +755,7 @@ function useItem(id){
  }
  state.dirty=true;updateHud();renderPanel()
 }
-function structurePositions(){return[state.bench,state.furnace,state.ironBench,state.goldBench,state.jungleBench,state.cookingStation,state.incubator,...state.flags].filter(Boolean)}
+function structurePositions(){return[state.bench,state.furnace,state.ironBench,state.goldBench,state.jungleBench,state.cookingStation,state.incubator,...state.flags,...state.chests,...state.walls,...state.doors,...state.beds].filter(Boolean)}
 function resolveStructureOverlaps(){
  const keys=['bench','furnace','ironBench','goldBench','cookingStation','incubator'],placed=[];
  for(const key of keys){let s=state[key];if(!s)continue;if(placed.some(p=>dist(s.x,s.y,p.x,p.y)<88)){let fixed=null;for(let ring=1;ring<=4&&!fixed;ring++)for(let i=0;i<12;i++){const a=i*Math.PI/6,pos={x:clamp(s.x+Math.cos(a)*95*ring,45,WORLD.w-45),y:clamp(s.y+Math.sin(a)*95*ring,45,WORLD.h-45)};if(placed.every(p=>dist(pos.x,pos.y,p.x,p.y)>=88)){fixed=pos;break}}if(fixed){state[key]=s=fixed;state.dirty=true}}placed.push(s)}
@@ -761,7 +765,24 @@ function findStructurePlacement(){
  for(const [ox,oy] of offs){const pos={x:clamp(p.x+ox,45,WORLD.w-45),y:clamp(p.y+oy,45,WORLD.h-45)};if(structurePositions().every(s=>dist(pos.x,pos.y,s.x,s.y)>=88))return pos}
  return null
 }
-function placeStructure(id,pos=findStructurePlacement()){if(!pos)return false;if(id==='bench')state.bench=pos;if(id==='furnace')state.furnace=pos;if(id==='iron-bench')state.ironBench=pos;if(id==='gold-bench')state.goldBench=pos;if(id==='jungle-bench')state.jungleBench=pos;if(id==='cooking-station')state.cookingStation=pos;if(id==='shadow-wolf-incubator')state.incubator=pos;if(id==='flag')state.flags.push(pos);return true}
+function placeStructure(id,pos=findStructurePlacement()){
+ if(!pos)return false;
+ const vertical=pos.vertical!==undefined?!!pos.vertical:Math.abs(state.player.faceX||1)>=Math.abs(state.player.faceY||0);
+ const base={x:pos.x,y:pos.y,id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),vertical};
+ if(id==='bench')state.bench=pos;
+ else if(id==='furnace')state.furnace=pos;
+ else if(id==='iron-bench')state.ironBench=pos;
+ else if(id==='gold-bench')state.goldBench=pos;
+ else if(id==='jungle-bench')state.jungleBench=pos;
+ else if(id==='cooking-station')state.cookingStation=pos;
+ else if(id==='shadow-wolf-incubator')state.incubator=pos;
+ else if(id==='flag')state.flags.push(pos);
+ else if(id==='storage-chest'){const b={...base,storage:pos.storage&&typeof pos.storage==='object'?{...pos.storage}:{}};state.chests.push(b);return b}
+ else if(id==='wood-wall'){const b={...base};state.walls.push(b);return b}
+ else if(id==='wood-door'){const b={...base,open:!!pos.open};state.doors.push(b);return b}
+ else if(id==='bed'){const b={...base};state.beds.push(b);return b}
+ return pos
+}
 function structureExists(id){return id==='bench'?!!state.bench:id==='furnace'?!!state.furnace:id==='iron-bench'?!!state.ironBench:id==='gold-bench'?!!state.goldBench:id==='jungle-bench'?!!state.jungleBench:id==='cooking-station'?!!state.cookingStation:id==='shadow-wolf-incubator'?!!state.incubator:false}
 function craftItem(id){
  const r=item(id);if(!r)return
@@ -775,8 +796,8 @@ function craftItem(id){
  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
  pay(r.cost);const p=state.player;
  if(r.kind==='structure'){
-   placeStructure(r.id,pos);rememberItem(r.id);
-   if(multiplayer.connected&&!multiIsHost())multiSend('structure-place',{id:r.id,pos:{x:pos.x,y:pos.y}})
+   const placed=placeStructure(r.id,pos);rememberItem(r.id);
+   if(multiplayer.connected&&!multiIsHost())multiSend('structure-place',{id:r.id,pos:placed&&typeof placed==='object'?placed:{x:pos.x,y:pos.y}})
  }
  else if(r.kind==='weapon'){addInv(r.id);if(!p.weapon)setWeapon(r.id)}
  else if(r.kind==='tool'){addInv(r.id);if(!p.tool)p.tool=r.id}
@@ -838,7 +859,7 @@ function openCooking(){
 }
 function renderInventory(){
  tabState();const p=state.player,gear=recipes.filter(r=>['weapon','tool','armor','consumable','ingredient'].includes(r.kind)&&invCount(r.id)>0);
- let html='<div class="info"><b>인벤토리</b><br>한 번도 얻지 못한 상위 재료와 제작물은 ???로 표시돼.</div><div class="invSection">재료</div><div class="invMaterials"><div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'+materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div><div class="invSection">설치물</div><div class="invMaterials">'+structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)+'<div class="mat">깃발 <b>'+state.flags.length+'개</b></div></div><div class="invSection">아이템</div><div class="grid">';
+ let html='<div class="info"><b>인벤토리</b><br>한 번도 얻지 못한 상위 재료와 제작물은 ???로 표시돼.</div><div class="invSection">재료</div><div class="invMaterials"><div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'+materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div><div class="invSection">설치물</div><div class="invMaterials">'+structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)+'<div class="mat">상자 <b>'+state.chests.length+'개</b></div><div class="mat">나무벽 <b>'+state.walls.length+'개</b></div><div class="mat">나무문 <b>'+state.doors.length+'개</b></div><div class="mat">침대 <b>'+state.beds.length+'개</b></div><div class="mat">깃발 <b>'+state.flags.length+'개</b></div></div><div class="invSection">아이템</div><div class="grid">';
  if(p.torch)html+='<button class="invItem" id="torchToggle"><b>마력 횃불</b><small>왼손 · 남은 내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'왼손 장착 중':'왼손에 들기')+'</small></button>';
  if(!gear.length&&!p.torch)html+='<div class="info">아직 보유한 장비나 소모품이 없어.</div>';
  for(const r of gear){let action='보유';if(r.kind==='weapon')action=p.weapon===r.id?'장착 중':'장착';if(r.kind==='tool')action=p.tool===r.id?'장착 중':'장착';if(r.kind==='armor')action=p.armor===r.id?'장착 중':'장착';if(r.kind==='consumable')action='사용';if(r.kind==='ingredient')action='요리 재료';const clickable=r.kind==='consumable'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');html+='<button class="invItem" data-id="'+r.id+'" '+(clickable?'':'disabled')+'><b>'+r.name+' ×'+invCount(r.id)+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="slot">'+action+'</small></button>'}
@@ -1124,9 +1145,42 @@ function renderPanel(){
  else if(state.panelMode==='cooking')renderCooking();
  else if(state.panelMode==='story')renderStory();
  else if(state.panelMode==='gift')renderGift();
+ else if(state.panelMode==='chest')renderChest();
  else renderCraft()
 }function openCraft(mode=state.craftMode){state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');renderInventory()}
 
+function chestById(id){return state.chests.find(x=>x.id===id)||null}
+function renderChest(){
+ tabState();const ch=chestById(state.activeChestId);
+ if(!ch){ui.sheetBody.innerHTML='<div class="info">상자를 찾을 수 없어.</div>';return}
+ const p=state.player,carry=recipes.filter(r=>invCount(r.id)>0&&r.id!==p.weapon&&r.id!==p.tool&&r.id!==p.armor),stored=Object.entries(ch.storage||{}).filter(([,n])=>Number(n)>0);
+ let html='<div class="info"><b>상자</b><br>장착 중인 장비를 제외한 아이템을 1개씩 넣고 꺼낼 수 있어.</div><div class="invSection">내 인벤토리</div><div class="grid">';
+ if(!carry.length)html+='<div class="info">넣을 아이템이 없어.</div>';
+ for(const r of carry)html+='<button class="invItem" data-chest-put="'+r.id+'"><b>'+r.name+' ×'+invCount(r.id)+'</b><small>상자에 1개 넣기</small></button>';
+ html+='</div><div class="invSection">상자 안</div><div class="grid">';
+ if(!stored.length)html+='<div class="info">상자가 비어 있어.</div>';
+ for(const [id,n] of stored){const r=item(id);if(r)html+='<button class="invItem" data-chest-take="'+id+'"><b>'+r.name+' ×'+n+'</b><small>1개 꺼내기</small></button>'}
+ html+='</div>';ui.sheetBody.innerHTML=html;
+ ui.sheetBody.querySelectorAll('[data-chest-put]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.chestPut;if(invCount(id)<1)return;p.inventory[id]--;ch.storage[id]=(Number(ch.storage[id])||0)+1;state.dirty=true;renderChest();saveGame(false)}));
+ ui.sheetBody.querySelectorAll('[data-chest-take]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.chestTake,n=Number(ch.storage[id])||0;if(n<1)return;ch.storage[id]=n-1;addInv(id,1);state.dirty=true;renderChest();saveGame(false)}))
+}
+function openChest(ch){state.activeChestId=ch.id;state.panelMode='chest';ui.sheet.classList.add('open');renderChest()}
+function interactBed(b){
+ const p=state.player;state.respawnPos={x:b.x,y:b.y};state.dirty=true;
+ if(p.restingBedId===b.id){p.restingBedId=null;showNotice('침대에서 일어났어 · 리스폰 지점은 유지돼');saveGame(false);return}
+ p.restingBedId=b.id;p.bedHealAt=performance.now()+1000;p.x=b.x;p.y=b.y;showNotice('침대에 누웠어 · 리스폰 지점 설정 · 체력 회복 중');saveGame(false)
+}
+function playerBuildingAt(x,y,range=70){
+ let best=null,bd=range;
+ for(const [type,list] of [['chest',state.chests],['door',state.doors],['bed',state.beds]])for(const b of list){const d=dist(x,y,b.x,b.y);if(d<bd){best={type,b};bd=d}}
+ return best
+}
+function blockedByPlayerBuilding(x,y){
+ if(state.area!=='surface')return false;
+ const blocks=[...state.walls,...state.doors.filter(d=>!d.open)];
+ for(const b of blocks){const hx=b.vertical?17:48,hy=b.vertical?48:17;if(Math.abs(x-b.x)<hx+18&&Math.abs(y-b.y)<hy+18)return true}
+ return false
+}
 function openGiftPlayer(targetId){
  if(!multiplayer.connected){showNotice('멀티에서만 동료에게 아이템을 줄 수 있어');return}
  const r=multiplayer.remote.get(targetId),now=performance.now();
@@ -1301,12 +1355,12 @@ function sharedStructureSnapshot(){
   jungleBench:state.jungleBench?{...state.jungleBench}:null,
   cookingStation:state.cookingStation?{...state.cookingStation}:null,
   incubator:state.incubator?{...state.incubator}:null,
-  flags:state.flags.map(x=>({...x}))
+  flags:state.flags.map(x=>({...x})),chests:state.chests.map(x=>({...x,storage:{...(x.storage||{})}})),walls:state.walls.map(x=>({...x})),doors:state.doors.map(x=>({...x})),beds:state.beds.map(x=>({...x}))
  }
 }
 function hostApplyStructurePlace(payload){
  if(!multiIsHost()||!payload)return;
- const allowed=new Set(['bench','furnace','iron-bench','gold-bench','jungle-bench','cooking-station','shadow-wolf-incubator','flag']);
+ const allowed=new Set(['bench','furnace','iron-bench','gold-bench','jungle-bench','cooking-station','shadow-wolf-incubator','flag','storage-chest','wood-wall','wood-door','bed']);
  const id=String(payload.id||'');if(!allowed.has(id))return;
  const pos=sharedStructurePos(payload.pos);if(!pos)return;
  if(id!=='flag'&&structureExists(id))return;
@@ -1411,7 +1465,9 @@ function applyWorldSnapshot(w){
   state.jungleBench=sharedStructurePos(w.structures.jungleBench);
   state.cookingStation=sharedStructurePos(w.structures.cookingStation);
   state.incubator=sharedStructurePos(w.structures.incubator);
-  state.flags=Array.isArray(w.structures.flags)?w.structures.flags.map(sharedStructurePos).filter(Boolean):[]
+  state.flags=Array.isArray(w.structures.flags)?w.structures.flags.map(sharedStructurePos).filter(Boolean):[];
+  const netBuild=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=sharedStructurePos(b);return p?{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?{open:!!b.open}:{}),...(type==='chest'?{storage:b.storage&&typeof b.storage==='object'?{...b.storage}:{}}:{})}:null}).filter(Boolean):[];
+  state.chests=netBuild(w.structures.chests,'chest');state.walls=netBuild(w.structures.walls,'wall');state.doors=netBuild(w.structures.doors,'door');state.beds=netBuild(w.structures.beds,'bed')
  }
  if(w.weather&&typeof w.weather==='object')setWeather(w.weather.kind,{fromNetwork:true,changedAt:w.weather.changedAt,nextAt:w.weather.nextAt,seed:w.weather.seed});
  state.bossSummoned=!!w.bossSummoned;state.bossDefeated=!!w.bossDefeated;state.crystalSealReleased=!!w.crystalSealReleased
@@ -1568,7 +1624,7 @@ function updatePet(dt,now){
  }
 }
 function attack(){
- const now=performance.now(),p=state.player,w=currentWeapon();interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+ const now=performance.now(),p=state.player,w=currentWeapon();if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
  p.attackAt=now;p.attackFx=now+150;
  const audioWeight=Math.max(0,Math.min(1,(Number(w?.power)||0)/180));playCombatAudio('swing',audioWeight);
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2'){
@@ -1602,7 +1658,7 @@ function attack(){
  if(hit){playCombatAudio('hit',audioWeight);state.dirty=true}updateHud()
 }
 function knockoutPlayer(message='쓰러져 숲 중앙에서 부활했어'){
- const p=state.player;if(state.pet.mounted)dismountPet(false);p.hp=Math.max(1,p.maxHp*.5);p.hunger=50;p.x=START.x;p.y=START.y;state.area='surface';if(petAlive()){state.pet.x=START.x+55;state.pet.y=START.y+25;state.pet.targetId=null}p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.poisonUntil=0;p.poisonNext=0;p.mudSlowUntil=0;p.templeSlowUntil=0;p.attackBlockedUntil=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;p.weakenedUntil=0;p.grabbedUntil=0;p.grabbedBy=null;p.vulnerableUntil=0;p.oxygen=40000;p.oxygenEndsAt=0;showNotice(message);state.dirty=true;updateHud()
+ const p=state.player;if(state.pet.mounted)dismountPet(false);const resp=state.respawnPos||START;p.hp=Math.max(1,p.maxHp*.5);p.hunger=50;p.x=resp.x;p.y=resp.y;p.restingBedId=null;state.area='surface';if(petAlive()){state.pet.x=resp.x+55;state.pet.y=resp.y+25;state.pet.targetId=null}p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.poisonUntil=0;p.poisonNext=0;p.mudSlowUntil=0;p.templeSlowUntil=0;p.attackBlockedUntil=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;p.weakenedUntil=0;p.grabbedUntil=0;p.grabbedBy=null;p.vulnerableUntil=0;p.oxygen=40000;p.oxygenEndsAt=0;showNotice(message);state.dirty=true;updateHud()
 }
 function enemyDamageTarget(e,n,force=false){
  const remoteId=multiplayer.connected&&multiIsHost()&&e?.playerTargetId&&e.playerTargetId!==multiplayer.playerId?e.playerTargetId:null;
@@ -1614,7 +1670,7 @@ function enemyDamageTarget(e,n,force=false){
  damagePlayer(n,force,e);return'player'
 }
 function damagePlayer(n,force=false,attacker=null){
- const p=state.player,now=performance.now();if(attacker)engagePet(attacker);if(state.pet.mounted&&petAlive()){damagePet(n,attacker);return}if(!force&&now<p.invuln)return;interruptAutoGather(now);const armor=item(p.armor);if(now>=(p.vulnerableUntil||0))n*=1-(armor?.reduce||0);p.hp=Math.max(0,p.hp-n);p.invuln=now+520;playCombatAudio('hurt',Math.max(0,Math.min(1,n/100)));ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
+ const p=state.player,now=performance.now();if(p.restingBedId)p.restingBedId=null;if(attacker)engagePet(attacker);if(state.pet.mounted&&petAlive()){damagePet(n,attacker);return}if(!force&&now<p.invuln)return;interruptAutoGather(now);const armor=item(p.armor);if(now>=(p.vulnerableUntil||0))n*=1-(armor?.reduce||0);p.hp=Math.max(0,p.hp-n);p.invuln=now+520;playCombatAudio('hurt',Math.max(0,Math.min(1,n/100)));ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
 }
 function applyBurn(){const p=state.player;p.burnTicks=4;p.burnNext=performance.now()+1000;showNotice('화염 상태 · 4초')}
 const SMELT_SPECS={
@@ -1891,6 +1947,14 @@ function handleWorldTap(e){
   if(remoteId){
    if(!doubleTapTarget('remote-player:'+remoteId,now,()=>openGiftPlayer(remoteId)))showNotice('동료를 한 번 더 눌러 아이템 주기');
    return
+  }
+ }
+ if(state.area==='surface'){
+  const pb=playerBuildingAt(wx,wy);
+  if(pb){
+   if(pb.type==='door'){doubleTapTarget('door:'+pb.b.id,now,()=>{pb.b.open=!pb.b.open;state.dirty=true;showNotice(pb.b.open?'문을 열었어':'문을 닫았어');saveGame(false)});return}
+   if(pb.type==='chest'){doubleTapTarget('chest:'+pb.b.id,now,()=>openChest(pb.b));return}
+   if(pb.type==='bed'){doubleTapTarget('bed:'+pb.b.id,now,()=>interactBed(pb.b));return}
   }
  }
  if(state.area==='surface'&&dist(wx,wy,JUNGLE_TEMPLE_ENTRANCE.x,JUNGLE_TEMPLE_ENTRANCE.y)<JUNGLE_TEMPLE_ENTRANCE.r+30){if(!doubleTapTarget('jungle-temple-entry',now,enterJungleTemple))showNotice('밀림 신전 · 한 번 더 눌러 입장');return}
@@ -2443,10 +2507,11 @@ function update(dt,now){
   let mx=(state.keys.has('KeyD')||state.keys.has('ArrowRight')?1:0)-(state.keys.has('KeyA')||state.keys.has('ArrowLeft')?1:0)+state.stick.x,
       my=(state.keys.has('KeyS')||state.keys.has('ArrowDown')?1:0)-(state.keys.has('KeyW')||state.keys.has('ArrowUp')?1:0)+state.stick.y,
       m=Math.hypot(mx,my);
+  if(m>.01&&p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')}
   if(m>.01&&now>=(p.stunnedUntil||0)&&now>=(p.grabbedUntil||0)){
     mx/=Math.max(1,m);my/=Math.max(1,m);
     const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){p.x=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24);p.y=clamp(p.y+my*moveSpeed*dt,24,UNDERWATER.h-24)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
-    else{const nx=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24),ny=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24);if(!pointInGiantLakeWater(nx,ny)){p.x=nx;p.y=ny}}
+    else{const nx=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24),ny=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24);if(!pointInGiantLakeWater(nx,ny)&&!blockedByPlayerBuilding(nx,ny)){p.x=nx;p.y=ny}}
     p.faceX=mx;p.faceY=my
   }
   if(state.area==='underwater'&&p.y<=UNDERWATER.exitY){leaveUnderwater()}
@@ -2461,6 +2526,11 @@ function update(dt,now){
   if(now>=p.hungerNext){const steps=Math.max(1,Math.floor((now-p.hungerNext)/20000)+1);p.hunger=Math.max(0,p.hunger-steps);p.hungerNext+=steps*20000;state.dirty=true;updateHud()}
   if(p.regenTicks>0&&now>=p.regenNext){p.hp=Math.min(p.maxHp,p.hp+10);p.regenTicks--;p.regenNext=now+1000;state.dirty=true;updateHud()}
   if(p.foodRegenTicks>0&&now>=p.foodRegenNext){p.hp=Math.min(p.maxHp,p.hp+p.foodRegenAmount);p.foodRegenTicks--;p.foodRegenNext=now+1000;state.dirty=true;updateHud()}
+  if(p.restingBedId){
+   const bed=state.beds.find(b=>b.id===p.restingBedId);
+   if(!bed||state.area!=='surface')p.restingBedId=null;
+   else{p.x=bed.x;p.y=bed.y;if(now>=(p.bedHealAt||0)){p.bedHealAt=now+1000;p.hp=Math.min(p.maxHp,p.hp+10);state.dirty=true;updateHud()}}
+  }
   updatePet(dt,now);
   if(!multiplayer.connected||multiIsHost()||state.area==='storylab1'||state.area==='storylab2'){
     for(const e of state.enemies){
@@ -2828,6 +2898,18 @@ function drawStructure(s,cx,cy,type){
  else if(type==='goldbench'){label='금 제작대';labelColor='#fff1a2'}
  else if(type==='flag'){label='깃발';labelColor='#fff3be';labelY=y+48}
  ctx.fillStyle=labelColor;ctx.font='bold 9px system-ui';ctx.fillText(label,x,labelY)
+}
+function drawPlayerBuilding(b,cx,cy,type){
+ if(!b)return;const x=b.x-cx,y=b.y-cy;if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)return;ctx.save();ctx.translate(x,y);ctx.textAlign='center';
+ if(type==='wall'||type==='door'){
+  const w=b.vertical?28:92,h=b.vertical?92:28;ctx.fillStyle=type==='door'?(b.open?'#6f8a58':'#7b5434'):'#765331';ctx.fillRect(-w/2,-h/2,w,h);ctx.strokeStyle='#c69a62';ctx.lineWidth=4;ctx.strokeRect(-w/2,-h/2,w,h);
+  if(type==='door'){ctx.fillStyle='#fff1c9';ctx.font='bold 9px system-ui';ctx.fillText(b.open?'문 열림':'문 닫힘 · 두 번 누르기',0,h/2+18)}
+ }else if(type==='chest'){
+  ctx.fillStyle='#7a512d';roundRect(-30,-22,60,44,7);ctx.fill();ctx.strokeStyle='#d4a85e';ctx.lineWidth=4;ctx.strokeRect(-28,-20,56,40);ctx.fillStyle='#ffe6a5';ctx.font='bold 9px system-ui';ctx.fillText('상자 · 두 번 누르기',0,38)
+ }else if(type==='bed'){
+  ctx.fillStyle='#704b37';ctx.fillRect(-42,-24,84,48);ctx.fillStyle='#b44343';ctx.fillRect(-32,-18,64,36);ctx.fillStyle='#eee4d4';ctx.fillRect(-30,-16,20,32);ctx.fillStyle='#ffe9c2';ctx.font='bold 9px system-ui';ctx.fillText(state.player.restingBedId===b.id?'누워서 회복 중':'침대 · 두 번 누르기',0,40)
+ }
+ ctx.restore()
 }
 const FANTASY_VISUAL_STYLE_LOCK=Object.freeze({
  version:1,
@@ -3277,7 +3359,7 @@ function draw(){
  else{
   drawBackground(cx,cy,innerWidth,innerHeight);
   for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);
-  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)
+  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');drawShadowEgg(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);
  drawDeathEffects(cx,cy,now);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawQuestDarkness()
@@ -3291,7 +3373,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,beds:state.beds,respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -3305,7 +3387,10 @@ function loadGame(){
   p.wood=Math.max(0,Number(o.wood)||0);p.stone=Math.max(0,Number(o.stone)||0);p.fiber=Math.max(0,Number(o.fiber)||0);p.ironOre=Math.max(0,Number(o.ironOre)||0);p.ironIngot=Math.max(0,Number(o.ironIngot)||0);p.goldOre=Math.max(0,Number(o.goldOre)||0);p.goldIngot=Math.max(0,Number(o.goldIngot)||0);p.essence=Math.max(0,Number(o.essence)||0);p.cold=clamp(Number(o.cold)||0,0,100);p.hunger=clamp(Number.isFinite(Number(o.hunger))?Number(o.hunger):100,0,100);p.hungerNext=performance.now()+20000;p.wolfHide=Math.max(0,Number(o.wolfHide)||0);p.walkerClaw=Math.max(0,Number(o.walkerClaw)||0);p.bearClaw=Math.max(0,Number(o.bearClaw)||0);p.bearHide=Math.max(0,Number(o.bearHide)||0);p.bearFang=Math.max(0,Number(o.bearFang)||0);p.loot=o.loot&&typeof o.loot==='object'?{...o.loot}:{};for(const k of NEW_LOOT_KEYS)p.loot[k]=Math.max(0,Number(p.loot[k])||0);p.kills=Math.max(0,Number(o.kills)||0);
   p.inventory=o.inventory&&typeof o.inventory==='object'?{...o.inventory}:{};p.weapon=item(o.weapon)?.kind==='weapon'?o.weapon:(o.weapon==='wood-sword'?'wood-spear':null);p.tool=item(o.tool)?.kind==='tool'?o.tool:(item(o.axe)?.kind==='tool'?o.axe:(item(o.pick)?.kind==='tool'?o.pick:null));p.armor=item(o.armor)?.kind==='armor'?o.armor:(o.shield==='stone-shield'?'rune-shield':null);p.torch=!!o.torch;p.torchDurability=p.torch?clamp(Number.isFinite(Number(o.torchDurability))?Number(o.torchDurability):300000,0,300000):0;p.torchEquipped=!!o.torchEquipped&&p.torch&&p.torchDurability>0;p.map=!!o.map;p.root=Math.max(0,Number(o.root)||0);p.maxHp=100+(item(p.armor)?.maxHp||0)+(item(p.weapon)?.maxHp||0);p.hp=clamp(Number(o.hp)||p.maxHp,1,p.maxHp);ensureEquippedInInventory();
   const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(obj.y)*scale+shiftY,35,WORLD.h-35)}};
-  state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.jungleBench=loadPos(s.jungleBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);state.flags=Array.isArray(s.flags)?s.flags.map(loadPos).filter(Boolean):[];resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),reviveClickUntil:Math.max(0,Number(s.pet.reviveClickUntil)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
+  state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.jungleBench=loadPos(s.jungleBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);state.flags=Array.isArray(s.flags)?s.flags.map(loadPos).filter(Boolean):[];
+  const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?{open:!!b.open}:{}),...(type==='chest'?{storage:b.storage&&typeof b.storage==='object'?{...b.storage}:{}}:{})}}).filter(Boolean):[];
+  state.chests=loadBuildList(s.chests,'chest');state.walls=loadBuildList(s.walls,'wall');state.doors=loadBuildList(s.doors,'door');state.beds=loadBuildList(s.beds,'bed');
+  state.respawnPos=s.respawnPos&&Number.isFinite(Number(s.respawnPos.x))?loadPos(s.respawnPos):null;resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),reviveClickUntil:Math.max(0,Number(s.pet.reviveClickUntil)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
   if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug','fish','hare','lizard','crystaldeer','greens','bird','goat','monopoly'].includes(x)):[]}}
   state.knownMaterials=s.knownMaterials&&typeof s.knownMaterials==='object'?{...s.knownMaterials}:{};
   state.knownItems=s.knownItems&&typeof s.knownItems==='object'?{...s.knownItems}:{};
@@ -3313,7 +3398,7 @@ function loadGame(){
   for(const [id,count] of Object.entries(p.inventory||{})){const r=item(id);if(Number(count)>0&&r?.where==='meal')state.knownCookingRecipes[id]=true}
   for(const k of ['wood','stone','fiber','ironOre','ironIngot','goldOre','goldIngot','essence',...Object.keys(DROP_MATERIAL_NAMES)])if(materialAmount(k)>0)rememberMaterial(k);
   for(const [id,count] of Object.entries(p.inventory||{}))if(Number(count)>0)rememberItem(id);
-  for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
+  for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);for(const [id,list] of [['storage-chest',state.chests],['wood-wall',state.walls],['wood-door',state.doors],['bed',state.beds]])if(list.length)rememberItem(id);
   if(version<30){for(const r of recipes)if(state.knownItems[r.id])for(const [k,v] of Object.entries(r.cost||{}))if(Number(v)>0)rememberMaterial(k)}
   if(s.weather&&typeof s.weather==='object')setWeather(s.weather.kind,{fromNetwork:true,changedAt:s.weather.changedAt,nextAt:s.weather.nextAt,seed:s.weather.seed});
   state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle,snow:!!s.discovered?.snow};
