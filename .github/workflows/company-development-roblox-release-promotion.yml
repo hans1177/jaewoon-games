@@ -202,32 +202,32 @@ jobs:
           console.log('ROBLOX_INTERNAL_RELEASE_VISIBILITY_INTENT=PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
           NODE
 
-      - name: Verify unchanged source and assemble canonical internal-release evidence
+      - name: Verify unchanged source and exact F0 candidate evidence
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
           GAME_ID: ${{ steps.target.outputs.game_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
         shell: bash
         run: |
           set -euo pipefail
           git cat-file -e "${SOURCE_REVISION}^{commit}"
           git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
           git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
-          node tools/vibe3-roblox-platform.mjs \
-            --assemble-development-release-evidence \
-            --queue ../runtime/development-queue.json \
-            --game-id "$GAME_ID" \
-            --output /tmp/roblox-development-release-evidence.json
-          grep -q '"state": "PASS"' /tmp/roblox-development-release-evidence.json
-          echo 'ROBLOX_RELEASE_SOURCE_UNCHANGED_FROM_FINAL_REVIEW=YES'
-          echo 'ROBLOX_RELEASE_CANONICAL_EVIDENCE=PASS'
-          echo 'ROBLOX_RUNTIME_FOUNDATION_RERUN=REQUIRED'
-          echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
-          echo 'ROBLOX_REGRESSION_RERUN=NO'
-          echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
-          echo 'ROBLOX_PUBLIC_RELEASE=NO'
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('runtime candidate queue item missing');
+          const e=item.robloxFoundationF0Evidence||{};
+          if(item.robloxFoundationF0Passed!==true||e.sourcePreflightPassed!==true||e.f0SourceIntegrityPassed!==true)throw new Error('ROBLOX_F0_CANDIDATE_EVIDENCE_BLOCKED');
+          if(e.actualRuntimeEvidence!==false||e.runtimeFoundationPassed!==false)throw new Error('ROBLOX_F0_FALSE_RUNTIME_CLAIM');
+          if(e.sourceRevision!==process.env.SOURCE_REVISION||e.artifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('ROBLOX_F0_EXACT_BINDING_MISMATCH');
+          fs.writeFileSync('/tmp/roblox-runtime-candidate-evidence.json',JSON.stringify(e,null,2)+'\n');
+          console.log('ROBLOX_F0_CANDIDATE_EVIDENCE=PASS');
+          NODE
 
       - name: Resolve retained immutable internal-release package by exact SHA256
         id: package
@@ -263,25 +263,38 @@ jobs:
           echo 'ROBLOX_RELEASE_IMMUTABLE_ARTIFACT_BIND=PASS'
           echo "ROBLOX_RELEASE_PACKAGE_SHA256=$hash"
 
-      - name: Validate internal Open Cloud publish plan fail-closed
+      - name: Validate private runtime candidate publish plan fail-closed
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: bash
         run: |
           set -euo pipefail
-          node tools/vibe3-roblox-platform.mjs \
-            --place-file "$PLACE_FILE" \
-            --evidence /tmp/roblox-development-release-evidence.json \
-            --source-revision "$SOURCE_REVISION" | tee /tmp/roblox-final-release-plan.log
-          grep -q '^ROBLOX_V3_STATE=READY$' /tmp/roblox-final-release-plan.log
-          echo 'ROBLOX_RELEASE_OPEN_CLOUD_PLAN=READY'
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {createRobloxRuntimeCandidatePublishPlan} from './tools/vibe3-roblox-platform.mjs';
+          const f0=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-candidate-evidence.json','utf8'));
+          const plan=createRobloxRuntimeCandidatePublishPlan({
+            placeFile:process.env.PLACE_FILE,
+            universeId:process.env.ROBLOX_UNIVERSE_ID,
+            placeId:process.env.ROBLOX_PLACE_ID,
+            sourceRevision:process.env.SOURCE_REVISION,
+            artifactIdentity:process.env.ARTIFACT_IDENTITY,
+            f0Evidence:f0,
+          });
+          if(plan.executionReady!==true)throw new Error('ROBLOX_RUNTIME_CANDIDATE_PLAN_BLOCKED:'+(plan.blockedReasons||[]).join(','));
+          fs.writeFileSync('/tmp/roblox-runtime-candidate-plan.json',JSON.stringify(plan,null,2)+'\n');
+          console.log('ROBLOX_RUNTIME_CANDIDATE_PLAN=READY');
+          console.log('ROBLOX_RUNTIME_CLAIM=NO');
+          console.log('ROBLOX_INTERNAL_RELEASE_CLAIM=NO');
+          NODE
 
-      - name: Ensure Roblox universe is private before internal publish
+      - name: Ensure Roblox universe is private before runtime candidate publish
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
@@ -352,7 +365,7 @@ jobs:
           echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS'
           echo 'ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO'
 
-      - name: Publish exact final-reviewed package to internal Roblox target
+      - name: Publish exact F0-passed package as private runtime candidate
         id: publish
         if: steps.target.outputs.skip != 'true'
         working-directory: main
@@ -363,6 +376,7 @@ jobs:
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: bash
         run: |
@@ -377,14 +391,15 @@ jobs:
             set +e
             node --input-type=module <<'NODE' 2>&1 | tee /tmp/roblox-final-release-publish.log
           import fs from 'node:fs';
-          import {createRobloxPlacePublishPlan,publishRobloxPlace} from './tools/vibe3-roblox-platform.mjs';
-          const evidence=JSON.parse(fs.readFileSync('/tmp/roblox-development-release-evidence.json','utf8'));
-          const plan=createRobloxPlacePublishPlan({
+          import {createRobloxRuntimeCandidatePublishPlan,publishRobloxPlace} from './tools/vibe3-roblox-platform.mjs';
+          const f0=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-candidate-evidence.json','utf8'));
+          const plan=createRobloxRuntimeCandidatePublishPlan({
             placeFile:process.env.PLACE_FILE,
             universeId:process.env.ROBLOX_UNIVERSE_ID,
             placeId:process.env.ROBLOX_PLACE_ID,
             sourceRevision:process.env.SOURCE_REVISION,
-            evidence,
+            artifactIdentity:process.env.ARTIFACT_IDENTITY,
+            f0Evidence:f0,
           });
           if(plan.executionReady!==true)throw new Error(`Roblox publish blocked: ${(plan.blockedReasons||[]).join(',')}`);
           const result=await publishRobloxPlace({plan,retryDelaysMs:[]});
@@ -399,7 +414,7 @@ jobs:
               [[ "$version" =~ ^[1-9][0-9]*$ ]]
               printf 'version_number=%s\n' "$version" >> "$GITHUB_OUTPUT"
               printf 'deferred=false\n' >> "$GITHUB_OUTPUT"
-              echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=PASS'
+              echo 'ROBLOX_RUNTIME_CANDIDATE_OPEN_CLOUD_PUBLISH=PASS'
               exit 0
             fi
             if ! grep -Eqi 'Roblox publish failed HTTP 409:.*(server is busy|unable to process your upload request)' /tmp/roblox-final-release-publish.log; then
@@ -407,7 +422,7 @@ jobs:
             fi
             if [ "$SECONDS" -ge "$deadline" ]; then
               printf 'deferred=true\n' >> "$GITHUB_OUTPUT"
-              echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=BUSY_MANUAL_RETRY_REQUIRED'
+              echo 'ROBLOX_RUNTIME_CANDIDATE_OPEN_CLOUD_PUBLISH=BUSY_MANUAL_RETRY_REQUIRED'
               echo 'ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO'
               exit 75
             fi
