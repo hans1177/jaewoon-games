@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/cozy-island/client/Game.client.luau
 -- roblox-games/cozy-island/client/Game.client.luau
 -- 포근섬 모바일 우선 HUD / 채집·건설·전투 조작
 
@@ -75,7 +76,7 @@ local hud=Instance.new("Frame")
 hud.Name="TopHUD"
 hud.AnchorPoint=Vector2.new(0,0)
 hud.Position=UDim2.fromOffset(8,8)
-hud.Size=UDim2.fromOffset(286,58)
+hud.Size=touchEnabled and UDim2.fromOffset(220,52)or UDim2.fromOffset(286,58)
 hud.BackgroundColor3=Color3.fromRGB(38,67,61)
 hud.BackgroundTransparency=.08
 hud.Parent=gui
@@ -99,14 +100,14 @@ resources.BackgroundTransparency=1
 resources.TextColor3=Color3.fromRGB(235,245,238)
 resources.TextWrapped=false
 resources.TextScaled=false
-resources.TextSize=13
+resources.TextSize=touchEnabled and 11 or 13
 resources.Font=Enum.Font.Gotham
 resources.Parent=hud
 
 local objective=Instance.new("TextLabel")
-objective.Size=UDim2.fromOffset(310,28)
-objective.AnchorPoint=Vector2.new(.5,0)
-objective.Position=UDim2.new(.5,0,0,8)
+objective.Size=touchEnabled and UDim2.fromOffset(220,24)or UDim2.fromOffset(310,28)
+objective.AnchorPoint=touchEnabled and Vector2.new(0,0)or Vector2.new(.5,0)
+objective.Position=touchEnabled and UDim2.fromOffset(8,64)or UDim2.new(.5,0,0,8)
 objective.BackgroundColor3=Color3.fromRGB(29,50,46)
 objective.BackgroundTransparency=.18
 objective.TextColor3=Color3.fromRGB(255,232,158)
@@ -118,8 +119,8 @@ roundify(objective,9)
 
 local gatherHint=Instance.new("TextLabel")
 gatherHint.Name="ManualGatherHint"
-gatherHint.Size=UDim2.fromOffset(188,24)
-gatherHint.Position=UDim2.fromOffset(8,72)
+gatherHint.Size=touchEnabled and UDim2.fromOffset(174,22)or UDim2.fromOffset(188,24)
+gatherHint.Position=touchEnabled and UDim2.fromOffset(8,92)or UDim2.fromOffset(8,72)
 gatherHint.BackgroundColor3=Color3.fromRGB(33,58,47)
 gatherHint.BackgroundTransparency=.24
 gatherHint.TextColor3=Color3.fromRGB(211,239,213)
@@ -128,6 +129,7 @@ gatherHint.Font=Enum.Font.GothamBold
 gatherHint.Text="나무/작물에 가까이 가서 직접 채집"
 gatherHint.Parent=gui
 roundify(gatherHint,8)
+if touchEnabled then task.delay(9,function()if gatherHint.Parent then gatherHint.Visible=false end end)end
 
 -- 하단 조작: 채집은 월드 상호작용, 여기에는 마을 운영/정복만 표시
 local controls=Instance.new("Frame")

@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/horror-escape-room/client/Game.client.luau
 -- roblox-games/horror-escape-room/client/Game.client.luau
 -- 심야 술래잡기 모바일 추격 HUD / 상황별 행동 UI
 
@@ -75,8 +76,8 @@ hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
 hud.Size=UDim2.fromOffset(330,62)
-hud.BackgroundColor3=Color3.fromRGB(22,24,31)
-hud.BackgroundTransparency=.12
+hud.BackgroundColor3=Color3.fromRGB(34,37,45)
+hud.BackgroundTransparency=.03
 hud.ZIndex=10
 hud.Parent=gui
 roundify(hud,14);outline(hud,.5)
@@ -94,7 +95,7 @@ local roleLine=Instance.new("TextLabel")
 roleLine.Size=UDim2.new(1,-16,0,16)
 roleLine.Position=UDim2.fromOffset(8,24)
 roleLine.BackgroundTransparency=1
-roleLine.TextColor3=Color3.fromRGB(212,218,230)
+roleLine.TextColor3=Color3.fromRGB(236,240,248)
 roleLine.TextScaled=false
 roleLine.TextSize=11
 roleLine.Font=Enum.Font.Gotham
@@ -117,7 +118,7 @@ objectiveLine.Name="ObjectiveProgress"
 objectiveLine.Size=UDim2.new(1,-16,0,15)
 objectiveLine.Position=UDim2.fromOffset(8,44)
 objectiveLine.BackgroundTransparency=1
-objectiveLine.TextColor3=Color3.fromRGB(153,224,185)
+objectiveLine.TextColor3=Color3.fromRGB(177,238,203)
 objectiveLine.TextSize=10
 objectiveLine.Font=Enum.Font.GothamBold
 objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
@@ -129,8 +130,8 @@ mapPanel.Name="MiniMap"
 mapPanel.AnchorPoint=Vector2.new(1,0)
 mapPanel.Position=UDim2.new(1,-10,0,8)
 mapPanel.Size=UDim2.fromOffset(132,108)
-mapPanel.BackgroundColor3=Color3.fromRGB(16,18,24)
-mapPanel.BackgroundTransparency=.18
+mapPanel.BackgroundColor3=Color3.fromRGB(29,32,39)
+mapPanel.BackgroundTransparency=.05
 mapPanel.ZIndex=10
 mapPanel.Visible=false
 mapPanel.Parent=gui
@@ -150,7 +151,7 @@ miniTitle.Parent=mapPanel
 local mapCanvas=Instance.new("Frame")
 mapCanvas.Size=UDim2.fromOffset(116,78)
 mapCanvas.Position=UDim2.fromOffset(8,25)
-mapCanvas.BackgroundColor3=Color3.fromRGB(36,39,48)
+mapCanvas.BackgroundColor3=Color3.fromRGB(48,52,61)
 mapCanvas.BackgroundTransparency=.08
 mapCanvas.ClipsDescendants=true
 mapCanvas.ZIndex=11

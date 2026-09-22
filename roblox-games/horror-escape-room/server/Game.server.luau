@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/horror-escape-room/server/Game.server.luau
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
@@ -210,16 +211,16 @@ local function applyMapEvent(f,map,event)
  workspace:SetAttribute("CurrentMapEventName",event.Name)
  if event.Id=="LIGHTS_OUT"or event.Id=="POWER_OUTAGE"or event.Id=="RIDE_BLACKOUT"then
   -- 정전은 긴장감만 주고 플레이 경로 자체는 읽혀야 한다.
-  Lighting.Brightness=1.55
-  Lighting.FogEnd=map.Id=="HOSPITAL"and 150 or 205
-  Lighting.Ambient=Color3.fromRGB(86,91,103)
+  Lighting.Brightness=map.Id=="SCHOOL"and 1.82 or 1.65
+  Lighting.FogEnd=map.Id=="HOSPITAL"and 150 or map.Id=="SCHOOL"and 235 or 205
+  Lighting.Ambient=map.Id=="SCHOOL"and Color3.fromRGB(104,109,121)or Color3.fromRGB(86,91,103)
   for _,x in ipairs(f:GetDescendants())do
    if x:IsA("Part")and(x.Name=="CeilingLight"or x.Name=="ParkLight")then x.Transparency=.42
    elseif x:IsA("Part")and(x.Name=="HallGuideStrip"or x.Name=="EdgeGuide")then x.Transparency=.08 end
   end
  elseif event.Id=="RED_HALL"then
-  Lighting.Brightness=1.62
-  Lighting.Ambient=Color3.fromRGB(88,34,40)
+  Lighting.Brightness=1.82
+  Lighting.Ambient=Color3.fromRGB(104,45,52)
   for _,x in ipairs(f:GetDescendants())do if x:IsA("Part")and x.Name=="CeilingLight"then x.Color=Color3.fromRGB(255,70,70);x.Transparency=.05 end end
  elseif event.Id=="FIRE_DRILL"then
   local door=f:FindFirstChild("GymDoor",true)
@@ -261,7 +262,7 @@ local function makeArena(map)
  f.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local grade=Lighting:FindFirstChild("MidnightColorGrade")or Instance.new("ColorCorrectionEffect")
- grade.Name="MidnightColorGrade";grade.Brightness=-.02;grade.Contrast=.14;grade.Saturation=-.08;grade.TintColor=Color3.fromRGB(220,229,238);grade.Parent=Lighting
+ grade.Name="MidnightColorGrade";grade.Brightness=.035;grade.Contrast=.08;grade.Saturation=-.04;grade.TintColor=Color3.fromRGB(230,235,242);grade.Parent=Lighting
  local floorColor=map.Id=="SCHOOL"and Color3.fromRGB(36,41,48)or map.Id=="HOSPITAL"and Color3.fromRGB(61,72,72)or Color3.fromRGB(56,55,67)
  local floorMaterial=map.Id=="THEME_PARK"and Enum.Material.Asphalt or Enum.Material.Concrete
  arenaPart(f,"Floor",Vector3.new(340,1,340),Vector3.new(0,0,0),floorColor,floorMaterial)
@@ -274,6 +275,11 @@ local function makeArena(map)
 
  if map.Id=="SCHOOL"then
   -- 초보용 학교: 중앙 복도 + 교실 + 급식실 + 체육관. 시야가 길고 우회로가 단순하다.
+   arenaPart(f,"SchoolMainRoof",Vector3.new(336,1.2,336),Vector3.new(0,14.2,0),Color3.fromRGB(82,87,96),Enum.Material.Concrete)
+   for _,roofZ in ipairs({-144,-120,-96,-72,-48,-24,0,24,48,72,96,120,144})do
+    local hallLamp=arenaPart(f,"CeilingLight",Vector3.new(11,.45,2),Vector3.new(0,12.3,roofZ),Style.SafeLight,Enum.Material.Neon)
+    hallLamp.CanCollide=false;hallLamp.Transparency=.08;glow(hallLamp,Style.SafeLight,17,.58)
+   end
   zoneFloor(f,"SchoolHallFloor",Vector3.new(32,.35,124),Vector3.new(0,.68,0),Color3.fromRGB(133,136,139),Enum.Material.Marble)
   zoneFloor(f,"SchoolCafeteriaFloor",Vector3.new(54,.35,48),Vector3.new(-51,.68,43),Color3.fromRGB(111,101,91),Enum.Material.Concrete)
   zoneFloor(f,"SchoolGymZone",Vector3.new(52,.35,46),Vector3.new(50,.68,48),Color3.fromRGB(136,95,67),Enum.Material.WoodPlanks)
@@ -294,7 +300,16 @@ local function makeArena(map)
      arenaPart(f,"ClassDesk",Vector3.new(7,2,4),Vector3.new(side*(31+(desk%2)*12),1.5,z+6+math.floor((desk-1)/2)*9),Color3.fromRGB(121,91,67),Enum.Material.WoodPlanks)
     end
    end
-   local lamp=arenaPart(f,"CeilingLight",Vector3.new(12,.5,2),Vector3.new(0,10,z+7),Style.SafeLight,Enum.Material.Neon);lamp.Transparency=.12;glow(lamp,Style.SafeLight,18,.72)
+   for _,side in ipairs({-1,1})do
+     local classCenter=side*48
+     local door=arenaPart(f,"ClassDoor",Vector3.new(8,9,.8),Vector3.new(classCenter,4.5,z-1.7),Color3.fromRGB(103,78,58),Enum.Material.Wood);door.CanCollide=false;door.Transparency=.1
+     local doorGlass=arenaPart(f,"ClassDoorGlass",Vector3.new(4,2.7,.25),door.Position+Vector3.new(0,1.7,-.5),Color3.fromRGB(143,190,205),Enum.Material.Glass);doorGlass.CanCollide=false;doorGlass.Transparency=.3
+     local board=arenaPart(f,"ClassBoard",Vector3.new(14,4,.35),Vector3.new(side*73,6,z+10),Color3.fromRGB(45,78,65),Enum.Material.Slate);board.CanCollide=false
+     for _,wz in ipairs({-8,8})do
+      local window=arenaPart(f,"ClassWindow",Vector3.new(7,3.5,.28),Vector3.new(side*75,7,z+wz),Color3.fromRGB(148,188,202),Enum.Material.Glass);window.CanCollide=false;window.Transparency=.32
+     end
+    end
+    local lamp=arenaPart(f,"CeilingLight",Vector3.new(12,.5,2),Vector3.new(0,10,z+7),Style.SafeLight,Enum.Material.Neon);lamp.Transparency=.12;glow(lamp,Style.SafeLight,18,.72)
   end
   -- 급식실
   arenaPart(f,"CafeteriaSign",Vector3.new(22,8,2),Vector3.new(-52,4,48),Style.Locker,Enum.Material.Metal)
@@ -305,7 +320,10 @@ local function makeArena(map)
   arenaPart(f,"GymFloor",Vector3.new(48,1,42),Vector3.new(50,.6,48),Color3.fromRGB(126,91,65),Enum.Material.WoodPlanks)
   local gymDoor=arenaPart(f,"GymDoor",Vector3.new(4,10,14),Vector3.new(20,5,48),Style.Locker,Enum.Material.Metal);gymDoor.Transparency=.18
   for i=1,4 do arenaPart(f,"GymBleacher",Vector3.new(18,3,5),Vector3.new(58,2,26+i*8),Color3.fromRGB(94,101,110),Enum.Material.Metal)end
-  for i=1,10 do arenaPart(f,"Locker",Vector3.new(4,8,3),Vector3.new(-12+(i%5)*6,4,-62+math.floor((i-1)/5)*8),Style.Locker,Enum.Material.Metal)end
+  for i=1,16 do
+    local locker=arenaPart(f,"Locker",Vector3.new(3.4,8,3),Vector3.new(-14+(i%8)*4,4,-64+math.floor((i-1)/8)*8),Style.Locker,Enum.Material.Metal)
+    local vent=arenaPart(f,"LockerVent",Vector3.new(2.2,.25,.2),locker.Position+Vector3.new(0,1.5,-1.6),Color3.fromRGB(121,145,157),Enum.Material.Metal);vent.CanCollide=false
+   end
   for _,z in ipairs({-52,-26,0,26,52})do
    local strip=arenaPart(f,"HallGuideStrip",Vector3.new(12,.18,1.2),Vector3.new(0,.78,z),Color3.fromRGB(87,210,224),Enum.Material.Neon);strip.CanCollide=false
   end
@@ -339,7 +357,15 @@ local function makeArena(map)
    arenaPart(f,"ScienceBench",Vector3.new(12,3,5),Vector3.new(90+(i%4)*18,1.7,-92+math.floor((i-1)/4)*32),Color3.fromRGB(110,119,123),Enum.Material.Metal)
   end
   for i=1,5 do arenaPart(f,"AuditoriumSeat",Vector3.new(13,3,5),Vector3.new(78+i*12,1.7,86+(i%2)*18),Color3.fromRGB(118,61,57),Enum.Material.Fabric)end
-  addObjectiveStation(f,"도서관 단말",Vector3.new(-118,3,-70),1)
+  for i=1,8 do
+    local row=math.floor((i-1)/4);local col=(i-1)%4
+    arenaPart(f,"LibraryShelfExtra",Vector3.new(11,6.8,3),Vector3.new(-145+col*18,3.5,-82+row*18),Color3.fromRGB(91,69,52),Enum.Material.WoodPlanks)
+   end
+   for i=1,6 do
+    local row=math.floor((i-1)/3);local col=(i-1)%3
+    arenaPart(f,"ScienceBenchExtra",Vector3.new(10,3,5),Vector3.new(94+col*18,1.7,-82+row*22),Color3.fromRGB(105,116,121),Enum.Material.Metal)
+   end
+   addObjectiveStation(f,"도서관 단말",Vector3.new(-118,3,-70),1)
   addObjectiveStation(f,"과학실 전원",Vector3.new(118,3,-70),2)
   addObjectiveStation(f,"운동장 방송",Vector3.new(-108,3,104),3)
   addObjectiveStation(f,"강당 비상패널",Vector3.new(108,3,104),4)
@@ -456,7 +482,7 @@ local function makeArena(map)
  end
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
- workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_ASSET_ESCAPE_V7")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_INTERIOR_ESCAPE_V8")
  workspace:SetAttribute("EscapeUnlocked",false)
  workspace:SetAttribute("SurvivorEscapeTriggered",false)
  decorateArenaWithOfficialAssets(f,map)
@@ -623,7 +649,7 @@ local function applyClassicCostume(character,id)
 end
 local function applyRoleVisual(p,r)
  clearRoleVisual(p);local c=p.Character;if not c then return end
- local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.67;hi.OutlineTransparency=.05;hi.Parent=c
+ local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.86;hi.OutlineTransparency=.42;hi.Parent=c
  if r=="MONSTER"then
   local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
   applyClassicCostume(c,currentForm.Id)
@@ -632,7 +658,7 @@ local function applyRoleVisual(p,r)
    local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=true;g.Parent=head
    local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=mf.Label;t.TextColor3=mf.Accent;t.TextStrokeTransparency=.25;t.Parent=g
   end
- else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.new(1,1,1)end
+ else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.fromRGB(166,205,219)end
 end
 local function teleport(p,pos)
  local r=root(p);if r then
@@ -662,7 +688,7 @@ local function freezePlayer(p)
  if os.clock()<(tagGraceUntil[p]or 0)then return end
  if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then
   p:SetAttribute("Frozen",true);p:SetAttribute("FeedbackEvent","FREEZE:"..tostring(math.floor(os.clock()*1000)));speed(p,0)
-  local c=p.Character;if c then local h=c:FindFirstChild("RoleHighlight");if h then h.FillColor=Style.Frozen;h.OutlineColor=Color3.fromRGB(220,248,255)end end
+  local c=p.Character;if c then local h=c:FindFirstChild("RoleHighlight");if h then h.FillColor=Style.Frozen;h.OutlineColor=Color3.fromRGB(143,215,232)end end
   -- 1인 플레이는 AI 구조 실패로 영구 정지되지 않게 자동 해동 안전장치를 둔다.
   if #Players:GetPlayers()==1 then
    task.delay(2.4,function()

@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/cozy-island/server/Game.server.luau
 -- 포근섬: 수동 채집 + 주민 자동화 + 기본섬 NPC/몹 + 5거점 정복
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
@@ -34,9 +35,12 @@ local function part(parent,name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
  x.TopSurface=Enum.SurfaceType.Smooth;x.BottomSurface=Enum.SurfaceType.Smooth;x.Parent=parent;return x
 end
-local function attach(rootPart,name,size,offset,color,material,shape)
- local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.Massless=true;x.Anchored=false
- x.CFrame=rootPart.CFrame*CFrame.new(offset);if shape then x.Shape=shape end;x.Parent=rootPart
+local function attach(rootPart,name,size,offset,color,material,shape,rotation)
+ local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
+ x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true;x.Anchored=false
+ local rot=rotation or Vector3.zero
+ x.CFrame=rootPart.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
+ if shape then x.Shape=shape end;x.Parent=rootPart
  local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x;return x
 end
 local function stripAsset(root)
@@ -67,7 +71,7 @@ local function assetProp(parent,assetId,keywords,pos,scale,seed)
 end
 local function decorateHomeAssets(parent,topY)
  task.spawn(function()
-  for i=1,28 do
+  for i=1,40 do
    local a=i/28*math.pi*2;local r=58+(i%5)*19
    assetProp(parent,ASSETS.Nature,{"tree","bush","flower","rock","log","stump"},Vector3.new(math.cos(a)*r,topY+1,math.sin(a)*r),.62+(i%4)*.08,i)
   end
@@ -95,62 +99,41 @@ end
 local function prompt(target,objectText,actionText)
  local pr=Instance.new("ProximityPrompt");pr.ObjectText=objectText;pr.ActionText=actionText;pr.MaxActivationDistance=10;pr.HoldDuration=.15;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
 end
-local function createR15Figure(parent,anchor,name,skin,topColor,bottomColor,scale)
- local desc=Instance.new("HumanoidDescription")
- desc.HeightScale=math.clamp(scale or 1,.85,1.05)
- desc.WidthScale=.92
- desc.DepthScale=.92
- desc.HeadScale=.95
- desc.BodyTypeScale=.35
- desc.ProportionScale=.45
- local ok,rig=pcall(function()return Players:CreateHumanoidModelFromDescription(desc,Enum.HumanoidRigType.R15)end)
- desc:Destroy()
- if not ok or not rig then return nil end
- rig.Name=name.."_Rig";rig.Parent=parent;rig:PivotTo(anchor.CFrame)
- local rr=rig:FindFirstChild("HumanoidRootPart")
- if not rr then rig:Destroy();return nil end
- for _,d in ipairs(rig:GetDescendants())do
-  if d:IsA("BasePart")then
-   d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.Massless=true
-   if d.Name=="Head"or d.Name=="LeftLowerArm"or d.Name=="RightLowerArm"or d.Name=="LeftHand"or d.Name=="RightHand"then d.Color=skin
-   elseif d.Name=="UpperTorso"or d.Name=="LowerTorso"or d.Name=="LeftUpperArm"or d.Name=="RightUpperArm"then d.Color=topColor
-   elseif string.find(d.Name,"Leg",1,true)or string.find(d.Name,"Foot",1,true)then d.Color=bottomColor end
-  end
- end
- local h=rig:FindFirstChildOfClass("Humanoid")
- if h then h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None;h.AutoRotate=false;h.WalkSpeed=0;h.JumpPower=0 end
- rr.Anchored=false
- local w=Instance.new("WeldConstraint");w.Part0=anchor;w.Part1=rr;w.Parent=rr
- return rig
-end
 local function figure(parent,name,pos,color,accent,scale)
  scale=math.clamp(scale or 1,.72,1.05)
- local skin=Color3.fromRGB(224,190,154)
- local r=part(parent,name,Vector3.new(2.2,4.7,1.7)*scale,pos,color);r.CanCollide=true;r.Transparency=1
- local rig=createR15Figure(parent,r,name,skin,color,accent,scale)
- if not rig then
-  r.Transparency=0
-  attach(r,"Head",Vector3.new(2.1,2.1,2.1)*scale,Vector3.new(0,3.1*scale,0),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(r,"ArmL",Vector3.new(.7,2.8,.7)*scale,Vector3.new(-1.55*scale,0,0),color)
-  attach(r,"ArmR",Vector3.new(.7,2.8,.7)*scale,Vector3.new(1.55*scale,0,0),color)
-  attach(r,"LegL",Vector3.new(.8,2.7,.8)*scale,Vector3.new(-.55*scale,-3*scale,0),accent)
-  attach(r,"LegR",Vector3.new(.8,2.7,.8)*scale,Vector3.new(.55*scale,-3*scale,0),accent)
- end
+ local skin=Color3.fromRGB(226,190,154)
+ local r=part(parent,name,Vector3.new(2.2,5.8,1.8)*scale,pos,color);r.CanCollide=true;r.Transparency=1
+ local function add(nm,size,off,col,mat,shape,rot)return attach(r,nm,size*scale,off*scale,col,mat,shape,rot)end
+ add("Torso",Vector3.new(2.7,3.1,1.75),Vector3.new(0,.2,0),color,Enum.Material.Fabric,Enum.PartType.Ball)
+ add("Waist",Vector3.new(2.35,1.15,1.55),Vector3.new(0,-1.35,0),accent,Enum.Material.Fabric,Enum.PartType.Ball)
+ add("Head",Vector3.new(2.2,2.25,2.05),Vector3.new(0,2.55,-.05),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ add("Hair",Vector3.new(2.28,.68,2.1),Vector3.new(0,3.38,.05),Color3.fromRGB(74,55,43),Enum.Material.Fabric,Enum.PartType.Ball)
+ add("EyeL",Vector3.new(.2,.27,.14),Vector3.new(-.42,2.68,-1.03),Color3.fromRGB(40,43,43),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ add("EyeR",Vector3.new(.2,.27,.14),Vector3.new(.42,2.68,-1.03),Color3.fromRGB(40,43,43),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ add("ArmL",Vector3.new(2.55,.66,.66),Vector3.new(-1.55,.05,0),color,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,82))
+ add("ArmR",Vector3.new(2.55,.66,.66),Vector3.new(1.55,.05,0),color,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,98))
+ add("HandL",Vector3.new(.72,.72,.72),Vector3.new(-1.7,-1.08,-.04),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ add("HandR",Vector3.new(.72,.72,.72),Vector3.new(1.7,-1.08,-.04),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ add("LegL",Vector3.new(2.55,.72,.72),Vector3.new(-.63,-2.45,0),accent,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
+ add("LegR",Vector3.new(2.55,.72,.72),Vector3.new(.63,-2.45,0),accent,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
+ add("ShoeL",Vector3.new(.92,.48,1.3),Vector3.new(-.63,-3.58,-.28),Color3.fromRGB(69,58,51),Enum.Material.SmoothPlastic)
+ add("ShoeR",Vector3.new(.92,.48,1.3),Vector3.new(.63,-3.58,-.28),Color3.fromRGB(69,58,51),Enum.Material.SmoothPlastic)
  if name=="Chief"then
-  attach(r,"ChiefHat",Vector3.new(3.1,.32,3.1)*scale,Vector3.new(0,4.65*scale,0),Color3.fromRGB(96,65,45),Enum.Material.Fabric)
-  attach(r,"ChiefSash",Vector3.new(.36,3.2,1.9)*scale,Vector3.new(.55*scale,.2*scale,-.8*scale),Color3.fromRGB(214,176,91),Enum.Material.Fabric)
+  add("ChiefHat",Vector3.new(3.05,.34,3.05),Vector3.new(0,3.72,0),Color3.fromRGB(96,65,45),Enum.Material.Fabric)
+  add("ChiefSash",Vector3.new(.34,2.9,1.82),Vector3.new(.52,.12,-.86),Color3.fromRGB(214,176,91),Enum.Material.Fabric,nil,Vector3.new(0,0,-13))
  elseif name=="LumberMaster"then
-  attach(r,"LumberCap",Vector3.new(2.7,.32,2.6)*scale,Vector3.new(0,4.55*scale,0),Color3.fromRGB(64,94,58),Enum.Material.Fabric)
-  attach(r,"AxeHandle",Vector3.new(.22,3.4,.22)*scale,Vector3.new(2*scale,-.2*scale,0),Color3.fromRGB(112,78,48),Enum.Material.Wood)
-  attach(r,"AxeHead",Vector3.new(1.15,.72,.32)*scale,Vector3.new(2*scale,1.2*scale,0),Color3.fromRGB(132,139,145),Enum.Material.Metal)
+  add("LumberCap",Vector3.new(2.62,.34,2.55),Vector3.new(0,3.68,0),Color3.fromRGB(64,94,58),Enum.Material.Fabric)
+  add("AxeHandle",Vector3.new(3.1,.2,.2),Vector3.new(1.75,-.3,0),Color3.fromRGB(112,78,48),Enum.Material.Wood,Enum.PartType.Cylinder,Vector3.new(0,0,90))
+  add("AxeHead",Vector3.new(1.05,.7,.32),Vector3.new(1.75,1.05,0),Color3.fromRGB(132,139,145),Enum.Material.Metal)
  elseif name=="Farmer"then
-  attach(r,"StrawHat",Vector3.new(3.35,.28,3.35)*scale,Vector3.new(0,4.58*scale,0),Color3.fromRGB(205,174,91),Enum.Material.Fabric)
-  attach(r,"Apron",Vector3.new(2.05,2.55,.16)*scale,Vector3.new(0,-.05*scale,-.95*scale),Color3.fromRGB(201,188,151),Enum.Material.Fabric)
+  add("StrawHat",Vector3.new(3.3,.28,3.3),Vector3.new(0,3.7,0),Color3.fromRGB(205,174,91),Enum.Material.Fabric)
+  add("Apron",Vector3.new(2.05,2.35,.16),Vector3.new(0,.0,-.91),Color3.fromRGB(201,188,151),Enum.Material.Fabric)
  elseif name=="Captain"then
-  attach(r,"ShoulderL",Vector3.new(1.1,.48,1.7)*scale,Vector3.new(-1.35*scale,1.25*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
-  attach(r,"ShoulderR",Vector3.new(1.1,.48,1.7)*scale,Vector3.new(1.35*scale,1.25*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
+  add("ShoulderL",Vector3.new(1.02,.5,1.55),Vector3.new(-1.28,1,0),Color3.fromRGB(86,88,96),Enum.Material.Metal,Enum.PartType.Ball)
+  add("ShoulderR",Vector3.new(1.02,.5,1.55),Vector3.new(1.28,1,0),Color3.fromRGB(86,88,96),Enum.Material.Metal,Enum.PartType.Ball)
+  add("Belt",Vector3.new(2.5,.3,1.65),Vector3.new(0,-1.15,0),Color3.fromRGB(71,56,48),Enum.Material.SmoothPlastic)
  elseif string.find(name,"Villager",1,true)then
-  attach(r,"Vest",Vector3.new(2.05,2.3,.16)*scale,Vector3.new(0,.15*scale,-.92*scale),accent,Enum.Material.Fabric)
+  add("Vest",Vector3.new(2.05,2.15,.16),Vector3.new(0,.1,-.9),accent,Enum.Material.Fabric)
  end
  return r
 end
@@ -222,18 +205,33 @@ local function spawnMob(kind,pos)
  local folder=world:FindFirstChild("HomeMobs")or Instance.new("Folder");folder.Name="HomeMobs";folder.Parent=world
  local isRaider=kind=="RAIDER";local hp=isRaider and C.HomeIslandMobs.RaiderHP or C.HomeIslandMobs.BoarHP
  local damage=isRaider and C.HomeIslandMobs.RaiderDamage or C.HomeIslandMobs.BoarDamage
- local r=part(folder,isRaider and"IslandRaider"or"WildBoar",isRaider and Vector3.new(3.6,4.2,2.6)or Vector3.new(5,2.8,6),pos,isRaider and Color3.fromRGB(137,75,66)or Color3.fromRGB(113,83,64),Enum.Material.SmoothPlastic)
+ local r=part(folder,isRaider and"IslandRaider"or"WildBoar",isRaider and Vector3.new(3.2,5.4,2.5)or Vector3.new(5.4,3.2,6.5),pos,isRaider and Color3.fromRGB(137,75,66)or Color3.fromRGB(113,83,64),Enum.Material.SmoothPlastic)
+ r.CanCollide=true;r.Transparency=1
  if isRaider then
-  attach(r,"Head",Vector3.new(2.4,2.4,2.4),Vector3.new(0,3,0),Color3.fromRGB(210,172,140),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(r,"ArmL",Vector3.new(.8,3,.8),Vector3.new(-1.8,0,0),r.Color);attach(r,"ArmR",Vector3.new(.8,3,.8),Vector3.new(1.8,0,0),r.Color)
-  attach(r,"LegL",Vector3.new(1,2.8,1),Vector3.new(-.7,-3.2,0),Color3.fromRGB(64,56,55));attach(r,"LegR",Vector3.new(1,2.8,1),Vector3.new(.7,-3.2,0),Color3.fromRGB(64,56,55))
+  local skin=Color3.fromRGB(211,174,141);local cloth=Color3.fromRGB(117,69,62);local dark=Color3.fromRGB(60,53,52)
+  attach(r,"RaiderTorso",Vector3.new(2.9,3.4,1.9),Vector3.new(0,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"RaiderHead",Vector3.new(2.3,2.35,2.2),Vector3.new(0,2.15,-.1),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"RaiderHood",Vector3.new(2.55,1.05,2.45),Vector3.new(0,2.95,.05),dark,Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"RaiderArmL",Vector3.new(2.8,.72,.72),Vector3.new(-1.75,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,82))
+  attach(r,"RaiderArmR",Vector3.new(2.8,.72,.72),Vector3.new(1.75,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,98))
+  attach(r,"RaiderLegL",Vector3.new(2.7,.82,.82),Vector3.new(-.72,-2.8,0),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
+  attach(r,"RaiderLegR",Vector3.new(2.7,.82,.82),Vector3.new(.72,-2.8,0),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
  else
-  attach(r,"BoarHead",Vector3.new(3.6,2.7,3.1),Vector3.new(0,.3,-3.4),r.Color,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(r,"BoarSnout",Vector3.new(2.4,1.25,1.35),Vector3.new(0,.15,-5),Color3.fromRGB(139,96,72),Enum.Material.SmoothPlastic)
-  attach(r,"BoarEarL",Vector3.new(.8,1.2,.45),Vector3.new(-1.25,1.85,-3.4),Color3.fromRGB(88,62,52),Enum.Material.Fabric)
-  attach(r,"BoarEarR",Vector3.new(.8,1.2,.45),Vector3.new(1.25,1.85,-3.4),Color3.fromRGB(88,62,52),Enum.Material.Fabric)
-  for _,x in ipairs({-1.45,1.45})do for _,z in ipairs({-1.7,1.7})do attach(r,"BoarLeg",Vector3.new(.72,1.9,.72),Vector3.new(x,-2,z),Color3.fromRGB(79,61,51))end end
-  attach(r,"TuskL",Vector3.new(.35,.35,1.1),Vector3.new(-.9,.1,-5.65),Color3.fromRGB(235,225,195));attach(r,"TuskR",Vector3.new(.35,.35,1.1),Vector3.new(.9,.1,-5.65),Color3.fromRGB(235,225,195))
+  local fur=Color3.fromRGB(105,76,58);local dark=Color3.fromRGB(69,52,45);local muzzle=Color3.fromRGB(143,98,73)
+  attach(r,"BoarBody",Vector3.new(5.5,3.25,6.5),Vector3.new(0,-1.85,.25),fur,Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"BoarShoulder",Vector3.new(5.15,3.5,4.2),Vector3.new(0,-1.65,-1.25),Color3.fromRGB(116,83,62),Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"BoarHead",Vector3.new(3.45,2.85,3.3),Vector3.new(0,-1.25,-3.65),fur,Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"BoarSnout",Vector3.new(2.5,1.45,1.65),Vector3.new(0,-1.5,-5.25),muzzle,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"BoarNose",Vector3.new(1.45,.8,.32),Vector3.new(0,-1.45,-6.05),Color3.fromRGB(78,55,51),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"BoarEarL",Vector3.new(.75,1.15,.6),Vector3.new(-1.15,.12,-3.45),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,-20))
+  attach(r,"BoarEarR",Vector3.new(.75,1.15,.6),Vector3.new(1.15,.12,-3.45),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,20))
+  for _,x in ipairs({-1.55,1.55})do for _,z in ipairs({-1.65,1.65})do
+   attach(r,"BoarLeg",Vector3.new(2.1,.72,.72),Vector3.new(x,-3.65,z),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
+   attach(r,"BoarHoof",Vector3.new(.85,.5,1),Vector3.new(x,-4.58,z-.12),Color3.fromRGB(49,43,39),Enum.Material.SmoothPlastic)
+  end end
+  attach(r,"BoarTail",Vector3.new(1.8,.3,.3),Vector3.new(0,-1.35,3.45),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,25,35))
+  attach(r,"TuskL",Vector3.new(.34,.34,1.15),Vector3.new(-.92,-1.58,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
+  attach(r,"TuskR",Vector3.new(.34,.34,1.15),Vector3.new(.92,-1.58,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
  end
  label(r,isRaider and"섬 약탈병"or"멧돼지",isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
  local pr=prompt(r,isRaider and"섬 약탈병"or"멧돼지","공격")
@@ -318,7 +316,7 @@ local function buildWorld()
    for i=1,8 do part(world,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-40+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
   end
  end
- workspace:SetAttribute("WorldArtPass","COZY_ASSET_GATHER_WORLD_V6")
+ workspace:SetAttribute("WorldArtPass","COZY_STYLIZED_ASSET_WORLD_V7")
 end
 
 local function init(p)
