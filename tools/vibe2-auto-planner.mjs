@@ -60,6 +60,15 @@ function registeredHistoricalMaintenanceTask(item={},registryById=new Map()){
     &&evidence.has('historical-current-release-claim:NO')
     &&evidence.has('maintenance-registry:'+HISTORICAL_MAINTENANCE_REGISTRY_PATH);
 }
+function verifiedFocusedReleaseTask(item={}){
+  const evidence=new Set((Array.isArray(item.evidence)?item.evidence:[]).map(clean));
+  const releaseKind=[...evidence].find(value=>value.startsWith('focus-release-kind:'))?.slice('focus-release-kind:'.length)||'';
+  return item.postReleaseFocused===true
+    &&clean(item.target).toLowerCase()==='roblox'
+    &&clean(item.releaseState).toLowerCase()==='release-confirmed'
+    &&evidence.has('post-release-focused:yes')
+    &&['INTERNAL_PLATFORM_RELEASE','PUBLIC_RELEASE','LEGACY_PUBLIC_RELEASE'].includes(releaseKind);
+}
 function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={}){
   const byId=catalogById(catalog),historicalById=historicalMaintenanceById(historicalRegistry),removed=permanentRemovalIds(catalog);
   const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{
@@ -82,8 +91,12 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
       if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-stop-requested:${state}`])]};
       return item;
     }
-    const currentReleaseState=stateFromCatalog(game);
-    const currentAuthority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
+    const catalogReleaseState=stateFromCatalog(game);
+    const focusedReleaseAuthority=verifiedFocusedReleaseTask(item);
+    const currentReleaseState=focusedReleaseAuthority?'release-confirmed':catalogReleaseState;
+    const currentAuthority=focusedReleaseAuthority
+      ?'VERIFIED_INTERNAL_OR_PUBLIC_RELEASE'
+      :(clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER');
     const currentStatus=clean(item.status).toLowerCase();
     const currentBlocker=clean(item.blocker);
     const itemEvidence=(item.evidence||[]).map(clean);
