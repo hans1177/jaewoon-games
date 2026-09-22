@@ -69,7 +69,7 @@ function QACamera.install(config,screenGui,pointProvider)
  end
 
  local function readLatestFromGallery(count)
-  local result,pages=CaptureService:ReadCapturesFromGalleryAsync({Enum.CaptureType.Screenshot},false)
+  local result,pages=CaptureService:ReadCapturesFromGalleryAsync({},false)
   if result~=Enum.ReadCapturesFromGalleryResult.Success or not pages then return nil,"gallery:"..tostring(result)end
   local page=pages:GetCurrentPage()
   local latest={}
@@ -128,17 +128,6 @@ function QACamera.install(config,screenGui,pointProvider)
     end
    end
 
-   local permissionOk,permissionGranted=pcall(function()
-    return CaptureService:PromptCaptureGalleryPermissionAsync(Enum.CaptureGalleryPermission.ReadAndUpload)
-   end)
-   if not permissionOk or permissionGranted~=true then
-    status.Text="캡처 갤러리 권한 필요"
-    report("STATUS","PERMISSION_DENIED")
-    busy=false;button.Text="QA촬영"
-    task.delay(5,function()if not busy then status.Visible=false end end)
-    return
-   end
-
    local camera=Workspace.CurrentCamera
    if not camera then report("STATUS","NO_CAMERA");busy=false;button.Text="QA촬영";return end
    local savedCamera={cameraType=camera.CameraType,cframe=camera.CFrame,focus=camera.Focus,fov=camera.FieldOfView,subject=camera.CameraSubject}
@@ -180,6 +169,19 @@ function QACamera.install(config,screenGui,pointProvider)
    if not saveDone or savedCount==0 then
     status.Text="갤러리 저장 취소";report("STATUS",saveDone and"SAVE_DENIED"or"SAVE_TIMEOUT")
     busy=false;button.Text="QA촬영";return
+   end
+
+   -- 저장된 캡처가 생긴 뒤에만 갤러리 읽기/업로드 권한을 요청한다.
+   status.Text="갤러리 접근 허용"
+   local permissionOk,permissionGranted=pcall(function()
+    return CaptureService:PromptCaptureGalleryPermissionAsync(Enum.CaptureGalleryPermission.ReadAndUpload)
+   end)
+   if not permissionOk or permissionGranted~=true then
+    status.Text="갤러리 접근 허용 필요"
+    report("STATUS",permissionOk and"PERMISSION_DENIED_AFTER_SAVE"or("PERMISSION_PROMPT_FAIL:"..tostring(permissionGranted)))
+    busy=false;button.Text="QA촬영"
+    task.delay(6,function()if not busy then status.Visible=false end end)
+    return
    end
 
    task.wait(1)
