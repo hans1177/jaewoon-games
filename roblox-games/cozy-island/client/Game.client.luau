@@ -33,6 +33,7 @@ local gui=Instance.new("ScreenGui")
 gui.Name="CozyConquest"
 gui.ResetOnSpawn=false
 gui.IgnoreGuiInset=false
+gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.Parent=p:WaitForChild("PlayerGui")
 
 local function roundify(target,radius)
@@ -71,16 +72,16 @@ end
 -- 상단 HUD: 자원과 정복 진행
 local hud=Instance.new("Frame")
 hud.Name="TopHUD"
-hud.AnchorPoint=Vector2.new(.5,0)
-hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.new(1,-16,0,70)
+hud.AnchorPoint=Vector2.new(0,0)
+hud.Position=UDim2.fromOffset(8,8)
+hud.Size=UDim2.fromOffset(286,58)
 hud.BackgroundColor3=Color3.fromRGB(38,67,61)
 hud.BackgroundTransparency=.08
 hud.Parent=gui
 roundify(hud,14);outline(hud,.4)
 
 local title=Instance.new("TextLabel")
-title.Size=UDim2.new(1,-16,0,20)
+title.Size=UDim2.new(1,-16,0,18)
 title.Position=UDim2.fromOffset(8,3)
 title.BackgroundTransparency=1
 title.Text="포근섬 · 5거점 정복"
@@ -91,33 +92,35 @@ title.Font=Enum.Font.GothamBold
 title.Parent=hud
 
 local resources=Instance.new("TextLabel")
-resources.Size=UDim2.new(1,-16,0,20)
+resources.Size=UDim2.new(1,-16,0,28)
 resources.Position=UDim2.fromOffset(8,24)
 resources.BackgroundTransparency=1
 resources.TextColor3=Color3.fromRGB(235,245,238)
 resources.TextWrapped=false
-resources.TextScaled=true
+resources.TextScaled=false
+resources.TextSize=13
 resources.Font=Enum.Font.Gotham
 resources.Parent=hud
 
 local objective=Instance.new("TextLabel")
-objective.Size=UDim2.new(1,-16,0,20)
-objective.Position=UDim2.fromOffset(8,47)
+objective.Size=UDim2.fromOffset(310,28)
+objective.AnchorPoint=Vector2.new(.5,0)
+objective.Position=UDim2.new(.5,0,0,8)
 objective.BackgroundColor3=Color3.fromRGB(29,50,46)
 objective.BackgroundTransparency=.18
 objective.TextColor3=Color3.fromRGB(255,232,158)
 objective.TextWrapped=true
 objective.TextScaled=true
 objective.Font=Enum.Font.GothamBold
-objective.Parent=hud
+objective.Parent=gui
 roundify(objective,9)
 
 -- 하단 조작: 평소에는 카테고리 3개만 표시하고, 탭한 카테고리의 액션만 잠깐 노출
 local controls=Instance.new("Frame")
 controls.Name="ActionDock"
 controls.AnchorPoint=Vector2.new(.5,1)
-controls.Position=UDim2.new(.5,0,1,-8)
-controls.Size=UDim2.new(1,-16,0,56)
+controls.Position=UDim2.new(.5,0,1,-10)
+controls.Size=UDim2.fromOffset(300,48)
 controls.BackgroundColor3=Color3.fromRGB(26,43,39)
 controls.BackgroundTransparency=.12
 controls.Parent=gui
@@ -126,8 +129,8 @@ roundify(controls,14);outline(controls,.5)
 local actionPopup=Instance.new("Frame")
 actionPopup.Name="ActionPopup"
 actionPopup.AnchorPoint=Vector2.new(.5,1)
-actionPopup.Position=UDim2.new(.5,0,1,-70)
-actionPopup.Size=UDim2.new(1,-16,0,56)
+actionPopup.Position=UDim2.new(.5,0,1,-64)
+actionPopup.Size=UDim2.fromOffset(300,48)
 actionPopup.BackgroundColor3=Color3.fromRGB(26,43,39)
 actionPopup.BackgroundTransparency=.08
 actionPopup.Visible=false
@@ -169,14 +172,14 @@ end
 
 for groupIndex,group in ipairs(groups)do
  local tab=makeButton(controls,group.title,group.color)
- tab.Size=UDim2.new(.31,0,0,44)
- tab.Position=UDim2.new(.015+(groupIndex-1)*.33,0,0,6)
+ tab.Size=UDim2.new(.31,0,0,38)
+ tab.Position=UDim2.new(.015+(groupIndex-1)*.33,0,0,5)
  tab.Activated:Connect(function()showGroup(groupIndex)end)
 
  for row,a in ipairs(group.actions)do
   local b=makeButton(actionPopup,a[2],group.color)
-  b.Size=UDim2.new(.31,0,0,44)
-  b.Position=UDim2.new(.015+(row-1)*.33,0,0,6)
+  b.Size=UDim2.new(.31,0,0,38)
+  b.Position=UDim2.new(.015+(row-1)*.33,0,0,5)
   b.Visible=false
   b.Activated:Connect(function()
    if a[1]==C.Actions.ATTACK or a[1]==C.Actions.RECRUIT or a[1]==C.Actions.BARRACKS then actionSfx.TimePosition=0;actionSfx:Play()end
@@ -193,9 +196,9 @@ local function render()
  local idx=p:GetAttribute("NextBaseIndex")or 1
  local b=C.Bases[idx]
  local target=b and (b.Name.." · "..(b.Enemy or"수비대").." · 전력 "..b.Strength)or"5개 거점 정복 완료"
- resources.Text=string.format("나무 %d  식량 %d  코인 %d  |  철 %d  말 %d  돌 %d  금 %d  유황 %d\n주민 %d · 병영 Lv.%d · 병사 %d · 점령 %d/5",
-  p:GetAttribute("Wood")or 0,p:GetAttribute("Food")or 0,p:GetAttribute("Coins")or 0,p:GetAttribute("Iron")or 0,p:GetAttribute("Horses")or 0,p:GetAttribute("Stone")or 0,p:GetAttribute("Gold")or 0,p:GetAttribute("Sulfur")or 0,
-  p:GetAttribute("Residents")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("Troops")or 0,p:GetAttribute("CapturedBases")or 0)
+ resources.Text=string.format("나무 %d · 식량 %d · 코인 %d\n병사 %d · 병영 Lv.%d · 점령 %d/5",
+  p:GetAttribute("Wood")or 0,p:GetAttribute("Food")or 0,p:GetAttribute("Coins")or 0,
+  p:GetAttribute("Troops")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("CapturedBases")or 0)
 
  local inBattle=p:GetAttribute("InBattle")==true
  local activity=p:GetAttribute("LastActivity")or"채집해서 병력을 키우고 다음 거점을 정복해"
