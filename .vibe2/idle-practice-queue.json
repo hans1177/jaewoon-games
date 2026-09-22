@@ -30,7 +30,9 @@
         "SECURITY",
         "ANIMATION_FEEL",
         "UI_STATE",
-        "UNITY_RUNTIME"
+        "UNITY_RUNTIME",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -126,7 +128,9 @@
         "SECURITY",
         "ANIMATION_FEEL",
         "UI_STATE",
-        "UNITY_RUNTIME"
+        "UNITY_RUNTIME",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -1099,16 +1103,6 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l14",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "WEB_RUNTIME"
-      ]
-    },
-    {
       "id": "gap-debugging-l15",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1126,6 +1120,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "STATE_MACHINE"
+      ]
+    },
+    {
+      "id": "gap-web_runtime-l15",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
       ]
     }
   ]
