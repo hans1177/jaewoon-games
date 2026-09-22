@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 1
+          fetch-depth: 0
           fetch-tags: false
       - uses: actions/setup-node@v4
         with:
@@ -357,7 +357,19 @@ jobs:
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
-                robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,robloxBuildFailedAt:null,
+                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
+                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
+                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,robloxMultiplayerQaPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
+                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,robloxInternalReleaseEvidence:null,robloxReleaseEvidence:null,
+                robloxPublicReleaseReady:false,robloxReleaseClaim:false,robloxReleasePublishedAt:null,
+                robloxLastSuccessfulStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',
+                robloxFailureSignature:'ROBLOX_BUILD_PACKAGE_PENDING',routingBlockers:['roblox-build-package-pending'],updatedAt:stamp,
               });
               reconciliationPass++;
             }else{
@@ -365,7 +377,19 @@ jobs:
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
-                robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'existing-source-revalidation-failed'}${detail}`],updatedAt:stamp,
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,
+                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
+                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
+                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,robloxMultiplayerQaPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
+                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,robloxInternalReleaseEvidence:null,robloxReleaseEvidence:null,
+                robloxPublicReleaseReady:false,robloxReleaseClaim:false,robloxReleasePublishedAt:null,
+                robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureSignature:result.failure||'ROBLOX_SOURCE_REVALIDATION_FAILED',
+                routingBlockers:[`roblox-source-bootstrap:${result.failure||'existing-source-revalidation-failed'}${detail}`],updatedAt:stamp,
               });
               reconciliationFail++;
             }

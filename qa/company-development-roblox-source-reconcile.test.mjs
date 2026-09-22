@@ -69,6 +69,71 @@ test('minimum-design Roblox SOURCE_BIND items are eligible for source reconcilia
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),false);
 });
 
+
+test('bound Roblox games re-enter reconciliation only when their own source tree changed',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-drift-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    initGitRepo(tmp);
+    const boundRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={
+      ...staleItem(),
+      currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      robloxSourceCommit:boundRevision,
+      robloxInternalReleaseReady:true,
+      robloxRuntimePassed:true,
+    };
+    assert.equal(eligibleForRobloxSourceReconciliation(item),true);
+    const unchanged=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:boundRevision,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(unchanged.length,0);
+
+    fs.appendFileSync(path.join(root,'server','Game.server.luau'),'\n-- exact main source drift\n');
+    execFileSync('git',['add','.'],{cwd:tmp});
+    execFileSync('git',['commit','-m','change game source'],{cwd:tmp,stdio:'ignore'});
+    const currentRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const changed=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:currentRevision,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(changed.length,1);
+    assert.equal(changed[0].pass,true,changed[0].blockers.join(','));
+    assert.equal(changed[0].sourceDrift,true);
+    assert.equal(changed[0].sourceRevision,currentRevision);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('Roblox runtime source rebind atomically invalidates stale downstream evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/Revalidate exact-main Roblox source already merged/);
+  assert.match(workflow,/fetch-depth: 0/);
+  for(const pattern of [
+    /robloxBuildOrPackagePassed:false/,
+    /robloxBuildArtifactIdentity:null/,
+    /robloxFoundationF0Passed:false/,
+    /robloxRuntimeCandidateEvidence:null/,
+    /robloxRuntimeFoundationEvidence:null/,
+    /robloxRuntimePassed:false/,
+    /robloxIndependentQaPassed:false/,
+    /robloxRegressionPassed:false/,
+    /robloxFinalReviewPassed:false/,
+    /robloxF9ReleaseRegressionPassed:false/,
+    /robloxInternalReleaseReady:false/,
+    /robloxInternalReleaseEvidence:null/,
+    /robloxReleaseEvidence:null/,
+  ]) assert.match(workflow,pattern);
+});
+
 test('verified Vibe2 Studio handoff remains readable but does not replace minimum-design admission',()=>{
   const item=verifiedHandoffItem();
   assert.equal(hasVerifiedVibe2SourceHandoff(item),true);
