@@ -12,6 +12,9 @@ on:
       - 'qa/company-development-roblox-runtime-continuation.test.mjs'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/unity-web-first-stage-build.yml'
+      - 'tools/company-unity-web-first-stage.mjs'
+      - 'unity-games/**'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/design-only-promotion-sync.mjs'
@@ -72,7 +75,8 @@ jobs:
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const d=r.directNativeDualPlatformDevelopment||{};
           if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('DIRECT_NATIVE_OWNER_LOCK_REQUIRED');
-          if(d.unityWebEnabled!==false||d.unityWebRequired!==false||d.unityWebGateRequired!==false)throw new Error('UNITY_WEB_MUST_BE_DISABLED');
+          if(d.unityWebEnabled!==true||d.unityWebRequired!==false||d.unityWebGateRequired!==false)throw new Error('UNITY_WEB_VALIDATION_SURFACE_CONTRACT_REQUIRED');
+          if(d.unityWebValidationSurface?.enabled!==true||d.unityWebValidationSurface?.releasePlatform!==false||d.unityWebValidationSurface?.nativeReleaseAuthority!==false)throw new Error('UNITY_WEB_VALIDATION_SURFACE_MUST_BE_NON_RELEASE');
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
           if(d.automaticPairing?.ROBLOX?.join(',')!=='ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY,ROBLOX')throw new Error('BIDIRECTIONAL_AUTO_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
@@ -113,7 +117,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible_ids=${ids.join(',')}\n`);
           console.log(`DIRECT_NATIVE_ELIGIBLE_COUNT=${ids.length}`);
           console.log(`DIRECT_NATIVE_ELIGIBLE_IDS=${ids.join(',')||'NONE'}`);
-          console.log('UNITY_WEB_EXECUTION=DISABLED');
+          console.log('UNITY_WEB_EXECUTION=VALIDATION_SURFACE_ENABLED');
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
 
@@ -124,7 +128,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Dispatch both native runtimes
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Dispatch both native runtimes and eligible Unity Web validation builds
         env:
           GH_TOKEN: ${{ github.token }}
           ELIGIBLE_IDS: ${{ needs.native-plan.outputs.eligible_ids }}
@@ -136,6 +146,47 @@ jobs:
           echo "DIRECT_NATIVE_IDS=$ELIGIBLE_IDS"
           echo 'ROBLOX_RUNTIME_DISPATCH=YES'
           echo 'UNITY_APP_RUNTIME_DISPATCH=YES'
-          echo 'UNITY_WEB_RUNTIME_DISPATCH=NO'
+          web_dispatched=0
+          web_skipped=0
+          IFS=',' read -ra ids <<< "$ELIGIBLE_IDS"
+          for id in "${ids[@]}"; do
+            [ -n "$id" ] || continue
+            project="unity-games/$id"
+            if [ ! -d "$project/Assets/Editor" ] || [ ! -f "$project/ProjectSettings/ProjectVersion.txt" ]; then
+              echo "UNITY_WEB_VALIDATION_SKIP=$id:NO_BUILDABLE_UNITY_PROJECT"
+              web_skipped=$((web_skipped+1))
+              continue
+            fi
+            method="$(node --input-type=module - "$project" <<'NODE'
+import fs from 'node:fs';
+import path from 'node:path';
+const project=process.argv[2];
+const root=path.join(project,'Assets','Editor');
+const files=[];
+const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=path.join(d,e.name);if(e.isDirectory())walk(f);else if(e.isFile()&&e.name.endsWith('.cs'))files.push(f);}};
+walk(root);
+for(const file of files){
+  const text=fs.readFileSync(file,'utf8');
+  const classMatch=text.match(/(?:public\s+)?static\s+class\s+([A-Za-z_][A-Za-z0-9_]*)/);
+  if(classMatch&&/public\s+static\s+void\s+BuildWeb\s*\(/.test(text)){process.stdout.write(classMatch[1]+'.BuildWeb');process.exit(0);}
+}
+NODE
+)"
+            if [ -z "$method" ]; then
+              echo "UNITY_WEB_VALIDATION_SKIP=$id:BUILD_WEB_METHOD_MISSING"
+              web_skipped=$((web_skipped+1))
+              continue
+            fi
+            gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
+              -f game_id="$id" \
+              -f project_path="$project" \
+              -f build_method="$method" \
+              -f source_commit="$GITHUB_SHA" \
+              -f publish_to_main=true
+            echo "UNITY_WEB_VALIDATION_DISPATCHED=$id:$method"
+            web_dispatched=$((web_dispatched+1))
+          done
+          echo "UNITY_WEB_VALIDATION_DISPATCH_COUNT=$web_dispatched"
+          echo "UNITY_WEB_VALIDATION_SKIP_COUNT=$web_skipped"
           echo 'BIDIRECTIONAL_AUTO_PAIR=YES'
           echo 'INTERNAL_RELEASE_FIRST=YES'
