@@ -96,10 +96,17 @@ function QACamera.install(config,screenGui,pointProvider)
    local permissionOk,permissionGranted=pcall(function()
     return CaptureService:PromptCaptureGalleryPermissionAsync(Enum.CaptureGalleryPermission.ReadAndUpload)
    end)
-   if not permissionOk or permissionGranted~=true then
-    status.Text="캡처 권한 허용 필요"
+   if not permissionOk then
+    status.Text="Roblox 메뉴 > 캡처 켜기"
+    warn("QA capture gallery permission request failed:",permissionGranted)
     busy=false;button.Text="QA촬영"
-    task.delay(3,function()if not busy then status.Visible=false end end)
+    task.delay(5,function()if not busy then status.Visible=false end end)
+    return
+   end
+   if permissionGranted~=true then
+    status.Text="캡처 접근 허용 후 다시 눌러"
+    busy=false;button.Text="QA촬영"
+    task.delay(5,function()if not busy then status.Visible=false end end)
     return
    end
    button.Text="촬영중"
