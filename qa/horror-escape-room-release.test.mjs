@@ -7,13 +7,17 @@ const server=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server
 const client=fs.readFileSync('roblox-games/horror-escape-room/client/Game.client.luau','utf8');
 const launch=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8'));
 
-test('심야 술래잡기 외부출시 빌드에는 서로 다른 3개 맵과 맵 이벤트가 있다',()=>{
+test('심야 술래잡기 외부출시 빌드는 구조가 다른 3개 맵과 전용 이벤트를 가진다',()=>{
   for(const id of ['SCHOOL','HOSPITAL','THEME_PARK'])assert.match(config,new RegExp('Id="'+id+'"'));
+  for(const area of ['교실','복도','급식실','체육관','병실','수술실','지하실','회전목마','귀신의 집','매표소','지하 통로'])assert.match(config,new RegExp(area));
+  for(const eventId of ['LIGHTS_OUT','RED_HALL','FIRE_DRILL','POWER_OUTAGE','WARD_LOCKDOWN','BASEMENT_FOG','CAROUSEL_START','RIDE_BLACKOUT','TUNNEL_FOG'])assert.match(config,new RegExp(eventId));
+  for(const marker of ['ClassDesk','CafeteriaTable','GymFloor','HospitalHallL','HospitalBed','SurgeryTable','BasementCeiling','CarouselRotor','HauntedShell','TicketBooth','UnderpassCeiling'])assert.match(server,new RegExp(marker));
   assert.match(server,/currentMapIndex=\(currentMapIndex%#C\.Maps\)\+1/);
   assert.match(server,/workspace:SetAttribute\("CurrentMapName"/);
   assert.match(server,/workspace:SetAttribute\("CurrentMapEventName"/);
+  assert.match(server,/workspace:SetAttribute\("MapEventGameplay"/);
   assert.ok(launch.releaseGates.includes('3-map round rotation'));
-  assert.ok(launch.releaseGates.includes('map event visibility'));
+  assert.ok(launch.releaseGates.includes('three map-specific events per map'));
 });
 
 test('게임 시작 선택 UI는 선택 직후 접혀 플레이 입력을 가리지 않는다',()=>{
@@ -28,9 +32,10 @@ test('클라이언트가 임의 Remote 액션이나 스팸으로 서버 상태�
   assert.match(server,/local allowedActions=\{\}/);
   assert.match(server,/allowedActions\[action\]=true/);
   assert.match(server,/allowedActions\[a\]~=true then return false/);
-  assert.match(server,/now-\(remoteLast\[p\]or 0\)<C\.RemoteMinInterval/);
+  assert.match(server,/now-\(lastRequest\[p\]or 0\)<C\.RemoteMinInterval/);
   assert.equal((server.match(/remote\.OnServerEvent:Connect/g)||[]).length,1);
-  assert.doesNotMatch(server,/broadcastMultiplayerSync/);
+  assert.match(server,/broadcastMultiplayerSync\(p\)/);
+  assert.match(server,/remote:FireAllClients\("MULTIPLAYER_SYNC"/);
   assert.doesNotMatch(server,/RoundScore.*\+1/);
   assert.ok(launch.releaseGates.includes('remote action allowlist and spam rejection'));
 });
