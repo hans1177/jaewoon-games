@@ -17,7 +17,12 @@ test('canonical policy admits Roblox and Unity directly from one minimum design 
   assert.equal(direct.mode,'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR');
   assert.deepEqual(direct.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.equal(direct.webDevelopmentStageRemoved,true);
-  assert.equal(direct.unityWebEnabled,false);
+  assert.equal(direct.unityWebEnabled,true);
+  assert.equal(direct.unityWebRequired,false);
+  assert.equal(direct.unityWebGateRequired,false);
+  assert.equal(direct.unityWebMode,'VALIDATION_SURFACE_ONLY');
+  assert.equal(direct.unityWebValidationSurface?.requiredForDevelopmentAdmission,false);
+  assert.equal(direct.unityWebValidationSurface?.requiredForInternalRelease,false);
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.sameGameBothPlatformsRequired,true);
   assert.equal(direct.platformSpecificImplementationRequired,true);
@@ -69,7 +74,8 @@ test('architecture and runtime execute the same direct-native topology',()=>{
   assert.match(runtime,/company-selected-platform-router\.mjs/);
   assert.match(runtime,/ROBLOX_RUNTIME_DISPATCH=YES/);
   assert.match(runtime,/UNITY_APP_RUNTIME_DISPATCH=YES/);
-  assert.match(runtime,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.match(runtime,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
+  assert.match(runtime,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
   assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
   assert.doesNotMatch(runtime,/company-development-web-gameplay-validation\.mjs/);
 });
