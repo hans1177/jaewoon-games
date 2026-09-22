@@ -1,6 +1,7 @@
 local Style={
   Lighting={Brightness=2.6,ClockTime=14.2,Ambient=Color3.fromRGB(165,180,185),OutdoorAmbient=Color3.fromRGB(182,197,202)},
   Water=Color3.fromRGB(70,157,188),
+  SeaLevel=2,
   Regions={
     {Name="기본섬",Pos=Vector3.new(0,0,0),Size=Vector3.new(176,10,176),Color=Color3.fromRGB(126,188,112),Material=Enum.Material.Grass,Accent=Color3.fromRGB(103,160,88)},
     {Name="산악 철광산",Pos=Vector3.new(178,7,-92),Size=Vector3.new(122,20,122),Color=Color3.fromRGB(112,118,128),Material=Enum.Material.Slate,Accent=Color3.fromRGB(77,85,96)},
