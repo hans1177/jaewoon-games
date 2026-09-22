@@ -7,11 +7,11 @@ local Style={
   Frozen=Color3.fromRGB(112,202,255),
   Survivor=Color3.fromRGB(201,219,231),
   Monsters={
-    DRAK={Color=Color3.fromRGB(112,26,40),Accent=Color3.fromRGB(255,54,81),Label="드라크"},
-    FRANKEN={Color=Color3.fromRGB(75,108,74),Accent=Color3.fromRGB(153,245,132),Label="프랑켄"},
-    WOLF={Color=Color3.fromRGB(92,76,67),Accent=Color3.fromRGB(239,181,94),Label="울프"},
-    MIRAA={Color=Color3.fromRGB(174,156,111),Accent=Color3.fromRGB(239,221,163),Label="미이라"},
-    REAPER={Color=Color3.fromRGB(53,42,70),Accent=Color3.fromRGB(161,95,255),Label="리퍼"},
+    DRACULA={Color=Color3.fromRGB(76,18,30),Accent=Color3.fromRGB(232,48,72),Label="드라큘라"},
+    FRANKENSTEIN={Color=Color3.fromRGB(75,108,74),Accent=Color3.fromRGB(153,245,132),Label="프랑켄슈타인"},
+    WEREWOLF={Color=Color3.fromRGB(91,70,58),Accent=Color3.fromRGB(239,181,94),Label="늑대인간"},
+    MUMMY={Color=Color3.fromRGB(176,160,116),Accent=Color3.fromRGB(244,229,177),Label="미라"},
+    GRIM_REAPER={Color=Color3.fromRGB(42,34,56),Accent=Color3.fromRGB(165,92,255),Label="사신"},
   }
 }
 return table.freeze(Style)
