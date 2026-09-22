@@ -194,6 +194,25 @@ local function updatePartyCount(p)
  local count=0;for _ in pairs(parties[p]or{})do count+=1 end;p:SetAttribute("PartyCount",count)
 end
 local function partyHas(p,id)return parties[p]and parties[p][id]==true end
+local function roomParticipants(p)
+ local code=n(p,"RoomCode",1)
+ local members={}
+ for _,other in ipairs(Players:GetPlayers())do
+  if n(other,"RoomCode",1)==code then table.insert(members,other)end
+ end
+ return members
+end
+local function broadcastMultiplayerSync(actor)
+ local members=roomParticipants(actor)
+ local sharedObjective=0
+ for _,member in ipairs(members)do sharedObjective=math.max(sharedObjective,n(member,"PartyKills",0))end
+ remote:FireAllClients("MULTIPLAYER_SYNC",{
+  ActorUserId=actor.UserId,
+  RoomCode=n(actor,"RoomCode",1),
+  ParticipantCount=#members,
+  SharedObjective=sharedObjective,
+ })
+end
 
 local function makeVillage()
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
@@ -373,12 +392,20 @@ local function completeQuestIfNeeded(p,zone)
 end
 local function partyKill(p,contribution)
  if p:GetAttribute("PartyHuntActive")~=true then return end
- local kills=n(p,"PartyKills",0)+1;p:SetAttribute("PartyKills",kills);p:SetAttribute("Contribution",n(p,"Contribution",0)+contribution)
- if kills>=C.PartyHuntTarget then
-  local c=n(p,"Contribution",0);local rewardGold=80+c*5;local rewardXP=80+c*6
-  p:SetAttribute("Gold",n(p,"Gold",0)+rewardGold);grantXP(p,rewardXP);p:SetAttribute("PartyHuntActive",false)
-  msg(p,string.format("파티 사냥 완료 · 기여도 %d · 골드 %d / 경험치 %d",c,rewardGold,rewardXP));feedback(p,"PARTY_COMPLETE")
+ local zone=n(p,"CurrentZone",0)
+ for _,member in ipairs(roomParticipants(p))do
+  if member:GetAttribute("PartyHuntActive")==true and n(member,"CurrentZone",0)==zone then
+   local kills=n(member,"PartyKills",0)+1
+   member:SetAttribute("PartyKills",kills)
+   if member==p then member:SetAttribute("Contribution",n(member,"Contribution",0)+contribution)end
+   if kills>=C.PartyHuntTarget then
+    local c=n(member,"Contribution",0);local rewardGold=80+c*5;local rewardXP=80+c*6
+    member:SetAttribute("Gold",n(member,"Gold",0)+rewardGold);grantXP(member,rewardXP);member:SetAttribute("PartyHuntActive",false)
+    msg(member,string.format("공동 사냥 완료 · 기여도 %d · 골드 %d / 경험치 %d",c,rewardGold,rewardXP));feedback(member,"PARTY_COMPLETE")
+   end
+  end
  end
+ broadcastMultiplayerSync(p)
 end
 local function killEnemy(p,e,contribution)
  if e.hp>0 then return end
@@ -437,8 +464,10 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.RETURN_VILLAGE then
   if os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds or p:GetAttribute("InCombat")==true then msg(p,"전투 중에는 마을 귀환 불가")return end
   p:SetAttribute("CurrentZone",0);p:SetAttribute("PartyHuntActive",false);teleportPlayer(p,C.VillageCenter);setStats(p,true);msg(p,"마을 귀환 · 체력 완전 회복")
- elseif a==C.Actions.NEXT_ROOM_CODE then local code=n(p,"RoomCode",1)%10+1;p:SetAttribute("RoomCode",code);msg(p,"멀티 코드 "..code)
+ elseif a==C.Actions.NEXT_ROOM_CODE then
+  local code=n(p,"RoomCode",1)%10+1;p:SetAttribute("RoomCode",code);msg(p,"멀티 코드 "..code)
  end
+ broadcastMultiplayerSync(p)
 end)
 
 Players.PlayerAdded:Connect(function(p)
