@@ -14,12 +14,13 @@ test('3개 내부 빌드는 공식 CaptureService QA 카메라와 안전한 서�
   const server=read(`roblox-games/${id}/server/Game.server.luau`);
   assert.match(config,/QACameraEnabled=true/);
   assert.match(config,/QACaptureRemoteName="QACaptureReport"/);
-  for(const marker of ['CaptureService','PromptCaptureGalleryPermissionAsync','Enum.CaptureGalleryPermission.ReadAndUpload','TakeScreenshotCaptureAsync','PromptSaveCapturesToGallery','UploadCaptureAsync','Enum.CameraType.Scriptable','UICaptureMode=Enum.UICaptureMode.All','camera.CameraType=saved.cameraType']){
+  for(const marker of ['CaptureService','PromptCaptureGalleryPermissionAsync','Enum.CaptureGalleryPermission.ReadAndUpload','TakeScreenshotCaptureAsync','PromptSaveCapturesToGallery','ReadCapturesFromGalleryAsync','StartUploadCaptureAsync','CheckUploadCaptureStatusAsync','Enum.CameraType.Scriptable','UICaptureMode=Enum.UICaptureMode.All','camera.CameraType=saved.cameraType']){
    assert.match(qa,new RegExp(marker.replaceAll('.','\\.')));
   }
   assert.match(client,/QACamera\.install\(C,gui/);
   assert.match(server,/qa-camera-captures-v1/);
-  assert.match(server,/if not id:match\("\^%d\+\$"\)then return end/);
+  assert.match(server,/if not isStatus and not raw:match\("\^%d\+\$"\)then return end/);
+  assert.match(server,/record\.kind="STATUS"/);
   assert.match(server,/qaCaptureStore:UpdateAsync\("latest"/);
  }
 });
@@ -44,8 +45,8 @@ test('심야 술래잡기는 실제 좌표 미니맵과 맵별 가독성 바닥/
  const client=read('roblox-games/horror-escape-room/client/Game.client.luau');
  const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
  const style=read('roblox-games/horror-escape-room/shared/VisualStyle.luau');
- for(const marker of ['MiniMap','PlayerDot','mapLayouts','RunService.RenderStepped','CurrentMapId'])assert.match(client,new RegExp(marker.replaceAll('.','\\.')));
- for(const marker of ['SchoolHallFloor','SchoolCafeteriaFloor','HospitalHallFloor','HospitalBasementFloor','ParkMainPath','CarouselCanopy','READABLE_ART_V4'])assert.match(server,new RegExp(marker));
+ for(const marker of ['MiniMap','PlayerDot','mapLayouts','RunService.RenderStepped','CurrentMapId','MidnightArena','MapReady'])assert.match(client,new RegExp(marker.replaceAll('.','\\.')));
+ for(const marker of ['SchoolHallFloor','SchoolCafeteriaFloor','HospitalHallFloor','HospitalBasementFloor','ParkMainPath','CarouselCanopy','READABLE_ART_V4','MapReady','arena=makeArena(C.Maps[1])'])assert.match(server,new RegExp(marker.replace(/[.*+?^$()|[\]{}]/g,'\\ for(const marker of ['SchoolHallFloor','SchoolCafeteriaFloor','HospitalHallFloor','HospitalBasementFloor','ParkMainPath','CarouselCanopy','READABLE_ART_V4'])assert.match(server,new RegExp(marker));')));
  assert.match(style,/Brightness=2\.05/);
  assert.match(style,/FogEnd=270/);
 });
