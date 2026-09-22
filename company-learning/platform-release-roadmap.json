@@ -4391,14 +4391,17 @@
       }
     },
     "autonomousBottleneckRecovery": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-21",
       "enabled": true,
       "objective": "PIPELINE_OPEN_THEN_VIBE_AUTONOMOUSLY_DETECT_REPAIR_REVERIFY_AND_RESUME_BOTTLENECKS",
       "canonicalSequence": [
         "DETECT_FAILURE_OR_STALL",
         "CAPTURE_EXACT_FAILURE_STAGE_SIGNATURE_AND_CHECKPOINT",
+        "CALCULATE_COMPANY_WIDE_BOTTLENECK_IMPACT",
         "CLASSIFY_SCOPE_AND_AUTHORITY",
+        "GENERATE_MULTIPLE_CAUSAL_HYPOTHESES",
+        "FALSIFY_WITH_CURRENT_EVIDENCE_AND_KNOWN_GOOD_WHEN_AVAILABLE",
         "ROUTE_TO_VIBE2_VIBE3_OR_SUPERVISED_SYSTEM_AI",
         "DIRECTLY_REPAIR_RESPONSIBLE_IMPLEMENTATION",
         "RERUN_EXACT_FAILED_STAGE",
@@ -4455,7 +4458,10 @@
         ],
         "allowVerificationAfterMutationOnly": true,
         "objective": "STOP_VERIFY_ONLY_LOOPS_AND_FORCE_CAUSAL_IMPLEMENTATION_PROGRESS"
-      }
+      },
+      "companyWideImpactPriorityRequired": true,
+      "multiHypothesisFalsificationRequiredForRepeatedOrBottleneckRepair": true,
+      "failedRepairStrategyFingerprintMustPersistAcrossRetry": true
     },
     "systemAiVerifiedLearningFanIn": {
       "version": 1,
@@ -12802,7 +12808,7 @@
     "objective": "MINIMIZE_MODEL_SERIALIZATION_AND_LATENCY_WHILE_PRESERVING_ROLE_LEVEL_REVIEW_AND_DETERMINISTIC_QA",
     "qualityGateWeakeningForbidden": true,
     "systemAiBottleneckResilience": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-21",
       "existingArchitectureOnly": true,
       "objective": "MAXIMIZE_24H_SYSTEM_AI_BOTTLENECK_RECOVERY_SUCCESS_WITHOUT_GATE_WEAKENING",
@@ -12833,7 +12839,56 @@
         "retryBudgetConsumed": false,
         "learningPenalty": false,
         "executor": "tools/company-system-ai-queue.mjs::reclaimStaleSystemAiReservations"
-      }
+      },
+      "impactAwareScheduling": {
+        "enabled": true,
+        "executor": "tools/company-system-ai-queue.mjs::systemAiImpactProfile",
+        "reserveOrder": "BOTTLENECK_IMPACT_SCORE_DESC_THEN_STATIC_PRIORITY_THEN_CREATED_AT",
+        "components": [
+          "STATIC_SEVERITY",
+          "BLOCKED_DOWNSTREAM_TASK_COUNT",
+          "FAILURE_RECURRENCE_COUNT",
+          "DEPENDENCY_CENTRALITY",
+          "QUEUE_AGE",
+          "REPAIR_RISK_PENALTY"
+        ],
+        "commonFailureSignatureCohortIncluded": true,
+        "blockedTaskIdsIncluded": true,
+        "impactScorePersistedIntoReservedTask": true,
+        "objective": "REPAIR_THE_CAUSE_THAT_RESTORES_THE_MOST_COMPANY_THROUGHPUT_FIRST",
+        "authorityChange": "NONE"
+      },
+      "multiHypothesisCausalRepair": {
+        "enabled": true,
+        "reusesExistingNeuralDiagnosis": true,
+        "diagnosisBinding": "tools/vibe2-neural-diagnosis.mjs::buildNeuralDiagnosis",
+        "workerBinding": "tools/company-system-ai-worker.mjs",
+        "multipleHypothesesComparedBeforeRepair": true,
+        "rejectedHypothesesExcludedFromSelection": true,
+        "knownGoodComparisonRequiredWhenReferenceExists": true,
+        "knownGoodMustNotBeInventedWhenMissing": true,
+        "genericFallbackHypothesesUsedWhenEvidenceProducesFewerThanTwo": true,
+        "selectedHypothesisPersistedInImmutableResult": true,
+        "falsifiedHypothesesPersistedToQueueEvidence": true,
+        "failedRepairStrategyFingerprintPersisted": true,
+        "repeatedFailedRepairStrategyBlocked": true,
+        "sameFailureSignatureRequiresNewCausalEvidenceOrDifferentStrategy": true,
+        "preservesVerifiedCheckpoint": true,
+        "automaticWritableScopeExpansion": false,
+        "deterministicQaAndSupervisorRemainAuthoritative": true,
+        "objective": "FALSIFY_CAUSAL_ALTERNATIVES_BEFORE_MUTATING_RESPONSIBLE_SOURCE",
+        "authorityChange": "NONE"
+      },
+      "implementationBindings": [
+        "tools/company-system-ai-queue.mjs",
+        "tools/company-system-ai-worker.mjs",
+        "tools/company-recovery-dispatch.mjs",
+        "tools/vibe2-neural-diagnosis.mjs",
+        ".github/workflows/company-system-ai-workers.yml",
+        "qa/company-system-ai-worker.test.mjs",
+        "qa/company-system-ai-supervision-loop.test.mjs"
+      ],
+      "implementationState": "IMPLEMENTED_QA_PENDING"
     }
   },
   "learningRetrievalRouting": {
