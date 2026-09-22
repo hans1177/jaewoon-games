@@ -63120,7 +63120,10 @@
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22SYS-ARCH-b6e6cadf9046-v1%7C35793352138%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-b6e6cadf9046-v1-primary-35793352138-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-b6e6cadf9046-v1%7C35793352138%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-b6e6cadf9046-v1-primary-35793352138-1%7CCI_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-b6e6cadf9046-v1%7C35793352138%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-b6e6cadf9046-v1-primary-35793352138-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "supervised-promotion:NOT_REQUIRED",
-        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22SYS-ARCH-b6e6cadf9046-v1%22%2C%22sampleId%22%3A%22SYS-ARCH-b6e6cadf9046-v1%7C35793352138%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-b6e6cadf9046-v1-primary-35793352138-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D"
+        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22SYS-ARCH-b6e6cadf9046-v1%22%2C%22sampleId%22%3A%22SYS-ARCH-b6e6cadf9046-v1%7C35793352138%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-b6e6cadf9046-v1-primary-35793352138-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
+        "release-dispatch-recovery-requested:vibe2/candidate/SYS-ARCH-b6e6cadf9046-v1-primary-35793352138-1",
+        "release-dispatch-recovery-at:1790120885642",
+        "release-dispatch-recovery-candidate-sha:bf80345a9b090ee8697b7df5ff46a351b5d905a5"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35793352138:1",
@@ -68937,7 +68940,8 @@
         "release-dispatch-recovery-at:1790119376328",
         "release-dispatch-recovery-candidate-sha:5a64f5f5e72cdcb06e8951d3627dc284f1e46908",
         "release-dispatch-recovery-at:1790119855111",
-        "release-dispatch-recovery-at:1790120359624"
+        "release-dispatch-recovery-at:1790120359624",
+        "release-dispatch-recovery-at:1790120885642"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
       "reservationId": "35794682023:1",
@@ -69268,7 +69272,8 @@
         "release-dispatch-recovery-at:1790119376328",
         "release-dispatch-recovery-candidate-sha:b234afd01fae04476cfdce519798d16c5856e363",
         "release-dispatch-recovery-at:1790119855111",
-        "release-dispatch-recovery-at:1790120359624"
+        "release-dispatch-recovery-at:1790120359624",
+        "release-dispatch-recovery-at:1790120885642"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
       "reservationId": "35794682023:1",
