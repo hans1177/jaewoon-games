@@ -381,10 +381,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-22T09:30:38.692Z",
+      "updatedAt": "2026-09-22T09:36:28.492Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -517,61 +517,16 @@
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
       "fastLaunchPriority": true,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "919c926deff80e305673ba396dc652172ffa83e3",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "daechung-rpg",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T08:12:35.942Z",
-        "sourceRevision": "54063a45d7b7b315951a8c09b6053e2143a0e1e7",
-        "artifactIdentity": "sha256:01bd54bfd44ea7c598025c7750c00f9bee9a3ff9164c3b04ecb40871f46ab6eb",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "54063a45d7b7b315951a8c09b6053e2143a0e1e7",
-            "artifactIdentity": "sha256:01bd54bfd44ea7c598025c7750c00f9bee9a3ff9164c3b04ecb40871f46ab6eb",
-            "webValidationPassed": true,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": true,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blocker found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -586,12 +541,12 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxBuildArtifactIdentity": null,
+      "robloxBuildArtifactIdentity": "sha256:c11b37b476292a608239e342570fd38fe08cdbfe57bf7d73f05fc875f60381cb",
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseReady": false,
-      "robloxBuildPassedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxBuildPassedAt": "2026-09-22T09:36:28.492Z",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "gameNameEnglish": "Whatever RPG",
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
@@ -3845,7 +3800,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T09:34:16.406Z",
+  "updatedAt": "2026-09-22T09:36:28.492Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
