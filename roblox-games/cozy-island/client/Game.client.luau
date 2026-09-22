@@ -121,7 +121,7 @@ local controls=Instance.new("Frame")
 controls.Name="ActionDock"
 controls.AnchorPoint=Vector2.new(.5,1)
 controls.Position=UDim2.new(.5,0,1,-10)
-controls.Size=UDim2.fromOffset(300,48)
+controls.Size=UDim2.fromOffset(276,44)
 controls.BackgroundColor3=Color3.fromRGB(26,43,39)
 controls.BackgroundTransparency=.12
 controls.Parent=gui
@@ -130,8 +130,8 @@ roundify(controls,14);outline(controls,.5)
 local actionPopup=Instance.new("Frame")
 actionPopup.Name="ActionPopup"
 actionPopup.AnchorPoint=Vector2.new(.5,1)
-actionPopup.Position=UDim2.new(.5,0,1,-64)
-actionPopup.Size=UDim2.fromOffset(300,48)
+actionPopup.Position=UDim2.new(.5,0,1,-58)
+actionPopup.Size=UDim2.fromOffset(276,44)
 actionPopup.BackgroundColor3=Color3.fromRGB(26,43,39)
 actionPopup.BackgroundTransparency=.08
 actionPopup.Visible=false
@@ -155,6 +155,7 @@ local groups={
 
 local actionButtons={}
 local openGroup=nil
+local popupToken=0
 local function showGroup(index)
  if openGroup==index and actionPopup.Visible then
   actionPopup.Visible=false
@@ -169,17 +170,25 @@ local function showGroup(index)
   b.Visible=true
  end
  actionPopup.Visible=true
+ popupToken+=1
+ local token=popupToken
+ task.delay(4.5,function()
+  if popupToken==token and actionPopup.Visible then
+   actionPopup.Visible=false
+   openGroup=nil
+  end
+ end)
 end
 
 for groupIndex,group in ipairs(groups)do
  local tab=makeButton(controls,group.title,group.color)
- tab.Size=UDim2.new(.31,0,0,38)
+ tab.Size=UDim2.new(.31,0,0,34)
  tab.Position=UDim2.new(.015+(groupIndex-1)*.33,0,0,5)
  tab.Activated:Connect(function()showGroup(groupIndex)end)
 
  for row,a in ipairs(group.actions)do
   local b=makeButton(actionPopup,a[2],group.color)
-  b.Size=UDim2.new(.31,0,0,38)
+  b.Size=UDim2.new(.31,0,0,34)
   b.Position=UDim2.new(.015+(row-1)*.33,0,0,5)
   b.Visible=false
   b.Activated:Connect(function()
