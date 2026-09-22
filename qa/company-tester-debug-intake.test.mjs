@@ -25,3 +25,37 @@ test('same ticket is deduplicated and increments occurrence count',()=>{
  assert.equal(second.tickets.tickets.length,1);
  assert.equal(second.tickets.tickets[0].occurrenceCount,2);
 });
+
+
+test('private Roblox runtime candidate without F1-F4 evidence becomes an existing tester execution ticket, not a fake repair',()=>{
+ const dev={items:[{
+  gameId:'cozy-island',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/cozy-island',
+  robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),versionNumber:21},
+  robloxRuntimeFoundationPassed:false,robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',robloxFailureSignature:'ROBLOX_RUNTIME_FOUNDATION_PENDING'
+ }]};
+ const r=ingestTesterDebug({developmentQueue:dev});
+ const t=r.tickets.tickets.find(x=>x.gameId==='cozy-island'&&x.signature==='ROBLOX_RUNTIME_FOUNDATION_UNVERIFIED');
+ assert.ok(t);
+ assert.equal(t.category,'FOUNDATION');
+ assert.equal(t.route,'GAME_TESTER_FOUNDATION_EXECUTION');
+ assert.equal(t.repairEligible,false);
+ assert.match(t.reproduction,/RUN_EXISTING_GAME_TESTER_F0_TO_F4_FOUNDATION_SCENARIO/);
+ assert.equal(r.recovery.tasks.some(x=>x.sourceTaskId===t.id),false);
+});
+
+test('observed Roblox foundation failure becomes critical tester ticket and exact-stage recovery',()=>{
+ const dev={items:[{
+  gameId:'cozy-island',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/cozy-island',
+  robloxRuntimeCandidateEvidence:{published:true,versionNumber:21},
+  robloxRuntimeFoundationPassed:false,
+  robloxRuntimeFoundationEvidence:{state:'BLOCKED',failureSignature:'GROUND_CONTACT_FAILURE',blockers:['checkpoint:GROUND_CONTACT']},
+  robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',robloxFailureSignature:'GROUND_CONTACT_FAILURE'
+ }]};
+ const r=ingestTesterDebug({developmentQueue:dev});
+ const t=r.tickets.tickets.find(x=>x.signature==='GROUND_CONTACT_FAILURE');
+ assert.ok(t);
+ assert.equal(t.severity,'CRITICAL');
+ assert.equal(t.category,'FOUNDATION');
+ assert.equal(t.exactFailedStage,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+ assert.ok(r.recovery.tasks.some(x=>x.sourceTaskId===t.id&&x.failureSignature==='GROUND_CONTACT_FAILURE'));
+});
