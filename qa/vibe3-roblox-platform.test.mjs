@@ -7,7 +7,7 @@ import {
   validateRobloxSourcePath,
   assembleRobloxTechnicalEvidence,
   validateRobloxReleaseEvidence,
-  createRobloxPlacePublishPlan,
+  createRobloxPlacePublishPlan,createRobloxRuntimeCandidatePublishPlan,
   publishRobloxPlace,
 } from '../tools/vibe3-roblox-platform.mjs';
 
@@ -284,3 +284,31 @@ for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
 }
 
 console.log(`PASS active Roblox source regression: ${ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS.length}/${ROBLOX_PORTFOLIO_ALL_GAME_IDS.length-ROBLOX_PERMANENTLY_REMOVED.size}`);
+
+
+test('Roblox runtime candidate publish plan accepts exact F0 evidence but never claims runtime or internal release',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const plan=createRobloxRuntimeCandidatePublishPlan({
+    placeFile:'roblox-games/demo/place.rbxl',
+    universeId:'123',placeId:'456',sourceRevision:revision,artifactIdentity:artifact,
+    f0Evidence:{sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:false,runtimeFoundationPassed:false,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
+  });
+  assert.equal(plan.executionReady,true);
+  assert.equal(plan.planKind,'PRIVATE_RUNTIME_CANDIDATE');
+  assert.equal(plan.releaseClaim,false);
+  assert.equal(plan.evidenceGate.runtimeClaimAllowed,false);
+  assert.equal(plan.evidenceGate.internalReleaseClaimAllowed,false);
+  assert.equal(plan.actualRuntimeValidationRequiredAfterPublish,true);
+});
+
+test('Roblox runtime candidate publish plan rejects headless evidence that claims runtime',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const plan=createRobloxRuntimeCandidatePublishPlan({
+    placeFile:'roblox-games/demo/place.rbxl',
+    universeId:'123',placeId:'456',sourceRevision:revision,artifactIdentity:artifact,
+    f0Evidence:{sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:true,runtimeFoundationPassed:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
+  });
+  assert.equal(plan.executionReady,false);
+  assert.ok(plan.blockedReasons.includes('f0-must-not-claim-runtime-evidence'));
+  assert.ok(plan.blockedReasons.includes('f0-must-not-claim-runtime-foundation'));
+});
