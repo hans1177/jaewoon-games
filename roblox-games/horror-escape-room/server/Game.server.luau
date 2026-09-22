@@ -90,10 +90,12 @@ local function applyMapEvent(f,map,event)
  workspace:SetAttribute("CurrentMapEvent",event.Id)
  workspace:SetAttribute("CurrentMapEventName",event.Name)
  if event.Id=="LIGHTS_OUT"or event.Id=="POWER_OUTAGE"or event.Id=="RIDE_BLACKOUT"then
-  Lighting.Brightness=.82
-  Lighting.FogEnd=map.Id=="HOSPITAL"and 82 or 135
+  -- 정전은 긴장감만 주고 플레이 경로 자체는 읽혀야 한다.
+  Lighting.Brightness=1.18
+  Lighting.FogEnd=map.Id=="HOSPITAL"and 118 or 165
+  Lighting.Ambient=Color3.fromRGB(66,72,82)
   for _,x in ipairs(f:GetDescendants())do
-   if x:IsA("Part")and(x.Name=="CeilingLight"or x.Name=="ParkLight")then x.Transparency=.9 end
+   if x:IsA("Part")and(x.Name=="CeilingLight"or x.Name=="ParkLight")then x.Transparency=.68 end
   end
  elseif event.Id=="RED_HALL"then
   Lighting.Ambient=Color3.fromRGB(72,22,28)
@@ -109,7 +111,7 @@ local function applyMapEvent(f,map,event)
   Lighting.Brightness=.9
   workspace:SetAttribute("MapEventGameplay","WARD_SHORTCUTS_CLOSED")
  elseif event.Id=="BASEMENT_FOG"then
-  Lighting.Brightness=.78;Lighting.FogEnd=72;Lighting.FogColor=Color3.fromRGB(75,82,78)
+  Lighting.Brightness=1.02;Lighting.FogEnd=92;Lighting.FogColor=Color3.fromRGB(75,82,78)
   workspace:SetAttribute("MapEventGameplay","HOSPITAL_SHORT_SIGHT")
  elseif event.Id=="CAROUSEL_START"then
   local rotor=f:FindFirstChild("CarouselRotor",true)
@@ -123,7 +125,7 @@ local function applyMapEvent(f,map,event)
   end
   workspace:SetAttribute("MapEventGameplay","MOVING_CAROUSEL_HAZARD")
  elseif event.Id=="TUNNEL_FOG"then
-  Lighting.FogEnd=88;Lighting.Brightness=.82
+  Lighting.FogEnd=108;Lighting.Brightness=1.05
   workspace:SetAttribute("MapEventGameplay","UNDERPASS_LOW_VISIBILITY")
  end
 end
@@ -176,6 +178,11 @@ local function makeArena(map)
   local gymDoor=arenaPart(f,"GymDoor",Vector3.new(4,10,14),Vector3.new(20,5,48),Style.Locker,Enum.Material.Metal);gymDoor.Transparency=.18
   for i=1,4 do arenaPart(f,"GymBleacher",Vector3.new(18,3,5),Vector3.new(58,2,26+i*8),Color3.fromRGB(94,101,110),Enum.Material.Metal)end
   for i=1,10 do arenaPart(f,"Locker",Vector3.new(4,8,3),Vector3.new(-12+(i%5)*6,4,-62+math.floor((i-1)/5)*8),Style.Locker,Enum.Material.Metal)end
+  for _,z in ipairs({-52,-26,0,26,52})do
+   local strip=arenaPart(f,"HallGuideStrip",Vector3.new(12,.18,1.2),Vector3.new(0,.78,z),Color3.fromRGB(87,210,224),Enum.Material.Neon);strip.CanCollide=false
+  end
+  arenaPart(f,"SchoolNoticeBoard",Vector3.new(12,6,.8),Vector3.new(-16,5,-28),Color3.fromRGB(126,89,54),Enum.Material.WoodPlanks)
+  arenaPart(f,"SchoolClock",Vector3.new(4,4,.6),Vector3.new(16,7,-6),Color3.fromRGB(215,220,222),Enum.Material.SmoothPlastic)
  elseif map.Id=="HOSPITAL"then
   -- 폐병원: 좁은 중앙 복도와 병실, 수술실, 지하실 느낌의 저천장 구역.
   Lighting.FogEnd=132
@@ -203,6 +210,9 @@ local function makeArena(map)
   arenaPart(f,"BasementWallA",Vector3.new(3,8,34),Vector3.new(20,4,57),Color3.fromRGB(69,73,75),Enum.Material.Concrete)
   arenaPart(f,"BasementWallB",Vector3.new(3,8,34),Vector3.new(75,4,57),Color3.fromRGB(69,73,75),Enum.Material.Concrete)
   for i=1,5 do arenaPart(f,"BasementCrate",Vector3.new(6,5,6),Vector3.new(28+i*8,2.5,50+(i%2)*12),Color3.fromRGB(83,74,65),Enum.Material.WoodPlanks)end
+  for _,z in ipairs({-56,-28,0,28,56})do
+   local strip=arenaPart(f,"HospitalGuideStrip",Vector3.new(8,.18,1),Vector3.new(0,.78,z),Color3.fromRGB(111,215,190),Enum.Material.Neon);strip.CanCollide=false
+  end
  elseif map.Id=="THEME_PARK"then
   -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
   zoneFloor(f,"ParkMainPath",Vector3.new(20,.3,142),Vector3.new(0,.66,0),Color3.fromRGB(92,82,103),Enum.Material.Concrete)
@@ -237,6 +247,8 @@ local function makeArena(map)
   arenaPart(f,"UnderpassCeiling",Vector3.new(72,1,18),Vector3.new(0,7,-66),Color3.fromRGB(53,54,61),Enum.Material.Concrete)
   arenaPart(f,"UnderpassWallL",Vector3.new(72,8,2),Vector3.new(0,4,-74),Color3.fromRGB(62,63,70),Enum.Material.Concrete)
   arenaPart(f,"UnderpassWallR",Vector3.new(72,8,2),Vector3.new(0,4,-58),Color3.fromRGB(62,63,70),Enum.Material.Concrete)
+  local sign=arenaPart(f,"ParkLandmarkSign",Vector3.new(18,5,1),Vector3.new(0,9,-30),Color3.fromRGB(222,105,178),Enum.Material.Neon);glow(sign,sign.Color,26,1.4)
+  for _,x in ipairs({-45,45})do local guide=arenaPart(f,"ParkRouteGuide",Vector3.new(12,.18,1.2),Vector3.new(x,.8,-30),Color3.fromRGB(111,201,225),Enum.Material.Neon);guide.CanCollide=false end
  end
 
  local events=map.Events or {}
@@ -249,7 +261,7 @@ local function makeArena(map)
  end
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
- workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_READABLE_ART_V5")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_PLAYABLE_ART_V6")
  workspace:SetAttribute("MapReady",true)
  workspace:SetAttribute("MapBuilding",false)
  return f
