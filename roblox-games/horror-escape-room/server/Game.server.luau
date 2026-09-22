@@ -113,15 +113,17 @@ local function loadOfficialAsset(id)
 end
 local function matchingMesh(root,keywords,seed)
  if not root then return nil end
- local candidates={}
+ local candidates,all={},{}
  for _,d in ipairs(root:GetDescendants())do
   if d:IsA("MeshPart")then
+   table.insert(all,d)
    local name=string.lower(d.Name)
    for _,key in ipairs(keywords)do
     if string.find(name,string.lower(key),1,true)then table.insert(candidates,d);break end
    end
   end
  end
+ if #candidates==0 then candidates=all end
  if #candidates==0 then return nil end
  return candidates[((seed or 1)-1)%#candidates+1]
 end
