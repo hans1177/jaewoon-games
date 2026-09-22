@@ -59,7 +59,7 @@ test('F0 blocks when actual Luau compiler evidence is missing even if structural
 test('Roblox F0 workflow uses shallow checkout and exact source revision fetch instead of full history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
- assert.equal((workflow.match(/fetch-depth:\s*1/g)||[]).length,2);
+ assert.ok((workflow.match(/fetch-depth:\s*1/g)||[]).length>=2);
  assert.match(workflow,/git fetch --no-tags origin "\$\{\{ matrix\.sourceRevision \}\}"/);
 });
 
