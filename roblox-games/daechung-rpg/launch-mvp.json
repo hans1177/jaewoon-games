@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
   "releaseStrategy": "FAST_MVP",
@@ -9,11 +9,13 @@
   "launchCore": [
     "four fixed party slots",
     "player plus AI companions",
-    "story NPC recruitment",
+    "progressive story NPC recruitment",
     "four player classes",
+    "four normal enemy types",
+    "one elite enemy",
+    "one final boss",
     "equipment/AI-style tuning",
-    "one field boss",
-    "boss and hidden companion paths"
+    "field/battle/boss music and combat feedback"
   ],
   "deferredUntilAfterMvp": [
     "multiple regions",
@@ -30,7 +32,12 @@
     "save/rejoin",
     "boss progression regression",
     "Creator Store BGM and gameplay SFX",
-    "remote action allowlist and spam rejection"
+    "remote action allowlist and spam rejection",
+    "four normal enemy types",
+    "one elite enemy",
+    "final boss encounter",
+    "field/battle/boss music states",
+    "attack/hit/skill/level-up/boss feedback"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -42,5 +49,5 @@
     "audioFeedbackPassRequired": true,
     "abuseResistancePassRequired": true
   },
-  "updatedAt": "2026-09-22T08:05:00+09:00"
+  "updatedAt": "2026-09-22T11:50:00+09:00"
 }
