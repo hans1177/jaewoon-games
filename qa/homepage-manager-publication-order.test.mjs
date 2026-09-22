@@ -317,3 +317,29 @@ test('platform availability requires explicit internal release evidence from com
   assert.match(runtime,/supportedPlatforms/);
   assert.doesNotMatch(runtime,/fortniteAction|Web 플레이/);
 });
+
+
+test('Homepage Manager binds the central homepage policy fingerprint from self-QA through Director publication',()=>{
+  const manage=section('  manage-and-self-qa:','  director-supervision:');
+  const director=section('  director-supervision:');
+  assert.match(manage,/--require-homepage-policy=true/);
+  assert.match(manage,/HOMEPAGE_POLICY_SHA256/);
+  assert.match(manage,/policyFingerprint:process\.env\.HOMEPAGE_POLICY_SHA256/);
+  assert.match(manage,/HOMEPAGE_CENTRAL_POLICY_SYNC=PASS/);
+  assert.match(director,/--require-homepage-policy=true/);
+  assert.match(director,/test "\$policy_sha" = "\$HOMEPAGE_POLICY_SHA256"/);
+  assert.match(director,/Revalidate central homepage policy before publication/);
+  assert.match(director,/HOMEPAGE_CENTRAL_POLICY_FINAL_SYNC=PASS/);
+  assert.doesNotMatch(manage,/git checkout origin\/main -- tools\/company-homepage-platform-exposure-sync\.mjs/);
+  assert.match(manager,/compileHomepageCentralPolicy/);
+  assert.match(manager,/centralPolicyFingerprint===homepageCentral\.fingerprint/);
+});
+
+test('homepage platform exposure derives supported platforms from the central roadmap rather than a workflow constant',()=>{
+  const sync=fs.readFileSync('tools/company-homepage-platform-exposure-sync.mjs','utf8');
+  assert.match(sync,/compileHomepageCentralPolicy/);
+  assert.match(sync,/centralPolicyFingerprint:central\.fingerprint/);
+  assert.match(sync,/supportedPlatforms:central\.supportedPlatforms/);
+  assert.match(sync,/HOMEPAGE_PLATFORM_ADAPTER_MISSING/);
+  assert.doesNotMatch(sync,/supportedPlatforms:\['ROBLOX','UNITY'\]/);
+});
