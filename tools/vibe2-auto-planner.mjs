@@ -10,6 +10,7 @@ import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { diagnoseGame, microTaskFromIssue, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
 import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
+import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -135,6 +136,29 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
   if(clean(item?.status).toUpperCase()!=='ACTIVE'||stateFromCatalog(game)!=='development-confirmed')continue;
+  const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
+  const queueRobloxRoot=posix(item?.robloxProjectPath||item?.targetSourcePaths?.ROBLOX||(queueTarget==='ROBLOX'?item?.targetSourcePath:''));
+  if(queueTarget==='ROBLOX'||/^roblox-games\//.test(queueRobloxRoot)){
+    const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
+    const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
+    const queuePatch={
+      queueCurrentStep:clean(item?.currentStep),
+      queueCanonicalState:clean(item?.canonicalState),
+      queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
+      queueRobloxFailureStage:clean(item?.robloxFailureStage),
+      queueRobloxFailureSignature:clean(item?.robloxFailureSignature),
+      queueRobloxSourceCommit:clean(item?.robloxSourceCommit),
+      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity),
+      queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
+      queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
+      queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
+      queueRobloxInternalReleaseArtifact:clean(item?.robloxInternalReleaseEvidence?.artifactIdentity),
+      companyDevelopmentQueueSource:true
+    };
+    if(existingRoblox)Object.assign(existingRoblox,queuePatch,{projectPath:root,releaseState:'development-confirmed'});
+    else rows.push({gameId:id,name:clean(item?.gameName||game?.name||id),engine:'roblox',target:'roblox',projectPath:root,lifecycleState:gameLifecycleState(game),existing:fs.existsSync(path.join(repoRoot,root)),releaseState:'development-confirmed',progress:Number(item?.progress||0),source:'company-development-queue-roblox',developmentBaseline:null,...queuePatch});
+    continue;
+  }
   const firstStagePolicy=centralPresentationPolicy(repoRoot)?.unityWebFirstStage||{};
   const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY'&&firstStagePolicy?.appliesToAllGames===true;
   if(unityWebFirstStage){
@@ -345,10 +369,10 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const supervised=supervisedWebBuildRequired(project,goal);
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
-  const focused=project.ownerFocusedCaretaker===true;
+  const focused=project.ownerFocusedCaretaker===true,unlimitedRepair=focused||project.engine==='roblox';
   const plannedTask={
     id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':priority,
-    releaseState:project.releaseState,status:'queued',retries:0,maxRetries:focused?null:2,retryPolicy:focused?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
+    releaseState:project.releaseState,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
     supervisionApproved:false,
@@ -837,9 +861,40 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
   const goal=`[EXISTING_WEB_DEVELOPMENT_CONTINUATION] ${project.name||project.gameId}는 ACTIVE DEVELOPMENT_CONFIRMED 기존 실제 Web 게임이지만 최신 development validation이 아직 없다. 기존 게임/세이브/핵심 루프를 재생성하거나 초기화하지 말고 현재 소스를 기준으로 개발을 계속한다. 실제 플레이에서 체감되는 하나의 일관된 기능 패키지를 구현하거나 현재 끊긴 시스템 연결을 완성하고, 모바일 입력·상태 일치·저장 호환·실패/재시도·회귀 안정성을 함께 확인한다. 검증용 숫자/라벨/버튼만 추가하는 작업은 금지한다. 변경 후 다음 Web 실제 플레이 검증이 가능한 상태로 만든다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
   return task(id,project,goal,[relative],'high','medium',['existing-web-continuation','development-validation:missing','preserve-existing-game']);
 }
+function findRobloxInternalPlaytestTask(project,repoRoot,queue){
+  if(project.engine!=='roblox'||project.releaseState!=='development-confirmed')return null;
+  const state=clean(project.queueCanonicalState).toUpperCase(),step=clean(project.queueCurrentStep).toUpperCase();
+  if(state!=='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'&&step!=='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG')return null;
+  if(project.queueRobloxInternalReleaseReady!==true)return null;
+  const root=posix(project.projectPath),sourceDir=sourceFile(repoRoot,root);if(!fs.existsSync(sourceDir))return null;
+  const exactSource=clean(project.queueRobloxInternalReleaseSource||project.queueRobloxSourceCommit);
+  const exactArtifact=clean(project.queueRobloxInternalReleaseArtifact||project.queueRobloxArtifactIdentity);
+  const version=Number(project.queueRobloxInternalReleaseVersion||0);
+  if(!exactSource||!exactArtifact||!version)return null;
+  const core=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'].map(rel=>root+'/'+rel).filter(rel=>fs.existsSync(sourceFile(repoRoot,rel)));
+  if(!core.length)return null;
+  const id=project.gameId+'-roblox-internal-playtest-debug-'+exactSource.slice(0,12);
+  if(hasTask(queue,id))return null;
+  const failures=[...new Set([...(project.queueRoutingBlockers||[]),project.queueRobloxFailureStage,project.queueRobloxFailureSignature].map(clean).filter(Boolean))];
+  const prior=(queue.tasks||[]).filter(row=>row.gameId===project.gameId&&(row.evidence||[]).includes('internal-playtest-co-development:yes')&&['failed','blocked'].includes(clean(row.status).toLowerCase()));
+  const saturation=classifyVibePatchSaturation({attempts:prior.map(row=>({status:row.status,responsibleFiles:row.responsibleFiles||[],failureSignature:clean(row.blocker)})),responsibleFiles:core,threshold:3});
+  const failureContext=failures.length?failures.join(' | '):'NO_REPRODUCIBLE_RUNTIME_FAILURE_RECORDED';
+  const mode=saturation.saturated?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
+  const goal='[ROBLOX_INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG] game='+String(project.name||project.gameId)+'\nexact source='+exactSource+' artifact='+exactArtifact+' version='+version+' mode='+mode+'\nUse the already-published internal build as the current Candidate. Consume reproducible internal playtest evidence and Owner feedback when present, trace the first failure to the original responsible source, and preserve working gameplay, save meaning, and core loop. Never fabricate an observed runtime PASS and never satisfy acceptance by adding marker strings. If no reproducible runtime failure is recorded, do not invent a gameplay change; only repair concrete static defects, duplicate declarations, or broken bindings that are directly evidenced by the current source. After three repeated failures on the same responsibility, stop micro-patch accumulation and repair or redesign the original responsible system under ROOT_CAUSE_MODE. failure-evidence='+failureContext;
+  const out=task(id,project,goal,core,'critical','medium',[
+    'roblox-stage:INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','internal-playtest-co-development:yes','repair-mode:'+mode,
+    'internal-roblox-version:'+version,'internal-release-source:'+exactSource,'internal-release-artifact:'+exactArtifact,
+    'acceptance:OBSERVED_INTERNAL_PLAYTEST_EVIDENCE_REQUIRED',...failures.map(value=>'runtime-failure:'+value)
+  ]);
+  out.changeSetId=id;out.baseSourceRevision=exactSource;out.sourceRevision=exactSource;out.internalRobloxVersion=version;
+  out.acceptanceContract={observable:['EXACT_INTERNAL_RELEASE_SOURCE_BOUND','NO_FABRICATED_RUNTIME_PASS','AFFECTED_CORE_LOOP_REVALIDATED_WHEN_CHANGED','EXISTING_VALID_FEATURES_PRESERVED'],markerOnlyPassForbidden:true,preserveExistingBehaviorRequired:true,exactRevisionRequired:true,runtimeObservationRequired:true};
+  out.failureEvidence=failures;out.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';out.patchSaturation=saturation;
+  return out;
+}
 function findSafeTasks(project,repoRoot,queue){
   const pilot=isAssetProductionPilot(project,repoRoot);
   if(project.engine==='roblox')return uniqueTaskCandidates([
+    findRobloxInternalPlaytestTask(project,repoRoot,queue),
     findWeatherPresentationTask(project,repoRoot,queue),
     findPresentationQualityTask(project,repoRoot,queue),
     scanExplicitMarkerTask(project,repoRoot,queue)
