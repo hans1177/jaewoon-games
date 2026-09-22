@@ -526,6 +526,30 @@ test('central DESIGN_ONLY authority cancels stale production implementation with
   assert.equal(preserved.blocker,null);
 });
 
+test('verified internal-release focused Roblox caretaker survives stale DESIGN_ONLY catalog authority',()=>{
+  const root=tempRepo();
+  const task={
+    id:'cozy-focus',gameId:'cozy-island',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/cozy-island',releaseState:'release-confirmed',status:'cancelled',
+    blocker:'production-authority-inactive:DESIGN_ONLY',lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
+    postReleaseFocused:true,priority:'critical',evidence:[
+      'post-release-focused:yes','focus-release-kind:INTERNAL_PLATFORM_RELEASE','internal-release-focused:yes',
+      'production-authority-sync:DESIGN_ONLY'
+    ]
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:'cozy-island',productionClass:'DESIGN_ONLY',homepageCategory:'design-only',lifecycleState:'ACTIVE'}]},
+    queue:{tasks:[task]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const restored=result.queue.tasks.find(row=>row.id==='cozy-focus');
+  assert.equal(restored.status,'queued');
+  assert.equal(restored.blocker,null);
+  assert.equal(restored.releaseState,'release-confirmed');
+  assert.equal(restored.lastOutcome,'RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY');
+  assert.ok(restored.evidence.includes('production-authority-restored:VERIFIED_INTERNAL_OR_PUBLIC_RELEASE'));
+});
+
 test('registered historical Roblox maintenance survives catalog absence and revives stale lifecycle cancellation',()=>{
   const root=tempRepo();
   const task={
