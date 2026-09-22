@@ -118,3 +118,14 @@ test('심야 BGM은 평상시 가벼운 서스펜스이고 강한 추격곡은 �
   assert.match(client,/if near then/);
   assert.match(client,/bgm\.Volume=near and \.045 or \.105/);
 });
+
+test('심야 맵 전환은 기존 맵을 유지한 채 완성 후 교체하고 첫 학교 맵은 재사용한다',()=>{
+  assert.match(server,/workspace:SetAttribute\("MapBuilding",true\)/);
+  assert.match(server,/f\.Name=old and"MidnightArenaNext"or"MidnightArena"/);
+  assert.match(server,/if old and old\.Parent then/);
+  assert.match(server,/f\.Name="MidnightArena"/);
+  assert.match(server,/workspace:SetAttribute\("MapBuilding",false\)/);
+  assert.match(server,/workspace:GetAttribute\("CurrentMapId"\)==map\.Id/);
+  assert.match(server,/arena=existing/);
+  assert.match(server,/while workspace:GetAttribute\("MapReady"\)~=true/);
+});
