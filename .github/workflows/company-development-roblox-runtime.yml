@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           fetch-tags: false
       - uses: actions/setup-node@v4
         with:
@@ -73,6 +73,19 @@ jobs:
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+          node - <<'NODE' > /tmp/roblox-bound-source-revisions
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const revisions=[...new Set((q.items||[]).map(x=>String(x.robloxSourceCommit||'').trim()).filter(x=>/^[0-9a-f]{40}$/i.test(x)))];
+          for(const revision of revisions)console.log(revision);
+          NODE
+          while read -r revision; do
+            [ -n "$revision" ] || continue
+            if ! git cat-file -e "$revision^{commit}" 2>/dev/null; then
+              git fetch --no-tags --depth=1 origin "$revision"
+            fi
+          done < /tmp/roblox-bound-source-revisions
+          echo "ROBLOX_RECONCILE_BOUND_REVISION_COUNT=$(wc -l < /tmp/roblox-bound-source-revisions | tr -d ' ')"
 
       - name: Revalidate exact-main Roblox source already merged
         id: reconcile
