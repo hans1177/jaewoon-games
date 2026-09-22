@@ -49,10 +49,21 @@ function run(ctx,item,exposure){
     recombinationFile:ctx.files.recomb,exposureFile:ctx.files.exposure,repoRoot:ctx.root
   });
 }
-test('new internal platform release cannot enter post-public update engine',()=>{
+test('internal platform release enters focused development as a release',()=>{
   const c=mk();
   const r=run(c,releasedItem({publishedAt:'2026-09-21T10:00:00Z'}),{
-    games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY'}]
+    games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY',platforms:[{platform:'ROBLOX',internalReleaseReady:true,internalReleaseState:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',placeId:'123'}]}]
+  });
+  assert.equal(r.added,true);
+  assert.equal(r.task.postReleaseFocused,true);
+  assert.equal(r.task.releaseState,'release-confirmed');
+  assert.ok(r.task.evidence.includes('focus-release-kind:INTERNAL_PLATFORM_RELEASE'));
+  assert.ok(r.task.evidence.includes('internal-release-focused:yes'));
+});
+test('private runtime candidate without internal release is not release-focused',()=>{
+  const c=mk();
+  const r=run(c,releasedItem({publishedAt:'2026-09-21T10:00:00Z'}),{
+    games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY',platforms:[{platform:'ROBLOX',internalReleaseReady:false,internalReleaseState:'NOT_READY'}]}]
   });
   assert.equal(r.added,false);
   assert.equal(r.reason,'NO_RELEASED_OR_HISTORICAL_ROBLOX');
