@@ -42,6 +42,7 @@ local function foundationCheckpoint(name,p,extra)
   foundationStore:UpdateAsync("latest",function(old)
    local data=typeof(old)=="table"and old or{}
    data.version=1;data.gameId=C.GameId;data.placeId=game.PlaceId;data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
+   data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
    data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
    data.checkpoints[name]=payload
    return data
@@ -49,6 +50,7 @@ local function foundationCheckpoint(name,p,extra)
  end)
 end
 foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
+foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
 
 local function part(parent,name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
@@ -208,6 +210,7 @@ local function broadcastMultiplayerSync(actor)
   SharedObjective=sharedObjective,
   SharedSupportPower=sharedSupportPower,
  })
+ if #participants>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#participants})end
 end
 local function attackBase(p)
  if battling[p]then msg(p,"전투 중")return end
@@ -274,6 +277,18 @@ local function spawnMob(kind,pos)
 end
 
 local function buildWorld()
+
+task.spawn(function()
+ if C.SaveEnabled~=true then return end
+ local probeKey="__foundation_probe__:"..tostring(game.PlaceVersion)
+ local token=C.GameId..":"..tostring(game.PlaceVersion)..":"..tostring(os.time())
+ local ok,readBack=pcall(function()
+  store:SetAsync(probeKey,{token=token,at=os.time()})
+  local value=store:GetAsync(probeKey)
+  return typeof(value)=="table"and value.token or nil
+ end)
+ if ok and readBack==token then foundationCheckpoint("SAVE_ROUNDTRIP",nil,{roundtrip=true})end
+end)
  local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
  world=Instance.new("Folder");world.Name="CozyConquestWorld";world.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
@@ -369,6 +384,7 @@ remote.OnServerEvent:Connect(function(p,a)
  local now=os.clock();if now-(lastRequest[p]or 0)<C.RateLimitSeconds then return end
  lastRequest[p]=now
  H[a](p)
+ foundationCheckpoint("CORE_LOOP_READY",p,{action=a})
  broadcastMultiplayerSync(p)
 end)
 
@@ -410,6 +426,7 @@ end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
  if name~="CAMERA_READY"and name~="INPUT_READY"then return end
+ foundationCheckpoint("REMOTE_ROUNDTRIP",p,{clientReported=true})
  foundationCheckpoint(name,p,{clientReported=true})
 end)
 
