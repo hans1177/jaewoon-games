@@ -57,6 +57,9 @@ function setup(){
   assert.ok(task.securityReviewScopes.includes('REMOTE_INPUT_VALIDATION'));
   assert.ok(task.securityReviewScopes.includes('SAVE_INTEGRITY'));
   assert(task.evidence.some(x=>x==='recombination-recipe:r1'));
+  assert(task.evidence.includes('system-ai-caretaker-game:demo'));
+  assert(task.evidence.includes('caretaker-logical-owner:STICKY'));
+  assert(task.evidence.includes('caretaker-worker-handoff:REPLACE_WORKER_RESUME_EXACT_CHECKPOINT'));
 }
 
 {
@@ -117,6 +120,9 @@ function setup(){
   assert.equal(task.feedbackDecisionAuthority,'VIBE');
   assert.deepEqual(task.allowedUpdateScales,['HOTFIX','MINOR','MAJOR']);
   assert.equal(task.bugEmergencyLane,true);
+  assert(task.evidence.includes('system-ai-caretaker-game:historical'));
+  assert(task.evidence.includes('caretaker-logical-owner:STICKY'));
+  assert(task.evidence.includes('caretaker-worker-handoff:REPLACE_WORKER_RESUME_EXACT_CHECKPOINT'));
 }
 
 {
