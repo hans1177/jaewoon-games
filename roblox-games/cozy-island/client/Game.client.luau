@@ -73,15 +73,15 @@ local hud=Instance.new("Frame")
 hud.Name="TopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.new(1,-16,0,128)
+hud.Size=UDim2.new(1,-16,0,70)
 hud.BackgroundColor3=Color3.fromRGB(38,67,61)
 hud.BackgroundTransparency=.08
 hud.Parent=gui
 roundify(hud,14);outline(hud,.4)
 
 local title=Instance.new("TextLabel")
-title.Size=UDim2.new(1,-16,0,28)
-title.Position=UDim2.fromOffset(8,5)
+title.Size=UDim2.new(1,-16,0,20)
+title.Position=UDim2.fromOffset(8,3)
 title.BackgroundTransparency=1
 title.Text="포근섬 · 5거점 정복"
 title.TextColor3=Color3.fromRGB(255,244,208)
@@ -91,18 +91,18 @@ title.Font=Enum.Font.GothamBold
 title.Parent=hud
 
 local resources=Instance.new("TextLabel")
-resources.Size=UDim2.new(1,-16,0,46)
-resources.Position=UDim2.fromOffset(8,35)
+resources.Size=UDim2.new(1,-16,0,20)
+resources.Position=UDim2.fromOffset(8,24)
 resources.BackgroundTransparency=1
 resources.TextColor3=Color3.fromRGB(235,245,238)
-resources.TextWrapped=true
+resources.TextWrapped=false
 resources.TextScaled=true
 resources.Font=Enum.Font.Gotham
 resources.Parent=hud
 
 local objective=Instance.new("TextLabel")
-objective.Size=UDim2.new(1,-16,0,38)
-objective.Position=UDim2.fromOffset(8,84)
+objective.Size=UDim2.new(1,-16,0,20)
+objective.Position=UDim2.fromOffset(8,47)
 objective.BackgroundColor3=Color3.fromRGB(29,50,46)
 objective.BackgroundTransparency=.18
 objective.TextColor3=Color3.fromRGB(255,232,158)
@@ -112,54 +112,79 @@ objective.Font=Enum.Font.GothamBold
 objective.Parent=hud
 roundify(objective,9)
 
--- 하단 조작: 채집 / 성장 / 전투를 시각적으로 분리
+-- 하단 조작: 평소에는 카테고리 3개만 표시하고, 탭한 카테고리의 액션만 잠깐 노출
 local controls=Instance.new("Frame")
 controls.Name="ActionDock"
 controls.AnchorPoint=Vector2.new(.5,1)
 controls.Position=UDim2.new(.5,0,1,-8)
-controls.Size=UDim2.new(1,-16,0,210)
+controls.Size=UDim2.new(1,-16,0,56)
 controls.BackgroundColor3=Color3.fromRGB(26,43,39)
-controls.BackgroundTransparency=.07
+controls.BackgroundTransparency=.12
 controls.Parent=gui
-roundify(controls,16);outline(controls,.45)
+roundify(controls,14);outline(controls,.5)
 
-local sectionTitles={"채집","마을 성장","정복"}
-for i,text in ipairs(sectionTitles)do
- local label=Instance.new("TextLabel")
- label.Size=UDim2.new(.32,0,0,24)
- label.Position=UDim2.new(.013+(i-1)*.329,0,0,6)
- label.BackgroundTransparency=1
- label.Text=text
- label.TextColor3=i==1 and Color3.fromRGB(139,226,156) or i==2 and Color3.fromRGB(250,210,116) or Color3.fromRGB(255,135,106)
- label.TextScaled=true
- label.Font=Enum.Font.GothamBold
- label.Parent=controls
-end
+local actionPopup=Instance.new("Frame")
+actionPopup.Name="ActionPopup"
+actionPopup.AnchorPoint=Vector2.new(.5,1)
+actionPopup.Position=UDim2.new(.5,0,1,-70)
+actionPopup.Size=UDim2.new(1,-16,0,56)
+actionPopup.BackgroundColor3=Color3.fromRGB(26,43,39)
+actionPopup.BackgroundTransparency=.08
+actionPopup.Visible=false
+actionPopup.Parent=gui
+roundify(actionPopup,14);outline(actionPopup,.5)
 
 local groups={
  {
-  color=Color3.fromRGB(63,133,84),
+  title="채집",color=Color3.fromRGB(63,133,84),
   actions={{C.Actions.CHOP,"벌목"},{C.Actions.FOOD,"식량"},{C.Actions.HIRE,"주민"}},
  },
  {
-  color=Color3.fromRGB(139,104,48),
+  title="마을 성장",color=Color3.fromRGB(139,104,48),
   actions={{C.Actions.WOOD_JOB,"벌목배치"},{C.Actions.FOOD_JOB,"식량배치"},{C.Actions.BARRACKS,"병영강화"}},
  },
  {
-  color=Color3.fromRGB(150,67,52),
+  title="정복",color=Color3.fromRGB(150,67,52),
   actions={{C.Actions.RECRUIT,"병사모집"},{C.Actions.ATTACK,"기지공격"},{C.Actions.SUPPORT,"원정지원"}},
  },
 }
 
-for groupIndex,group in ipairs(groups)do
+local actionButtons={}
+local openGroup=nil
+local function showGroup(index)
+ if openGroup==index and actionPopup.Visible then
+  actionPopup.Visible=false
+  openGroup=nil
+  return
+ end
+ openGroup=index
+ for _,b in ipairs(actionButtons)do b.Visible=false end
+ local group=groups[index]
  for row,a in ipairs(group.actions)do
-  local b=makeButton(controls,a[2],group.color)
-  b.Size=UDim2.new(.305,0,0,50)
-  b.Position=UDim2.new(.018+(groupIndex-1)*.329,0,0,32+(row-1)*57)
+  local b=actionButtons[(index-1)*3+row]
+  b.Visible=true
+ end
+ actionPopup.Visible=true
+end
+
+for groupIndex,group in ipairs(groups)do
+ local tab=makeButton(controls,group.title,group.color)
+ tab.Size=UDim2.new(.31,0,0,44)
+ tab.Position=UDim2.new(.015+(groupIndex-1)*.33,0,0,6)
+ tab.Activated:Connect(function()showGroup(groupIndex)end)
+
+ for row,a in ipairs(group.actions)do
+  local b=makeButton(actionPopup,a[2],group.color)
+  b.Size=UDim2.new(.31,0,0,44)
+  b.Position=UDim2.new(.015+(row-1)*.33,0,0,6)
+  b.Visible=false
   b.Activated:Connect(function()
    if a[1]==C.Actions.ATTACK or a[1]==C.Actions.RECRUIT or a[1]==C.Actions.BARRACKS then actionSfx.TimePosition=0;actionSfx:Play()end
    remote:FireServer(a[1])
+   actionPopup.Visible=false
+   openGroup=nil
   end)
+  table.insert(actionButtons,b)
  end
 end
 
