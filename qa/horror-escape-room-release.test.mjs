@@ -22,7 +22,7 @@ test('심야 술래잡기 외부출시 빌드는 구조가 다른 3개 맵과 �
 
 test('심야 술래잡기 UI는 추격 시야를 비우고 상황별 최소 행동만 표시한다',()=>{
   for(const marker of ['MidnightTopHUD','RoleSetup','RoundActions','친구 구출','대시','괴물 스킬','setupPanel.Visible','actionDock.Visible','CoreUISafeInsets'])assert.match(client,new RegExp(marker));
-  assert.match(client,/hud\.Size=UDim2\.fromOffset\(320,46\)/);
+  assert.match(client,/hud\.Size=UDim2\.fromOffset\(330,62\)/);
   assert.match(client,/actionDock\.Size=UDim2\.fromOffset\(194,48\)/);
   assert.match(client,/rescueButton\.Visible=running and role=="SURVIVOR"/);
   assert.match(client,/abilityButton\.Visible=running and role=="MONSTER"/);
