@@ -5057,6 +5057,40 @@
         "candidateDeploymentMayOccurAfterF0BeforeF1": true,
         "candidateDeploymentDoesNotSatisfyAnyOfF1ThroughF9": true,
         "promotionAfterFoundationPassMayReuseSameExactArtifact": true
+      },
+      "ownership": {
+        "newDepartmentCreated": false,
+        "executionOwner": "EXISTING_GAME_TESTER_AND_QA_CAPABILITY",
+        "testerTicketState": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json",
+        "runtimePlaytestOwner": "developmentLifecycleMachine.internalPlatformPlaytestDevelopment",
+        "platformQaOwner": "developmentLifecycleMachine.targetPlatformDevelopment.runtimeIndependentQaRegressionRequired",
+        "deterministicVerdictAuthority": "developmentLifecycleMachine.deterministicGateAuthority",
+        "sourceRepairOwner": "VIBE2_VIBE3",
+        "systemAiRole": "BOTTLENECK_PRIORITY_ROOT_CAUSE_AND_REPAIR_ROUTING_ONLY",
+        "securityRole": "EXISTING_SECURITY_DEPARTMENT_ONLY",
+        "testerMayCreateFailureEvidence": true,
+        "testerMayNotSelfAcceptRelease": true,
+        "qaMayBlockPromotion": true,
+        "qaFailureCreatesOrUpdatesTesterDebugTicket": true,
+        "sameFailureTicketMustFollowExactSourceRevisionAndArtifact": true
+      },
+      "testerQaFlow": [
+        "F0_DETERMINISTIC_SOURCE_PREFLIGHT",
+        "DEPLOY_PRIVATE_RUNTIME_CANDIDATE",
+        "EXISTING_GAME_TESTER_EXECUTES_F1_TO_F4_FOUNDATION_SCENARIO",
+        "TESTER_WRITES_STRUCTURED_RUNTIME_FAILURE_OR_PASS_EVIDENCE",
+        "INDEPENDENT_QA_REVALIDATES_REQUIRED_FOUNDATION_AND_IMPACT_SCOPED_FEATURES",
+        "DETERMINISTIC_GATE_COMPUTES_VERDICT",
+        "FAILURE_ROUTES_EXISTING_TESTER_DEBUG_TICKET_TO_VIBE_SYSTEM_AI_REPAIR",
+        "PASS_ALLOWS_NEXT_CANONICAL_STAGE"
+      ],
+      "departmentReuse": {
+        "duplicateFoundationDepartmentForbidden": true,
+        "duplicateTesterPipelineForbidden": true,
+        "duplicateQaAuthorityForbidden": true,
+        "foundationStackIsTestProtocolNotOrganization": true,
+        "existingTesterDebugTicketFormatMustBeExtendedRatherThanReplaced": true,
+        "existingInternalPlaytestRepairLoopMustBeReused": true
       }
     }
   },
