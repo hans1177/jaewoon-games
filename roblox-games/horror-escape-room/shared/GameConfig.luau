@@ -13,8 +13,12 @@ local Config={
  Audio={
   Background="rbxassetid://9044889073",
   Chase="rbxassetid://9042664292",
+  Result="rbxassetid://1839321582",
   Action="rbxassetid://1837829181",
   Warning="rbxassetid://9043346574",
+  Footstep="rbxassetid://1837829181",
+  Freeze="rbxassetid://9043346574",
+  Rescue="rbxassetid://1839321582",
  },
  Maps={
   {Id="SCHOOL",Name="학교",Difficulty="BEGINNER",Areas={"교실","복도","급식실","체육관"},Events={
