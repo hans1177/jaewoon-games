@@ -1,0 +1,83 @@
+// 파일명: qa/company-direct-native-policy-contract.test.mjs
+// 역할: 현재 중앙 Source of Truth의 Roblox+Unity direct-native 개발/내부플레이테스트 계약 검증
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+const runtime=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+
+test('canonical policy admits Roblox and Unity directly from one minimum design and keeps UEFN owner-held',()=>{
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+  const direct=roadmap.directNativeDualPlatformDevelopment;
+  assert.equal(direct.status,'OWNER_DIRECT_LOCKED');
+  assert.equal(direct.mode,'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR');
+  assert.deepEqual(direct.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
+  assert.equal(direct.webDevelopmentStageRemoved,true);
+  assert.equal(direct.unityWebEnabled,false);
+  assert.equal(direct.minimumDesignRequired,true);
+  assert.equal(direct.sameGameBothPlatformsRequired,true);
+  assert.equal(direct.platformSpecificImplementationRequired,true);
+  assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
+  assert.equal(direct.platformSpecificIndependentQaRequired,true);
+  assert.equal(direct.platformSpecificRegressionRequired,true);
+  assert.equal(direct.noArtificialGlobalGameCountCap,true);
+  assert.equal(direct.fortniteUefnState,'OWNER_HOLD');
+  assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
+});
+
+test('lifecycle has no active Web-first handoff and treats internal playtest as co-development',()=>{
+  const life=roadmap.developmentLifecycleMachine;
+  assert.deepEqual(life.stages,['MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE','POST_RELEASE_FOCUSED_DEVELOPMENT']);
+  assert.equal(life.webToPlatformHandoff.required,false);
+  assert.equal(life.webToPlatformHandoff.status,'LEGACY_DISABLED');
+  assert.equal(life.webFirstImplementation.enabled,false);
+  assert.equal(life.missingWebBaselinePlanning.enabled,false);
+  assert.equal(life.machineWorkInstruction.webWorker.enabled,false);
+  assert.equal(life.machineWorkInstruction.internalPlaytestWorker.activeCoDevelopment,true);
+  assert.equal(life.machineWorkInstruction.internalPlaytestWorker.ownerInterruptSupported,true);
+  assert.equal(life.machineWorkInstruction.internalPlaytestWorker.publicPromotionBlockedUntilAcceptance,true);
+  assert.equal(life.gameDevelopmentAuthority.appliesFromStage,'MINIMUM_DESIGN_CONTRACT_READY');
+  assert.equal(life.gameDevelopmentAuthority.ownsWebFirstImplementation,false);
+  assert.equal(life.gameDevelopmentAuthority.ownsSelectedPlatformImplementation,true);
+  assert.equal(life.gameDevelopmentAuthority.ownsInternalPlaytestRepair,true);
+});
+
+test('directive mirror cannot reactivate legacy Web-first development',()=>{
+  assert.equal(directive.currentExecutionMode,'DIRECT_NATIVE_ROBLOX_UNITY');
+  assert.equal(directive.legacyWebFirstPolicy.status,'LEGACY_DISABLED');
+  assert.equal(directive.legacyWebFirstPolicy.developmentAdmissionAuthority,false);
+  assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,false);
+  assert.equal(directive.classes.RELEASE_CONFIRMED.webCompanionRequired,false);
+  assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
+  assert.equal(directive.ai.vibe2.ownsInternalPlaytestRepair,true);
+});
+
+test('architecture and runtime execute the same direct-native topology',()=>{
+  assert.deepEqual(architecture.executionTopology.web,['LEGACY_DISABLED']);
+  assert.ok(architecture.executionTopology.selectedPlatform.includes('ROBLOX_UNITY_AUTO_PAIR'));
+  assert.ok(architecture.executionTopology.selectedPlatform.includes('INTERNAL_PLATFORM_RELEASE'));
+  assert.ok(architecture.executionTopology.selectedPlatform.includes('INTERNAL_PLAYTEST'));
+  assert.match(runtime,/DIRECT_NATIVE_MACHINE_CONTRACT=PASS/);
+  assert.match(runtime,/company-minimum-design-contract\.mjs/);
+  assert.match(runtime,/company-selected-platform-router\.mjs/);
+  assert.match(runtime,/ROBLOX_RUNTIME_DISPATCH=YES/);
+  assert.match(runtime,/UNITY_APP_RUNTIME_DISPATCH=YES/);
+  assert.match(runtime,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
+  assert.doesNotMatch(runtime,/company-development-web-gameplay-validation\.mjs/);
+});
+
+test('active scheduling cannot silently re-enable UEFN or weaken native evidence',()=>{
+  assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
+  assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX']);
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
+  assert.equal(roadmap.platformPriorityInvariant.qualityOrEvidenceGateWeakeningAllowed,false);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
+});

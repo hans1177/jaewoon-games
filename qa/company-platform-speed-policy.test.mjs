@@ -49,25 +49,23 @@ test('speed sequence changes execution only and cannot weaken quality gates',()=
   assert.match(flow,/cronMustNotBePrimaryProgressionEngine: true/);
 });
 
-test('Unity and Roblox share the first scheduling tier without weakening lower-platform or quality rules',()=>{
-  assert.deepEqual(roadmap.priority,['UNITY','ROBLOX','FORTNITE_UEFN']);
+test('Unity and Roblox are the active equal scheduling tier while UEFN remains owner-held',()=>{
+  assert.deepEqual(roadmap.priority,['ROBLOX','UNITY']);
   assert.equal(roadmap.primaryPlatform,'ROBLOX');
   assert.equal(roadmap.primaryPlatformRole,'LEGACY_COMPATIBILITY_ONLY_NOT_SCHEDULING_PRIORITY');
   assert.equal(roadmap.platformPriorityInvariant.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
-  assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX'],['FORTNITE_UEFN']]);
-  assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX','FORTNITE_UEFN']);
+  assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
+  assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX']);
   assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleDevelopmentSlot,false);
-  assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleFocusedSlot,false);
-  assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligiblePostReleaseProtectedSlot,false);
   assert.equal(roadmap.platformPriorityInvariant.unityDevelopmentStillAllowed,true);
-  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,true);
-  assert.equal(roadmap.platformPriorityInvariant.lowerPriorityPlatformsMayRunInParallelWhenCapacityRemains,true);
-  assert.equal(roadmap.platformPriorityInvariant.lowerPriorityPlatformMayNotPreemptEligibleRobloxWork,false);
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnState,'OWNER_HOLD');
   assert.equal(roadmap.platformPriorityInvariant.qualityOrEvidenceGateWeakeningAllowed,false);
+  assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
   assert.equal(roadmap.developmentLifecycleMachine.platformPriorityInvariant.schedulerMustHonorRobloxFirst,false);
   assert.equal(roadmap.developmentLifecycleMachine.platformPriorityInvariant.schedulerMustHonorUnityRobloxEqualTier,true);
+  assert.equal(roadmap.developmentLifecycleMachine.platformPriorityInvariant.fortniteUefnExcludedWhileOwnerHold,true);
 });
-
 test('canonical machine roadmap owns the execution contract',()=>{
   assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
