@@ -1,5 +1,5 @@
 {
-  "version": 255,
+  "version": 256,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -3459,7 +3459,7 @@
       }
     },
     "sharedWorkerContext": {
-      "version": 3,
+      "version": 4,
       "authority": "OWNER_DIRECTIVE_2026-09-20",
       "requiredForAllWorkers": true,
       "appliesTo": [
@@ -3569,7 +3569,11 @@
         "fullDocumentShaBoundToExecutionEvidence": true,
         "unrelatedRoadmapProgressChangeInvalidatesWork": false,
         "executionPolicySemanticChangeInvalidatesWork": true
-      }
+      },
+      "centralDocumentationContract": "company-learning/platform-release-roadmap.json#centralDocumentation",
+      "codeChangeRequiresCentralDocumentationImpactReview": true,
+      "documentationChangeRequiresImplementationImpactReview": true,
+      "postCentralDocumentWriteSharedContextResyncRequired": true
     },
     "primaryAiOrchestration": {
       "version": 3,
@@ -4750,7 +4754,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-22T03:45:00+09:00",
+  "updatedAt": "2026-09-22T11:10:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -5272,27 +5276,31 @@
     }
   },
   "changeRecord": {
-    "id": "NEURAL_SHADOW_HARDENING_DISTINCT_QUALITY_SAMPLES_2026-09-20",
+    "id": "CENTRAL_DOCUMENTATION_VIBE_SYNC_2026-09-22",
     "documentIsCode": true,
-    "documentationFirst": false,
-    "previousChangeRecordId": "BUG_DEFENSE_SUPERVISED_WORKER_CONTEXT_SYNC_RUNTIME_V3_2026-09-20",
-    "reason": "HARDEN MERGED NEURAL SHADOW OBSERVATION WITHOUT GRANTING PHASE2 EXECUTION AUTHORITY. POLICY/LOCK EVENTS CALIBRATE IN SHADOW WITHOUT UNRELATED ROOT-CAUSE PROOF; ROOT-CAUSE EVIDENCE GAINS DETERMINISTIC SAMPLE IDENTITY; PHASE2 REVIEW ELIGIBILITY REQUIRES DISTINCT IDENTIFIED ROOT-CAUSE SAMPLES, CALIBRATION ACCURACY, PREDICTION COVERAGE, LOW CONTRADICTION, AND ZERO SAMPLE CONFLICTS.",
+    "documentationFirst": true,
+    "previousChangeRecordId": "NEURAL_SHADOW_HARDENING_DISTINCT_QUALITY_SAMPLES_2026-09-20",
+    "reason": "CENTRALIZE_DOCUMENT_ROLES_BRANCH_STATE_BOUNDARIES_AND_VIBE_PRE_POST_WORK_SYNCHRONIZATION_IN_THE_CANONICAL_MACHINE_POLICY_WITHOUT_CREATING_A_SECOND_POLICY_SYSTEM",
     "invariants": {
-      "existingWaveSchedulerRemainsAuthoritative": true,
-      "neuralExecutionAuthorityGranted": false,
-      "workerCreationAuthorityGranted": false,
-      "queueMutationAuthorityGranted": false,
-      "waveReorderAuthorityGranted": false,
-      "lockAcquisitionAuthorityGranted": false,
-      "automaticLearningAuthorityGranted": false,
-      "automaticPromotionAuthorityGranted": false,
-      "qualityGateWeakeningForbidden": true
+      "platformAndGameRulesUnchanged": true,
+      "qualityAndReleaseGatesUnchanged": true,
+      "runtimeBranchPolicyCreationForbidden": true,
+      "vibeControlPolicyCreationForbidden": true,
+      "legacyCompanyFlowRemainsNonAuthoritative": true,
+      "existingSharedContextValidatorRemainsAuthoritative": true,
+      "noNewShadowDocumentationPipeline": true
     },
+    "codeBindings": [
+      "tools/company-shared-context.mjs",
+      "qa/company-shared-context.test.mjs",
+      "company-learning/company-architecture-map.json",
+      "company-learning/company-log-map.json",
+      "company-learning/security-immune-system.json"
+    ],
     "next": [
-      "RUN_FULL_NEURAL_AND_CENTRAL_POLICY_REGRESSION",
-      "COLLECT_DISTINCT_DURABLE_SHADOW_SAMPLES",
-      "MEASURE_CALIBRATION_ACCURACY_AND_ROOT_CAUSE_CONTRADICTION_RATE",
-      "KEEP_PHASE2_EXECUTION_AUTHORITY_BLOCKED_UNTIL_EXPLICIT_PRIMARY_AND_SECURITY_REVIEW"
+      "MIRROR_STRUCTURAL_SYNC_RULES_IN_COMPANY_ARCHITECTURE_MAP",
+      "RELOAD_CURRENT_MAIN_CENTRAL_SET_AND_VERIFY_JSON_AND_CROSS_DOCUMENT_POINTERS",
+      "KEEP_ALL_VIBE_WORKERS_FAIL_CLOSED_ON_STALE_OR_UNSYNCHRONIZED_CONTEXT"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -12745,6 +12753,84 @@
       "regressionMeaning": "HEADLESS_EXACT_ARTIFACT_REGRESSION",
       "openCloudPublishRequiredForInternalRelease": true,
       "authority": "OWNER_DIRECTIVE_2026-09-22"
+    }
+  },
+  "centralDocumentation": {
+    "version": 1,
+    "status": "CANONICAL_MACHINE_DOCUMENTATION_CONTRACT",
+    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
+    "objective": "KEEP_POLICY_ARCHITECTURE_LOG_SECURITY_AND_IMPLEMENTATION_STATE_SYNCHRONIZED_WITHOUT_DUPLICATE_OR_SHADOW_POLICY_DOCUMENTS",
+    "canonicalSet": {
+      "policy": "company-learning/platform-release-roadmap.json",
+      "logMap": "company-learning/company-log-map.json",
+      "architectureMap": "company-learning/company-architecture-map.json",
+      "securityPolicy": "company-learning/security-immune-system.json"
+    },
+    "readOrder": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "documentRoles": {
+      "company-learning/platform-release-roadmap.json": "ONLY_CANONICAL_POLICY_CREATION_AUTHORITY",
+      "company-learning/company-log-map.json": "LOG_LOCATION_CORRELATION_AND_EVIDENCE_CONTRACT_ONLY",
+      "company-learning/company-architecture-map.json": "EXECUTION_TOPOLOGY_AND_STRUCTURAL_MIRROR_ONLY",
+      "company-learning/security-immune-system.json": "SECURITY_ENFORCEMENT_BOUND_TO_CENTRAL_POLICY_ONLY",
+      "COMPANY_FLOW.md": "LEGACY_POINTER_AND_COMPATIBILITY_MIRROR_NON_AUTHORITATIVE"
+    },
+    "branchRoles": {
+      "main": "CANONICAL_CODE_AND_MACHINE_POLICY",
+      "company-runtime": "DURABLE_RUNTIME_STATE_NO_POLICY_CREATION",
+      "vibe2-unreal-core": "VIBE_QUEUE_AND_CONTROL_STATE_NO_POLICY_CREATION",
+      "vibe2-learning-runtime": "VERIFIED_LEARNING_MEMORY_NO_POLICY_CREATION"
+    },
+    "rules": {
+      "documentIsCode": true,
+      "centralPolicyOnlyCreatesPolicy": true,
+      "duplicatePolicyDocumentsForbidden": true,
+      "shadowPolicyDocumentsForbidden": true,
+      "naturalLanguagePolicyReplicationForbidden": true,
+      "runtimeBranchesMayNotCreatePolicy": true,
+      "currentCodeAndDocumentationMustAgree": true,
+      "unverifiedImplementationStateClaimsForbidden": true,
+      "codeChangeRequiresCentralDocumentationImpactReview": true,
+      "documentationChangeRequiresImplementationImpactReview": true,
+      "architectureTopologyChangeRequiresArchitectureMapUpdate": true,
+      "loggingContractChangeRequiresLogMapUpdate": true,
+      "securityContractChangeRequiresSecurityPolicyUpdate": true,
+      "policyChangeRequiresCurrentMainRebind": true
+    },
+    "synchronization": {
+      "beforeWorkLoadAndValidateCanonicalSet": true,
+      "afterWorkReloadAndValidateCanonicalSet": true,
+      "vibeWorkerPreflightRequired": true,
+      "currentMainPolicyShaBindingRequired": true,
+      "documentHashesBoundToExecutionEvidence": true,
+      "staleDocumentationMayNotStartWork": true,
+      "staleDocumentationMayNotCompleteWork": true,
+      "completionRequiresSharedContextSyncPass": true,
+      "validator": "tools/company-shared-context.mjs",
+      "qa": "qa/company-shared-context.test.mjs",
+      "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE"
+    },
+    "stateDocumentation": {
+      "policyStoresRulesNotTransientRuntimeState": true,
+      "companyRuntimeStoresDurableRuntimeState": true,
+      "vibeControlStoresQueueAndReservationState": true,
+      "verifiedLearningRuntimeStoresVerifiedLearningMemory": true,
+      "sourceRevisionRequiredForCodeStateClaims": true,
+      "artifactIdentityRequiredForBuildOrReleaseClaims": true,
+      "runtimeEvidenceRequiredForRuntimePassClaims": true
+    },
+    "changeManagement": {
+      "smallestResponsibleDocumentEditPreferred": true,
+      "separateDocumentationPipelineForbidden": true,
+      "preserveExistingDocumentStructure": true,
+      "updateExistingCanonicalSectionBeforeAddingNewDocument": true,
+      "centralContractChangeMustRecordChangeRecord": true,
+      "postWriteSharedContextResyncRequired": true
     }
   }
 }
