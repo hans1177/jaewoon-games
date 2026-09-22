@@ -18,7 +18,7 @@
 → 공개 출시
 ```
 
-Unity Web 신규 제작과 Unity Web 선행 관문은 사용하지 않는다.
+Unity WebGL 선행 관문은 사용하지 않는다. WebGL은 같은 Unity 원본을 브라우저에서 빠르게 확인하기 위한 비차단 테스트 표면으로만 사용한다.
 
 ## Roblox와의 자동 쌍
 
@@ -67,7 +67,7 @@ Unity 구현은 `design-revised.json#content.platformProfiles.UNITY`를 직접 �
 - 내부 또는 Closed 테스트 빌드
 - 필요 시 스토어 공개 빌드
 
-Unity Web Build는 신규 개발 파이프라인에 포함하지 않는다.
+Unity WebGL 빌드는 네이티브 개발/출시를 막지 않는 보조 검증 경로다. `BuildWeb()`이 준비된 프로젝트는 `web-games/<game-id>/`에 검증된 테스트 빌드를 만들 수 있으며, 홈페이지의 `Unity Web 테스트` 링크로 노출할 수 있다.
 
 ## 에셋/성능
 
