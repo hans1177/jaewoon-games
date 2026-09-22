@@ -181,20 +181,20 @@ local function gather(p,key,amount,text)
 end
 
 local function freeResidents(p)return n(p,"Residents",0)-n(p,"WoodWorkers",0)-n(p,"Farmers",0)end
-local function hire(p)if n(p,"Coins",0)<10 then msg(p,"주민 고용 코인 부족")return end;s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용")end
+local function hire(p)if n(p,"Coins",0)<10 then msg(p,"주민 고용 코인 부족")return false end;s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용");return true end
 local function job(p,key)
- if freeResidents(p)<=0 then msg(p,"배치할 주민 없음")return end
- s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치")
+ if freeResidents(p)<=0 then msg(p,"배치할 주민 없음")return false end
+ s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치");return true
 end
 local function barracks(p)
  local lv=n(p,"BarracksLevel",1);local wc=14+lv*8;local fc=10+lv*6;local ic=math.max(0,(lv-1)*4)
- if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic))return end
- s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD")
+ if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic))return false end
+ s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD");return true
 end
 local function recruit(p)
  local lv=n(p,"BarracksLevel",1);local fc=4+lv;local wc=2+math.floor(lv/2);local ic=lv>=3 and 1 or 0
- if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족")return end
- s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD")
+ if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족")return false end
+ s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD");return true
 end
 local function supportPower(p)local total=0;for _,o in ipairs(Players:GetPlayers())do if o~=p and o:GetAttribute("SupportReady")==true then total+=n(o,"Troops",0)*2 end end;return total end
 local function broadcastMultiplayerSync(actor)
@@ -214,9 +214,9 @@ local function broadcastMultiplayerSync(actor)
  if #participants>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#participants})end
 end
 local function attackBase(p)
- if battling[p]then msg(p,"전투 중")return end
- local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"5개 거점 정복 완료")return end
- local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return end
+ if battling[p]then msg(p,"전투 중")return false end
+ local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"5개 거점 정복 완료")return false end
+ local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return false end
  battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);p:SetAttribute("BattleEnemy",b.Enemy);p:SetAttribute("BattlePower",troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p));feedback(p,"HIT");BattleVisual.start(p,idx,troops,C,Style);broadcastMultiplayerSync(p)
  task.spawn(function()
   for i=1,4 do if not p.Parent then battling[p]=nil return end;s(p,"BattleProgress",i*25);task.wait(.55)end
@@ -226,6 +226,7 @@ local function attackBase(p)
   else msg(p,b.Name.." 패배 · 병력/병영을 강화해");feedback(p,"HIT")end
   s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil;BattleVisual.finish(p,won);broadcastMultiplayerSync(p)
  end)
+ return true
 end
 
 local function spawnMob(kind,pos)
@@ -364,6 +365,8 @@ end)
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
 
+buildWorld()
+
 local function init(p)
  for k,v in pairs(C.InitialState)do p:SetAttribute(k,v)end
  p:SetAttribute("SupportReady",false);p:SetAttribute("InBattle",false);msg(p,"나무/작물에 가까이 가서 직접 채집해.")
@@ -378,15 +381,17 @@ local function save(p)local d={SupportReady=p:GetAttribute("SupportReady")==true
 local H={
  [C.Actions.HIRE]=hire,[C.Actions.WOOD_JOB]=function(p)job(p,"WoodWorkers")end,[C.Actions.FOOD_JOB]=function(p)job(p,"Farmers")end,
  [C.Actions.BARRACKS]=barracks,[C.Actions.RECRUIT]=recruit,[C.Actions.ATTACK]=attackBase,
- [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady")and"원정지원 ON"or"원정지원 OFF")end,
+ [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady")and"원정지원 ON"or"원정지원 OFF");return true end,
 }
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"or not H[a]then return end
  local now=os.clock();if now-(lastRequest[p]or 0)<C.RateLimitSeconds then return end
  lastRequest[p]=now
- H[a](p)
- foundationCheckpoint("CORE_LOOP_READY",p,{action=a})
- broadcastMultiplayerSync(p)
+ local accepted=H[a](p)
+ if accepted==true then
+  foundationCheckpoint("CORE_LOOP_READY",p,{action=a})
+  broadcastMultiplayerSync(p)
+ end
 end)
 
 local function validateCharacterFoundation(p,c)
@@ -466,5 +471,3 @@ qaCaptureRemote.OnServerEvent:Connect(function(p,labelName,value)
  local rec={gameId=C.GameId,label=labelName,userId=p.UserId,capturedAt=os.time(),kind=isStatus and"STATUS"or"CAPTURE"};if isStatus then rec.status=raw else rec.assetId=raw end
  pcall(function()qaCaptureStore:UpdateAsync("latest",function(old)local d=typeof(old)=="table"and old or{captures={}};d.captures=typeof(d.captures)=="table"and d.captures or{};table.insert(d.captures,rec);while#d.captures>30 do table.remove(d.captures,1)end;d.updatedAt=os.time();d.gameId=C.GameId;return d end)end)
 end)
-
-buildWorld()
