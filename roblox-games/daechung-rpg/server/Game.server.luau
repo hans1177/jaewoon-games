@@ -30,6 +30,7 @@ local aiUsers={}
 local parties={}
 local clickTimes={}
 local lastRequest={}
+local lastBlockRequest={}
 local lastCombat={}
 local movementProbeStart={}
 local foundationSeen={}
@@ -398,8 +399,14 @@ local function beginEnemyAttack(e,target,now)
  if e.attackPending or now<(e.stunnedUntil or 0)then return end
  local attack=chooseEnemyAttack(e);if not attack then return end
  e.attackPending=true;e.lastAttack=now;e.nextAttackAt=now+(attack.Cooldown or 1.2);attackTelegraph(e,attack,target)
- local special=tostring(attack.Special or"")
- if special=="CHARGE"or special=="ANTLER_CHARGE"or special=="MOON_POUNCE"then
+ local special=tostring(attack.Special or"");local tr0=root(target)
+ if tr0 then
+  local flat=Vector3.new(tr0.Position.X,e.part.Position.Y,tr0.Position.Z)
+  if(flat-e.part.Position).Magnitude>.01 then e.part.CFrame=CFrame.lookAt(e.part.Position,flat)end
+ end
+ if special=="TAIL_SWEEP"or special=="HOWL_BLAST"then
+  TweenService:Create(e.part,TweenInfo.new(math.max(.18,(attack.Telegraph or .5)*.65),Enum.EasingStyle.Quad),{CFrame=e.part.CFrame*CFrame.Angles(0,math.rad(150),0)}):Play()
+ elseif special=="CHARGE"or special=="ANTLER_CHARGE"or special=="MOON_POUNCE"or special=="POUNCE"or special=="FANG_CHAIN"then
   local tr=root(target);if tr then
    local d=Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
    if d.Magnitude>.1 then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,5)end
@@ -711,8 +718,10 @@ local function makeZone(z)
  local groundColor=z.Theme=="MEADOW"and Color3.fromRGB(75,126,67)or z.Theme=="CANYON"and Color3.fromRGB(136,83,60)or z.Theme=="RUINS"and Color3.fromRGB(74,70,86)or z.Theme=="SNOW"and Color3.fromRGB(188,211,220)or Color3.fromRGB(49,43,62)
  local material=z.Theme=="MEADOW"and Enum.Material.Grass or z.Theme=="CANYON"and Enum.Material.Sand or z.Theme=="SNOW"and Enum.Material.Snow or Enum.Material.Slate
  ppart(f,"ZoneGround",Vector3.new(440,2,440),z.Center+Vector3.new(0,0,0),groundColor,material)
- ppart(f,"ZoneInnerRoad",Vector3.new(22,1,330),z.Center+Vector3.new(0,1,0),Color3.fromRGB(105,100,94),Enum.Material.Cobblestone)
- for i=1,34 do themedProp(f,z,i)end
+ if z.Theme~="MEADOW"then
+  ppart(f,"ZoneInnerRoad",Vector3.new(22,1,330),z.Center+Vector3.new(0,1,0),Color3.fromRGB(105,100,94),Enum.Material.Cobblestone)
+  for i=1,34 do themedProp(f,z,i)end
+ end
  if z.Theme=="SNOW"then
   for i=1,28 do
    local a=i/28*math.pi*2;local radius=48+(i%6)*27
@@ -727,7 +736,7 @@ local function makeZone(z)
   local a=i/8*math.pi*2;local lamp=ppart(f,"Guide"..i,Vector3.new(1.2,8,1.2),z.Center+Vector3.new(math.cos(a)*86,5,math.sin(a)*86),Color3.fromRGB(75,73,76),Enum.Material.Metal)
   local glow=ppart(f,"GuideGlow"..i,Vector3.new(2.2,2.2,2.2),lamp.Position+Vector3.new(0,5,0),z.Color,Enum.Material.Neon);glow.CanCollide=false
  end
- decorateZoneAssets(f,z)
+ if z.Theme~="MEADOW"then decorateZoneAssets(f,z)end
  local ret=ppart(f,"ReturnPortal",Vector3.new(26,2,18),z.Center+Vector3.new(0,2,190),Color3.fromRGB(112,180,205),Enum.Material.Neon);label(ret,"마을 귀환",Color3.fromRGB(180,235,255),36)
  prompt(ret,"마을","귀환").Triggered:Connect(function(p)
   local combat=os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds
@@ -879,6 +888,17 @@ local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)
  local stagger=spec and spec.Stagger or(boss and 120 or 40)
  local e={part=part,zone=z.Id,hp=hp,max=hp,damage=damage,gold=gold,xp=xp,spawn=spawn,boss=boss==true,hiddenBoss=hiddenBoss==true,def=spec,lastAttack=0,target=nil,attackPending=false,attackIndex=0,stagger=stagger,staggerMax=stagger,stunnedUntil=0,speed=spec and spec.Speed or(boss and 9 or 7)}
  part:SetAttribute("HP",hp);part:SetAttribute("MaxHP",hp);part:SetAttribute("Zone",z.Id);part:SetAttribute("EnemyId",spec and spec.Id or"DEFAULT");part:SetAttribute("Stagger",stagger);part:SetAttribute("StaggerMax",stagger);part:SetAttribute("HiddenBoss",hiddenBoss==true)
+ local status=Instance.new("BillboardGui");status.Name="EnemyStatus";status.Size=UDim2.fromOffset(boss and 110 or 84,12);status.StudsOffset=Vector3.new(0,boss and 7.4 or 5.7,0);status.AlwaysOnTop=false;status.MaxDistance=80;status.Parent=part
+ local hpBack=Instance.new("Frame");hpBack.Name="HPBack";hpBack.Size=UDim2.new(1,0,.45,0);hpBack.BackgroundColor3=Color3.fromRGB(48,45,46);hpBack.BorderSizePixel=0;hpBack.Parent=status
+ local hpBar=Instance.new("Frame");hpBar.Name="HP";hpBar.Size=UDim2.fromScale(1,1);hpBar.BackgroundColor3=Color3.fromRGB(194,73,67);hpBar.BorderSizePixel=0;hpBar.Parent=hpBack
+ local stBack=Instance.new("Frame");stBack.Name="StaggerBack";stBack.Position=UDim2.new(0,0,.58,0);stBack.Size=UDim2.new(1,0,.32,0);stBack.BackgroundColor3=Color3.fromRGB(44,44,50);stBack.BorderSizePixel=0;stBack.Parent=status
+ local stBar=Instance.new("Frame");stBar.Name="Stagger";stBar.Size=UDim2.fromScale(1,1);stBar.BackgroundColor3=Color3.fromRGB(222,184,78);stBar.BorderSizePixel=0;stBar.Parent=stBack
+ local function refreshBars()
+  if not part.Parent then return end
+  hpBar.Size=UDim2.fromScale(math.clamp(n(part,"HP",hp)/math.max(1,n(part,"MaxHP",hp)),0,1),1)
+  stBar.Size=UDim2.fromScale(math.clamp(n(part,"Stagger",stagger)/math.max(1,n(part,"StaggerMax",stagger)),0,1),1)
+ end
+ part:GetAttributeChangedSignal("HP"):Connect(refreshBars);part:GetAttributeChangedSignal("Stagger"):Connect(refreshBars);refreshBars()
  table.insert(enemies,e);return e
 end
 local function nearestEnemy(pos,zone,range)
@@ -977,6 +997,7 @@ generateMeadowRun=function(seed)
   local hiddenBoss=rng:NextNumber()<=hiddenBossChance
   local bossDef=hiddenBoss and z.HiddenBosses[rng:NextInteger(1,#z.HiddenBosses)]or nil
   meadowRunState.hiddenBossId=bossDef and bossDef.Id or""
+  workspace:SetAttribute("MeadowHiddenBossId",bossDef and bossDef.Id or"")
   local pr=prompt(stone,"수상한 룬석","조사")
   pr.Triggered:Connect(function(p)
    if n(p,"CurrentZone",0)~=1 or stone:GetAttribute("Revealed")==true then return end
@@ -1191,7 +1212,12 @@ local function chooseAdvancement(p,key)
 end
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"then return end
- local now=os.clock();if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
+ local now=os.clock();local isBlock=a==C.Actions.BLOCK_START or a==C.Actions.BLOCK_END
+ if isBlock then
+  if now-(lastBlockRequest[p]or 0)<.02 then return end;lastBlockRequest[p]=now
+ else
+  if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
+ end
  local accepted=false
  if CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
  elseif a==C.Actions.ADVANCE_A then accepted=chooseAdvancement(p,"A")
@@ -1253,7 +1279,7 @@ local function bindPlayer(p)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
