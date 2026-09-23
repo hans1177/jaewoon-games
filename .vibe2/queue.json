@@ -55089,7 +55089,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날씨 반응 모션을 연결한다.\n[COMMERCIAL_READINESS_GUIDANCE] 상업용 준비 기준: 첫 10분 안에 핵심 재미와 학습 흐름이 실제 플레이로 드러나야 하며, 버튼/보상/피격/구매/제작/레벨업/퀘스트 완료 피드백을 실제 이벤트와 연결한다. BGM/SFX/UI/환경음은 역할을 분리하고 mute/volume 및 반복음 변형을 제공한다. 모바일 핵심 조작은 44px 이상과 엄지 도달성을 지키고, 과도한 흔들림·번쩍임·진동은 조절 가능해야 하며 텍스트/상태를 색 하나만으로 구분하지 않는다. 저장이 있는 게임은 업데이트 후 기존 저장 의미를 보존하고 실패 시 전체 데이터 손실을 피한다. 초반/중반/후반 목표와 반복 플레이 이유를 만들고, 수익화가 있으면 일반 게임 UI와 구매/광고 UI를 분리하며 결제 없이는 핵심 루프가 막히지 않게 한다. 이 기준이 실패하면 기존 repair/revalidation으로 되돌린다.",
       "responsibleFiles": [
         "web-games/fantasy-survival/index.html"
@@ -55097,7 +55097,7 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "verified",
       "retries": 11,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -55156,7 +55156,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-supervised-review",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -56414,13 +56414,18 @@
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35800091699%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-speculative-1-35800091699-1%22%2C%22verificationStage%22%3A%22FAN_IN_REVIEW%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Atrue%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35800091699%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-speculative-1-35800091699-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35800091699%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-speculative-1-35800091699-1%7CCI_RESULT%22%2C%22eventId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35800091699%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-speculative-1-35800091699-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22fantasy-survival-presentation-living-motion-v1%22%2C%22sampleId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35800091699%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-speculative-1-35800091699-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_BLOCKED%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22BOTH_HOLD_OR_OBSERVE%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D"
+        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22fantasy-survival-presentation-living-motion-v1%22%2C%22sampleId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35800091699%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-speculative-1-35800091699-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_BLOCKED%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22BOTH_HOLD_OR_OBSERVE%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
+        "web-static-qa-pass",
+        "main-pr-merged",
+        "actions-run-35805356154",
+        "signal-state:VERIFIED_CHECKPOINT",
+        "signal-continuity:NEXT_CAUSAL_INPUT"
       ],
-      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": "35800091699:1",
-      "reservationRunId": "35800091699",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-23T00:55:36Z",
+      "lastOutcome": "PASS",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 0,
       "neuronResults": [],
       "companyContext": null,
