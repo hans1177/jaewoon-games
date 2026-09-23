@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
   "releaseStrategy": "FAST_MVP",
@@ -33,7 +33,8 @@
     "portal 1 can generate secret groves, event rooms, treasure rooms, elites and two hidden bosses",
     "hidden meadow bosses use multi-pattern attacks and boss stagger",
     "portal 1 meadow run ends with Golden Antler boss using parryable charge, unblockable ground stomp and multi-hit charge",
-    "perfect-parry windows have a server rearm delay to prevent block-tap spam"
+    "perfect-parry windows have a server rearm delay to prevent block-tap spam",
+    "meadow run boss remains sealed until all normal and elite room enemies are cleared"
   ],
   "deferredUntilAfterMvp": [
     "advanced cross-server room matchmaking",
@@ -73,7 +74,8 @@
     "meadow includes secret-room and hidden-boss generation",
     "meadow hidden bosses have multiple telegraphed attacks",
     "meadow run boss has three telegraphed attack patterns",
-    "perfect-parry spam rearm is server-authoritative"
+    "perfect-parry spam rearm is server-authoritative",
+    "meadow run boss seal opens only after required room enemies are cleared"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -85,7 +87,7 @@
     "audioFeedbackPassRequired": true,
     "abuseResistancePassRequired": true
   },
-  "updatedAt": "2026-09-24T06:40:00+09:00",
+  "updatedAt": "2026-09-24T06:55:00+09:00",
   "gameTitleKo": "5포탈 RPG: 던전 파티",
   "gameTitleEn": "Five Portal RPG: Dungeon Party",
   "gameDescriptionKo": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌파하는 협동 RPG. AI 동료와 파티를 맺고 보스와 던전을 공략해 성장해.",
