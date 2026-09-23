@@ -72,6 +72,9 @@ test('internal playtest rejects unapproved primitive primary actors even with go
     ],
   });
   assert.equal(result.pass,false);
+  assert.equal(result.releaseAuthority,false);
+  assert.equal(result.standaloneReleaseBlocker,false);
+  assert.equal(result.graphicsPassMeaning,'VERIFIED_CHECKPOINT_NOT_TERMINAL_COMPLETION');
   assert.deepEqual([...result.primitiveViolations],['wolf']);
   assert.throws(()=>assertVibeRuntimeVisualQuality({
     stage:'INTERNAL_PLAYTEST',
