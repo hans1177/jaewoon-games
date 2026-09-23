@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
+const designSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+const departmentWorkflow=fs.readFileSync('.github/workflows/artbook-free-department-bots.yml','utf8');
+const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 
 test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops before artbook',()=>{
   const fact=source.indexOf("await run('tools/artbook-fact-pack.mjs')");
@@ -41,4 +44,18 @@ test('DEVELOPMENT_CONFIRMED keeps gated validation and disposition before later 
   assert.ok(dev>=0&&gate>dev&&disposition>gate);
   assert.match(source,/DEVELOPMENT_DISPOSITION_GATE=ENABLED/);
   assert.match(source,/DEVELOPMENT_ARTBOOK_ONLY_AFTER_PROMOTION=YES/);
+});
+
+
+test('canonical department contract is exactly five roles including audio',()=>{
+  const expected=['planning','graphics','development','qa','audio'];
+  assert.deepEqual(directive.ai?.departments,expected);
+  assert.deepEqual(Object.keys(directive.ai?.departmentLeadModels||{}).sort(),[...expected].sort());
+  assert.equal(directive.ai?.departmentResponsibilityMerge?.balance?.separateDepartment,false);
+  assert.deepEqual(directive.ai?.departmentResponsibilityMerge?.balance?.mergedInto,['planning','qa']);
+  assert.match(designSource,/const ROLES=\['planning','graphics','development','qa','audio'\]/);
+  assert.doesNotMatch(designSource,/const ROLES=\[[^\]]*'balance'/);
+  assert.match(designSource,/ART_AUDIO_DIRECTION:\['graphics','audio'\]/);
+  assert.match(departmentWorkflow,/const designRoles=\['planning','graphics','development','qa','audio'\]/);
+  assert.doesNotMatch(departmentWorkflow,/\['planning','graphics','development','qa','balance','audio'\]/);
 });
