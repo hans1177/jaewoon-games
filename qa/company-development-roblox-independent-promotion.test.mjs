@@ -52,7 +52,8 @@ test('merged Roblox source stays in the Roblox lane while the central orchestrat
   assert.ok(parentWorkflow.includes('company-development-roblox-runtime.yml'));
   assert.ok(parentWorkflow.includes('company-development-unity-runtime.yml'));
   assert.ok(parentWorkflow.includes('BIDIRECTIONAL_AUTO_PAIR=YES'));
-  assert.ok(parentWorkflow.includes('UNITY_WEB_RUNTIME_DISPATCH=NO'));
+  assert.ok(parentWorkflow.includes('UNITY_WEB_RUNTIME_DISPATCH_COUNT'));
+  assert.ok(parentWorkflow.includes('UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE'));
   assert.ok(workflow.includes('persist Roblox source-bind results'));
   assert.ok(workflow.includes('technical-plan:'));
   assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
