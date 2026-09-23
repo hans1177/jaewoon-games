@@ -1,5 +1,5 @@
 {
-  "version": 111,
+  "version": 112,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2253,7 +2253,21 @@
       "duplicateMarketingDepartmentForbidden": true,
       "vibeDecisionAuthority": true,
       "autonomousPaidSpendAuthority": false
-    }
+    },
+    "canonicalProductionDepartments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "audio"
+    ],
+    "canonicalProductionDepartmentCount": 5,
+    "audioIncluded": true,
+    "balanceSeparateDepartment": false,
+    "balanceResponsibilityMergedInto": [
+      "planning",
+      "qa"
+    ]
   },
   "recordsGovernance": {
     "canonicalPolicy": "company-learning/platform-release-roadmap.json#recordsGovernance",
@@ -2633,7 +2647,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T11:16:00+09:00",
+  "updatedAt": "2026-09-23T10:55:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
