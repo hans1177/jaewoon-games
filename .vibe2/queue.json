@@ -74088,7 +74088,1965 @@
       "reservationRunAttempt": 1,
       "reservedAt": "2026-09-23T00:20:05Z",
       "neuronExpectedVariants": 3,
-      "neuronResults": [],
+      "neuronResults": [
+        {
+          "version": 14,
+          "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
+          "reservationId": "35798873937:1",
+          "variant": "speculative-2",
+          "outcome": "FAIL",
+          "blocker": "source-candidate-generation-failed",
+          "candidateBranch": null,
+          "baseMainSha": "8850987b2ec889fdfd6a43ee6849496339e70fc1",
+          "candidateIdentity": null,
+          "candidateFailure": {
+            "class": "DIAGNOSTIC_POSTCONDITION",
+            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:farming-rules.js:CLEAR_INTERVAL_LIFECYCLE_MISSING"
+          },
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "role-result:exploration:PASS",
+            "role-result:implementation:FAIL",
+            "role-result:test:FAIL",
+            "role-result:performance:FAIL",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+            "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:4",
+            "coding-primary-targets:%5B%22actualWorkers%22%2C%22buildIronMine%22%2C%22recruitCavalry50%22%2C%22ironProduction%22%5D",
+            "coding-primary-systems:%5B%22PLACEMENT%22%2C%22PRESENTATION%22%2C%22SAVE%22%2C%22AI%22%2C%22ECONOMY%22%2C%22PROGRESSION%22%2C%22CORE_STATE%22%2C%22COMBAT%22%2C%22GOAL_STATE%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22SAVE%22%2C%22PRESENTATION%22%2C%22AI%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%2C%22CORE_STATE%22%2C%22PLAYER%22%5D",
+            "coding-semantic-system-budget:10",
+            "coding-failure-fingerprint:web|DIAGNOSTIC_POSTCONDITION|OTHER",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_system_ai_0b0a34e7dbf177b41b7207d9%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_system_ai_a4960e93b58a431d14b77f9c%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_1981e22d7ce6d0655400a0e7%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_383f1508b1e716e1b7848811%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_54427da2204e4033e8fa26ba%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_67cbe292d92c17ee1773a10c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_9826195dac24dccb5a25672d%22%5D",
+            "learning-primary-domains:%5B%22WEB_RUNTIME%22%5D",
+            "learning-secondary-domains:%5B%22AI%22%2C%22ANIMATION_FEEL%22%2C%22ASSET_PRODUCTION%22%2C%22COMBAT%22%2C%22CORE_LOOP%22%2C%22DEBUGGING%22%5D",
+            "actions-run:35798873937",
+            "reservation-id:35798873937:1",
+            "variant:speculative-2",
+            "shared-context-sync:MISSING"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": false,
+            "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
+            "packageId": "cozy-island-wp-12b0gr7",
+            "target": "web",
+            "sourceRoot": "web-games/cozy-island",
+            "baseMainSha": "8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "responsibleFiles": [
+              "farming-rules.js",
+              "fishing-limit-v9.js",
+              "iron-lv3-spearman-v14.js",
+              "iron-worker-v15.js"
+            ],
+            "impactFiles": [
+              "farming-rules.js",
+              "fishing-limit-v9.js",
+              "iron-lv3-spearman-v14.js",
+              "iron-worker-v15.js",
+              "index.html",
+              "iron-worker-pre-v15.js",
+              "cozy-balance-v5.js",
+              "iron-layout-v16.js",
+              "rules-v7.js",
+              "worker-shop-freeze-guard.js",
+              "abyss-cave-v23.js",
+              "balance-reset.js"
+            ],
+            "contextFiles": [
+              "farming-rules.js",
+              "fishing-limit-v9.js",
+              "iron-lv3-spearman-v14.js",
+              "iron-worker-v15.js",
+              "index.html",
+              "iron-worker-pre-v15.js",
+              "cozy-balance-v5.js",
+              "iron-layout-v16.js",
+              "rules-v7.js",
+              "worker-shop-freeze-guard.js",
+              "abyss-cave-v23.js",
+              "balance-reset.js"
+            ],
+            "relatedFiles": [
+              {
+                "path": "index.html",
+                "score": 107
+              },
+              {
+                "path": "iron-worker-pre-v15.js",
+                "score": 45
+              },
+              {
+                "path": "cozy-balance-v5.js",
+                "score": 40
+              },
+              {
+                "path": "iron-layout-v16.js",
+                "score": 40
+              },
+              {
+                "path": "rules-v7.js",
+                "score": 40
+              },
+              {
+                "path": "worker-shop-freeze-guard.js",
+                "score": 40
+              },
+              {
+                "path": "abyss-cave-v23.js",
+                "score": 35
+              },
+              {
+                "path": "balance-reset.js",
+                "score": 35
+              },
+              {
+                "path": "balance-resume-v20.js",
+                "score": 35
+              },
+              {
+                "path": "bounty-fix-v10.js",
+                "score": 35
+              },
+              {
+                "path": "bounty-tax-v6.js",
+                "score": 35
+              },
+              {
+                "path": "cannon-system.js",
+                "score": 35
+              }
+            ],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "storage",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [
+              "diagnostic:INTERVAL_CLEANUP_RISK",
+              "repair-mode:MODEL"
+            ],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "MAJOR_REWORK",
+              "confidence": "MEDIUM",
+              "reasons": [
+                "REUSABLE_SOURCE_EXISTS",
+                "SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS",
+                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 4816,
+                "sourceSha256": "1e503c2d4f189cc7245e4ef880e9fe5136332a4cec3a1e681f7fe8bbedd323a7",
+                "validationScore": 0,
+                "approvedDesign": false,
+                "gameplaySignalCount": 4,
+                "gameplaySignals": {
+                  "input": false,
+                  "runtimeLoop": false,
+                  "mutableState": false,
+                  "gameplayOutcome": false,
+                  "progression": true,
+                  "combat": true,
+                  "spatial": true,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": false
+                },
+                "prototypeMarkerCount": 0,
+                "approvedScopeRequiredCount": 0,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 0,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "cozy-island",
+              "sourceRoot": "web-games/cozy-island",
+              "sourcePath": "web-games/cozy-island/index.html",
+              "designBaselinePath": null
+            },
+            "fileDigests": [
+              {
+                "path": "farming-rules.js",
+                "hash": "81d47c960cfa271b",
+                "bytes": 12393
+              },
+              {
+                "path": "fishing-limit-v9.js",
+                "hash": "b19c945224844a6b",
+                "bytes": 2924
+              },
+              {
+                "path": "iron-lv3-spearman-v14.js",
+                "hash": "b6d2ba862c08f744",
+                "bytes": 27041
+              },
+              {
+                "path": "iron-worker-v15.js",
+                "hash": "d090f7d69a1f0d5a",
+                "bytes": 18066
+              },
+              {
+                "path": "index.html",
+                "hash": "1e503c2d4f189cc7",
+                "bytes": 4816
+              },
+              {
+                "path": "iron-worker-pre-v15.js",
+                "hash": "f6128b1dbb15a509",
+                "bytes": 1708
+              },
+              {
+                "path": "cozy-balance-v5.js",
+                "hash": "b9191d7e63bbfebe",
+                "bytes": 15418
+              },
+              {
+                "path": "iron-layout-v16.js",
+                "hash": "3d0f85ee52634abe",
+                "bytes": 6158
+              },
+              {
+                "path": "rules-v7.js",
+                "hash": "d41b62b28607c596",
+                "bytes": 9586
+              },
+              {
+                "path": "worker-shop-freeze-guard.js",
+                "hash": "9ac5a1086cab754a",
+                "bytes": 702
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "LOW",
+                "matched": [],
+                "focusedChecksAdded": [],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "actualWorkers",
+                "buildIronMine",
+                "recruitCavalry50",
+                "ironProduction"
+              ],
+              "allowedResponsibleFiles": [
+                "farming-rules.js",
+                "fishing-limit-v9.js",
+                "iron-lv3-spearman-v14.js",
+                "iron-worker-v15.js"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "jungleUnlocked",
+                "toast",
+                "v14",
+                "scaledMineCost",
+                "canPay",
+                "spend",
+                "saveImmediate",
+                "executeAction",
+                "handleAction",
+                "drawWithIronLv3",
+                "makeCavalry",
+                "productionState",
+                "workerNumber",
+                "assignIronWorker",
+                "blockWorkerPurchase",
+                "patchPanels",
+                "PRESENTATION",
+                "SAVE",
+                "WORLD",
+                "ECONOMY",
+                "PROGRESSION",
+                "CORE_STATE",
+                "PLACEMENT",
+                "COMBAT"
+              ],
+              "primarySystems": [
+                "PLACEMENT",
+                "PRESENTATION",
+                "SAVE",
+                "AI",
+                "ECONOMY",
+                "PROGRESSION",
+                "CORE_STATE",
+                "COMBAT",
+                "GOAL_STATE"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "SAVE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD",
+                "CORE_STATE",
+                "PLAYER"
+              ],
+              "directDependentSystems": [
+                "PRESENTATION",
+                "SAVE",
+                "WORLD",
+                "ECONOMY",
+                "PROGRESSION",
+                "CORE_STATE",
+                "PLACEMENT",
+                "COMBAT",
+                "AI"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "SAVE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD",
+                "CORE_STATE",
+                "PLAYER"
+              ],
+              "ownedState": [
+                "state",
+                "cost",
+                "now",
+                "interval",
+                "elapsed",
+                "cycles",
+                "iron",
+                "food",
+                "cavalry",
+                "p"
+              ],
+              "readState": [
+                "now",
+                "toast",
+                "state",
+                "IRON_MINE",
+                "v14",
+                "cost",
+                "activeRuntime",
+                "currentGame",
+                "interval",
+                "elapsed",
+                "cycles",
+                "iron",
+                "panel",
+                "CAVALRY_COST",
+                "CAVALRY_MAX",
+                "food",
+                "cavalry",
+                "workers",
+                "p"
+              ],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:storage",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBLE_FUNCTION:actualWorkers",
+                "STATE_WRITE:p",
+                "STATE_WRITE:iron",
+                "DOWNSTREAM:productionState",
+                "DOWNSTREAM:workerNumber",
+                "RESPONSIBLE_FUNCTION:buildIronMine",
+                "STATE_WRITE:state",
+                "STATE_WRITE:cost",
+                "DOWNSTREAM:jungleUnlocked",
+                "DOWNSTREAM:toast",
+                "DOWNSTREAM:v14",
+                "DOWNSTREAM:scaledMineCost",
+                "RESPONSIBLE_FUNCTION:recruitCavalry50",
+                "STATE_WRITE:food",
+                "STATE_WRITE:cavalry",
+                "DOWNSTREAM:makeCavalry",
+                "DOWNSTREAM:saveImmediate",
+                "RESPONSIBLE_FUNCTION:ironProduction",
+                "STATE_WRITE:now",
+                "STATE_WRITE:interval",
+                "STATE_WRITE:elapsed"
+              ],
+              "requiredObservableResult": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. farming-rules.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. fishing-limit-v9.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. iron-lv3-spearman-v14.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. iron-worker-v15.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "PLACEMENT",
+                  "PRESENTATION",
+                  "SAVE",
+                  "AI",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "CORE_STATE",
+                  "COMBAT",
+                  "GOAL_STATE",
+                  "WORLD"
+                ],
+                "preferredPrimarySymbols": [
+                  "actualWorkers",
+                  "buildIronMine",
+                  "recruitCavalry50",
+                  "ironProduction"
+                ],
+                "maxSystemCount": 10,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "SAVE",
+                  "PRESENTATION",
+                  "AI",
+                  "PROGRESSION",
+                  "ECONOMY",
+                  "COMBAT",
+                  "WORLD",
+                  "CORE_STATE",
+                  "PLAYER"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_PRESENTATION",
+                "MICRO_COMBAT",
+                "MICRO_AI",
+                "MICRO_ECONOMY",
+                "MICRO_PROGRESSION",
+                "MICRO_PLACEMENT",
+                "MICRO_SAVE",
+                "MICRO_GOAL_STATE",
+                "MICRO_WORLD",
+                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": true,
+                "nodeTestTargets": [],
+                "executable": true,
+                "mode": "DIAGNOSTIC_RESCAN",
+                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+                "diagnosticType": "INTERVAL_CLEANUP_RISK",
+                "diagnosticFile": "farming-rules.js",
+                "diagnosticLine": 322,
+                "diagnosticNeedle": "setInterval(",
+                "diagnosticMicroTask": "farming-rules.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
+                "verifiedResponsibleSystem": "GAME_RUNTIME",
+                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OWNED_STATE_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "actualWorkers",
+                  "buildIronMine",
+                  "recruitCavalry50",
+                  "ironProduction"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "jungleUnlocked",
+                  "toast",
+                  "v14",
+                  "scaledMineCost",
+                  "canPay",
+                  "spend",
+                  "saveImmediate",
+                  "executeAction",
+                  "handleAction",
+                  "drawWithIronLv3",
+                  "makeCavalry",
+                  "productionState",
+                  "workerNumber",
+                  "assignIronWorker",
+                  "blockWorkerPurchase",
+                  "patchPanels",
+                  "PRESENTATION",
+                  "SAVE",
+                  "WORLD",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "CORE_STATE",
+                  "PLACEMENT",
+                  "COMBAT"
+                ],
+                "ownedState": [
+                  "state",
+                  "cost",
+                  "now",
+                  "interval",
+                  "elapsed",
+                  "cycles",
+                  "iron",
+                  "food",
+                  "cavalry",
+                  "p"
+                ],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_PRESENTATION",
+                  "MICRO_COMBAT",
+                  "MICRO_AI",
+                  "MICRO_ECONOMY",
+                  "MICRO_PROGRESSION",
+                  "MICRO_PLACEMENT",
+                  "MICRO_SAVE",
+                  "MICRO_GOAL_STATE",
+                  "MICRO_WORLD",
+                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:storage",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "SAVE",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "saveOrRestore(command)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 93,
+                "edgeCount": 178,
+                "maxFunctionBodyBytes": 1995,
+                "maxCallsPerFunction": 11,
+                "maxCalledByPerFunction": 18,
+                "maxStateWritesPerFunction": 12,
+                "maxSystemsPerFunction": 8,
+                "multiWriterStateCount": 48,
+                "stateWriterLinkCount": 224,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 2,
+                "eventBindingCount": 3,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 19
+              },
+              "responsibilityGraph": {
+                "nodeCount": 93,
+                "relevantNodes": [
+                  {
+                    "name": "toast",
+                    "systems": [
+                      "PRESENTATION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "showModalFishingV9",
+                      "buildIronMine",
+                      "upgradeHallLv3",
+                      "buildLv3Structure",
+                      "ironProduction",
+                      "recruitSpearman",
+                      "upgradeSpearman",
+                      "openArmory",
+                      "recruitCavalry50",
+                      "assignIronWorker",
+                      "deliverIron",
+                      "breakMine",
+                      "updateIronMine",
+                      "blockWorkerPurchase"
+                    ],
+                    "stateReads": [
+                      "toast",
+                      "el"
+                    ],
+                    "stateWrites": [
+                      "toast",
+                      "el"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "saveImmediate",
+                    "systems": [
+                      "SAVE",
+                      "WORLD",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState",
+                      "livingSpearmen"
+                    ],
+                    "calledBy": [
+                      "buildIronMine",
+                      "upgradeHallLv3",
+                      "buildLv3Structure",
+                      "ironProduction",
+                      "recruitSpearman",
+                      "upgradeSpearman",
+                      "recruitCavalry50",
+                      "assignIronWorker",
+                      "updateIronMine"
+                    ],
+                    "stateReads": [
+                      "activeRuntime",
+                      "state",
+                      "currentGame",
+                      "initializedSpearmen",
+                      "v14",
+                      "coins",
+                      "map"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "v14",
+                      "coins"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "jungleUnlocked",
+                    "systems": [
+                      "PROGRESSION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "buildIronMine",
+                      "contextAction",
+                      "nearIronNode"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "currentGame"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "v14",
+                    "systems": [
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState"
+                    ],
+                    "calledBy": [
+                      "lv3",
+                      "scaledMineCost",
+                      "buildIronMine",
+                      "upgradeHallLv3",
+                      "buildLv3Structure",
+                      "ironProduction",
+                      "spearMultiplier",
+                      "makeSpearman",
+                      "restoreSpearmen",
+                      "syncSpearmanAttack",
+                      "recruitSpearman",
+                      "upgradeSpearman",
+                      "updateBallista",
+                      "patchInventory",
+                      "patchLevelPanel",
+                      "contextAction"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "currentGame"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "canPay",
+                    "systems": [
+                      "ECONOMY",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "buildIronMine",
+                      "upgradeHallLv3",
+                      "buildLv3Structure"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "currentGame",
+                      "coins",
+                      "inv",
+                      "cost",
+                      "iron"
+                    ],
+                    "stateWrites": [
+                      "inv"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "spend",
+                    "systems": [
+                      "ECONOMY",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "buildIronMine",
+                      "upgradeHallLv3",
+                      "buildLv3Structure"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "currentGame",
+                      "coins",
+                      "inv",
+                      "cost",
+                      "iron"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "coins",
+                      "inv",
+                      "iron"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scaledMineCost",
+                    "systems": [
+                      "ECONOMY",
+                      "PLACEMENT",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "v14"
+                    ],
+                    "calledBy": [
+                      "buildIronMine",
+                      "contextAction"
+                    ],
+                    "stateReads": [
+                      "IRON_MINE",
+                      "v14",
+                      "n",
+                      "scale"
+                    ],
+                    "stateWrites": [
+                      "n",
+                      "scale"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "buildIronMine",
+                    "systems": [
+                      "PLACEMENT",
+                      "PRESENTATION",
+                      "SAVE",
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "jungleUnlocked",
+                      "toast",
+                      "v14",
+                      "scaledMineCost",
+                      "canPay",
+                      "spend",
+                      "saveImmediate"
+                    ],
+                    "calledBy": [
+                      "executeAction",
+                      "handleAction"
+                    ],
+                    "stateReads": [
+                      "now",
+                      "toast",
+                      "state",
+                      "IRON_MINE",
+                      "v14",
+                      "cost"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "cost"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "ironProduction",
+                    "systems": [
+                      "SAVE",
+                      "PLACEMENT",
+                      "AI",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "v14",
+                      "toast",
+                      "saveImmediate"
+                    ],
+                    "calledBy": [
+                      "drawWithIronLv3"
+                    ],
+                    "stateReads": [
+                      "activeRuntime",
+                      "now",
+                      "toast",
+                      "state",
+                      "currentGame",
+                      "v14",
+                      "interval",
+                      "elapsed",
+                      "cycles",
+                      "iron"
+                    ],
+                    "stateWrites": [
+                      "now",
+                      "state",
+                      "interval",
+                      "elapsed",
+                      "cycles",
+                      "iron"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "makeCavalry",
+                    "systems": [
+                      "COMBAT",
+                      "AI"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "recruitCavalry50"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "nextUnitId",
+                      "barracks",
+                      "cavalry"
+                    ],
+                    "stateWrites": [
+                      "nextUnitId",
+                      "barracks"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "recruitCavalry50",
+                    "systems": [
+                      "PRESENTATION",
+                      "SAVE",
+                      "COMBAT",
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "toast",
+                      "makeCavalry",
+                      "saveImmediate"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "toast",
+                      "panel",
+                      "state",
+                      "CAVALRY_COST",
+                      "CAVALRY_MAX",
+                      "currentGame",
+                      "food",
+                      "cavalry"
+                    ],
+                    "stateWrites": [
+                      "food",
+                      "cavalry"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "executeAction",
+                    "systems": [
+                      "PLACEMENT",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "buildIronMine",
+                      "upgradeHallLv3",
+                      "buildLv3Structure",
+                      "openSpearmanPanel",
+                      "openArmory"
+                    ],
+                    "calledBy": [
+                      "setupContextButton"
+                    ],
+                    "stateReads": [],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "drawWithIronLv3",
+                    "systems": [
+                      "PRESENTATION",
+                      "SAVE",
+                      "COMBAT",
+                      "PROGRESSION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState",
+                      "restoreSpearmen",
+                      "syncSpearmanAttack",
+                      "ironProduction",
+                      "detectSpearHits",
+                      "updateBleeds",
+                      "updateBallista",
+                      "patchInventory",
+                      "patchLevelPanel",
+                      "patchCavalryButton",
+                      "updateContextButton"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "activeRuntime",
+                      "now",
+                      "dt",
+                      "state",
+                      "currentGame",
+                      "lastTick",
+                      "originalDraw",
+                      "result"
+                    ],
+                    "stateWrites": [
+                      "now",
+                      "dt",
+                      "currentGame",
+                      "lastTick",
+                      "result"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "workerNumber",
+                    "systems": [],
+                    "calls": [],
+                    "calledBy": [
+                      "actualWorkers",
+                      "reconcileWorkerTotal",
+                      "assignIronWorker",
+                      "breakMine",
+                      "patchPanels"
+                    ],
+                    "stateReads": [
+                      "count",
+                      "value"
+                    ],
+                    "stateWrites": [
+                      "value"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "productionState",
+                    "systems": [
+                      "CORE_STATE",
+                      "PLACEMENT",
+                      "PRESENTATION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "actualWorkers",
+                      "reconcileWorkerTotal"
+                    ],
+                    "stateReads": [
+                      "state"
+                    ],
+                    "stateWrites": [
+                      "state"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "actualWorkers",
+                    "systems": [
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "productionState",
+                      "workerNumber"
+                    ],
+                    "calledBy": [
+                      "assignIronWorker",
+                      "blockWorkerPurchase",
+                      "patchPanels",
+                      "drawWithIronWorkerV15"
+                    ],
+                    "stateReads": [
+                      "workers",
+                      "state",
+                      "p",
+                      "iron"
+                    ],
+                    "stateWrites": [
+                      "p",
+                      "iron"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "assignIronWorker",
+                    "systems": [
+                      "SAVE",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState",
+                      "workerNumber",
+                      "reconcileWorkerTotal",
+                      "saveImmediate",
+                      "toast",
+                      "actualWorkers"
+                    ],
+                    "calledBy": [
+                      "handleAction",
+                      "handleDouble"
+                    ],
+                    "stateReads": [
+                      "workers",
+                      "toast",
+                      "state",
+                      "currentGame",
+                      "root"
+                    ],
+                    "stateWrites": [
+                      "workers",
+                      "state",
+                      "root"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "handleAction",
+                    "systems": [
+                      "PLACEMENT",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "currentAction",
+                      "buildIronMine",
+                      "assignIronWorker"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "action",
+                      "node",
+                      "worker"
+                    ],
+                    "stateWrites": [
+                      "action"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "blockWorkerPurchase",
+                    "systems": [],
+                    "calls": [
+                      "actualWorkers",
+                      "toast"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "toast",
+                      "currentGame"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "patchPanels",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState",
+                      "lv2",
+                      "actualWorkers",
+                      "workerNumber"
+                    ],
+                    "calledBy": [
+                      "drawWithIronWorkerV15"
+                    ],
+                    "stateReads": [
+                      "workers",
+                      "panel",
+                      "title",
+                      "body",
+                      "state",
+                      "currentGame",
+                      "v14",
+                      "note",
+                      "p",
+                      "root",
+                      "iron",
+                      "worker",
+                      "total",
+                      "span"
+                    ],
+                    "stateWrites": [
+                      "title",
+                      "body",
+                      "note",
+                      "root",
+                      "worker",
+                      "total",
+                      "span"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "showModalFishingV9",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "saveImmediate",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "saveImmediate",
+                    "to": "livingSpearmen",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "v14",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "lv3",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scaledMineCost",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildIronMine",
+                    "to": "jungleUnlocked",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildIronMine",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildIronMine",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildIronMine",
+                    "to": "scaledMineCost",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildIronMine",
+                    "to": "canPay",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildIronMine",
+                    "to": "spend",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildIronMine",
+                    "to": "saveImmediate",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeHallLv3",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeHallLv3",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeHallLv3",
+                    "to": "canPay",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeHallLv3",
+                    "to": "spend",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeHallLv3",
+                    "to": "saveImmediate",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildLv3Structure",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildLv3Structure",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildLv3Structure",
+                    "to": "canPay",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildLv3Structure",
+                    "to": "spend",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buildLv3Structure",
+                    "to": "saveImmediate",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "ironProduction",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "ironProduction",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "ironProduction",
+                    "to": "saveImmediate",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "spearMultiplier",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "makeSpearman",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "restoreSpearmen",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "syncSpearmanAttack",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "recruitSpearman",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "recruitSpearman",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "recruitSpearman",
+                    "to": "saveImmediate",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeSpearman",
+                    "to": "v14",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeSpearman",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeSpearman",
+                    "to": "saveImmediate",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "openArmory",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "recruitCavalry50",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "recruitCavalry50",
+                    "to": "makeCavalry",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "recruitCavalry50",
+                    "to": "saveImmediate",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 40,
+                "hardBlockers": [],
+                "issues": [
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "activeRuntime:patchedLoadProgress,patchedQueueSaveProgress,loadWithIronLv3,saveWithIronLv3,loadWithIronWorker,saveWithIronWorker"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "progress:patchedLoadProgress,ensureWorkerState,migrateRaidTimer,enforceTwoMinuteRaid,tickWorkers,openWorkerShop,buyWorker"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "now:applyFarmRules,tickWorkers,ironProduction,updateBleeds,drawWithIronLv3,nearIronNode,drawIronNodes,drawWithIronWorkerV15"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "workers:ensureWorkerState,tickWorkers,renderWorkerShopBody,buyWorker,assignIronWorker,breakMine"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "style:setupWorkerShop,renderWorkerShopBody,patchLevelPanel,setupContextButton,updateContextButton"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "button:setupWorkerShop,updateWorkerShopButton,patchLevelPanel,patchCavalryButton,setupContextButton,updateContextButton"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "count:updateWorkerShopButton,buyWorker,recruitSpearman,openSpearmanPanel,patchCavalryButton"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "body:openWorkerShop,renderWorkerShopBody,openSpearmanPanel,patchInventory,patchLevelPanel,patchPanels"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "state:applyFarmRules,tickWorkers,showModalFishingV9,patchFishingText,ensureState,loadWithIronLv3,saveWithIronLv3,saveImmediate,spend,buildIronMine,upgradeHallLv3,buildLv3Structure,ironProduction,upgradeSpearman,patchInventory,contextAction,drawIronMine,drawLv3Buildings,productionState,reconcileWorkerTotal,loadWithIronWorker,assignIronWorker,breakMine"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "food:patchedLoadProgress,applyFarmRules,tickWorkers,recruitSpearman,recruitCavalry50,updateIronMine"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "root:saveWithIronWorker,nearIronNode,assignIronWorker,deliverIron,breakMine,updateIronMine,mineAction,patchPanels,drawIronNodes,drawWithIronWorkerV15"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "iron:ensureState,spend,ironProduction,actualWorkers,reconcileWorkerTotal,deliverIron"
+                  }
+                ]
+              },
+              "failureEvidence": [
+                "diagnostic:INTERVAL_CLEANUP_RISK",
+                "repair-mode:MODEL",
+                "FAIL",
+                "learning-motor-candidate-tournament:repeated-verified-failure",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+                "coding-failure-fingerprint:web|STATE_FLOW|RELEASE|ASSET_PRODUCTION|PERFORMANCE|STATE_MACHINE|WEB_RUNTIME",
+                "learning-primary-domains:%5B%22WEB_RUNTIME%22%5D",
+                "shared-context-sync:MISSING",
+                "failure-cause:source-candidate-generation-failed",
+                "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js%7C35794418452%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+                "neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_CONTRADICTED%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A-0.1%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D",
+                "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js%7C35794418452%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+                "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js%7C35794418452%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js%7C35794418452%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A14%2C%22edgeCount%22%3A12%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "9f2e9bacbd7bd035d96273c2",
+            "generatedAt": "2026-09-23T00:21:38.859Z"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "CAUSAL_TRACE_CROSSCHECK",
+            "candidateVariant": "speculative-2",
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "actualWorkers",
+              "buildIronMine",
+              "recruitCavalry50",
+              "ironProduction"
+            ],
+            "primarySystems": [
+              "PLACEMENT",
+              "PRESENTATION",
+              "SAVE",
+              "AI",
+              "ECONOMY",
+              "PROGRESSION",
+              "CORE_STATE",
+              "COMBAT",
+              "GOAL_STATE"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "SAVE",
+              "PRESENTATION",
+              "AI",
+              "PROGRESSION",
+              "ECONOMY",
+              "COMBAT",
+              "WORLD",
+              "CORE_STATE",
+              "PLAYER"
+            ],
+            "ownedState": [
+              "state",
+              "cost",
+              "now",
+              "interval",
+              "elapsed",
+              "cycles",
+              "iron",
+              "food",
+              "cavalry",
+              "p"
+            ],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "PLACEMENT",
+                "PRESENTATION",
+                "SAVE",
+                "AI",
+                "ECONOMY",
+                "PROGRESSION",
+                "CORE_STATE",
+                "COMBAT",
+                "GOAL_STATE",
+                "WORLD"
+              ],
+              "preferredPrimarySymbols": [
+                "actualWorkers",
+                "buildIronMine",
+                "recruitCavalry50",
+                "ironProduction"
+              ],
+              "maxSystemCount": 10,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "SAVE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD",
+                "CORE_STATE",
+                "PLAYER"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": null,
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": true,
+              "nodeTestTargets": [],
+              "executable": true,
+              "mode": "DIAGNOSTIC_RESCAN",
+              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+              "diagnosticType": "INTERVAL_CLEANUP_RISK",
+              "diagnosticFile": "farming-rules.js",
+              "diagnosticLine": 322,
+              "diagnosticNeedle": "setInterval(",
+              "diagnosticMicroTask": "farming-rules.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
+              "verifiedResponsibleSystem": "GAME_RUNTIME",
+              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "generationAttempts": 0,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": false,
+            "incrementalQaPass": false,
+            "performanceSanityPass": false,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "NOT_AVAILABLE",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "WORK_ORDER_FALLBACK"
+          },
+          "presentationQuality": null,
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "FAIL",
+            "test": "FAIL",
+            "performance": "FAIL",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "practiceArtifact": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/cozy-island",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "current-deterministic-diagnostic-interval-cleanup-risk",
+                "system": "GAME_RUNTIME",
+                "confidence": 0.99,
+                "reason": "현재 task의 결정론적 diagnostic INTERVAL_CLEANUP_RISK(iron-worker-v15.js)가 GAME_RUNTIME 책임 가설을 직접 지지함",
+                "diagnosticType": "INTERVAL_CLEANUP_RISK",
+                "diagnosticFile": "iron-worker-v15.js",
+                "verified": false,
+                "advisoryOnly": true
+              },
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              },
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "current-deterministic-diagnostic-interval-cleanup-risk",
+                "to": "TASK_GOAL",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.99,
+                "verified": false,
+                "rank": 1
+              },
+              {
+                "from": "save-compatibility",
+                "to": "TASK_GOAL",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 2
+              },
+              {
+                "from": "source-generation-path",
+                "to": "TASK_GOAL",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 3
+              }
+            ],
+            "responsibility": {
+              "system": "GAME_RUNTIME",
+              "confidence": 0.99,
+              "alternatives": [
+                {
+                  "system": "SAVE_SYSTEM",
+                  "confidence": 0.32727272727272727
+                },
+                {
+                  "system": "SOURCE_GENERATION",
+                  "confidence": 0.31272727272727274
+                }
+              ],
+              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 5,
+                "recurrence": 2,
+                "sharedScope": 2,
+                "priority": 2,
+                "evidenceConfidence": 0.99
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": null,
+              "responsibleSystem": "GAME_RUNTIME",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": false,
+              "blocker": null
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_1981e22d7ce6d0655400a0e7",
+              "capability_ctrace_383f1508b1e716e1b7848811",
+              "capability_ctrace_54427da2204e4033e8fa26ba",
+              "capability_ctrace_67cbe292d92c17ee1773a10c",
+              "capability_ctrace_9826195dac24dccb5a25672d"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_1981e22d7ce6d0655400a0e7",
+              "capability_ctrace_383f1508b1e716e1b7848811",
+              "capability_ctrace_54427da2204e4033e8fa26ba",
+              "capability_ctrace_67cbe292d92c17ee1773a10c",
+              "capability_ctrace_9826195dac24dccb5a25672d"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 309120,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_system_ai_0b0a34e7dbf177b41b7207d9",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_system_ai_a4960e93b58a431d14b77f9c",
+              "CODE_PATTERN:pat_14v79w7",
+              "CODE_PATTERN:pat_15k9k0m",
+              "CODE_PATTERN:pat_1dj8rdx",
+              "CODE_PATTERN:pat_1e917b8",
+              "CODE_PATTERN:pat_1gglxo2",
+              "CODE_PATTERN:pat_1lx9uhh",
+              "VERIFIED_CAPABILITY:capability_ctrace_1981e22d7ce6d0655400a0e7",
+              "VERIFIED_CAPABILITY:capability_ctrace_383f1508b1e716e1b7848811",
+              "VERIFIED_CAPABILITY:capability_ctrace_54427da2204e4033e8fa26ba",
+              "VERIFIED_CAPABILITY:capability_ctrace_67cbe292d92c17ee1773a10c",
+              "VERIFIED_CAPABILITY:capability_ctrace_9826195dac24dccb5a25672d"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "workLock": {
+            "required": true,
+            "acquired": true,
+            "id": "wl-1a5mib4",
+            "reason": "existing-worker-task-lock",
+            "worker": "vibe2",
+            "baseSha": "8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "files": [
+              "web-games/cozy-island/farming-rules.js",
+              "web-games/cozy-island/fishing-limit-v9.js",
+              "web-games/cozy-island/iron-lv3-spearman-v14.js",
+              "web-games/cozy-island/iron-worker-v15.js"
+            ],
+            "releaseRule": "RELEASE_AFTER_FAN_IN_QA_OR_ABORT"
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35798873937:1",
+            "reservedAt": "2026-09-23T00:20:05Z",
+            "workerStartedAt": 1790122855548,
+            "workerFinishedAt": 1790123164668,
+            "checkoutMs": 4557,
+            "modelPrepMs": 3352,
+            "candidateMs": 265257,
+            "qaMs": 0,
+            "workerTotalMs": 309120,
+            "changedFileCount": 0,
+            "addedLineCount": 0,
+            "deletedLineCount": 0,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
+        }
+      ],
       "companyContext": null,
       "sourceRoot": "web-games/cozy-island",
       "speculativeEligible": true,
