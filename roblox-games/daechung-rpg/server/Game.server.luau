@@ -58,25 +58,33 @@ local function foundationCheckpoint(name,p,extra)
  local payload={name=name,at=os.time(),userId=p and p.UserId or 0,gameId=C.GameId,placeId=tostring(game.PlaceId),placeVersion=game.PlaceVersion}
  if typeof(extra)=="table"then for k,v in pairs(extra)do if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then payload[k]=v end end end
  local committedSequence=foundationSequence
- local ok=pcall(function()
-  foundationStore:UpdateAsync("latest",function(old)
-   local exact=typeof(old)=="table"and tonumber(old.placeVersion)==game.PlaceVersion and tonumber(old.placeId)==game.PlaceId and tostring(old.gameId or"")==tostring(C.GameId)
-   local data=exact and old or{version=3,gameId=C.GameId,placeId=tostring(game.PlaceId),placeVersion=game.PlaceVersion,checkpoints={},sequence=0}
-   data.version=3;data.gameId=C.GameId;data.placeId=tostring(game.PlaceId);data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
-   data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
-   data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
-   if typeof(data.checkpoints[name])=="table"then committedSequence=math.floor(tonumber(data.checkpoints[name].sequence)or foundationSequence);return data end
-   committedSequence=math.max(foundationSequence,math.floor(tonumber(data.sequence)or 0))+1
-   local row={};for k,v in pairs(payload)do row[k]=v end;row.sequence=committedSequence
-   data.sequence=committedSequence;data.checkpoints[name]=row
-   return data
+ local lastError=nil
+ for attempt=1,4 do
+  local ok,err=pcall(function()
+   foundationStore:UpdateAsync("latest",function(old)
+    local exact=typeof(old)=="table"and tonumber(old.placeVersion)==game.PlaceVersion and tonumber(old.placeId)==game.PlaceId and tostring(old.gameId or"")==tostring(C.GameId)
+    local data=exact and old or{version=3,gameId=C.GameId,placeId=tostring(game.PlaceId),placeVersion=game.PlaceVersion,checkpoints={},sequence=0}
+    data.version=3;data.gameId=C.GameId;data.placeId=tostring(game.PlaceId);data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
+    data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
+    data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
+    if typeof(data.checkpoints[name])=="table"then committedSequence=math.floor(tonumber(data.checkpoints[name].sequence)or foundationSequence);return data end
+    committedSequence=math.max(foundationSequence,math.floor(tonumber(data.sequence)or 0))+1
+    local row={};for k,v in pairs(payload)do row[k]=v end;row.sequence=committedSequence
+    data.sequence=committedSequence;data.checkpoints[name]=row
+    return data
+   end)
   end)
- end)
- if ok then
-  foundationSeen[name]=true;foundationSequence=math.max(foundationSequence,committedSequence)
-  workspace:SetAttribute("Foundation_"..name,true)
+  if ok then
+   foundationSeen[name]=true;foundationSequence=math.max(foundationSequence,committedSequence)
+   workspace:SetAttribute("Foundation_"..name,true)
+   return true
+  end
+  lastError=err
+  if attempt<4 then task.wait(.15*attempt)end
  end
- return ok
+ if p then p:SetAttribute("FoundationFailure","CHECKPOINT_WRITE_FAILED:"..name)end
+ warn("Foundation checkpoint write failed",name,lastError)
+ return false
 end
 loadFoundationState()
 foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
@@ -622,22 +630,23 @@ end
 
 buildWorld()
 
-Players.PlayerAdded:Connect(function(p)
+local function bindPlayer(p)
  load(p)
  p.CharacterAdded:Connect(function(c)
   task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter);validateCharacterFoundation(p,c)
  end)
  if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);validateCharacterFoundation(p,p.Character)end)end
-end)
-for _,p in ipairs(Players:GetPlayers())do load(p)end
+end
+Players.PlayerAdded:Connect(bindPlayer)
+for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
 Players.PlayerRemoving:Connect(function(p)save(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
  if typeof(name)~="string"then return end
- local now=os.clock();if now-(foundationLast[p]or 0)<.05 then return end;foundationLast[p]=now
  if name=="REMOTE_PING"then foundationRemote:FireClient(p,"REMOTE_PONG");return end
  if name=="REMOTE_ROUNDTRIP"then foundationCheckpoint("REMOTE_ROUNDTRIP",p,{roundtrip=true});return end
+ local now=os.clock();if now-(foundationLast[p]or 0)<.05 then return end;foundationLast[p]=now
  if name=="CAMERA_READY"or name=="INPUT_READY"then foundationCheckpoint(name,p,{clientReported=true})end
 end)
 
