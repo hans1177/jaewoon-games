@@ -363,22 +363,27 @@ jobs:
                   authority:'existing-independent-qa-native-foundation-v3',
                   verifiedAt:stamp,
                 };
-                item.currentStep='TARGET_PLATFORM_REGRESSION';
-                item.canonicalState='ROBLOX_DEVELOPMENT_CONTINUES_MULTIPLAYER_PENDING';
+                item.robloxInternalMultiplayerSimplifiedPassed=
+                  item.robloxFoundationF0Evidence?.multiplayerSyncContractPassed===true
+                  &&item.robloxServerClientBoundaryPassed===true
+                  &&item.robloxDatastoreRejoinPassed===true;
+                item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                item.canonicalState='ROBLOX_INTERNAL_RELEASE_REVIEW_MULTIPLAYER_SIMPLIFIED';
                 item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
-                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                item.robloxFailureSignature='ROBLOX_MULTIPLAYER_PROMOTION_EVIDENCE_PENDING';
+                item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
                 item.routingBlockers=[];
-                item.robloxPromotionBlockers=['roblox-multiplayer-evidence-pending'];
+                item.robloxPromotionBlockers=['roblox-full-multiplayer-evidence-pending-public-release-only'];
                 if(item.executionEvidence){
                   item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
                   item.executionEvidence.runtimePassed=false;
                   item.executionEvidence.independentQaPassed=true;
                   item.executionEvidence.regressionPassed=true;
-                  item.executionEvidence.failureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                  item.executionEvidence.failureSignature='ROBLOX_MULTIPLAYER_PROMOTION_EVIDENCE_PENDING';
+                  item.executionEvidence.failureStage=null;
+                  item.executionEvidence.failureSignature=null;
                 }
-                console.log('ROBLOX_MULTIPLAYER_PARALLEL_NON_BLOCKING='+item.gameId);
+                f9Ids.push(item.gameId);
+                console.log('ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW='+item.gameId);
                 pending++;
               }else{
                 item.robloxIndependentQaPassed=false;
