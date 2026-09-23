@@ -11,7 +11,7 @@ const write=(root,file,value)=>{
   fs.writeFileSync(target,typeof value==='string'?value:JSON.stringify(value,null,2));
 };
 const designContent=()=>({
-  identity:'Direct native test game',
+  identity:'Direct native cross-platform test game identity',
   coreFun:'Repeat a readable action and improve across sessions.',
   coreLoop:['prepare','play','resolve','upgrade'],
   signatureSystems:[{name:'Core Action',purpose:'main loop'},{name:'Growth',purpose:'progression'}],
@@ -170,6 +170,7 @@ test('reconciler source contains no Web-first admission state',()=>{
 
 test('workflow persists only direct-native queue state and dispatches runtime only when queue is nonempty',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  const source=fs.readFileSync('tools/company-development-queue-reconcile.mjs','utf8');
   assert.match(workflow,/id:\s*queue_state/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.match(workflow,/company-minimum-design-contract\.mjs/);
