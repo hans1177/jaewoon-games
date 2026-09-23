@@ -317,7 +317,7 @@ local function makeZone(z)
  ppart(f,"ZoneGround",Vector3.new(440,2,440),z.Center+Vector3.new(0,0,0),groundColor,material)
  ppart(f,"ZoneInnerRoad",Vector3.new(22,1,330),z.Center+Vector3.new(0,1,0),Color3.fromRGB(105,100,94),Enum.Material.Cobblestone)
  for i=1,34 do themedProp(f,z,i)end
- if z.Theme=="SNOW"then
+  local s=ppart(f,"SnowPatch",Vector3.new(12,.5,9),pos+Vector3.new(4,.7,3),Color3.fromRGB(221,235,241),Enum.Material.Snow)
   for i=1,28 do
    local a=i/28*math.pi*2;local radius=48+(i%6)*27
    local p=z.Center+Vector3.new(math.cos(a)*radius,1.2,math.sin(a)*radius)
