@@ -256,6 +256,8 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const lastKnownGoodRevision=clean(repairShared.lastKnownGoodRevision||order?.selectedTask?.lastKnownGoodRevision)||null;
   const firstBrokenRevision=clean(repairShared.firstBrokenRevision||order?.selectedTask?.firstBrokenRevision)||null;
   const currentRevision=clean(repairShared.currentRevision||process.env.VIBE2_BASE_MAIN_SHA)||null;
+  const repairRepeatCount=Math.max(0,Number(repairShared.repeatCount||order?.selectedTask?.recurrenceCount||0)||0);
+  const repairMode=repairRepeatCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
   const saveRequired=(sourceAnalysis.storageKeys||[]).length>0||/(?:localStorage|indexedDB|PlayerPrefs|DataStoreService|save|load|persist|저장|불러오기)/i.test(sourceText);
   const multiplayerRequired=/(?:RemoteEvent|RemoteFunction|NetworkVariable|Netcode|Photon|Mirror|multiplayer|server.?authorit|client.?server|co-?op|pvp|멀티|협동|동기화)/i.test(sourceText+' '+requirementText);
   const classifiedTargets=unique(testTargets||[]);
@@ -287,8 +289,31 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     multiplayerLifecycle:{
       required:multiplayerRequired,
       minimumPlayers:2,
-      testTargets:classifiedTargets.filter(value=>/(?:multi|network|sync|join|rejoin|server|client|remote)/i.test(value)).slice(0,8)
+      userAssistanceRequired:false,
+      manualOwnerParticipationMayNotBeRequiredForPass:true,
+      testTargets:classifiedTargets.filter(value=>/(?:multi|network|sync|join|rejoin|server|client|remote)/i.test(value)).slice(0,8),
+      automation:{
+        required:multiplayerRequired,
+        minimumSyntheticOrRealClients:2,
+        machineDrivenScenarios:[
+          'TWO_CLIENT_JOIN_AND_READY',
+          'SIMULTANEOUS_CORE_ACTION',
+          'SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE',
+          'ONE_CLIENT_LEAVE',
+          'ONE_CLIENT_REJOIN',
+          'LATE_JOIN_STATE_RECONCILIATION',
+          'AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC',
+          'DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK'
+        ],
+        deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable:true,
+        actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:true,
+        unavailableAutomationAction:'KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION',
+        userReportedSuccessCannotReplaceMachineEvidence:true
+      }
     },
+    repeatCount:repairRepeatCount,
+    repairMode,
+    sameApproachWithoutNewCausalEvidenceForbidden:repairMode==='ROOT_CAUSE_MODE',
     impactRegressionRequired:true,
     fullRegressionFanInRequired:true,
     unchangedSourceRevalidationForbidden:true,
@@ -300,8 +325,12 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
     ...hotspotChecks,
     ...(causalReplay.executable?['CAUSAL_REPLAY_POSTPATCH_REQUIRED']:[]),
+    ...(failures.length?['GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY','GAME_REPAIR_INVARIANT_VALIDATION']:[]),
+    ...(saveRequired?['GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION']:[]),
+    ...(multiplayerRequired?['GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION']:[]),
+    ...(repairMode==='ROOT_CAUSE_MODE'?['ROOT_CAUSE_COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT','ROOT_CAUSE_RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED']:[]),
     ...(testTargets||[]).map(value=>'TEST_TARGET:'+value)
-  ]).slice(0,24);
+  ]).slice(0,32);
   const strategyHint=failures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
     :primaryTargets.length?'RESPONSIBILITY_FIRST'
     :sourceAnalysis.present?'PRESERVE_PATCH_RESPONSIBLE_SCOPE'
