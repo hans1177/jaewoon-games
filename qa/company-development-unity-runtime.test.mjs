@@ -314,6 +314,12 @@ test('Unity hybrid router avoids full repository history and fetches only the ev
 });
 
 
+test('distinct Unity runtime runs are not globally serialized while runtime persistence stays serialized',()=>{
+  assert.doesNotMatch(workflowSource,/^concurrency:\s*\n\s*group:\s*company-development-unity-runtime\s*$/m);
+  assert.match(workflowSource,/persist-runtime:[\s\S]*concurrency:[\s\S]*group: company-runtime-writer/);
+});
+
+
 test('Unity direct native changes override unrelated representative canary selection',()=>{
   assert.match(workflowSource,/REQUESTED_GAME_IDS/);
   assert.match(workflowSource,/test\("\^\\\\\.build-requests\/unity\/\[\^\/\]\+\\\\\.json\$"\)/);
