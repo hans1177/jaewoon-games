@@ -78,3 +78,17 @@ test('foundation sentinel rejects checkpoints carried over from an older publish
  assert.equal(r.runtimeAcceptancePassed,false);
  assert.ok(r.blockers.includes('checkpoint:SERVER_BOOT'));
 });
+
+
+test('daechung RPG save normalization preserves legacy meaning and rejects incompatible payloads',()=>{
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ assert.match(server,/local SAVE_SCHEMA_VERSION=1/);
+ assert.match(server,/local SAVE_GAME_ID=C\.GameId/);
+ assert.match(server,/local function normalizeSavePayload\(raw\)/);
+ assert.match(server,/SAVE_VERSION_UNSUPPORTED/);
+ assert.match(server,/SAVE_GAME_ID_MISMATCH/);
+ assert.match(server,/SaveMigration","LEGACY_V1_NORMALIZED"/);
+ assert.match(server,/__saveVersion=SAVE_SCHEMA_VERSION,__gameId=SAVE_GAME_ID/);
+ assert.match(server,/legacyMigration=true,meaningPreserved=true/);
+ assert.match(server,/foundationCheckpoint\("SAVE_ROUNDTRIP"/);
+});

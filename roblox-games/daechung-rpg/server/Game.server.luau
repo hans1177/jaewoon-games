@@ -233,6 +233,22 @@ local function grantXP(p,amount)
  if leveled then setStats(p,true);msg(p,"레벨 "..level.." · 최대체력/공격력 +10");feedback(p,"LEVEL_UP")end
 end
 local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","QuestPortal","QuestKills","QuestNeed","RoomCode"}
+local SAVE_SCHEMA_VERSION=1
+local SAVE_GAME_ID=C.GameId
+local function normalizeSavePayload(raw)
+ if typeof(raw)~="table"then return nil,"SAVE_PAYLOAD_INVALID",false end
+ local rawVersion=raw.__saveVersion
+ local legacy=rawVersion==nil
+ local version=legacy and SAVE_SCHEMA_VERSION or math.floor(tonumber(rawVersion)or 0)
+ if version>SAVE_SCHEMA_VERSION then return nil,"SAVE_VERSION_UNSUPPORTED",legacy end
+ if version<1 then return nil,"SAVE_VERSION_INVALID",legacy end
+ local gameId=tostring(raw.__gameId or"")
+ if gameId~=""and gameId~=SAVE_GAME_ID then return nil,"SAVE_GAME_ID_MISMATCH",legacy end
+ local source=typeof(raw.data)=="table"and raw.data or raw
+ local normalized={}
+ for _,k in ipairs(SAVE)do if source[k]~=nil then normalized[k]=source[k]end end
+ return normalized,nil,legacy
+end
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1)
  p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
@@ -243,25 +259,45 @@ end
 local function load(p)
  init(p)
  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
- if ok and typeof(d)=="table"then for _,k in ipairs(SAVE)do if d[k]~=nil then p:SetAttribute(k,d[k])end end end
+ if ok and typeof(d)=="table"then
+  local normalized,saveError,legacy=normalizeSavePayload(d)
+  if normalized then
+   for _,k in ipairs(SAVE)do if normalized[k]~=nil then p:SetAttribute(k,normalized[k])end end
+   p:SetAttribute("SaveSchemaVersion",SAVE_SCHEMA_VERSION)
+   if legacy then p:SetAttribute("SaveMigration","LEGACY_V1_NORMALIZED")end
+  else
+   p:SetAttribute("SaveLoadError",saveError or"UNKNOWN_SAVE_ERROR")
+  end
+ end
  setStats(p,true)
 end
 local function save(p)
- local d={};for _,k in ipairs(SAVE)do d[k]=p:GetAttribute(k)end
+ local d={__saveVersion=SAVE_SCHEMA_VERSION,__gameId=SAVE_GAME_ID};for _,k in ipairs(SAVE)do d[k]=p:GetAttribute(k)end
  pcall(function()store:SetAsync("p:"..p.UserId,d)end)
 end
 task.spawn(function()
  if C.SaveEnabled~=true or foundationSeen.SAVE_ROUNDTRIP then return end
+ local legacyProbe={Gold=321,XP=45,Level=3,WeaponTier=2,ArmorTier=2,QuestPortal=1,QuestKills=2,QuestNeed=5,RoomCode=7}
+ local normalized,legacyError,legacy=normalizeSavePayload(legacyProbe)
+ local _,futureError=normalizeSavePayload({__saveVersion=SAVE_SCHEMA_VERSION+1,__gameId=SAVE_GAME_ID,Gold=999})
+ local _,gameError=normalizeSavePayload({__saveVersion=SAVE_SCHEMA_VERSION,__gameId="other-game",Gold=999})
+ local migrationPass=legacy==true and legacyError==nil and normalized~=nil
+  and normalized.Gold==legacyProbe.Gold and normalized.XP==legacyProbe.XP and normalized.Level==legacyProbe.Level
+  and normalized.WeaponTier==legacyProbe.WeaponTier and normalized.ArmorTier==legacyProbe.ArmorTier
+  and normalized.QuestPortal==legacyProbe.QuestPortal and normalized.QuestKills==legacyProbe.QuestKills
+  and normalized.QuestNeed==legacyProbe.QuestNeed and normalized.RoomCode==legacyProbe.RoomCode
+  and futureError=="SAVE_VERSION_UNSUPPORTED" and gameError=="SAVE_GAME_ID_MISMATCH"
+ if not migrationPass then return end
  local probeKey="__foundation_probe__:"..tostring(game.PlaceVersion)
  local token=C.GameId..":"..tostring(game.PlaceVersion)..":"..tostring(os.time())
  local ok,readBack=pcall(function()
-  store:SetAsync(probeKey,{token=token,at=os.time()})
+  store:SetAsync(probeKey,{__saveVersion=SAVE_SCHEMA_VERSION,__gameId=SAVE_GAME_ID,token=token,at=os.time()})
   local value=store:GetAsync(probeKey)
   return typeof(value)=="table"and value.token or nil
  end)
  if ok and readBack==token then
   pcall(function()store:RemoveAsync(probeKey)end)
-  foundationCheckpoint("SAVE_ROUNDTRIP",nil,{roundtrip=true})
+  foundationCheckpoint("SAVE_ROUNDTRIP",nil,{roundtrip=true,schemaVersion=SAVE_SCHEMA_VERSION,legacyMigration=true,meaningPreserved=true})
  end
 end)
 local function updatePartyCount(p)

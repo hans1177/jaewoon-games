@@ -1,3 +1,4 @@
+const gameCoreSource=fs.readFileSync('unity-games/daechung-rpg/Assets/Scripts/GameCore.cs','utf8');
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -269,4 +270,16 @@ test('independent Unity QA launches exact APK activity without monkey',()=>{
   assert.match(independentQaSource,/launch_component="\$package\/\$activity"/);
   assert.match(independentQaSource,/adb shell am start -W -n "\$launch_component"/);
   assert.doesNotMatch(independentQaSource,/adb shell monkey/);
+});
+
+
+test('daechung RPG Unity save normalization keeps v1 meaning and blocks incompatible saves',()=>{
+  assert.match(gameCoreSource,/private const string SaveGameId = "daechung-rpg";/);
+  assert.match(gameCoreSource,/private const int CurrentSaveVersion = 1;/);
+  assert.match(gameCoreSource,/new GameSaveData \{ version = CurrentSaveVersion, gameId = SaveGameId, player = Player \}/);
+  assert.match(gameCoreSource,/TryNormalizeSaveData/);
+  assert.match(gameCoreSource,/SAVE_VERSION_UNSUPPORTED/);
+  assert.match(gameCoreSource,/SAVE_MIGRATION_MISSING:/);
+  assert.match(gameCoreSource,/SAVE_GAME_ID_MISMATCH/);
+  assert.match(gameCoreSource,/JAEWOON_SAVE_LOAD_BLOCKED/);
 });
