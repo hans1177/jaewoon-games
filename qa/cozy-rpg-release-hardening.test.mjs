@@ -83,7 +83,7 @@ test('대충 RPG 성장/상점은 레벨당 체력+10 공격+10과 장비 5단�
 });
 
 test('대충 RPG에는 지정된 10명 AI와 파티사냥 기여도 시스템이 있다',()=>{
- for(const pair of [['NONE',2],['HEALER',2],['WARRIOR',3],['ARCHER',3]]){
+ for(const pair of [['BREAKER',3],['SHADOW',3],['RUNE',2],['SOUL',2]]){
   const re=new RegExp('Class="'+pair[0]+'"','g');assert.equal((rpgConfig.match(re)||[]).length,pair[1]);
  }
  assert.match(rpgServer,/ClickDetector/);
@@ -91,8 +91,10 @@ test('대충 RPG에는 지정된 10명 AI와 파티사냥 기여도 시스템이
  assert.match(rpgConfig,/PartyHuntTarget=15/);
  assert.match(rpgServer,/Contribution/);
  assert.match(rpgServer,/파티 사냥 완료/);
- assert.match(rpgServer,/ai\.def\.Class=="HEALER"/);
- assert.match(rpgServer,/h\.Health=math\.min\(h\.MaxHealth,h\.Health\+10\)/);
+ assert.match(rpgServer,/CreateHumanoidModelFromDescription/);
+ assert.match(rpgServer,/PathfindingService:CreatePath/);
+ assert.match(rpgServer,/ai\.classId=="SOUL"/);
+ assert.match(rpgServer,/GUARDIAN_MEDIUM/);
 });
 
 test('대충 RPG UI는 포탈 이동을 월드에 맡기고 전투/귀환/파티 상태를 직관적으로 분리한다',()=>{
