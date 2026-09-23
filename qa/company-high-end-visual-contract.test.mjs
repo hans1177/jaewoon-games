@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
-import {createVibeArtPipeline,createVibeGraphicsProduction,VIBE_HIGH_END_TARGET_FRAME_ROLES,GRAPHICS_PRODUCTION_INTERNAL_MODULES,GRAPHICS_PRODUCTION_STAGES} from '../assets/vibe-art-pipeline.js';
+import {createVibeArtPipeline,createVibeGraphicsProduction,createVibeOwnerChangeRequestStability,VIBE_HIGH_END_TARGET_FRAME_ROLES,GRAPHICS_PRODUCTION_INTERNAL_MODULES,GRAPHICS_PRODUCTION_STAGES} from '../assets/vibe-art-pipeline.js';
 import {createVibeHighEndVisualDirection,HIGH_END_VISUAL_TARGET_FRAMES} from '../assets/vibe-visual-autopilot.js';
 import {createVibeHighEndPresentationStack} from '../assets/vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
@@ -18,6 +18,14 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.target,'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION');
   assert.equal(c.developmentAdmissionGate,false);
   assert.equal(c.runsInParallelWithNativeDevelopment,true);
+  assert.equal(c.internalPlatformReleasePresentationGateRequired,false);
+  assert.equal(c.publicReleasePresentationGateRequired,false);
+  assert.equal(c.presentationCompletionIsTerminal,false);
+  assert.equal(c.continuesAfterInternalRelease,true);
+  assert.equal(c.continuesAfterPublicRelease,true);
+  assert.equal(c.continuousEvolution.enabled,true);
+  assert.equal(c.cinematicDirection.enabled,true);
+  assert.equal(c.ownerChangeRequestStability.enabled,true);
   assert.equal(c.noNewDepartment,true);
   assert.equal(c.defaultAssetApplication.enabled,true);
   assert.equal(c.defaultAssetApplication.backgroundAndEnvironmentFirstClass,true);
@@ -29,6 +37,8 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.ok(architecture.executionTopology.assetProduction.includes('RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION'));
   assert.equal(architecture.departmentTopology.graphics.usesExistingDepartment,true);
   assert.equal(logMap.highEndVisualEvidenceContract.markerOnlyEvidenceForbidden,true);
+  assert.equal(logMap.highEndVisualEvidenceContract.checkpointEvidenceNotTerminalCompletion,true);
+  assert.equal(logMap.highEndVisualEvidenceContract.standaloneReleaseAuthority,false);
   assert.equal(security.highEndAssetTransformationSecurity.protections.unverifiedExternalAssetUseForbidden,true);
 });
 
@@ -42,17 +52,35 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(plan.policy.webPresentationMustPassBeforeNativeHandoff,false);
   assert.equal(plan.policy.defaultPurposefulAssetsRequired,true);
   assert.equal(plan.policy.antiKitbashGateRequired,true);
+  assert.equal(plan.highEndVisual.internalPlatformReleasePresentationGateRequired,false);
+  assert.equal(plan.highEndVisual.publicReleasePresentationGateRequired,false);
+  assert.equal(plan.highEndVisual.continuousEvolution,true);
+  assert.equal(plan.highEndVisual.cinematicDirectionRequired,true);
+  assert.equal(plan.policy.continuousPresentationEvolution,true);
+  assert.equal(plan.policy.graphicsPassIsCheckpointNotTerminal,true);
+  assert.equal(plan.policy.highEndPresentationCompletionIsReleaseGate,false);
 
   const art=createVibeArtPipeline({request:'하이엔드 캐릭터 배경 보스 애니메이션 VFX',target:'roblox',quality:3});
-  assert.equal(art.version,5);
+  assert.equal(art.version,6);
   assert.deepEqual([...art.highEndVisual.targetFrames],[...VIBE_HIGH_END_TARGET_FRAME_ROLES]);
   assert.ok(art.art.transforms.includes('kitbash'));
   assert.equal(art.policy.highEndVisualProduction,true);
+  assert.deepEqual([...art.animation.motionLayers],['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
+  assert.equal(art.animation.characterAndCreatureActing,true);
+  assert.equal(art.vfx.gameSpecificLanguage,true);
+  assert.equal(art.audio.authoringOwner,'audio');
+  assert.equal(art.policy.graphicsPassIsCheckpointNotTerminal,true);
+  assert.equal(art.policy.highEndPresentationCompletionIsReleaseGate,false);
 
   const direction=createVibeHighEndVisualDirection({game:{genre:'action rpg'},world:{materials:['stone']},platform:'mobile'});
   assert.deepEqual([...direction.targetFrames],[...HIGH_END_VISUAL_TARGET_FRAMES]);
   assert.equal(direction.assetPolicy.antiKitbashCohesionGate,true);
-  assert.equal(createVibeHighEndPresentationStack().channels.includes('LIGHTING'),true);
+  const presentation=createVibeHighEndPresentationStack({request:'어두운 숲 보스 연출'});
+  assert.equal(presentation.version,2);
+  assert.equal(presentation.channels.includes('LIGHTING'),true);
+  assert.equal(presentation.continuousEvolution.graphicsPassIsCheckpointNotTerminal,true);
+  assert.equal(presentation.continuousEvolution.highEndCompletionIsReleaseGate,false);
+  assert.deepEqual([...presentation.cinematicDirection.motionLayers],['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
 });
 
 function evidence(){
@@ -77,6 +105,9 @@ function evidence(){
 test('high-end runtime QA requires real world cohesion regression and performance evidence',()=>{
   const pass=auditVibeRuntimeVisualEvidence(evidence());
   assert.equal(pass.pass,true,pass.reasons.join(','));
+  assert.equal(pass.releaseAuthority,false);
+  assert.equal(pass.graphicsPassMeaning,'VERIFIED_CHECKPOINT_NOT_TERMINAL_COMPLETION');
+  assert.equal(pass.presentationCompletionIsTerminal,false);
   const sparse=evidence(); sparse.environment={...sparse.environment,setDressing:false};
   assert.equal(auditVibeRuntimeVisualEvidence(sparse).pass,false);
   const sample=evidence(); sample.heroAssets=[{id:'player',presentation:'mesh',sampleAssetUnmodified:true}];
@@ -92,6 +123,9 @@ test('graphics production is one top-level work unit with existing visual module
   assert.equal(u.queueContract.topLevelGraphicsWorkUnitsPerGameCandidate,1);
   assert.equal(u.queueContract.siblingTopLevelCharacterEnvironmentAnimationVfxLightingUiTasksForbidden,true);
   assert.equal(u.outputContract.oneRootEvidenceRecord,true);
+  assert.equal(u.outputContract.passIsVerifiedCheckpointNotTerminal,true);
+  assert.equal(u.outputContract.continuousEvolutionAfterPass,true);
+  assert.equal(u.outputContract.releaseAuthority,false);
   assert.equal(architecture.departmentTopology.graphics.oneTopLevelGraphicsWorkUnitPerGameCandidate,true);
   assert.equal(architecture.executionTopology.assetProduction[0],'GRAPHICS_PRODUCTION');
   assert.equal(logMap.graphicsProductionEvidenceContract.recordKind,'graphics-production-evidence');
@@ -129,4 +163,22 @@ test('graphics production is one top-level work unit with existing visual module
   assert.equal(production.authority.audioAuthoringOwner,'audio');
   assert.equal(production.evidence.kind,'graphics-production-evidence');
   assert.equal(production.status,'GRAPHICS_PRODUCTION_ACTIVE');
+  assert.equal(production.continuousEvolution.graphicsPassIsCheckpointNotTerminal,true);
+  assert.equal(production.continuousEvolution.highEndCompletionIsReleaseGate,false);
+  assert.equal(production.changeRequestStability.latestExplicitOwnerIntentWinsWithinSameScope,true);
+  assert.equal(production.policy.ownerChangeRequestStabilityRequired,true);
+});
+
+test('owner presentation changes replace conflicting same-scope intent instead of stacking patches',()=>{
+  const stability=createVibeOwnerChangeRequestStability({
+    request:'곰 공격 모션만 더 무겁게',
+    previousRequests:['곰 공격 빠르게','곰 공격 흔들림 추가'],
+    affectedScopes:['bear.attack.motion']
+  });
+  assert.equal(stability.currentIntent,'곰 공격 모션만 더 무겁게');
+  assert.equal(stability.latestExplicitOwnerIntentWinsWithinSameScope,true);
+  assert.equal(stability.conflictingPriorIntentMustBeReplacedNotStacked,true);
+  assert.equal(stability.directResponsibleSystemModificationPreferred,true);
+  assert.equal(stability.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden,true);
+  assert.deepEqual([...stability.affectedScopes],['bear.attack.motion']);
 });
