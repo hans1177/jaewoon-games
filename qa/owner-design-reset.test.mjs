@@ -76,3 +76,13 @@ test('design runtime persists only the target seed and cannot overwrite newer sh
   assert.match(workflow,/runtime\.seeds\[index\]=seed/);
   assert.doesNotMatch(workflow,/checkout "\$generated_commit" -- game-seed-state\.json/);
 });
+
+
+test('promoted owner-reset seeds remain eligible for parallel strict design review',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const predicateMatches=workflow.match(/strictDesignReviewContinuesInParallel===true/g)||[];
+  assert.ok(predicateMatches.length>=4,'all scheduler, matrix, score-sync and continuation paths must honor parallel strict design review');
+  assert.match(workflow,/status==='ACTIVE'\|\|seed\?\.promotion\?\.strictDesignReviewContinuesInParallel===true/);
+  assert.match(workflow,/status==='ACTIVE'\|\|x\?\.promotion\?\.strictDesignReviewContinuesInParallel===true/);
+  assert.doesNotMatch(workflow,/find\(x=>String\(x\.gameId\)===gameId&&String\(x\.status\)\.toUpperCase\(\)==='ACTIVE'\)/);
+});
