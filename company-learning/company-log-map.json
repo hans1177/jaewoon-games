@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -150,7 +150,10 @@
       "SYSTEM_AI_CARETAKER_GAME_ID",
       "SYSTEM_AI_QA_CONTRACT_DRIFT=YES|NO",
       "SYSTEM_AI_KNOWLEDGE_IDS",
-      "SYSTEM_AI_KNOWLEDGE_OUTCOME"
+      "SYSTEM_AI_KNOWLEDGE_OUTCOME",
+      "SYSTEM_AI_LEARNING_KNOWLEDGE_OUTCOMES_ADDED",
+      "COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY",
+      "COMPANY_SYSTEM_AI_CONTROL_WRITE"
     ],
     "rawModelOutputStored": false,
     "rawModelOutputSha256Required": true,
@@ -189,6 +192,15 @@
         "integratedRegressionRun": 7913,
         "securityImmuneRun": 3154
       }
+    },
+    "runtimeEvidence": {
+      "latestReserveRunId": 35803294553,
+      "reserveSharedContractQa": "PASS",
+      "collisionRetriesObserved": 2,
+      "reservePersistedAttempt": 3,
+      "bottleneckQueueDepthObserved": 267,
+      "bottleneckRecommendedBatch": 19,
+      "reservedDisjointWorkers": 2
     }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
