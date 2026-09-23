@@ -208,8 +208,34 @@ test('material design change requires plan A and B plus selected rationale',()=>
   const ready=buildVibeDesignIntelligence({task:{
     goal:'장르를 확장한다',type:'design',designChange:true,designRationale:'새 플레이 가능성 검토',
     designAlternatives:[
-      {label:'PLAN_A',concept:'기존 생존 탐험을 깊게 확장'},
-      {label:'PLAN_B',concept:'생존 기반에 지역별 잠입 챌린지를 결합'}
+      {
+        label:'PLAN_A',concept:'기존 생존 탐험을 깊게 확장',playerFantasy:'위험한 세계를 스스로 개척한다',
+        genreDirection:'생존 탐험 유지',coreLoopShift:'탐험-채집-제작-전투의 선택 압력을 강화한다',
+        mapTopologyRegionRoles:'허브에서 위험도별 지역이 갈라지고 다시 보스 관문에서 합류한다',
+        landmarksTraversal:'지역마다 방향 인지 랜드마크와 서로 다른 이동 제약을 둔다',
+        enemyEcosystemCounterplay:'추적형·매복형·원거리 압박형의 대응법을 다르게 만든다',
+        bossSignatureMoments:'지역 규칙을 종합해서 시험하는 보스 전환 구간을 둔다',
+        progressionEconomy:'지역 위험도와 제작 투자 사이의 선택을 강화한다',
+        questStoryEventFlow:'탐험 중 발견 사건이 다음 지역 목표로 연결된다',
+        failureRetryRecovery:'실패 시 일부 진행을 보존하고 안전 허브에서 재정비한다',
+        platformAdaptation:'Roblox와 Unity에서 같은 규칙을 각 입력·성능 조건에 맞게 표현한다',
+        implementationScope:'기존 탐험·전투 책임 시스템 안에서 필요한 범위만 수정한다',
+        validationPlan:'지역 도달성·적 대응법·보스 전환·저장 복구를 실제 플레이로 확인한다'
+      },
+      {
+        label:'PLAN_B',concept:'생존 기반에 지역별 잠입 챌린지를 결합',playerFantasy:'관찰과 위험 회피로 강한 적을 돌파한다',
+        genreDirection:'생존+잠입 challenger',coreLoopShift:'정찰-경로선택-회피/교전-탈출의 리듬을 추가한다',
+        mapTopologyRegionRoles:'노출 경로와 우회 경로가 교차하는 지역 구조를 사용한다',
+        landmarksTraversal:'감시탑·은폐 지형·단축로를 이동 의사결정에 연결한다',
+        enemyEcosystemCounterplay:'시야형·소리반응형·순찰형 적을 서로 다른 방식으로 회피한다',
+        bossSignatureMoments:'탐지 상태가 바뀌는 다단계 추격 보스를 둔다',
+        progressionEconomy:'은폐 장비 투자와 전투 장비 투자의 기회비용을 만든다',
+        questStoryEventFlow:'잠입 성공/발각 결과가 후속 사건의 조건을 바꾼다',
+        failureRetryRecovery:'발각 실패 후 체크포인트 복구와 다른 경로 재시도를 제공한다',
+        platformAdaptation:'모바일 터치에서도 은폐 정보와 경로 선택이 읽히게 조정한다',
+        implementationScope:'검증 전 기존 passing baseline을 보존한 가역 challenger로 구현한다',
+        validationPlan:'발각/비발각 양쪽 경로·재시도·저장·모바일 입력을 비교 검증한다'
+      }
     ],
     selectedDesignPlan:'PLAN_B',selectedDesignRationale:'정체성을 유지하면서 새로운 플레이 리듬을 만든다'
   }});
@@ -217,6 +243,8 @@ test('material design change requires plan A and B plus selected rationale',()=>
   assert.equal(ready.blueprint.selectedPlan,'PLAN_B');
   assert.equal(ready.blueprint.genreChallengeAllowed,true);
   assert.equal(ready.blueprint.baseConceptIsReferenceNotPrison,true);
+  assert.deepEqual(ready.blueprint.issues,[]);
+  assert.equal(ready.implementationGate.allowed,true);
 });
 
 test('content diversity detects repeated map and enemy templates',()=>{
@@ -238,6 +266,38 @@ test('content diversity detects repeated map and enemy templates',()=>{
   assert.ok(result.diversity.issues.includes('MAP_REGION_TEMPLATE_MONOTONY'));
   assert.ok(result.diversity.issues.includes('ENEMY_ROLE_TEMPLATE_MONOTONY'));
   assert.ok(result.diversity.issues.includes('OBJECTIVE_TEMPLATE_MONOTONY'));
+});
+
+test('content diversity requires at least two meaningful differentiators between enemy pairs',()=>{
+  const result=buildVibeDesignIntelligence({task:{
+    goal:'적 역할 차별화 검사',
+    enemyVarietyRequired:true,
+    contentDiversity:{
+      enemies:[
+        {behavior:'추적',counterplay:'거리 유지',positioning:'정면',timing:'2초',mobility:'보통',groupRole:'근접',identity:'늑대',rewardMeaning:'가죽'},
+        {behavior:'추적',counterplay:'거리 유지',positioning:'정면',timing:'1초',mobility:'보통',groupRole:'근접',identity:'늑대',rewardMeaning:'가죽'}
+      ]
+    }
+  }});
+  assert.equal(result.diversity.status,'VARIETY_DEBT');
+  assert.ok(result.diversity.issues.some(x=>x.startsWith('ENEMY_PAIR_INSUFFICIENT_DIFFERENTIATION:0:1:1')));
+});
+
+test('design integrity blocks boss multiplayer or narrative reachability contradictions',()=>{
+  const result=buildVibeDesignIntelligence({task:{
+    goal:'설계 도달성 검사',
+    designIntegrity:{
+      movementAndControlReachable:true,spawnToFirstActionReachable:true,progressionReachable:true,
+      questPrerequisitesSatisfiable:true,sessionEndReachable:true,failureRecoveryReachable:true,
+      mapObjectivesReachable:true,economyFeasible:true,counterplayFeasible:true,
+      bossPhaseTransitionsReachable:false,multiplayerLifecycleFeasible:false,saveCompatible:true,
+      narrativeCausalityConsistent:false
+    }
+  }});
+  assert.equal(result.integrity.status,'BLOCKING_CONTRADICTION');
+  assert.ok(result.implementationGate.blockers.includes('DESIGN_INTEGRITY_FAIL:BOSS_PHASE_TRANSITION_REACHABILITY'));
+  assert.ok(result.implementationGate.blockers.includes('DESIGN_INTEGRITY_FAIL:MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY'));
+  assert.ok(result.implementationGate.blockers.includes('DESIGN_INTEGRITY_FAIL:NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY'));
 });
 
 test('dialogue design requires character-specific grammar voice knowledge and scene beats',()=>{
