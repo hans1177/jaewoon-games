@@ -255,13 +255,15 @@ test('bottleneck sensor separates scheduler pending, runnable starvation, and fa
     systemAiQueue:{tasks:[
       {id:'ready',status:'queued',priority:'critical',responsibleFiles:['tools/ready.mjs'],createdAt:'2026-09-22T20:00:00Z'}
     ]},
-    workflowMetrics:{pendingRuns:2,reservationWaitMs:120000,fanInWaitMs:180000},
+    workflowMetrics:{pendingRuns:2,reservationWaitMs:120000,fanInWaitMs:180000,supervisorReviewWaitMs:240000},
     maxBatch:2,
     at:Date.parse('2026-09-23T00:00:00Z')
   });
   assert.ok(snapshot.actions.includes('REDUCE_SCHEDULER_PENDING_RUN_WAIT'));
   assert.ok(snapshot.actions.includes('PRIORITIZE_LONG_WAIT_RUNNABLE_WORK'));
   assert.ok(snapshot.actions.includes('REDUCE_FAN_IN_WAIT'));
+  assert.ok(snapshot.actions.includes('PRIORITIZE_PRIMARY_AI_SUPERVISOR_REVIEW'));
+  assert.equal(snapshot.workflow.supervisorReviewWaitMs,240000);
   assert.equal(snapshot.actions.includes('REDUCE_SCHEDULER_OR_FAN_IN_WAIT'),false);
 });
 
