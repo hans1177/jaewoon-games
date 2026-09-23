@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
   "gameNameEnglish": "Five Portal RPG: Dungeon Party",
@@ -8,7 +8,7 @@
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "authorRole": "OWNER_DIRECTIVE",
-  "updatedAt": "2026-09-24T06:58:00+09:00",
+  "updatedAt": "2026-09-23T21:27:58.346Z",
   "ownerDirectDevelopment": true,
   "content": {
     "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
@@ -24,9 +24,10 @@
       "마을에서 퀘스트와 장비 준비",
       "포탈로 사냥터 이동",
       "몬스터 직접 전투",
-      "AI 유저 파티 구성",
+      "보스 첫 처치로 AI 동료 해금",
       "15마리 파티 사냥과 기여도 보상",
-      "3·5지역 보스 공략",
+      "플레이어 + 보스 동료 최대 3명 편성",
+      "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
       "마을 귀환/회복/강화"
     ],
     "startingClasses": [
@@ -57,34 +58,34 @@
     ],
     "launchCompanions": [
       {
-        "id": "KYLE",
-        "name": "카일",
-        "route": "폐광 도입 스토리"
+        "id": "GOLDEN_ANTLER",
+        "name": "금빛 큰뿔",
+        "route": "1번 초원 런 보스 첫 처치",
+        "role": "돌진·균형파괴"
       },
       {
-        "id": "SERA",
-        "name": "세라",
-        "route": "필드 조건 후 구출"
+        "id": "WHITE_FANG",
+        "name": "백색 송곳니",
+        "route": "1번 초원 히든 보스 첫 처치",
+        "role": "추적·마무리"
       },
       {
-        "id": "IRIS",
-        "name": "이리스",
-        "route": "지역보스 룬 해제"
+        "id": "ANCIENT_HEART",
+        "name": "고목의 심장",
+        "route": "1번 초원 히든 보스 첫 처치",
+        "role": "속박·보호"
       },
       {
-        "id": "NOA",
-        "name": "노아",
-        "route": "파티 기억 조건"
+        "id": "RUIN_GUARDIAN",
+        "name": "유적 수호자",
+        "route": "3번 룬 유적 보스 첫 처치",
+        "role": "방벽·균형"
       },
       {
-        "id": "WARDEN",
-        "name": "심연의 간수",
-        "route": "보스 포섭"
-      },
-      {
-        "id": "NAMELESS",
-        "name": "무명의 동료",
-        "route": "히든 조건"
+        "id": "ABYSS_LORD",
+        "name": "심연 군주",
+        "route": "5번 심연 보스 첫 처치",
+        "role": "압박·처형"
       }
     ],
     "signatureSystems": [
@@ -98,15 +99,11 @@
       },
       {
         "name": "5단계 장비",
-        "purpose": "무기 5티어와 방어구 5티어의 점진적 강화."
-      },
-      {
-        "name": "AI 유저 10명",
-        "purpose": "플레이어와 같은 4개 시작 직업을 사용한다. 파쇄기사3·그림자추적자3·룬술사2·영혼소환사2이며 R15 Humanoid/Pathfinding으로 일반 유저처럼 이동·전투한다."
+        "purpose": "무기·방어구는 T1~T5로 단순 성장하고, 유물 1칸은 직업 특성을 가볍게 바꾼다. 장착 슬롯은 무기/방어구/유물 3개."
       },
       {
         "name": "1차 전직",
-        "purpose": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다. 전직소에서 골드를 사용해 같은 시작 직업의 다른 분기로 재전직할 수 있다."
+        "purpose": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다. 같은 시작 직업의 다른 1차 분기는 마을에서 재전직 가능."
       },
       {
         "name": "파티 토글",
@@ -143,6 +140,26 @@
       {
         "name": "초원 런 보스 봉인",
         "purpose": "금빛 큰뿔은 런 시작부터 존재하지만 봉인 상태로 전투에 참여하지 않는다. 일반/정예 전투 몬스터를 모두 처치하면 봉인이 해제되어 보스전을 시작한다."
+      },
+      {
+        "name": "Lv.60 만렙·숙련",
+        "purpose": "캐릭터 레벨은 60에서 멈추고 이후 XP는 전투력 증가가 없는 직업 숙련으로 전환한다."
+      },
+      {
+        "name": "2차 전직 완성형",
+        "purpose": "Lv.40에 1차 전직 분기별 고유 2차 완성형으로 자동 승급한다. 2차에서 다시 분기하지 않는다."
+      },
+      {
+        "name": "보스 동료 수집",
+        "purpose": "영입 가능한 보스를 처음 격파하면 해당 보스가 AI 동료로 영구 해금된다. 별도 인간형 캐릭터 제작 없이 보스 실루엣/정체성을 동료에 재사용한다."
+      },
+      {
+        "name": "1+3 동료 조합",
+        "purpose": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성한다. 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다."
+      },
+      {
+        "name": "동료 단순 스킬셋",
+        "purpose": "각 보스 동료는 기본 공격 1개, 고유 스킬 1개, 특성 1개만 사용해 조합 판단은 깊게 유지하면서 조작/육성 복잡도는 낮춘다."
       }
     ],
     "balanceContract": {
@@ -150,17 +167,22 @@
       "mandatoryRole": false,
       "universalBestInSlot": false,
       "ordinaryCompanionMetaAllowed": true,
-      "dominanceGuard": "특정 동료/조합이 동급 콘텐츠에서 약 15~20% 이상 지속 압도하거나 상위 조합에 거의 고정되면 재밸런스"
+      "dominanceGuard": "특정 직업/보스동료 조합이 동급 콘텐츠에서 약 15~20% 이상 지속 압도하거나 상위 조합에 거의 고정되면 재밸런스",
+      "itemDependency": "직업/보스동료 조합 > 플레이 실력 > 아이템",
+      "companionAutoScale": true,
+      "companionGearRequired": false
     },
     "equipment": {
       "slots": [
         "Weapon",
         "Armor",
-        "Accessory"
+        "Relic"
       ],
+      "weaponArmorTiers": 5,
       "behaviorChanging": true,
-      "companionSpecificGear": true,
-      "mandatorySetBonus": false
+      "companionSpecificGear": false,
+      "mandatorySetBonus": false,
+      "rule": "무기/방어구/유물 3슬롯만 사용. 아이템은 조합보다 약한 보조 수단이며 복잡한 세트/문장 시스템을 두지 않는다."
     },
     "tacticalCommands": [
       "집중공격",
@@ -178,35 +200,41 @@
         "5단계 무기/방어구",
         "레벨 성장",
         "어그로 해제",
-        "AI 10명",
         "파티 토글",
         "15킬 파티사냥",
         "모바일 전투",
         "저장",
         "4개 시작 직업",
         "Lv.15 1차 전직 8분기",
-        "R15 AI 유저 이동/전투 애니메이션",
         "막기/완벽 패링/가드 브레이크",
         "1번 초원 시드형 랜덤런",
         "초원 몬스터 10종",
         "초원 히든 장소/히든 보스",
-        "초원 런 보스 봉인 해제 조건"
+        "초원 런 보스 봉인 해제 조건",
+        "Lv.60 만렙",
+        "Lv.60 이후 비전투력 직업 숙련",
+        "Lv.40 2차 전직 완성형",
+        "무기/방어구/유물 3슬롯",
+        "보스 첫 처치 AI 동료 해금",
+        "플레이어+보스동료 최대3명 파티",
+        "보스 동료 리더 레벨 자동 동기화",
+        "보스 동료 기본공격1·고유스킬1·특성1"
       ],
       "deferred": [
         "고급 크로스서버 매칭",
         "6번째 이후 포탈",
         "대형 퀘스트 체인",
-        "2차 전직",
         "고급 동료 성격/관계 AI",
         "2~5포탈 로그라이크 자동변형",
-        "5포탈 합계 50종 이상 기본 몬스터"
+        "5포탈 합계 50종 이상 기본 몬스터",
+        "추가 보스 동료 로스터 확장"
       ],
       "forbidden": [
         "자동전투가 직접 전투 대체",
         "도트 BGM 중심"
       ]
     },
-    "progressionDirection": "마을 퀘스트 → 1~5포탈 사냥 → 장비/레벨 성장 → AI 파티 활용 → 3지역 보스 → 5지역 최종 보스.",
+    "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련.",
     "failureRetryRisk": {
       "failureStates": [
         "전투 패배",
@@ -216,21 +244,25 @@
       "retryFlow": "마을 귀환 후 회복·장비·파티 구성을 바꾸고 즉시 재도전.",
       "recoveryRules": "전투 종료 후 마을에서 다시 준비 가능."
     },
-    "multiplayerMode": "COOP_WITH_AI_PARTY",
+    "multiplayerMode": "COOP_WITH_BOSS_COMPANIONS",
     "technicalAssumptions": [
       "마을 귀환 시 풀회복",
       "전투 중 귀환 금지",
       "퀘스트 기본 50골드+50XP",
       "레벨업 최대체력+10/공격력+10",
-      "AI 유저 10명",
       "파티사냥 15킬",
       "RoomCode 1~10",
       "전투/보상 서버 authoritative",
-      "DataStore 저장"
+      "DataStore 저장",
+      "보스 첫 처치 동료 해금 저장",
+      "플레이어+동료 최대3명",
+      "보스 동료는 리더 레벨 자동 동기화",
+      "동료 전용 장비 없음",
+      "Lv60 레벨캡"
     ],
-    "visualDirection": "Roblox R15 감각을 유지한 장난감·피규어풍 스타일라이즈드 판타지 캐릭터. 현실적인 성인 기사 비율보다 친근한 형태와 과장된 무기·손·장비 실루엣을 우선하고, 마을은 밝고 아기자기하게 시작해 5개 포탈을 지날수록 배경이 어둡고 신비로워진다.",
+    "visualDirection": "Roblox R15 플레이어는 4개 시작 직업/전직 실루엣을 유지한다. AI 동료는 별도 인간형 캐릭터를 새로 만들지 않고 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다.",
     "artAudioDirection": {
-      "visualIdentity": "밝은 중세 판타지 마을·무료 미디블 에셋 변형·직업별 장비 실루엣과, 포탈을 지날수록 어두워지는 초원/협곡/유적/설원/심연의 대비. 캐릭터는 R15 피규어풍이고 몬스터는 지역별 체형을 다르게 한다.",
+      "visualIdentity": "밝은 중세 판타지 마을과 어두워지는 포탈 지역 대비. 플레이어는 R15 직업 실루엣, 보스 동료는 원본 보스의 체형·색·핵심 장식을 유지해 한눈에 구분한다.",
       "audioIdentity": "도트/8비트가 아닌 경쾌한 판타지 어드벤처 BGM과 명확한 타격/회피/합동기 사운드"
     },
     "mobileUx": "이동·공격·스킬·홀드 막기/완벽 패링·회피는 큰 버튼으로 제공한다. 패링 판정은 서버 권위이며 재무장 지연을 둬 막기 연타로 완벽 패링 창을 무한 갱신할 수 없게 한다.",
@@ -240,7 +272,7 @@
       "taxonomy": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
       "declaredGameCategory": "STORY_COMPLETE_RPG",
       "genre": "RPG",
-      "subgenre": "Five Portal AI Party Action RPG",
+      "subgenre": "Portal Boss Companion Action RPG",
       "playMode": "COOP",
       "multiplayerRequired": true,
       "coopImplementationRequired": true,
@@ -248,12 +280,12 @@
       "networkingRequired": true,
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "displayLabelKo": "RPG · 5포탈 · AI 파티",
+      "displayLabelKo": "RPG · 보스동료 · 파티조합",
       "validationMode": "HEADLESS_FAST_MVP",
       "studioRequired": false,
       "visualQualityTarget": "RPG_STYLIZED_TOY_DARK_FANTASY",
       "visualPriority": [
-        "R15-player-like-NPC-motion",
+        "boss-companion-silhouette-readability",
         "class-equipment-readability",
         "sanitized-medieval-asset-remix",
         "zone-monster-identity",
@@ -264,12 +296,12 @@
       "ROBLOX": {
         "platform": "ROBLOX",
         "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
-        "sessionModel": "마을 편성→지역 전투→보스/영입→귀환. 싱글1+3AI, 멀티는 실제 플레이어가 AI 슬롯 대체",
-        "multiplayerRuntime": "서버가 4슬롯 파티·AI·보상·관계·장비·전투 상태를 authoritative하게 관리",
+        "sessionModel": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합.",
+        "multiplayerRuntime": "서버가 실제 플레이어 상태·보스 동료 해금·최대3 동료 편성·전투/보상 상태를 authoritative하게 관리.",
         "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
         "uiUx": "전투 HUD와 파티/장비 화면 분리",
-        "saveAndNetwork": "동료·스토리·장비·관계·파티기억·히든조건 DataStore 저장",
-        "platformContentAdaptation": "Roblox R15 비율을 유지한 장난감·피규어풍 판타지 캐릭터. 플레이어와 AI 유저는 같은 직업/전직 외형과 애니메이션을 공유하고, 읽기 쉬운 스킬 이펙트를 사용한다.",
+        "saveAndNetwork": "직업·전직·장비·보스동료 해금·레벨/숙련·RoomCode를 DataStore 저장.",
+        "platformContentAdaptation": "플레이어는 Roblox R15 직업형 캐릭터. AI 동료는 보스 모델의 고유 실루엣을 재사용하며 별도 인간형 캐릭터 로스터를 만들지 않는다.",
         "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
         "validationEvidence": [
           "Exact source revision + Rojo artifact SHA256",
@@ -284,11 +316,11 @@
       "UNITY": {
         "platform": "UNITY",
         "inputModel": "Android 터치 액션",
-        "sessionModel": "동일 4인 파티/스토리",
+        "sessionModel": "플레이어1+보스동료 최대3 중심, 멀티 혼합 가능",
         "multiplayerRuntime": "1+3 AI와 최대4인 혼합",
         "performanceBudget": "모바일 AI/파티클 제한",
         "uiUx": "전투/편성 UI 분리",
-        "saveAndNetwork": "동료·장비·스토리·관계·기억 버전 저장",
+        "saveAndNetwork": "직업·장비·보스동료 해금·레벨/숙련 저장",
         "platformContentAdaptation": "모바일 판타지3D",
         "internalReleaseTarget": "INTERNAL_OR_CLOSED_APP_TEST_BUILD",
         "validationEvidence": "실기기 전투·저장·AI·회귀"
@@ -302,10 +334,11 @@
         "Roblox R15 감각을 유지한 장난감·피규어풍 스타일라이즈드 체형",
         "현실적인 성인 기사보다 머리·손·무기를 약간 과장해 직업과 장비를 쉽게 읽게 한다",
         "무료 미디블 에셋은 스크립트를 제거하고 색·재질·부품·배치를 변형해 재사용한다",
-        "플레이어와 AI 유저는 같은 4직업·1차전직 시각 언어와 R15 애니메이션을 공유한다",
+        "플레이어는 4직업/전직 R15 시각 언어를 사용하고, AI 동료는 격파한 보스의 실루엣·색·핵심 장식을 그대로 계승한다",
         "마을은 밝고 아기자기하게, 포탈 지역은 진행할수록 어둡고 신비롭게 대비한다",
         "초원 늑대·협곡 도적·룬 골렘·설원 야수·심연 기사는 체형부터 다르게 만든다",
-        "보스는 일반몹 단순 확대 금지"
+        "보스는 일반몹 단순 확대 금지",
+        "보스 동료는 별도 인간형 캐릭터로 다시 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 사용한다"
       ],
       "forbidden": [
         "현실형 중세 시뮬레이션 비율",
@@ -318,15 +351,15 @@
     },
     "implementationSync": {
       "sourceBranch": "main",
-      "sourceRevision": "5bb5500a2d43e0fb32a84c55ac46a61356093796",
-      "syncedAt": "2026-09-22T19:50:00+09:00",
+      "sourceRevision": "6ccd976eaec3e6143cfdb88eb576f56be5288f4f",
+      "syncedAt": "2026-09-23T21:27:58.346Z",
       "codePaths": {
         "config": "roblox-games/daechung-rpg/shared/GameConfig.luau",
         "server": "roblox-games/daechung-rpg/server/Game.server.luau",
         "client": "roblox-games/daechung-rpg/client/Game.client.luau",
         "launch": "roblox-games/daechung-rpg/launch-mvp.json"
       },
-      "launchMvpVersion": 12,
+      "launchMvpVersion": 13,
       "graphicsConcept": "RPG_STYLIZED_TOY_DARK_FANTASY",
       "runtimeWorldArtPass": "RPG_FANTASY_PORTAL_WORLD_V5",
       "runtimeCharacterArtDirection": "RPG_STYLIZED_TOY_FANTASY_R15",
@@ -342,12 +375,20 @@
           {
             "id": "IRON_BREAKER",
             "name": "철벽파쇄자",
-            "identity": "방어·반격"
+            "identity": "방어·반격",
+            "secondAdvancement": {
+              "id": "FORTRESS_BREAKER",
+              "name": "성채파쇄자"
+            }
           },
           {
             "id": "RAGE_BREAKER",
             "name": "광전파쇄자",
-            "identity": "분노·강공격"
+            "identity": "분노·강공격",
+            "secondAdvancement": {
+              "id": "BLOODFORGE_BREAKER",
+              "name": "혈철파괴자"
+            }
           }
         ]
       },
@@ -357,12 +398,20 @@
           {
             "id": "ASSASSIN_TRACKER",
             "name": "암살추적자",
-            "identity": "배후·치명타"
+            "identity": "배후·치명타",
+            "secondAdvancement": {
+              "id": "NIGHTFANG_TRACKER",
+              "name": "야습추적자"
+            }
           },
           {
             "id": "MIRAGE_TRACKER",
             "name": "환영추적자",
-            "identity": "회피·교란"
+            "identity": "회피·교란",
+            "secondAdvancement": {
+              "id": "PHANTOM_TRACKER",
+              "name": "환영지배자"
+            }
           }
         ]
       },
@@ -372,12 +421,20 @@
           {
             "id": "ELEMENTAL_RUNER",
             "name": "원소룬술사",
-            "identity": "원소조합"
+            "identity": "원소조합",
+            "secondAdvancement": {
+              "id": "PRIMAL_RUNER",
+              "name": "원초룬술사"
+            }
           },
           {
             "id": "OVERLOAD_RUNER",
             "name": "폭주룬술사",
-            "identity": "과부하·순간화력"
+            "identity": "과부하·순간화력",
+            "secondAdvancement": {
+              "id": "ARCSTORM_RUNER",
+              "name": "폭풍룬술사"
+            }
           }
         ]
       },
@@ -387,12 +444,20 @@
           {
             "id": "GUARDIAN_MEDIUM",
             "name": "수호영매사",
-            "identity": "보호·회복"
+            "identity": "보호·회복",
+            "secondAdvancement": {
+              "id": "ANCESTOR_GUARDIAN",
+              "name": "선조수호자"
+            }
           },
           {
             "id": "WRAITH_MASTER",
             "name": "망령지배자",
-            "identity": "공격소환"
+            "identity": "공격소환",
+            "secondAdvancement": {
+              "id": "SOUL_LORD",
+              "name": "영혼군주"
+            }
           }
         ]
       }
