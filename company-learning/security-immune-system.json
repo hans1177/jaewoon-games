@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -322,7 +322,10 @@
       "supervisorReviewBacklogMayNotBypassPrimaryAiReview": true,
       "genericFailureMayNotAuthorizeCrossScopeRepair": true,
       "crossScopeCanaryAllowedOnlyForExplicitSharedInfrastructureRepair": true,
-      "crossScopeDependencyReconciliationMayNotExpandWritableScope": true
+      "crossScopeDependencyReconciliationMayNotExpandWritableScope": true,
+      "pushQaMayNotMutateSystemAiQueue": true,
+      "pushQaMayNotReserveWorkers": true,
+      "pushQaMayNotHoldRealReserveMutationLock": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -389,7 +392,10 @@
         "2a7ab4957c5c670ca03ea689a384fa0aab471147",
         "c556915ea3022ef8002dec8acba9b2bb95e78e7d"
       ],
-      "crossScopeCanaryAuthorityExpansion": false
+      "crossScopeCanaryAuthorityExpansion": false,
+      "pushQaOnlyRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
+      "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c",
+      "pushQaAuthorityExpansion": false
     },
     "producerSideRepairReuse": {
       "binding": "tools/company-recovery-dispatch.mjs",
