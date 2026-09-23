@@ -442,3 +442,12 @@ test('Roblox source and package workers avoid full repository history checkout',
   assert.ok((workflow.match(/fetch-tags:\s*false/g)||[]).length>=6);
   assert.match(workflow,/git fetch --no-tags origin "\$\{\{ matrix\.sourceRevision \}\}"/);
 });
+
+
+test('Roblox runtime persist writers serialize with the shared company runtime writer lock',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const sourcePersist=workflow.slice(workflow.indexOf('  source-bootstrap:'),workflow.indexOf('  technical-plan:'));
+  const packagePersist=workflow.slice(workflow.indexOf('  technical-persist:'),workflow.indexOf('  ',workflow.indexOf('  technical-persist:')+10)>0?workflow.length:workflow.length);
+  assert.match(sourcePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
+  assert.match(packagePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
+});
