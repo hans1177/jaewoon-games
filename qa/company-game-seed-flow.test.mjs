@@ -37,7 +37,8 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
-  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
+  assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
   assert.equal(directive.portfolioGovernance.mode,'FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO');
   assert.equal(directive.portfolioGovernance.fixedGameSlots,false);
   assert.equal(directive.portfolioGovernance.oneForOneReplacementRule,false);
