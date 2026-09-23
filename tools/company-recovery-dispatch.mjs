@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { isSafeSecurityRepairFile } from './company-recovery-queue.mjs';
+import { systemAiRepairWorkIdentity } from './company-system-ai-queue.mjs';
 
 const clean=v=>String(v??'').trim();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
@@ -59,7 +60,28 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     }else if(owner==='SYSTEM_AI'){
       const sharedCanary=clean(rec.sourceQueue).toLowerCase()==='system-ai'&&clean(rec.blastRadius).startsWith('shared-worker-contract:');
       if(sharedCanary){
-        const repairTaskId='recovery-'+clean(rec.id);
+        const proposedRepairTaskId='recovery-'+clean(rec.id);
+        const proposedRepairTask={
+          id:proposedRepairTaskId,status:'queued',priority:'critical',department:'recovery',taskType:'bottleneck-repair',
+          gameId:null,
+          goal:clean(rec.goal)||`Repair shared System AI infrastructure failure ${clean(rec.failureSignature)} and release the dependent cohort only after deterministic verification.`,
+          responsibleFiles:uniq(rec.responsibleFiles),contextFiles:uniq(rec.contextFiles),
+          failureStage:clean(rec.failureStage)||null,failureSignature:clean(rec.failureSignature)||null,
+          relatedTaskIds:ids,blockedTaskIds:ids,blastRadius:clean(rec.blastRadius)||null,recurrenceCount:Math.max(1,ids.length),
+          sourceMutationRequired:true,sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+          acceptanceCriteria:['repair only assigned System AI infrastructure files','produce a real responsible-source mutation','rerun deterministic System AI worker QA','clear the repeated shared failure signature','release dependent cohort only after repair task is done','no central policy write','no self acceptance'],
+          verificationCommands:uniq(rec.verificationPlan),
+          dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
+          evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'shared-signature-canary:YES','shared-signature:'+clean(rec.failureSignature),'cohort-size:'+ids.length,'learning-route:existing-vibe-learning-motor','primary-ai-collaboration:REQUESTED']),
+          supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,createdAt:stamp,updatedAt:stamp
+        };
+        const proposedIdentity=systemAiRepairWorkIdentity(proposedRepairTask);
+        const terminalStatuses=new Set(['done','completed','cancelled','verified']);
+        const existingRepair=systemAi.tasks.find(task=>
+          !terminalStatuses.has(clean(task.status).toLowerCase())
+          &&systemAiRepairWorkIdentity(task)===proposedIdentity
+        )||null;
+        const repairTaskId=clean(existingRepair?.id)||proposedRepairTaskId;
         const set=new Set(ids);
         systemAi.tasks=systemAi.tasks.map(task=>{
           if(!set.has(clean(task.id))||clean(task.status)==='done')return task;
@@ -74,20 +96,27 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             updatedAt:stamp
           };
         });
-        if(!systemAi.tasks.some(task=>clean(task.id)===repairTaskId)){
+        if(existingRepair){
+          systemAi.tasks=systemAi.tasks.map(task=>clean(task.id)!==repairTaskId?task:{
+            ...task,
+            relatedTaskIds:uniq([...(task.relatedTaskIds||[]),...ids]),
+            blockedTaskIds:uniq([...(task.blockedTaskIds||[]),...ids]),
+            recurrenceCount:Math.max(Number(task.recurrenceCount||0),ids.length),
+            evidence:uniq([
+              ...(task.evidence||[]),
+              ...(rec.evidence||[]),
+              'recovery-queue:'+clean(rec.id),
+              'system-ai-producer-dedupe:REUSED_EXISTING_REPAIR',
+              'primary-ai-collaboration:REQUESTED',
+              'primary-ai-collaboration-task:'+repairTaskId
+            ]),
+            updatedAt:stamp
+          });
+          touched++;
+        }else{
           systemAi.tasks.push({
-            id:repairTaskId,status:'queued',priority:'critical',department:'recovery',taskType:'bottleneck-repair',
-            gameId:null,
-            goal:clean(rec.goal)||`Repair shared System AI infrastructure failure ${clean(rec.failureSignature)} and release the dependent cohort only after deterministic verification.`,
-            responsibleFiles:uniq(rec.responsibleFiles),contextFiles:uniq(rec.contextFiles),
-            failureStage:clean(rec.failureStage)||null,failureSignature:clean(rec.failureSignature)||null,
-            relatedTaskIds:ids,blockedTaskIds:ids,blastRadius:clean(rec.blastRadius)||null,recurrenceCount:Math.max(1,ids.length),
-            sourceMutationRequired:true,sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
-            acceptanceCriteria:['repair only assigned System AI infrastructure files','produce a real responsible-source mutation','rerun deterministic System AI worker QA','clear the repeated shared failure signature','release dependent cohort only after repair task is done','no central policy write','no self acceptance'],
-            verificationCommands:uniq(rec.verificationPlan),
-            dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
-            evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'shared-signature-canary:YES','shared-signature:'+clean(rec.failureSignature),'cohort-size:'+ids.length,'learning-route:existing-vibe-learning-motor','primary-ai-collaboration:REQUESTED','primary-ai-collaboration-task:'+repairTaskId]),
-            supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,createdAt:stamp,updatedAt:stamp
+            ...proposedRepairTask,
+            evidence:uniq([...(proposedRepairTask.evidence||[]),'primary-ai-collaboration-task:'+repairTaskId])
           });
           touched++;
         }
