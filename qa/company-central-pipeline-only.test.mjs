@@ -27,7 +27,8 @@ test('platform-release-roadmap is the only production machine policy with author
   assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(roadmap.humanDocumentRequired,false);
-  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
+  assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
 });
 test('legacy autonomous top-level workflow namespace is removed',()=>{
   const files=fs.readdirSync(path.join(repoRoot,'.github/workflows'));
@@ -93,10 +94,16 @@ test('director recovery can only restart the central DEVELOPMENT_CONFIRMED runti
 });
 
 test('technical release implementation remains subordinate to central evidence gates',()=>{
-  const flow=read('COMPANY_FLOW.md');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const releaseCycle=read('tools/company-release-production-cycle.mjs');
-  assert.match(flow,/developmentBaselineRequired:\s*true/);
-  assert.match(flow,/sourceTreeBindingRequired:\s*true/);
-  assert.match(flow,/independentQaSeparatedFromVibe2SelfCheck:\s*true/);
+  const direct=roadmap.directNativeDualPlatformDevelopment;
+  const release=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
+  assert.equal(direct.minimumDesignRequired,true);
+  assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
+  assert.equal(direct.platformSpecificIndependentQaRequired,true);
+  assert.equal(direct.platformSpecificRegressionRequired,true);
+  assert.equal(direct.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
+  assert.equal(release.internalRelease.foundationValidationRequired,true);
+  assert.equal(release.internalRelease.actualRuntimeFoundationF1ThroughF4Required,true);
   assert.ok(releaseCycle.includes('company-learning/platform-release-roadmap.json'));
 });
