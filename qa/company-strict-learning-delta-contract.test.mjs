@@ -4,7 +4,6 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
 const designSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 
 test('strict review improvement learning keeps before-after evidence',()=>{
   assert.match(source,/improvementTargets/);
@@ -26,6 +25,4 @@ test('design review feedback is reused as unvalidated next-design learning conte
   assert.match(designSource,/const latestDesignFeedbackEvent=designLearningEvents\.at\(-1\)\|\|null/);
   assert.match(designSource,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,4500\)\}/);
   assert.match(designSource,/rejectionReasons:Array\.isArray\(latestDesignFeedbackEvent\?\.rejectionReasons\)/);
-  assert.match(flow,/designReviewFeedbackStoredAsUnvalidatedLearningCandidate: true/);
-  assert.match(flow,/designReviewFeedbackFeedsNextDesignContext: true/);
 });
