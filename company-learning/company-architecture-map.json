@@ -1,5 +1,5 @@
 {
-  "version": 115,
+  "version": 116,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -56,11 +56,12 @@
   },
   "executionTopology": {
     "design": [
-      "COMMON_CORE_DESIGN",
+      "GAME_SEED",
+      "MINIMUM_COMMON_CORE",
       "ROBLOX_PLATFORM_PROFILE",
-      "UNITY_PLATFORM_PROFILE_WITH_WEB_VALIDATION_COMPATIBILITY",
-      "MINIMUM_DESIGN_CONTRACT_GATE",
-      "STRICT_DESIGN_REVIEW_CONTINUES_IN_PARALLEL"
+      "UNITY_PLATFORM_PROFILE",
+      "MINIMUM_DESIGN_READY",
+      "STRICT_DESIGN_REVIEW_PARALLEL_NON_ADMISSION"
     ],
     "web": [
       "UNITY_WEB_VALIDATION_SURFACE_ONLY",
@@ -2369,7 +2370,11 @@
       "outputRoot": "web-games/<gameId>/",
       "dispatchOwner": ".github/workflows/unity-web-first-stage-build.yml",
       "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml"
-    }
+    },
+    "admissionAuthority": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+    "strictDesignScoreAdmissionAuthority": false,
+    "webAdmissionAuthority": false,
+    "humanReadableSyncDocumentRequired": false
   },
   "releaseExposureLifecycle": {
     "version": 2,
@@ -3041,5 +3046,14 @@
       "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
       "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
     }
+  },
+  "centralPolicyExecution": {
+    "machineDocumentsOnly": true,
+    "requiredDocuments": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ]
   }
 }
