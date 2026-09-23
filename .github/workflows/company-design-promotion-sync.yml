@@ -11,15 +11,12 @@ on:
     paths:
       - '.github/workflows/company-design-promotion-sync.yml'
       - 'tools/design-only-promotion-sync.mjs'
-      - 'tools/company-baseline-gate.mjs'
-      - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-direct-native-design-migration.mjs'
       - 'tools/company-homepage-platform-exposure-sync.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/design-promotion-workflow-contract.test.mjs'
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
 
 permissions:
@@ -57,9 +54,10 @@ jobs:
           done
           git reset -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json >/dev/null 2>&1 || true
           test -f game-seed-state.json
-          echo 'STRICT_DESIGN_EVIDENCE_OVERLAY=YES'
           echo 'DESIGN_PROMOTION_RUNTIME_OVERLAY=YES'
-          echo 'PRE_WEB_ARTBOOK_REQUIRED=NO'
+          echo 'DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY'
+          echo 'STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE'
+          echo 'HUMAN_POLICY_DOCUMENT_REQUIRED=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Validate promotion contract
@@ -133,10 +131,10 @@ jobs:
             git clean -fd
 
             # Re-run the canonical promotion calculation against the newest runtime state.
-            # Canonical machine policy must be overlaid from main too; otherwise the runtime branch can revive legacy AI-review blockers.
-            # Only runtime JSON files are staged; engine/policy files remain main-owned and are never persisted here.
-            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs tools/company-direct-native-design-migration.mjs
-            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs tools/company-direct-native-design-migration.mjs >/dev/null 2>&1 || true
+            # Overlay only machine policy and the responsible runtime tools from main.
+            # Runtime JSON remains branch-owned; policy/tool files are never persisted to company-runtime.
+            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs tools/company-direct-native-design-migration.mjs
+            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs tools/company-direct-native-design-migration.mjs >/dev/null 2>&1 || true
             node tools/company-direct-native-design-migration.mjs
             node tools/design-only-promotion-sync.mjs
             node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
@@ -171,5 +169,5 @@ jobs:
           gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
           gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY'
-          echo 'UNITY_WEB_DISPATCH=NO'
+          echo 'UNITY_WEB_PROMOTION_GATE=NO'
           echo 'ONE_PLATFORM_REQUEST_STARTS_BOTH=YES'
