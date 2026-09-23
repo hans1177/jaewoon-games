@@ -1,5 +1,5 @@
 {
-  "version": 125,
+  "version": 126,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -191,7 +191,10 @@
     "shadowDocumentationSystemForbidden": true,
     "gameErrorRepairContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair",
     "gameErrorRepairMustRebindCurrentMainPolicy": true,
-    "gameErrorRepairCannotCreateShadowQaOrRepairPipeline": true
+    "gameErrorRepairCannotCreateShadowQaOrRepairPipeline": true,
+    "legacyPolicyPointerValidationRequired": true,
+    "nonCanonicalPolicySemanticsForbidden": true,
+    "policyAuthoritySource": "company-learning/platform-release-roadmap.json"
   },
   "forbidden": [
     "WORK_WITHOUT_SHARED_CONTEXT",
@@ -2796,9 +2799,9 @@
   },
   "updatedAt": "2026-09-23",
   "centralDocumentationTopology": {
-    "version": 1,
+    "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
-    "role": "STRUCTURAL_MIRROR_AND_BINDING_POINTERS_ONLY",
+    "role": "STRUCTURAL_BINDINGS_AND_COMPATIBILITY_POINTERS_ONLY",
     "policyCreationAuthority": "company-learning/platform-release-roadmap.json",
     "canonicalSetSource": "company-learning/platform-release-roadmap.json#centralDocumentation.canonicalSet",
     "branchRoleSource": "company-learning/company-architecture-map.json#branches",
@@ -2812,7 +2815,19 @@
     ],
     "duplicatePolicyReplicationForbidden": true,
     "runtimeStateMayNotCreatePolicy": true,
-    "vibeControlStateMayNotCreatePolicy": true
+    "vibeControlStateMayNotCreatePolicy": true,
+    "policySemanticsDefinedInCentralOnly": true,
+    "manualPolicyMirrorForbidden": true,
+    "legacyCompatibilityPointers": [
+      "COMPANY_FLOW.md",
+      "company-learning/PLATFORM_RELEASE_ROADMAP.md",
+      "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
+      "company-learning/UNITY_WEB_FIRST_STAGE.md",
+      "company-learning/PRIMARY_THREE_FAST_MVP.md",
+      "company-learning/VIBE3_ENGINE.md"
+    ],
+    "legacyPointerFilesMayNotContainExecutablePolicySemantics": true,
+    "historicalPolicyIsGitHistoryNotLiveDocument": true
   },
   "plannedExecutionEnhancements": {
     "version": 1,
