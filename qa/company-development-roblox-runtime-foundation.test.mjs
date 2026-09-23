@@ -204,7 +204,9 @@ test('post-runtime QA preserves independent and regression progress while shared
  assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
  assert.match(workflow,/robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
  assert.match(workflow,/routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
- assert.doesNotMatch(workflow,/f9Ids\.push\(item\.gameId\)[\s\S]*ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
+ const pendingBlock=workflow.match(/if\(multiplayerOnlyPending\)\{[\s\S]*?console\.log\('ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING='\+item\.gameId\);\s*pending\+\+;/)?.[0]||'';
+ assert.ok(pendingBlock,'two-client pending branch must exist');
+ assert.doesNotMatch(pendingBlock,/f9Ids\.push\(item\.gameId\)/);
  assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
 });
 
