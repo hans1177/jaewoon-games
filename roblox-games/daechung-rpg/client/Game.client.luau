@@ -61,10 +61,11 @@ local objective=Instance.new("TextLabel");objective.Name="QuestObjective";object
 local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-8,0,8);party.Size=touchEnabled and UDim2.fromOffset(116,58)or UDim2.fromOffset(142,64);party.BackgroundColor3=Color3.fromRGB(29,32,40);party.BackgroundTransparency=.1;party.Parent=gui;corner(party,12);stroke(party,.5)
 local partyText=Instance.new("TextLabel");partyText.Size=UDim2.new(1,-12,1,-10);partyText.Position=UDim2.fromOffset(6,5);partyText.BackgroundTransparency=1;partyText.TextColor3=Color3.fromRGB(220,232,241);partyText.TextSize=11;partyText.TextWrapped=true;partyText.Font=Enum.Font.GothamBold;partyText.Parent=party
 
-local combat=Instance.new("Frame");combat.Name="CombatDock";combat.AnchorPoint=Vector2.new(1,.5);combat.Position=UDim2.new(1,-12,.5,30);combat.Size=UDim2.fromOffset(62,174);combat.BackgroundTransparency=1;combat.Parent=gui
+local combat=Instance.new("Frame");combat.Name="CombatDock";combat.AnchorPoint=Vector2.new(1,.5);combat.Position=UDim2.new(1,-12,.5,30);combat.Size=UDim2.fromOffset(62,232);combat.BackgroundTransparency=1;combat.Parent=gui
 local attack=button(combat,"공격",Color3.fromRGB(166,65,55));attack.Size=UDim2.fromOffset(58,50);attack.Position=UDim2.fromOffset(2,0)
 local skill=button(combat,"스킬",Color3.fromRGB(100,69,166));skill.Size=UDim2.fromOffset(58,50);skill.Position=UDim2.fromOffset(2,58)
-local dodge=button(combat,"회피",Color3.fromRGB(54,115,139));dodge.Size=UDim2.fromOffset(58,50);dodge.Position=UDim2.fromOffset(2,116)
+local block=button(combat,"막기",Color3.fromRGB(74,102,151));block.Name="BlockParry";block.Size=UDim2.fromOffset(58,50);block.Position=UDim2.fromOffset(2,116)
+local dodge=button(combat,"회피",Color3.fromRGB(54,115,139));dodge.Size=UDim2.fromOffset(58,50);dodge.Position=UDim2.fromOffset(2,174)
 local combatTracks={}
 local function playCombatAnimation(skillCast)
  local c=p.Character;local h=c and c:FindFirstChildOfClass("Humanoid");if not h then return end
@@ -80,9 +81,26 @@ local function playCombatAnimation(skillCast)
   track:Play(.08,1,speed)
  end
 end
-attack.Activated:Connect(function()playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
-skill.Activated:Connect(function()playCombatAnimation(true);skillSfx:Play();remote:FireServer(C.Actions.SKILL)end)
-dodge.Activated:Connect(function()remote:FireServer(C.Actions.DODGE)end)
+local blockHeld=false
+local function setBlock(on)
+ if blockHeld==on then return end;blockHeld=on
+ remote:FireServer(on and C.Actions.BLOCK_START or C.Actions.BLOCK_END)
+end
+attack.Activated:Connect(function()setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
+skill.Activated:Connect(function()setBlock(false);playCombatAnimation(true);skillSfx:Play();remote:FireServer(C.Actions.SKILL)end)
+dodge.Activated:Connect(function()setBlock(false);remote:FireServer(C.Actions.DODGE)end)
+block.InputBegan:Connect(function(input)
+ if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then setBlock(true)end
+end)
+block.InputEnded:Connect(function(input)
+ if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then setBlock(false)end
+end)
+UserInputService.InputBegan:Connect(function(input,processed)
+ if not processed and input.KeyCode==Enum.KeyCode.F then setBlock(true)end
+end)
+UserInputService.InputEnded:Connect(function(input)
+ if input.KeyCode==Enum.KeyCode.F then setBlock(false)end
+end)
 
 local classPanel=Instance.new("Frame");classPanel.Name="ClassChoice";classPanel.AnchorPoint=Vector2.new(.5,.5);classPanel.Position=UDim2.fromScale(.5,.55);classPanel.Size=touchEnabled and UDim2.fromOffset(300,230)or UDim2.fromOffset(380,250);classPanel.BackgroundColor3=Color3.fromRGB(23,25,33);classPanel.BackgroundTransparency=.04;classPanel.Parent=gui;corner(classPanel,16);stroke(classPanel,.35)
 local classTitle=Instance.new("TextLabel");classTitle.Size=UDim2.new(1,-20,0,42);classTitle.Position=UDim2.fromOffset(10,8);classTitle.BackgroundTransparency=1;classTitle.TextColor3=Color3.fromRGB(255,226,164);classTitle.Font=Enum.Font.GothamBold;classTitle.TextSize=17;classTitle.TextWrapped=true;classTitle.Parent=classPanel
@@ -148,16 +166,19 @@ local function render()
  multi.Text="멀티 코드 "..tostring(p:GetAttribute("RoomCode")or 1)
  local trial=p:GetAttribute("AdvancementTrialActive")==true
  if trial then objective.Text=string.format("전직 시험 · %d/%d · %s",p:GetAttribute("AdvancementTrialProgress")or 0,C.AdvancementTrialTarget,p:GetAttribute("LastAction")or"")end
- hint.Text=zone==0 and"포탈 1~5 선택 · AI 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")
+ local guard=math.floor(p:GetAttribute("Guard")or C.GuardMax);local blocking=p:GetAttribute("Blocking")==true
+ block.Text=(blocking and"막는중"or"막기").."\n"..guard
+ block.BackgroundColor3=blocking and Color3.fromRGB(83,139,177)or Color3.fromRGB(74,102,151)
+ if zone==1 then hint.Text="초원 RUN "..tostring(p:GetAttribute("CurrentRunSeed")or 0).." · 노랑=패링 / 빨강=회피"else hint.Text=zone==0 and"포탈 1~5 선택 · AI 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")end
  if classId=="BREAKER"then skill.Text="파쇄"elseif classId=="SHADOW"then skill.Text="그림자"elseif classId=="RUNE"then skill.Text="룬"elseif classId=="SOUL"then skill.Text="영혼"else skill.Text="스킬"end
  renderClassPanel()
 end
-for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge"})do p:GetAttributeChangedSignal(k):Connect(render)end
+for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
 local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local v=tostring(p:GetAttribute("FeedbackEvent")or"")
- if v:find("LEVEL_UP")then levelSfx:Play()elseif v:find("ATTACK")or v:find("KILL")then hitSfx:Play()end
+ if v:find("LEVEL_UP")then levelSfx:Play()elseif v:find("PARRY")then skillSfx:Play()elseif v:find("GUARD_BREAK")then hitSfx:Play()elseif v:find("ATTACK")or v:find("KILL")then hitSfx:Play()end
 end)
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
