@@ -120,6 +120,15 @@ test('push-triggered System AI runs are coalesced QA-only and never reserve work
   assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch origin vibe2-unreal-core'));
 });
 
+test('System AI uses provider matrix capacity without an internal worker cap',()=>{
+  assert.match(workflow,/SYSTEM_AI_MAX_BATCH: '256'/);
+  const workerBlock=workflow.slice(workflow.indexOf('\n  worker:'),workflow.indexOf('\n  fan_in:'));
+  assert.match(workerBlock,/strategy:/);
+  assert.match(workerBlock,/matrix: \$\{\{ fromJSON\(needs\.reserve\.outputs\.matrix\) \}\}/);
+  assert.equal(/max-parallel:/.test(workerBlock),false);
+  assert.match(workflow,/company-system-ai-reserve-control/);
+});
+
 test('verification-only System AI tasks run deterministic contracts before any model call',()=>{
   const preverify=workflow.indexOf('- name: Verify existing verifier contract before model');
   const implement=workflow.indexOf('- name: Execute external AI assignment');
