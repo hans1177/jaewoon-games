@@ -97,16 +97,28 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
     ?runRepairNodeTargets({root,data,targets:contract.saveMigration.testTargets,category:'SAVE_MIGRATION'}):[];
   const saveMigration=saveRequired?(saveResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE'):'NOT_APPLICABLE';
   const multiplayerRequired=contract?.multiplayerLifecycle?.required===true;
-  const multiplayerResults=multiplayerRequired&&Array.isArray(contract?.multiplayerLifecycle?.testTargets)&&contract.multiplayerLifecycle.testTargets.length
-    ?runRepairNodeTargets({root,data,targets:contract.multiplayerLifecycle.testTargets,category:'MULTIPLAYER_LIFECYCLE'}):[];
-  const multiplayerLifecycle=multiplayerRequired?(multiplayerResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE'):'NOT_APPLICABLE';
+  const multiplayerAutomation=contract?.multiplayerLifecycle?.automation&&typeof contract.multiplayerLifecycle.automation==='object'
+    ?contract.multiplayerLifecycle.automation:{};
+  const multiplayerTargets=Array.isArray(contract?.multiplayerLifecycle?.testTargets)?contract.multiplayerLifecycle.testTargets:[];
+  const multiplayerResults=multiplayerRequired&&multiplayerTargets.length
+    ?runRepairNodeTargets({root,data,targets:multiplayerTargets,category:'MULTIPLAYER_LIFECYCLE'}):[];
+  const autonomousMultiplayerContractValid=!multiplayerRequired||(
+    contract?.multiplayerLifecycle?.userAssistanceRequired===false
+    &&Number(contract?.multiplayerLifecycle?.minimumPlayers||0)>=2
+    &&multiplayerAutomation.required===true
+    &&Number(multiplayerAutomation.minimumSyntheticOrRealClients||0)>=2
+  );
+  const multiplayerLifecycle=!multiplayerRequired?'NOT_APPLICABLE'
+    :!autonomousMultiplayerContractValid?'INVALID_AUTOMATION_CONTRACT'
+    :multiplayerResults.length?'PASS_AUTOMATED_HARNESS'
+    :'PENDING_AUTONOMOUS_HARNESS_EVIDENCE';
   const revisions=contract?.revisions||{};
   const revisionComparison=revisions.lastKnownGoodRevision&&revisions.currentRevision?'READY'
     :(revisions.lastKnownGoodRevision||revisions.firstBrokenRevision||revisions.currentRevision)?'PARTIAL':'NOT_AVAILABLE';
   const readyForFanIn=originalScenarioReplay==='PASS'
     &&invariants==='PASS'
     &&['PASS','NOT_APPLICABLE'].includes(saveMigration)
-    &&['PASS','NOT_APPLICABLE'].includes(multiplayerLifecycle);
+    &&['PASS_AUTOMATED_HARNESS','NOT_APPLICABLE'].includes(multiplayerLifecycle);
   return{
     status:readyForFanIn?'EVIDENCE_READY_FOR_FULL_REGRESSION':'WAITING_EVIDENCE',
     required:true,
@@ -122,6 +134,15 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
     saveResults,
     multiplayerLifecycle,
     multiplayerResults,
+    multiplayerAutomation:{
+      userAssistanceRequired:false,
+      minimumPlayers:Number(contract?.multiplayerLifecycle?.minimumPlayers||0)||null,
+      minimumSyntheticOrRealClients:Number(multiplayerAutomation.minimumSyntheticOrRealClients||0)||null,
+      machineDrivenScenarios:Array.isArray(multiplayerAutomation.machineDrivenScenarios)?multiplayerAutomation.machineDrivenScenarios.map(clean).filter(Boolean):[],
+      actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:multiplayerAutomation.actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass===true
+    },
+    repeatCount:Math.max(0,Number(contract.repeatCount||0)||0),
+    repairMode:clean(contract.repairMode)||'FOCUSED_REPAIR',
     revisions:{
       lastKnownGoodRevision:clean(revisions.lastKnownGoodRevision)||null,
       firstBrokenRevision:clean(revisions.firstBrokenRevision)||null,
@@ -604,6 +625,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`GAME_REPAIR_INVARIANTS=${result.gameRepairQa?.invariants||'NOT_APPLICABLE'}`);
     console.log(`GAME_REPAIR_SAVE_MIGRATION=${result.gameRepairQa?.saveMigration||'NOT_APPLICABLE'}`);
     console.log(`GAME_REPAIR_MULTIPLAYER_LIFECYCLE=${result.gameRepairQa?.multiplayerLifecycle||'NOT_APPLICABLE'}`);
+    console.log('GAME_REPAIR_USER_ASSISTANCE_REQUIRED=NO');
+    console.log(`GAME_REPAIR_REPEAT_COUNT=${Number(result.gameRepairQa?.repeatCount||0)}`);
+    console.log(`GAME_REPAIR_MODE=${result.gameRepairQa?.repairMode||'FOCUSED_REPAIR'}`);
+    console.log(`GAME_REPAIR_READY_FOR_FAN_IN=${result.gameRepairQa?.readyForFanIn===true?'YES':'NO'}`);
     console.log('GAME_REPAIR_IMPACT_REGRESSION=PASS');
     console.log('GAME_REPAIR_FULL_REGRESSION_REQUIRED=YES');
     console.log(`VIBE2_ARCHITECTURE_DRIFT_STATUS=${result.architectureDrift?.status||'NOT_AVAILABLE'}`);
