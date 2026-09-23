@@ -27,7 +27,6 @@ jobs:
           node --check tools/production-classification.mjs
           node --check tools/artbook-fact-pack.mjs
           node --check tools/company-design-cycle.mjs
-          node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-release-stale-artifact-guard.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
@@ -99,7 +98,6 @@ jobs:
           set -euo pipefail
           grep -Fq 'Pull configured free department models' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'DEPARTMENT_LEAD_PREFLIGHT=PASS' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'tools/company-development-validation-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'tools/company-release-production-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/vibe2-release-implementation.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/unity-android-build.json' .github/workflows/artbook-free-department-bots.yml
@@ -131,7 +129,7 @@ jobs:
           node --test qa/release-stale-artifact-guard.test.mjs
           node --test qa/tier1-development-baseline-gate.test.mjs
           node --test qa/company-design-pre-gate-resume.test.mjs
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-development-validation-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
           fi
@@ -142,10 +140,11 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-          const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
-          for(const token of ['web-gameplay-validation.json','targetEvidenceFile','development-revalidation.json','selected-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
-          for(const token of ['aiMayInventValidationPass:false','web-gameplay-validation-failed','technical-validation-failed','revalidation-required:','artbookOnlyAfterBaselineReady:true'])if(!cycle.includes(token))throw new Error(`development cycle contract missing: ${token}`);
+          for(const token of ['minimum-dual-platform-design-required','targetEvidenceFile','development-revalidation.json','selected-native-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY','supportingOnly:true'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
+          if(gate.includes("webGameplay:{required:true"))throw new Error('Web gameplay may not regain development admission authority');
           console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
+          console.log('DEVELOPMENT_ADMISSION=MINIMUM_DESIGN_PLUS_NATIVE_EVIDENCE');
+          console.log('UNITY_WEB_ADMISSION_AUTHORITY=NONE');
           NODE
 
       - name: Validate RELEASE_CONFIRMED evidence and Vibe2 handoff cannot be faked
