@@ -1766,7 +1766,10 @@
       "coding_i4ejkw",
       "coding_39ufnn",
       "coding_1474yn",
-      "coding_7eoxsz"
+      "coding_7eoxsz",
+      "coding_xfsh4t",
+      "coding_flxu1x",
+      "coding_10mp84k"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -3152,14 +3155,29 @@
       "coding_negative_1hcjtbq",
       "coding_negative_3qjor0",
       "coding_negative_9gss8p",
-      "coding_negative_7iuat9"
+      "coding_negative_7iuat9",
+      "coding_negative_15xvqg5",
+      "coding_negative_e3q0qr",
+      "coding_negative_62froq",
+      "coding_negative_1w3sues",
+      "coding_negative_1pmzce5",
+      "coding_negative_y1tcoz",
+      "coding_negative_nscw3i",
+      "coding_negative_10motcv",
+      "coding_negative_pkti6c",
+      "coding_negative_jm664v",
+      "coding_negative_lcd79m",
+      "coding_negative_wh313y",
+      "coding_negative_1ty0ifm",
+      "coding_negative_fqsry6",
+      "coding_negative_116e1nf"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 114,
+        "verifiedApplications": 115,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 269,
-        "verifiedFailures": 497,
+        "totalGenerationAttempts": 273,
+        "verifiedFailures": 502,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -3176,13 +3194,13 @@
           "survival": 5,
           "line-defense": 54,
           "seed-casual-realm-weaver": 1,
-          "__vibe_system__": 9,
+          "__vibe_system__": 10,
           "cozy-island": 4,
           "horror-escape-room": 2
         },
         "targets": {
           "web": 100,
-          "system": 9,
+          "system": 10,
           "roblox": 5
         },
         "contextModes": {
@@ -3227,14 +3245,14 @@
             "lastUpdatedAt": "2026-09-20T17:56:17.499Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 17,
-            "verifiedFailures": 108,
+            "verifiedApplications": 18,
+            "verifiedFailures": 113,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 49,
-            "totalContextBytes": 704893,
-            "lastEvidence": "coding_e2tcz3",
-            "lastFailureEvidence": "coding_negative_9gss8p",
-            "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+            "totalGenerationAttempts": 53,
+            "totalContextBytes": 752974,
+            "lastEvidence": "coding_xfsh4t",
+            "lastFailureEvidence": "coding_negative_fqsry6",
+            "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
           }
         },
         "failureFingerprints": {
@@ -3779,7 +3797,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 90,
+            "verifiedFailures": 93,
             "games": {
               "cozy-island": 2
             },
@@ -3788,18 +3806,18 @@
             },
             "failureGames": {
               "fantasy-survival": 51,
-              "ant-simulator": 39
+              "ant-simulator": 42
             },
             "failureTargets": {
-              "web": 90
+              "web": 93
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 51,
-              "INCREMENTAL_QA": 39
+              "INCREMENTAL_QA": 42
             },
             "lastEvidence": "coding_1n6axr4",
-            "lastFailureEvidence": "coding_negative_sx4k4g",
-            "lastUpdatedAt": "2026-09-23T14:12:19.516Z"
+            "lastFailureEvidence": "coding_negative_nscw3i",
+            "lastUpdatedAt": "2026-09-23T14:49:59.265Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
             "verifiedApplications": 0,
@@ -4082,33 +4100,33 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 8,
+            "verifiedFailures": 10,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 8
+              "cozy-island": 10
             },
             "failureTargets": {
-              "web": 8
+              "web": 10
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 8
+              "INCREMENTAL_QA": 10
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_9gss8p",
-            "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+            "lastFailureEvidence": "coding_negative_fqsry6",
+            "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_e2tcz3",
-        "lastFailureEvidence": "coding_negative_9gss8p",
-        "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+        "lastEvidence": "coding_xfsh4t",
+        "lastFailureEvidence": "coding_negative_fqsry6",
+        "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 164,
+        "verifiedApplications": 166,
         "firstCandidatePasses": 24,
-        "totalGenerationAttempts": 344,
-        "verifiedFailures": 436,
+        "totalGenerationAttempts": 349,
+        "verifiedFailures": 441,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -4125,14 +4143,14 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 2,
           "fantasy-survival": 27,
           "__vibe_system__": 1,
-          "cozy-island": 20,
-          "horror-escape-room": 20
+          "cozy-island": 21,
+          "horror-escape-room": 21
         },
         "targets": {
           "web": 105,
           "unity": 18,
           "system": 1,
-          "roblox": 40
+          "roblox": 42
         },
         "contextModes": {
           "UNKNOWN": {
@@ -4166,14 +4184,14 @@
             "lastUpdatedAt": "2026-09-21T05:01:21.057Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 87,
-            "verifiedFailures": 108,
+            "verifiedApplications": 89,
+            "verifiedFailures": 113,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 201,
-            "totalContextBytes": 2575322,
-            "lastEvidence": "coding_7eoxsz",
-            "lastFailureEvidence": "coding_negative_3qjor0",
-            "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+            "totalGenerationAttempts": 206,
+            "totalContextBytes": 2638702,
+            "lastEvidence": "coding_10mp84k",
+            "lastFailureEvidence": "coding_negative_116e1nf",
+            "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -4968,23 +4986,23 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 71,
+            "verifiedFailures": 74,
             "games": {},
             "targets": {},
             "failureGames": {
               "fantasy-survival": 38,
-              "ant-simulator": 33
+              "ant-simulator": 36
             },
             "failureTargets": {
-              "web": 71
+              "web": 74
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 38,
-              "INCREMENTAL_QA": 33
+              "INCREMENTAL_QA": 36
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1l1e05u",
-            "lastUpdatedAt": "2026-09-23T14:12:19.516Z"
+            "lastFailureEvidence": "coding_negative_10motcv",
+            "lastUpdatedAt": "2026-09-23T14:49:59.265Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
             "verifiedApplications": 0,
@@ -5245,16 +5263,16 @@
             "lastUpdatedAt": "2026-09-21T09:51:46.150Z"
           },
           "roblox|OTHER": {
-            "verifiedApplications": 40,
+            "verifiedApplications": 42,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 100,
+            "totalGenerationAttempts": 105,
             "verifiedFailures": 35,
             "games": {
-              "cozy-island": 20,
-              "horror-escape-room": 20
+              "cozy-island": 21,
+              "horror-escape-room": 21
             },
             "targets": {
-              "roblox": 40
+              "roblox": 42
             },
             "failureGames": {
               "fantasy-survival": 1,
@@ -5268,9 +5286,9 @@
             "failureClasses": {
               "INCREMENTAL_QA": 35
             },
-            "lastEvidence": "coding_7eoxsz",
+            "lastEvidence": "coding_10mp84k",
             "lastFailureEvidence": "coding_negative_8v7ooz",
-            "lastUpdatedAt": "2026-09-23T14:12:19.514Z"
+            "lastUpdatedAt": "2026-09-23T14:49:59.264Z"
           },
           "web|NO_OP|OTHER": {
             "verifiedApplications": 4,
@@ -5360,33 +5378,33 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 8,
+            "verifiedFailures": 10,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 8
+              "cozy-island": 10
             },
             "failureTargets": {
-              "web": 8
+              "web": 10
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 8
+              "INCREMENTAL_QA": 10
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_3qjor0",
-            "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+            "lastFailureEvidence": "coding_negative_116e1nf",
+            "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_7eoxsz",
-        "lastFailureEvidence": "coding_negative_3qjor0",
-        "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+        "lastEvidence": "coding_10mp84k",
+        "lastFailureEvidence": "coding_negative_116e1nf",
+        "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 544,
         "firstCandidatePasses": 94,
         "totalGenerationAttempts": 1210,
-        "verifiedFailures": 421,
+        "verifiedFailures": 426,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 87,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -5446,13 +5464,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 48,
-            "verifiedFailures": 101,
+            "verifiedFailures": 106,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 128,
             "totalContextBytes": 1657376,
             "lastEvidence": "coding_18c1nzh",
-            "lastFailureEvidence": "coding_negative_7iuat9",
-            "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+            "lastFailureEvidence": "coding_negative_1ty0ifm",
+            "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
           },
           "UNKNOWN": {
             "verifiedApplications": 1,
@@ -5907,7 +5925,7 @@
             "verifiedApplications": 5,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 10,
-            "verifiedFailures": 91,
+            "verifiedFailures": 94,
             "games": {
               "cozy-island": 5
             },
@@ -5916,18 +5934,18 @@
             },
             "failureGames": {
               "fantasy-survival": 53,
-              "ant-simulator": 38
+              "ant-simulator": 41
             },
             "failureTargets": {
-              "web": 91
+              "web": 94
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 53,
-              "INCREMENTAL_QA": 38
+              "INCREMENTAL_QA": 41
             },
             "lastEvidence": "coding_18c1nzh",
-            "lastFailureEvidence": "coding_negative_1nc90h6",
-            "lastUpdatedAt": "2026-09-23T14:12:19.516Z"
+            "lastFailureEvidence": "coding_negative_pkti6c",
+            "lastUpdatedAt": "2026-09-23T14:49:59.265Z"
           },
           "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
             "verifiedApplications": 26,
@@ -6282,27 +6300,27 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 8,
+            "verifiedFailures": 10,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 8
+              "cozy-island": 10
             },
             "failureTargets": {
-              "web": 8
+              "web": 10
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 8
+              "INCREMENTAL_QA": 10
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_7iuat9",
-            "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+            "lastFailureEvidence": "coding_negative_1ty0ifm",
+            "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_18c1nzh",
-        "lastFailureEvidence": "coding_negative_7iuat9",
-        "lastUpdatedAt": "2026-09-23T14:12:19.517Z"
+        "lastFailureEvidence": "coding_negative_1ty0ifm",
+        "lastUpdatedAt": "2026-09-23T14:49:59.266Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 133,
@@ -9304,7 +9322,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-23T14:12:19.568Z",
+    "lastBuiltAt": "2026-09-23T14:49:59.308Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -13749,5 +13767,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-23T14:12:19.568Z"
+  "updatedAt": "2026-09-23T14:49:59.308Z"
 }
