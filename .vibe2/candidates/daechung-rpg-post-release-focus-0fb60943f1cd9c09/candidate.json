@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": " for _,ai in ipairs(aiUsers)do",
+      "replace": "  if e.dormant==true then\n   e.part.AssemblyLinearVelocity=Vector3.zero\n  else\n   local target,bd=nil,z.Aggro\n   for _,p in ipairs(Players:GetPlayers())do\n    if n(p,\"CurrentZone\",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end\n   end\n   if target then\n    local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)\n    local attackDef=e.def and e.def.Attack;local engage=(attackDef and attackDef.Range)or(e.def and e.def.Attacks and 18)or 5.5\n    if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end\n    if tr and(tr.Position-e.part.Position).Magnitude<=engage and now>=(e.nextAttackAt or 0)and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end\n   else\n    local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)\n    if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end\n   end\n   if (e.part.Position-e.spawn).Magnitude>z.Leash then e.part.CFrame=CFrame.new(e.spawn)end\n   end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
