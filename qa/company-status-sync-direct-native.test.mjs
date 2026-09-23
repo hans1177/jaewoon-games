@@ -58,13 +58,9 @@ test('company status policy mirrors direct-native admission without Web-first au
   assert.equal(policy.developmentAdmission,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(policy.strictDesignScoreRequiredForAdmission,false);
   assert.equal(policy.strictDesignReviewRunsInParallel,true);
-  assert.equal(policy.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
-  assert.equal(policy.webCompanionRequiredForEveryGame,false);
-  assert.equal(policy.webGameplayValidationRequired,false);
-  assert.equal(policy.musicValidationRequired,false);
-  assert.equal(policy.webBeforeTargetPlatformByDefault,false);
   assert.equal(policy.targetPlatformMayRunImmediately,true);
-  assert.equal(policy.unityWebValidationGateAuthority,false);
+  assert.equal(policy.unityWebValidationPolicySource,'company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebValidationSurface');
+  for(const key of ['webPurpose','webCompanionRequiredForEveryGame','webGameplayValidationRequired','musicValidationRequired','webBeforeTargetPlatformByDefault','unityWebValidationGateAuthority'])assert.equal(Object.hasOwn(policy,key),false,key);
   assert.equal(policy.fortniteUefnAutomaticDevelopment,false);
 });
 
@@ -106,10 +102,7 @@ test('DEVELOPMENT_CONFIRMED projection is one Roblox plus Unity native state',()
   assert.deepEqual(project.concurrentTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(project.targetSourcePaths.ROBLOX,'roblox-games/g1');
   assert.equal(project.targetSourcePaths.UNITY,'unity-games/g1');
-  assert.equal(project.webCompanionRequired,false);
-  assert.equal(project.webValidationRequired,false);
-  assert.equal(project.webGameplayValidationRequired,false);
-  assert.equal(project.musicValidationRequired,false);
+  for(const key of ['webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired','webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault'])assert.equal(Object.hasOwn(project,key),false,key);
   assert.equal(project.strictDesignScoreRequiredForAdmission,false);
   assert.equal(project.strictDesignReviewRunsInParallel,true);
 
@@ -119,7 +112,7 @@ test('DEVELOPMENT_CONFIRMED projection is one Roblox plus Unity native state',()
 
   assert.equal(policy.engine,'ROBLOX_UNITY_DIRECT_NATIVE');
   assert.equal(policy.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
-  assert.equal(policy.webCompanionRequired,false);
+  assert.equal(Object.hasOwn(policy,'webCompanionRequired'),false);
   assert.equal(policy.targetPlatformMayRunImmediately,true);
   assert.equal(result.portfolio.productionClassState.pipeline.activeDevelopmentWipMax,null);
   assert.equal(result.portfolio.productionClassState.pipeline.noArtificialGlobalGameCountCap,true);
