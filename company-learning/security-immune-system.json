@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -319,7 +319,10 @@
       "securityReserveReconciliationMayNotBroadenSecurityTaskAuthority": true,
       "workflowWaitTelemetryReadOnly": true,
       "workflowWaitTelemetryMayNotExpandWorkerAuthority": true,
-      "supervisorReviewBacklogMayNotBypassPrimaryAiReview": true
+      "supervisorReviewBacklogMayNotBypassPrimaryAiReview": true,
+      "genericFailureMayNotAuthorizeCrossScopeRepair": true,
+      "crossScopeCanaryAllowedOnlyForExplicitSharedInfrastructureRepair": true,
+      "crossScopeDependencyReconciliationMayNotExpandWritableScope": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -379,7 +382,14 @@
         "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
         "2095f85bb419149c14168a135d72aa456de7747c"
       ],
-      "preciseWaitTelemetryAuthorityExpansion": false
+      "preciseWaitTelemetryAuthorityExpansion": false,
+      "responsibilityScopedRecoveryCohortRevision": "599a575779e96093841aa2c81fbbac5cc1fbad03",
+      "crossScopeCanaryReconciliationRevision": "16a40328b8d05c4416cad1672606ad38cb489a18",
+      "crossScopeCanaryReconciliationTests": [
+        "2a7ab4957c5c670ca03ea689a384fa0aab471147",
+        "c556915ea3022ef8002dec8acba9b2bb95e78e7d"
+      ],
+      "crossScopeCanaryAuthorityExpansion": false
     },
     "producerSideRepairReuse": {
       "binding": "tools/company-recovery-dispatch.mjs",
