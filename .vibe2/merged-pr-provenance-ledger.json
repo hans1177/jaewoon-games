@@ -17823,11 +17823,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_f36f3f086537d320693445be",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2622",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "48275bac80b20a653ad54bd3e975b9f907406486",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2622,
+        "baseBranch": "main",
+        "headBranch": "assistant/high-end-visual-production",
+        "baseSha": "48275bac80b20a653ad54bd3e975b9f907406486",
+        "headSha": "d9fab572fb91a824ea822336a2b78f9fa4e3237c",
+        "mergeCommitSha": "2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+        "mergedAt": "2026-09-23T03:15:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "794f7c191609d47a0ae02295ad12dd0f335e437830b5fb7dd98e3ef3a4481ff9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/high-end-visual-production",
+        "candidateSha": "d9fab572fb91a824ea822336a2b78f9fa4e3237c"
+      },
+      "changeStats": {
+        "changedFileCount": 22,
+        "codingRelevantFileCount": 22,
+        "addedLineCount": 1071,
+        "deletedLineCount": 61,
+        "changedFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-evolution-qa.yml",
+          "assets/vibe-art-pipeline.js",
+          "assets/vibe-presentation-director.js",
+          "assets/vibe-visual-autopilot.js",
+          "assets/vibe-visual-quality-gate.js",
+          "company-directive.json",
+          "company-learning/company-architecture-map.json",
+          "company-learning/company-log-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/security-immune-system.json",
+          "qa/artbook-editorial-role-contract.test.mjs",
+          "qa/artbook-production-pipeline.test.mjs",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-direct-native-policy-contract.test.mjs",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/company-high-end-visual-contract.test.mjs",
+          "qa/company-machine-development-lifecycle.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-evolution-qa.yml",
+          "assets/vibe-art-pipeline.js",
+          "assets/vibe-presentation-director.js",
+          "assets/vibe-visual-autopilot.js",
+          "assets/vibe-visual-quality-gate.js",
+          "company-directive.json",
+          "company-learning/company-architecture-map.json",
+          "company-learning/company-log-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/security-immune-system.json",
+          "qa/artbook-editorial-role-contract.test.mjs",
+          "qa/artbook-production-pipeline.test.mjs",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-direct-native-policy-contract.test.mjs",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/company-high-end-visual-contract.test.mjs",
+          "qa/company-machine-development-lifecycle.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2622",
+        "merge-commit:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+        "base-main:48275bac80b20a653ad54bd3e975b9f907406486"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 145
+    "total": 146
   }
 }
