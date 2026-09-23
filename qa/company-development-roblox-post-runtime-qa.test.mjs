@@ -16,13 +16,13 @@ test('Roblox runtime foundation QA uses Open Cloud sentinel and never Studio',()
   assert.doesNotMatch(workflow,/ExecuteMultiplayerTestAsync/);
 });
 
-test('missing actual runtime observation escalates after repeated automatic attempts',()=>{
+test('missing actual runtime observation remains on the same gate with unlimited causal retry',()=>{
   assert.match(workflow,/robloxRuntimeRetryCount=attempts/);
-  assert.match(workflow,/attempts>=3/);
-  assert.match(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
-  assert.match(workflow,/roblox-actual-runtime-executor-unavailable/);
-  assert.match(workflow,/ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_PENDING/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=.*retry=UNLIMITED_CAUSAL_REPAIR/);
+  assert.doesNotMatch(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
+  assert.doesNotMatch(workflow,/roblox-actual-runtime-executor-unavailable/);
+  assert.doesNotMatch(workflow,/attempts>=3/);
 });
 
 test('foundation QA remains fail-closed and exact-candidate bound',()=>{
@@ -54,13 +54,13 @@ test('foundation QA emits machine-readable exact blocker evidence',()=>{
 });
 
 
-test('stale published Roblox version counts as missing actual runtime execution and escalates',()=>{
+test('stale published Roblox version preserves the exact failed stage and retries without a fixed cap',()=>{
   assert.match(workflow,/result\.exactGame===true&&result\.exactPlace===true&&result\.exactVersion!==true/);
-  assert.match(workflow,/ROBLOX_FOUNDATION_STALE_RUNTIME=/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_STALE_RUNTIME=.*retry=UNLIMITED_CAUSAL_REPAIR/);
   assert.match(workflow,/stale-runtime-sentinel-observation/);
   assert.match(workflow,/roblox-runtime-foundation-stale-version/);
-  assert.match(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
-  assert.match(workflow,/attempts>=3/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_PENDING/);
+  assert.doesNotMatch(workflow,/attempts>=3/);
 });
 
 
