@@ -39,6 +39,7 @@ jobs:
         with:
           fetch-depth: 1
           fetch-tags: false
+          lfs: true
 
       - name: Resolve build request
         id: request
