@@ -33,7 +33,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   const save=saveEnabled(config);
   checks.saveRejoin=!save||(/DataStoreService/.test(server)&&/GetAsync/.test(server)&&/(SetAsync|UpdateAsync)/.test(server));
   const multi=multiplayerRequired(config);
-  checks.multiplayerSync=!multi||(/Players:GetPlayers\s*\(\)/.test(server)&&/FireAllClients/.test(server)&&/OnClientEvent/.test(client));
+  checks.multiplayerSync=!multi||(/Players:GetPlayers\s*\(\)/.test(server)&&/FireAllClients\s*\(\s*["']MULTIPLAYER_SYNC["']/.test(server)&&/ParticipantCount/.test(server)&&/OnClientEvent:Connect/.test(client)&&/MULTIPLAYER_SYNC/.test(client));
   checks.sessionEndRestart=/Players\.PlayerRemoving:Connect/.test(server)&&/Players\.PlayerAdded:Connect/.test(server)&&(!save||/BindToClose/.test(server));
   checks.errorGuards=/pcall\s*\(/.test(server)&&/typeof\s*\(/.test(server);
   checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
