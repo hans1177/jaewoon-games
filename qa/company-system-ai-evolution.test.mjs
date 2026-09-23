@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import {classifySystemAiFailure} from '../tools/company-system-ai-failure-classifier.mjs';
 import {analyzeSystemAiBottlenecks} from '../tools/company-system-ai-bottleneck-sensor.mjs';
 import {reviewSystemAiQaContract} from '../tools/company-system-ai-qa-contract-review.mjs';
-import {reserveSystemAiBatch,applySystemAiResults,handoffMissingSystemAiResults} from '../tools/company-system-ai-queue.mjs';
+import {reserveSystemAiBatch,applySystemAiResults,handoffMissingSystemAiResults,coalesceQueuedSystemAiDuplicateRepairs} from '../tools/company-system-ai-queue.mjs';
 import {buildSystemAiLearningContext} from '../tools/company-system-ai-learning-context.mjs';
 
 const policy={version:270,policySource:'company-learning/platform-release-roadmap.json',authority:'MACHINE_EXECUTION_CONTRACT'};
@@ -77,6 +77,52 @@ test('missing worker result is handed off immediately from only the exact reserv
   assert.ok(lost.evidence.includes('system-ai-exact-checkpoint-resume:YES'));
   assert.equal(result.queue.tasks.find(x=>x.id==='finished').status,'running');
   assert.equal(result.queue.tasks.find(x=>x.id==='other').reservationId,'run:2');
+});
+
+test('exact duplicate bottleneck repairs coalesce before reservation without losing distinct work',()=>{
+  const queue={tasks:[
+    {
+      id:'repair-a',status:'queued',priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
+      goal:'repair the same verified bottleneck',responsibleFiles:['web-games/demo/index.html'],
+      sourceMutationRequired:true,createdAt:'2026-09-23T00:00:00Z',evidence:['recovery-queue:r1']
+    },
+    {
+      id:'repair-b',status:'queued',priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
+      goal:'repair the same verified bottleneck',responsibleFiles:['web-games/demo/index.html'],
+      sourceMutationRequired:true,createdAt:'2026-09-23T00:01:00Z',
+      failureSignature:'shared-signature-canary-pending:repair-a',evidence:['recovery-queue:r2']
+    },
+    {
+      id:'repair-c',status:'queued',priority:'high',taskType:'bottleneck-repair',gameId:'demo',
+      goal:'repair the same verified bottleneck',responsibleFiles:['web-games/demo/index.html'],
+      sourceMutationRequired:true,createdAt:'2026-09-23T00:02:00Z',evidence:['recovery-queue:r3']
+    },
+    {
+      id:'distinct',status:'queued',priority:'high',taskType:'bottleneck-repair',gameId:'demo',
+      goal:'repair a different verified bottleneck',responsibleFiles:['tools/distinct.mjs'],
+      sourceMutationRequired:true,createdAt:'2026-09-23T00:03:00Z'
+    }
+  ]};
+  const compacted=coalesceQueuedSystemAiDuplicateRepairs(queue,{at:Date.parse('2026-09-23T00:10:00Z')});
+  assert.equal(compacted.coalesced,2);
+  assert.equal(compacted.groups,1);
+  const canonical=compacted.queue.tasks.find(x=>x.id==='repair-a');
+  assert.equal(canonical.status,'queued');
+  assert.equal(canonical.recurrenceCount,2);
+  assert.ok(canonical.evidence.includes('system-ai-coalesced-count:3'));
+  for(const id of ['repair-b','repair-c']){
+    const row=compacted.queue.tasks.find(x=>x.id===id);
+    assert.equal(row.status,'cancelled');
+    assert.equal(row.blocker,'system-ai-duplicate-repair-superseded');
+    assert.ok(row.evidence.includes('system-ai-duplicate-repair-superseded-by:repair-a'));
+    assert.ok(row.evidence.includes('retry-budget-consumed:NO'));
+    assert.ok(row.evidence.includes('learning-penalty:NO'));
+  }
+  assert.equal(compacted.queue.tasks.find(x=>x.id==='distinct').status,'queued');
+
+  const reserved=reserveSystemAiBatch(queue,{max:4,reservationId:'run:dedupe',at:Date.parse('2026-09-23T00:10:00Z')});
+  assert.equal(reserved.coalesced,2);
+  assert.deepEqual(new Set(reserved.reserved.map(x=>x.id)),new Set(['repair-a','distinct']));
 });
 
 test('reserve chooses one representative canary for a shared failure signature while disjoint work stays parallel',()=>{
