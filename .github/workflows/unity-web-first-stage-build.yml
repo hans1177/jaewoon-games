@@ -261,6 +261,49 @@ jobs:
           out="/tmp/unity-web/web-games/$GAME_ID"
           mkdir -p "$out"
           cp -R "$src"/. "$out"/
+
+          # Cloudflare Pages serves each static asset only up to 25 MiB.
+          # Fail before publication instead of exposing a homepage link to an undeployable bundle.
+          python3 - "$out" "$GAME_ID" <<'PY'
+          import json, pathlib, sys
+          root=pathlib.Path(sys.argv[1])
+          game=sys.argv[2]
+          build=root/'Build'
+          if not build.is_dir():
+              raise SystemExit('Unity Web Build directory missing from collected output')
+          groups={
+              'loader': sorted(build.glob('*.loader.js')),
+              'data': sorted(build.glob('*.data*')),
+              'framework': sorted(build.glob('*.framework.js*')),
+              'wasm': sorted(build.glob('*.wasm*')),
+          }
+          missing=[name for name,files in groups.items() if not files]
+          if missing:
+              raise SystemExit('Unity Web deploy bundle incomplete: '+','.join(missing))
+          max_bytes=25*1024*1024
+          oversized=[]
+          files=[]
+          for file in sorted(build.iterdir()):
+              if not file.is_file():
+                  continue
+              size=file.stat().st_size
+              files.append({'path':file.relative_to(root).as_posix(),'bytes':size})
+              if size>max_bytes:
+                  oversized.append(f'{file.name}:{size}')
+          if oversized:
+              raise SystemExit('Cloudflare Pages 25MiB asset limit exceeded: '+' | '.join(oversized))
+          manifest={
+              'version':1,
+              'engine':'UNITY_WEB',
+              'gameId':game,
+              'bundleComplete':True,
+              'requiredGroups':{name:[f.relative_to(root).as_posix() for f in group] for name,group in groups.items()},
+              'files':files,
+              'cloudflareSingleAssetMaxBytes':max_bytes,
+          }
+          (root/'unity-web-deploy-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
+          PY
+
           tree_sha="$(find "$out" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')"
           echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
 
@@ -362,7 +405,16 @@ jobs:
           rm -rf "web-games/$GAME_ID"
           mkdir -p "web-games/$GAME_ID"
           cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
+          test -d "web-games/$GAME_ID/Build"
+          test -s "web-games/$GAME_ID/unity-web-deploy-manifest.json"
           git add "web-games/$GAME_ID"
+          # Historical repo-wide Unity ignore rules matched this nested public Build directory.
+          # Force-add the runtime bundle so index.html never lands without loader/data/framework/wasm.
+          git add -f "web-games/$GAME_ID/Build"
+          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.loader.js" | head -n1)"
+          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.data*" | head -n1)"
+          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.framework.js*" | head -n1)"
+          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.wasm*" | head -n1)"
           git diff --cached --check
           if git diff --cached --quiet; then
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
