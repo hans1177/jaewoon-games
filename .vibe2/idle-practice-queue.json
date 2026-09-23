@@ -1,8 +1,18 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "vibe2-idle-practice-queue",
-  "productionWorkAlwaysPreemptsPractice": false,
+  "productionWorkAlwaysPreemptsPractice": true,
   "productionDefaultPriorityHigherThanPractice": true,
+  "companyGraphicsLibrary24h": {
+    "enabled": true,
+    "drillCount": 14,
+    "platformProfiles": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "productionPreemptible": true,
+    "noGenerationCap": true
+  },
   "practiceSignalGenerationAlwaysOn": true,
   "practiceGenerationLimit": null,
   "relearningGenerationLimit": null,
@@ -708,6 +718,188 @@
       "targetEngine": "roblox",
       "unseenProblemFingerprint": "phase4-unseen-12l4chz",
       "mayPromoteGeneralization": false
+    },
+    {
+      "id": "company-graphics-unity-character-archetype",
+      "kind": "CHARACTER_ARCHETYPE_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-creature-rig",
+      "kind": "CREATURE_RIG_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-action-motion",
+      "kind": "ACTION_MOTION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-weapon-motion",
+      "kind": "WEAPON_MOTION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-vfx-library",
+      "kind": "VFX_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "VFX",
+        "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-environment-kit",
+      "kind": "ENVIRONMENT_KIT_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-ui-presentation",
+      "kind": "UI_PRESENTATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "VFX"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-character-archetype",
+      "kind": "CHARACTER_ARCHETYPE_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-creature-rig",
+      "kind": "CREATURE_RIG_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-action-motion",
+      "kind": "ACTION_MOTION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-weapon-motion",
+      "kind": "WEAPON_MOTION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-vfx-library",
+      "kind": "VFX_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "VFX",
+        "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-environment-kit",
+      "kind": "ENVIRONMENT_KIT_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-ui-presentation",
+      "kind": "UI_PRESENTATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "VFX"
+      ]
     },
     {
       "id": "hypothesis-asset_adaptation",
