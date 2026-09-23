@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -173,7 +173,22 @@
         "VERIFIED_LEARNING_REUSE"
       ],
       "structuredEvidenceRequired": true,
-      "duplicatePersistentLogForbidden": true
+      "duplicatePersistentLogForbidden": true,
+      "implementationState": "IMPLEMENTED_QA_VERIFIED_ACTIVE_RUNTIME",
+      "runtimeBindings": [
+        "tools/company-system-ai-failure-classifier.mjs",
+        "tools/company-system-ai-bottleneck-sensor.mjs",
+        "tools/company-system-ai-qa-contract-review.mjs",
+        "tools/company-system-ai-queue.mjs",
+        ".github/workflows/company-system-ai-workers.yml"
+      ],
+      "verifiedEvidence": {
+        "implementationRevision": "5e1dc153d62167c95da3ec1465217a4f24193dd8",
+        "systemAiReserveRun": 598,
+        "centralPolicyQaRun": 2261,
+        "integratedRegressionRun": 7913,
+        "securityImmuneRun": 3154
+      }
     }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
