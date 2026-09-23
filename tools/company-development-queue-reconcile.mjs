@@ -117,7 +117,7 @@ function bindNativeItem(item,{game,design,roadmap,stamp}){
     currentStep:preserveProgress?previousStep:'TARGET_PLATFORM_SOURCE_BIND',
     canonicalState:preserveProgress?previousState:'PENDING_DUAL_NATIVE_SOURCE_BIND',
     enqueuedAt:item.enqueuedAt||stamp,
-    updatedAt:stamp
+    updatedAt:item.updatedAt||stamp
   });
   removeLegacyWebQueueFields(item);
   bindSharedSaveContract(item,roadmap);
