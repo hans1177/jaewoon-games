@@ -16,9 +16,9 @@ const designContent=()=>({
   coreLoop:['prepare','play','resolve','upgrade'],
   signatureSystems:[{name:'Core Action',purpose:'main loop'},{name:'Growth',purpose:'progression'}],
   progressionDirection:'Persistent unlocks improve future sessions.',
-  failureRetryRisk:{failureStates:['defeat'],retryFlow:'restart stronger'},
+  failureRetryRisk:{failureStates:['defeat','failed objective'],retryFlow:'restart stronger'},
   multiplayerMode:'COOP',
-  technicalAssumptions:['authoritative gameplay separated from presentation'],
+  technicalAssumptions:['authoritative gameplay separated from presentation','save meaning remains stable across platforms'],
   platformProfiles:{
     ROBLOX:{
       platform:'ROBLOX',inputModel:'touch keyboard gamepad',sessionModel:'drop-in session',
@@ -173,7 +173,7 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.match(workflow,/id:\s*queue_state/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.match(workflow,/company-minimum-design-contract\.mjs/);
-  assert.match(workflow,/game-seed-state\.json/);
+  assert.match(source,/game-seed-state\.json/);
   assert.match(workflow,/MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT/);
   assert.match(workflow,/UNITY_WEB_ADMISSION_AUTHORITY=NONE/);
   assert.doesNotMatch(workflow,/COMPANY_FLOW\.md/);
