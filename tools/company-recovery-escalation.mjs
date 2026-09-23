@@ -19,6 +19,11 @@ function evidenceSignature(task={}){
   if(cause)return clean(cause.slice('failure-cause:'.length));
   return clean(task.blocker||task.lastOutcome);
 }
+function systemAiCohortKey(task={},signature=''){
+  if(clean(signature)==='system-ai-infrastructure-contract-failed')return 'SHARED_SYSTEM_AI_INFRASTRUCTURE';
+  const files=uniq(task.responsibleFiles).sort();
+  return files.length?'RESPONSIBLE_FILES:'+files.join('|'):'TASK:'+clean(task.id);
+}
 function failureStage(task={}){
   const ev=uniq(task.evidence);
   const recoveryExact=[...ev].reverse().find(x=>x.startsWith('recovery-exact-stage:'));
@@ -105,7 +110,7 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
   }
   const grouped=new Map();
   for(const row of candidates){
-    const key=row.sourceQueue+'|'+row.signature;
+    const key=row.sourceQueue+'|'+row.signature+(row.sourceQueue==='system-ai'?'|'+systemAiCohortKey(row.task,row.signature):'');
     if(!grouped.has(key))grouped.set(key,[]);
     grouped.get(key).push(row);
   }
