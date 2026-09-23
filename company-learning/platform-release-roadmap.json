@@ -1,5 +1,5 @@
 {
-  "version": 282,
+  "version": 283,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T10:40:00+09:00",
+  "updatedAt": "2026-09-23T10:44:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6350,7 +6350,7 @@
       "postImplementationSync": {
         "reserveCollisionHardening": "VERIFIED_RUNTIME_RUN_612_RESERVE_SUCCESS",
         "verifiedLearningOutcomeFeedback": "IMPLEMENTED_PENDING_FULL_WORKER_FANIN_RUNTIME_OBSERVATION",
-        "revision": "c556915ea3022ef8002dec8acba9b2bb95e78e7d",
+        "revision": "eec5aa2219bc4523bb08f0c4d9d293772f0bbc2e",
         "failureClassifierQaDriftFailClosed": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION",
         "liveBottleneckWaitMetrics": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION",
         "securityBindingRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
@@ -6401,7 +6401,13 @@
         "responsibilityScopedRecoveryCohortsTestRevision": "c556915ea3022ef8002dec8acba9b2bb95e78e7d",
         "crossScopeCanaryDependencyReconciliation": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
         "crossScopeCanaryDependencyReconciliationRevision": "16a40328b8d05c4416cad1672606ad38cb489a18",
-        "crossScopeCanaryDependencyReconciliationTestRevision": "2a7ab4957c5c670ca03ea689a384fa0aab471147"
+        "crossScopeCanaryDependencyReconciliationTestRevision": "2a7ab4957c5c670ca03ea689a384fa0aab471147",
+        "pushQaOnlyTrigger": "IMPLEMENTED_TEST_COVERED",
+        "pushQaOnlyTriggerRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
+        "pushQaOnlyTriggerTestRevision": "7514d87deae8799f9891eaf67fe2a684dcccd55b",
+        "pushQaReserveLockIsolation": "IMPLEMENTED_TEST_COVERED",
+        "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c",
+        "pushQaReserveLockIsolationTestRevision": "eec5aa2219bc4523bb08f0c4d9d293772f0bbc2e"
       }
     }
   },
@@ -14242,7 +14248,19 @@
             "2a7ab4957c5c670ca03ea689a384fa0aab471147",
             "c556915ea3022ef8002dec8acba9b2bb95e78e7d"
           ],
-          "crossScopeCanaryLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN"
+          "crossScopeCanaryLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+          "pushEventMode": "QA_ONLY_NO_RESERVATION",
+          "pushQaRunsCoalesced": true,
+          "pushQaReserveLockSeparated": true,
+          "executionReservationEvents": [
+            "repository_dispatch",
+            "schedule",
+            "workflow_dispatch",
+            "workflow_call"
+          ],
+          "pendingRunMetricExcludesPushQa": true,
+          "pushQaOnlyRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
+          "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c"
         },
         "verifiedLearningFeedback": {
           "producer": "tools/company-system-ai-learning.mjs",
@@ -14254,7 +14272,7 @@
           "crossGameTransformativeAdaptationRequired": true,
           "rawCrossGameCopyForbidden": true
         },
-        "latestImplementationRevision": "16a40328b8d05c4416cad1672606ad38cb489a18"
+        "latestImplementationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c"
       }
     }
   },
