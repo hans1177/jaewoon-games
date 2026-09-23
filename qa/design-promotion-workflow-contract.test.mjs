@@ -58,6 +58,8 @@ test('promotion dispatches both native lanes and does not use Unity Web as a pro
   assert.match(promotion,/company-development-roblox-runtime\.yml/);
   assert.match(promotion,/company-development-unity-runtime\.yml/);
   assert.match(promotion,/DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY/);
-  assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NO/);
+  assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NONE/);
+  assert.match(promotion,/UNITY_WEB_ROLE=OPTIONAL_NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.match(promotion,/legacy Web admission key remains/);
   assert.match(promotion,/ONE_PLATFORM_REQUEST_STARTS_BOTH=YES/);
 });
