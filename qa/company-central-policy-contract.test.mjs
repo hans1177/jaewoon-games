@@ -152,7 +152,7 @@ test('Unity Web is the browser validation surface of the same canonical Unity pr
   assert.equal(architecture.homepagePipeline?.unityWebDisabled,false);
   assert.equal(architecture.homepagePipeline?.webPlaySurfaceDisabled,false);
   assert.match(designCycle,/unityWebValidationSurfaceContract/);
-  assert.match(designCycle,/same canonical Unity 프로젝트/);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment?.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
   assert.match(nativeDevelopmentWorkflow,/gh workflow run unity-web-first-stage-build\.yml/);
   assert.match(nativeDevelopmentWorkflow,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
   assert.match(unityRuntimeWorkflow,/UNITY_WEB_VALIDATION=NON_BLOCKING_SEPARATE_WORKFLOW/);
