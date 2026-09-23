@@ -1,5 +1,5 @@
 {
-  "version": 287,
+  "version": 288,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T10:55:00+09:00",
+  "updatedAt": "2026-09-23T11:38:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -13893,7 +13893,10 @@
     "balanceResponsibilityMergedInto": [
       "planning",
       "qa"
-    ]
+    ],
+    "strictDesignParallelWithDevelopment": true,
+    "activeDevelopmentGlobalDesignDeferForbidden": true,
+    "activeOwnerResetSource": "owner-design-reset-queue.json"
   },
   "aiExecutionEfficiency": {
     "version": 1,
@@ -14969,7 +14972,7 @@
     }
   },
   "canonicalProductionDepartments": {
-    "version": 1,
+    "version": 2,
     "roles": [
       "planning",
       "graphics",
@@ -14983,6 +14986,11 @@
     "balanceResponsibilityMergedInto": [
       "planning",
       "qa"
-    ]
+    ],
+    "runtime": ".github/workflows/company-seed-design-runtime.yml",
+    "activeOwnerResetSource": "owner-design-reset-queue.json",
+    "strictDesignContinuesParallelWithDevelopment": true,
+    "activeDevelopmentMayNotGloballyDeferStrictDesign": true,
+    "unityWebRole": "VALIDATION_SURFACE_ONLY"
   }
 }
