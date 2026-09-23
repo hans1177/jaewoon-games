@@ -176,6 +176,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             blockedTaskIds:uniq([...(task.blockedTaskIds||[]),...ids.filter(id=>id!==clean(task.id))]),
             blastRadius:clean(rec.blastRadius)||task.blastRadius||null,
             recurrenceCount:Math.max(Number(task.recurrenceCount||0),Number(rec.recurrenceCount||0),ids.length),
+            repairMode:Math.max(Number(task.recurrenceCount||0),Number(rec.recurrenceCount||0),ids.length)>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR',
+            userAssistanceRequired:false,
             gameRepairContract:{
               ...(task.gameRepairContract||{}),
               version:1,
@@ -211,6 +213,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             responsibleFiles:uniq(rec.responsibleFiles),contextFiles:uniq(rec.contextFiles),
             failureStage:clean(rec.failureStage)||null,failureSignature:clean(rec.failureSignature)||null,
             relatedTaskIds:ids,blockedTaskIds:ids,blastRadius:clean(rec.blastRadius)||null,recurrenceCount,
+            repairMode,userAssistanceRequired:false,
             sourceMutationRequired:true,sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
             gameRepairContract:{
               version:1,mode:repairMode,
