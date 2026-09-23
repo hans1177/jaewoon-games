@@ -107,6 +107,18 @@ test('workflow wait telemetry separates runnable reservation, fan-in job wait, a
   assert.match(workflow,/Math\.max\(\.\.\.stamps\)/);
 });
 
+test('push-triggered System AI runs are coalesced QA-only and never reserve workers',()=>{
+  assert.match(workflow,/group: company-system-ai-\$\{\{ github\.event_name == 'push' && 'push-qa' \|\| github\.run_id \}\}/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  const reserve=workflow.slice(workflow.indexOf('- name: Reserve disjoint supervised assignments'),workflow.indexOf('\n  worker:'));
+  assert.match(reserve,/if \[ "\$\{GITHUB_EVENT_NAME\}" = 'push' \]; then/);
+  assert.match(reserve,/COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES/);
+  assert.match(reserve,/matrix=\{"include":\[\]\}/);
+  assert.match(reserve,/count=0/);
+  assert.match(reserve,/\.event!="push"/);
+  assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch origin vibe2-unreal-core'));
+});
+
 test('verification-only System AI tasks run deterministic contracts before any model call',()=>{
   const preverify=workflow.indexOf('- name: Verify existing verifier contract before model');
   const implement=workflow.indexOf('- name: Execute external AI assignment');
