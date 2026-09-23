@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: 'Optional game id. DESIGN_ONLY runs direct to Design Baseline; artbook starts after promotion. DEVELOPMENT_CONFIRMED and RELEASE_CONFIRMED resume gated pipelines.'
+        description: 'Optional game id. DESIGN_ONLY prepares minimum shared design; DEVELOPMENT_CONFIRMED delegates to direct-native Roblox+Unity runtime; RELEASE_CONFIRMED resumes release evidence.'
         required: false
         type: string
   schedule:
@@ -12,13 +12,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'game-catalog.json'
       - 'game-seed-state.json'
       - 'owner-design-reset-queue.json'
       - 'artbook-work-orders/**'
-      - 'design/**/web-gameplay-validation.json'
       - 'design/**/unity-technical-validation.json'
       - 'design/**/development-revalidation.json'
       - 'design/**/vibe2-release-implementation.json'
@@ -29,7 +27,6 @@ on:
       - 'tools/production-classification.mjs'
       - 'tools/owner-design-reset.mjs'
       - 'tools/company-design-cycle.mjs'
-      - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-baseline-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
