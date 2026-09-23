@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -276,6 +276,21 @@
       "securityBoundaryRequiresSecurityStewardPlusPrimaryAiReview": true,
       "collaborationDoesNotGrantSecurityBypass": true,
       "rawPrivateReasoningNotRequired": true
+    },
+    "implementationState": "IMPLEMENTED_QA_VERIFIED_ACTIVE_RUNTIME",
+    "runtimeBindings": [
+      "tools/company-system-ai-failure-classifier.mjs",
+      "tools/company-system-ai-qa-contract-review.mjs",
+      "tools/company-system-ai-worker.mjs",
+      "tools/company-system-ai-queue.mjs",
+      ".github/workflows/company-system-ai-workers.yml"
+    ],
+    "verification": {
+      "implementationRevision": "5e1dc153d62167c95da3ec1465217a4f24193dd8",
+      "securityImmuneRun": 3154,
+      "result": "PASS",
+      "centralPolicyQaRun": 2261,
+      "integratedRegressionRun": 7913
     }
   }
 }
