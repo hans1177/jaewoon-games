@@ -7,7 +7,7 @@ const json=p=>JSON.parse(read(p));
 
 const cases=[
  {id:'cozy-island',graphics:'COZY_CHIBI_STORYBOOK',world:'COZY_CHIBI_KINGDOM_WORLD_V8',character:'COZY_CHIBI_KINGDOM',design:'design/cozy-island/2026-09-22/design-revised.json',md:'design/cozy-island/2026-09-22/GAME_DESIGN.md'},
- {id:'daechung-rpg',graphics:'RPG_STYLIZED_TOY_DARK_FANTASY',world:'RPG_FANTASY_PORTAL_WORLD_V5',character:'RPG_STYLIZED_TOY_FANTASY_R15',design:'design/daechung-rpg/2026-09-22/design-revised.json',md:'design/daechung-rpg/2026-09-22/GAME_DESIGN.md'},
+ {id:'daechung-rpg',graphics:'RPG_STYLIZED_TOY_DARK_FANTASY',world:'RPG_FANTASY_PORTAL_WORLD_V6',character:'RPG_STYLIZED_TOY_FANTASY_R15_V2',design:'design/daechung-rpg/2026-09-22/design-revised.json',md:'design/daechung-rpg/2026-09-22/GAME_DESIGN.md'},
  {id:'horror-escape-room',graphics:'REALISTIC_HUMANS_ABERRANT_MONSTERS',world:'INFECTION_HORROR_V9',character:'REALISTIC_HUMANS_ABERRANT_MONSTERS',design:'design/horror-escape-room/2026-09-22/design-revised.json',md:'design/horror-escape-room/2026-09-22/GAME_DESIGN.md'}
 ];
 

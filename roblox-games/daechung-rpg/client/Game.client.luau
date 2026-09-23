@@ -4,6 +4,7 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
+local TweenService=game:GetService("TweenService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
@@ -47,25 +48,45 @@ end)
 local function corner(x,r)local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,r or 10);c.Parent=x end
 local function stroke(x,t)local s=Instance.new("UIStroke");s.Thickness=1.3;s.Transparency=t or .5;s.Parent=x end
 local function button(parent,text,color)
- local b=Instance.new("TextButton");b.Text=text;b.TextScaled=true;b.Font=Enum.Font.GothamBold;b.TextColor3=Color3.new(1,1,1);b.BackgroundColor3=color;b.Parent=parent;corner(b,11);stroke(b,.48);return b
+ local b=Instance.new("TextButton");b.Text=text;b.TextScaled=false;b.TextSize=14;b.TextWrapped=true;b.Font=Enum.Font.GothamBold;b.TextColor3=Color3.new(1,1,1);b.BackgroundColor3=color;b.AutoButtonColor=true;b.Parent=parent;corner(b,12);stroke(b,.55);return b
+end
+local function bar(parent,name,pos,size,backColor,fillColor)
+ local back=Instance.new("Frame");back.Name=name.."Back";back.Position=pos;back.Size=size;back.BackgroundColor3=backColor;back.BorderSizePixel=0;back.Parent=parent;corner(back,99)
+ local fill=Instance.new("Frame");fill.Name=name;fill.Size=UDim2.fromScale(1,1);fill.BackgroundColor3=fillColor;fill.BorderSizePixel=0;fill.Parent=back;corner(fill,99)
+ return fill
 end
 
-local stats=Instance.new("Frame");stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(214,82)or UDim2.fromOffset(270,88);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.BackgroundTransparency=.1;stats.Parent=gui;corner(stats,13);stroke(stats,.5)
-local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
-local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,38);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
+-- Compact mobile HUD: status stays in corners, objectives only appear when active,
+-- and transient messages use a toast instead of covering the center of the screen.
+local stats=Instance.new("Frame");stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(196,78)or UDim2.fromOffset(248,82);stats.Position=UDim2.fromOffset(10,10);stats.BackgroundColor3=Color3.fromRGB(18,21,27);stats.BackgroundTransparency=.14;stats.Parent=gui;corner(stats,14);stroke(stats,.58)
+local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-16,0,20);title.Position=UDim2.fromOffset(8,5);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,225,164);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=14;title.Parent=stats
+local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-16,0,27);statLine.Position=UDim2.fromOffset(8,25);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(228,232,239);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=10;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
+local hpFill=bar(stats,"HP",UDim2.fromOffset(8,54),UDim2.new(1,-16,0,6),Color3.fromRGB(54,57,64),Color3.fromRGB(200,78,72))
+local xpFill=bar(stats,"XP",UDim2.fromOffset(8,64),UDim2.new(1,-16,0,4),Color3.fromRGB(48,51,59),Color3.fromRGB(221,184,85))
+local classBadge=Instance.new("TextLabel");classBadge.Name="ClassBadge";classBadge.Size=UDim2.new(1,-16,0,10);classBadge.Position=UDim2.fromOffset(8,68);classBadge.BackgroundTransparency=1;classBadge.TextColor3=Color3.fromRGB(185,205,255);classBadge.TextXAlignment=Enum.TextXAlignment.Left;classBadge.TextSize=9;classBadge.Font=Enum.Font.GothamBold;classBadge.Parent=stats
 
-local classBadge=Instance.new("TextLabel");classBadge.Name="ClassBadge";classBadge.Size=UDim2.new(1,-14,0,16);classBadge.Position=UDim2.fromOffset(7,64);classBadge.BackgroundTransparency=1;classBadge.TextColor3=Color3.fromRGB(190,207,255);classBadge.TextXAlignment=Enum.TextXAlignment.Left;classBadge.TextSize=11;classBadge.Font=Enum.Font.GothamBold;classBadge.Parent=stats
+local objective=Instance.new("TextLabel");objective.Name="QuestObjective";objective.AnchorPoint=Vector2.new(.5,0);objective.Position=UDim2.new(.5,0,0,14);objective.Size=touchEnabled and UDim2.fromOffset(250,30)or UDim2.fromOffset(310,32);objective.BackgroundColor3=Color3.fromRGB(24,27,34);objective.BackgroundTransparency=.15;objective.TextColor3=Color3.fromRGB(255,220,146);objective.TextWrapped=true;objective.TextSize=12;objective.Font=Enum.Font.GothamBold;objective.Visible=false;objective.Parent=gui;corner(objective,10);stroke(objective,.58)
 
-local objective=Instance.new("TextLabel");objective.Name="QuestObjective";objective.AnchorPoint=Vector2.new(.5,0);objective.Position=touchEnabled and UDim2.new(.5,0,0,96)or UDim2.new(.5,0,0,8);objective.Size=touchEnabled and UDim2.fromOffset(276,34)or UDim2.fromOffset(330,38);objective.BackgroundColor3=Color3.fromRGB(31,34,43);objective.BackgroundTransparency=.12;objective.TextColor3=Color3.fromRGB(255,220,146);objective.TextWrapped=true;objective.TextSize=13;objective.Font=Enum.Font.GothamBold;objective.Parent=gui;corner(objective,11);stroke(objective,.52)
+local toast=Instance.new("TextLabel");toast.Name="ActionToast";toast.AnchorPoint=Vector2.new(.5,1);toast.Position=UDim2.new(.5,0,1,-58);toast.Size=touchEnabled and UDim2.fromOffset(260,32)or UDim2.fromOffset(330,34);toast.BackgroundColor3=Color3.fromRGB(26,28,35);toast.BackgroundTransparency=.12;toast.TextColor3=Color3.fromRGB(242,238,226);toast.TextWrapped=true;toast.TextSize=11;toast.Font=Enum.Font.GothamBold;toast.Visible=false;toast.Parent=gui;corner(toast,10);stroke(toast,.6)
+local toastToken=0
+local function showToast(text)
+ if not text or text==""then return end
+ toastToken+=1;local token=toastToken;toast.Text=text;toast.Visible=true;toast.TextTransparency=0;toast.BackgroundTransparency=.12
+ task.delay(2.25,function()
+  if token~=toastToken or not toast.Parent then return end
+  TweenService:Create(toast,TweenInfo.new(.22),{TextTransparency=1,BackgroundTransparency=1}):Play()
+  task.wait(.24);if token==toastToken and toast.Parent then toast.Visible=false end
+ end)
+end
 
-local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-8,0,8);party.Size=touchEnabled and UDim2.fromOffset(116,58)or UDim2.fromOffset(142,64);party.BackgroundColor3=Color3.fromRGB(29,32,40);party.BackgroundTransparency=.1;party.Parent=gui;corner(party,12);stroke(party,.5)
-local partyText=Instance.new("TextLabel");partyText.Size=UDim2.new(1,-12,1,-10);partyText.Position=UDim2.fromOffset(6,5);partyText.BackgroundTransparency=1;partyText.TextColor3=Color3.fromRGB(220,232,241);partyText.TextSize=11;partyText.TextWrapped=true;partyText.Font=Enum.Font.GothamBold;partyText.Parent=party
+local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-10,0,10);party.Size=touchEnabled and UDim2.fromOffset(108,46)or UDim2.fromOffset(126,50);party.BackgroundColor3=Color3.fromRGB(20,23,29);party.BackgroundTransparency=.14;party.Parent=gui;corner(party,12);stroke(party,.58)
+local partyText=Instance.new("TextLabel");partyText.Size=UDim2.new(1,-10,1,-8);partyText.Position=UDim2.fromOffset(5,4);partyText.BackgroundTransparency=1;partyText.TextColor3=Color3.fromRGB(220,230,238);partyText.TextSize=10;partyText.TextWrapped=true;partyText.Font=Enum.Font.GothamBold;partyText.Parent=party
 
-local combat=Instance.new("Frame");combat.Name="CombatDock";combat.AnchorPoint=Vector2.new(1,.5);combat.Position=UDim2.new(1,-12,.5,30);combat.Size=UDim2.fromOffset(62,232);combat.BackgroundTransparency=1;combat.Parent=gui
-local attack=button(combat,"공격",Color3.fromRGB(166,65,55));attack.Size=UDim2.fromOffset(58,50);attack.Position=UDim2.fromOffset(2,0)
-local skill=button(combat,"스킬",Color3.fromRGB(100,69,166));skill.Size=UDim2.fromOffset(58,50);skill.Position=UDim2.fromOffset(2,58)
-local block=button(combat,"막기",Color3.fromRGB(74,102,151));block.Name="BlockParry";block.Size=UDim2.fromOffset(58,50);block.Position=UDim2.fromOffset(2,116)
-local dodge=button(combat,"회피",Color3.fromRGB(54,115,139));dodge.Size=UDim2.fromOffset(58,50);dodge.Position=UDim2.fromOffset(2,174)
+local combat=Instance.new("Frame");combat.Name="CombatDock";combat.AnchorPoint=Vector2.new(1,1);combat.Position=UDim2.new(1,-12,1,-74);combat.Size=UDim2.fromOffset(116,116);combat.BackgroundTransparency=1;combat.Parent=gui
+local attack=button(combat,"공격",Color3.fromRGB(162,67,57));attack.Size=UDim2.fromOffset(54,54);attack.Position=UDim2.fromOffset(0,0)
+local skill=button(combat,"스킬",Color3.fromRGB(94,70,153));skill.Size=UDim2.fromOffset(54,54);skill.Position=UDim2.fromOffset(62,0)
+local block=button(combat,"막기",Color3.fromRGB(68,97,142));block.Name="BlockParry";block.Size=UDim2.fromOffset(54,54);block.Position=UDim2.fromOffset(0,62)
+local dodge=button(combat,"회피",Color3.fromRGB(51,108,128));dodge.Size=UDim2.fromOffset(54,54);dodge.Position=UDim2.fromOffset(62,62)
 local combatTracks={}
 local function playCombatAnimation(skillCast)
  local c=p.Character;local h=c and c:FindFirstChildOfClass("Humanoid");if not h then return end
@@ -113,14 +134,14 @@ end
 local advA=button(classPanel,"",Color3.fromRGB(91,125,160));advA.Size=UDim2.new(1,-24,0,68);advA.Position=UDim2.fromOffset(12,65);advA.Activated:Connect(function()remote:FireServer(C.Actions.ADVANCE_A)end)
 local advB=button(classPanel,"",Color3.fromRGB(139,83,125));advB.Size=UDim2.new(1,-24,0,68);advB.Position=UDim2.fromOffset(12,145);advB.Activated:Connect(function()remote:FireServer(C.Actions.ADVANCE_B)end)
 
-local returnButton=button(gui,"마을 귀환",Color3.fromRGB(61,111,86));returnButton.Name="ReturnVillage";returnButton.AnchorPoint=Vector2.new(.5,1);returnButton.Position=UDim2.new(.5,0,1,-10);returnButton.Size=UDim2.fromOffset(116,36)
+local returnButton=button(gui,"마을 귀환",Color3.fromRGB(61,111,86));returnButton.Name="ReturnVillage";returnButton.AnchorPoint=Vector2.new(.5,1);returnButton.Position=UDim2.new(.5,0,1,-12);returnButton.Size=UDim2.fromOffset(104,32);returnButton.TextSize=12
 returnButton.Activated:Connect(function()remote:FireServer(C.Actions.RETURN_VILLAGE)end)
 
-local multi=button(gui,"멀티 코드 1",Color3.fromRGB(55,76,119));multi.Name="MultiplayerCode";multi.AnchorPoint=touchEnabled and Vector2.new(1,1)or Vector2.new(1,0);multi.Position=touchEnabled and UDim2.new(1,-8,1,-10)or UDim2.new(1,-8,0,80);multi.Size=UDim2.fromOffset(112,32)
+local multi=button(gui,"방 1",Color3.fromRGB(49,67,103));multi.Name="MultiplayerCode";multi.AnchorPoint=Vector2.new(1,0);multi.Position=UDim2.new(1,-10,0,62);multi.Size=UDim2.fromOffset(74,28);multi.TextSize=11
 multi.Activated:Connect(function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end)
 
-local hint=Instance.new("TextLabel");hint.Name="WorldHint";hint.AnchorPoint=Vector2.new(0,1);hint.Position=UDim2.new(0,8,1,-10);hint.Size=touchEnabled and UDim2.fromOffset(170,32)or UDim2.fromOffset(220,34);hint.BackgroundColor3=Color3.fromRGB(25,28,35);hint.BackgroundTransparency=.3;hint.TextColor3=Color3.fromRGB(226,230,235);hint.TextSize=11;hint.Font=Enum.Font.Gotham;hint.TextWrapped=true;hint.Text="마을 포탈로 이동 · AI는 두 번 터치해 파티 초대";hint.Parent=gui;corner(hint,9)
-if touchEnabled then task.delay(9,function()if hint.Parent then hint.Visible=false end end)end
+local hint=Instance.new("TextLabel");hint.Name="WorldHint";hint.AnchorPoint=Vector2.new(0,1);hint.Position=UDim2.new(0,10,1,-10);hint.Size=touchEnabled and UDim2.fromOffset(150,27)or UDim2.fromOffset(205,29);hint.BackgroundColor3=Color3.fromRGB(22,25,31);hint.BackgroundTransparency=.26;hint.TextColor3=Color3.fromRGB(221,226,232);hint.TextSize=10;hint.Font=Enum.Font.Gotham;hint.TextWrapped=true;hint.Text="포탈 입장 · 보스 동료는 마을에서 편성";hint.Parent=gui;corner(hint,9)
+if touchEnabled then task.delay(7,function()if hint.Parent then hint.Visible=false end end)end
 
 local function zoneName(id)
  if id==0 then return"마을"end
@@ -147,7 +168,9 @@ local function render()
  local hp=0;local maxHP=p:GetAttribute("MaxHP")or 100
  local h=p.Character and p.Character:FindFirstChildOfClass("Humanoid");if h then hp=math.floor(h.Health)end
  local mastery=p:GetAttribute("MasteryLevel")or 0;local levelLabel=level>=(C.LevelCap or 60)and("Lv."..level.." MAX")or("Lv."..level)
- statLine.Text=string.format("%s  HP %d/%d  공격 %d\n골드 %d · 무기 T%d · 방어구 T%d · 유물 %s%s",levelLabel,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1,tostring(p:GetAttribute("RelicId")or"NONE"),mastery>0 and(" · 숙련 "..mastery)or"")
+ statLine.Text=string.format("%s · HP %d/%d · 공격 %d\n골드 %d · 무기T%d 방어T%d · 유물 %s%s",levelLabel,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1,tostring(p:GetAttribute("RelicId")or"NONE"),mastery>0 and(" · 숙련"..mastery)or"")
+ hpFill.Size=UDim2.fromScale(math.clamp(hp/math.max(1,maxHP),0,1),1)
+ local nextXP=level>=(C.LevelCap or 60)and 1 or math.max(1,level*100);xpFill.Size=UDim2.fromScale(level>=(C.LevelCap or 60)and 1 or math.clamp(xp/nextXP,0,1),1)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=C.Classes[classId];local adv=tostring(p:GetAttribute("AdvancementId")or"");local second=tostring(p:GetAttribute("SecondAdvancementId")or"")
  local advName="";if cd and adv~=""then for _,a in pairs(cd.Advancements)do if a.Id==adv then advName=" → "..a.Name;if second~=""and a.SecondId==second then advName=advName.." → "..(a.SecondName or second)end;break end end end
  classBadge.Text=(cd and cd.Name or"직업 미선택")..advName
@@ -155,26 +178,28 @@ local function render()
  local qp=p:GetAttribute("QuestPortal")or 0
  local qk=p:GetAttribute("QuestKills")or 0
  local qn=p:GetAttribute("QuestNeed")or 0
- if qp>0 then objective.Text=string.format("퀘스트 · %s 몬스터 %d/%d",zoneName(qp),qk,qn)else objective.Text=(p:GetAttribute("LastAction")or"마을 이장에게 퀘스트를 받아.")end
+ objective.Visible=qp>0
+ if qp>0 then objective.Text=string.format("퀘스트 · %s %d/%d",zoneName(qp),qk,qn)end
  local pc=p:GetAttribute("PartyCount")or 0
  local pk=p:GetAttribute("PartyKills")or 0
  local contrib=p:GetAttribute("Contribution")or 0
- partyText.Text=(p:GetAttribute("PartyHuntActive")==true)and string.format("파티 %d/4\n사냥 %d/%d · 기여 %d",pc+1,pk,C.PartyHuntTarget,contrib)or string.format("파티 %d/4\n동료 두번 터치",pc+1)
+ partyText.Text=(p:GetAttribute("PartyHuntActive")==true)and string.format("파티 %d/4 · 사냥 %d/%d\n기여 %d",pc+1,pk,C.PartyHuntTarget,contrib)or string.format("파티 %d/4 · 동료 %d\n마을에서 편성",pc+1,pc)
  local combatLocked=p:GetAttribute("InCombat")==true
  returnButton.Visible=zone>0
  returnButton.Text=combatLocked and"전투 중 귀환 불가"or"마을 귀환"
  returnButton.BackgroundColor3=combatLocked and Color3.fromRGB(104,65,65)or Color3.fromRGB(61,111,86)
- multi.Text="멀티 코드 "..tostring(p:GetAttribute("RoomCode")or 1)
+ multi.Text="방 "..tostring(p:GetAttribute("RoomCode")or 1)
  local trial=p:GetAttribute("AdvancementTrialActive")==true
- if trial then objective.Text=string.format("전직 시험 · %d/%d · %s",p:GetAttribute("AdvancementTrialProgress")or 0,C.AdvancementTrialTarget,p:GetAttribute("LastAction")or"")end
+ if trial then objective.Visible=true;objective.Text=string.format("전직 시험 · %d/%d",p:GetAttribute("AdvancementTrialProgress")or 0,C.AdvancementTrialTarget)end
  local guard=math.floor(p:GetAttribute("Guard")or C.GuardMax);local blocking=p:GetAttribute("Blocking")==true
- block.Text=(blocking and"막는중"or"막기").."\n"..guard
+ block.Text=(blocking and"막는중 "or"막기 ")..guard
  block.BackgroundColor3=blocking and Color3.fromRGB(83,139,177)or Color3.fromRGB(74,102,151)
- if zone==1 then hint.Text="초원 RUN "..tostring(p:GetAttribute("CurrentRunSeed")or 0).." · 노랑=패링 / 빨강=회피"else hint.Text=zone==0 and"포탈 1~5 선택 · 보스 동료 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")end
+ if zone==1 then hint.Text="RUN "..tostring(p:GetAttribute("CurrentRunSeed")or 0).." · 노랑 패링 / 빨강 회피"else hint.Text=zone==0 and"포탈 입장 · 보스 동료는 마을에서 편성"or(zoneName(zone).." · 멀어지면 어그로 해제")end
  if classId=="BREAKER"then skill.Text="파쇄"elseif classId=="SHADOW"then skill.Text="그림자"elseif classId=="RUNE"then skill.Text="룬"elseif classId=="SOUL"then skill.Text="영혼"else skill.Text="스킬"end
  renderClassPanel()
 end
-for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
+for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
+p:GetAttributeChangedSignal("LastAction"):Connect(function()showToast(tostring(p:GetAttribute("LastAction")or""));render()end)
 local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()

@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
   "releaseStrategy": "FAST_MVP",
@@ -16,7 +16,6 @@
     "level scaling: max HP +10 and attack +10",
     "combat-locked village return",
     "monster aggro and leash reset",
-    "double-click AI party invite/remove",
     "15-kill party hunts with contribution rewards",
     "four starter classes: Breaker, Shadow Tracker, Rune Caster, Soul Summoner",
     "level-15 class trials with two first-advancement branches per starter class",
@@ -38,7 +37,15 @@
     "boss-first-clear companion unlocks: recruitable bosses become AI companions",
     "party composition supports the player plus up to three unlocked boss companions",
     "boss companions reuse boss silhouettes and each has one basic attack, one signature skill and one trait",
-    "boss companion combat power automatically scales to the leader level without companion gear grind"
+    "boss companion combat power automatically scales to the leader level without companion gear grind",
+    "single-prompt boss companion party toggle in the village",
+    "compact mobile HUD with corner status, 2x2 combat dock, persistent objective only when active, and transient action toast",
+    "reduced-glare stone portals with readable labels and restrained portal lighting",
+    "layered village and zone terrain dressing to avoid flat baseplate presentation",
+    "distinct role silhouettes for player class gear and NPCs",
+    "expanded creature silhouettes/details and distinct rune-guardian vs abyss-lord boss bodies",
+    "player death keeps joints intact instead of exploding into separated body parts",
+    "mobile-safe atmosphere, color correction, restrained bloom and sun rays"
   ],
   "deferredUntilAfterMvp": [
     "advanced cross-server room matchmaking",
@@ -60,7 +67,6 @@
     "five weapon tiers",
     "five armor tiers",
     "enemy aggro leash",
-    "AI double-click party toggle",
     "15-kill party hunt contribution rewards",
     "save/rejoin",
     "remote action allowlist and spam rejection",
@@ -81,7 +87,15 @@
     "weapon armor relic three-slot equipment contract",
     "boss first-clear unlock persists for recruitable companions",
     "player plus at most three boss companions",
-    "boss companions use boss-derived visuals and auto-scale to leader level"
+    "boss companions use boss-derived visuals and auto-scale to leader level",
+    "single prompt companion party toggle",
+    "mobile HUD avoids center-screen message stacking",
+    "portal glow does not wash out labels or player silhouettes",
+    "village and combat zones have layered terrain dressing",
+    "NPC roles are visually distinct",
+    "major creature archetypes have readable face, limb and silhouette details",
+    "third-zone and fifth-zone bosses have distinct visual bodies",
+    "player death does not break character joints"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -93,7 +107,7 @@
     "audioFeedbackPassRequired": true,
     "abuseResistancePassRequired": true
   },
-  "updatedAt": "2026-09-23T21:26:19.583Z",
+  "updatedAt": "2026-09-23T21:55:10.243Z",
   "gameTitleKo": "5포탈 RPG: 던전 파티",
   "gameTitleEn": "Five Portal RPG: Dungeon Party",
   "gameDescriptionKo": "마을에서 장비와 퀘스트를 준비하고 포탈을 돌파하는 협동 액션 RPG. 보스를 처음 격파하면 그 보스를 AI 동료로 영입해 최대 3명까지 조합할 수 있어.",
@@ -109,8 +123,8 @@
     "designJsonPath": "design/daechung-rpg/2026-09-22/design-revised.json",
     "designMarkdownPath": "design/daechung-rpg/2026-09-22/GAME_DESIGN.md",
     "graphicsConcept": "RPG_STYLIZED_TOY_DARK_FANTASY",
-    "runtimeWorldArtPass": "RPG_FANTASY_PORTAL_WORLD_V5",
-    "runtimeCharacterArtDirection": "RPG_STYLIZED_TOY_FANTASY_R15",
+    "runtimeWorldArtPass": "RPG_FANTASY_PORTAL_WORLD_V6",
+    "runtimeCharacterArtDirection": "RPG_STYLIZED_TOY_FANTASY_R15_V2",
     "rule": "GAME_DESIGN_AND_DESIGN_REVISED_MUST_MATCH_IMPLEMENTED_ROBLOX_CODE"
   }
 }
