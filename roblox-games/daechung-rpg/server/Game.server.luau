@@ -298,6 +298,19 @@ end
 local function applyPlayerAppearance(p)
  local c=p.Character;if not c then return end
  decorateCharacterModel(c,tostring(p:GetAttribute("ClassId")or"NONE"),(p.UserId%7)+1,tostring(p:GetAttribute("AdvancementId")or""))
+ local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
+ if gear then
+  for _,d in ipairs(gear:GetDescendants())do
+   if d:IsA("BasePart")and string.find(d.Name,"ClassWeapon",1,true)then
+    if weaponTier>=4 then d.Material=Enum.Material.Neon;d.Color=weaponTier>=5 and Color3.fromRGB(255,221,133)or Color3.fromRGB(169,207,255)end
+   end
+  end
+  local torso=c:FindFirstChild("UpperTorso")
+  if torso and armorTier>=4 then
+   local rune=gearPart(gear,torso,"ArmorTierRune",Vector3.new(.55,.55,.12),Vector3.new(0,.15,-.72),armorTier>=5 and Color3.fromRGB(255,214,116)or Color3.fromRGB(142,196,230),Enum.Material.Neon,Enum.PartType.Ball)
+   if rune then local light=Instance.new("PointLight");light.Brightness=.35;light.Range=5;light.Color=rune.Color;light.Parent=rune end
+  end
+ end
 end
 local function loadR15Track(h,id,priority,looped)
  local animator=h:FindFirstChildOfClass("Animator")or Instance.new("Animator",h)
@@ -801,6 +814,7 @@ local function aiAttack(ai,leader,e,now)
  local dist=(e.part.Position-ai.root.Position).Magnitude
  if dist>range then moveAITo(ai,e.part.Position);return end
  if now-ai.lastAttack<delay then return end;ai.lastAttack=now
+ if ai.attackTrack then ai.attackTrack:Play(.06,1,ai.classId=="SHADOW"and 1.5 or ai.classId=="BREAKER"and .82 or 1)end
  local dmg=10+ai.level*1.2+ai.weaponTier*3
  if ai.classId=="BREAKER"then dmg*=1.22 elseif ai.classId=="SHADOW"then dmg*=1.08 elseif ai.classId=="RUNE"then dmg*=1.12 else dmg*=.95 end
  if ai.advancementId=="RAGE_BREAKER"or ai.advancementId=="ASSASSIN_TRACKER"or ai.advancementId=="OVERLOAD_RUNER"or ai.advancementId=="WRAITH_MASTER"then dmg*=1.16 end
@@ -819,7 +833,7 @@ local function makeAI()
   if model and part and h then
    local gui=label(part,def.Name.." · "..classDisplay(def.Class,""),Color3.fromRGB(240,240,234),32);local textLabel=gui:FindFirstChildOfClass("TextLabel")
    local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=18;cd.Parent=part
-   local ai={id=i,def=def,model=model,part=part,root=part,humanoid=h,label=textLabel,classId=def.Class,advancementId="",zone=0,gold=70,weaponTier=1,level=math.min(14,3+i),xp=0,lastAttack=0,nextWander=0,nextAdventure=os.clock()+20+i*2,pathBusy=false,nextPathAt=0}
+   local ai={id=i,def=def,model=model,part=part,root=part,humanoid=h,label=textLabel,classId=def.Class,advancementId="",zone=0,gold=70,weaponTier=1,level=math.min(14,3+i),xp=0,lastAttack=0,nextWander=0,nextAdventure=os.clock()+20+i*2,pathBusy=false,nextPathAt=0,attackTrack=loadR15Track(h,522635514,Enum.AnimationPriority.Action,false)}
    table.insert(aiUsers,ai);refreshAILabel(ai)
    cd.MouseClick:Connect(function(p)
     clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][i]or 0;clickTimes[p][i]=now
@@ -843,7 +857,7 @@ local function buildWorld()
  Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
  makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
  for _,z in ipairs(C.Portals)do for i=1,10 do spawnEnemy(z,false,i)end;if z.Boss then spawnEnemy(z,true,1)end end
- workspace:SetAttribute("WorldArtPass","RPG_FANTASY_SILHOUETTE_WORLD_V5");workspace:SetAttribute("CharacterArtDirection","RPG_STYLIZED_TOY_FANTASY_R15");workspace:SetAttribute("MedievalAssetBase",tostring(C.MedievalCharacterAssetId))
+ workspace:SetAttribute("WorldArtPass","RPG_FANTASY_PORTAL_WORLD_V5");workspace:SetAttribute("CharacterArtDirection","RPG_STYLIZED_TOY_FANTASY_R15");workspace:SetAttribute("MedievalAssetBase",tostring(C.MedievalCharacterAssetId))
  foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
@@ -928,7 +942,7 @@ buildWorld()
 local function bindPlayer(p)
  load(p)
  local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
- p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance)
+ p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("WeaponTier"):Connect(refreshAppearance);p:GetAttributeChangedSignal("ArmorTier"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
   task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
  end)
