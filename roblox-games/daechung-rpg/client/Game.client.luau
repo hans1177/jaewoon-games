@@ -10,8 +10,9 @@ local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
+local foundationRoundtrip=false
 foundationRemote.OnClientEvent:Connect(function(kind)
- if kind=="REMOTE_PONG"then foundationRemote:FireServer("REMOTE_ROUNDTRIP")end
+ if kind=="REMOTE_PONG"then foundationRoundtrip=true;foundationRemote:FireServer("REMOTE_ROUNDTRIP")end
 end)
 
 local function sound(name,id,volume)
@@ -23,8 +24,14 @@ local skillSfx=sound("RPGSkill",C.Audio.Skill,.24)
 local levelSfx=sound("RPGLevel",C.Audio.LevelUp,.26)
 
 local gui=Instance.new("ScreenGui");gui.Name="RPGHUD";gui.ResetOnSpawn=false;gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui:SetAttribute("TouchEnabled",touchEnabled);gui.Parent=p:WaitForChild("PlayerGui")
-foundationRemote:FireServer("INPUT_READY")
-foundationRemote:FireServer("REMOTE_PING")
+task.spawn(function()
+ for _=1,20 do
+  foundationRemote:FireServer("INPUT_READY")
+  foundationRemote:FireServer("REMOTE_PING")
+  if foundationRoundtrip then break end
+  task.wait(.5)
+ end
+end)
 task.spawn(function()
  local camera=workspace.CurrentCamera
  local character=p.Character or p.CharacterAdded:Wait()
