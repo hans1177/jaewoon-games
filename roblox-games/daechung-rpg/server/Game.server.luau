@@ -6,6 +6,8 @@ local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
 local AssetService=game:GetService("AssetService")
+local PathfindingService=game:GetService("PathfindingService")
+local TweenService=game:GetService("TweenService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -34,7 +36,7 @@ local foundationSeen={}
 local foundationSequence=0
 local foundationLast={}
 local assetCache={}
-local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293}
+local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293,MedievalArmor=C.MedievalCharacterAssetId,MedievalHouseA=C.MedievalHouseAssetIds[1],MedievalHouseB=C.MedievalHouseAssetIds[2]}
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
@@ -42,6 +44,16 @@ local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("H
 local function feedback(p,k)p:SetAttribute("FeedbackEvent",k..":"..tostring(math.floor(os.clock()*1000)))end
 local function msg(p,t)p:SetAttribute("LastAction",t)end
 local function portalDef(id)for _,z in ipairs(C.Portals)do if z.Id==id then return z end end end
+local function classDef(id)return C.Classes[tostring(id or"")]end
+local function advancementDef(classId,advId)
+ local c=classDef(classId);if not c then return nil end
+ for _,a in pairs(c.Advancements or{})do if a.Id==advId then return a end end
+ return nil
+end
+local function classDisplay(classId,advId)
+ local a=advancementDef(classId,advId);if a then return a.Name end
+ local c=classDef(classId);return c and c.Name or"직업 미선택"
+end
 local function loadFoundationState()
  local ok,old=pcall(function()return foundationStore:GetAsync("latest")end)
  if not ok or typeof(old)~="table"then return end
@@ -229,9 +241,11 @@ local function teleportPlayer(p,pos)
 end
 local function setStats(p,heal)
  local level=n(p,"Level",1);local wt=n(p,"WeaponTier",1);local at=n(p,"ArmorTier",1)
- local maxHP=C.BaseMaxHP+(level-1)*C.LevelHPGain+(C.ArmorBonus[at]or 0)
- local attack=C.BaseAttack+(level-1)*C.LevelAttackGain+(C.WeaponBonus[wt]or 0)
- p:SetAttribute("MaxHP",maxHP);p:SetAttribute("AttackPower",attack)
+ local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=classDef(classId)
+ local hpMult=cd and cd.HPMult or 1;local attackMult=cd and cd.AttackMult or 1
+ local maxHP=math.floor((C.BaseMaxHP+(level-1)*C.LevelHPGain+(C.ArmorBonus[at]or 0))*hpMult+.5)
+ local attack=math.floor((C.BaseAttack+(level-1)*C.LevelAttackGain+(C.WeaponBonus[wt]or 0))*attackMult+.5)
+ p:SetAttribute("MaxHP",maxHP);p:SetAttribute("AttackPower",attack);p:SetAttribute("ClassName",classDisplay(classId,tostring(p:GetAttribute("AdvancementId")or"")))
  local h=hum(p);if h then h.MaxHealth=maxHP;if heal then h.Health=maxHP else h.Health=math.min(h.Health,maxHP)end end
 end
 local function grantXP(p,amount)
@@ -240,12 +254,16 @@ local function grantXP(p,amount)
  p:SetAttribute("XP",xp);p:SetAttribute("Level",level)
  if leveled then setStats(p,true);msg(p,"레벨 "..level.." · 최대체력/공격력 +10");feedback(p,"LEVEL_UP")end
 end
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","QuestPortal","QuestKills","QuestNeed","RoomCode"}
+-- Save schema v2 adds class/advancement keys without renaming or deleting any v1 keys.
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId"}
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1)
+ p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("ClassName","직업 미선택")
+ p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false)
+ p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
- msg(p,"마을 이장에게 퀘스트를 받고 포탈로 이동해.")
+ msg(p,"직업을 고르고 마을 이장에게 퀘스트를 받아.")
  parties[p]={};clickTimes[p]={};setStats(p,true)
 end
 local function load(p)
