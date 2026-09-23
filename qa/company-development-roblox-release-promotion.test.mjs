@@ -249,3 +249,10 @@ test('central native foundation policy locks spawn ordering candidate invalidati
     'CANDIDATE_VERSION_NUMBER','ACTUAL_RUNTIME_SENTINEL','POST_RUNTIME_QA'
   ]);
 });
+
+
+test('private runtime candidate keeps ancestry while using partial clone',()=>{
+  assert.match(candidate,/Checkout current canonical implementation[\s\S]*fetch-depth:\s*0[\s\S]*fetch-tags:\s*false[\s\S]*filter:\s*blob:none/);
+  assert.match(candidate,/git merge-base --is-ancestor "\$SOURCE_REVISION" HEAD/);
+  assert.match(candidate,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
+});
