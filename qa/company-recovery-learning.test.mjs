@@ -26,6 +26,19 @@ test('repeated failure is escalated into recovery queue',()=>{
   assert.deepEqual(row.responsibleFiles,['web-games/g1/index.html']);
 });
 
+test('generic System-AI failure signature does not group unrelated responsible files',()=>{
+  const result=escalateRecoveryCandidates({
+    systemAiQueueInput:{tasks:[
+      {id:'a',status:'failed',retries:2,blocker:'system-ai-implementation-failed',responsibleFiles:['web-games/a/index.html']},
+      {id:'b',status:'failed',retries:2,blocker:'system-ai-implementation-failed',responsibleFiles:['company-learning/marketing/b/latest.json']}
+    ]}
+  });
+  assert.equal(result.added.length,2);
+  assert.equal(result.queue.tasks.length,2);
+  assert.deepEqual(new Set(result.queue.tasks.map(x=>x.sourceTaskId)),new Set(['a','b']));
+  assert.ok(result.queue.tasks.every(x=>x.blastRadius==='single-task'));
+});
+
 test('repeated System-AI infrastructure failure creates one repair canary and gates the cohort',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const systemAiQueueInput={tasks:[
