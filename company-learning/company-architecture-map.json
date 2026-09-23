@@ -1,5 +1,5 @@
 {
-  "version": 104,
+  "version": 105,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T10:26:00+09:00",
+  "updatedAt": "2026-09-23T10:29:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2771,7 +2771,13 @@
         "producerSideRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
         "historicalSupersededMappingSource": "SYSTEM_AI_QUEUE_EVIDENCE",
         "historicalSupersededDependencyRepair": "TO_CANONICAL_REPAIR_TASK",
-        "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747"
+        "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
+        "queueReconciliationEntryPoints": [
+          "STANDARD_RESERVE",
+          "TARGETED_RESERVE",
+          "SECURITY_RECOVERY_RESERVE"
+        ],
+        "queueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a"
       },
       "bottleneckSensor": {
         "queueSources": [
@@ -2861,10 +2867,10 @@
       "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
     },
     "latestImplementationSync": {
-      "revision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
+      "revision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
       "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
-      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
-      "testRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
+      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_CONFIRMATION",
+      "testRevision": "7d50a0f64075d67467389f18a8ac30a386e7ce81",
       "producerSideRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
       "producerSideRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
       "producerSideRepairReuseState": "IMPLEMENTED_TEST_COVERED_PENDING_NEXT_RECOVERY_DISPATCH_AND_RESERVE_CYCLE"
