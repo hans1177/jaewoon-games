@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -208960,6 +208958,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9c9e112fc5f1170559423f9d",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:d08c7ff8e877c92250e0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cb5cd07284db7ee9f705ee55",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:44b06aa93218cf4e63f3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6aa2b0a6f484560f59cea6ce",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:05ff39450601aa087a3c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -208978,7 +209075,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 59,
+        "applicationCount": 62,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -209650,7 +209747,10 @@
         "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
         "actions-run:35810617980",
         "reservation-id:35810617980:1",
-        "coding-trace:ctrace_28f57bddbc09792425d66fe2"
+        "coding-trace:ctrace_28f57bddbc09792425d66fe2",
+        "actions-run:35809023711",
+        "reservation-id:35809023711:1",
+        "coding-trace:ctrace_fc799d4e1c291d223f89eddd"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -209659,8 +209759,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 11,
-      "confidence": 0.9167,
+      "confirmations": 12,
+      "confidence": 0.9231,
       "capabilityApplications": [
         {
           "version": 1,
@@ -211047,6 +211147,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_133804ac0be75c9691dbd42a",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:d08c7ff8e877c92250e0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_297edff2720b1bdb7a61c4b4",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:44b06aa93218cf4e63f3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9c4ddab66caa94aa2719d28c",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:05ff39450601aa087a3c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -211065,7 +211264,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 42,
+        "applicationCount": 45,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -211173,105 +211372,6 @@
       "confirmations": 12,
       "confidence": 0.9231,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_749426c8d3faf4827d05d9af",
-          "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d"
-          ],
-          "evidence": [
-            "base-main:a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd",
-            "actions-run:35801408975",
-            "reservation-id:35801408975:1",
-            "capability-application-sample:202c78b6f7e59b66bd8c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_08d18884f43ff17c7d16b5c5",
-          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_7203426ac1b5f0818e6a0d53"
-          ],
-          "evidence": [
-            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
-            "actions-run:35800091699",
-            "reservation-id:35800091699:1",
-            "capability-application-sample:2c95d547b1fa84122dda"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_703ee8fbcbfbbe597cc4d404",
-          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_7203426ac1b5f0818e6a0d53"
-          ],
-          "evidence": [
-            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
-            "actions-run:35800091699",
-            "reservation-id:35800091699:1",
-            "capability-application-sample:c5f14800bf770cff5aca"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_a908a3024ba74b23f692ed21",
@@ -213310,6 +213410,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f0639cfd226529bb9e328d4c",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:d08c7ff8e877c92250e0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d21225b25b3eb664cb8e916c",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:44b06aa93218cf4e63f3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_34f5779217bdd954ead95f1d",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:05ff39450601aa087a3c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -213436,104 +213635,6 @@
       "confirmations": 12,
       "confidence": 0.9231,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_a8ab0b9d0805f8d02c6bae99",
-          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d"
-          ],
-          "evidence": [
-            "actions-run:35801408975",
-            "reservation-id:35801408975:1",
-            "capability-application-sample:3c39438e145042775f5b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_18c612363a4397090c30c715",
-          "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d"
-          ],
-          "evidence": [
-            "base-main:a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd",
-            "actions-run:35801408975",
-            "reservation-id:35801408975:1",
-            "capability-application-sample:f3a1ca4f3ae1cdb5244c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_b1f91871f7b54b04d6ff4659",
-          "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d"
-          ],
-          "evidence": [
-            "base-main:a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd",
-            "actions-run:35801408975",
-            "reservation-id:35801408975:1",
-            "capability-application-sample:94b565697cb900fd43a8"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_27f94f86c57bb772e892b8b3",
@@ -215566,6 +215667,105 @@
             "actions-run:35810617980",
             "reservation-id:35810617980:1",
             "capability-application-sample:efce3147950f272e8314"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_123ac9781e6190db2650d4fe",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:d08c7ff8e877c92250e0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6036db143fdfb981a79add0e",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:44b06aa93218cf4e63f3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8680e0a2d9471684d0ef2521",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:05ff39450601aa087a3c"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -218147,114 +218347,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_d9da86b6fae4df7bbf91cacb",
-          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_7203426ac1b5f0818e6a0d53"
-          ],
-          "evidence": [
-            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
-            "actions-run:35800091699",
-            "reservation-id:35800091699:1",
-            "capability-application-sample:29371d08b9eed74d6451"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_a2861c869737cd47b330f583",
-          "taskId": "cozy-island-post-release-focus-c65fd31b4b324380",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_694d98ebd713acfd3b0a9289",
-            "capability_ctrace_e24add62615bf96a065576ab",
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba"
-          ],
-          "evidence": [
-            "candidate-sha:0ce62ad868c0bfe8976fe889f78ca53a94e46d45",
-            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
-            "incremental-qa-hash:da267bff6857d92e70dcc2d7dae13bd72b653a1dc128075dab053d0a440c35f7",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:35800091699",
-            "reservation-id:35800091699:1",
-            "capability-application-sample:3f0e57e2b1107e02158a"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_dc60cfc77040ea5f6a01b774",
-          "taskId": "cozy-island-post-release-focus-c65fd31b4b324380",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "roblox",
-          "outcome": "FRESH_QA_PASS",
-          "selected": true,
-          "finalReviewPass": true,
-          "freshTaskQaPass": true,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_694d98ebd713acfd3b0a9289",
-            "capability_ctrace_e24add62615bf96a065576ab",
-            "capability_ctrace_1981e22d7ce6d0655400a0e7",
-            "capability_ctrace_383f1508b1e716e1b7848811",
-            "capability_ctrace_54427da2204e4033e8fa26ba"
-          ],
-          "evidence": [
-            "candidate-sha:470e2e29972af3fea66589bbf46197061d27e837",
-            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
-            "incremental-qa-hash:8750e5a2cfd817351c11c2c245e3bbfab3a776d4f33b2fac8d0e22ba83ea2388",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:35800091699",
-            "reservation-id:35800091699:1",
-            "fan-in-review:PASS",
-            "capability-application-sample:a8b7038acb2ca39959c3"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_88dd02a773f6938a3bf650e4",
           "taskId": "cozy-island-post-release-focus-c65fd31b4b324380",
           "workKey": null,
@@ -220295,6 +220387,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fc413c48074bd4724f3bbb7b",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:d08c7ff8e877c92250e0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4691e5810ef3814665295de6",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:44b06aa93218cf4e63f3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8a171d61199eeed9bd41b0c0",
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_7203426ac1b5f0818e6a0d53"
+          ],
+          "evidence": [
+            "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
+            "actions-run:35809023711",
+            "reservation-id:35809023711:1",
+            "capability-application-sample:05ff39450601aa087a3c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -220394,7 +220585,10 @@
         "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
         "actions-run:35810617980",
         "reservation-id:35810617980:1",
-        "coding-trace:ctrace_1ef7f8fe7fc4852d91471510"
+        "coding-trace:ctrace_1ef7f8fe7fc4852d91471510",
+        "actions-run:35809023711",
+        "reservation-id:35809023711:1",
+        "coding-trace:ctrace_5b94945930ae446f44e8f330"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -220403,8 +220597,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 8,
-      "confidence": 0.8889,
+      "confirmations": 9,
+      "confidence": 0.9,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -220511,7 +220705,10 @@
         "base-main:2cde0f8eab1c6672fb8d0819f4d1bef548c4a1ab",
         "actions-run:35810617980",
         "reservation-id:35810617980:1",
-        "coding-trace:ctrace_2efeb6f662e43b546ee45f0f"
+        "coding-trace:ctrace_2efeb6f662e43b546ee45f0f",
+        "actions-run:35809023711",
+        "reservation-id:35809023711:1",
+        "coding-trace:ctrace_ab489bf9326b80662757e5bf"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -220520,8 +220717,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 10,
-      "confidence": 0.9091,
+      "confirmations": 11,
+      "confidence": 0.9167,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
