@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -417,6 +417,31 @@
       "authorityExpansion": false,
       "revision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
       "testRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f"
+    }
+  },
+  "departmentRuntimeSecurity": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "protections": {
+      "departmentLauncherMayDispatchCanonicalNativeRuntime": true,
+      "departmentLauncherMayNotCreateParallelDevelopmentAuthority": true,
+      "companyRuntimeDevelopmentQueueRemainsAuthority": true,
+      "sameGameOverlappingDepartmentExecutionSerialized": true,
+      "activeSameGameWorkMayNotBeCancelledByNewPush": true,
+      "distinctGameParallelismMayNotExpandWritableScope": true,
+      "designOnlyDeterministicEvidenceMayNotBecomeAiSelfAcceptance": true,
+      "paidApiAuthorityExpansion": false,
+      "directMainGameSourceWriteAuthorityExpansion": false
+    },
+    "implementationState": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_RUN",
+    "revisions": {
+      "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
+      "providerContract": "4bb509f3d79de183fc6c0594dfcbf2ca441ed523",
+      "sweep": "72d9498e944eca8833e2bc3abfbb8be2670e27bb",
+      "sweepTest": "6cc10c25178c0e80a97195a59ffdc369d9879097",
+      "nativeDelegate": "da19705e37720bfb78494a62aca7b1922c2ac298",
+      "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
+      "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
     }
   }
 }
