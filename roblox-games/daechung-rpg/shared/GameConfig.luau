@@ -9,7 +9,7 @@ local Config={
  QuestBaseGold=50,QuestBaseXP=50,PartyHuntTarget=15,
  WeaponPrices={50,120,240,420,700},ArmorPrices={45,110,220,390,650},
  WeaponBonus={0,8,18,30,45},ArmorBonus={0,10,22,36,55},
- AdvancementLevel=15,AdvancementTrialTarget=5,
+ AdvancementLevel=15,AdvancementTrialTarget=5,AdvancementSwitchCost=300,
  MedievalCharacterAssetId=91766715515988,
  MedievalHouseAssetIds={1819167267,254849325},
  Classes={
