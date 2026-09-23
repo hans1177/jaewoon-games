@@ -1,5 +1,5 @@
 {
-  "version": 310,
+  "version": 311,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5609,8 +5609,8 @@
       "testCandidateManifestIsHomepageShelf": false
     },
     "frontDoor": {
-      "version": 2,
-      "authority": "OWNER_DIRECTIVE_2026-09-21_SAMPLE_EXACT",
+      "version": 3,
+      "authority": "OWNER_DIRECTIVE_2026-09-24_ASSET_LIBRARY_SURFACE",
       "mode": "SAMPLE_FRONT_DOOR_V1",
       "legacyMixingForbidden": true,
       "order": [
@@ -5626,7 +5626,8 @@
         "brand": "JAEWOON GAMES",
         "links": [
           "GAME",
-          "DEVELOPMENT",
+          "GAME_DEVELOPMENT",
+          "RECENT_UPDATES",
           "CHATGPT"
         ],
         "chatgptUrl": "/command.html?from=chatgpt-shortcut",
@@ -5673,7 +5674,7 @@
         "navItems": [
           "HOME",
           "GAME",
-          "RECENT_UPDATES",
+          "GAME_DEVELOPMENT",
           "CHATGPT"
         ],
         "chatgptUrl": "/command.html?from=chatgpt-shortcut",
@@ -5739,6 +5740,16 @@
         "limit": 5,
         "ambiguousState": "확인 중",
         "replaces": "DEVELOPMENT_FLOW"
+      },
+      "gameDevelopmentSurface": {
+        "enabled": true,
+        "label": "게임 개발",
+        "route": "/asset-library.html",
+        "registry": "/company-asset-library.json",
+        "purpose": "OWNER_VISIBLE_COMPANY_ASSET_AND_MOTION_LIBRARY_INSPECTION",
+        "mayShowPreparedResearch": true,
+        "preparedResearchMustBeLabeled": true,
+        "verifiedCompanyAssetClaimRequiresPromotionGate": true
       }
     }
   },
@@ -12349,7 +12360,7 @@
       }
     },
     "companyGraphicsLibrary24h": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-24",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
@@ -12545,6 +12556,18 @@
         "presentationOnlyWorkMayNotMoveAuthorityFromGameplay": true,
         "noWrapperOverrideOrShadowGraphicsPipeline": true,
         "existingGameAssetsAndSaveDataMustNotBeBrokenByLibraryConsumption": true
+      },
+      "visibility": {
+        "homepageEntryLabel": "게임 개발",
+        "homepageRoute": "/asset-library.html",
+        "registryPath": "company-asset-library.json",
+        "ownerVisualInspectionEnabled": true,
+        "showExistingRepositoryAssets": true,
+        "showPlatformSeparatedResearch": true,
+        "showMotionCoverageAndPreview": true,
+        "preparedResearchMustRemainClearlyLabeled": true,
+        "publicInspectionSurfaceDoesNotGrantProductionPass": true,
+        "verifiedPromotionMayAppendRegistry": true
       }
     }
   },
