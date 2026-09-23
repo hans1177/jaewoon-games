@@ -122,3 +122,11 @@ test('changed-source workflow binds homepage sync dependencies from main',()=>{
   assert.match(workflow,/company-shared-context\.mjs/);
   assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
 });
+
+
+test('single changed Roblox game redispatches exact runtime game id',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/passed_ids/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id=/);
+  assert.match(workflow,/ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:/);
+});
