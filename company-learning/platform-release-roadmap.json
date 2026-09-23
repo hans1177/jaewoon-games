@@ -1,5 +1,5 @@
 {
-  "version": 280,
+  "version": 281,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T10:29:00+09:00",
+  "updatedAt": "2026-09-23T10:36:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6350,7 +6350,7 @@
       "postImplementationSync": {
         "reserveCollisionHardening": "VERIFIED_RUNTIME_RUN_612_RESERVE_SUCCESS",
         "verifiedLearningOutcomeFeedback": "IMPLEMENTED_PENDING_FULL_WORKER_FANIN_RUNTIME_OBSERVATION",
-        "revision": "7d50a0f64075d67467389f18a8ac30a386e7ce81",
+        "revision": "2095f85bb419149c14168a135d72aa456de7747c",
         "failureClassifierQaDriftFailClosed": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION",
         "liveBottleneckWaitMetrics": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION",
         "securityBindingRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
@@ -6372,7 +6372,7 @@
         "producerSideRecoveryRepairReuse": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
         "producerSideRecoveryRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
         "producerSideRecoveryRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
-        "historicalSupersededDependencyRepair": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
+        "historicalSupersededDependencyRepair": "VERIFIED_RUNTIME_RUN_35806215679_REWIRED_16_ORPHAN_0",
         "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
         "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
         "allReservePathQueueReconciliation": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_CONFIRMATION",
@@ -6380,6 +6380,21 @@
         "allReservePathQueueReconciliationTests": [
           "170dff04a67d5b6d302135296b480d303845ed89",
           "7d50a0f64075d67467389f18a8ac30a386e7ce81"
+        ],
+        "historicalSupersededDependencyRepairRuntimeEvidence": {
+          "runId": 35806215679,
+          "rewired": 16,
+          "orphanDependenciesAfter": 0,
+          "canaryCancelledTargetsAfter": 0
+        },
+        "workflowWaitCauseClassification": "IMPLEMENTED_TEST_COVERED",
+        "workflowWaitCauseClassificationRevision": "6a05859ccf52528c43b333f05d680b09eeba6768",
+        "workflowWaitCauseClassificationTestRevision": "6e549014697127afbeac18716577a0cb85805f5d",
+        "preciseFanInAndSupervisorWaitTelemetry": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_METRIC_CONFIRMATION",
+        "preciseFanInAndSupervisorWaitRevision": "68550bced736074602c5df848af92ba5c8724e7c",
+        "preciseFanInAndSupervisorWaitTests": [
+          "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
+          "2095f85bb419149c14168a135d72aa456de7747c"
         ]
       }
     }
@@ -14184,7 +14199,7 @@
           "historicalSupersededBlockersRewiredToCanonical": true,
           "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
           "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
-          "historicalSupersededDependencyRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+          "historicalSupersededDependencyRepairLiveVerification": "VERIFIED_RUNTIME_RUN_35806215679_REWIRED_16_ORPHAN_0",
           "queueReconciliationBeforeStandardReserve": true,
           "queueReconciliationBeforeTargetedReserve": true,
           "queueReconciliationBeforeSecurityReserve": true,
@@ -14193,7 +14208,24 @@
             "170dff04a67d5b6d302135296b480d303845ed89",
             "7d50a0f64075d67467389f18a8ac30a386e7ce81"
           ],
-          "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
+          "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+          "workflowWaitCauseActions": {
+            "pendingRuns": "REDUCE_SCHEDULER_PENDING_RUN_WAIT",
+            "runnableReservationWait": "PRIORITIZE_LONG_WAIT_RUNNABLE_WORK",
+            "fanInWait": "REDUCE_FAN_IN_WAIT",
+            "supervisorReviewWait": "PRIORITIZE_PRIMARY_AI_SUPERVISOR_REVIEW"
+          },
+          "workflowWaitCauseClassificationRevision": "6a05859ccf52528c43b333f05d680b09eeba6768",
+          "realFanInWaitUsesGithubJobGraph": true,
+          "supervisorReviewWaitSeparatedFromFanIn": true,
+          "reservationWaitUsesRunnableDependencyReadyTimestamp": true,
+          "preciseWaitSensorRevision": "d3db69b57e4754ada7a6c68f8069008c0a4ac608",
+          "preciseWaitWorkflowRevision": "68550bced736074602c5df848af92ba5c8724e7c",
+          "preciseWaitTests": [
+            "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
+            "2095f85bb419149c14168a135d72aa456de7747c"
+          ],
+          "preciseWaitLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN"
         },
         "verifiedLearningFeedback": {
           "producer": "tools/company-system-ai-learning.mjs",
@@ -14205,7 +14237,7 @@
           "crossGameTransformativeAdaptationRequired": true,
           "rawCrossGameCopyForbidden": true
         },
-        "latestImplementationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a"
+        "latestImplementationRevision": "68550bced736074602c5df848af92ba5c8724e7c"
       }
     }
   },
