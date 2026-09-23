@@ -914,7 +914,11 @@ local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)
 end
 local function nearestEnemy(pos,zone,range)
  local best,bd=nil,range
- for _,e in ipairs(enemies)do if e.hp>0 and e.zone==zone and e.part.Parent then local d=(e.part.Position-pos).Magnitude;if d<bd then best=e;bd=d end end end
+ for _,e in ipairs(enemies)do
+  if e.hp>0 and e.zone==zone and e.part.Parent and e.dormant~=true then
+   local d=(e.part.Position-pos).Magnitude;if d<bd then best=e;bd=d end
+  end
+ end
  return best
 end
 
@@ -1001,7 +1005,20 @@ generateMeadowRun=function(seed)
  local runBossDef=z.RunBoss
  if runBossDef then
   local bossPos=nodes[#nodes]+Vector3.new(0,6,-4)
-  spawnEnemy(z,true,777,runBossDef,bossPos,false)
+  local runBoss=spawnEnemy(z,true,777,runBossDef,bossPos,false)
+  if runBoss then
+   runBoss.dormant=true;runBoss.part:SetAttribute("Dormant",true)
+   local seal=Instance.new("Folder");seal.Name="RunBossSeal";seal.Parent=f
+   local c=nodes[#nodes]+Vector3.new(0,5,0);local wallColor=Color3.fromRGB(255,211,91)
+   for _,row in ipairs({
+    {Size=Vector3.new(54,10,2),Pos=c+Vector3.new(0,0,-27)},
+    {Size=Vector3.new(54,10,2),Pos=c+Vector3.new(0,0,27)},
+    {Size=Vector3.new(2,10,54),Pos=c+Vector3.new(-27,0,0)},
+    {Size=Vector3.new(2,10,54),Pos=c+Vector3.new(27,0,0)},
+   })do
+    local wall=ppart(seal,"BossSealWall",row.Size,row.Pos,wallColor,Enum.Material.ForceField);wall.Transparency=.42
+   end
+  end
  end
  local secretChance=z.Procedural and z.Procedural.SecretChance or .8
  if rng:NextNumber()<=secretChance then
@@ -1029,6 +1046,26 @@ generateMeadowRun=function(seed)
  end
  for _,p in ipairs(Players:GetPlayers())do if n(p,"CurrentZone",0)==1 then p:SetAttribute("CurrentRunSeed",seed)end end
  workspace:SetAttribute("MeadowRunRooms",#nodes);workspace:SetAttribute("MeadowRosterCount",#roster)
+end
+
+local function wakeMeadowRunBossIfReady()
+ local seed=meadowRunState.seed
+ if seed==0 or workspace:GetAttribute("MeadowRunBossDefeated")==true then return end
+ for _,e in ipairs(enemies)do
+  if e.zone==1 and e.runSeed==seed and e.hp>0 and e.part and e.part.Parent and e.runBoss~=true and e.hiddenBoss~=true then return end
+ end
+ for _,e in ipairs(enemies)do
+  if e.zone==1 and e.runSeed==seed and e.runBoss==true and e.hp>0 and e.part and e.part.Parent and e.dormant==true then
+   e.dormant=false;e.part:SetAttribute("Dormant",false);e.nextAttackAt=os.clock()+1.2
+   local zone=world and world:FindFirstChild("Zone1");local run=zone and zone:FindFirstChild("ProceduralRun");local seal=run and run:FindFirstChild("RunBossSeal")
+   if seal then seal:Destroy()end
+   combatFlash(e.part.Position,Color3.fromRGB(255,211,91),3.2)
+   for _,p in ipairs(Players:GetPlayers())do
+    if n(p,"CurrentZone",0)==1 then msg(p,"초원 런 보스 봉인 해제 · "..tostring(e.def and e.def.Name or"보스"));feedback(p,"RUN_BOSS_AWAKEN")end
+   end
+   return
+  end
+ end
 end
 
 local function completeQuestIfNeeded(p,zone)
@@ -1074,6 +1111,7 @@ local function killEnemy(p,e,contribution)
   workspace:SetAttribute("MeadowRunBossDefeated",true);msg(p,"초원 런 보스 격파 · "..display);feedback(p,"BOSS_KILL")
  else
   msg(p,(e.boss and"보스 격파 · "or"처치 · ")..display);feedback(p,e.boss and"BOSS_KILL"or"KILL")
+  if e.zone==1 and e.runBoss~=true and e.hiddenBoss~=true then task.defer(wakeMeadowRunBossIfReady)end
   local killedRun=e.runSeed
   task.delay(e.boss and 18 or 8,function()
    if world and world.Parent and(z.Id~=1 or meadowRunState.seed==killedRun)then spawnEnemy(z,e.boss,math.random(1,80),e.def,nil,false)end
@@ -1336,7 +1374,11 @@ RunService.Heartbeat:Connect(function(dt)
  -- 몬스터: 같은 지역 플레이어만 추적, 일정 거리 밖이면 원위치로 돌아간다.
  for _,e in ipairs(enemies)do
   if e.hp>0 and e.part.Parent then
-   local z=portalDef(e.zone);local target,bd=nil,z.Aggro
+   local z=portalDef(e.zone)
+   if e.dormant==true then
+    e.part.AssemblyLinearVelocity=Vector3.zero
+   else
+   local target,bd=nil,z.Aggro
    for _,p in ipairs(Players:GetPlayers())do
     if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
    end
@@ -1350,6 +1392,7 @@ RunService.Heartbeat:Connect(function(dt)
     if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
    end
    if (e.part.Position-e.spawn).Magnitude>z.Leash then e.part.CFrame=CFrame.new(e.spawn)end
+   end
   end
  end
 
