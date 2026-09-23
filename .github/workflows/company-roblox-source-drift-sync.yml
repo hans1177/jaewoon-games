@@ -17,7 +17,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-runtime-writer
+  group: roblox-source-drift-runtime-writer
   cancel-in-progress: false
 
 env:
