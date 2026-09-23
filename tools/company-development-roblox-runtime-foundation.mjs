@@ -101,7 +101,9 @@ export async function probeRobloxOpenCloudEngine({
     body:JSON.stringify({script,timeout:'20s'}),
   });
   const createdDecoded=await decode(created,'CREATE');
-  if(created.status===401||created.status===403)return Object.freeze({available:false,permissionDenied:true,status:created.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'CREATE',requiredScope:ROBLOX_LUAU_EXECUTION_WRITE_SCOPE,errorCode:clean(createdDecoded.body?.code)||null,errorMessage:clean(createdDecoded.body?.message)||null});
+  const createdErrorMessage=clean(createdDecoded.body?.message);
+  const createdRequiredScope=createdErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
+  if(created.status===401||created.status===403)return Object.freeze({available:false,permissionDenied:true,status:created.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'CREATE',requiredScope:createdRequiredScope,errorCode:clean(createdDecoded.body?.code)||null,errorMessage:createdErrorMessage||null});
   if(!created.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_${created.status}:${createdDecoded.text.slice(0,300)}`);
   const rawPath=clean(createdDecoded.body?.path).replace(/^\/+/, '').replace(/^cloud\/v2\//,'');
   if(!rawPath)throw new Error('ROBLOX_OPEN_CLOUD_ENGINE_TASK_PATH_MISSING');
@@ -113,7 +115,9 @@ export async function probeRobloxOpenCloudEngine({
     if(delay>0)await new Promise(resolve=>setTimeout(resolve,delay));
     const response=await fetchImpl(taskUrl,{headers:{'x-api-key':key}});
     const decoded=await decode(response,'TASK');
-    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'TASK_POLL',requiredScope:ROBLOX_LUAU_EXECUTION_WRITE_SCOPE,errorCode:clean(decoded.body?.code)||null,errorMessage:clean(decoded.body?.message)||null});
+    const taskErrorMessage=clean(decoded.body?.message);
+    const taskRequiredScope=taskErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
+    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'TASK_POLL',requiredScope:taskRequiredScope,errorCode:clean(decoded.body?.code)||null,errorMessage:taskErrorMessage||null});
     if(!response.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_TASK_HTTP_${response.status}:${decoded.text.slice(0,300)}`);
     task=decoded.body;
   }
@@ -121,7 +125,9 @@ export async function probeRobloxOpenCloudEngine({
   if(state!=='COMPLETE')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
   const logsResponse=await fetchImpl(`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}});
   const logsDecoded=await decode(logsResponse,'LOGS');
-  if(logsResponse.status===401||logsResponse.status===403)return Object.freeze({available:false,permissionDenied:true,status:logsResponse.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'LOGS',requiredScope:ROBLOX_LUAU_EXECUTION_WRITE_SCOPE,errorCode:clean(logsDecoded.body?.code)||null,errorMessage:clean(logsDecoded.body?.message)||null,taskPath:rawPath});
+  const logsErrorMessage=clean(logsDecoded.body?.message);
+  const logsRequiredScope=logsErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
+  if(logsResponse.status===401||logsResponse.status===403)return Object.freeze({available:false,permissionDenied:true,status:logsResponse.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'LOGS',requiredScope:logsRequiredScope,errorCode:clean(logsDecoded.body?.code)||null,errorMessage:logsErrorMessage||null,taskPath:rawPath});
   if(!logsResponse.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_LOGS_HTTP_${logsResponse.status}:${logsDecoded.text.slice(0,300)}`);
   const rows=Array.isArray(logsDecoded.body?.luauExecutionSessionTaskLogs)?logsDecoded.body.luauExecutionSessionTaskLogs:[];
   const messages=[];
