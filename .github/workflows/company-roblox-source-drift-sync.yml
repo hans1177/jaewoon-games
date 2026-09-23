@@ -57,6 +57,13 @@ jobs:
             changed="$REQUESTED_GAME_ID"
           elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             changed="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ | awk -F/ 'NF>=3 {print $2}' | sort -u | paste -sd, -)"
+            if [[ -z "$changed" ]] && git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/.company-runtime-trigger | grep -q .; then
+              changed="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | tr -d '[:space:]')"
+            fi
+          fi
+          if [[ -n "$changed" ]] && ! [[ "$changed" =~ ^[a-z0-9][a-z0-9-]{1,48}(,[a-z0-9][a-z0-9-]{1,48})*$ ]]; then
+            echo "invalid Roblox changed game ids: $changed" >&2
+            exit 2
           fi
           echo "game_ids=$changed" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_CHANGED_SOURCE_IDS=${changed:-NONE}"
