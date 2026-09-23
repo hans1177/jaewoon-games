@@ -9,7 +9,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 32,
+  "phase4GeneralizationDrills": 34,
   "drills": [
     {
       "id": "review-fail_1agpu1k",
@@ -90,7 +90,10 @@
         "MOBILE_INPUT",
         "DEBUGGING",
         "QUEST_DESIGN",
-        "WEB_RUNTIME"
+        "WEB_RUNTIME",
+        "COMBAT",
+        "RECOVERY",
+        "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_3e38u6"
     },
@@ -780,6 +783,44 @@
       "holdoutGameId": "amusement-tycoon",
       "targetEngine": "web",
       "unseenProblemFingerprint": "phase4-unseen-1ab5msq",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-control",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_e24add62615bf96a065576ab",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_e24add62615bf96a065576ab",
+      "phase4PairId": "phase4-pair-cja4qp",
+      "phase4Role": "CONTROL",
+      "holdoutGameId": "amusement-tycoon",
+      "targetEngine": "roblox",
+      "unseenProblemFingerprint": "phase4-unseen-12l4chz",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-challenger",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_e24add62615bf96a065576ab",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_e24add62615bf96a065576ab",
+      "phase4PairId": "phase4-pair-cja4qp",
+      "phase4Role": "CHALLENGER",
+      "holdoutGameId": "amusement-tycoon",
+      "targetEngine": "roblox",
+      "unseenProblemFingerprint": "phase4-unseen-12l4chz",
       "mayPromoteGeneralization": false
     },
     {
