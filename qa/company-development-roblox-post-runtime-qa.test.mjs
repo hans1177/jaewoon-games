@@ -43,3 +43,12 @@ test('foundation workflow edits self-trigger exact current game revalidation',()
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID=/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID/);
 });
+
+
+test('foundation QA emits machine-readable exact blocker evidence',()=>{
+  assert.match(workflow,/ROBLOX_FOUNDATION_RESULT=/);
+  assert.match(workflow,/exactVersion:result\.exactVersion/);
+  assert.match(workflow,/checkpointPass:result\.checkpointPass/);
+  assert.match(workflow,/checkpointOrderPassed:result\.checkpointOrderPassed/);
+  assert.match(workflow,/blockers:result\.blockers/);
+});
