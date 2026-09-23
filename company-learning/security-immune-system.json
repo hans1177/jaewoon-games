@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -316,7 +316,10 @@
       "historicalDependencyRepairMayOnlyFollowRecordedSupersededByEvidence": true,
       "historicalDependencyRepairMayNotExpandWritableScope": true,
       "targetedReserveReconciliationMayNotBroadenTargetAuthority": true,
-      "securityReserveReconciliationMayNotBroadenSecurityTaskAuthority": true
+      "securityReserveReconciliationMayNotBroadenSecurityTaskAuthority": true,
+      "workflowWaitTelemetryReadOnly": true,
+      "workflowWaitTelemetryMayNotExpandWorkerAuthority": true,
+      "supervisorReviewBacklogMayNotBypassPrimaryAiReview": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -365,7 +368,18 @@
         "170dff04a67d5b6d302135296b480d303845ed89",
         "7d50a0f64075d67467389f18a8ac30a386e7ce81"
       ],
-      "allReservePathQueueReconciliationAuthorityExpansion": false
+      "allReservePathQueueReconciliationAuthorityExpansion": false,
+      "historicalSupersededDependencyRepairLiveRunId": 35806215679,
+      "historicalSupersededDependenciesRewired": 16,
+      "historicalSupersededOrphansAfter": 0,
+      "workflowWaitCauseClassificationRevision": "6a05859ccf52528c43b333f05d680b09eeba6768",
+      "preciseWaitSensorRevision": "d3db69b57e4754ada7a6c68f8069008c0a4ac608",
+      "preciseWaitWorkflowRevision": "68550bced736074602c5df848af92ba5c8724e7c",
+      "preciseWaitTests": [
+        "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
+        "2095f85bb419149c14168a135d72aa456de7747c"
+      ],
+      "preciseWaitTelemetryAuthorityExpansion": false
     },
     "producerSideRepairReuse": {
       "binding": "tools/company-recovery-dispatch.mjs",
