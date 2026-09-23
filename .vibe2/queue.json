@@ -80972,6 +80972,2119 @@
             "ollamaCacheHit": true,
             "ollamaRuntimeSource": "CACHE"
           }
+        },
+        {
+          "version": 14,
+          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+          "reservationId": "35801243745:1",
+          "variant": "speculative-1",
+          "outcome": "FAIL",
+          "blocker": "source-candidate-generation-failed",
+          "candidateBranch": null,
+          "baseMainSha": "8992684cc215e012a2814c864cfe4af7498efd76",
+          "candidateIdentity": null,
+          "candidateFailure": {
+            "class": "DIAGNOSTIC_POSTCONDITION",
+            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:class-upgrades-pirate-v12.js:CLEAR_INTERVAL_LIFECYCLE_MISSING"
+          },
+          "evidence": [
+            "base-main:8992684cc215e012a2814c864cfe4af7498efd76",
+            "role-result:exploration:PASS",
+            "role-result:implementation:FAIL",
+            "role-result:test:FAIL",
+            "role-result:performance:FAIL",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+            "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:6",
+            "coding-primary-targets:%5B%22adjustExplorerRewards%22%2C%22applyUpgradeToUnit%22%2C%22installFishingCooldown%22%2C%22breakProduction%22%2C%22autoFarm%22%2C%22drawObjectsWithWest%22%5D",
+            "coding-primary-systems:%5B%22COMBAT%22%2C%22AI%22%2C%22PROGRESSION%22%2C%22CORE_STATE%22%2C%22SAVE%22%2C%22INTERACTION%22%2C%22GOAL_STATE%22%2C%22PLACEMENT%22%2C%22ECONOMY%22%2C%22PRESENTATION%22%2C%22WORLD%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22PLAYER%22%2C%22AI%22%2C%22INTERACTION%22%2C%22PLACEMENT%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%5D",
+            "coding-semantic-system-budget:11",
+            "coding-failure-fingerprint:web|DIAGNOSTIC_POSTCONDITION|OTHER",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_system_ai_0b0a34e7dbf177b41b7207d9%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_system_ai_a4960e93b58a431d14b77f9c%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_1981e22d7ce6d0655400a0e7%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_383f1508b1e716e1b7848811%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_54427da2204e4033e8fa26ba%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_67cbe292d92c17ee1773a10c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_9826195dac24dccb5a25672d%22%5D",
+            "learning-primary-domains:%5B%22ECONOMY%22%2C%22WEB_RUNTIME%22%5D",
+            "learning-secondary-domains:%5B%22AI%22%2C%22ANIMATION_FEEL%22%2C%22ASSET_PRODUCTION%22%2C%22COMBAT%22%2C%22CORE_LOOP%22%2C%22DEBUGGING%22%5D",
+            "actions-run:35801243745",
+            "reservation-id:35801243745:1",
+            "variant:speculative-1",
+            "shared-context-sync:MISSING"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": false,
+            "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+            "packageId": "cozy-island-wp-1ec8zh5",
+            "target": "web",
+            "sourceRoot": "web-games/cozy-island",
+            "baseMainSha": "8992684cc215e012a2814c864cfe4af7498efd76",
+            "responsibleFiles": [
+              "class-upgrades-pirate-v12.js",
+              "cozy-balance-v5.js",
+              "economy-west-v2.js",
+              "farm-smithy.js"
+            ],
+            "impactFiles": [
+              "class-upgrades-pirate-v12.js",
+              "cozy-balance-v5.js",
+              "economy-west-v2.js",
+              "farm-smithy.js",
+              "index.html",
+              "balance-reset.js",
+              "balance-resume-v20.js",
+              "iron-worker-pre-v15.js",
+              "iron-worker-v15.js",
+              "jungle-west-camp.js",
+              "worker-shop-freeze-guard.js",
+              "abyss-cave-v23.js"
+            ],
+            "contextFiles": [
+              "class-upgrades-pirate-v12.js",
+              "cozy-balance-v5.js",
+              "economy-west-v2.js",
+              "farm-smithy.js",
+              "index.html",
+              "balance-reset.js",
+              "balance-resume-v20.js",
+              "iron-worker-pre-v15.js",
+              "iron-worker-v15.js",
+              "jungle-west-camp.js",
+              "worker-shop-freeze-guard.js",
+              "abyss-cave-v23.js"
+            ],
+            "relatedFiles": [
+              {
+                "path": "index.html",
+                "score": 131
+              },
+              {
+                "path": "balance-reset.js",
+                "score": 40
+              },
+              {
+                "path": "balance-resume-v20.js",
+                "score": 40
+              },
+              {
+                "path": "iron-worker-pre-v15.js",
+                "score": 40
+              },
+              {
+                "path": "iron-worker-v15.js",
+                "score": 40
+              },
+              {
+                "path": "jungle-west-camp.js",
+                "score": 40
+              },
+              {
+                "path": "worker-shop-freeze-guard.js",
+                "score": 40
+              },
+              {
+                "path": "abyss-cave-v23.js",
+                "score": 35
+              },
+              {
+                "path": "bounty-fix-v10.js",
+                "score": 35
+              },
+              {
+                "path": "bounty-tax-v6.js",
+                "score": 35
+              },
+              {
+                "path": "cannon-system.js",
+                "score": 35
+              },
+              {
+                "path": "combat-expansion.js",
+                "score": 35
+              }
+            ],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [
+              "diagnostic:INTERVAL_CLEANUP_RISK",
+              "repair-mode:MODEL"
+            ],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "MAJOR_REWORK",
+              "confidence": "MEDIUM",
+              "reasons": [
+                "REUSABLE_SOURCE_EXISTS",
+                "SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS",
+                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 4816,
+                "sourceSha256": "1e503c2d4f189cc7245e4ef880e9fe5136332a4cec3a1e681f7fe8bbedd323a7",
+                "validationScore": 0,
+                "approvedDesign": false,
+                "gameplaySignalCount": 4,
+                "gameplaySignals": {
+                  "input": false,
+                  "runtimeLoop": false,
+                  "mutableState": false,
+                  "gameplayOutcome": false,
+                  "progression": true,
+                  "combat": true,
+                  "spatial": true,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": false
+                },
+                "prototypeMarkerCount": 0,
+                "approvedScopeRequiredCount": 0,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 0,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "cozy-island",
+              "sourceRoot": "web-games/cozy-island",
+              "sourcePath": "web-games/cozy-island/index.html",
+              "designBaselinePath": null
+            },
+            "fileDigests": [
+              {
+                "path": "class-upgrades-pirate-v12.js",
+                "hash": "9d807bf25ceb8035",
+                "bytes": 11601
+              },
+              {
+                "path": "cozy-balance-v5.js",
+                "hash": "b9191d7e63bbfebe",
+                "bytes": 15418
+              },
+              {
+                "path": "economy-west-v2.js",
+                "hash": "4846b3c62aa05306",
+                "bytes": 29290
+              },
+              {
+                "path": "farm-smithy.js",
+                "hash": "b83cce8858b5f731",
+                "bytes": 14422
+              },
+              {
+                "path": "index.html",
+                "hash": "1e503c2d4f189cc7",
+                "bytes": 4816
+              },
+              {
+                "path": "balance-reset.js",
+                "hash": "b755b1a8b6a32828",
+                "bytes": 7207
+              },
+              {
+                "path": "balance-resume-v20.js",
+                "hash": "98ab84e0aa16d709",
+                "bytes": 12684
+              },
+              {
+                "path": "iron-worker-pre-v15.js",
+                "hash": "f6128b1dbb15a509",
+                "bytes": 1708
+              },
+              {
+                "path": "iron-worker-v15.js",
+                "hash": "d090f7d69a1f0d5a",
+                "bytes": 18066
+              },
+              {
+                "path": "jungle-west-camp.js",
+                "hash": "c852f4b72b9b3ac1",
+                "bytes": 19542
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "LOW",
+                "matched": [],
+                "focusedChecksAdded": [],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "adjustExplorerRewards",
+                "applyUpgradeToUnit",
+                "installFishingCooldown",
+                "breakProduction",
+                "autoFarm",
+                "drawObjectsWithWest"
+              ],
+              "allowedResponsibleFiles": [
+                "class-upgrades-pirate-v12.js",
+                "cozy-balance-v5.js",
+                "economy-west-v2.js",
+                "farm-smithy.js"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "ensureState",
+                "multiplier",
+                "syncAlliedUpgrades",
+                "showModalWithFishingCooldown",
+                "ensureV5State",
+                "toast",
+                "save",
+                "productionState",
+                "resetResourceSample",
+                "scaledCost",
+                "consumeCapacity",
+                "updateTick",
+                "ensureFeatureState",
+                "workerNumber",
+                "systemTick",
+                "CORE_STATE",
+                "AI",
+                "PROGRESSION",
+                "PRESENTATION",
+                "SAVE",
+                "ECONOMY",
+                "COMBAT",
+                "PLACEMENT"
+              ],
+              "primarySystems": [
+                "COMBAT",
+                "AI",
+                "PROGRESSION",
+                "CORE_STATE",
+                "SAVE",
+                "INTERACTION",
+                "GOAL_STATE",
+                "PLACEMENT",
+                "ECONOMY",
+                "PRESENTATION",
+                "WORLD"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "PLAYER",
+                "AI",
+                "INTERACTION",
+                "PLACEMENT",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "directDependentSystems": [
+                "CORE_STATE",
+                "AI",
+                "PROGRESSION",
+                "PRESENTATION",
+                "SAVE",
+                "ECONOMY",
+                "COMBAT",
+                "PLACEMENT"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "PLAYER",
+                "AI",
+                "INTERACTION",
+                "PLACEMENT",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "ownedState": [
+                "state",
+                "level",
+                "currentAttack",
+                "meta",
+                "externalDelta",
+                "desired",
+                "now",
+                "innerShowModal",
+                "v5",
+                "remain",
+                "fishing",
+                "attempts",
+                "inv",
+                "resource",
+                "p",
+                "buffered",
+                "next",
+                "kind",
+                "coins",
+                "expansion",
+                "lastExplorerTrips",
+                "lastExplorerEarned",
+                "trips",
+                "earned"
+              ],
+              "readState": [
+                "CLASS_DEFS",
+                "currentGame",
+                "state",
+                "level",
+                "currentAttack",
+                "meta",
+                "externalDelta",
+                "desired",
+                "kind",
+                "now",
+                "FISHING_COOLDOWN_MS",
+                "innerShowModal",
+                "v5",
+                "remain",
+                "fishing",
+                "attempts",
+                "inv",
+                "resource",
+                "p",
+                "buffered",
+                "next",
+                "coins",
+                "expansion",
+                "EXPLORER_REWARD_MIN"
+              ],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBLE_FUNCTION:adjustExplorerRewards",
+                "STATE_WRITE:state",
+                "STATE_WRITE:coins",
+                "STATE_WRITE:expansion",
+                "STATE_WRITE:lastExplorerTrips",
+                "DOWNSTREAM:save",
+                "DOWNSTREAM:toast",
+                "RESPONSIBLE_FUNCTION:applyUpgradeToUnit",
+                "STATE_WRITE:level",
+                "STATE_WRITE:currentAttack",
+                "STATE_WRITE:meta",
+                "DOWNSTREAM:ensureState",
+                "DOWNSTREAM:multiplier",
+                "RESPONSIBLE_FUNCTION:installFishingCooldown",
+                "STATE_WRITE:now",
+                "STATE_WRITE:innerShowModal",
+                "STATE_WRITE:v5",
+                "STATE_WRITE:remain",
+                "DOWNSTREAM:showModalWithFishingCooldown",
+                "DOWNSTREAM:ensureV5State",
+                "RESPONSIBLE_FUNCTION:breakProduction",
+                "STATE_WRITE:inv",
+                "STATE_WRITE:resource",
+                "STATE_WRITE:p",
+                "DOWNSTREAM:productionState",
+                "DOWNSTREAM:resetResourceSample",
+                "RESPONSIBLE_FUNCTION:autoFarm",
+                "STATE_WRITE:planted",
+                "STATE_WRITE:seeds",
+                "DOWNSTREAM:ensureFeatureState",
+                "DOWNSTREAM:workerNumber"
+              ],
+              "requiredObservableResult": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. class-upgrades-pirate-v12.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. cozy-balance-v5.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. economy-west-v2.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. farm-smithy.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "COMBAT",
+                  "AI",
+                  "PROGRESSION",
+                  "CORE_STATE",
+                  "SAVE",
+                  "INTERACTION",
+                  "GOAL_STATE",
+                  "PLACEMENT",
+                  "ECONOMY",
+                  "PRESENTATION",
+                  "WORLD"
+                ],
+                "preferredPrimarySymbols": [
+                  "adjustExplorerRewards",
+                  "applyUpgradeToUnit",
+                  "installFishingCooldown",
+                  "breakProduction",
+                  "autoFarm",
+                  "drawObjectsWithWest"
+                ],
+                "maxSystemCount": 11,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "PRESENTATION",
+                  "PLAYER",
+                  "AI",
+                  "INTERACTION",
+                  "PLACEMENT",
+                  "PROGRESSION",
+                  "ECONOMY",
+                  "COMBAT",
+                  "WORLD"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_PRESENTATION",
+                "MICRO_WORLD",
+                "MICRO_COMBAT",
+                "MICRO_AI",
+                "MICRO_INTERACTION",
+                "MICRO_ECONOMY",
+                "MICRO_PROGRESSION",
+                "MICRO_PLACEMENT",
+                "MICRO_GOAL_STATE",
+                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": true,
+                "nodeTestTargets": [],
+                "executable": true,
+                "mode": "DIAGNOSTIC_RESCAN",
+                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+                "diagnosticType": "INTERVAL_CLEANUP_RISK",
+                "diagnosticFile": "class-upgrades-pirate-v12.js",
+                "diagnosticLine": 308,
+                "diagnosticNeedle": "setInterval(",
+                "diagnosticMicroTask": "class-upgrades-pirate-v12.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
+                "verifiedResponsibleSystem": "GAME_RUNTIME",
+                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OWNED_STATE_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "adjustExplorerRewards",
+                  "applyUpgradeToUnit",
+                  "installFishingCooldown",
+                  "breakProduction",
+                  "autoFarm",
+                  "drawObjectsWithWest"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "ensureState",
+                  "multiplier",
+                  "syncAlliedUpgrades",
+                  "showModalWithFishingCooldown",
+                  "ensureV5State",
+                  "toast",
+                  "save",
+                  "productionState",
+                  "resetResourceSample",
+                  "scaledCost",
+                  "consumeCapacity",
+                  "updateTick",
+                  "ensureFeatureState",
+                  "workerNumber",
+                  "systemTick",
+                  "CORE_STATE",
+                  "AI",
+                  "PROGRESSION",
+                  "PRESENTATION",
+                  "SAVE",
+                  "ECONOMY",
+                  "COMBAT",
+                  "PLACEMENT"
+                ],
+                "ownedState": [
+                  "state",
+                  "level",
+                  "currentAttack",
+                  "meta",
+                  "externalDelta",
+                  "desired",
+                  "now",
+                  "innerShowModal",
+                  "v5",
+                  "remain",
+                  "fishing",
+                  "attempts",
+                  "inv",
+                  "resource",
+                  "p",
+                  "buffered",
+                  "next",
+                  "kind",
+                  "coins",
+                  "expansion",
+                  "lastExplorerTrips",
+                  "lastExplorerEarned",
+                  "trips",
+                  "earned"
+                ],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_PRESENTATION",
+                  "MICRO_WORLD",
+                  "MICRO_COMBAT",
+                  "MICRO_AI",
+                  "MICRO_INTERACTION",
+                  "MICRO_ECONOMY",
+                  "MICRO_PROGRESSION",
+                  "MICRO_PLACEMENT",
+                  "MICRO_GOAL_STATE",
+                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 106,
+                "edgeCount": 199,
+                "maxFunctionBodyBytes": 2810,
+                "maxCallsPerFunction": 10,
+                "maxCalledByPerFunction": 24,
+                "maxStateWritesPerFunction": 18,
+                "maxSystemsPerFunction": 8,
+                "multiWriterStateCount": 53,
+                "stateWriterLinkCount": 285,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 1,
+                "eventBindingCount": 4,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 17
+              },
+              "responsibilityGraph": {
+                "nodeCount": 106,
+                "relevantNodes": [
+                  {
+                    "name": "ensureState",
+                    "systems": [
+                      "CORE_STATE",
+                      "AI",
+                      "PROGRESSION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "loadWithClassPirate",
+                      "saveWithClassPirate",
+                      "saveImmediate",
+                      "applyUpgradeToUnit",
+                      "upgradeClass",
+                      "patchUpgradePanel",
+                      "chooseRaidReplacement",
+                      "drawWithClassUpgradePirates",
+                      "loadWithExpansionV4",
+                      "saveWithExpansionV4",
+                      "scaledCost",
+                      "buildProduction",
+                      "breakProduction",
+                      "consumeCapacity",
+                      "fishingAttempts",
+                      "cooldownRemaining",
+                      "detectRecruits",
+                      "westState",
+                      "patchUI",
+                      "drawWithExpansionV4",
+                      "drawIslandWithWest",
+                      "drawObjectsWithWest"
+                    ],
+                    "stateReads": [
+                      "MAX_UPGRADE_LEVEL",
+                      "CLASS_DEFS",
+                      "root",
+                      "state",
+                      "kind"
+                    ],
+                    "stateWrites": [
+                      "root",
+                      "state"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "toast",
+                    "systems": [
+                      "PRESENTATION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "upgradeClass",
+                      "chooseRaidReplacement",
+                      "buyWorker",
+                      "buyExplorer",
+                      "installFishingCooldown",
+                      "showModalWithFishingCooldown",
+                      "sellWolfHide",
+                      "selectBearAt",
+                      "updateBears",
+                      "buildProduction",
+                      "breakProduction",
+                      "limitedFishingShowModal",
+                      "detectRecruits",
+                      "adjustExplorerRewards",
+                      "unlockWest",
+                      "selectWestBossAt",
+                      "updateWestCombat",
+                      "openWestChest",
+                      "trackDrops",
+                      "craft"
+                    ],
+                    "stateReads": [
+                      "el",
+                      "show"
+                    ],
+                    "stateWrites": [
+                      "el"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "multiplier",
+                    "systems": [
+                      "PROGRESSION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "applyUpgradeToUnit",
+                      "patchUpgradePanel"
+                    ],
+                    "stateReads": [
+                      "MAX_UPGRADE_LEVEL",
+                      "level"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "applyUpgradeToUnit",
+                    "systems": [
+                      "COMBAT",
+                      "AI",
+                      "PROGRESSION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState",
+                      "multiplier"
+                    ],
+                    "calledBy": [
+                      "syncAlliedUpgrades"
+                    ],
+                    "stateReads": [
+                      "CLASS_DEFS",
+                      "currentGame",
+                      "state",
+                      "level",
+                      "currentAttack",
+                      "meta",
+                      "externalDelta",
+                      "desired",
+                      "kind"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "level",
+                      "currentAttack",
+                      "meta",
+                      "externalDelta",
+                      "desired"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "syncAlliedUpgrades",
+                    "systems": [],
+                    "calls": [
+                      "applyUpgradeToUnit"
+                    ],
+                    "calledBy": [
+                      "upgradeClass",
+                      "drawWithClassUpgradePirates"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "allies"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "ensureV5State",
+                    "systems": [
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "queueWithBalanceV5",
+                      "save",
+                      "installFishingCooldown",
+                      "showModalWithFishingCooldown",
+                      "drawWithBalanceV5"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "old"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "old"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "save",
+                    "systems": [
+                      "SAVE",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureV5State",
+                      "updateCoins"
+                    ],
+                    "calledBy": [
+                      "drawPirateUnits",
+                      "buyWorker",
+                      "buyExplorer",
+                      "installFishingCooldown",
+                      "showModalWithFishingCooldown",
+                      "sellWolfHide",
+                      "pruneDeadTroops",
+                      "drawObjectsWithWestBears",
+                      "buildProduction",
+                      "breakProduction",
+                      "limitedFishingShowModal",
+                      "detectRecruits",
+                      "adjustExplorerRewards",
+                      "unlockWest",
+                      "pruneWestDead",
+                      "updateWestCombat",
+                      "openWestChest",
+                      "drawIslandWithWest",
+                      "drawObjectsWithWest",
+                      "autoFarm",
+                      "trackDrops",
+                      "craft",
+                      "drawSeedDepot",
+                      "drawSmithy"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "activeRuntime",
+                      "state"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "installFishingCooldown",
+                    "systems": [
+                      "COMBAT",
+                      "SAVE",
+                      "INTERACTION",
+                      "AI",
+                      "PROGRESSION",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "showModalWithFishingCooldown",
+                      "ensureV5State",
+                      "toast",
+                      "save"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "now",
+                      "FISHING_COOLDOWN_MS",
+                      "innerShowModal",
+                      "v5",
+                      "remain",
+                      "fishing",
+                      "attempts"
+                    ],
+                    "stateWrites": [
+                      "now",
+                      "innerShowModal",
+                      "v5",
+                      "remain",
+                      "fishing",
+                      "attempts"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "showModalWithFishingCooldown",
+                    "systems": [
+                      "COMBAT",
+                      "SAVE",
+                      "AI",
+                      "PROGRESSION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureV5State",
+                      "toast",
+                      "save"
+                    ],
+                    "calledBy": [
+                      "installFishingCooldown"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "now",
+                      "FISHING_COOLDOWN_MS",
+                      "innerShowModal",
+                      "v5",
+                      "remain",
+                      "fishing",
+                      "attempts"
+                    ],
+                    "stateWrites": [
+                      "now",
+                      "v5",
+                      "remain",
+                      "fishing",
+                      "attempts"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "productionState",
+                    "systems": [
+                      "CORE_STATE",
+                      "PLACEMENT",
+                      "PRESENTATION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "buildProduction",
+                      "breakProduction",
+                      "resetResourceSample",
+                      "monitorProduction",
+                      "patchUI"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "state"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scaledCost",
+                    "systems": [
+                      "ECONOMY",
+                      "PLACEMENT",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState"
+                    ],
+                    "calledBy": [
+                      "buildProduction",
+                      "breakProduction",
+                      "patchUI"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "factor",
+                      "REBUILD_MULTIPLIER",
+                      "LUMBER",
+                      "MINE",
+                      "resource",
+                      "rebuilds",
+                      "base",
+                      "kind"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "factor",
+                      "resource",
+                      "rebuilds",
+                      "base",
+                      "kind"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "breakProduction",
+                    "systems": [
+                      "SAVE",
+                      "PLACEMENT",
+                      "AI",
+                      "ECONOMY",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "productionState",
+                      "ensureState",
+                      "save",
+                      "resetResourceSample",
+                      "scaledCost",
+                      "toast"
+                    ],
+                    "calledBy": [
+                      "consumeCapacity"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "inv",
+                      "resource",
+                      "p",
+                      "buffered",
+                      "next",
+                      "kind"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "inv",
+                      "resource",
+                      "p",
+                      "buffered",
+                      "next",
+                      "kind"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "resetResourceSample",
+                    "systems": [
+                      "ECONOMY",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "productionState"
+                    ],
+                    "calledBy": [
+                      "buildProduction",
+                      "breakProduction",
+                      "monitorProduction"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "inv",
+                      "lastResourceSample",
+                      "p"
+                    ],
+                    "stateWrites": [
+                      "inv",
+                      "lastResourceSample",
+                      "p"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "consumeCapacity",
+                    "systems": [
+                      "AI",
+                      "ECONOMY",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState",
+                      "breakProduction"
+                    ],
+                    "calledBy": [
+                      "monitorProduction"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "resource",
+                      "key",
+                      "kind"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "key",
+                      "kind"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "adjustExplorerRewards",
+                    "systems": [
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "SAVE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "save",
+                      "toast"
+                    ],
+                    "calledBy": [
+                      "updateTick"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "coins",
+                      "expansion",
+                      "EXPLORER_REWARD_MIN",
+                      "EXPLORER_REWARD_MAX",
+                      "lastExplorerTrips",
+                      "lastExplorerEarned",
+                      "trips",
+                      "earned",
+                      "originalReward",
+                      "correctedReward",
+                      "adjustment"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "coins",
+                      "expansion",
+                      "lastExplorerTrips",
+                      "lastExplorerEarned",
+                      "trips",
+                      "earned",
+                      "originalReward",
+                      "correctedReward",
+                      "adjustment"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "updateTick",
+                    "systems": [
+                      "CORE_STATE",
+                      "COMBAT",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "monitorProduction",
+                      "ensureNorthNodes",
+                      "adjustExplorerRewards",
+                      "updateWestCombat",
+                      "updateWestButton",
+                      "patchUI"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "currentGame",
+                      "activeRuntime",
+                      "lastTick",
+                      "now",
+                      "dt"
+                    ],
+                    "stateWrites": [
+                      "lastTick",
+                      "now",
+                      "dt"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "drawObjectsWithWest",
+                    "systems": [
+                      "PRESENTATION",
+                      "SAVE",
+                      "WORLD",
+                      "INTERACTION",
+                      "COMBAT",
+                      "PROGRESSION",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureState",
+                      "save"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "alive",
+                      "originalDrawObjects",
+                      "WEST_CHEST",
+                      "westSelected",
+                      "westBoss",
+                      "west",
+                      "x"
+                    ],
+                    "stateWrites": [
+                      "west"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "workerNumber",
+                    "systems": [],
+                    "calls": [],
+                    "calledBy": [
+                      "totalWorkers",
+                      "autoFarm"
+                    ],
+                    "stateReads": [],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "ensureFeatureState",
+                    "systems": [
+                      "CORE_STATE",
+                      "ECONOMY",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "totalWorkers"
+                    ],
+                    "calledBy": [
+                      "loadWithFarmSmithy",
+                      "saveWithFarmSmithy",
+                      "applyAllGear",
+                      "autoFarm",
+                      "trackDrops",
+                      "craft",
+                      "renderSmithyPanel",
+                      "systemTick",
+                      "drawWithFarmSmithy",
+                      "drawFarmSmithyObjects"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "key",
+                      "RECIPES",
+                      "oldDepot",
+                      "oldSmithy",
+                      "looseSeeds",
+                      "seeds"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "oldDepot",
+                      "oldSmithy",
+                      "looseSeeds",
+                      "seeds"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "autoFarm",
+                    "systems": [
+                      "SAVE",
+                      "INTERACTION",
+                      "GOAL_STATE",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureFeatureState",
+                      "workerNumber",
+                      "save"
+                    ],
+                    "calledBy": [
+                      "systemTick"
+                    ],
+                    "stateReads": [
+                      "currentGame",
+                      "activeRuntime",
+                      "state",
+                      "planted",
+                      "seeds"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "planted",
+                      "seeds"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "systemTick",
+                    "systems": [
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureFeatureState",
+                      "applyAllGear",
+                      "autoFarm",
+                      "trackDrops",
+                      "updateSmithyButton",
+                      "patchPanels"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "currentGame",
+                      "state",
+                      "now",
+                      "lastFarmTick",
+                      "lastUiPatch"
+                    ],
+                    "stateWrites": [
+                      "now",
+                      "lastFarmTick",
+                      "lastUiPatch"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "loadWithClassPirate",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "saveWithClassPirate",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "saveImmediate",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyUpgradeToUnit",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyUpgradeToUnit",
+                    "to": "multiplier",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "syncAlliedUpgrades",
+                    "to": "applyUpgradeToUnit",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeClass",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeClass",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "upgradeClass",
+                    "to": "syncAlliedUpgrades",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "patchUpgradePanel",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "patchUpgradePanel",
+                    "to": "multiplier",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "chooseRaidReplacement",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "chooseRaidReplacement",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "drawWithClassUpgradePirates",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "drawWithClassUpgradePirates",
+                    "to": "syncAlliedUpgrades",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "drawPirateUnits",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "queueWithBalanceV5",
+                    "to": "ensureV5State",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "save",
+                    "to": "ensureV5State",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "save",
+                    "to": "updateCoins",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyWorker",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyWorker",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyExplorer",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyExplorer",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "installFishingCooldown",
+                    "to": "showModalWithFishingCooldown",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "installFishingCooldown",
+                    "to": "ensureV5State",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "installFishingCooldown",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "installFishingCooldown",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "showModalWithFishingCooldown",
+                    "to": "ensureV5State",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "showModalWithFishingCooldown",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "showModalWithFishingCooldown",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sellWolfHide",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sellWolfHide",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "selectBearAt",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "pruneDeadTroops",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "updateBears",
+                    "to": "toast",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "drawWithBalanceV5",
+                    "to": "ensureV5State",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "drawObjectsWithWestBears",
+                    "to": "save",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "loadWithExpansionV4",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "saveWithExpansionV4",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scaledCost",
+                    "to": "ensureState",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 45,
+                "hardBlockers": [],
+                "issues": [
+                  {
+                    "code": "BROAD_STATE_MUTATION_RESPONSIBILITY",
+                    "severity": "WARN",
+                    "detail": "patchUI:18"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "currentGame:drawWithClassUpgradePirates,drawWithBalanceV5,patchUI,drawWithExpansionV4,drawWithFarmSmithy"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "activeRuntime:loadWithClassPirate,saveWithClassPirate,queueWithBalanceV5,loadWithExpansionV4,saveWithExpansionV4,loadWithFarmSmithy,saveWithFarmSmithy"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "state:ensureState,loadWithClassPirate,applyUpgradeToUnit,upgradeClass,patchUpgradePanel,chooseRaidReplacement,ensureV5State,buyWorker,buyExplorer,sellWolfHide,pruneDeadTroops,loadWithExpansionV4,scaledCost,buildProduction,breakProduction,consumeCapacity,fishingAttempts,adjustExplorerRewards,unlockWest,pruneWestDead,openWestChest,patchUI,ensureFeatureState,loadWithFarmSmithy,applyAllGear,autoFarm,trackDrops,craft,renderSmithyPanel,drawFarmSmithyObjects"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "coins:saveImmediate,upgradeClass,buyWorker,buyExplorer,sellWolfHide,adjustExplorerRewards,unlockWest,openWestChest"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "button:setupWestButton,updateWestButton,patchUI,renderSmithyPanel,setupSmithyButton,updateSmithyButton"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "d:nearestLiving,updatePirateAttacks,selectBearAt,moveToward,nearest,returnBearTroops,updateBears,returnWestTroops,updateWestCombat"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "now:drawWithClassUpgradePirates,installFishingCooldown,showModalWithFishingCooldown,selectBearAt,updateBears,drawWithBalanceV5,fishingAttempts,selectWestBossAt,updateTick,systemTick"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "inv:sellWolfHide,buildProduction,breakProduction,resetResourceSample,monitorProduction,openWestChest,canCraft,spendRecipe,renderSmithyPanel"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "p:buildProduction,breakProduction,resetResourceSample,monitorProduction,patchUI"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "kind:patchUpgradePanel,pirateUnit,drawPirateUnits,updateBears,scaledCost,buildProduction,breakProduction,consumeCapacity,updateWestCombat,patchUI"
+                  }
+                ]
+              },
+              "failureEvidence": [
+                "diagnostic:INTERVAL_CLEANUP_RISK",
+                "repair-mode:MODEL",
+                "FAIL",
+                "learning-motor-candidate-tournament:repeated-verified-failure",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+                "coding-failure-fingerprint:web|STATE_FLOW|RELEASE|ASSET_PRODUCTION|ECONOMY|PERFORMANCE|STATE_MACHINE|WEB_RUNTIME",
+                "learning-primary-domains:%5B%22ECONOMY%22%2C%22WEB_RUNTIME%22%5D",
+                "shared-context-sync:MISSING",
+                "failure-cause:source-candidate-generation-failed",
+                "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js%7C35794255941%3A1%7Cspeculative-1%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+                "neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_CONTRADICTED%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A-0.1%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D",
+                "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js%7C35794255941%3A1%7Cspeculative-1%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+                "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js%7C35794255941%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js%7C35794255941%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A14%2C%22edgeCount%22%3A12%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "ed5d429087fd418f13728038",
+            "generatedAt": "2026-09-23T00:45:47.058Z"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+            "candidateVariant": "speculative-1",
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "adjustExplorerRewards",
+              "applyUpgradeToUnit",
+              "installFishingCooldown",
+              "breakProduction",
+              "autoFarm",
+              "drawObjectsWithWest"
+            ],
+            "primarySystems": [
+              "COMBAT",
+              "AI",
+              "PROGRESSION",
+              "CORE_STATE",
+              "SAVE",
+              "INTERACTION",
+              "GOAL_STATE",
+              "PLACEMENT",
+              "ECONOMY",
+              "PRESENTATION",
+              "WORLD"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "PLAYER",
+              "AI",
+              "INTERACTION",
+              "PLACEMENT",
+              "PROGRESSION",
+              "ECONOMY",
+              "COMBAT",
+              "WORLD"
+            ],
+            "ownedState": [
+              "state",
+              "level",
+              "currentAttack",
+              "meta",
+              "externalDelta",
+              "desired",
+              "now",
+              "innerShowModal",
+              "v5",
+              "remain",
+              "fishing",
+              "attempts",
+              "inv",
+              "resource",
+              "p",
+              "buffered",
+              "next",
+              "kind",
+              "coins",
+              "expansion",
+              "lastExplorerTrips",
+              "lastExplorerEarned",
+              "trips",
+              "earned"
+            ],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "COMBAT",
+                "AI",
+                "PROGRESSION",
+                "CORE_STATE",
+                "SAVE",
+                "INTERACTION",
+                "GOAL_STATE",
+                "PLACEMENT",
+                "ECONOMY",
+                "PRESENTATION",
+                "WORLD"
+              ],
+              "preferredPrimarySymbols": [
+                "adjustExplorerRewards",
+                "applyUpgradeToUnit",
+                "installFishingCooldown",
+                "breakProduction",
+                "autoFarm",
+                "drawObjectsWithWest"
+              ],
+              "maxSystemCount": 11,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "PLAYER",
+                "AI",
+                "INTERACTION",
+                "PLACEMENT",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": null,
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": true,
+              "nodeTestTargets": [],
+              "executable": true,
+              "mode": "DIAGNOSTIC_RESCAN",
+              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+              "diagnosticType": "INTERVAL_CLEANUP_RISK",
+              "diagnosticFile": "class-upgrades-pirate-v12.js",
+              "diagnosticLine": 308,
+              "diagnosticNeedle": "setInterval(",
+              "diagnosticMicroTask": "class-upgrades-pirate-v12.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
+              "verifiedResponsibleSystem": "GAME_RUNTIME",
+              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "generationAttempts": 0,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": false,
+            "incrementalQaPass": false,
+            "performanceSanityPass": false,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "NOT_AVAILABLE",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "WORK_ORDER_FALLBACK"
+          },
+          "presentationQuality": null,
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "FAIL",
+            "test": "FAIL",
+            "performance": "FAIL",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "practiceArtifact": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/cozy-island",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "current-deterministic-diagnostic-interval-cleanup-risk",
+                "system": "GAME_RUNTIME",
+                "confidence": 0.99,
+                "reason": "현재 task의 결정론적 diagnostic INTERVAL_CLEANUP_RISK(farm-smithy.js)가 GAME_RUNTIME 책임 가설을 직접 지지함",
+                "diagnosticType": "INTERVAL_CLEANUP_RISK",
+                "diagnosticFile": "farm-smithy.js",
+                "verified": false,
+                "advisoryOnly": true
+              },
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              },
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "current-deterministic-diagnostic-interval-cleanup-risk",
+                "to": "TASK_GOAL",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.99,
+                "verified": false,
+                "rank": 1
+              },
+              {
+                "from": "save-compatibility",
+                "to": "TASK_GOAL",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 2
+              },
+              {
+                "from": "source-generation-path",
+                "to": "TASK_GOAL",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 3
+              }
+            ],
+            "responsibility": {
+              "system": "GAME_RUNTIME",
+              "confidence": 0.99,
+              "alternatives": [
+                {
+                  "system": "SAVE_SYSTEM",
+                  "confidence": 0.32727272727272727
+                },
+                {
+                  "system": "SOURCE_GENERATION",
+                  "confidence": 0.31272727272727274
+                }
+              ],
+              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 5,
+                "recurrence": 2,
+                "sharedScope": 2,
+                "priority": 2,
+                "evidenceConfidence": 0.99
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": null,
+              "responsibleSystem": "GAME_RUNTIME",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": false,
+              "blocker": null
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_1981e22d7ce6d0655400a0e7",
+              "capability_ctrace_383f1508b1e716e1b7848811",
+              "capability_ctrace_54427da2204e4033e8fa26ba",
+              "capability_ctrace_67cbe292d92c17ee1773a10c",
+              "capability_ctrace_9826195dac24dccb5a25672d"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_1981e22d7ce6d0655400a0e7",
+              "capability_ctrace_383f1508b1e716e1b7848811",
+              "capability_ctrace_54427da2204e4033e8fa26ba",
+              "capability_ctrace_67cbe292d92c17ee1773a10c",
+              "capability_ctrace_9826195dac24dccb5a25672d"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 313123,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_system_ai_0b0a34e7dbf177b41b7207d9",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_system_ai_a4960e93b58a431d14b77f9c",
+              "CODE_PATTERN:pat_14v79w7",
+              "CODE_PATTERN:pat_15k9k0m",
+              "CODE_PATTERN:pat_1dj8rdx",
+              "CODE_PATTERN:pat_1e917b8",
+              "CODE_PATTERN:pat_1gglxo2",
+              "CODE_PATTERN:pat_1lx9uhh",
+              "VERIFIED_CAPABILITY:capability_ctrace_1981e22d7ce6d0655400a0e7",
+              "VERIFIED_CAPABILITY:capability_ctrace_383f1508b1e716e1b7848811",
+              "VERIFIED_CAPABILITY:capability_ctrace_54427da2204e4033e8fa26ba",
+              "VERIFIED_CAPABILITY:capability_ctrace_67cbe292d92c17ee1773a10c",
+              "VERIFIED_CAPABILITY:capability_ctrace_9826195dac24dccb5a25672d"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "workLock": {
+            "required": true,
+            "acquired": true,
+            "id": "wl-xnj9br",
+            "reason": "existing-worker-task-lock",
+            "worker": "vibe2",
+            "baseSha": "8992684cc215e012a2814c864cfe4af7498efd76",
+            "files": [
+              "web-games/cozy-island/class-upgrades-pirate-v12.js",
+              "web-games/cozy-island/cozy-balance-v5.js",
+              "web-games/cozy-island/economy-west-v2.js",
+              "web-games/cozy-island/farm-smithy.js"
+            ],
+            "releaseRule": "RELEASE_AFTER_FAN_IN_QA_OR_ABORT"
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35801243745:1",
+            "reservedAt": "2026-09-23T00:43:03Z",
+            "workerStartedAt": 1790124300361,
+            "workerFinishedAt": 1790124613484,
+            "checkoutMs": 4694,
+            "modelPrepMs": 3616,
+            "candidateMs": 265886,
+            "qaMs": 0,
+            "workerTotalMs": 313123,
+            "changedFileCount": 0,
+            "addedLineCount": 0,
+            "deletedLineCount": 0,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
         }
       ],
       "companyContext": null,
