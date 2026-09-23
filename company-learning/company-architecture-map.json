@@ -1,5 +1,5 @@
 {
-  "version": 98,
+  "version": 99,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T10:06:19+09:00",
+  "updatedAt": "2026-09-23T10:14:04+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2744,7 +2744,14 @@
         "fanInIsolation": "company-system-ai-fanin-${github.run_id}-${github.run_attempt}",
         "fanInWriteMode": "OPTIMISTIC_LATEST_STATE_REPLAY_MAX_5",
         "reservationCollisionRecovery": "RELOAD_LATEST_CONTROL_BRANCH_RECOMPUTE_AND_RETRY_UP_TO_8_PER_RUN",
-        "latestVerifiedReserveRunId": 35803294553
+        "latestVerifiedReserveRunId": 35803294553,
+        "duplicateRepairCoalescing": "QUEUED_BOTTLENECK_REPAIR_EXACT_IDENTITY_ONLY",
+        "duplicateRepairCheckpointIdentity": [
+          "SOURCE_MUTATION_BASELINE",
+          "KNOWN_GOOD_REVISION"
+        ],
+        "duplicateRepairCoalescingRevision": "9ab01df47287ae1ae836e71b9d7be843db8ff867",
+        "duplicateRepairCheckpointRevision": "24d941a8e5bf75a37ea54b35cbd351b5daae5bad"
       },
       "bottleneckSensor": {
         "queueSources": [
@@ -2830,9 +2837,10 @@
       "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
     },
     "latestImplementationSync": {
-      "revision": "f2c7dc0fca00a0046a50160680c92a895c80d3d8",
+      "revision": "24d941a8e5bf75a37ea54b35cbd351b5daae5bad",
       "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
-      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION"
+      "state": "IMPLEMENTED_TEST_COVERED_PENDING_NEXT_RESERVE_CYCLE",
+      "testRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8"
     }
   }
 }
