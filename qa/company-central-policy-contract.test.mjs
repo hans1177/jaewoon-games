@@ -8,7 +8,6 @@ import {fileURLToPath} from 'node:url';
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const readText=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
 const readJson=relative=>JSON.parse(readText(relative));
-const flow=readText('COMPANY_FLOW.md');
 const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
 const roadmap=readJson('company-learning/platform-release-roadmap.json');
@@ -32,25 +31,25 @@ test('platform-release-roadmap is the single machine execution policy source',()
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(roadmap.humanDocumentRequired,false);
   assert.equal(roadmap.runtimeContractCannotCreatePolicy,true);
-  assert.equal(roadmap.legacyPolicyMirror.path,'COMPANY_FLOW.md');
-  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
-  assert.equal(roadmap.legacyPolicyMirror.requiredForExecution,false);
-  assert.equal(roadmap.legacyPolicyMirror.mayCreatePolicy,false);
-  assert.match(flow,/sourceOfTruth: company-learning\/platform-release-roadmap\.json/);
-  assert.match(flow,/format: MACHINE_ORIENTED_POLICY_SPEC/);
-  assert.match(flow,/authority: LEGACY_POLICY_MIRROR/);
-  assert.match(flow,/authoritative: false/);
-  assert.match(flow,/executionRequired: false/);
-  assert.match(flow,/legacyPolicyMirror: true/);
-  assert.match(flow,/humanReadableNarrativeRequired: false/);
-  assert.match(flow,/ownerInstructionOverridesPolicy: true/);
-  assert.match(flow,/passMinimum: 80/);
-  assert.match(flow,/formalImplementationMinimumForTargetPlatformDispatch: 90/);
-  assert.match(flow,/designOnlyArtbookForbidden: true/);
-  assert.match(flow,/preWebArtbookForbidden: true/);
-  assert.match(flow,/createOnlyAfterWebStrictReview: true/);
-  assert.match(flow,/blockingBudgetMinutes: 10/);
+  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
+  assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.centralDocumentation.humanReadableArtifactPolicy.humanReadablePolicyMirrorRequired,false);
+  assert.equal(roadmap.centralDocumentation.rules.legacyHumanPolicyMirrorForbidden,true);
+  assert.equal(roadmap.centralDocumentation.rules.completedOneShotMigrationArtifactsMustBeRemoved,true);
   assert.equal(fs.existsSync(obsoleteAgentsPath),false);
+  for(const removed of [
+    'COMPANY_FLOW.md',
+    'company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md',
+    'company-learning/PLATFORM_RELEASE_ROADMAP.md',
+    'company-learning/PRIMARY_THREE_FAST_MVP.md',
+    'company-learning/UNITY_WEB_FIRST_STAGE.md',
+    'company-learning/VIBE3_ENGINE.md',
+    '.github/workflows/temp-cloud-designer-cutover-v2.yml',
+    '.github/workflows/temp-design-v2-wireup.yml',
+    '.github/workflows/one-shot-common-development-policy.yml',
+    'tools/temp-migrate-stage-gate-v2.mjs',
+    'tools/apply-common-development-quality-policy.mjs'
+  ]) assert.equal(fs.existsSync(path.join(repoRoot,removed)),false,removed);
 });
 test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and selected-platform policy',()=>{
   assert.equal(directive.gameSeed.enabled,true);
@@ -80,14 +79,6 @@ test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and s
   assert.equal(directive.gameSeed.initialTargetPlatform,'ROBLOX');
   assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
-  assert.match(flow,/historicalInitialSeedBatchCount: 6/);
-  assert.match(flow,/historicalInitialSeedBatchOnly: true/);
-  assert.match(flow,/initialSeedBatchIsProductionQuota: false/);
-  assert.match(flow,/sourceCodeRule: IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE/);
-  assert.match(flow,/replenishment:[\s\S]*mode: DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO/);
-  assert.match(flow,/oneForOneOnly: false/);
-  assert.match(flow,/initialTargetPlatform: ROBLOX/);
-  assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
 });
 
 test('DESIGN_ONLY is transient until the minimum dual-platform design contract is ready',()=>{
@@ -161,8 +152,6 @@ test('discard policy requires redesign or real implementation evidence instead o
   assert.equal(directive.discardPolicy.DEVELOPMENT_CONFIRMED.discardRequiresRealEvidence,true);
   assert.equal(directive.discardPolicy.DEVELOPMENT_CONFIRMED.discardRequiresTargetedFixWhenPractical,true);
   assert.equal(directive.discardPolicy.DEVELOPMENT_CONFIRMED.discardRequiresTargetedRevalidation,true);
-  assert.match(flow,/SAME_GAME_DESIGNER_REVISION_ATTEMPTED/);
-  assert.match(flow,/TARGETED_REVALIDATION_PERFORMED/);
 });
 
 test('semantic production classes are canonical and fixed numeric quotas are not policy',()=>{
@@ -175,9 +164,6 @@ test('semantic production classes are canonical and fixed numeric quotas are not
   assert.equal(Object.hasOwn(directive.production,'numericLabels'),false);
   assert.equal(directive.production.numericLabelsAreAliasesOnly,true);
   assert.equal(Object.hasOwn(directive,'tiersCompatibility'),false);
-  assert.match(flow,/membership: DYNAMIC_EVIDENCE/);
-  assert.match(flow,/fixedClassCounts: false/);
-  assert.match(flow,/fixedPortfolioSize: false/);
 });
 
 test('DESIGN_ONLY keeps deterministic evidence while lead-model distinctness is not an execution gate',()=>{
@@ -282,8 +268,6 @@ test('Web learning evidence is auxiliary and cannot replace native platform evid
   assert.equal(directive.learning.webGameEvidence.cannotEnterRobloxUnityUefnVerifiedLaneWithoutMatchingNativeEvidence,true);
   assert.equal(directive.learning.webGameEvidence.useExistingCanonicalDistillationOnly,true);
   assert.equal(directive.learning.webGameEvidence.newTrainerOrCronForbidden,true);
-  assert.match(flow,/role: AUXILIARY_PORTABLE_LEARNING_EVIDENCE/);
-  assert.match(flow,/cannotSatisfyNativePlatformRuntimeGate: true/);
   assert.match(nativeDatasetGate,/browser QA must be NOT_APPLICABLE/);
   assert.match(nativeDatasetGate,/runtime PASS required/);
   assert.match(nativeDatasetGate,/real verified/);
@@ -302,8 +286,8 @@ test('equal-tier scheduling keeps strict design as a parallel quality signal, no
   assert.equal(directive.executionPause.stopAfterStage,'NONE');
   assert.equal(directive.executionPause.developmentConfirmedQueueAllowed,true);
   assert.equal(directive.executionPause.developmentRuntimeDispatchAllowed,true);
-  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
-  assert.equal(roadmap.legacyPolicyMirror.requiredForExecution,false);
+  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
+  assert.equal(roadmap.centralDocumentation.legacyPolicyCleanup.status,'REMOVED_FROM_ACTIVE_REPOSITORY');
 });
 
 test('Unity and Roblox share the active first development tier while Fortnite UEFN remains owner-held',()=>{
@@ -330,7 +314,6 @@ test('Unity and Roblox share the active first development tier while Fortnite UE
   assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleDevelopmentSlot,false);
   assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
   assert.equal(roadmap.platformPriorityInvariant.fortniteUefnState,'OWNER_HOLD');
-  assert.match(flow,/roadmapPhaseEntryGatesForbidden: true/);
 });
 
 test('owner permanent removal is machine-enforced and cannot auto-recover',()=>{
@@ -461,15 +444,14 @@ test('Vibe brain is always running and uses verified checkpoints instead of term
   assert.ok(roadmap.assistantRoadmapOrchestration.workRequestContract.claimStateValues.includes('VERIFIED_CHECKPOINT'));
 });
 
-test('Director supervisor consumes canonical machine policy and treats COMPANY_FLOW as legacy mirror only',()=>{
+test('Director supervisor consumes canonical machine policy without a human policy mirror',()=>{
   assert.match(directorSupervisor,/company-learning\/platform-release-roadmap\.json/);
   assert.match(directorSupervisor,/directive\.machineSourceOfTruth!==machineSource/);
   assert.match(directorSupervisor,/policy\.machineSourceOfTruth!==machineSource/);
   assert.match(directorSupervisor,/MACHINE_EXECUTION_CONTRACT/);
-  assert.match(directorSupervisor,/authority: LEGACY_POLICY_MIRROR/);
-  assert.match(directorSupervisor,/authoritative: false/);
+  assert.match(directorSupervisor,/human policy mirror must remain disabled/);
+  assert.match(directorSupervisor,/legacy policy mirror field must be removed/);
   assert.doesNotMatch(directorSupervisor,/directive\.policyDocument!=='COMPANY_FLOW\.md'/);
-  assert.doesNotMatch(directorSupervisor,/policy authority: COMPANY_FLOW\.md only/);
 });
 
 test('24h learning is Gemini-free and provider failure cannot stop the portfolio',()=>{
