@@ -388,6 +388,29 @@ test('project machine state carries canonical web to Roblox lifecycle context',(
 
 
 
+test('24h company graphics library keeps Unity and Roblox preparation drills rotating in idle capacity',()=>{
+  const idle=buildIdlePracticeQueue({});
+  assert.equal(idle.version,4);
+  assert.equal(idle.productionWorkAlwaysPreemptsPractice,true);
+  assert.equal(idle.companyGraphicsLibrary24h.enabled,true);
+  assert.equal(idle.companyGraphicsLibrary24h.drillCount,14);
+  const library=idle.drills.filter(row=>row.companyGraphicsLibrary===true);
+  assert.equal(library.length,14);
+  assert.deepEqual([...new Set(library.map(row=>row.platformProfile))].sort(),['ROBLOX','UNITY']);
+  assert.ok(library.some(row=>row.kind==='CHARACTER_ARCHETYPE_LIBRARY_DRILL'));
+  assert.ok(library.some(row=>row.kind==='CREATURE_RIG_LIBRARY_DRILL'));
+  assert.ok(library.some(row=>row.kind==='ACTION_MOTION_LIBRARY_DRILL'));
+  assert.ok(library.some(row=>row.kind==='WEAPON_MOTION_LIBRARY_DRILL'));
+  const action=library.find(row=>row.kind==='ACTION_MOTION_LIBRARY_DRILL'&&row.platformProfile==='UNITY');
+  const queued=injectIdlePracticeTask({tasks:[]},{drills:[action]});
+  assert.equal(queued.added,true);
+  assert.ok(queued.task.evidence.includes('company-graphics-library-24h'));
+  assert.ok(queued.task.evidence.includes('company-graphics-platform:UNITY'));
+  assert.match(queued.task.goal,/platformProfile=UNITY/);
+  assert.match(queued.task.goal,/idle 4종 이상/);
+  assert.ok(queued.task.evidence.includes('production-pass:NO'));
+});
+
 test('practice signals are generated even while production work exists and only priority changes',()=>{
   const idle={drills:[{id:'gap-save-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['SAVE'],productionPreemptible:true,countsAsProductionPass:false}]};
   const busy=injectIdlePracticeTask({tasks:[{id:'prod',status:'queued',department:'development',type:'implementation',evidence:[]}]},idle);
