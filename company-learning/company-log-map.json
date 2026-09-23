@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -242,7 +242,13 @@
       "supersededRepairDependencyRewireLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
       "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
       "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
-      "historicalSupersededDependencyRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
+      "historicalSupersededDependencyRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+      "allReservePathQueueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+      "allReservePathQueueReconciliationTests": [
+        "170dff04a67d5b6d302135296b480d303845ed89",
+        "7d50a0f64075d67467389f18a8ac30a386e7ce81"
+      ],
+      "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
     },
     "metricSemantics": {
       "SYSTEM_AI_RESERVATION_WAIT_MS": {
