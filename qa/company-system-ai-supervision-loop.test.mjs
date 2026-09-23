@@ -110,6 +110,7 @@ test('workflow wait telemetry separates runnable reservation, fan-in job wait, a
 test('push-triggered System AI runs are coalesced QA-only and never reserve workers',()=>{
   assert.match(workflow,/group: company-system-ai-\$\{\{ github\.event_name == 'push' && 'push-qa' \|\| github\.run_id \}\}/);
   assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/group: \$\{\{ github\.event_name == 'push' && 'company-system-ai-push-qa-reserve' \|\| 'company-system-ai-reserve-control' \}\}/);
   const reserve=workflow.slice(workflow.indexOf('- name: Reserve disjoint supervised assignments'),workflow.indexOf('\n  worker:'));
   assert.match(reserve,/if \[ "\$\{GITHUB_EVENT_NAME\}" = 'push' \]; then/);
   assert.match(reserve,/COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES/);
