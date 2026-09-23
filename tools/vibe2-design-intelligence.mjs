@@ -168,7 +168,8 @@ function evaluateContentDiversity(task = {}) {
   const enemyMaterial=/enemy|monster|creature|mob|적|몬스터|몹|생물/.test(goal)||actors.length>0;
   if(worldMaterial&&regions.length<2)issues.push('MAP_REGION_VARIETY_INSUFFICIENT');
   if(enemyMaterial&&actors.length<2)issues.push('ENEMY_OR_ACTOR_VARIETY_INSUFFICIENT');
-  const numericOnly=unique(d.variationRules||[]).some(rule=>/^(?:hp|damage|speed|color|체력|공격력|속도|색상)/i.test(clean(rule)));
+  const variationText=[...(d.variationRules||[]),clean(d.variationGuard)].filter(Boolean);
+  const numericOnly=variationText.some(rule=>/^(?:hp|damage|speed|color|체력|공격력|속도|색상)\b/i.test(clean(rule)));
   if(numericOnly)issues.push('NUMERIC_OR_COLOR_ONLY_VARIATION_INSUFFICIENT');
   return freeze({
     required:worldMaterial||enemyMaterial,
@@ -249,7 +250,7 @@ function evaluateConstraints(task = {}) {
 function evaluateDesigner(task = {}) {
   const goal = clean(task.goal);
   const designChange = task.designChange === true || clean(task.type).toLowerCase() === 'design';
-  const alternatives = Array.isArray(task.designAlternatives) ? task.designAlternatives.map(clean).filter(Boolean) : [];
+  const alternatives = Array.isArray(task.designAlternatives) ? task.designAlternatives.map(row=>typeof row==='string'?clean(row):clean(row?.concept||row?.summary||row?.plan)).filter(Boolean) : [];
   const rationale = clean(task.designRationale);
   const issues = [];
   if (!goal) issues.push('GOAL_REQUIRED');
@@ -286,7 +287,10 @@ function evaluateCritic(task = {}, designer = {}) {
 function evaluateNarrativeContract(task = {}) {
   const goal = clean(task.goal);
   const supplied = task.narrative && typeof task.narrative === 'object' ? task.narrative : {};
-  const required = task.narrativeRequired === true || Object.keys(supplied).length > 0
+  if(supplied.applicable===false&&task.narrativeRequired!==true)return freeze({
+    required:false,status:'NOT_APPLICABLE',issues:freezeList([]),authorityExpanded:false
+  });
+  const required = task.narrativeRequired === true || supplied.applicable===true || Object.keys(supplied).length > 0
     || /story|narrative|quest|dialogue|character|스토리|서사|퀘스트|대화|대사|캐릭터|세계관|복선|반전/.test(goal.toLowerCase());
   if (!required) return freeze({
     required:false,
