@@ -146,10 +146,10 @@ local function assetProp(parent,assetId,keywords,pos,scale,seed,collide)
  local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=collide==true;x.CanTouch=false;x.Size=x.Size*(scale or 1)
  x.CFrame=CFrame.new(pos)*CFrame.Angles(0,math.rad(((seed or 1)*41)%360),0);x.Parent=parent;return x
 end
-local function wholeAsset(parent,assetId,pos,scale,name)
+local function wholeAsset(parent,assetId,pos,scale,name,yaw)
  local t=loadAsset(assetId);if not t then return nil end
  local x=t:Clone();x.Name=name or("AssetModel_"..assetId);stripAsset(x);x.Parent=parent
- pcall(function()x:ScaleTo(scale or 1)end);pcall(function()x:PivotTo(CFrame.new(pos))end);return x
+ pcall(function()x:ScaleTo(scale or 1)end);pcall(function()x:PivotTo(CFrame.new(pos)*CFrame.Angles(0,math.rad(yaw or 0),0))end);return x
 end
 local function decorateVillageAssets(parent)
  task.spawn(function()
@@ -431,6 +431,42 @@ local function broadcastMultiplayerSync(actor)
  if #members>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#members,roomCode=n(actor,"RoomCode",1)})end
 end
 
+local function fantasyHouse(parent,index,pos,yaw)
+ local assetId=index%2==0 and ASSETS.MedievalHouseA or ASSETS.MedievalHouseB
+ local model=wholeAsset(parent,assetId,pos,.42,"MedievalVillageHouse"..index,yaw)
+ if model then return model end
+ local body=ppart(parent,"VillageHouse",Vector3.new(20,11,17),pos+Vector3.new(0,5,0),Color3.fromRGB(145,108,76),Enum.Material.WoodPlanks)
+ ppart(parent,"VillageRoof",Vector3.new(23,2,20),body.Position+Vector3.new(0,6.5,0),index%3==0 and Color3.fromRGB(103,62,55)or Color3.fromRGB(78,68,73),Enum.Material.Slate)
+ ppart(parent,"HouseDoor",Vector3.new(4,7,.6),body.Position+Vector3.new(0,-1,-8.7),Color3.fromRGB(83,59,44),Enum.Material.Wood)
+ local window=ppart(parent,"HouseWindow",Vector3.new(4,3,.35),body.Position+Vector3.new(6,1,-8.9),Color3.fromRGB(128,191,209),Enum.Material.Glass);window.Transparency=.22
+ ppart(parent,"HouseChimney",Vector3.new(2.2,5,2.2),body.Position+Vector3.new(-6,8,3),Color3.fromRGB(91,78,72),Enum.Material.Brick)
+ return body
+end
+local function trialInstruction(classId)
+ if classId=="BREAKER"then return"파쇄기사 시험 · 스킬 공격 5회 적중"
+ elseif classId=="SHADOW"then return"그림자추적자 시험 · 회피 직후 공격 5회 적중"
+ elseif classId=="RUNE"then return"룬술사 시험 · 룬 스킬 5회 적중"
+ elseif classId=="SOUL"then return"영혼소환사 시험 · 적 영혼 5개 수집"end
+ return"직업을 먼저 선택해."
+end
+local function startAdvancementTrial(p)
+ local classId=tostring(p:GetAttribute("ClassId")or"NONE")
+ if not classDef(classId)then msg(p,"직업을 먼저 선택해.")return end
+ if n(p,"Level",1)<C.AdvancementLevel then msg(p,"전직은 Lv."..C.AdvancementLevel.."부터 가능")return end
+ if tostring(p:GetAttribute("AdvancementId")or"")~=""then msg(p,"이미 1차 전직 완료 · "..classDisplay(classId,p:GetAttribute("AdvancementId")))return end
+ if p:GetAttribute("AdvancementTrialPassed")==true then msg(p,"전직 시험 완료 · 화면에서 A/B 전직을 선택해.")return end
+ p:SetAttribute("AdvancementTrialActive",true);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("SoulCharge",0)
+ msg(p,trialInstruction(classId))
+end
+local function advanceTrial(p,amount)
+ if p:GetAttribute("AdvancementTrialActive")~=true or p:GetAttribute("AdvancementTrialPassed")==true then return end
+ local value=math.min(C.AdvancementTrialTarget,n(p,"AdvancementTrialProgress",0)+(amount or 1));p:SetAttribute("AdvancementTrialProgress",value)
+ if value>=C.AdvancementTrialTarget then
+  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialPassed",true)
+  msg(p,"전직 시험 완료 · A/B 전직을 선택해.");feedback(p,"ADVANCEMENT_READY")
+ end
+end
+
 local function makeVillage()
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
  foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Position=C.VillageCenter+Vector3.new(0,2,0);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
@@ -439,12 +475,16 @@ local function makeVillage()
  for _,z in ipairs({-112,-84,-56,56,84,112})do ppart(f,"MainRoad",Vector3.new(16,1,36),Vector3.new(0,1.15,z),Color3.fromRGB(119,105,88),Enum.Material.Cobblestone)end
  for i=1,12 do local a=i/12*math.pi*2;tree(f,Vector3.new(math.cos(a)*126,1,math.sin(a)*126),.9+(i%3)*.08)end
  for i=1,10 do
-  local a=i/10*math.pi*2;local pos=Vector3.new(math.cos(a)*72,6,math.sin(a)*72)
-  local h=ppart(f,"VillageHouse",Vector3.new(20,11,17),pos,Color3.fromRGB(145,108,76),Enum.Material.WoodPlanks)
-  ppart(f,"VillageRoof",Vector3.new(23,2,20),h.Position+Vector3.new(0,6.5,0),Color3.fromRGB(78,68,73),Enum.Material.Slate)
-  ppart(f,"HouseDoor",Vector3.new(4,7,.6),h.Position+Vector3.new(0,-1,-8.7),Color3.fromRGB(83,59,44),Enum.Material.Wood)
-  local window=ppart(f,"HouseWindow",Vector3.new(4,3,.35),h.Position+Vector3.new(6,1,-8.9),Color3.fromRGB(128,191,209),Enum.Material.Glass);window.Transparency=.22
-  ppart(f,"HouseChimney",Vector3.new(2.2,5,2.2),h.Position+Vector3.new(-6,8,3),Color3.fromRGB(91,78,72),Enum.Material.Brick)
+  local a=i/10*math.pi*2;local pos=Vector3.new(math.cos(a)*82,1,math.sin(a)*82);fantasyHouse(f,i,pos,math.deg(-a)+90)
+ end
+ -- Functional buildings read clearly from the plaza instead of looking like ten identical houses.
+ for _,entry in ipairs({
+  {Text="대장간",Pos=Vector3.new(31,4,14),Color=Color3.fromRGB(194,112,65)},
+  {Text="방어구점",Pos=Vector3.new(31,4,-14),Color=Color3.fromRGB(122,151,158)},
+  {Text="치유소",Pos=Vector3.new(-31,4,-14),Color=Color3.fromRGB(128,191,203)},
+  {Text="전직소",Pos=Vector3.new(-31,4,14),Color=Color3.fromRGB(154,112,186)},
+ })do
+  local sign=ppart(f,"ServiceSign",Vector3.new(8,3,.5),entry.Pos,entry.Color,Enum.Material.WoodPlanks);label(sign,entry.Text,Color3.new(1,1,1),32)
  end
  for _,x in ipairs({-48,-24,24,48})do
   local pole=ppart(f,"VillageLamp",Vector3.new(1,8,1),Vector3.new(x,5,25),Color3.fromRGB(70,66,62),Enum.Material.Metal)
@@ -479,6 +519,8 @@ local function makeVillage()
  end)
  local healer=humanoidFigure(f,"VillageHealer",Vector3.new(-18,6,-10),Color3.fromRGB(208,221,235),Color3.fromRGB(116,169,193),.95);label(healer,"치유사",Color3.fromRGB(180,232,255),28)
  prompt(healer,"치유사","회복").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복")end end)
+ local master=humanoidFigure(f,"AdvancementMaster",Vector3.new(-24,6,14),Color3.fromRGB(112,88,145),Color3.fromRGB(67,56,82),.95);label(master,"전직 교관",Color3.fromRGB(225,196,255),30)
+ prompt(master,"전직 교관","전직 시험").Triggered:Connect(startAdvancementTrial)
 
  for i=1,6 do
   local a=i/6*math.pi*2;local npc=humanoidFigure(f,"Resident"..i,Vector3.new(math.cos(a)*43,6,math.sin(a)*43),Color3.fromRGB(110+i*8,105+i*5,96+i*4),Color3.fromRGB(72,70,68),.82)
