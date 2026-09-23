@@ -147,7 +147,8 @@ test('successful APK build is retained even when the legacy child runtime gate f
   assert.match(workflowSource,/select\(\.name=="build"\)/);
   assert.match(workflowSource,/select\(\.name=="android16-install-gate"\)/);
   assert.match(workflowSource,/build_passed=/);
-  assert.match(workflowSource,/LEGACY_RUNTIME_GATE_CONCLUSION=/);
+  assert.match(workflowSource,/LEGACY_RUNTIME_JOB_CONCLUSION=/);
+  assert.match(workflowSource,/LEGACY_RUNTIME_VERIFY_CONCLUSION=/);
   assert.match(workflowSource,/gh run download "\$BUILD_RUN" -D \/tmp\/unity-build/);
   assert.doesNotMatch(workflowSource,/CLOUD_UNITY_BUILD_FAILED=/);
 });
@@ -256,6 +257,22 @@ test('Unity executor admits source-bind work through the shared platform router 
   assert.match(workflowSource,/project="unity-games\/\$GAME_ID"/);
   assert.match(workflowSource,/node tools\/company-development-unity-bootstrap\.mjs/);
   assert.match(workflowSource,/platformDevelopmentEligible\(item,'UNITY'\)/);
+});
+
+
+test('Unity parent accepts only actual runtime verification and avoids duplicate fresh-build smoke dispatch',()=>{
+  assert.match(workflowSource,/select\(\.name=="Install and launch exact APK on matching ARM64 runtime"\)\|\.conclusion/);
+  assert.match(workflowSource,/runtime_passed=.*legacy_verify.*success/);
+  assert.match(workflowSource,/LEGACY_RUNTIME_VERIFY_CONCLUSION=\$legacy_verify/);
+  assert.match(workflowSource,/if: steps\.buildstate\.outputs\.build_passed == 'true' && steps\.buildstate\.outputs\.runtime_passed != 'true'/);
+  assert.doesNotMatch(workflowSource,/runtime_passed != 'true' && steps\.plan\.outputs\.reuse_build == 'true'/);
+  assert.match(workflowSource,/REUSE: \$\{\{ steps\.plan\.outputs\.reuse_build \}\}/);
+  assert.match(workflowSource,/runs\?event=workflow_run&per_page=50/);
+  assert.match(workflowSource,/UNITY_RUNTIME_SMOKE_REUSED_AUTO=/);
+  assert.match(workflowSource,/UNITY_RUNTIME_SMOKE_DISPATCHED_MANUAL=/);
+  const reuseAuto=workflowSource.indexOf('UNITY_RUNTIME_SMOKE_REUSED_AUTO=');
+  const manualDispatch=workflowSource.indexOf('jq -n --arg ref main --arg run "$BUILD_RUN"');
+  assert.ok(reuseAuto>0&&manualDispatch>reuseAuto,'fresh build must reuse the auto runtime smoke before any manual fallback dispatch');
 });
 
 

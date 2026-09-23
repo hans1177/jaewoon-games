@@ -406,11 +406,13 @@ jobs:
           done
           jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100")"
           build="$(jq -r '[.jobs[]|select(.name=="build")|.conclusion][0]//"missing"' <<<"$jobs")"
-          runtime="$(jq -r '[.jobs[]|select(.name=="android16-install-gate")|.conclusion][0]//"missing"' <<<"$jobs")"
+          legacy_job="$(jq -r '[.jobs[]|select(.name=="android16-install-gate")|.conclusion][0]//"missing"' <<<"$jobs")"
+          legacy_verify="$(jq -r '[.jobs[]|select(.name=="android16-install-gate")|.steps[]?|select(.name=="Install and launch exact APK on matching ARM64 runtime")|.conclusion][0]//"missing"' <<<"$jobs")"
           echo "build_passed=$([[ "$build" == success ]]&&echo true||echo false)" >> "$GITHUB_OUTPUT"
-          echo "runtime_passed=$([[ "$runtime" == success ]]&&echo true||echo false)" >> "$GITHUB_OUTPUT"
+          echo "runtime_passed=$([[ "$legacy_verify" == success ]]&&echo true||echo false)" >> "$GITHUB_OUTPUT"
           echo "BUILD_JOB_CONCLUSION=$build"
-          echo "LEGACY_RUNTIME_GATE_CONCLUSION=$runtime"
+          echo "LEGACY_RUNTIME_JOB_CONCLUSION=$legacy_job"
+          echo "LEGACY_RUNTIME_VERIFY_CONCLUSION=$legacy_verify"
 
       - name: Bind immutable APK artifact identity
         id: artifact
@@ -445,25 +447,39 @@ jobs:
 
       - name: Resume target-platform runtime only from its failed checkpoint
         id: runtime
-        if: steps.buildstate.outputs.build_passed == 'true' && steps.buildstate.outputs.runtime_passed != 'true' && steps.plan.outputs.reuse_build == 'true'
+        if: steps.buildstate.outputs.build_passed == 'true' && steps.buildstate.outputs.runtime_passed != 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          REUSE: ${{ steps.plan.outputs.reuse_build }}
         shell: bash
         run: |
           set -euo pipefail
           api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
           title="Unity Android Runtime Smoke $BUILD_RUN"
-          baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
           child=''
-          for _ in $(seq 1 60); do
-            child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"
-            [[ "$child" =~ ^[0-9]+$ ]] && break
-            sleep 4
-          done
-          [[ "$child" =~ ^[0-9]+$ ]] || exit 5
+          if [[ "$REUSE" != 'true' ]]; then
+            for _ in $(seq 1 60); do
+              child="$(gh api "$api/runs?event=workflow_run&per_page=50" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title)|.id]|max//empty')"
+              [[ "$child" =~ ^[0-9]+$ ]] && break
+              sleep 2
+            done
+            if [[ "$child" =~ ^[0-9]+$ ]]; then
+              echo "UNITY_RUNTIME_SMOKE_REUSED_AUTO=$child"
+            fi
+          fi
+          if [[ ! "$child" =~ ^[0-9]+$ ]]; then
+            baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
+            jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
+            for _ in $(seq 1 60); do
+              child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"
+              [[ "$child" =~ ^[0-9]+$ ]] && break
+              sleep 4
+            done
+            [[ "$child" =~ ^[0-9]+$ ]] || exit 5
+            echo "UNITY_RUNTIME_SMOKE_DISPATCHED_MANUAL=$child"
+          fi
           echo "run_id=$child" >> "$GITHUB_OUTPUT"
           for _ in $(seq 1 420); do
             row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
