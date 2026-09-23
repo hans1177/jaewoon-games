@@ -1789,7 +1789,8 @@
       "coding_1p78159",
       "coding_1a59jww",
       "coding_3bofz1",
-      "coding_xvzdz7"
+      "coding_xvzdz7",
+      "coding_1b4psy4"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4198,9 +4199,9 @@
         "lastUpdatedAt": "2026-09-23T19:59:19.623Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 185,
+        "verifiedApplications": 186,
         "firstCandidatePasses": 24,
-        "totalGenerationAttempts": 396,
+        "totalGenerationAttempts": 399,
         "verifiedFailures": 458,
         "games": {
           "territory-war": 11,
@@ -4218,14 +4219,14 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 2,
           "fantasy-survival": 27,
           "__vibe_system__": 1,
-          "cozy-island": 30,
+          "cozy-island": 31,
           "horror-escape-room": 31
         },
         "targets": {
           "web": 105,
           "unity": 18,
           "system": 1,
-          "roblox": 61
+          "roblox": 62
         },
         "contextModes": {
           "UNKNOWN": {
@@ -4259,14 +4260,14 @@
             "lastUpdatedAt": "2026-09-21T05:01:21.057Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 108,
+            "verifiedApplications": 109,
             "verifiedFailures": 130,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 253,
-            "totalContextBytes": 3239620,
-            "lastEvidence": "coding_xvzdz7",
+            "totalGenerationAttempts": 256,
+            "totalContextBytes": 3272502,
+            "lastEvidence": "coding_1b4psy4",
             "lastFailureEvidence": "coding_negative_7pwb4a",
-            "lastUpdatedAt": "2026-09-23T19:59:19.623Z"
+            "lastUpdatedAt": "2026-09-23T20:02:35.460Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -5340,16 +5341,16 @@
             "lastUpdatedAt": "2026-09-21T09:51:46.150Z"
           },
           "roblox|OTHER": {
-            "verifiedApplications": 61,
+            "verifiedApplications": 62,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 152,
+            "totalGenerationAttempts": 155,
             "verifiedFailures": 35,
             "games": {
-              "cozy-island": 30,
+              "cozy-island": 31,
               "horror-escape-room": 31
             },
             "targets": {
-              "roblox": 61
+              "roblox": 62
             },
             "failureGames": {
               "fantasy-survival": 1,
@@ -5363,9 +5364,9 @@
             "failureClasses": {
               "INCREMENTAL_QA": 35
             },
-            "lastEvidence": "coding_xvzdz7",
+            "lastEvidence": "coding_1b4psy4",
             "lastFailureEvidence": "coding_negative_8v7ooz",
-            "lastUpdatedAt": "2026-09-23T19:44:38.647Z"
+            "lastUpdatedAt": "2026-09-23T20:02:35.460Z"
           },
           "web|NO_OP|OTHER": {
             "verifiedApplications": 4,
@@ -5474,9 +5475,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_xvzdz7",
+        "lastEvidence": "coding_1b4psy4",
         "lastFailureEvidence": "coding_negative_7pwb4a",
-        "lastUpdatedAt": "2026-09-23T19:59:19.623Z"
+        "lastUpdatedAt": "2026-09-23T20:02:35.460Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 544,
@@ -9402,7 +9403,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-23T19:59:19.669Z",
+    "lastBuiltAt": "2026-09-23T20:02:35.505Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -13847,5 +13848,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-23T19:59:19.669Z"
+  "updatedAt": "2026-09-23T20:02:35.505Z"
 }
