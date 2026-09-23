@@ -1,5 +1,5 @@
 {
-  "version": 33,
+  "version": 34,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -548,5 +548,38 @@
     "dailyHealthScanEvidenceRequired": true,
     "periodicDeepReviewHours": 168,
     "passCheckpointMayBeReopenedByNewSignalOrPeriodicReview": true
+  },
+  "gameErrorRepairLogContract": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair",
+    "scope": "ONLY_WHEN_GAME_ERROR_REPAIR_OR_CAUSAL_REPLAY_EXECUTES",
+    "requiredMarkers": [
+      "GAME_REPAIR_FAILURE_STAGE",
+      "GAME_REPAIR_FAILURE_SIGNATURE",
+      "GAME_REPAIR_PREPATCH_REPRODUCED=YES|NO",
+      "GAME_REPAIR_CAUSAL_CLASS",
+      "GAME_REPAIR_RESPONSIBLE_SYSTEM",
+      "GAME_REPAIR_RESPONSIBLE_FILES",
+      "GAME_REPAIR_LAST_KNOWN_GOOD_REVISION",
+      "GAME_REPAIR_FIRST_BROKEN_REVISION",
+      "GAME_REPAIR_CURRENT_REVISION",
+      "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY=PASS|FAIL|NOT_APPLICABLE",
+      "GAME_REPAIR_INVARIANTS=PASS|FAIL|NOT_APPLICABLE",
+      "GAME_REPAIR_SAVE_MIGRATION=PASS|FAIL|NOT_APPLICABLE",
+      "GAME_REPAIR_MULTIPLAYER_LIFECYCLE=PASS|FAIL|NOT_APPLICABLE",
+      "GAME_REPAIR_IMPACT_REGRESSION=PASS|FAIL",
+      "GAME_REPAIR_FULL_REGRESSION_REQUIRED=YES",
+      "GAME_REPAIR_REPEAT_COUNT",
+      "GAME_REPAIR_MODE=FOCUSED_REPAIR|ROOT_CAUSE_MODE"
+    ],
+    "repeatedFailureDedupeBy": [
+      "GAME_ID",
+      "FAILURE_STAGE",
+      "FAILURE_SIGNATURE"
+    ],
+    "rawDuplicateFailureSpamForbidden": true,
+    "rawSavePayloadLoggingForbidden": true,
+    "rawPrivateReasoningLogged": false,
+    "structuredEvidenceRequiredForAcceptance": true
   }
 }
