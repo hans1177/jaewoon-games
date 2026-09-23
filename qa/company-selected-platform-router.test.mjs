@@ -64,6 +64,15 @@ test('minimum dual-platform design admits both native implementations without We
   assert.equal(targetPlatformDevelopmentEligible({...item,platformDesignProfiles:{ROBLOX:item.platformDesignProfiles.ROBLOX}}),false);
 });
 
+test('secondary concurrent platform stays eligible while the primary platform owns the shared runtime step',()=>{
+  const item={...nativeItem('parallel','ROBLOX'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
+  assert.equal(targetPlatformDevelopmentEligible(item),false);
+  assert.equal(platformDevelopmentEligible(item,'ROBLOX'),false);
+  assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
+  assert.equal(selectTargetPlatformDevelopmentWindow([item]).length,1);
+  assert.equal(platformDevelopmentEligible({...item,unityInternalReleaseReady:true},'UNITY'),false);
+});
+
 test('owner direct development starts from an owner basic baseline without waiting for design admission',()=>{
   const item={...nativeItem('owner-direct','ROBLOX'),
     minimumDesignContract:{pass:false,source:null},

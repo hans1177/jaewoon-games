@@ -103,8 +103,16 @@ export function concurrentTargetPlatforms(item={}){
 export function platformDevelopmentEligible(item={},platform=''){
   const requested=normalizeSelectedPlatform(platform);
   if(!requested||requested==='FORTNITE_UEFN')return false;
-  if(!concurrentTargetPlatforms(item).includes(requested))return false;
-  return targetPlatformDevelopmentEligible({...item,selectedPlatform:requested,targetPlatform:requested});
+  const targets=concurrentTargetPlatforms(item);
+  if(!targets.includes(requested))return false;
+  const selected=resolveSelectedPlatform(item);
+  const completed=requested==='ROBLOX'
+    ?item.robloxInternalReleaseReady===true||item.robloxPublicRelease===true
+    :item.unityInternalReleaseReady===true||item.unityPublicRelease===true;
+  if(completed)return false;
+  const projected={...item,selectedPlatform:requested,targetPlatform:requested};
+  if(selected!==requested&&targets.length>1)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+  return targetPlatformDevelopmentEligible(projected);
 }
 
 export function adapterForPlatform(value){
