@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -281,7 +281,7 @@
   },
   "idleTraining": {
     "enabled": true,
-    "productionWorkAlwaysPreemptsPractice": false,
+    "productionWorkAlwaysPreemptsPractice": true,
     "usesOnlyFreeCapacity": false,
     "drills": [
       "VERIFIED_FAILURE_REPLAY",
@@ -338,7 +338,30 @@
     "hypothesisGenerationLimit": null,
     "falsificationGenerationLimit": null,
     "previousResultComparisonRequired": true,
-    "nextSignalAfterCompletedGenerationRequired": true
+    "nextSignalAfterCompletedGenerationRequired": true,
+    "companyGraphicsLibrary24h": {
+      "enabled": true,
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
+      "purpose": "PREPARE_DIVERSE_REUSABLE_GRAPHICS_AND_MOTION_CAPABILITIES_WITHOUT_CLAIMING_PRODUCTION_ASSET_STATUS_BEFORE_RUNTIME_VERIFICATION",
+      "permanentDrills": [
+        "CHARACTER_ARCHETYPE_LIBRARY_DRILL",
+        "CREATURE_RIG_LIBRARY_DRILL",
+        "ACTION_MOTION_LIBRARY_DRILL",
+        "WEAPON_MOTION_LIBRARY_DRILL",
+        "VFX_LIBRARY_DRILL",
+        "ENVIRONMENT_KIT_LIBRARY_DRILL",
+        "UI_PRESENTATION_LIBRARY_DRILL"
+      ],
+      "platformRotation": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "noGenerationCap": true,
+      "meaningfulVariationRequired": true,
+      "rawPracticeArtifactIsNotCompanyAsset": true,
+      "verifiedProjectOutcomeRequiredForPromotion": true,
+      "productionPreemptible": true
+    }
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",
@@ -524,7 +547,8 @@
       "PROGRESSION_UNCHANGED",
       "HIT_SEMANTICS_UNCHANGED",
       "NETWORK_AUTHORITY_UNCHANGED"
-    ]
+    ],
+    "companyGraphicsLibrary24hAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h"
   },
   "closedLoop": {
     "enabled": true,
@@ -547,5 +571,6 @@
     "retiredKnowledgeRetrievalForbidden": true,
     "rawExternalAiOutputDirectUse": false,
     "authorityExpanded": false
-  }
+  },
+  "updatedAt": "2026-09-24"
 }
