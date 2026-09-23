@@ -11,11 +11,11 @@ description: "중앙정책에 따라 실제 Web gameplay, staged content-depth, 
 
 - 실행하지 않은 항목을 PASS로 기록하지 않는다.
 - 실제 게임과 테스트 하네스를 구분한다.
-- Web evidence와 Roblox/Unity/UEFN native evidence를 서로 대체하지 않는다.
+- Unity Web 검증 evidence와 Roblox/Unity native evidence를 서로 대체하지 않는다.
 - canonical pipeline의 현재 책임 단계만 검증하며 별도 wrapper/shadow/bypass 검증 경로를 만들지 않는다.
 - 기존 실제 Web 게임은 보존·재검증을 우선한다.
 
-## Web initial-cycle QA
+## Unity Web initial-cycle QA
 
 초기 Web 제작 최소 단위는 30분이 아니라 `ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE`이다. 실제 플레이로 다음을 확인한다.
 
@@ -60,7 +60,11 @@ description: "중앙정책에 따라 실제 Web gameplay, staged content-depth, 
 
 UI 수량만 보지 않고 `UNIQUE_FUNCTIONAL_UI_COUNT`, `UNIQUE_MECHANIC_COUNT`, `GAMEPLAY_ACTION_COUNT`, `MEANINGFUL_STATE_TRANSITION_COUNT`, `SYSTEM_DEPENDENCY_COUNT`, world/enemy entity 수, win/fail/retry path, gameplay screen ratio, duplicate action ratio, test UI ratio를 함께 본다.
 
-Web strict는 공통 60점 + 장르별 40점 = 100점이다. 생존/디펜스/RPG/타이쿤·시뮬레이터/퍼즐/오비/전투·슈터/스토리·어드벤처/생활·롤플레이의 핵심 시스템을 서로 다른 category profile로 검증하며 hard gate 실패는 점수로 덮지 않는다.
+Unity Web 검증 점수 체계가 적용되는 경우 공통 60점 + 장르별 40점 = 100점이다. 생존/디펜스/RPG/타이쿤·시뮬레이터/퍼즐/오비/전투·슈터/스토리·어드벤처/생활·롤플레이의 핵심 시스템을 서로 다른 category profile로 검증하며 hard gate 실패는 점수로 덮지 않는다.
+
+## 통합 밸런스 검증 책임
+
+별도 balance 부서는 없다. QA는 planning이 정의한 성장·경제·보상 의도를 기준으로 실제 수치 회귀, 난이도 압력, 보상 흐름, 실패/회복 체감, 장기 진행 안정성을 검증한다. QA는 수치를 임의로 설계하거나 변경하지 않고, 수치 변경이 필요하면 근거와 재현 evidence를 planning/개발에 돌려보낸다.
 
 ## FINAL content-depth QA
 
