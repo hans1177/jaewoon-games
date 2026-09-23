@@ -1,5 +1,5 @@
 {
-  "version": 279,
+  "version": 280,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T10:26:00+09:00",
+  "updatedAt": "2026-09-23T10:29:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6350,7 +6350,7 @@
       "postImplementationSync": {
         "reserveCollisionHardening": "VERIFIED_RUNTIME_RUN_612_RESERVE_SUCCESS",
         "verifiedLearningOutcomeFeedback": "IMPLEMENTED_PENDING_FULL_WORKER_FANIN_RUNTIME_OBSERVATION",
-        "revision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
+        "revision": "7d50a0f64075d67467389f18a8ac30a386e7ce81",
         "failureClassifierQaDriftFailClosed": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION",
         "liveBottleneckWaitMetrics": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION",
         "securityBindingRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
@@ -6374,7 +6374,13 @@
         "producerSideRecoveryRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
         "historicalSupersededDependencyRepair": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
         "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
-        "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c"
+        "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
+        "allReservePathQueueReconciliation": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_CONFIRMATION",
+        "allReservePathQueueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+        "allReservePathQueueReconciliationTests": [
+          "170dff04a67d5b6d302135296b480d303845ed89",
+          "7d50a0f64075d67467389f18a8ac30a386e7ce81"
+        ]
       }
     }
   },
@@ -14178,7 +14184,16 @@
           "historicalSupersededBlockersRewiredToCanonical": true,
           "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
           "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
-          "historicalSupersededDependencyRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
+          "historicalSupersededDependencyRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+          "queueReconciliationBeforeStandardReserve": true,
+          "queueReconciliationBeforeTargetedReserve": true,
+          "queueReconciliationBeforeSecurityReserve": true,
+          "allReservePathQueueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+          "allReservePathQueueReconciliationTests": [
+            "170dff04a67d5b6d302135296b480d303845ed89",
+            "7d50a0f64075d67467389f18a8ac30a386e7ce81"
+          ],
+          "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
         },
         "verifiedLearningFeedback": {
           "producer": "tools/company-system-ai-learning.mjs",
@@ -14190,7 +14205,7 @@
           "crossGameTransformativeAdaptationRequired": true,
           "rawCrossGameCopyForbidden": true
         },
-        "latestImplementationRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747"
+        "latestImplementationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a"
       }
     }
   },
