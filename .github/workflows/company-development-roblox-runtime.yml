@@ -18,6 +18,11 @@ on:
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-roblox-runtime.test.mjs'
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty keeps the existing batch behavior.
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -103,6 +108,8 @@ jobs:
 
       - name: Resolve next Roblox source execution slice from unbounded native queue
         id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -110,6 +117,8 @@ jobs:
           import fs from 'node:fs';
           import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
           const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
@@ -120,6 +129,7 @@ jobs:
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
             if(rows.length>=EXECUTION_BATCH_MAX)break;
+            if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
@@ -151,6 +161,7 @@ jobs:
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log(`ROBLOX_EXECUTION_BATCH_CAPACITY=${EXECUTION_BATCH_MAX}`);
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log(`ROBLOX_REQUESTED_GAME_ID=${requested||'BATCH'}`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
@@ -595,6 +606,8 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - name: Resolve next exact-source Roblox technical execution slice from unbounded native queue
         id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -602,6 +615,8 @@ jobs:
           import fs from 'node:fs';
           import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
@@ -610,6 +625,7 @@ jobs:
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
@@ -638,6 +654,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log(`ROBLOX_REQUESTED_TECHNICAL_GAME_ID=${requested||'BATCH'}`);
           console.log(`ROBLOX_TECHNICAL_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
