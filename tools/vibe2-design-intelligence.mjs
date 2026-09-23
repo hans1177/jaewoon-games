@@ -160,8 +160,8 @@ function evaluateCreativeChallenge(task = {}, intent = {}) {
 }
 function evaluateContentDiversity(task = {}) {
   const d=task.contentDiversityPlan&&typeof task.contentDiversityPlan==='object'?task.contentDiversityPlan:{};
-  const regions=Array.isArray(d.regions)?d.regions:[];
-  const actors=Array.isArray(d.enemiesOrActors)?d.enemiesOrActors:Array.isArray(d.enemies)?d.enemies:[];
+  const regions=Array.isArray(d.regionsOrSpaces)?d.regionsOrSpaces:Array.isArray(d.regions)?d.regions:[];
+  const actors=Array.isArray(d.enemiesActorsOrObstacles)?d.enemiesActorsOrObstacles:Array.isArray(d.enemiesOrActors)?d.enemiesOrActors:Array.isArray(d.enemies)?d.enemies:[];
   const issues=[];
   const goal=clean(task.goal).toLowerCase();
   const worldMaterial=/map|world|region|biome|맵|지역|월드|바이옴/.test(goal)||regions.length>0;
