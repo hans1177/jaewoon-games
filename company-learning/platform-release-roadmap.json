@@ -1,5 +1,5 @@
 {
-  "version": 305,
+  "version": 306,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5481,7 +5481,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23",
+  "updatedAt": "2026-09-24",
   "priorityTiers": [
     {
       "tier": 1,
@@ -15761,6 +15761,15 @@
               "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": true,
               "unavailableAutomationAction": "KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION",
               "userReportedSuccessCannotReplaceMachineEvidence": true
+            },
+            "developmentScheduling": {
+              "mode": "PARALLEL_NON_BLOCKING_DEVELOPMENT_RELEASE_BLOCKING_ONLY",
+              "multiplayerVerificationMayNotStallUnrelatedImplementationQaRegressionOrQualityWork": true,
+              "missingOrFailedMultiplayerEvidenceKeepsMultiplayerUnverified": true,
+              "missingOrFailedMultiplayerEvidenceBlocksPromotionAndReleaseWhenMultiplayerIsRequired": true,
+              "independentQaAndRegressionMayContinueWhenFoundationCoreServicesAndCoreLoopPass": true,
+              "recurringAutomationMustContinueRecheckingUntilVerified": true,
+              "userAssistanceRequired": false
             }
           },
           "repairCompletion": {
