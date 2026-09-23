@@ -32,6 +32,7 @@ test('platform-release-roadmap is the single machine execution policy source',()
   assert.equal(roadmap.humanDocumentRequired,false);
   assert.equal(roadmap.runtimeContractCannotCreatePolicy,true);
   assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
+  assert.equal(Object.hasOwn(roadmap,'legacyPolicyCleanup'),false);
   assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.centralDocumentation.humanReadableArtifactPolicy.humanReadablePolicyMirrorRequired,false);
   assert.equal(roadmap.centralDocumentation.rules.legacyHumanPolicyMirrorForbidden,true);
