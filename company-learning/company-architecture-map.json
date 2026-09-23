@@ -1,5 +1,5 @@
 {
-  "version": 110,
+  "version": 111,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -58,12 +58,14 @@
     "design": [
       "COMMON_CORE_DESIGN",
       "ROBLOX_PLATFORM_PROFILE",
-      "UNITY_APP_PLATFORM_PROFILE",
+      "UNITY_PLATFORM_PROFILE_WITH_WEB_VALIDATION_COMPATIBILITY",
       "MINIMUM_DESIGN_CONTRACT_GATE",
       "STRICT_DESIGN_REVIEW_CONTINUES_IN_PARALLEL"
     ],
     "web": [
-      "LEGACY_DISABLED"
+      "UNITY_WEB_VALIDATION_SURFACE_ONLY",
+      "SAME_CANONICAL_UNITY_PROJECT",
+      "NO_NATIVE_GATE_AUTHORITY"
     ],
     "selectedPlatform": [
       "ROBLOX_UNITY_AUTO_PAIR",
@@ -2274,14 +2276,23 @@
     "designStructure": {
       "commonCore": "design-revised.json#content",
       "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
-      "UNITY": "design-revised.json#content.platformProfiles.UNITY"
+      "UNITY": "design-revised.json#content.platformProfiles.UNITY (native + Unity Web validation compatibility)"
     },
     "independentRuntimeEvidence": true,
     "onePlatformFailureDoesNotCancelOther": true,
     "onePlatformMayReleaseWithoutWaitingForOther": true,
     "globalGameCountCap": null,
     "uefn": "OWNER_HOLD",
-    "unityWeb": "DISABLED"
+    "unityWeb": "VALIDATION_SURFACE_ONLY",
+    "unityWebValidationSurface": {
+      "enabled": true,
+      "releasePlatform": false,
+      "nativeGateAuthority": false,
+      "canonicalSource": "unity-games/<gameId>/",
+      "outputRoot": "web-games/<gameId>/",
+      "dispatchOwner": ".github/workflows/unity-web-first-stage-build.yml",
+      "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml"
+    }
   },
   "releaseExposureLifecycle": {
     "version": 2,
@@ -2596,9 +2607,10 @@
       "ROBLOX",
       "UNITY"
     ],
-    "webPlaySurfaceDisabled": true,
-    "unityWebDisabled": true,
-    "internalAndPublicReleaseStatesPerPlatform": true
+    "webPlaySurfaceDisabled": false,
+    "unityWebDisabled": false,
+    "internalAndPublicReleaseStatesPerPlatform": true,
+    "webPlaySurfaceRole": "UNITY_WEB_VALIDATION_SURFACE"
   },
   "developmentPipeline": {
     "focusedCaretakers": {
@@ -2621,7 +2633,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T11:05:20+09:00",
+  "updatedAt": "2026-09-23T11:16:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2938,7 +2950,10 @@
       "dispatchFromDepartmentLauncher": "SINGLE_DEDUPED_WORKFLOW_DISPATCH",
       "robloxRuntime": ".github/workflows/company-development-roblox-runtime.yml",
       "unityRuntime": ".github/workflows/company-development-unity-runtime.yml",
-      "legacyWebFirstValidatorActive": false
+      "legacyWebFirstValidatorActive": false,
+      "unityWebValidationRuntime": ".github/workflows/unity-web-first-stage-build.yml",
+      "unityWebValidationRole": "NON_BLOCKING_VALIDATION_SURFACE",
+      "unityWebCanonicalSource": "unity-games/<gameId>/"
     },
     "revisions": {
       "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
