@@ -110,14 +110,14 @@ test('Open Cloud engine probe binds exact place version without granting runtime
 });
 
 test('Open Cloud engine probe reports missing scope without fabricating evidence',async()=>{
- const fetchImpl=async()=>({ok:false,status:403,text:async()=>JSON.stringify({code:'PERMISSION_DENIED',message:'missing Luau execution scope'})});
+ const fetchImpl=async()=>({ok:false,status:403,text:async()=>JSON.stringify({code:'PERMISSION_DENIED',message:'The required scope <universe.place.luau-execution-session:1:write> is missing.'})});
  const r=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:1});
  assert.equal(r.available,false);
  assert.equal(r.permissionDenied,true);
  assert.equal(r.engineExecuted,false);
  assert.equal(r.exactVersion,false);
  assert.equal(r.failureStage,'CREATE');
- assert.equal(r.requiredScope,'universe.place.luau-execution-session:write');
+ assert.equal(r.requiredScope,'universe.place.luau-execution-session:1:write');
  assert.equal(r.errorCode,'PERMISSION_DENIED');
 });
 
@@ -128,9 +128,12 @@ test('runtime QA preserves exact permission evidence instead of misclassifying s
  assert.match(workflow,/roblox-open-cloud-luau-execution-scope-missing/);
  assert.match(workflow,/universe\.place\.luau-execution-session:write/);
  assert.match(workflow,/samePermissionBlock/);
+ assert.match(workflow,/item\.robloxRuntimeRetryCount=0/);
+ assert.match(workflow,/priorRetryCount===0/);
  const permissionIndex=workflow.indexOf("engineProbe?.permissionDenied===true");
+ const retryResetIndex=workflow.indexOf('item.robloxRuntimeRetryCount=0');
  const sentinelIndex=workflow.indexOf('let sentinel;');
- assert.ok(permissionIndex>0&&sentinelIndex>permissionIndex,'permission blocker must be classified before stale sentinel read');
+ assert.ok(permissionIndex>0&&retryResetIndex>permissionIndex&&sentinelIndex>retryResetIndex,'permission blocker must reset stale retry count before sentinel read');
 });
 
 
