@@ -295,3 +295,12 @@ test('Unity runtime has no retired validation-cycle dependency',()=>{
   assert.match(workflowSource,/Revalidate shared worker context before Unity checkpoint/);
   assert.match(workflowSource,/const canonical=process\.env\.MEETING_STATE\|\|'WAITING_TARGET_PLATFORM_VALIDATION'/);
 });
+
+
+test('independent Unity QA dispatches exact artifact regression after PASS',()=>{
+  assert.match(independentQaSource,/permissions:[\s\S]*actions:\s*write/);
+  assert.match(independentQaSource,/name: Dispatch exact artifact regression/);
+  assert.match(independentQaSource,/gh workflow run unity-android-regression\.yml/);
+  assert.match(independentQaSource,/-f run_id="\$\{\{ steps\.upstream\.outputs\.run_id \}\}"/);
+  assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCHED=/);
+});
