@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 299,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -15430,7 +15430,11 @@
         "implementationBindings": [
           "tools/vibe2-design-intelligence.mjs::buildVibeDesignIntelligence",
           "tools/company-design-cycle.mjs",
-          "tools/vibe2-learning-motor.mjs"
+          "tools/vibe2-learning-motor.mjs",
+          "assets/vibe-quality-intelligence.js::diagnoseVibeReplayRegression",
+          "assets/vibe-quality-intelligence.js::classifyVibePatchSaturation",
+          "tools/vibe2-incremental-qa.mjs::runCausalReplay",
+          "tools/company-recovery-dispatch.mjs"
         ],
         "loop": [
           "STABILIZE",
@@ -15527,7 +15531,22 @@
             "VALIDATION_PLAN"
           ],
           "highImpactChangeMinimumAlternatives": 2,
-          "winnerRule": "HIGHEST_EXPECTED_PLAYER_VALUE_AND_DISTINCTNESS_WITH_ACCEPTABLE_STABILITY_REGRESSION_AND_IMPLEMENTATION_RISK"
+          "winnerRule": "HIGHEST_EXPECTED_PLAYER_VALUE_AND_DISTINCTNESS_WITH_ACCEPTABLE_STABILITY_REGRESSION_AND_IMPLEMENTATION_RISK",
+          "alternativeRequiredAxes": [
+            "CONCEPT_AND_PLAYER_FANTASY",
+            "CORE_LOOP_AND_SESSION_RHYTHM",
+            "MAP_TOPOLOGY_AND_REGION_ROLES",
+            "LANDMARKS_AND_TRAVERSAL",
+            "ENEMY_ECOSYSTEM_AND_COUNTERPLAY",
+            "BOSS_AND_SIGNATURE_MOMENTS",
+            "PROGRESSION_AND_ECONOMY",
+            "QUEST_STORY_OR_EVENT_FLOW_WHEN_RELEVANT",
+            "FAILURE_RETRY_AND_RECOVERY",
+            "PLATFORM_ADAPTATION",
+            "IMPLEMENTATION_SCOPE",
+            "VALIDATION_PLAN"
+          ],
+          "eachAlternativeMustCoverRequiredAxes": true
         },
         "antiMonotony": {
           "enabled": true,
@@ -15716,6 +15735,136 @@
           "passCheckpointDoesNotDisableFutureReview": true,
           "noDueSignalAction": "NO_DESIGN_MUTATION_KEEP_RUNTIME_LIVE",
           "artificialLifetimeRevisionCap": null
+        },
+        "gameErrorRepair": {
+          "version": 1,
+          "status": "ACTIVE_EXECUTABLE_CONTRACT",
+          "authority": "OWNER_DIRECTIVE_2026-09-23",
+          "objective": "REPAIR_PLAYER_VISIBLE_GAME_FAILURES_BY_REPRODUCING_THE_EXACT_FAILURE_FINDING_THE_CAUSAL_RESPONSIBLE_SYSTEM_MODIFYING_THAT_SYSTEM_DIRECTLY_AND_PROVING_THE_FIX_WITH_SCENARIO_INVARIANT_SAVE_MULTIPLAYER_AND_REGRESSION_EVIDENCE",
+          "priority": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION",
+          "requiredFlow": [
+            "CAPTURE_PLAYER_VISIBLE_FAILURE",
+            "REPRODUCE_PRE_PATCH_WITH_IDENTICAL_OR_EQUIVALENT_INPUT_STATE",
+            "CLASSIFY_IMPLEMENTATION_DESIGN_MIXED_OR_UNRESOLVED_CAUSE",
+            "IDENTIFY_CAUSAL_RESPONSIBLE_SYSTEM_AND_FILES",
+            "COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_AND_CURRENT_WHEN_HISTORY_EXISTS",
+            "MODIFY_EXISTING_RESPONSIBLE_SYSTEM_DIRECTLY",
+            "RERUN_ORIGINAL_FAILURE_SCENARIO",
+            "VALIDATE_GAME_STATE_INVARIANTS",
+            "VALIDATE_SAVE_LOAD_AND_MIGRATION_WHEN_SAVE_EXISTS",
+            "VALIDATE_MULTIPLAYER_LIFECYCLE_WHEN_MULTIPLAYER_EXISTS",
+            "RUN_IMPACT_SCOPED_REGRESSION",
+            "RUN_FULL_REGRESSION_FAN_IN",
+            "ACCEPT_ONLY_VERIFIED_FIX_OTHERWISE_ROLLBACK_OR_REQUEUE"
+          ],
+          "scenarioQa": {
+            "required": true,
+            "canonicalScenarios": [
+              "BOOT_TO_FIRST_ACTION",
+              "MOVE_INTERACT_COMBAT_OR_CORE_ACTION",
+              "DAMAGE_DEATH_RETRY_OR_SESSION_RECOVERY_WHEN_APPLICABLE",
+              "SAVE_EXIT_RELOAD_RESTORE_WHEN_SAVE_EXISTS",
+              "MAP_REGION_OBJECTIVE_OR_QUEST_PROGRESS_WHEN_APPLICABLE",
+              "BOSS_OR_SIGNATURE_COMPLETION_WHEN_APPLICABLE",
+              "MOBILE_TOUCH_JOYSTICK_BUTTON_AND_VIEWPORT",
+              "MULTIPLAYER_JOIN_PLAY_LEAVE_REJOIN_SYNC_WHEN_MULTIPLAYER_EXISTS"
+            ],
+            "actualRuntimeEvidencePreferred": true,
+            "staticOrMarkerOnlyPassForbiddenForRuntimeFailure": true,
+            "originalFailureScenarioMustBeReplayedAfterRepair": true
+          },
+          "lastKnownGoodComparison": {
+            "enabled": true,
+            "compareWhenHistoryExists": [
+              "LAST_KNOWN_GOOD_REVISION",
+              "FIRST_BROKEN_REVISION",
+              "CURRENT_REVISION"
+            ],
+            "sameRelevantScenarioAndStatePreferred": true,
+            "missingHistoryDoesNotAuthorizeGuessing": true
+          },
+          "invariantValidation": {
+            "required": true,
+            "commonExamples": [
+              "FINITE_VALID_PLAYER_STATE",
+              "NO_INVALID_NEGATIVE_OR_NAN_CRITICAL_STATE",
+              "DEAD_OR_REMOVED_ENTITY_CANNOT_CONTINUE_AUTHORITATIVE_ACTION",
+              "REWARD_OR_QUEST_COMPLETION_NOT_DUPLICATED",
+              "EQUIPPED_ITEM_MUST_EXIST_AND_BE_OWNED",
+              "SPAWN_AND_REQUIRED_OBJECTIVES_REMAIN_REACHABLE",
+              "WAVE_PHASE_OR_PROGRESS_SEQUENCE_CANNOT_SKIP_REQUIRED_STATE",
+              "AUTHORITATIVE_GAMEPLAY_RESULT_MATCHES_APPROVED_RULES"
+            ],
+            "gameSpecificInvariantsMustBeDerivedFromApprovedDesignAndExistingImplementation": true,
+            "invariantChangeMayNotHideARealFailure": true
+          },
+          "saveCompatibility": {
+            "requiredWhenSaveExists": true,
+            "sequence": [
+              "LOAD_LAST_COMPATIBLE_SAVE",
+              "MIGRATE_IF_SCHEMA_CHANGED",
+              "PLAY_AND_MUTATE_MEANINGFUL_PROGRESS",
+              "SAVE_NEW_STATE",
+              "RELOAD_NEW_STATE",
+              "COMPARE_PRESERVED_MEANING"
+            ],
+            "stableKeysAndMeaningPreservedByDefault": true,
+            "schemaChangeRequiresExplicitMigration": true,
+            "silentResetOrProgressLossForbidden": true,
+            "migrationFailureBlocksRepairAcceptance": true
+          },
+          "multiplayerLifecycle": {
+            "requiredWhenMultiplayerExists": true,
+            "minimumPlayers": 2,
+            "scenarios": [
+              "SIMULTANEOUS_CORE_ACTION",
+              "SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE",
+              "PLAYER_LEAVE",
+              "PLAYER_REJOIN",
+              "LATE_JOIN",
+              "AUTHORITATIVE_STATE_SYNC"
+            ],
+            "serverAuthorityAndRemoteValidationMustRemainIntact": true,
+            "singlePlayerEvidenceCannotProveMultiplayerRepair": true
+          },
+          "repairCompletion": {
+            "requiredEvidence": [
+              "PRE_PATCH_FAILURE_REPRODUCED",
+              "CAUSAL_RESPONSIBLE_SYSTEM_IDENTIFIED",
+              "RESPONSIBLE_SOURCE_MUTATED",
+              "ORIGINAL_SCENARIO_PASSES_AFTER_REPAIR",
+              "RELATED_GAME_INVARIANTS_PASS",
+              "SAVE_MIGRATION_PASS_WHEN_APPLICABLE",
+              "MULTIPLAYER_LIFECYCLE_PASS_WHEN_APPLICABLE",
+              "IMPACT_REGRESSION_PASS",
+              "FULL_REGRESSION_FAN_IN_PASS"
+            ],
+            "errorLogDisappearanceAloneInsufficient": true,
+            "unchangedSourceRevalidationForbidden": true,
+            "wrapperOverrideOrShadowRepairForbidden": true,
+            "rollbackOrRequeueRequiredOnFailedVerification": true
+          },
+          "repeatedFailureEscalation": {
+            "enabled": true,
+            "sameFailureSignatureThreshold": 3,
+            "action": [
+              "STOP_MICRO_PATCH_ACCUMULATION",
+              "RELOAD_RESPONSIBILITY_GRAPH",
+              "REPRODUCE_FIRST_FAILURE",
+              "COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT",
+              "RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED_OR_UNRESOLVED",
+              "REPAIR_OR_REDESIGN_ORIGINAL_RESPONSIBLE_SYSTEM",
+              "RERUN_ORIGINAL_FAILURE_AND_FULL_REGRESSION"
+            ],
+            "repeatedSameApproachWithoutNewCausalEvidenceForbidden": true,
+            "noArtificialRetryCap": true
+          },
+          "preservation": {
+            "gameplayBalanceProgressionSaveMeaningDropsRewardsHitCooldownAndMultiplayerIntentPreservedUnlessExplicitlyAuthorized": true,
+            "existingResponsibleSystemDirectModificationPreferred": true,
+            "duplicateRepairImplementationForbidden": true,
+            "unaffectedBehaviorPreserved": true
+          }
         }
       }
     },
