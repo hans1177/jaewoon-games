@@ -1693,7 +1693,8 @@
       "coding_1x3i3cb",
       "coding_1e6ykm5",
       "coding_61d0bh",
-      "coding_strf1d"
+      "coding_strf1d",
+      "coding_jvlpa1"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -2841,9 +2842,9 @@
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 102,
+        "verifiedApplications": 103,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 230,
+        "totalGenerationAttempts": 233,
         "verifiedFailures": 415,
         "games": {
           "territory-war": 2,
@@ -2861,13 +2862,13 @@
           "survival": 5,
           "line-defense": 54,
           "seed-casual-realm-weaver": 1,
-          "__vibe_system__": 1,
+          "__vibe_system__": 2,
           "cozy-island": 2,
           "horror-escape-room": 1
         },
         "targets": {
           "web": 99,
-          "system": 1,
+          "system": 2,
           "roblox": 2
         },
         "contextModes": {
@@ -2912,14 +2913,14 @@
             "lastUpdatedAt": "2026-09-20T17:56:17.499Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 5,
+            "verifiedApplications": 6,
             "verifiedFailures": 26,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 10,
-            "totalContextBytes": 179729,
-            "lastEvidence": "coding_strf1d",
+            "totalGenerationAttempts": 13,
+            "totalContextBytes": 227810,
+            "lastEvidence": "coding_jvlpa1",
             "lastFailureEvidence": "coding_negative_v0owx8",
-            "lastUpdatedAt": "2026-09-23T00:17:00.421Z"
+            "lastUpdatedAt": "2026-09-23T00:27:04.369Z"
           }
         },
         "failureFingerprints": {
@@ -3687,9 +3688,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_strf1d",
+        "lastEvidence": "coding_jvlpa1",
         "lastFailureEvidence": "coding_negative_v0owx8",
-        "lastUpdatedAt": "2026-09-23T00:17:00.421Z"
+        "lastUpdatedAt": "2026-09-23T00:27:04.369Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 123,
@@ -8675,7 +8676,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-23T00:19:33.144Z",
+    "lastBuiltAt": "2026-09-23T00:27:04.400Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -12829,5 +12830,5 @@
       "knowledge_17j2skh"
     ]
   },
-  "updatedAt": "2026-09-23T00:19:33.145Z"
+  "updatedAt": "2026-09-23T00:27:04.400Z"
 }
