@@ -40,6 +40,10 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     let touched=0;
     if(owner==='VIBE2_VIBE3'){
       const set=new Set(ids);
+      const recurrenceCount=Math.max(1,Number(rec.recurrenceCount||0),ids.length);
+      const repairMode=recurrenceCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
+      const saveRepairRequired=uniq(rec.evidence).some(value=>/(?:save|load|migration|persist|storage|저장|불러오기)/i.test(value));
+      const multiplayerRepairRequired=uniq(rec.evidence).some(value=>/(?:multiplayer|network|sync|join|rejoin|server|client|remote|멀티|협동|동기화)/i.test(value));
       gameQueue.tasks=gameQueue.tasks.map(task=>{
         if(!set.has(clean(task.id)))return task;
         if(clean(task.status)==='done'||clean(task.status)==='cancelled')return task;
@@ -53,7 +57,38 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           retries:running?task.retries:0,
           sourceMutationRequired:rec.sourceMutationRequired!==false,
           sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
-          evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-strategy:'+clean(rec.recoveryStrategy),'recovery-exact-stage:'+clean(rec.failureStage),'source-mutation-required:YES']),
+          recurrenceCount,
+          repairMode,
+          userAssistanceRequired:false,
+          gameRepairContract:{
+            ...(task.gameRepairContract||{}),
+            version:1,
+            mode:repairMode,
+            prePatchReproductionRequired:true,
+            causalResponsibleSystemRequired:true,
+            compareLastKnownGoodFirstBrokenCurrentRequired:repairMode==='ROOT_CAUSE_MODE',
+            originalScenarioReplayRequired:true,
+            invariantValidationRequired:true,
+            saveMigrationValidationRequired:saveRepairRequired,
+            multiplayerLifecycleValidationRequired:multiplayerRepairRequired,
+            multiplayerUserAssistanceRequired:false,
+            multiplayerMinimumAutomatedClients:multiplayerRepairRequired?2:0,
+            impactRegressionRequired:true,
+            fullRegressionFanInRequired:true,
+            repeatedSameApproachWithoutNewCausalEvidenceForbidden:repairMode==='ROOT_CAUSE_MODE'
+          },
+          evidence:uniq([
+            ...(task.evidence||[]),
+            'recovery-queue:'+clean(rec.id),
+            'recovery-strategy:'+clean(rec.recoveryStrategy),
+            'recovery-exact-stage:'+clean(rec.failureStage),
+            'source-mutation-required:YES',
+            'game-repair-mode:'+repairMode,
+            'game-repair-repeat-count:'+recurrenceCount,
+            'game-repair-user-assistance-required:NO',
+            'game-repair-save-migration:'+(saveRepairRequired?'REQUIRED':'NOT_APPLICABLE'),
+            'game-repair-multiplayer-lifecycle:'+(multiplayerRepairRequired?'MACHINE_REQUIRED':'NOT_APPLICABLE')
+          ]),
           updatedAt:stamp
         };
       });
