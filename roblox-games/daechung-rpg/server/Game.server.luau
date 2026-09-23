@@ -39,6 +39,7 @@ local assetCache={}
 local meadowRunCounter=0
 local meadowRunState={seed=0,hiddenBossId="",generated=false}
 local generateMeadowRun
+local meadowPlayersInside
 local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293,MedievalArmor=C.MedievalCharacterAssetId,MedievalHouseA=C.MedievalHouseAssetIds[1],MedievalHouseB=C.MedievalHouseAssetIds[2]}
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
@@ -343,6 +344,7 @@ local function resolveIncomingAttack(p,e,attack)
  local damage=(e.damage or 8)*(attack.DamageMult or 1)
  if e.enragedUntil and e.enragedUntil>now then damage*=1.22 end
  local blocking=p:GetAttribute("Blocking")==true and n(p,"GuardBrokenUntil",0)<=now and facingEnemy(p,e)
+ local skillGuard=n(p,"GuardUntil",0)>now and facingEnemy(p,e)
  if blocking and attack.Parryable~=false then
   local started=n(p,"BlockStartedAt",0)
   if started>0 and now-started<=classParryWindow(p)then
@@ -366,6 +368,8 @@ local function resolveIncomingAttack(p,e,attack)
   end
  elseif blocking and attack.Unblockable==true then
   feedback(p,"UNBLOCKABLE_HIT");msg(p,"막을 수 없는 공격!")
+ elseif skillGuard and attack.Unblockable~=true then
+  damage*=.45;feedback(p,"GUARD");msg(p,"스킬 가드")
  end
  if damage>0 then h:TakeDamage(damage)end
  lastCombat[p]=now;p:SetAttribute("InCombat",true)
@@ -377,7 +381,7 @@ local function resolveIncomingAttack(p,e,attack)
  elseif special=="HOWL_COMMAND"then
   e.enragedUntil=now+4;combatFlash(e.part.Position,Color3.fromRGB(171,225,116),2)
  elseif special=="SHELL_BASH"then
-  pr.AssemblyLinearVelocity=(pr.Position-e.part.Position).Unit*32+Vector3.new(0,8,0)
+  local knock=pr.Position-e.part.Position;if knock.Magnitude>.01 then pr.AssemblyLinearVelocity=knock.Unit*32+Vector3.new(0,8,0)end
  end
 end
 local function chooseEnemyAttack(e)
@@ -393,7 +397,7 @@ end
 local function beginEnemyAttack(e,target,now)
  if e.attackPending or now<(e.stunnedUntil or 0)then return end
  local attack=chooseEnemyAttack(e);if not attack then return end
- e.attackPending=true;e.lastAttack=now;attackTelegraph(e,attack,target)
+ e.attackPending=true;e.lastAttack=now;e.nextAttackAt=now+(attack.Cooldown or 1.2);attackTelegraph(e,attack,target)
  local special=tostring(attack.Special or"")
  if special=="CHARGE"or special=="ANTLER_CHARGE"or special=="MOON_POUNCE"then
   local tr=root(target);if tr then
@@ -889,7 +893,7 @@ local function clearMeadowRunEnemies()
   if e.zone==1 then if e.part and e.part.Parent then e.part:Destroy()end;table.remove(enemies,i)end
  end
 end
-local function meadowPlayersInside()
+meadowPlayersInside=function()
  local count=0
  for _,p in ipairs(Players:GetPlayers())do if n(p,"CurrentZone",0)==1 then count+=1 end end
  return count
@@ -1243,7 +1247,7 @@ local function bindPlayer(p)
  local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
  p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("WeaponTier"):Connect(refreshAppearance);p:GetAttributeChangedSignal("ArmorTier"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
-  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
+  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
  end)
  if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
 end
@@ -1289,9 +1293,8 @@ RunService.Heartbeat:Connect(function(dt)
    if target then
     local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
     local attackDef=e.def and e.def.Attack;local engage=(attackDef and attackDef.Range)or(e.def and e.def.Attacks and 18)or 5.5
-    local cooldown=(attackDef and attackDef.Cooldown)or(e.boss and 1.55 or 1.15)
     if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end
-    if tr and(tr.Position-e.part.Position).Magnitude<=engage and now-e.lastAttack>cooldown and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
+    if tr and(tr.Position-e.part.Position).Magnitude<=engage and now>=(e.nextAttackAt or 0)and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
    else
     local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
     if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
