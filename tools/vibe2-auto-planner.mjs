@@ -717,7 +717,7 @@ function presentationRelevantText(value=''){
   return /(?:graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|idle|walk|run|turn|impact|vfx|effect|particle|trail|audio|music|bgm|sound|sfx|camera|frame|fps|performance|mobile|readability|placeholder|primitive|silhouette|style|cinematic|art.?direction|design|detail|그래픽|비주얼|연출|에셋|모델|환경|배경|재질|조명|애니|움직임|모션|공격 ?모션|이펙트|효과|음악|브금|사운드|카메라|프레임|성능|가독성|플레이스홀더|실루엣|스타일|시네마틱|디자인|외형|묘사|디테일|컨셉)/i.test(clean(value));
 }
 function graphicsEvolutionAffectedPasses(text=''){
-  const value=clean(text),passes=[];
+  const value=clean(text).replace(/[_:-]+/g,' '),passes=[];
   const add=pass=>{if(PRESENTATION_EVOLUTION_PASSES.includes(pass)&&!passes.includes(pass))passes.push(pass);};
   if(/(?:\b(?:asset|model|environment|background|terrain|material|lighting|placeholder|primitive|silhouette|style|landmark|art)\b|에셋|모델|환경|배경|재질|조명|실루엣|외형|디자인|디테일|컨셉)/i.test(value))add('ASSET_ADAPTATION');
   if(/(?:\b(?:motion|animation|move|movement|idle|walk|run|turn|smooth|blend|weight|locomotion|secondary|procedural)\b|애니|움직임|모션|걷|달리|회전|부드럽|체중|보조모션)/i.test(value))add('LIVING_MOTION');
