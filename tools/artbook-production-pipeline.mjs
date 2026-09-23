@@ -75,10 +75,12 @@ function canReuseCompletedDesign(status){
 console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);console.log(`PRODUCTION_CLASS=${productionClass}`);console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
 await run('tools/artbook-fact-pack.mjs');
 if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
-  await run('tools/company-development-validation-cycle.mjs');
-  await run('tools/company-baseline-gate.mjs');
-  await run('tools/company-development-disposition-gate.mjs');
-  console.log('DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT');console.log('DEVELOPMENT_RESUME_FROM_LATEST_EVIDENCE=YES');console.log('DEVELOPMENT_DISPOSITION_GATE=ENABLED');console.log('DEVELOPMENT_ARTBOOK_ONLY_AFTER_PROMOTION=YES');
+  console.log('DEVELOPMENT_EXECUTION_MODE=DIRECT_NATIVE_DUAL_PLATFORM');
+  console.log('DEVELOPMENT_RUNTIME_DELEGATED=YES');
+  console.log('DEVELOPMENT_RUNTIME_OWNER=.github/workflows/company-development-confirmed-runtime.yml');
+  console.log('DEVELOPMENT_QUEUE_AUTHORITY=company-runtime:development-queue.json');
+  console.log('DEVELOPMENT_LEGACY_WEB_FIRST_VALIDATION=DISABLED');
+  console.log('DEVELOPMENT_ARTBOOK_PIPELINE_SOURCE_MUTATION=NO');
 }else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
   await run('tools/company-release-production-cycle.mjs');await run('tools/company-release-stale-artifact-guard.mjs');
   console.log('RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION');console.log('RELEASE_VIBE2_PRIMARY_DEVELOPER=YES');console.log('RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED');console.log('RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED');console.log('RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES');
@@ -93,4 +95,4 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
   console.log('DESIGN_ONLY_VIBE2_USED=NO');
 }
-console.log('ARTBOOK_PIPELINE_COMPLETE=YES');console.log('DEPARTMENT_MODE=FIVE_DISTINCT_LEADS_PLUS_MULTIMODEL_ASSISTANTS');console.log('DEPARTMENT_REPRESENTATIVE_OWNER=DEPARTMENT_LEAD_MODEL');console.log('DEPARTMENT_REBUTTAL_OWNER=DEPARTMENT_LEAD_MODEL');console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI_AFTER_PROMOTION');console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');console.log('BASELINE_APPROVAL=REAL_EVIDENCE_GATE_SEPARATE_FROM_AI_REVIEW');console.log('PAID_API=NO');
+console.log('ARTBOOK_PIPELINE_COMPLETE=YES');console.log('DEPARTMENT_MODE=CLASS_SCOPED_CURRENT_RUNTIME');console.log('DEPARTMENT_REPRESENTATIVE_OWNER=DEPARTMENT_LEAD_MODEL');console.log('DEPARTMENT_REBUTTAL_OWNER=DEPARTMENT_LEAD_MODEL');console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI_AFTER_PROMOTION');console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');console.log('BASELINE_APPROVAL=REAL_EVIDENCE_GATE_SEPARATE_FROM_AI_REVIEW');console.log('PAID_API=NO');
