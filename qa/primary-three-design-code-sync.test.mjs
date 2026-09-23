@@ -7,7 +7,7 @@ const json=p=>JSON.parse(read(p));
 
 const cases=[
  {id:'cozy-island',graphics:'COZY_CHIBI_STORYBOOK',world:'COZY_CHIBI_KINGDOM_WORLD_V8',character:'COZY_CHIBI_KINGDOM',design:'design/cozy-island/2026-09-22/design-revised.json',md:'design/cozy-island/2026-09-22/GAME_DESIGN.md'},
- {id:'daechung-rpg',graphics:'RPG_HEROIC_PORTAL_FANTASY',world:'RPG_FANTASY_SILHOUETTE_WORLD_V4',character:'RPG_HEROIC_FANTASY_SILHOUETTE',design:'design/daechung-rpg/2026-09-22/design-revised.json',md:'design/daechung-rpg/2026-09-22/GAME_DESIGN.md'},
+ {id:'daechung-rpg',graphics:'RPG_STYLIZED_TOY_DARK_FANTASY',world:'RPG_FANTASY_PORTAL_WORLD_V5',character:'RPG_STYLIZED_TOY_FANTASY_R15',design:'design/daechung-rpg/2026-09-22/design-revised.json',md:'design/daechung-rpg/2026-09-22/GAME_DESIGN.md'},
  {id:'horror-escape-room',graphics:'REALISTIC_HUMANS_ABERRANT_MONSTERS',world:'INFECTION_HORROR_V9',character:'REALISTIC_HUMANS_ABERRANT_MONSTERS',design:'design/horror-escape-room/2026-09-22/design-revised.json',md:'design/horror-escape-room/2026-09-22/GAME_DESIGN.md'}
 ];
 
@@ -47,10 +47,17 @@ test('심야 설계계약은 4대4 240초 감염전 코드와 일치한다',()=>
 test('대충 RPG 설계계약은 5포탈 10AI 15킬 파티사냥 코드와 일치한다',()=>{
  const launch=json('roblox-games/daechung-rpg/launch-mvp.json');
  const config=read('roblox-games/daechung-rpg/shared/GameConfig.luau');
- assert.equal((config.match(/Class="(?:NONE|HEALER|WARRIOR|ARCHER)"/g)||[]).length,10);
+ assert.equal((config.match(/Class="(?:BREAKER|SHADOW|RUNE|SOUL)"/g)||[]).length,10);
+ assert.equal((config.match(/Class="BREAKER"/g)||[]).length,3);
+ assert.equal((config.match(/Class="SHADOW"/g)||[]).length,3);
+ assert.equal((config.match(/Class="RUNE"/g)||[]).length,2);
+ assert.equal((config.match(/Class="SOUL"/g)||[]).length,2);
+ assert.match(config,/AdvancementLevel=15/);
+ assert.match(config,/IRON_BREAKER/);assert.match(config,/RAGE_BREAKER/);assert.match(config,/ASSASSIN_TRACKER/);assert.match(config,/MIRAGE_TRACKER/);
+ assert.match(config,/ELEMENTAL_RUNER/);assert.match(config,/OVERLOAD_RUNER/);assert.match(config,/GUARDIAN_MEDIUM/);assert.match(config,/WRAITH_MASTER/);
  assert.match(config,/PartyHuntTarget=15/);
  assert.ok(launch.launchCore.includes('five portal-separated hunting grounds/dungeons'));
- assert.ok(launch.launchCore.includes('ten AI users: 2 none, 2 healer, 3 warrior, 3 archer'));
+ assert.ok(launch.launchCore.includes('ten R15 AI users sharing the same four-class progression: 3 breaker, 3 shadow, 2 rune, 2 soul'));
 });
 
 test('포근섬 설계계약은 직접채집 주민자동화 병영 5거점 코드와 일치한다',()=>{
