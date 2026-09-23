@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
   "releaseStrategy": "FAST_MVP",
@@ -18,7 +18,6 @@
     "monster aggro and leash reset",
     "double-click AI party invite/remove",
     "15-kill party hunts with contribution rewards",
-    "mobile combat UI and room code 1-10",
     "four starter classes: Breaker, Shadow Tracker, Rune Caster, Soul Summoner",
     "level-15 class trials with two first-advancement branches per starter class",
     "advancement respec in village for gold without deleting progression",
@@ -26,14 +25,22 @@
     "Humanoid and PathfindingService AI movement with class formation behavior",
     "R15 walk/run and action animations plus weapon trails and hit VFX",
     "free medieval armor and medieval-house assets used as sanitized visual bases with procedural fallback",
-    "stylized toy-like Roblox fantasy characters against progressively darker portal regions"
+    "stylized toy-like Roblox fantasy characters against progressively darker portal regions",
+    "mobile four-button combat dock: attack, skill, hold-block/parry, dodge",
+    "Grounded-inspired frontal guard with guard meter, perfect-parry window, stagger and guard break",
+    "portal 1 meadow prototype rerolls a seeded room/chunk layout whenever a new empty run starts",
+    "portal 1 has ten distinct meadow enemy archetypes with telegraphed parryable/unblockable attacks",
+    "portal 1 can generate secret groves, event rooms, treasure rooms, elites and two hidden bosses",
+    "hidden meadow bosses use multi-pattern attacks and boss stagger"
   ],
   "deferredUntilAfterMvp": [
     "advanced cross-server room matchmaking",
     "additional portals beyond five",
     "large quest-chain expansion",
     "second class advancement tier",
-    "advanced companion personality and relationship AI"
+    "advanced companion personality and relationship AI",
+    "procedural roguelike generation for portals 2-5",
+    "full 50-plus monster roster across all five portals"
   ],
   "releaseGates": [
     "five visible village portals",
@@ -49,7 +56,6 @@
     "enemy aggro leash",
     "AI double-click party toggle",
     "15-kill party hunt contribution rewards",
-    "mobile three-button combat dock",
     "save/rejoin",
     "remote action allowlist and spam rejection",
     "4 starter classes selectable on mobile",
@@ -57,7 +63,13 @@
     "10 R15 AI users with 3/3/2/2 starter-class distribution",
     "AI uses Humanoid path movement instead of CFrame sliding",
     "player and AI combat animations visibly play",
-    "free medieval visual assets are sanitized and gameplay-safe"
+    "free medieval visual assets are sanitized and gameplay-safe",
+    "mobile four-button combat dock with hold block",
+    "server-authoritative perfect parry and guard meter",
+    "meadow roster has 10 distinct enemy definitions",
+    "meadow run generation is seeded and rebuilds room layout",
+    "meadow includes secret-room and hidden-boss generation",
+    "meadow hidden bosses have multiple telegraphed attacks"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -69,7 +81,7 @@
     "audioFeedbackPassRequired": true,
     "abuseResistancePassRequired": true
   },
-  "updatedAt": "2026-09-24T05:20:00+09:00",
+  "updatedAt": "2026-09-24T06:05:00+09:00",
   "gameTitleKo": "5포탈 RPG: 던전 파티",
   "gameTitleEn": "Five Portal RPG: Dungeon Party",
   "gameDescriptionKo": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌파하는 협동 RPG. AI 동료와 파티를 맺고 보스와 던전을 공략해 성장해.",
