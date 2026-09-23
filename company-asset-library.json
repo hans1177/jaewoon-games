@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "kind": "company-asset-library",
+  "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
+  "updatedAt": "2026-09-24",
+  "publicInspectionSurface": true,
+  "productionPassAuthority": false,
+  "rules": {
+    "verifiedOnlyMayClaimCompanyReusable": true,
+    "preparedOrResearchItemsMustBeLabeled": true,
+    "unityRobloxNativeVariantsSeparated": true,
+    "gameStyleLockOverridesGenericLook": true
+  },
+  "platformPacks": [
+    {
+      "platform": "UNITY",
+      "status": "ACTIVE_RESEARCH",
+      "libraryFamilies": 7,
+      "label": "Unity 네이티브"
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "ACTIVE_RESEARCH",
+      "libraryFamilies": 7,
+      "label": "Roblox 네이티브"
+    }
+  ],
+  "motionCoverage": {
+    "idleVariants": 4,
+    "locomotionDirections": 8,
+    "turnVariants": 3,
+    "dodgeVariants": 4,
+    "lightComboAttacks": 3,
+    "heavyAttacks": 2,
+    "aerialAttacks": 2,
+    "dashOrGapCloserAttacks": 2,
+    "directionalHitReactions": 4,
+    "hitStrengthLevels": 3,
+    "deathVariants": 3,
+    "skillOrCastVariants": 3
+  },
+  "weaponPacks": [
+    "UNARMED",
+    "ONE_HAND_SWORD",
+    "TWO_HAND_SWORD",
+    "SPEAR",
+    "AXE",
+    "HAMMER",
+    "BOW",
+    "FIREARM",
+    "STAFF_OR_WAND"
+  ],
+  "assets": [
+    {
+      "id": "insect-main-v3",
+      "title": "곤충 생존 비주얼",
+      "category": "CHARACTER",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/insect-main-v3.webp",
+      "license": "project-original",
+      "note": "실제 repo 자산 · 게임별 변형 기준 참고"
+    },
+    {
+      "id": "insect-war-v2",
+      "title": "곤충 전투 비주얼",
+      "category": "CHARACTER",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/insect-war-v2.webp",
+      "license": "project-original",
+      "note": "전투 캐릭터/적 실루엣 참고"
+    },
+    {
+      "id": "fantasy-rpg-v2",
+      "title": "판타지 RPG 비주얼",
+      "category": "CHARACTER",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/fantasy-rpg-v2.webp",
+      "license": "project-original",
+      "note": "판타지 캐릭터·환경 방향 참고"
+    },
+    {
+      "id": "card-rpg-v2",
+      "title": "RPG 카드 비주얼",
+      "category": "UI",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/card-rpg-v2.webp",
+      "license": "project-original",
+      "note": "UI/카드 표현 참고"
+    },
+    {
+      "id": "crystal-v2",
+      "title": "크리스탈 재질 비주얼",
+      "category": "VFX",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/crystal-v2.webp",
+      "license": "project-original",
+      "note": "재질·발광·보상 연출 참고"
+    },
+    {
+      "id": "page-bg-v4",
+      "title": "환경 배경 비주얼",
+      "category": "ENVIRONMENT",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/page-bg-v4.webp",
+      "license": "project-original",
+      "note": "전경/중경/후경 배경 구성 참고"
+    },
+    {
+      "id": "bug-defense-hero",
+      "title": "Bug Defense Hero",
+      "category": "CHARACTER",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/godot-games/bug-defense/assets/hero.svg",
+      "license": "project-original",
+      "note": "실루엣/파츠 분리 참고"
+    },
+    {
+      "id": "bug-defense-boss",
+      "title": "Bug Defense Boss",
+      "category": "CHARACTER",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/godot-games/bug-defense/assets/boss.svg",
+      "license": "project-original",
+      "note": "보스 실루엣 참고"
+    },
+    {
+      "id": "bug-defense-spider",
+      "title": "Bug Defense Spider",
+      "category": "CHARACTER",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/godot-games/bug-defense/assets/spider.svg",
+      "license": "project-original",
+      "note": "생물형 실루엣 참고"
+    },
+    {
+      "id": "ladybug-sprite",
+      "title": "Ladybug Sprite",
+      "category": "CHARACTER",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/logo-sprite-ladybug.svg",
+      "license": "project-original",
+      "note": "작은 몬스터/아이콘 실루엣 참고"
+    },
+    {
+      "id": "mantis-sprite",
+      "title": "Mantis Sprite",
+      "category": "CHARACTER",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/logo-sprite-mantis.svg",
+      "license": "project-original",
+      "note": "곤충형 관절/실루엣 참고"
+    },
+    {
+      "id": "dragonfly-sprite",
+      "title": "Dragonfly Sprite",
+      "category": "CHARACTER",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/logo-sprite-dragonfly.svg",
+      "license": "project-original",
+      "note": "비행형 실루엣 참고"
+    }
+  ],
+  "research": [
+    {
+      "id": "unity-character",
+      "title": "Unity 캐릭터 베이스",
+      "category": "CHARACTER",
+      "platform": "UNITY",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Humanoid/Generic, Blend Tree, Avatar Mask, IK, LOD"
+    },
+    {
+      "id": "roblox-character",
+      "title": "Roblox 캐릭터 베이스",
+      "category": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "RESEARCH_ACTIVE",
+      "note": "R15/Custom Rig, Motor6D, Attachment, AnimationTrack"
+    },
+    {
+      "id": "unity-motion",
+      "title": "Unity 액션 모션팩",
+      "category": "MOTION",
+      "platform": "UNITY",
+      "status": "RESEARCH_ACTIVE",
+      "note": "콤보/강공격/회피/피격/사망/스킬 네이티브 팩"
+    },
+    {
+      "id": "roblox-motion",
+      "title": "Roblox 액션 모션팩",
+      "category": "MOTION",
+      "platform": "ROBLOX",
+      "status": "RESEARCH_ACTIVE",
+      "note": "모바일 우선 액션 모션과 리타게팅"
+    },
+    {
+      "id": "weapon-motion",
+      "title": "무기별 모션팩",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "맨손·검·대검·창·도끼·망치·활·총·지팡이"
+    },
+    {
+      "id": "vfx-library",
+      "title": "전투 VFX 라이브러리",
+      "category": "VFX",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "타격·trail·telegraph·impact wave·critical·landing"
+    },
+    {
+      "id": "environment-kit",
+      "title": "환경 키트 라이브러리",
+      "category": "ENVIRONMENT",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "숲·설원·사막·마을·던전·폐허"
+    },
+    {
+      "id": "ui-library",
+      "title": "UI 표현 라이브러리",
+      "category": "UI",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "HUD·인벤토리·상점·옵션·체력바·모바일 조작"
+    }
+  ]
+}
