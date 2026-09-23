@@ -871,16 +871,6 @@
       ]
     },
     {
-      "id": "gap-character_arc-l1",
-      "kind": "CHARACTER_ARC_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CHARACTER_ARC"
-      ]
-    },
-    {
       "id": "gap-dialogue-l1",
       "kind": "DIALOGUE_SCENE_DRILL",
       "priority": "low",
@@ -1048,6 +1038,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "VFX"
+      ]
+    },
+    {
+      "id": "gap-character_arc-l2",
+      "kind": "CHARACTER_ARC_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CHARACTER_ARC"
       ]
     },
     {
