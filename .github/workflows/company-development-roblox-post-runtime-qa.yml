@@ -168,6 +168,7 @@ jobs:
             if(!exactCandidate){
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
+              item.robloxRuntimeRetryCount=0;
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH';
               item.routingBlockers=['roblox-runtime-candidate-identity-mismatch'];
@@ -179,11 +180,13 @@ jobs:
             if(engineProbe?.permissionDenied===true){
               const requiredScope=String(engineProbe.requiredScope||'universe.place.luau-execution-session:write');
               const failureSignature='ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED';
+              const priorRetryCount=Math.max(0,Number(item.robloxRuntimeRetryCount||0));
               const samePermissionBlock=
                 item.robloxFailureSignature===failureSignature
                 &&item.robloxRuntimeFoundationEvidence?.authority==='roblox-open-cloud-engine-permission-evidence'
                 &&item.robloxRuntimeFoundationEvidence?.requiredScope===requiredScope
-                &&Number(item.robloxRuntimeFoundationEvidence?.httpStatus)===Number(engineProbe.status);
+                &&Number(item.robloxRuntimeFoundationEvidence?.httpStatus)===Number(engineProbe.status)
+                &&priorRetryCount===0;
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
