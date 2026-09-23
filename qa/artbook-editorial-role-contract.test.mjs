@@ -11,7 +11,7 @@ const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const devCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const releaseCycle=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
-const roles=['planning','graphics','development','qa','balance'];
+const roles=['planning','graphics','development','qa','audio'];
 
 test('one canonical machine policy source owns class design meeting and release rules',()=>{
   assert.equal(directive.policyDocument,machineSource);
@@ -145,7 +145,7 @@ test('DEVELOPMENT_CONFIRMED starts Roblox and Unity directly from minimum shared
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.equal(dev.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
   assert.equal(dev.resumeFromLatestEvidence,true);
-  assert.equal(dev.webPurpose,'LEGACY_OPTIONAL_COMPANION_ONLY');
+  assert.equal(dev.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
   assert.equal(dev.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
   assert.equal(dev.webBeforeTargetPlatformByDefault,false);
   assert.equal(dev.targetPlatformMayRunImmediately,true);
