@@ -101,6 +101,7 @@ export function analyzeSystemAiBottlenecks({
   const recommendedBatch=Math.max(0,Math.min(configured,freeCapacity,disjointQueued.length));
   const reservationWaitMs=Math.max(0,Number(workflowMetrics.reservationWaitMs)||0);
   const fanInWaitMs=Math.max(0,Number(workflowMetrics.fanInWaitMs)||0);
+  const supervisorReviewWaitMs=Math.max(0,Number(workflowMetrics.supervisorReviewWaitMs)||0);
   const pendingRuns=Math.max(0,Number(workflowMetrics.pendingRuns)||0);
 
   const actions=[];
@@ -111,6 +112,7 @@ export function analyzeSystemAiBottlenecks({
   if(pendingRuns>0)actions.push('REDUCE_SCHEDULER_PENDING_RUN_WAIT');
   if(reservationWaitMs>=60000)actions.push('PRIORITIZE_LONG_WAIT_RUNNABLE_WORK');
   if(fanInWaitMs>=60000)actions.push('REDUCE_FAN_IN_WAIT');
+  if(supervisorReviewWaitMs>=60000)actions.push('PRIORITIZE_PRIMARY_AI_SUPERVISOR_REVIEW');
   if(!actions.length)actions.push('NO_CURRENT_BOTTLENECK_ACTION_REQUIRED');
 
   return{
@@ -123,7 +125,7 @@ export function analyzeSystemAiBottlenecks({
     representativeCanaryTaskIds:uniq(commonFailureCohorts.map(x=>x.representativeTaskId)),
     disjointQueuedTaskIds:disjointQueued.map(t=>clean(t.id)).filter(Boolean),
     caretakerHotspots,
-    workflow:{pendingRuns,reservationWaitMs,fanInWaitMs},
+    workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs},
     configuredBatch:configured,
     freeCapacity,
     recommendedBatch,
@@ -143,7 +145,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     gameQueue:readJson(clean(a['game-queue']),{tasks:[]}),
     maxBatch:Number(a.max||32),
     leaseMinutes:Number(a['lease-minutes']||30),
-    workflowMetrics:{pendingRuns:Number(a['pending-runs']||0),reservationWaitMs:Number(a['reservation-wait-ms']||0),fanInWaitMs:Number(a['fan-in-wait-ms']||0)}
+    workflowMetrics:{pendingRuns:Number(a['pending-runs']||0),reservationWaitMs:Number(a['reservation-wait-ms']||0),fanInWaitMs:Number(a['fan-in-wait-ms']||0),supervisorReviewWaitMs:Number(a['supervisor-review-wait-ms']||0)}
   });
   if(clean(a.output)){fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');}
   console.log('SYSTEM_AI_BOTTLENECK_QUEUE_DEPTH='+result.queueDepth.queued);
