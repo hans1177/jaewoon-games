@@ -1,5 +1,5 @@
 {
-  "version": 122,
+  "version": 123,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2422,7 +2422,12 @@
       "unresolvedCauseRequiresTraceBeforeMutation": true,
       "designIntegrityReachabilityChecksRequired": true,
       "runtimeBugRoutesToExistingDevelopmentQaRepair": true,
-      "verifiedDesignContradictionRoutesToExistingDesignRuntime": true
+      "verifiedDesignContradictionRoutesToExistingDesignRuntime": true,
+      "dailyDesignHealthScan": true,
+      "periodicDeepReviewHours": 168,
+      "newOwnerOrVerifiedSignalBypassesPeriodicInterval": true,
+      "passCheckpointDoesNotDisableFutureDesignReview": true,
+      "scheduler": ".github/workflows/company-seed-design-runtime.yml"
     }
   },
   "releaseExposureLifecycle": {
