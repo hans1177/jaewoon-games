@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -484,5 +484,12 @@
     },
     "failureAction": "QUARANTINE_AFFECTED_GRAPHICS_SCOPE_AND_ROUTE_SAME_GRAPHICS_PRODUCTION_ROOT_TO_ASSET_REPAIR_REQUIRED",
     "newShadowGraphicsPipelineForbidden": true
+  },
+  "centralPolicyMutationSecurity": {
+    "machinePolicyDocumentsOnlyForExecution": true,
+    "humanReadablePolicyDocumentMayNotCreateAuthority": true,
+    "humanReadablePolicyDocumentRequiredForExecution": false,
+    "legacyWebFirstFallbackForbidden": true,
+    "strictScoreAdmissionReactivationForbidden": true
   }
 }
