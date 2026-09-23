@@ -77,8 +77,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
-      group: company-system-ai-reserve-control
-      cancel-in-progress: false
+      group: ${{ github.event_name == 'push' && 'company-system-ai-push-qa-reserve' || 'company-system-ai-reserve-control' }}
+      cancel-in-progress: ${{ github.event_name == 'push' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       count: ${{ steps.matrix.outputs.count }}
