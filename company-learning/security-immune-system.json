@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -310,7 +310,9 @@
       "rawSecurityPayloadStored": false,
       "learningPromotionRequiresVerifiedSanitizedEvidence": true,
       "liveBottleneckTelemetryMayNotExpandAuthority": true,
-      "dependencyWaitStateMayNotCreateRecursiveRecoveryAuthority": true
+      "dependencyWaitStateMayNotCreateRecursiveRecoveryAuthority": true,
+      "supersededRepairDependencyRewireMayNotExpandWritableScope": true,
+      "supersededRepairDependencyRewireMustPreserveCheckpointIdentity": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -343,7 +345,11 @@
       "queueRepairCoalescingReviewRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8",
       "canaryWaitRecoveryRecursionRevision": "1c2275c3cd6e725dcef00ecdfee80dd125f756ca",
       "canaryWaitRecoveryRecursionTestRevision": "17fef35122561283b3c16d29b8cf07a37dc3e82d",
-      "canaryWaitRecoveryAuthorityExpansion": false
+      "canaryWaitRecoveryAuthorityExpansion": false,
+      "stableRepairWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
+      "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
+      "supersededRepairDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
+      "supersededRepairDependencyRewireAuthorityExpansion": false
     }
   }
 }
