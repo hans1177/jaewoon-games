@@ -46,3 +46,11 @@ test('empty queue and failed subjobs still flow into unconditional next-cycle re
   assert.match(runner,/VIBE2_24H_REFILL=DISPATCHED/);
   assert.doesNotMatch(runner,/VIBE2_24H_DONE/);
 });
+
+
+test('24h scheduler wake signals collapse into one continuous chain while refill remains unconditional',()=>{
+  assert.match(runner,/group: vibe2-24h-cycle-singleton/);
+  assert.match(runner,/cancel-in-progress:\s*false/);
+  assert.doesNotMatch(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
+  assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
+});
