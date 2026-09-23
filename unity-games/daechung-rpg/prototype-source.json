@@ -1,0 +1,38 @@
+{
+  "version": 3,
+  "gameId": "daechung-rpg",
+  "gameName": "Whatever RPG",
+  "category": "GENERAL",
+  "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
+  "coreLoop": [
+    "마을에서 퀘스트와 장비 준비",
+    "포탈로 사냥터 이동",
+    "몬스터 직접 전투",
+    "AI 유저 파티 구성",
+    "15마리 파티 사냥과 기여도 보상"
+  ],
+  "selectedPlatform": "UNITY",
+  "unityEditorVersion": "6000.6.0f1",
+  "unityEditorRevision": "f7f8ed4d1e24",
+  "generatorFingerprint": "c09e8ba749f5dbc9d0a1c25f400351d8b189b9e18c63f6a3869ad7a09da9c1b4",
+  "platformDesignProfile": {
+    "platform": "UNITY",
+    "inputModel": "Android 터치 액션",
+    "sessionModel": "동일 4인 파티/스토리",
+    "multiplayerRuntime": "1+3 AI와 최대4인 혼합",
+    "performanceBudget": "모바일 AI/파티클 제한",
+    "uiUx": "전투/편성 UI 분리",
+    "saveAndNetwork": "동료·장비·스토리·관계·기억 버전 저장",
+    "platformContentAdaptation": "모바일 판타지3D",
+    "internalReleaseTarget": "INTERNAL_OR_CLOSED_APP_TEST_BUILD",
+    "validationEvidence": "실기기 전투·저장·AI·회귀"
+  },
+  "androidGraphicsCompatibilityProfile": "OPEN_GLES3_ES30_MINIMUM",
+  "designBaseline": "design/daechung-rpg/2026-09-22/design-revised.json",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "nativeAppOnly": true,
+  "unityWebEnabled": false,
+  "purpose": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+  "releaseAuthority": false,
+  "generatedAt": "2026-09-23T17:02:23.215Z"
+}
