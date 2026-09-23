@@ -56,6 +56,10 @@ test('directive mirror cannot reactivate legacy Web-first development',()=>{
   assert.equal(directive.legacyWebFirstPolicy.status,'LEGACY_DISABLED');
   assert.equal(directive.legacyWebFirstPolicy.developmentAdmissionAuthority,false);
   assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
+  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebEnabled,true);
+  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebRequired,false);
+  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebMode,'VALIDATION_SURFACE_ONLY');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,false);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,false);
@@ -65,7 +69,7 @@ test('directive mirror cannot reactivate legacy Web-first development',()=>{
 });
 
 test('architecture and runtime execute the same direct-native topology',()=>{
-  assert.deepEqual(architecture.executionTopology.web,['LEGACY_DISABLED']);
+  assert.deepEqual(architecture.executionTopology.web,['UNITY_WEB_VALIDATION_SURFACE_ONLY','SAME_CANONICAL_UNITY_PROJECT','NO_NATIVE_GATE_AUTHORITY']);
   assert.ok(architecture.executionTopology.selectedPlatform.includes('ROBLOX_UNITY_AUTO_PAIR'));
   assert.ok(architecture.executionTopology.selectedPlatform.includes('INTERNAL_PLATFORM_RELEASE'));
   assert.ok(architecture.executionTopology.selectedPlatform.includes('INTERNAL_PLAYTEST'));
