@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "      <div class=\"panel-head\">",
+      "replace": "  <div class=\"panel-head\">\n    <h2 id=\"panelTitle\">가방</h2>\n    <button id=\"panelClose\" type=\"button\" aria-label=\"닫기\">×</button>\n  </div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
