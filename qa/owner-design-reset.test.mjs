@@ -94,6 +94,8 @@ test('design runtime keeps PASS as checkpoint and schedules recurring design hea
   assert.match(workflow,/designEvolutionDueFor/);
   assert.match(workflow,/deepReviewIntervalHours\|\|168/);
   assert.match(workflow,/NEW_VERIFIED_OR_OWNER_SIGNAL/);
+  assert.match(workflow,/NEW_OWNER_EVENT/);
+  assert.match(workflow,/ownerDesignEventId/);
   assert.match(workflow,/PERIODIC_DEEP_HEALTH_REVIEW/);
   assert.match(workflow,/PASS_CHECKPOINT_STILL_FRESH_NO_NEW_SIGNAL/);
   assert.match(workflow,/DESIGN_PASS_IS_CHECKPOINT_NOT_TERMINAL=YES/);
