@@ -1245,6 +1245,13 @@ function idleDrillKindForDomain(domain=''){
 function practiceInstructionForDrill(drill={}){
   const kind=upper(drill.kind);
   if(kind==='ASSET_ADAPTATION_DRILL')return'원본 에셋을 보존하면서 색감·재질·외곽선·비율·파츠·텍스처를 게임 Style Lock에 맞게 변형하는 방법과 라이선스/모바일 비용 검증을 분석한다.';
+  if(kind==='CHARACTER_ARCHETYPE_LIBRARY_DRILL')return'회사 공용 캐릭터 베이스를 준비한다. 실루엣·체형·머리·장비 결합 규칙을 다양화하고 HUMANOID_LIGHT/STANDARD/HEAVY를 포함해 같은 외형의 단순 색상 변형으로 수를 채우지 않는다. 지정 platformProfile에 맞는 Unity/Roblox 리그 차이를 명시하고 게임별 Style Lock 변형 여지를 남긴다.';
+  if(kind==='CREATURE_RIG_LIBRARY_DRILL')return'4족·곤충·파충류·비행형·골렘·비정형·대형 보스 리그/관절/부착 규칙을 공용 capability로 준비하는 방법을 설계한다. 종별 실루엣과 이동 방식이 달라야 하고 Unity/Roblox 네이티브 리그 제약을 분리한다.';
+  if(kind==='ACTION_MOTION_LIBRARY_DRILL')return'액션 게임에 바로 쓸 수준의 공용 모션팩을 설계·검증한다. idle 4종 이상, 8방향 이동, 시작/정지/회전, 점프/착지, 회피, 가드/패링, 경직/넉백/다운/기상, 방향별 피격, 사망 3종 이상과 anticipation→acceleration→impact→hit-stop→recoil→recovery를 포함한다.';
+  if(kind==='WEAPON_MOTION_LIBRARY_DRILL')return'맨손·한손검·대검·창·도끼·망치·활·총·지팡이 무기별 공격 리듬을 분리한다. 약공격 콤보 3타 이상, 강공격 2종 이상, 공중/돌진/스킬 변형을 준비하고 속도 배율만 바꾼 가짜 다양화는 금지한다.';
+  if(kind==='VFX_LIBRARY_DRILL')return'공용 VFX를 ambient/normal/heavy/critical/boss 강도로 분리해 타격·trail·afterimage·telegraph·impact wave·landing·reward 계열을 준비한다. 게임별 색/재질/밀도 변형이 가능해야 하며 모바일 가독성과 pooling 예산을 지킨다.';
+  if(kind==='ENVIRONMENT_KIT_LIBRARY_DRILL')return'숲·설원·사막·마을·던전·폐허 등 환경 키트를 전경/중경/배경, 랜드마크, 지형, 건축, 식생, 소품 조합으로 준비한다. 완성 맵 복제보다 재조합 가능한 모듈과 게임별 환경 언어 변형을 우선한다.';
+  if(kind==='UI_PRESENTATION_LIBRARY_DRILL')return'모바일 우선 HUD·인벤토리·상점·설정·체력바·슬롯·버튼·상호작용 피드백을 장르별로 변형 가능한 공용 표현 규격으로 준비한다. 하나의 전역 UI가 모든 게임 정체성을 평준화하지 않게 한다.';
   if(kind==='MOTION_CONTINUITY_DRILL')return'Idle 생동감, 속도 기반 이동 블렌딩, 가속·감속, 회전 후행, secondary motion, 발 미끄러짐 억제를 게임 수치 변경 없이 구현·검증하는 방법을 분석한다.';
   if(kind==='ANIMATION_FEEL_DRILL')return'준비→가속→impact→표현용 hit-stop→반동→복귀 흐름과 authoritative hit event 동기화를 분석한다. 게임 판정이나 쿨다운을 표현 계층에서 바꾸지 않는다.';
   if(kind==='VFX_READABILITY_DRILL')return'타격 피드백·trail·particle·telegraph를 모바일 가독성과 effect budget 안에서 구현하고 무제한 객체 생성을 막는 방법을 분석한다.';
@@ -1262,6 +1269,28 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
+function companyGraphicsLibraryDrills(){
+  const families=[
+    ['character-archetype','CHARACTER_ARCHETYPE_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['creature-rig','CREATURE_RIG_LIBRARY_DRILL',['ASSET_PRODUCTION','LIVING_MOTION']],
+    ['action-motion','ACTION_MOTION_LIBRARY_DRILL',['LIVING_MOTION','ANIMATION_FEEL']],
+    ['weapon-motion','WEAPON_MOTION_LIBRARY_DRILL',['LIVING_MOTION','ANIMATION_FEEL']],
+    ['vfx-library','VFX_LIBRARY_DRILL',['VFX','ASSET_PRODUCTION']],
+    ['environment-kit','ENVIRONMENT_KIT_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['ui-presentation','UI_PRESENTATION_LIBRARY_DRILL',['ASSET_ADAPTATION','VFX']]
+  ];
+  return ['UNITY','ROBLOX'].flatMap(platform=>families.map(([id,kind,domains])=>({
+    id:`company-graphics-${lower(platform)}-${id}`,
+    kind,
+    priority:'low',
+    productionPreemptible:true,
+    countsAsProductionPass:false,
+    companyGraphicsLibrary:true,
+    platformProfile:platform,
+    domains
+  })));
+}
+
 export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
@@ -1309,16 +1338,19 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
     priority:'high',productionPreemptible:true,countsAsProductionPass:false,
     domains:row.domains,sourceFailure:sig
   }));
+  const libraryDrills=companyGraphicsLibraryDrills();
   const drills=[
     ...repeatedFailureDrills,
     ...relearningDrills,
     ...phase4Drills,
+    ...libraryDrills,
     ...hypothesisDrills,
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
   return {
-    version:3,kind:'vibe2-idle-practice-queue',
-    productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,
+    version:4,kind:'vibe2-idle-practice-queue',
+    productionWorkAlwaysPreemptsPractice:true,productionDefaultPriorityHigherThanPractice:true,
+    companyGraphicsLibrary24h:{enabled:true,drillCount:libraryDrills.length,platformProfiles:['UNITY','ROBLOX'],productionPreemptible:true,noGenerationCap:true},
     practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,relearningGenerationLimit:null,
     hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
     previousResultComparisonRequired:true,
@@ -1428,6 +1460,8 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     phase4?`phase4Role=${upper(drill.phase4Role)}`:'',
     phase4?`phase4HoldoutGameId=${clean(drill.holdoutGameId)}`:'',
     phase4?`phase4UnseenProblemFingerprint=${clean(drill.unseenProblemFingerprint)}`:'',
+    drill?.companyGraphicsLibrary===true?`companyGraphicsLibrary=YES`:'',
+    clean(drill?.platformProfile)?`platformProfile=${upper(drill.platformProfile)}`:'',
     phase4?'phase4ScreenOnly=YES':'',
     '소스 파일을 수정하지 않는다. '+practiceInstructionForDrill(drill),
     '이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.',
@@ -1449,7 +1483,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
     speculativeEligible:false,estimatedRisk:'low',
-    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
+    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill?.companyGraphicsLibrary===true?['company-graphics-library-24h','company-graphics-library-prepared-not-promoted',`company-graphics-platform:${upper(drill.platformProfile)}`]:[]),...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
     completionCriteria:[artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
   };
   return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'PRACTICE_SIGNAL_ENQUEUED',task,practiceGeneration:next.generation,previousArtifactScore:next.previousScore,artifactPractice};
