@@ -100,3 +100,30 @@ test('web candidate release blocks inline script syntax and generic storage-cont
   assert.match(section,/VIBE2_WEB_SAVE_CONTRACT_MUTATION/);
   assert.match(releaseWorkflow,/git -C \/tmp\/vibe2-control fetch origin main:refs\/remotes\/origin\/main --quiet/);
 });
+
+
+test('candidate release queue recovery always fetches main into an explicit remote-tracking ref',()=>{
+  const explicit='git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet';
+  const legacy='git -C /tmp/vibe2-control fetch origin main --quiet';
+  const clones=releaseWorkflow.split('git clone --branch vibe2-unreal-core --single-branch').length-1;
+  const explicitFetches=releaseWorkflow.split(explicit).length-1;
+  assert.ok(clones>=4);
+  assert.equal(explicitFetches,clones);
+  assert.equal(releaseWorkflow.includes(legacy),false);
+  assert.match(releaseWorkflow,/worktree add --detach \/tmp\/vibe2-main-contract origin\/main/);
+});
+
+test('Unity release baseline uses minimum design and Unity native evidence without Web gameplay authority',()=>{
+  const start=releaseWorkflow.indexOf("if [ \"$decision\" = 'unity' ] && [ \"$production_class\" = 'RELEASE_CONFIRMED' ]");
+  const end=releaseWorkflow.indexOf("echo \"decision=$decision\"",start);
+  assert.ok(start>=0&&end>start);
+  const section=releaseWorkflow.slice(start,end);
+  assert.match(section,/company-learning\/platform-release-roadmap\.json/);
+  assert.match(section,/minimumDesignPass/);
+  assert.match(section,/unityProjectPass/);
+  assert.match(section,/unityTechnicalPass/);
+  assert.match(section,/webIsNonBlocking/);
+  assert.match(section,/UNITY_WEB_RELEASE_GATE_AUTHORITY=NONE/);
+  assert.doesNotMatch(section,/COMPANY_FLOW\.md/);
+  assert.doesNotMatch(section,/e\.webGameplay\?\.pass===true/);
+});
