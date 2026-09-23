@@ -7,7 +7,7 @@ import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-contr
 test('pipeline keeps stability defect ownership blueprint and validation in one design intelligence order',()=>{
   assert.deepEqual(DESIGN_INTELLIGENCE_STAGES,[
     'STABILITY_TRIAGE','DEFECT_OWNERSHIP','DESIGNER','DESIGN_BLUEPRINT','DESIGN_INTEGRITY','CONTENT_DIVERSITY',
-    'CONSTRAINT_ENGINE','CRITIC','CAUSALITY_GRAPH','PLAYER_MODEL','COMBAT_ECONOMY_SIMULATOR','IMPLEMENTATION',
+    'REFERENCE_HOMAGE','NARRATIVE_DIALOGUE','CONSTRAINT_ENGINE','CRITIC','CAUSALITY_GRAPH','PLAYER_MODEL','COMBAT_ECONOMY_SIMULATOR','IMPLEMENTATION',
     'AUTO_PLAYER','TELEMETRY','DESIGN_REVIEW','EXPERIENCE_MEMORY'
   ]);
 });
@@ -301,4 +301,50 @@ test('company design cycle consumes the design evolution brief and structured bl
   assert.match(source,/공공영역 고전/);
   assert.match(source,/현대 보호 작품은 추상적 기법만 참고/);
   assert.match(source,/같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다|중복 수정/);
+});
+
+
+test('homage contract allows public-domain motifs and abstract techniques but rejects unknown rights basis',()=>{
+  const ok=buildVibeDesignIntelligence({task:{
+    goal:'고전적 비극 구조를 게임 사건에 재해석',
+    referenceHomage:{
+      inspirations:[
+        {titleOrTradition:'고전 비극 전통',rightsBasis:'PUBLIC_DOMAIN',borrowedTechnique:'예고된 파국과 선택의 역설',transformation:'게임의 고유 세력 갈등과 플레이 선택 결과로 재구성'},
+        {titleOrTradition:'현대 액션게임 일반',rightsBasis:'ABSTRACT_TECHNIQUE',borrowedTechnique:'보스 페이즈 압박 리듬',transformation:'고유 몬스터 생태와 지역 기믹으로 변형'}
+      ],
+      originalityRule:'캐릭터·대사·장면 배열·고유 표현은 복제하지 않고 현재 게임 정체성으로 다시 설계한다'
+    }
+  }});
+  assert.equal(ok.referenceHomage.status,'CHECKED');
+  assert.equal(ok.referenceHomage.protectedModernExpressionCopyForbidden,true);
+  const bad=buildVibeDesignIntelligence({task:{
+    goal:'참고작 구조 검토',
+    referenceHomage:{inspirations:[{titleOrTradition:'미확인 작품',rightsBasis:'COPY',borrowedTechnique:'장면',transformation:'그대로'}]}
+  }});
+  assert.equal(bad.referenceHomage.status,'ADVISORY');
+  assert.ok(bad.referenceHomage.issues.some(x=>x.startsWith('REFERENCE_RIGHTS_BASIS_INVALID:')));
+});
+
+test('canonical central policy documents bind the intelligent design loop to existing code',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  const contract=roadmap.directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution;
+  assert.equal(contract.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(contract.unlimitedRevisionGenerations,true);
+  assert.equal(contract.ownerIntentUnderstanding.repeatedIdenticalOwnerTextCreatesNewRevision,true);
+  assert.equal(contract.identityAndCreativeFreedom.baseConceptIsReferenceNotPrison,true);
+  assert.equal(contract.identityAndCreativeFreedom.genreTransitionChallengeAllowed,true);
+  assert.equal(contract.stabilityFirst.creativeExpansionMayNotStarveConcreteStabilityRepair,true);
+  assert.equal(contract.detailedBlueprint.minimumPlans,2);
+  assert.equal(contract.antiMonotony.enabled,true);
+  assert.equal(contract.narrativeAndDialogue.characterVoiceProfileRequired,true);
+  assert.equal(contract.causalDefectOwnership.sameSymptomDualIndependentMutationForbidden,true);
+  assert.equal(contract.designIntegrityChecks.required,true);
+  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.newDesignPipelineForbidden,true);
+  assert.equal(logMap.designEvolutionEvidenceContract.sameSymptomDualMutationForbidden,true);
+  const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  assert.match(cycle,/CANONICAL_POLICY_PATH='company-learning\/platform-release-roadmap\.json'/);
+  assert.doesNotMatch(cycle,/centralPolicy:'COMPANY_FLOW\.md'/);
+  assert.match(cycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
 });
