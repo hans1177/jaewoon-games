@@ -96,8 +96,11 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
   for(const task of sysTasks){
     const status=clean(task.status).toLowerCase();
     if(['done','completed','cancelled','verified'].includes(status))continue;
+    const blocker=clean(task.blocker),lastOutcome=clean(task.lastOutcome);
+    if(/^shared-signature-canary-pending:/i.test(blocker))continue;
+    if(blocker==='system-ai-duplicate-repair-superseded'||lastOutcome==='SUPERSEDED_DUPLICATE_WORK')continue;
     const repeated=Number(task.retries||0)>=2||status==='failed';
-    const sig=clean(task.blocker||task.lastOutcome);
+    const sig=clean(blocker||lastOutcome);
     if(repeated&&sig)candidates.push({sourceQueue:'system-ai',task,signature:sig,stage:failureStage(task)});
   }
   const grouped=new Map();
