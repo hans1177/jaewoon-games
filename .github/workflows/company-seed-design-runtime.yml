@@ -440,7 +440,7 @@ jobs:
 
           const clean=value=>String(value??'').trim();
           const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
-          const roles=['planning','graphics','development','qa','balance'];
+          const roles=['planning','graphics','development','qa','audio'];
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const authorizedLeadPool=uniq(directive?.ai?.modelPool||[]);
           const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(','));
@@ -700,7 +700,7 @@ jobs:
           const fs=require('fs');
           const clean=value=>String(value??'').trim();
           const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
-          const roles=['planning','graphics','development','qa','balance'];
+          const roles=['planning','graphics','development','qa','audio'];
           const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(',')).slice(0,roles.length);
           const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
           const configured=Object.fromEntries(roles.map(role=>[role,[]]));
@@ -1183,7 +1183,7 @@ jobs:
           import {execFileSync} from 'node:child_process';
           const clean=value=>String(value??'').trim();
           const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
-          const roles=['planning','graphics','development','qa','balance'];
+          const roles=['planning','graphics','development','qa','audio'];
           const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(',')).slice(0,roles.length);
           const fallback=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS).split(','));
           const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
