@@ -127,8 +127,25 @@ jobs:
             }catch(error){
               const message=String(error?.message||error);
               if(/HTTP_404/.test(message)){
-                console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}`);
-                pending++;
+                const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
+                item.robloxRuntimeRetryCount=attempts;
+                item.robloxRuntimeLastObservationAttemptAt=stamp;
+                item.robloxRuntimeFoundationPassed=false;
+                item.robloxRuntimePassed=false;
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                if(attempts>=3){
+                  item.robloxFailureSignature='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE';
+                  item.routingBlockers=['roblox-actual-runtime-executor-unavailable','roblox-runtime-foundation-awaiting-observation'];
+                  console.log(`ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=${item.gameId}:attempt=${attempts}`);
+                  failed++;
+                }else{
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
+                  console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}:attempt=${attempts}`);
+                  pending++;
+                }
+                item.updatedAt=stamp;
+                changed=true;
                 continue;
               }
               throw error;
