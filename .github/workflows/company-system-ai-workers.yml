@@ -68,6 +68,10 @@ env:
   SYSTEM_AI_MAX_BATCH: '32'
   OLLAMA_HOST: 127.0.0.1:11434
 
+concurrency:
+  group: company-system-ai-${{ github.event_name == 'push' && 'push-qa' || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
 jobs:
   reserve:
     runs-on: ubuntu-latest
@@ -114,6 +118,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = 'push' ]; then
+            echo 'matrix={"include":[]}' >> "$GITHUB_OUTPUT"
+            echo 'count=0' >> "$GITHUB_OUTPUT"
+            echo 'targeted_security_recovery=NO' >> "$GITHUB_OUTPUT"
+            echo 'COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES'
+            exit 0
+          fi
           reservation="system-ai:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           persisted=0
 
@@ -145,7 +156,7 @@ jobs:
 
             adaptive_max="$SYSTEM_AI_MAX_BATCH"
             if [ -z "$SECURITY_RECOVERY_TASK_ID" ] && [ -z "$MARKETING_TASK_IDS" ]; then
-              pending_runs="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name=="Company System AI Workers" and (.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested"))] | length' 2>/dev/null || echo 0)"
+              pending_runs="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name=="Company System AI Workers" and .event!="push" and (.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested"))] | length' 2>/dev/null || echo 0)"
               reservation_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now(),tasks=q.tasks||[],byId=new Map(tasks.map(x=>[String(x.id||''),x]));const terminal=s=>['done','completed','verified'].includes(String(s||'').toLowerCase());const waits=[];for(const x of tasks){if(String(x.status||'').toLowerCase()!=='queued')continue;const deps=(x.dependencies||[]).map(id=>byId.get(String(id)));if(deps.some(d=>!d||!terminal(d.status)))continue;const m=String(x.blocker||'').match(/^shared-signature-canary-pending:(.+)$/i);if(m&&!terminal(byId.get(m[1])?.status))continue;const stamps=[x.updatedAt||x.createdAt,...deps.map(d=>d?.updatedAt||d?.createdAt)].map(Date.parse).filter(Number.isFinite);if(stamps.length)waits.push(Math.max(0,now-Math.max(...stamps)));}console.log(waits.length?Math.max(...waits):0)")"
               fan_in_wait_ms="$(node - <<'NODE'
               const cp=require('child_process');
