@@ -36,6 +36,8 @@ local foundationSeen={}
 local foundationSequence=0
 local foundationLast={}
 local assetCache={}
+local meadowRunCounter=0
+local meadowRunState={seed=0,hiddenBossId="",generated=false}
 local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293,MedievalArmor=C.MedievalCharacterAssetId,MedievalHouseA=C.MedievalHouseAssetIds[1],MedievalHouseB=C.MedievalHouseAssetIds[2]}
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
@@ -390,6 +392,7 @@ local function init(p)
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("ClassName","직업 미선택")
 p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
+ p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
  p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
  msg(p,"직업을 고르고 마을 이장에게 퀘스트를 받아.")
