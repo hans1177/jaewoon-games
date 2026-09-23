@@ -156,3 +156,26 @@ test('shared context fails closed when static architecture registry tries to ove
   try{assert.throws(()=>validateSharedWorkerContext(),/ARCHITECTURE_PROJECTION_OVERRIDE_BOUNDARY/);}
   finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
 });
+
+
+test('company game design system is centralized in roadmap and architecture registry only points to it',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const arch=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const library=JSON.parse(fs.readFileSync('company-learning/company-game-design-library.json','utf8'));
+  const adapter=JSON.parse(fs.readFileSync('company-learning/company-game-adapter-template.json','utf8'));
+  const system=policy.assetProductionParallelContract.companyGameDesignSystem;
+  assert.equal(system.authority,'OWNER_DIRECTIVE_2026-09-24');
+  assert.equal(system.noNewPipeline,true);
+  assert.equal(system.noNewDepartment,true);
+  assert.deepEqual(system.architectureLayers.map(x=>x.id),['COMPANY_CORE','COMPANY_DESIGN_KITS','GAME_ADAPTER']);
+  assert.equal(system.registry.path,'company-learning/company-game-design-library.json');
+  assert.equal(system.gameAdapterTemplate.path,'company-learning/company-game-adapter-template.json');
+  assert.equal(system.vibePreflight.requiredBeforeNewVisualOrPresentationImplementation,true);
+  assert.equal(system.initialAdoption.currentDaechungAssetsAutoPromoted,false);
+  assert.equal(arch.companyGameDesignSystemTopology.centralContract,'company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGameDesignSystem');
+  assert.equal(arch.companyGameDesignSystemTopology.noPolicyCreationHere,true);
+  assert.equal(library.role,'NON_POLICY_STRUCTURAL_REGISTRY');
+  assert.equal(adapter.role,'NON_POLICY_GAME_ADAPTATION_TEMPLATE');
+  assert.ok(library.entries.length>=30);
+  assert.equal(library.entries.some(x=>x.status==='RUNTIME_VERIFIED'&&(!Array.isArray(x.evidenceRefs)||x.evidenceRefs.length===0)),false);
+});

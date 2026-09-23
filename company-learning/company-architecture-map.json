@@ -1,5 +1,5 @@
 {
-  "version": 131,
+  "version": 132,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3138,5 +3138,32 @@
       "company-learning/company-architecture-map.json",
       "company-learning/security-immune-system.json"
     ]
+  },
+  "companyGameDesignSystemTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGameDesignSystem",
+    "role": "STRUCTURAL_BINDINGS_AND_COMPATIBILITY_POINTERS_ONLY",
+    "registry": "company-learning/company-game-design-library.json",
+    "adapterTemplate": "company-learning/company-game-adapter-template.json",
+    "styleInput": "artbook-style-profiles.json",
+    "existingProductionRoot": "GRAPHICS_PRODUCTION",
+    "existingCoordinator": "assets/vibe-art-pipeline.js",
+    "existingPlanner": "tools/vibe2-asset-production-plan.mjs",
+    "existingPresentationDirector": "assets/vibe-presentation-director.js",
+    "existingVisualGate": "assets/vibe-visual-quality-gate.js",
+    "layers": [
+      "COMPANY_CORE",
+      "COMPANY_DESIGN_KITS",
+      "GAME_ADAPTER"
+    ],
+    "platformAdapters": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "preflightBindingState": "DOCUMENTED_NEXT_IMPLEMENTATION",
+    "noNewPipeline": true,
+    "noNewDepartment": true,
+    "noPolicyCreationHere": true
   }
 }

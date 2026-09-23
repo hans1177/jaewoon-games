@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "kind": "company-game-adapter-template",
+  "role": "NON_POLICY_GAME_ADAPTATION_TEMPLATE",
+  "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGameDesignSystem",
+  "gameId": "<gameId>",
+  "platform": "<ROBLOX|UNITY|FORTNITE_UEFN>",
+  "sourceRevision": "<sha>",
+  "approvedDesignReference": "<company-runtime design reference>",
+  "styleProfileId": "<artbook-style-profiles game id or style lock>",
+  "selectedKits": [
+    {
+      "libraryId": "<company library entry id>",
+      "purpose": "<gameplay or presentation role>",
+      "mutations": {
+        "palette": [],
+        "scale": null,
+        "material": null,
+        "silhouetteParts": [],
+        "motionTempo": null,
+        "vfxVariant": null,
+        "uiVariant": null,
+        "platformOptimization": []
+      },
+      "exceptions": [],
+      "evidenceRefs": []
+    }
+  ],
+  "gameSpecificOnly": [
+    {
+      "id": "<new game-specific asset or behavior>",
+      "reason": "<why no reusable base fits>",
+      "reusablePromotionCandidate": false,
+      "provenanceRefs": [],
+      "evidenceRefs": []
+    }
+  ],
+  "preservation": [
+    "GAMEPLAY_BALANCE",
+    "SAVE_PROGRESS",
+    "ECONOMY",
+    "NETWORK_AUTHORITY",
+    "HIT_SEMANTICS"
+  ],
+  "mobileBudget": {
+    "uiCenterOcclusionForbidden": true,
+    "safeAreaRequired": true,
+    "performanceEvidenceRequired": true
+  },
+  "status": "DRAFT"
+}

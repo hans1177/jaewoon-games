@@ -1,8 +1,8 @@
 {
-  "version": 309,
+  "version": 310,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-23",
+  "recordedAt": "2026-09-24",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -11550,7 +11550,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 7,
+    "version": 8,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -12346,6 +12346,295 @@
         "existingModulePublicExportsMayRemainForCompatibility": true,
         "modulesMayNotActAsIndependentTopLevelProductionAuthorities": true,
         "newShadowGraphicsPipelineForbidden": true
+      }
+    },
+    "companyGameDesignSystem": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "status": "FOUNDATION_DOCUMENTED_IMPLEMENTATION_PENDING",
+      "objective": "BUILD_A_REUSABLE_COMPANY_GAME_PRODUCTION_ARCHITECTURE_SO_VIBE_SELECTS_VERIFIED_BASE_ASSETS_MOTION_VFX_WORLD_UI_AUDIO_AND_GAMEPLAY_ARCHETYPES_THEN_APPLIES_GAME_SPECIFIC_VARIANTS_INSTEAD_OF_REAUTHORING_EVERY_GAME_FROM_ZERO",
+      "scope": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "noNewDepartment": true,
+      "noShadowPipeline": true,
+      "productionRoot": "GRAPHICS_PRODUCTION",
+      "identityInputs": [
+        "APPROVED_GAME_DESIGN_REFERENCE",
+        "artbook-style-profiles.json",
+        "GAME_STYLE_LOCK",
+        "PLATFORM_PRESENTATION_CONTRACT"
+      ],
+      "architectureLayers": [
+        {
+          "id": "COMPANY_CORE",
+          "role": "REUSABLE_RUNTIME_AND_PRESENTATION_FOUNDATION",
+          "gameMutationDefault": "FORBIDDEN",
+          "contains": [
+            "CAMERA_INPUT",
+            "INTERACTION",
+            "SAVE_NETWORK_BINDINGS",
+            "UI_FRAMEWORK",
+            "ANIMATION_DRIVER",
+            "VFX_DRIVER",
+            "AUDIO_DRIVER",
+            "NPC_BASE",
+            "CREATURE_AI_BASE",
+            "ITEM_EQUIP_BASE"
+          ]
+        },
+        {
+          "id": "COMPANY_DESIGN_KITS",
+          "role": "REUSABLE_VISUAL_AND_MOTION_CONTENT",
+          "gameMutationDefault": "VARIANT_ONLY",
+          "contains": [
+            "ASSET_ARCHETYPES",
+            "CHARACTER_CREATURE_RIGS",
+            "MOTION_PACKS",
+            "VFX_PACKS",
+            "WORLD_KITS",
+            "UI_KITS",
+            "AUDIO_CUES",
+            "CAMERA_LIGHTING_PRESETS",
+            "GAMEPLAY_ARCHETYPES"
+          ]
+        },
+        {
+          "id": "GAME_ADAPTER",
+          "role": "GAME_SPECIFIC_SELECTION_AND_VARIATION_ONLY",
+          "gameMutationDefault": "ALLOWED_WITHIN_DECLARED_MUTATION_KEYS",
+          "contains": [
+            "KIT_SELECTION",
+            "PALETTE",
+            "PROPORTION",
+            "MATERIAL",
+            "SILHOUETTE_ATTACHMENTS",
+            "ANIMATION_TEMPO",
+            "VFX_INTENSITY",
+            "AUDIO_VARIATION",
+            "WORLD_COMPOSITION",
+            "UI_SKIN",
+            "PLATFORM_BUDGET"
+          ]
+        }
+      ],
+      "libraries": {
+        "assets": [
+          "CHARACTER",
+          "CREATURE",
+          "BOSS",
+          "NPC",
+          "WEAPON",
+          "ARMOR",
+          "ITEM",
+          "BUILDING",
+          "FOLIAGE",
+          "PROP",
+          "INTERACTABLE"
+        ],
+        "motion": [
+          "LOCOMOTION",
+          "MELEE",
+          "RANGED",
+          "CAST",
+          "CREATURE_ATTACK",
+          "BOSS_PATTERN",
+          "HIT_REACTION",
+          "STAGGER",
+          "DEATH",
+          "NPC_IDLE_INTERACTION",
+          "SECONDARY_MOTION"
+        ],
+        "vfx": [
+          "HIT",
+          "SLASH",
+          "IMPACT",
+          "PARRY",
+          "GUARD_BREAK",
+          "ELEMENTAL",
+          "HEAL",
+          "SHIELD",
+          "STATUS",
+          "PORTAL",
+          "BOSS_TELEGRAPH",
+          "BOSS_IMPACT",
+          "AMBIENT"
+        ],
+        "world": [
+          "FANTASY_VILLAGE",
+          "FOREST",
+          "CANYON",
+          "RUINS",
+          "SNOW",
+          "ABYSS",
+          "SURVIVAL_WILDERNESS",
+          "HORROR_INTERIOR",
+          "MODULAR_DUNGEON"
+        ],
+        "ui": [
+          "MOBILE_STATUS_HUD",
+          "FOUR_ACTION_COMBAT_DOCK",
+          "QUEST_OBJECTIVE",
+          "PARTY_PANEL",
+          "INVENTORY",
+          "SHOP",
+          "BOSS_BAR",
+          "TOAST",
+          "SETTINGS",
+          "MINIMAP"
+        ],
+        "audio": [
+          "UI",
+          "FOOTSTEP",
+          "WEAPON",
+          "CREATURE",
+          "AMBIENCE",
+          "COMBAT",
+          "BOSS",
+          "VICTORY",
+          "HUB"
+        ],
+        "cameraLighting": [
+          "EXPLORATION",
+          "COMBAT",
+          "BOSS",
+          "HUB",
+          "DARK_INTERIOR",
+          "BRIGHT_OUTDOOR",
+          "MOBILE_READABILITY"
+        ],
+        "gameplayArchetypes": [
+          "QUEST_GIVER",
+          "MERCHANT",
+          "HEALER",
+          "TRAINER",
+          "MELEE_ENEMY",
+          "RANGED_ENEMY",
+          "QUADRUPED_ENEMY",
+          "FLYING_ENEMY",
+          "HEAVY_ENEMY",
+          "BOSS",
+          "CHEST",
+          "PORTAL",
+          "RESOURCE_NODE"
+        ]
+      },
+      "registry": {
+        "path": "company-learning/company-game-design-library.json",
+        "role": "NON_POLICY_STRUCTURAL_REGISTRY",
+        "mayCreatePolicy": false,
+        "lifecycle": [
+          "DESIGN_BASE",
+          "IMPLEMENTED_CANDIDATE",
+          "RUNTIME_VERIFIED",
+          "DEPRECATED"
+        ],
+        "runtimeVerifiedRequiredBeforeDefaultReuse": true,
+        "unverifiedEntryMayBeUsedForExperimentOnly": true
+      },
+      "gameAdapterTemplate": {
+        "path": "company-learning/company-game-adapter-template.json",
+        "role": "NON_POLICY_GAME_ADAPTATION_TEMPLATE",
+        "oneManifestPerGamePlatformPresentation": true,
+        "directCopyWithoutDeclaredVariationForbidden": true
+      },
+      "vibePreflight": {
+        "requiredBeforeNewVisualOrPresentationImplementation": true,
+        "sequence": [
+          "LOAD_CURRENT_CENTRAL_POLICY",
+          "LOAD_APPROVED_GAME_DESIGN_AND_STYLE_PROFILE",
+          "LOAD_COMPANY_GAME_DESIGN_LIBRARY",
+          "SELECT_RELEVANT_BASE_KITS",
+          "DECLARE_GAME_ADAPTER_VARIATIONS",
+          "CHECK_PLATFORM_COMPATIBILITY_AND_PERFORMANCE",
+          "IMPLEMENT_OR_REPAIR_ONLY_MISSING_GAME_SPECIFIC_DELTA",
+          "RUN_RUNTIME_VISUAL_QA",
+          "PROMOTE_VERIFIED_REUSABLE_IMPROVEMENTS_BACK_TO_LIBRARY_WHEN_ELIGIBLE"
+        ],
+        "implementationState": "NEXT_BINDING_REQUIRED",
+        "responsibleExistingModules": [
+          "assets/vibe-art-pipeline.js",
+          "assets/vibe-presentation-director.js",
+          "assets/vibe-visual-quality-gate.js",
+          "tools/vibe2-asset-production-plan.mjs"
+        ],
+        "newStandalonePipelineForbidden": true
+      },
+      "mutationContract": {
+        "allowedByDefault": [
+          "COLOR_PALETTE",
+          "SCALE_WITHIN_READABILITY_BOUNDS",
+          "MATERIAL",
+          "ACCESSORY_AND_SILHOUETTE_PARTS",
+          "DETAIL_DENSITY",
+          "ANIMATION_SPEED_AND_WEIGHT",
+          "VFX_COLOR_SIZE_DURATION",
+          "AUDIO_VARIANT",
+          "WORLD_DRESSING_DENSITY",
+          "UI_SKIN_AND_SPACING",
+          "LOD_AND_MOBILE_OPTIMIZATION"
+        ],
+        "requiresNewBaseOrExplicitException": [
+          "RIG_TOPOLOGY_CHANGE",
+          "CORE_ATTACK_SEMANTICS",
+          "INTERACTION_PROTOCOL_CHANGE",
+          "SAVE_SCHEMA_CHANGE",
+          "NETWORK_AUTHORITY_CHANGE"
+        ],
+        "gameplayBalanceMayNotChangeAsVisualMutation": true,
+        "gameSpecificForkOfWholeLibraryItemForbidden": true,
+        "smallestVariantDeltaPreferred": true
+      },
+      "reuseOrder": [
+        "RUNTIME_VERIFIED_COMPANY_LIBRARY",
+        "IMPLEMENTED_COMPANY_CANDIDATE_WITH_FRESH_QA",
+        "LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET",
+        "LICENSE_VERIFIED_EXTERNAL_ASSET",
+        "RIGHTS_VERIFIED_DERIVATIVE_OR_RECONSTRUCTION",
+        "NEW_ASSET_CREATION",
+        "PROTOTYPE_PRIMITIVE_ONLY_WHEN_NOT_FINAL"
+      ],
+      "promotionContract": {
+        "gameSpecificWorkMayPromoteToCompanyLibrary": true,
+        "required": [
+          "LICENSE_AND_PROVENANCE_VERIFIED",
+          "RUNTIME_BOUND",
+          "VISUAL_QA_PASS",
+          "MOBILE_OR_PLATFORM_PERFORMANCE_PASS",
+          "NO_GAME_SPECIFIC_HARDCODED_DEPENDENCY",
+          "REUSABLE_PARAMETER_SURFACE_DECLARED"
+        ],
+        "promotionDoesNotReplaceOriginalGameAsset": true,
+        "verifiedVariantBecomesNewReusableCapabilityNotMandatoryGlobalStyle": true
+      },
+      "provenance": {
+        "externalRightsGateRequired": true,
+        "freeOrAuthorizedAssetPolicyPreserved": true,
+        "originalImmutable": true,
+        "derivedAssetPathRequired": true,
+        "transformHistoryRequired": true,
+        "externalScriptsRemovedBeforeRuntimeUse": true
+      },
+      "qualityContract": {
+        "baseKitDoesNotGuaranteeQualityPass": true,
+        "gameSpecificAdaptationRequired": true,
+        "rawAssetPackDropInForbidden": true,
+        "stockSampleLookForbidden": true,
+        "sameVisualSkinAcrossUnrelatedGamesForbidden": true,
+        "silhouetteReadabilityRequired": true,
+        "animationMotionIdentityRequired": true,
+        "vfxGameplayBindingRequired": true,
+        "environmentForegroundMidgroundBackgroundRequired": true,
+        "mobileUiOcclusionBudgetRequired": true,
+        "actualRuntimeEvidenceRequired": true
+      },
+      "initialAdoption": {
+        "firstGame": "daechung-rpg",
+        "useCurrentVisualRepairAsCandidateExtractionSource": true,
+        "currentDaechungAssetsAutoPromoted": false,
+        "promotionOnlyAfterReworkedRuntimeEvidence": true
       }
     }
   },
