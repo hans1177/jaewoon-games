@@ -1782,7 +1782,9 @@
       "coding_1g4ly6q",
       "coding_w4o4iu",
       "coding_ovzxum",
-      "coding_1igl61j"
+      "coding_1igl61j",
+      "coding_d16niv",
+      "coding_go6sln"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -3222,14 +3224,20 @@
       "coding_negative_c1g011",
       "coding_negative_1ebzwr0",
       "coding_negative_5fcy4t",
-      "coding_negative_1fqglo8"
+      "coding_negative_1fqglo8",
+      "coding_negative_zbkn2x",
+      "coding_negative_1cvu8yr",
+      "coding_negative_3eawng",
+      "coding_negative_1lp669t",
+      "coding_negative_kuaa7x",
+      "coding_negative_dm0ws4"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 116,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 277,
-        "verifiedFailures": 515,
+        "verifiedFailures": 517,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -3298,13 +3306,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 19,
-            "verifiedFailures": 126,
+            "verifiedFailures": 128,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 57,
             "totalContextBytes": 801055,
             "lastEvidence": "coding_16u7zxl",
-            "lastFailureEvidence": "coding_negative_1ebzwr0",
-            "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+            "lastFailureEvidence": "coding_negative_1lp669t",
+            "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
           }
         },
         "failureFingerprints": {
@@ -3589,7 +3597,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 2,
-            "verifiedFailures": 8,
+            "verifiedFailures": 9,
             "games": {
               "seed-casual-realm-weaver": 1
             },
@@ -3599,18 +3607,18 @@
             "failureGames": {
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-story-complete-rpg-chronicles-of-eldoria": 6,
-              "cozy-island": 1
+              "cozy-island": 2
             },
             "failureTargets": {
-              "web": 8
+              "web": 9
             },
             "failureClasses": {
               "NO_OP": 7,
-              "INCREMENTAL_QA": 1
+              "INCREMENTAL_QA": 2
             },
             "lastEvidence": "coding_1ai0xhw",
-            "lastFailureEvidence": "coding_negative_1ebzwr0",
-            "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+            "lastFailureEvidence": "coding_negative_1lp669t",
+            "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
           },
           "web|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
             "verifiedApplications": 0,
@@ -3851,7 +3859,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 99,
+            "verifiedFailures": 100,
             "games": {
               "cozy-island": 2
             },
@@ -3860,18 +3868,18 @@
             },
             "failureGames": {
               "fantasy-survival": 51,
-              "ant-simulator": 48
+              "ant-simulator": 49
             },
             "failureTargets": {
-              "web": 99
+              "web": 100
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 51,
-              "INCREMENTAL_QA": 48
+              "INCREMENTAL_QA": 49
             },
             "lastEvidence": "coding_1n6axr4",
-            "lastFailureEvidence": "coding_negative_hialro",
-            "lastUpdatedAt": "2026-09-23T18:11:13.044Z"
+            "lastFailureEvidence": "coding_negative_zbkn2x",
+            "lastUpdatedAt": "2026-09-23T18:30:32.792Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
             "verifiedApplications": 0,
@@ -4173,14 +4181,14 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_16u7zxl",
-        "lastFailureEvidence": "coding_negative_1ebzwr0",
-        "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+        "lastFailureEvidence": "coding_negative_1lp669t",
+        "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 178,
+        "verifiedApplications": 180,
         "firstCandidatePasses": 24,
-        "totalGenerationAttempts": 379,
-        "verifiedFailures": 454,
+        "totalGenerationAttempts": 384,
+        "verifiedFailures": 456,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -4197,14 +4205,14 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 2,
           "fantasy-survival": 27,
           "__vibe_system__": 1,
-          "cozy-island": 27,
-          "horror-escape-room": 27
+          "cozy-island": 28,
+          "horror-escape-room": 28
         },
         "targets": {
           "web": 105,
           "unity": 18,
           "system": 1,
-          "roblox": 54
+          "roblox": 56
         },
         "contextModes": {
           "UNKNOWN": {
@@ -4238,14 +4246,14 @@
             "lastUpdatedAt": "2026-09-21T05:01:21.057Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 101,
-            "verifiedFailures": 126,
+            "verifiedApplications": 103,
+            "verifiedFailures": 128,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 236,
-            "totalContextBytes": 3018982,
-            "lastEvidence": "coding_1igl61j",
-            "lastFailureEvidence": "coding_negative_5fcy4t",
-            "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+            "totalGenerationAttempts": 241,
+            "totalContextBytes": 3082362,
+            "lastEvidence": "coding_go6sln",
+            "lastFailureEvidence": "coding_negative_dm0ws4",
+            "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -4404,7 +4412,7 @@
             "verifiedApplications": 5,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 11,
-            "verifiedFailures": 7,
+            "verifiedFailures": 8,
             "games": {
               "seed-casual-realm-weaver": 2,
               "seed-idle-growth-rpg-crystal-bloom": 1,
@@ -4416,19 +4424,19 @@
             "failureGames": {
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-story-complete-rpg-chronicles-of-eldoria": 5,
-              "cozy-island": 1
+              "cozy-island": 2
             },
             "failureTargets": {
-              "web": 7
+              "web": 8
             },
             "failureClasses": {
               "EDIT_MATCH": 1,
-              "NO_OP": 5,
+              "NO_OP": 6,
               "INCREMENTAL_QA": 1
             },
             "lastEvidence": "coding_hjss6s",
-            "lastFailureEvidence": "coding_negative_5fcy4t",
-            "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+            "lastFailureEvidence": "coding_negative_dm0ws4",
+            "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
           },
           "web|EDIT_MATCH|TIMEOUT": {
             "verifiedApplications": 0,
@@ -5042,23 +5050,23 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 80,
+            "verifiedFailures": 81,
             "games": {},
             "targets": {},
             "failureGames": {
               "fantasy-survival": 38,
-              "ant-simulator": 42
+              "ant-simulator": 43
             },
             "failureTargets": {
-              "web": 80
+              "web": 81
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 38,
-              "INCREMENTAL_QA": 42
+              "INCREMENTAL_QA": 43
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_c1g011",
-            "lastUpdatedAt": "2026-09-23T18:11:13.044Z"
+            "lastFailureEvidence": "coding_negative_3eawng",
+            "lastUpdatedAt": "2026-09-23T18:30:32.793Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
             "verifiedApplications": 0,
@@ -5319,16 +5327,16 @@
             "lastUpdatedAt": "2026-09-21T09:51:46.150Z"
           },
           "roblox|OTHER": {
-            "verifiedApplications": 54,
+            "verifiedApplications": 56,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 135,
+            "totalGenerationAttempts": 140,
             "verifiedFailures": 35,
             "games": {
-              "cozy-island": 27,
-              "horror-escape-room": 27
+              "cozy-island": 28,
+              "horror-escape-room": 28
             },
             "targets": {
-              "roblox": 54
+              "roblox": 56
             },
             "failureGames": {
               "fantasy-survival": 1,
@@ -5342,9 +5350,9 @@
             "failureClasses": {
               "INCREMENTAL_QA": 35
             },
-            "lastEvidence": "coding_1igl61j",
+            "lastEvidence": "coding_go6sln",
             "lastFailureEvidence": "coding_negative_8v7ooz",
-            "lastUpdatedAt": "2026-09-23T18:11:13.042Z"
+            "lastUpdatedAt": "2026-09-23T18:30:32.791Z"
           },
           "web|NO_OP|OTHER": {
             "verifiedApplications": 4,
@@ -5453,15 +5461,15 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1igl61j",
-        "lastFailureEvidence": "coding_negative_5fcy4t",
-        "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+        "lastEvidence": "coding_go6sln",
+        "lastFailureEvidence": "coding_negative_dm0ws4",
+        "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 544,
         "firstCandidatePasses": 94,
         "totalGenerationAttempts": 1210,
-        "verifiedFailures": 439,
+        "verifiedFailures": 441,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 87,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -5521,13 +5529,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 48,
-            "verifiedFailures": 119,
+            "verifiedFailures": 121,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 128,
             "totalContextBytes": 1657376,
             "lastEvidence": "coding_18c1nzh",
-            "lastFailureEvidence": "coding_negative_1fqglo8",
-            "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+            "lastFailureEvidence": "coding_negative_kuaa7x",
+            "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
           },
           "UNKNOWN": {
             "verifiedApplications": 1,
@@ -5982,7 +5990,7 @@
             "verifiedApplications": 5,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 10,
-            "verifiedFailures": 100,
+            "verifiedFailures": 101,
             "games": {
               "cozy-island": 5
             },
@@ -5991,18 +5999,18 @@
             },
             "failureGames": {
               "fantasy-survival": 53,
-              "ant-simulator": 47
+              "ant-simulator": 48
             },
             "failureTargets": {
-              "web": 100
+              "web": 101
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 53,
-              "INCREMENTAL_QA": 47
+              "INCREMENTAL_QA": 48
             },
             "lastEvidence": "coding_18c1nzh",
-            "lastFailureEvidence": "coding_negative_15mn2a6",
-            "lastUpdatedAt": "2026-09-23T18:11:13.044Z"
+            "lastFailureEvidence": "coding_negative_1cvu8yr",
+            "lastUpdatedAt": "2026-09-23T18:30:32.792Z"
           },
           "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
             "verifiedApplications": 26,
@@ -6083,7 +6091,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 1,
-            "verifiedFailures": 9,
+            "verifiedFailures": 10,
             "games": {
               "seed-story-complete-rpg-chronicles-of-eldoria": 1
             },
@@ -6092,18 +6100,18 @@
             },
             "failureGames": {
               "seed-story-complete-rpg-chronicles-of-eldoria": 8,
-              "cozy-island": 1
+              "cozy-island": 2
             },
             "failureTargets": {
-              "web": 9
+              "web": 10
             },
             "failureClasses": {
               "NO_OP": 8,
-              "INCREMENTAL_QA": 1
+              "INCREMENTAL_QA": 2
             },
             "lastEvidence": "coding_m9v5a8",
-            "lastFailureEvidence": "coding_negative_1fqglo8",
-            "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+            "lastFailureEvidence": "coding_negative_kuaa7x",
+            "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
             "verifiedApplications": 1,
@@ -6378,8 +6386,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_18c1nzh",
-        "lastFailureEvidence": "coding_negative_1fqglo8",
-        "lastUpdatedAt": "2026-09-23T18:11:13.045Z"
+        "lastFailureEvidence": "coding_negative_kuaa7x",
+        "lastUpdatedAt": "2026-09-23T18:30:32.794Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 133,
@@ -9381,7 +9389,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-23T18:20:16.008Z",
+    "lastBuiltAt": "2026-09-23T18:30:32.845Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -13826,5 +13834,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-23T18:20:16.008Z"
+  "updatedAt": "2026-09-23T18:30:32.845Z"
 }

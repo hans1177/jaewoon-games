@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-23T17:45:25.834Z",
+  "updatedAt": "2026-09-23T18:30:34.853Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -22,8 +22,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T22:30:14.467Z",
-      "updatedAt": "2026-09-23T17:45:25.832Z",
-      "occurrenceCount": 539
+      "updatedAt": "2026-09-23T18:30:34.851Z",
+      "occurrenceCount": 540
     },
     {
       "id": "bug-7d114ff3812bf7516f00",
@@ -68,8 +68,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T17:45:25.832Z",
-      "occurrenceCount": 101
+      "updatedAt": "2026-09-23T18:30:34.851Z",
+      "occurrenceCount": 102
     },
     {
       "id": "bug-06912c56eec73d463251",
@@ -90,8 +90,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T17:45:25.832Z",
-      "occurrenceCount": 101
+      "updatedAt": "2026-09-23T18:30:34.851Z",
+      "occurrenceCount": 102
     },
     {
       "id": "bug-f1f45de215a280a3885b",
@@ -112,8 +112,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T17:45:25.832Z",
-      "occurrenceCount": 101
+      "updatedAt": "2026-09-23T18:30:34.851Z",
+      "occurrenceCount": 102
     },
     {
       "id": "bug-2cfb0882ff23baaef682",
@@ -179,8 +179,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-23T16:56:19.539Z",
-      "updatedAt": "2026-09-23T17:45:25.832Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-09-23T18:30:34.851Z",
+      "occurrenceCount": 5
     },
     {
       "id": "bug-6c53a36a6d111e2d487b",
@@ -205,6 +205,27 @@
       "createdAt": "2026-09-23T16:56:19.539Z",
       "updatedAt": "2026-09-23T17:45:25.832Z",
       "occurrenceCount": 4
+    },
+    {
+      "id": "bug-b7c347ad2e1e63b77216",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_FAILED",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"ROBLOX\",\"gameId\":\"daechung-rpg\",\"placeId\":\"126302702438348\",\"placeVersion\":20,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":true,\"requirements\":{\"saveEnabled\":true,\"multiplayerRequired\":true},\"requiredCheckpoints\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\",\"CAMERA_READY\",\"INPUT_READY\",\"MOVEMENT_CONFIRMED\",\"REMOTE_ROUNDTRIP\",\"CORE_LOOP_READY\",\"SAVE_ROUNDTRIP\",\"MULTIPLAYER_SYNC\"],\"checkpointPass\":{\"SERVER_BOOT\":true,\"MODULE_GRAPH_READY\":true,\"WORLD_READY\":true,\"SPAWN_READY\":true,\"CHARACTER_READY\":true,\"GROUND_CONTACT\":true,\"CAMERA_READY\":true,\"INPUT_READY\":true,\"MOVEMENT_CONFIRMED\":true,\"REMOTE_ROUNDTRIP\":true,\"CORE_LOOP_READY\":true,\"SAVE_ROUNDTRIP\":true,\"MULTIPLAYER_SYNC\":false},\"checkpointOrderPassed\":true,\"foundationCausalOrder\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\"],\"f1ServerBootPassed\":true,\"f2WorldFoundationPassed\":true,\"f3CharacterFoundationPassed\":true,\"f4PhysicsAndMovementPassed\":true,\"f5InputCameraUiPassed\":true,\"f6CoreServicesPassed\":true,\"f7MultiplayerFoundationPassed\":false,\"f8GameplaySystemsPassed\":true,\"runtimeFoundationPassed\":true,\"developmentContinuationPassed\":true,\"runtimeAcceptancePassed\":false,\"multiplayerPromotionPending\":true,\"actualRuntimeEvidence\":true,\"state\":\"DEVELOPMENT_CONTINUES_MULTIPLAYER_PENDING\",\"blockers\":[\"checkpoint:MULTIPLAYER_SYNC\"],\"authority\":\"roblox-actual-runtime-foundation-and-core-acceptance\",\"sourceRevision\":\"8cc2dcd86c7aae408b9202ab590f06a464e05c1c\",\"artifactIdentity\":\"sha256:c17c957f88e0dc2510a83c3f94ef4b9b11ac1498f8e2ef591560f029522c2c3d\",\"artifactRunId\":35884600293,\"universeId\":\"10767445769\",\"candidateVersionNumber\":20,\"observedAt\":\"2026-09-23T18:25:33.084Z\",\"workflowRunId\":35898786575,\"runtimePassed\":false,\"serverClientBoundaryPassed\":true,\"datastoreRejoinPassed\":true,\"mobileControlUiPassed\":true,\"multiplayerQaPassed\":false,\"actualPlatformRuntime\":true}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T18:30:34.851Z",
+      "updatedAt": "2026-09-23T18:30:34.851Z",
+      "occurrenceCount": 1
     }
   ]
 }
