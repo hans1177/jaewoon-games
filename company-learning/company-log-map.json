@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -160,7 +160,8 @@
       "SYSTEM_AI_PRODUCER_DEDUPE",
       "SYSTEM_AI_REPAIR_IDENTITY",
       "SYSTEM_AI_DUPLICATE_DEPENDENCY_REWIRED",
-      "COMPANY_SYSTEM_AI_SUPERSEDED_DEPENDENCIES_REWIRED"
+      "COMPANY_SYSTEM_AI_SUPERSEDED_DEPENDENCIES_REWIRED",
+      "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS"
     ],
     "rawModelOutputStored": false,
     "rawModelOutputSha256Required": true,
@@ -242,24 +243,46 @@
       "supersededRepairDependencyRewireLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
       "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
       "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
-      "historicalSupersededDependencyRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+      "historicalSupersededDependencyRepairLiveVerification": "VERIFIED_RUNTIME_RUN_35806215679",
       "allReservePathQueueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
       "allReservePathQueueReconciliationTests": [
         "170dff04a67d5b6d302135296b480d303845ed89",
         "7d50a0f64075d67467389f18a8ac30a386e7ce81"
       ],
-      "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
+      "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+      "historicalSupersededDependenciesRewired": 16,
+      "historicalSupersededOrphansAfter": 0,
+      "workflowWaitCauseClassificationRevision": "6a05859ccf52528c43b333f05d680b09eeba6768",
+      "preciseWaitSensorRevision": "d3db69b57e4754ada7a6c68f8069008c0a4ac608",
+      "preciseWaitWorkflowRevision": "68550bced736074602c5df848af92ba5c8724e7c",
+      "preciseWaitTests": [
+        "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
+        "2095f85bb419149c14168a135d72aa456de7747c"
+      ],
+      "preciseWaitLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN"
     },
     "metricSemantics": {
       "SYSTEM_AI_RESERVATION_WAIT_MS": {
-        "population": "RUNNABLE_QUEUED_ONLY",
+        "population": "RUNNABLE_DEPENDENCY_READY_QUEUED_ONLY",
+        "waitStart": "MAX_TASK_UPDATE_AND_TERMINAL_DEPENDENCY_UPDATE",
         "excludes": [
-          "SHARED_SIGNATURE_CANARY_PENDING",
-          "UNRESOLVED_DEPENDENCIES"
+          "UNRESOLVED_DEPENDENCIES",
+          "UNRESOLVED_SHARED_SIGNATURE_CANARY"
         ],
         "source": ".github/workflows/company-system-ai-workers.yml",
-        "implementationRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
-        "testRevision": "eb55d7a130b819c6fd7863b947bb779bc91c2378"
+        "implementationRevision": "68550bced736074602c5df848af92ba5c8724e7c"
+      },
+      "SYSTEM_AI_FAN_IN_WAIT_MS": {
+        "population": "ACTIVE_COMPANY_SYSTEM_AI_WORKFLOW_RUNS",
+        "waitStart": "LATEST_COMPLETED_WORKER_JOB",
+        "waitEnd": "FAN_IN_JOB_START_OR_NOW_IF_QUEUED",
+        "source": "GITHUB_ACTIONS_JOB_GRAPH",
+        "implementationRevision": "68550bced736074602c5df848af92ba5c8724e7c"
+      },
+      "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS": {
+        "population": "SYSTEM_AI_QUEUE_AWAITING_SUPERVISOR",
+        "source": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+        "implementationRevision": "68550bced736074602c5df848af92ba5c8724e7c"
       }
     },
     "durableQueueEvidenceMarkers": [
