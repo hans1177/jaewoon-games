@@ -1,5 +1,5 @@
 {
-  "version": 95,
+  "version": 96,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T08:26:00+09:00",
+  "updatedAt": "2026-09-23T09:01:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2716,7 +2716,6 @@
     "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
     "components": {
       "failureClassifier": {
-        "plannedBinding": "tools/company-system-ai-failure-classifier.mjs",
         "inputs": [
           "FAILURE_STAGE",
           "FAILURE_SIGNATURE",
@@ -2728,17 +2727,21 @@
           "FAILURE_CLASS",
           "ROUTE",
           "EVIDENCE"
-        ]
+        ],
+        "binding": "tools/company-system-ai-failure-classifier.mjs"
       },
       "workerHandoff": {
         "queue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
         "reservationOwner": "tools/company-system-ai-queue.mjs",
         "dispatch": "tools/company-recovery-dispatch.mjs",
         "workflow": ".github/workflows/company-system-ai-workers.yml",
-        "exactCheckpointResume": true
+        "exactCheckpointResume": true,
+        "missingResultRecovery": "tools/company-system-ai-queue.mjs::handoffMissingSystemAiResults",
+        "reserveSerialization": "company-system-ai-reserve-control",
+        "fanInIsolation": "company-system-ai-fanin-${github.run_id}-${github.run_attempt}",
+        "fanInWriteMode": "OPTIMISTIC_LATEST_STATE_REPLAY_MAX_5"
       },
       "bottleneckSensor": {
-        "plannedBinding": "tools/company-system-ai-bottleneck-sensor.mjs",
         "queueSources": [
           ".vibe2/system-ai-queue.json",
           ".vibe2/queue.json"
@@ -2750,7 +2753,9 @@
         "schedulerBindings": [
           ".github/workflows/vibe2-24h-runner.yml",
           ".github/workflows/company-system-ai-workers.yml"
-        ]
+        ],
+        "binding": "tools/company-system-ai-bottleneck-sensor.mjs",
+        "activeRepresentativeCanaryDedup": true
       },
       "caretaker": {
         "feeder": "tools/vibe2-post-release-focus.mjs",
@@ -2759,10 +2764,11 @@
         "logicalOwnership": "PER_GAME_PERSISTENT"
       },
       "qaEvolution": {
-        "plannedBinding": "tools/company-system-ai-qa-contract-review.mjs",
         "deterministicQaAuthorityPreserved": true,
         "centralPolicyProjection": "tools/company-shared-context.mjs",
-        "currentImplementationEvidenceRequired": true
+        "currentImplementationEvidenceRequired": true,
+        "binding": "tools/company-system-ai-qa-contract-review.mjs",
+        "coverageWeakeningForbidden": true
       },
       "primaryAiVibeCollaboration": {
         "existingBinding": "company-learning/company-architecture-map.json#primaryAiInternalVibeCollaboration",
@@ -2773,7 +2779,9 @@
       "verifiedLearningReuse": {
         "retrieval": "tools/vibe2-learning-motor.mjs",
         "systemAiAdapter": "tools/company-system-ai-learning-context.mjs",
-        "outcomeAttribution": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes"
+        "outcomeAttribution": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes",
+        "sameGameSameFailurePriority": true,
+        "failedStrategyReuseGuard": true
       }
     },
     "invariants": {
@@ -2785,6 +2793,15 @@
       "deterministicQaAuthorityPreserved": true,
       "securityBoundaryPreserved": true,
       "shadowPipelineForbidden": true
+    },
+    "implementationState": "IMPLEMENTED_QA_VERIFIED_ACTIVE_RUNTIME",
+    "verification": {
+      "implementationRevision": "5e1dc153d62167c95da3ec1465217a4f24193dd8",
+      "systemAiReserveRun": 598,
+      "systemAiReserveVerification": "PASS",
+      "centralPolicyQaRun": 2261,
+      "integratedRegressionRun": 7913,
+      "securityImmuneRun": 3154
     }
   }
 }
