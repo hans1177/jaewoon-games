@@ -184,6 +184,9 @@ function evaluateContentDiversity(task = {}) {
   const enemies = Array.isArray(supplied.enemies) ? supplied.enemies : [];
   const objectives = Array.isArray(supplied.objectives) ? supplied.objectives : [];
   const issues = [];
+  if(task.mapVarietyRequired===true&&regions.length<2)issues.push('MAP_REGION_VARIETY_REQUIRED');
+  if(task.enemyVarietyRequired===true&&enemies.length<2)issues.push('ENEMY_OR_CHALLENGE_ROLE_VARIETY_REQUIRED');
+  if(task.objectiveVarietyRequired===true&&objectives.length<2)issues.push('OBJECTIVE_ROLE_VARIETY_REQUIRED');
   const regionSignatures = new Set(regions.map((row) => clean([row?.traversal,row?.riskReward,row?.landmark,row?.encounterPattern,row?.resourcePressure,row?.storyContext].filter(Boolean).join('|')).toLowerCase()).filter(Boolean));
   const enemySignatures = new Set(enemies.map((row) => clean([row?.behavior,row?.counterplay,row?.positioning,row?.timing,row?.mobility,row?.groupRole,row?.identity,row?.rewardMeaning].filter(Boolean).join('|')).toLowerCase()).filter(Boolean));
   if (regions.length >= 2 && regionSignatures.size < Math.min(2, regions.length)) issues.push('MAP_REGION_TEMPLATE_MONOTONY');
