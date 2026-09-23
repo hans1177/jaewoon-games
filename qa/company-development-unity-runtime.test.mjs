@@ -7,6 +7,7 @@ import {spawnSync} from 'node:child_process';
 
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
+const routerSource=fs.readFileSync(path.resolve('tools/company-selected-platform-router.mjs'),'utf8');
 const cloudBuildSource=fs.readFileSync(path.resolve('.github/workflows/unity-cloud-android-test.yml'),'utf8');
 const hybridWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unity-hybrid-android-build.yml'),'utf8');
 const runtimeWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-runtime-smoke.yml'),'utf8');
@@ -237,8 +238,9 @@ test('exact artifact regression binds upstream APK SHA and source revision',()=>
   assert.match(regressionSource,/exactArtifactRegression.*True/s);
 });
 
-test('Unity executor admits source-bind work so missing owner-focused native roots can use the existing bootstrap path',()=>{
-  assert.match(workflowSource,/step==='TARGET_PLATFORM_SOURCE_BIND'\|\|step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
+test('Unity executor admits source-bind work through the shared platform router and existing bootstrap path',()=>{
+  assert.match(routerSource,/TARGET_PLATFORM_SOURCE_BIND/);
+  assert.match(routerSource,/TARGET_PLATFORM_TECHNICAL_VALIDATION/);
   assert.match(workflowSource,/project="unity-games\/\$GAME_ID"/);
   assert.match(workflowSource,/node tools\/company-development-unity-bootstrap\.mjs/);
   assert.match(workflowSource,/platformDevelopmentEligible\(item,'UNITY'\)/);
