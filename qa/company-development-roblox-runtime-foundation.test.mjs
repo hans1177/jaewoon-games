@@ -135,10 +135,11 @@ test('post-runtime QA preserves independent and regression progress while multip
  assert.match(workflow,/robloxIndependentQaPassed=true/);
  assert.match(workflow,/robloxRegressionPassed=true/);
  assert.match(workflow,/robloxParallelMultiplayerValidationPending=true/);
- assert.match(workflow,/ROBLOX_MULTIPLAYER_PROMOTION_EVIDENCE_PENDING/);
- assert.match(workflow,/robloxPromotionBlockers=\['roblox-multiplayer-evidence-pending'\]/);
+ assert.match(workflow,/ROBLOX_FINAL_REVIEW_PENDING/);
+ assert.match(workflow,/robloxPromotionBlockers=\['roblox-full-multiplayer-evidence-pending-public-release-only'\]/);
  assert.match(workflow,/routingBlockers=\[\]/);
- assert.doesNotMatch(workflow,/f9Ids\.push\(item\.gameId\)[\s\S]{0,800}ROBLOX_MULTIPLAYER_PARALLEL_NON_BLOCKING/);
+ assert.match(workflow,/f9Ids\.push\(item\.gameId\)/);
+ assert.match(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
 });
 
 
