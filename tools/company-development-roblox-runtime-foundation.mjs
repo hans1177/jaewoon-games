@@ -41,14 +41,15 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   const f7=!multiplayerRequired||checkpointPass.MULTIPLAYER_SYNC;
   const f8=checkpointPass.CORE_LOOP_READY;
   const foundation=exactGame&&exactPlace&&exactVersion&&checkpointOrderPassed&&f1&&f2&&f3&&f4;
-  const acceptance=foundation&&f5&&f6&&f7&&f8;
+  const developmentContinuation=foundation&&f5&&f6&&f8;
+  const acceptance=developmentContinuation&&f7;
   return Object.freeze({
     version:3,platform:'ROBLOX',gameId:clean(gameId)||clean(sentinel.gameId),placeId:clean(placeId),placeVersion:Number(versionNumber)||0,
     exactGame,exactPlace,exactVersion,requirements:Object.freeze({saveEnabled,multiplayerRequired}),
     requiredCheckpoints:Object.freeze(required),checkpointPass:Object.freeze(checkpointPass),checkpointOrderPassed,foundationCausalOrder:Object.freeze([...foundationCausalOrder]),
     f1ServerBootPassed:f1,f2WorldFoundationPassed:f2,f3CharacterFoundationPassed:f3,f4PhysicsAndMovementPassed:f4,
     f5InputCameraUiPassed:f5,f6CoreServicesPassed:f6,f7MultiplayerFoundationPassed:f7,f8GameplaySystemsPassed:f8,
-    runtimeFoundationPassed:foundation,runtimeAcceptancePassed:acceptance,actualRuntimeEvidence:true,state:acceptance?'PASS':foundation?'FOUNDATION_PASS_ACCEPTANCE_PENDING':'BLOCKED',
+    runtimeFoundationPassed:foundation,developmentContinuationPassed:developmentContinuation,runtimeAcceptancePassed:acceptance,multiplayerPromotionPending:multiplayerRequired&&!f7,actualRuntimeEvidence:true,state:acceptance?'PASS':developmentContinuation?'DEVELOPMENT_CONTINUES_MULTIPLAYER_PENDING':foundation?'FOUNDATION_PASS_ACCEPTANCE_PENDING':'BLOCKED',
     blockers:Object.freeze([
       ...(!exactGame?['exactGame']:[]),...(!exactPlace?['exactPlace']:[]),...(!exactVersion?['exactVersion']:[]),
       ...(!checkpointOrderPassed?['checkpointOrder']:[]),
