@@ -176,3 +176,17 @@ test('simplified multiplayer evidence can promote internal release without claim
  assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
  assert.match(finalReview,/item\.robloxPublicRelease=false/);
 });
+
+test('exact Open Cloud engine execution separates missing player runtime session from missing executor',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const exactEngineProbe=/);
+ assert.match(workflow,/engineProbe\?\.engineExecuted===true/);
+ assert.match(workflow,/engineProbe\?\.exactPlace===true/);
+ assert.match(workflow,/engineProbe\?\.exactVersion===true/);
+ assert.match(workflow,/ROBLOX_ACTUAL_PLAYER_RUNTIME_SESSION_UNAVAILABLE/);
+ assert.match(workflow,/roblox-actual-player-runtime-session-unavailable/);
+ const exactEngineIndex=workflow.indexOf('const exactEngineProbe=');
+ const genericExecutorIndex=workflow.indexOf("item.robloxFailureSignature='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE'");
+ assert.ok(exactEngineIndex>0&&genericExecutorIndex>exactEngineIndex,'exact engine execution must be classified before generic executor unavailability');
+});
+
