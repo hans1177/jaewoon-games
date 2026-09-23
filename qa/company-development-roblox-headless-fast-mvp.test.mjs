@@ -79,3 +79,13 @@ test('cozy-island creates safe spawn before player binding and core loop evidenc
  assert.match(source,/local accepted=H\[a\]\(p\)/);
  assert.match(source,/if accepted==true then[\s\S]*foundationCheckpoint\("CORE_LOOP_READY"/);
 });
+
+
+test('F0 workflow preserves blocker evidence even when validation fails',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(workflow,/name: development-roblox-f0-\$\{\{ matrix\.gameId \}\}[\s\S]*if-no-files-found: warn/);
+  const f0Upload=workflow.slice(workflow.lastIndexOf('- uses: actions\/upload-artifact@v4'));
+  assert.match(f0Upload,/if: always\(\)/);
+  const tool=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
+  assert.match(tool,/ROBLOX_FOUNDATION_F0_BLOCKERS=/);
+});
