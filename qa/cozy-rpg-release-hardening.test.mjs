@@ -96,11 +96,11 @@ test('대충 RPG는 보스 첫 처치 동료 해금과 플레이어+최대3 동�
 });
 
 test('대충 RPG UI는 포탈 이동을 월드에 맡기고 전투/귀환/파티 상태를 직관적으로 분리한다',()=>{
- for(const marker of ['RPGTopHUD','QuestObjective','PartyStatus','CombatDock','BlockParry','ReturnVillage','MultiplayerCode','공격','스킬','막기','회피','마을 귀환','동료 두번 터치'])assert.match(rpgClient,new RegExp(marker));
- assert.ok(rpgClient.includes('combat.Size=UDim2.fromOffset(62,232)'));
- assert.match(rpgClient,/returnButton\.Visible=zone>0/);
+ for(const marker of ['RPGTopHUD','QuestObjective','PartyStatus','CombatDock','BlockParry','ReturnVillage','MultiplayerCode','공격','스킬','막기','회피','마을 귀환','ActionToast'])assert.match(rpgClient,new RegExp(marker));
+ assert.ok(rpgClient.includes('combat.Size=UDim2.fromOffset(116,116)'));
+ assert.match(rpgClient,/returnButton\.Visible=zone>0/);\n assert.match(rpgClient,/showToast/);\n assert.match(rpgServer,/BossCompanionPrompt/);\n assert.match(rpgServer,/BreakJointsOnDeath=false/);
  assert.match(rpgClient,/전투 중 귀환 불가/);
- assert.match(rpgClient,/멀티 코드 /);
+ assert.match(rpgClient,/multi.Text="방 "/);
 });
 
 
