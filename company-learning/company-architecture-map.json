@@ -1,5 +1,5 @@
 {
-  "version": 105,
+  "version": 106,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T10:29:00+09:00",
+  "updatedAt": "2026-09-23T10:36:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2777,7 +2777,12 @@
           "TARGETED_RESERVE",
           "SECURITY_RECOVERY_RESERVE"
         ],
-        "queueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a"
+        "queueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+        "historicalDependencyRewireRuntimeEvidence": {
+          "runId": 35806215679,
+          "rewired": 16,
+          "orphanDependenciesAfter": 0
+        }
       },
       "bottleneckSensor": {
         "queueSources": [
@@ -2797,13 +2802,25 @@
         "liveWorkflowMetrics": [
           "PENDING_WORKFLOW_RUNS",
           "RESERVATION_WAIT_MS",
-          "FAN_IN_WAIT_MS"
+          "FAN_IN_WAIT_MS",
+          "SUPERVISOR_REVIEW_WAIT_MS"
         ],
         "workflowMetricBindingRevision": "1c90f8242d7f78f257c39cba5dcfd3184f58e689",
-        "reservationWaitPopulation": "RUNNABLE_QUEUED_ONLY",
+        "reservationWaitPopulation": "RUNNABLE_DEPENDENCY_READY_QUEUED_ONLY",
         "canaryDependencyWaitExcluded": true,
         "unresolvedDependenciesExcluded": true,
-        "runnableReservationWaitMetricRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051"
+        "runnableReservationWaitMetricRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
+        "waitCauseActions": {
+          "pendingRuns": "REDUCE_SCHEDULER_PENDING_RUN_WAIT",
+          "reservationWait": "PRIORITIZE_LONG_WAIT_RUNNABLE_WORK",
+          "fanInWait": "REDUCE_FAN_IN_WAIT",
+          "supervisorReviewWait": "PRIORITIZE_PRIMARY_AI_SUPERVISOR_REVIEW"
+        },
+        "fanInWaitSource": "GITHUB_ACTIONS_FAN_IN_JOB_AFTER_ALL_WORKERS_COMPLETE",
+        "supervisorReviewWaitSource": "SYSTEM_AI_QUEUE_AWAITING_SUPERVISOR",
+        "workflowWaitCauseClassificationRevision": "6a05859ccf52528c43b333f05d680b09eeba6768",
+        "preciseWaitSensorRevision": "d3db69b57e4754ada7a6c68f8069008c0a4ac608",
+        "preciseWaitWorkflowRevision": "68550bced736074602c5df848af92ba5c8724e7c"
       },
       "caretaker": {
         "feeder": "tools/vibe2-post-release-focus.mjs",
@@ -2867,10 +2884,10 @@
       "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
     },
     "latestImplementationSync": {
-      "revision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+      "revision": "68550bced736074602c5df848af92ba5c8724e7c",
       "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
-      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_CONFIRMATION",
-      "testRevision": "7d50a0f64075d67467389f18a8ac30a386e7ce81",
+      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_METRIC_CONFIRMATION",
+      "testRevision": "2095f85bb419149c14168a135d72aa456de7747c",
       "producerSideRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
       "producerSideRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
       "producerSideRepairReuseState": "IMPLEMENTED_TEST_COVERED_PENDING_NEXT_RECOVERY_DISPATCH_AND_RESERVE_CYCLE"
