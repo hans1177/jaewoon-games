@@ -1,5 +1,5 @@
 {
-  "version": 129,
+  "version": 130,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -155,7 +155,10 @@
       "ACCEPT_OR_ROLLBACK_REQUEUE",
       "MACHINE_ONLY_TWO_PLUS_CLIENT_MULTIPLAYER_REPRODUCTION",
       "JOIN_LEAVE_REJOIN_LATE_JOIN_AUTHORITATIVE_SYNC_VALIDATION",
-      "USER_ASSISTANCE_NOT_REQUIRED_FOR_MULTIPLAYER_PASS"
+      "USER_ASSISTANCE_NOT_REQUIRED_FOR_MULTIPLAYER_PASS",
+      "MULTIPLAYER_VALIDATION_PARALLEL_NON_BLOCKING_FOR_DEVELOPMENT",
+      "MULTIPLAYER_EVIDENCE_BLOCKS_PROMOTION_ONLY_WHEN_REQUIRED",
+      "UNRELATED_IMPLEMENTATION_QA_REGRESSION_AND_QUALITY_WORK_CONTINUES_WHILE_MULTIPLAYER_PENDING"
     ]
   },
   "workerRoles": {
@@ -2780,7 +2783,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23",
+  "updatedAt": "2026-09-24",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
