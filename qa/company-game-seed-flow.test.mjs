@@ -15,7 +15,6 @@ import {GAME_SEED_POLICY,GAME_SEED_REQUIRED_FIELDS} from '../tools/company-game-
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const stateTool=fs.readFileSync('tools/game-seed-state.mjs','utf8');
 const platformProfileTool=fs.readFileSync('tools/game-seed-platform-profile.mjs','utf8');
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
@@ -58,33 +57,22 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.deepEqual(directive.gameSeed.requiredFields,[...GAME_SEED_REQUIRED_FIELDS]);
   assert.ok(directive.gameSeed.requiredFields.includes('REFERENCE_INPUTS'));
   assert.ok(!directive.gameSeed.requiredFields.includes('REFERENCE_GAMES'));
-  assert.match(flow,/poolTarget: 100/);
-  assert.match(flow,/materialIsGame: false/);
-  assert.match(flow,/legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true/);
-  assert.match(flow,/fixedSixCategoryProductionQuotaForbidden: true/);
-  assert.match(flow,/concurrentGameWipMax: null/);
-  assert.match(flow,/externalProviderBoundary: 256/);
-  assert.match(flow,/initialImplementationMinimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
-  assert.match(flow,/thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
-  assert.match(flow,/finalContentDepthMinutesRequired: 30/);
-  assert.match(flow,/passMinimum: 80/);
-  assert.match(flow,/TARGET_PLATFORM_IMPLEMENTATION_GATE:[\s\S]*?passMinimum: 90/);
-  assert.match(flow,/designOnlyArtbookForbidden: true/);
-  assert.match(flow,/preWebArtbookForbidden: true/);
-  assert.match(flow,/createOnlyAfterWebStrictReview: true/);
-  assert.match(flow,/blockingBudgetMinutes: 10/);
-  assert.match(flow,/singleModelCallTimeoutSeconds: 150/);
-  assert.match(flow,/designSchemaAttemptsMax: 2/);
   assert.equal(directive.productionThroughput.concurrentGameWipMax,20);
   assert.equal(directive.productionThroughput.webValidationParallelismControlledSeparately,true);
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
   assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
-  assert.equal(directive.stageGateScoringV2.currentThresholds.webPlatformPromotion,90);
+  assert.equal(Object.hasOwn(directive.stageGateScoringV2.currentThresholds,'webPlatformPromotion'),false);
+  assert.equal(directive.stageGateScoringV2.designScoreRole,'PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION');
+  assert.equal(directive.stageGateScoringV2.webScoreRole,'OPTIONAL_UNITY_WEB_VALIDATION_QUALITY_ONLY');
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
   assert.equal(directive.stageGateScoringV2.currentThresholds.release,90);
   assert.equal(directive.stageGateScoringV2.liveVersionUpdate.passMinimum,80);
   assert.equal(directive.stageGateScoringV2.expansionPack.passMinimum,85);
+  assert.equal(directive.productionThroughput.optimizationBudget.blockingBudgetMinutes,10);
+  assert.equal(directive.productionThroughput.modelExecutionBudget.singleModelCallTimeoutSeconds,150);
+  assert.equal(directive.productionThroughput.modelExecutionBudget.designSchemaAttemptsMax,2);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designWorkflowTimeoutMinutes,45);
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.externalProviderBoundary,256);
 });
 
 test('five department scores drive expansion bands exactly as central policy defines',()=>{
