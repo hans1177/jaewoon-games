@@ -12,6 +12,7 @@ const architecture=JSON.parse(fs.readFileSync('company-learning/company-architec
 const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
 const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
 const plannerSource=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+const learningMotorSource=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
 
 test('canonical high-end visual contract reuses existing graphics and asset pipeline',()=>{
   const c=roadmap.assetProductionParallelContract.highEndVisualProductionContract;
@@ -35,6 +36,14 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.continuousEvolution.cycleGeneration.artificialCycleCapForbidden,true);
   assert.equal(c.continuousEvolution.cycleGeneration.centralDocumentAndImplementationMustStaySynchronized,true);
   assert.equal(c.continuousEvolution.cycleGeneration.implementationBinding,'tools/vibe2-auto-planner.mjs::findPresentationQualityTask');
+  assert.equal(c.continuousEvolution.intelligentEvolutionLoop.enabled,true);
+  assert.deepEqual(c.continuousEvolution.intelligentEvolutionLoop.loop,['OBSERVE','SCORE','CHOOSE','IMPROVE','COMPARE','LEARN','REPLAN']);
+  assert.equal(c.continuousEvolution.intelligentEvolutionLoop.observe.problemOnlyNotRequired,true);
+  assert.equal(c.continuousEvolution.intelligentEvolutionLoop.choose.minimumAlternativesForHighImpact,2);
+  assert.equal(c.continuousEvolution.intelligentEvolutionLoop.learn.producer,'tools/vibe2-learning-motor.mjs');
+  assert.equal(c.continuousEvolution.cycleGeneration.ownerExplicitRequestDedupePolicy.semanticTextDeduplicationForbidden,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.ownerExplicitRequestDedupePolicy.repeatedIdenticalOwnerTextCreatesNewGeneration,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.ownerRepeatedRequestBehavior.unlimitedRepeatsAllowed,true);
   assert.equal(c.cinematicDirection.enabled,true);
   assert.equal(c.ownerChangeRequestStability.enabled,true);
   assert.equal(c.noNewDepartment,true);
@@ -54,6 +63,10 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.match(plannerSource,/function nextGraphicsEvolutionTask\(/);
   assert.match(plannerSource,/graphics-evolution-trigger:/);
   assert.match(plannerSource,/graphics-evolution-unlimited-generations:yes/);
+  assert.match(plannerSource,/function graphicsEvolutionOpportunityScore\(/);
+  assert.match(plannerSource,/OWNER_REQUEST_EVENT_INSTANCE/);
+  assert.match(plannerSource,/OBSERVE→SCORE→CHOOSE→IMPROVE→COMPARE→LEARN→REPLAN/);
+  assert.match(learningMotorSource,/applyVerifiedGraphicsEvolutionOutcomes/);
   assert.equal(logMap.highEndVisualEvidenceContract.markerOnlyEvidenceForbidden,true);
   assert.equal(logMap.highEndVisualEvidenceContract.checkpointEvidenceNotTerminalCompletion,true);
   assert.equal(logMap.highEndVisualEvidenceContract.standaloneReleaseAuthority,false);
