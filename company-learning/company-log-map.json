@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -363,18 +363,19 @@
     "audioDepartmentRequired": true
   },
   "unityWebGameDevelopmentEvidence": {
-    "version": 1,
-    "role": "NON_BLOCKING_VALIDATION_SURFACE",
+    "version": 2,
+    "role": "OPTIONAL_VALIDATION_SURFACE_EVIDENCE_ONLY",
+    "nativeGateAuthority": false,
+    "requiredForDevelopmentAdmission": false,
+    "requiredForNativeRuntimePass": false,
+    "requiredForRelease": false,
     "markers": [
       "UNITY_WEB_VALIDATION_READY_IDS",
       "UNITY_WEB_RUNTIME_DISPATCH_COUNT",
       "UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE",
       "UNITY_WEB_VALIDATION=NON_BLOCKING_SEPARATE_WORKFLOW",
-      "UNITY_WEB_VALIDATION_OWNER=unity-web-first-stage-build.yml",
       "UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT"
-    ],
-    "canonicalSource": "unity-games/<gameId>/",
-    "outputRoot": "web-games/<gameId>/"
+    ]
   },
   "highEndVisualEvidenceContract": {
     "version": 1,
@@ -442,5 +443,9 @@
     "repairUpdatesSameGraphicsProductionRoot": true,
     "passState": "GRAPHICS_PASS",
     "failState": "ASSET_REPAIR_REQUIRED"
+  },
+  "centralPolicyExecutionEvidence": {
+    "humanReadablePolicyDocsRequired": false,
+    "machinePolicyHashesRequired": true
   }
 }
