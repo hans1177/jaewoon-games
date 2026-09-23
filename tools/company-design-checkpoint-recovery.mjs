@@ -56,6 +56,27 @@ function preservationContractValid(seed={},design={}){
     &&requiredPasses.every(value=>passes.has(value));
 }
 
+function continuousDesignContractValid(design={}){
+  return Boolean(
+    design?.conceptBlueprint
+    &&Array.isArray(design?.designAlternatives)&&design.designAlternatives.length>=2
+    &&design?.contentDiversityPlan
+    &&design?.creativeChallenge
+    &&design?.narrativeDirection
+  );
+}
+function recoveryDesignEvolution(seed={},checkpoint={}){
+  return {
+    ownerRequestEventId:clean(seed?.ownerRequestInstanceId||seed?.ownerResetRevision||'')||null,
+    ownerRepeatedRequestCreatesNewRevision:seed?.ownerRepeatedRequestCreatesNewDesignRevision===true,
+    autoSignalSource:clean(process.env.DESIGN_EVOLUTION_SIGNAL_SOURCE||checkpoint?.designEvolution?.autoSignalSource)||null,
+    autoSignalFingerprint:clean(process.env.DESIGN_EVOLUTION_SIGNAL_FINGERPRINT||checkpoint?.designEvolution?.autoSignalFingerprint)||null,
+    autoSignalReason:clean(process.env.DESIGN_EVOLUTION_SIGNAL_REASON||checkpoint?.designEvolution?.autoSignalReason)||null,
+    passIsCheckpointNotTerminal:true,
+    unlimitedRevisions:true
+  };
+}
+
 export function materializeDeterministicCheckpointCandidate({gameId,date,root='.'}={}){
   gameId=clean(gameId);date=clean(date)||kstDate();
   if(!gameId)throw new Error('DESIGN_CHECKPOINT_RECOVERY_GAME_ID_REQUIRED');
@@ -99,20 +120,27 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
     throw err;
   }
 
+  if(!continuousDesignContractValid(revised)){
+    const err=new Error('DESIGN_CHECKPOINT_RECOVERY_CONTINUOUS_DESIGN_CONTRACT_STALE');
+    err.code='CONTINUOUS_DESIGN_CONTRACT_STALE';
+    throw err;
+  }
+  const designEvolution=recoveryDesignEvolution(seed,checkpoint);
+
   const catalog=readJson(path.join(root,'game-catalog.json'),{games:[]});
   const game=(catalog.games||[]).find(row=>clean(row?.id)===gameId)||{};
   const now=new Date().toISOString();
   const authorModel=clean(checkpoint.effectiveDesignerModel)||clean(checkpoint.effectiveDesignerProvider)||'CHECKPOINT_MODEL';
   const draftFile={
-    version:5,gameId,date,productionClass:'DESIGN_ONLY',gameSeedId:clean(seed.seedId),
-    authorRole:'DESIGN_AUTHOR_CHECKPOINT',authorModel,
+    version:6,gameId,date,productionClass:'DESIGN_ONLY',gameSeedId:clean(seed.seedId),
+    authorRole:'DESIGN_AUTHOR_CHECKPOINT',authorModel,designEvolution,
     status:'DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT',
     content:deepClone(draft),
     recovery:{source:'design-checkpoint.json',checkpointFingerprint:clean(checkpoint.fingerprint)||null,aiVerdictUsed:false,materializedAt:now}
   };
   const revisedFile={
-    version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:clean(seed.seedId),
-    authorRole:'DESIGN_AUTHOR_CHECKPOINT',authorModel,sameModelAsDraft:true,
+    version:7,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:clean(seed.seedId),
+    authorRole:'DESIGN_AUTHOR_CHECKPOINT',authorModel,sameModelAsDraft:true,designEvolution,
     appliedConsensusCount:0,unresolvedConflictCount:0,heldCount:0,status:'DESIGN_BASELINE_CANDIDATE',
     content:revised,
     recovery:{
@@ -132,8 +160,9 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
   const priorLearning=(Array.isArray(seedState?.seedMaterialLearning?.events)?seedState.seedMaterialLearning.events:[])
     .filter(event=>clean(event?.gameId)===gameId&&clean(event?.reviewStage)==='DESIGN_STRICT_REVIEW').slice(-8);
   const cycle={
-    version:6,date,gameId,gameName:clean(game.name||seed.gameName||gameId),productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
+    version:7,date,gameId,gameName:clean(game.name||seed.gameName||gameId),productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
     status:'COMPLETE',policyDocument:'company-learning/platform-release-roadmap.json',
+    designEvolution,
     flow:'GAME_SEED_TO_DETERMINISTIC_DESIGN_BASELINE_CANDIDATE',
     gameSeed:{seedId:clean(seed.seedId),category:clean(seed.GAME_CATEGORY),source:'game-seed-state.json',complete:true},
     designer:{role:'DESIGN_AUTHOR_CHECKPOINT',model:authorModel,singleAuthor:true,sameModelRevised:true},
