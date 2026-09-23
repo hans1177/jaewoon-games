@@ -166,8 +166,10 @@
       "silentFeatureOmissionForbidden": true,
       "webBuildIsNotNativePlatformSubstitute": true,
       "nativePlatformReleaseStillRequiresNativeEvidence": true,
-      "role": "LEGACY_OPTIONAL_COMPANION",
-      "developmentAdmissionAuthority": false
+      "role": "UNITY_WEB_VALIDATION_SURFACE",
+      "developmentAdmissionAuthority": false,
+      "canonicalSource": "UNITY_PROJECT_WHEN_UNITY_WEB_AVAILABLE",
+      "legacyDirectWebAuthoring": false
     },
     "approvedScopeCompletion": {
       "mode": "FULL_APPROVED_DESIGN_SCOPE_REQUIRED",
@@ -275,7 +277,7 @@
       "CROSS_PLATFORM_EXPANSION_VALUE"
     ],
     "derivedProductionRequirements": [
-      "MANDATORY_WEB_GAME_COMPANION",
+      "UNITY_WEB_VALIDATION_SURFACE_WHEN_BUILDABLE",
       "FULL_APPROVED_SCOPE_IMPLEMENTATION"
     ],
     "seedMaterialPoolTarget": 100,
@@ -567,7 +569,7 @@
       "baseline": "DEVELOPMENT_BASELINE",
       "executionMode": "DIRECT_NATIVE_DUAL_PLATFORM",
       "resumeFromLatestEvidence": true,
-      "webPurpose": "LEGACY_OPTIONAL_COMPANION_ONLY",
+      "webPurpose": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
       "targetPlatformPurpose": "PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION",
       "webBeforeTargetPlatformByDefault": false,
       "targetPlatformMayRunImmediately": true,
@@ -664,7 +666,17 @@
       "repairStates": [
         "TARGET_PLATFORM_REPAIR_REQUIRED",
         "DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED"
-      ]
+      ],
+      "unityWebValidationSurface": {
+        "enabled": true,
+        "optional": true,
+        "canonicalSourceRoot": "unity-games/<gameId>/",
+        "outputRoot": "web-games/<gameId>/",
+        "sameCanonicalUnityProjectRequired": true,
+        "nativeGateAuthority": false,
+        "homepageTestSurface": true,
+        "buildWhenProjectSupportsBuildWeb": true
+      }
     },
     "RELEASE_CONFIRMED": {
       "baseline": "RELEASE_BASELINE",
