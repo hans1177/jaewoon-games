@@ -91,8 +91,10 @@ test('runtime promotion survives stale main DESIGN_ONLY mirrors only with matchi
   assert.deepEqual(result.state.developmentConfirmedGameIds,['P']);
   assert.equal(portfolio.projects[0].productionClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(portfolio.projects[0].productionClassSource,'COMPANY_RUNTIME_PROMOTED_SEED');
-  assert.equal(portfolio.projects[0].targetEngine,'unity-android');
-  assert.equal(portfolio.projects[0].mode,'FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT');
+  assert.equal(portfolio.projects[0].targetEngine,'roblox-unity-native');
+  assert.equal(portfolio.projects[0].mode,'ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT');
+  assert.deepEqual(portfolio.projects[0].concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(portfolio.projects[0].webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
   assert.equal(portfolio.projects[0].profileStatus,'DEVELOPMENT_CONFIRMED');
   assert.equal(catalog.games[0].productionClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(catalog.games[0].productionClassSource,'COMPANY_RUNTIME_PROMOTED_SEED');
@@ -129,13 +131,15 @@ test('runtime seed synthesizes a missing portfolio project instead of dropping p
   assert.equal(portfolio.projects[0].slug,'runtime-only');
   assert.equal(portfolio.projects[0].runtimeSynthesized,true);
   assert.equal(portfolio.projects[0].productionClass,'DEVELOPMENT_CONFIRMED');
-  assert.equal(portfolio.projects[0].webPurpose,'FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE');
+  assert.equal(portfolio.projects[0].webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
+  assert.equal(portfolio.projects[0].targetEngine,'roblox-unity-native');
+  assert.deepEqual(portfolio.projects[0].concurrentTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(catalog.games[0].productionClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(catalog.games[0].homepageCategory,'development-confirmed');
   assert.deepEqual(result.state.developmentConfirmedGameIds,['RUNTIME-runtime-only']);
 });
 
-test('selected platform remains final runtime target after mandatory full approved-scope Web companion validation',()=>{
+test('release keeps owner-selected platform while DEVELOPMENT_CONFIRMED projects use concurrent Roblox and Unity native targets',()=>{
   const portfolio={
     productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
     developmentFocusPolicy:{maxFocusedGames:1},
@@ -157,27 +161,31 @@ test('selected platform remains final runtime target after mandatory full approv
   assert.equal(portfolio.projects.find(row=>row.id==='U').targetEngine,'unity-android');
   assert.equal(portfolio.projects.find(row=>row.id==='F').targetEngine,'fortnite-uefn');
   const dev=portfolio.projects.find(row=>row.id==='D');
-  assert.equal(dev.targetEngine,'platform-selection-required');
-  assert.equal(dev.mode,'FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED');
-  assert.equal(dev.webPurpose,'FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE');
-  assert.equal(dev.webCompanionRequired,true);
+  assert.equal(dev.targetEngine,'roblox-unity-native');
+  assert.equal(dev.mode,'ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT');
+  assert.deepEqual(dev.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(dev.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
+  assert.equal(dev.webCompanionRequired,false);
   assert.equal(dev.approvedDesignScopeMustBeFullyImplemented,true);
   assert.equal(dev.webEvidenceMayReplaceNativePlatformEvidence,false);
-  assert.equal(dev.webGameplayValidationRequired,true);
-  assert.equal(dev.musicValidationRequired,true);
+  assert.equal(dev.webGameplayValidationRequired,false);
+  assert.equal(dev.musicValidationRequired,false);
   assert.equal(portfolio.productionClassPolicy.classes.RELEASE_CONFIRMED.engine,'PROJECT_SELECTED_PLATFORM');
-  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.engine,'PROJECT_SELECTED_PLATFORM');
-  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,true);
-  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,false);
-  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webCompanionRequired,true);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.engine,'ROBLOX_UNITY_DIRECT_NATIVE');
+  assert.deepEqual(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,false);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webCompanionRequired,false);
   assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.approvedDesignScopeMustBeFullyImplemented,true);
   assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webEvidenceMayReplaceNativePlatformEvidence,false);
-  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,true);
-  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.musicValidationRequired,true);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,false);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.musicValidationRequired,false);
   assert.equal(Object.hasOwn(portfolio.developmentFocusPolicy,'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'),false);
   assert.equal(Object.hasOwn(portfolio.developmentFocusPolicy,'optionalWebGameplayTestbedAllowedAlongsideReleaseFocus'),false);
   assert.equal(Object.hasOwn(portfolio.developmentFocusPolicy,'requiredWebGameplayAndMusicValidationBeforeTargetPlatform'),false);
-  assert.equal(portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform,true);
+  assert.equal(portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform,false);
+  assert.equal(portfolio.developmentFocusPolicy.nativeDevelopmentAdmission,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(portfolio.developmentFocusPolicy.nativePlatformEvidenceStillRequired,true);
   assert.equal((result.state.ranking||[]).some(row=>Object.hasOwn(row,'unityReady')),false);
 });
@@ -196,7 +204,7 @@ test('diversity selector remains diagnostic-only and does not control membership
 });
 
 
-test('homepage runtime info exposes only current schema-bound initial Web scores from company runtime',()=>{
+test('homepage runtime info exposes direct-native platform state without reviving legacy Web scores',()=>{
   const catalog={updatedAt:'2026-09-18',games:[
     {id:'dev',name:'Dev',genre:['디펜스'],productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',selectedPlatform:'UNITY'},
     {id:'design',name:'Design',genre:['RPG'],productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'}
@@ -215,14 +223,14 @@ test('homepage runtime info exposes only current schema-bound initial Web scores
   applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
   assert.equal(catalog.runtimeAuthority,'company-runtime');
   assert.equal(catalog.runtimeInfoAuthority,'company-runtime');
-  assert.deepEqual(catalog.runtimeSupportedPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual(catalog.runtimeSupportedPlatforms,['ROBLOX','UNITY']);
   assert.equal(catalog.runtimeCounts.homepageInfo,2);
 
   const dev=catalog.games.find(row=>row.id==='dev').homepageInfo;
-  assert.equal(dev.score,88);
-  assert.equal(dev.scoreCurrent,true);
-  assert.equal(dev.scoreSource,'SERVER_DEVELOPMENT_QUEUE');
-  assert.equal(dev.validationSchemaVersion,15);
+  assert.equal(dev.score,null);
+  assert.equal(dev.scoreCurrent,false);
+  assert.equal(dev.scoreSource,'DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT');
+  assert.equal(dev.validationSchemaVersion,null);
   assert.equal(dev.productionClass,'DEVELOPMENT_CONFIRMED');
 
   const design=catalog.games.find(row=>row.id==='design').homepageInfo;
@@ -236,5 +244,5 @@ test('homepage runtime info exposes only current schema-bound initial Web scores
   const stale=catalog.games.find(row=>row.id==='dev').homepageInfo;
   assert.equal(stale.score,null);
   assert.equal(stale.scoreCurrent,false);
-  assert.equal(stale.scoreLabel,'재검증 필요');
+  assert.equal(stale.scoreLabel,'점수 미평가');
 });
