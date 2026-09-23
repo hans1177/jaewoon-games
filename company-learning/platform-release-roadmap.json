@@ -1,5 +1,5 @@
 {
-  "version": 277,
+  "version": 278,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -6368,7 +6368,10 @@
         "stableRecoveryWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
         "supersededRecoveryDependencyRewire": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
         "supersededRecoveryDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
-        "supersededRecoveryDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9"
+        "supersededRecoveryDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
+        "producerSideRecoveryRepairReuse": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
+        "producerSideRecoveryRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
+        "producerSideRecoveryRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f"
       }
     }
   },
@@ -14159,7 +14162,14 @@
           "supersededRepairBlockerRewiredToCanonical": true,
           "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
           "supersededRepairDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
-          "supersededRepairDependencyRewireLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
+          "supersededRepairDependencyRewireLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+          "producerSideRecoveryRepairReuse": true,
+          "producerSideRecoveryRepairReuseBinding": "tools/company-recovery-dispatch.mjs",
+          "producerSideRecoveryRepairIdentity": "tools/company-system-ai-queue.mjs::systemAiRepairWorkIdentity",
+          "producerSideRecoveryRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
+          "producerSideRecoveryRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
+          "producerSideRecoveryRepairRule": "REUSE_NONTERMINAL_EXACT_REPAIR_IDENTITY_PRESERVE_DISTINCT_CHECKPOINT",
+          "producerSideRecoveryRepairLiveVerification": "PENDING_NEXT_RECOVERY_DISPATCH_AND_RESERVE_CYCLE"
         },
         "verifiedLearningFeedback": {
           "producer": "tools/company-system-ai-learning.mjs",
