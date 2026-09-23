@@ -743,46 +743,6 @@
       "authority": "practice-and-measurement-only"
     },
     {
-      "id": "phase4-generalization-capability_ctrace_d1fc214a9466b3499d56576b",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_d1fc214a9466b3499d56576b",
-      "sourceGameId": "seed-single-defense-strat-celestial-bastion",
-      "targetEngine": "web",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-1glxlvy",
-      "unseenProblemFingerprint": "phase4-unseen-1ki53rs",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
       "id": "phase4-generalization-capability_ctrace_577a356116637ad2923c0bf8",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -1023,6 +983,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 18,
+  "phase4GeneralizationCases": 17,
   "authority": "practice-and-measurement-only"
 }
