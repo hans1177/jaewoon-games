@@ -16,7 +16,7 @@ const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const parseArgs=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));
 const safeTask=t=>t?.requiresOwnerDecision!==true&&t?.protectedChange!==true&&t?.paidResourceRequired!==true;
 const activeStatus=s=>['queued','running'].includes(clean(s).toLowerCase());
-const waitBlocker=v=>/WAITING_FOR_GEMINI_QUOTA|external.*model.*quota|roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME/i.test(clean(v));
+createVibeContinuousQueue,EXTRACTION_MODE,UNLIMITED_CAUSAL_REPAIR
 const failureSignature=t=>clean(t?.blocker)||clean(t?.lastOutcome)||'causal-repair-required';
 const ADAPTIVE_STEPS=new Set(ADAPTIVE_PARALLELISM_STEPS.filter(step=>step>=DEFAULT_ADAPTIVE_TARGET));
 const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));
