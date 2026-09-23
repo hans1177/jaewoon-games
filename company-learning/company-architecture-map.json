@@ -1,5 +1,5 @@
 {
-  "version": 117,
+  "version": 118,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2339,7 +2339,12 @@
       "graphicsPassIsCheckpointNotTerminal": true,
       "ownerChangeRequestDirectResponsibleSystemEdit": true,
       "shadowOrWrapperPresentationAccumulationForbidden": true,
-      "releaseAuthorityExpansionForbidden": true
+      "releaseAuthorityExpansionForbidden": true,
+      "evidenceDrivenEvolutionCyclesWithinSameGraphicsProductionRoot": true,
+      "passDoesNotSelfRequeue": true,
+      "newVerifiedPresentationSignalMayReopenAffectedScopes": true,
+      "sameSignalDuplicateCycleForbidden": true,
+      "newGraphicsQueueTypeForbidden": true
     }
   },
   "recordsGovernance": {
