@@ -1,5 +1,5 @@
 {
-  "version": 292,
+  "version": 294,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -11719,7 +11719,7 @@
       "genericPrimitiveAssemblyCannotBeDeclaredFinalHighQuality": true
     },
     "highEndVisualProductionContract": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
@@ -11946,7 +11946,88 @@
           "SECONDARY_POLISH"
         ],
         "globalReleaseStopForUnfinishedHighEndPolishForbidden": true,
-        "existingRuntimeQaSecurityAndReleaseGatesRemainAuthoritative": true
+        "existingRuntimeQaSecurityAndReleaseGatesRemainAuthoritative": true,
+        "cycleGeneration": {
+          "enabled": true,
+          "authority": "EXISTING_GRAPHICS_PRODUCTION_CAUSAL_REPLAN",
+          "planner": "tools/vibe2-auto-planner.mjs::findPresentationQualityTask",
+          "evidenceTriggeredOnly": true,
+          "passAloneMustNotCreateNextCycle": true,
+          "noSignalAction": "KEEP_QUEUE_LIVE_AND_AWAIT_CAUSAL_SIGNAL",
+          "nextCycleAfterNewSignal": true,
+          "sameSignalDuplicateCycleForbidden": true,
+          "triggerFingerprintRequired": true,
+          "triggerFingerprintMustBeRecordedOnGeneratedTasks": true,
+          "affectedInternalStagesOnlyPreferred": true,
+          "fullPresentationReplayRequiresBroadEvidence": true,
+          "baselineCycle": {
+            "cycle": 1,
+            "role": "FOUNDATION",
+            "canonicalPasses": [
+              "ASSET_ADAPTATION",
+              "LIVING_MOTION",
+              "ANIMATION_FEEL",
+              "VFX",
+              "AUDIO_FEEL",
+              "CAMERA_LANGUAGE",
+              "POLISH_MOBILE"
+            ],
+            "runsOncePerGamePlatformPresentationFoundation": true
+          },
+          "acceptedSignalSources": [
+            "OWNER_CHANGE_REQUEST",
+            "VISUAL_DEBT",
+            "RUNTIME_CAPTURE_COMPARISON",
+            "INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK",
+            "PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE"
+          ],
+          "signalRules": {
+            "sourceMustBeVerifiedOrDurableEvidence": true,
+            "presentationRelevanceRequired": true,
+            "presentationTaskMayNotSelfTriggerAnotherCycleFromItsOwnPass": true,
+            "activeOrFailedPresentationRepairUsesExistingRepairFlowInsteadOfNewCycle": true,
+            "unrelatedGameplayChangeMustNotCreateGraphicsCycle": true
+          },
+          "cycleIdentity": {
+            "versionedExistingPresentationTaskIds": true,
+            "idPattern": "<game>-presentation-<stage>-v<cycle>",
+            "newStateTypeForbidden": true,
+            "newQueueTypeForbidden": true,
+            "sameGraphicsProductionRootRequired": true
+          },
+          "priority": [
+            "OWNER_CHANGE_REQUEST",
+            "RUNTIME_CAPTURE_COMPARISON",
+            "VISUAL_DEBT",
+            "PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE",
+            "INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK"
+          ],
+          "alternativesReviewed": [
+            {
+              "id": "A_UNCONDITIONAL_SELF_REQUEUE",
+              "result": "REJECTED",
+              "reason": "WOULD_CREATE_MEANINGLESS_INFINITE_POLISH_AND_STARVE_OTHER_WORK"
+            },
+            {
+              "id": "B_EVIDENCE_DRIVEN_TARGETED_EVOLUTION",
+              "result": "SELECTED",
+              "reason": "PRESERVES_CONTINUOUS_EVOLUTION_WHILE_ONLY_REOPENING_AFFECTED_PRESENTATION_SCOPES"
+            }
+          ],
+          "releaseAuthority": false,
+          "globalBarrier": false,
+          "unlimitedTotalCycles": true,
+          "totalCycleLimit": null,
+          "maximumGeneration": null,
+          "artificialCycleCapForbidden": true,
+          "evidenceDrivenUnlimitedGeneration": true,
+          "executionResourcesRemainBoundedPerRun": true,
+          "immediateSelfLoopForbidden": true,
+          "centralDocumentAndImplementationMustStaySynchronized": true,
+          "implementationBindingRequired": true,
+          "implementationBinding": "tools/vibe2-auto-planner.mjs::findPresentationQualityTask",
+          "policyImplementationMismatchAction": "BLOCK_COMPLETION_AND_REPAIR_EXISTING_RESPONSIBLE_SYSTEM"
+        }
       },
       "cinematicDirection": {
         "enabled": true,
@@ -12050,7 +12131,7 @@
       "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract"
     },
     "graphicsProductionUnification": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "externalWorkUnit": "GRAPHICS_PRODUCTION",
@@ -12087,7 +12168,18 @@
         "failedInternalScopeRoutesToSameRootRepairState": "ASSET_REPAIR_REQUIRED",
         "continuousImprovementAfterGraphicsPass": true,
         "graphicsPassMayGenerateLaterPolishWork": true,
-        "highEndCompletionMayNotCreateGlobalReleaseBarrier": true
+        "highEndCompletionMayNotCreateGlobalReleaseBarrier": true,
+        "evidenceDrivenEvolutionCycle": true,
+        "graphicsPassDoesNotSelfRequeue": true,
+        "newPresentationSignalMayReopenGraphicsWork": true,
+        "sameSignalDuplicateCycleForbidden": true,
+        "affectedInternalStagesOnlyPreferred": true,
+        "fullPresentationReplayRequiresBroadEvidence": true,
+        "evolutionCyclesReuseExistingQueueAndTaskKinds": true,
+        "unlimitedEvidenceDrivenEvolutionGenerations": true,
+        "artificialEvolutionGenerationCapForbidden": true,
+        "perRunExecutionCapacityStillBounded": true,
+        "policyAndPlannerBindingMustMatch": true
       },
       "authorityBoundaries": {
         "graphicsDepartmentOwnsVisualProductionDirection": true,
@@ -12114,7 +12206,10 @@
         "continuousEvolutionAfterPass": true,
         "presentationCompletionIsTerminal": false,
         "releaseAuthority": false,
-        "ownerChangeRequestScopeMustPreserveUnaffectedBehavior": true
+        "ownerChangeRequestScopeMustPreserveUnaffectedBehavior": true,
+        "evolutionCycleRecordedAtSameGraphicsProductionRoot": true,
+        "evolutionTriggerFingerprintRequired": true,
+        "evolutionAffectedScopesRequired": true
       },
       "compatibility": {
         "existingVisualModulesRetainedAsInternalModules": true,
