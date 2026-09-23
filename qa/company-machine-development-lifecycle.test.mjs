@@ -102,9 +102,12 @@ assert.equal(continuation.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(continuation.humanDocumentRequired,false);
 assert.equal(continuation.sourceOfTruth,'company-learning/platform-release-roadmap.json');
 assert.equal(continuation.objective,'MINIMUM_SHARED_DESIGN_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION_THEN_INTERNAL_PLAYTEST_AND_POST_RELEASE_FOCUSED_DEVELOPMENT');
-assert.equal(continuation.webBaseImplementation.enabled,false);
-assert.equal(continuation.webBaseImplementation.status,'LEGACY_DISABLED');
-assert.equal(continuation.webBaseImplementation.developmentAdmissionAuthority,false);
+assert.equal(Object.hasOwn(continuation,'webBaseImplementation'),false);
+assert.equal(Object.hasOwn(lifecycle,'webToPlatformHandoff'),false);
+assert.equal(Object.hasOwn(lifecycle,'webFirstImplementation'),false);
+assert.equal(Object.hasOwn(lifecycle,'missingWebBaselinePlanning'),false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface.requiredForDevelopmentAdmission,false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface.requiredForNativeRuntimePass,false);
 assert.equal(continuation.nativePlatformContinuation.startsFromSharedMinimumDesign,true);
 assert.equal(continuation.nativePlatformContinuation.concurrentRobloxUnity,true);
 assert.equal(continuation.nativePlatformContinuation.secondImplementationContinuesFromWebBase,false);
@@ -128,10 +131,6 @@ for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','TARGET_PLATFORM_SOURCE_BIND
   assert(continuation.verifiedLearningMaxUse.applyAt.includes(stage),stage);
 }
 
-assert.equal(lifecycle.webToPlatformHandoff.required,false);
-assert.equal(lifecycle.webToPlatformHandoff.status,'LEGACY_DISABLED');
-assert.equal(lifecycle.webToPlatformHandoff.webRole,'NONE');
-assert.equal(lifecycle.webToPlatformHandoff.replacement,'MINIMUM_DUAL_PLATFORM_DESIGN_HANDOFF');
 assert.match(webRuntime,/Resolve direct native development/);
 assert.match(webRuntime,/DIRECT_NATIVE_MACHINE_CONTRACT=PASS/);
 assert.match(webRuntime,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
@@ -149,9 +148,6 @@ assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.ok(bootstrap.includes('PolicySource = "company-learning/platform-release-roadmap.json"'));
-assert.equal(lifecycle.webToPlatformHandoff.required,false);
-assert.equal(lifecycle.webFirstImplementation.enabled,false);
-assert.equal(lifecycle.missingWebBaselinePlanning.enabled,false);
 assert.equal(lifecycle.directNativeDualPlatformDevelopment.webStageSkipped,true);
 assert.equal(lifecycle.directNativeDualPlatformDevelopment.webGateSkipped,true);
 
