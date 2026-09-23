@@ -168,10 +168,10 @@ test('owner preservation pilots materialize through canonical GAME_SEED bootstra
   assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.maxConcurrent,1);
   assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.consumesGamePrimaryWorkerSlot,false);
   assert.match(seedDesignWorkflow,/preservation_only/);
-  assert.match(seedDesignWorkflow,/RUN_OWNER_PRESERVATION_AUX/);
-  assert.match(seedDesignWorkflow,/PRESERVATION_PRESENTATION_UPGRADE/);
-  assert.match(seedDesignWorkflow,/OWNER_PRESERVATION_DESIGN_LANE=/);
-  assert.match(seedDesignWorkflow,/preservationOnly\?1:designWipMax/);
+  assert.match(seedDesignWorkflow,/RUN_PARALLEL_STRICT_DESIGN/);
+  assert.doesNotMatch(seedDesignWorkflow,/RUN_OWNER_PRESERVATION_AUX/);
+  assert.match(seedDesignWorkflow,/strictDesignReviewContinuesInParallel/);
+  assert.match(seedDesignWorkflow,/designReviewEligible/);
 });
 
 test('workflow uses canonical trigger for 24h idle unlimited-total production with bounded WIP',()=>{
@@ -391,7 +391,7 @@ test('DESIGN_ONLY Gemini workflow uses only centrally authorized model-pool entr
   assert.ok(leadMatch&&fallbackMatch);
   const workflowLeads=leadMatch[1].split(',').map(v=>v.trim()).filter(Boolean);
   const workflowFallbacks=fallbackMatch[1].split(',').map(v=>v.trim()).filter(Boolean);
-  const roles=['planning','graphics','development','qa','balance'];
+  const roles=['planning','graphics','development','qa','audio'];
   const inactiveDepartmentLeads=roles.map(role=>directive.ai.departmentLeadModels[role]);
   assert.deepEqual(inactiveDepartmentLeads,Array(5).fill('llama3.2:1b'));
   assert.equal(new Set(workflowLeads).size,5);
