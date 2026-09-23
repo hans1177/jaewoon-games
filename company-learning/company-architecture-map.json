@@ -1,5 +1,5 @@
 {
-  "version": 109,
+  "version": 110,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2621,7 +2621,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T10:49:00+09:00",
+  "updatedAt": "2026-09-23T11:05:20+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2913,6 +2913,41 @@
       "producerSideRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
       "producerSideRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
       "producerSideRepairReuseState": "IMPLEMENTED_TEST_COVERED_PENDING_NEXT_RECOVERY_DISPATCH_AND_RESERVE_CYCLE"
+    }
+  },
+  "departmentRuntimeTopology": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "centralContract": "company-learning/platform-release-roadmap.json#departmentDrivenPortfolioDevelopmentControl.runtimeExecution",
+    "launcher": ".github/workflows/artbook-free-department-bots.yml",
+    "targetResolver": "FULL_CANONICAL_PORTFOLIO_WITH_EXACT_PUSH_TARGETING",
+    "concurrency": {
+      "perGame": "SERIALIZED",
+      "cancelInProgress": false,
+      "distinctGamesParallel": true,
+      "globalCancellationGroup": false
+    },
+    "designOnly": {
+      "execution": "tools/artbook-production-pipeline.mjs -> tools/company-design-cycle.mjs",
+      "departmentEvidence": "DETERMINISTIC_DEPARTMENT_EVIDENCE",
+      "artbookBeforePromotion": false
+    },
+    "developmentConfirmed": {
+      "executionOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+      "queueAuthority": "company-runtime:development-queue.json",
+      "dispatchFromDepartmentLauncher": "SINGLE_DEDUPED_WORKFLOW_DISPATCH",
+      "robloxRuntime": ".github/workflows/company-development-roblox-runtime.yml",
+      "unityRuntime": ".github/workflows/company-development-unity-runtime.yml",
+      "legacyWebFirstValidatorActive": false
+    },
+    "revisions": {
+      "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
+      "providerContract": "4bb509f3d79de183fc6c0594dfcbf2ca441ed523",
+      "sweep": "72d9498e944eca8833e2bc3abfbb8be2670e27bb",
+      "sweepTest": "6cc10c25178c0e80a97195a59ffdc369d9879097",
+      "nativeDelegate": "da19705e37720bfb78494a62aca7b1922c2ac298",
+      "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
+      "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
     }
   }
 }
