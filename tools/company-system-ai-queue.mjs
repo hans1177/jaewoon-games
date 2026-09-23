@@ -69,6 +69,89 @@ function numericEvidence(task={},prefix=''){
   const value=Number(row?clean(row.slice(prefix.length)):NaN);
   return Number.isFinite(value)?value:null;
 }
+function stableRepairFailureSignature(task={}){
+  const signature=clean(failureSignatureOf(task));
+  return /^shared-signature-canary-pending:/i.test(signature)?'':signature;
+}
+function duplicateRepairIdentity(task={}){
+  if(clean(task.status).toLowerCase()!=='queued')return null;
+  if(clean(task.taskType).toLowerCase()!=='bottleneck-repair')return null;
+  const responsibleFiles=unique(task.responsibleFiles).sort();
+  if(!responsibleFiles.length||!clean(task.goal))return null;
+  return JSON.stringify({
+    department:clean(task.department).toLowerCase(),
+    taskType:'bottleneck-repair',
+    gameId:clean(task.gameId),
+    goal:clean(task.goal).replace(/\s+/g,' '),
+    responsibleFiles,
+    acceptanceCriteria:unique(task.acceptanceCriteria).sort(),
+    verificationCommands:unique(task.verificationCommands).sort(),
+    sourceMutationRequired:task.sourceMutationRequired===true,
+    failureClass:clean(task.failureClass).toUpperCase(),
+    failureSignature:stableRepairFailureSignature(task)
+  });
+}
+export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()}={}){
+  const queue=normalizeSystemAiQueue(queueInput);
+  const groups=new Map();
+  for(const task of queue.tasks){
+    const identity=duplicateRepairIdentity(task);
+    if(!identity)continue;
+    if(!groups.has(identity))groups.set(identity,[]);
+    groups.get(identity).push(task);
+  }
+  const canonicalByDuplicate=new Map(),canonicalMeta=new Map();
+  let coalesced=0;
+  for(const rows of groups.values()){
+    if(rows.length<2)continue;
+    const ordered=[...rows].sort((a,b)=>rank(b.priority)-rank(a.priority)
+      ||Number(b.impactScore||0)-Number(a.impactScore||0)
+      ||clean(a.createdAt).localeCompare(clean(b.createdAt))
+      ||clean(a.id).localeCompare(clean(b.id)));
+    const canonical=ordered[0],duplicates=ordered.slice(1);
+    for(const row of duplicates)canonicalByDuplicate.set(row.id,canonical.id);
+    canonicalMeta.set(canonical.id,{
+      duplicateIds:duplicates.map(x=>x.id),
+      recurrenceCount:Math.max(canonical.recurrenceCount||0,...rows.map(x=>Number(x.recurrenceCount||0)))+duplicates.length
+    });
+    coalesced+=duplicates.length;
+  }
+  if(!coalesced)return{queue,coalesced:0,groups:0};
+  const stamp=new Date(at).toISOString();
+  const tasks=queue.tasks.map(task=>{
+    const supersededBy=canonicalByDuplicate.get(task.id);
+    if(supersededBy)return{
+      ...task,
+      status:'cancelled',
+      blocker:'system-ai-duplicate-repair-superseded',
+      lastOutcome:'SUPERSEDED_DUPLICATE_WORK',
+      reservationId:null,
+      reservedAt:null,
+      updatedAt:stamp,
+      evidence:unique([
+        ...(task.evidence||[]),
+        'system-ai-duplicate-repair-coalesced:YES',
+        'system-ai-duplicate-repair-superseded-by:'+supersededBy,
+        'retry-budget-consumed:NO',
+        'learning-penalty:NO'
+      ])
+    };
+    const meta=canonicalMeta.get(task.id);
+    if(!meta)return task;
+    return{
+      ...task,
+      recurrenceCount:meta.recurrenceCount,
+      relatedTaskIds:unique([...(task.relatedTaskIds||[]),...meta.duplicateIds]),
+      updatedAt:stamp,
+      evidence:unique([
+        ...(task.evidence||[]),
+        'system-ai-duplicate-repair-coalesced:YES',
+        'system-ai-coalesced-count:'+(meta.duplicateIds.length+1)
+      ])
+    };
+  });
+  return{queue:{...queue,tasks},coalesced,groups:canonicalMeta.size};
+}
 export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Date.now()}={}){
   const queue=normalizeSystemAiQueue(queueInput),task=normalizeTask(taskInput);
   const signature=failureSignatureOf(task);
@@ -292,7 +375,8 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId=''}=
 
 export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now()}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
-  const queue=reclaimed.queue, active=queue.tasks.filter(t=>t.status==='running');
+  const compacted=coalesceQueuedSystemAiDuplicateRepairs(reclaimed.queue,{at});
+  const queue=compacted.queue, active=queue.tasks.filter(t=>t.status==='running');
   const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
     .sort((a,b)=>(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)||rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
@@ -320,7 +404,7 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
       evidence:unique([...(t.evidence||[]),`system-ai-impact-score:${impact.score}`,`system-ai-blocked-task-count:${impact.blockedTaskCount}`,`system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`,...(impact.commonBottleneck&&impact.signature?[`system-ai-representative-canary:${impact.signature}`]:[]),...(t.previousReservationId?[`system-ai-handoff-to-reservation:${rid}`]:[])])
     };
   });
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
 }
 export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now()}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
@@ -490,4 +574,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`COMPANY_SYSTEM_AI_QUEUE=${result.command.toUpperCase()}`);
   console.log(`COMPANY_SYSTEM_AI_COUNTS=${JSON.stringify(counts)}`);
   if(Number.isFinite(Number(result.reclaimed)))console.log(`COMPANY_SYSTEM_AI_STALE_RESERVATIONS_RECLAIMED=${Number(result.reclaimed)}`);
+  if(Number.isFinite(Number(result.coalesced)))console.log(`COMPANY_SYSTEM_AI_DUPLICATE_REPAIRS_COALESCED=${Number(result.coalesced)}`);
+  if(Number.isFinite(Number(result.coalescedGroups)))console.log(`COMPANY_SYSTEM_AI_DUPLICATE_REPAIR_GROUPS=${Number(result.coalescedGroups)}`);
 }
