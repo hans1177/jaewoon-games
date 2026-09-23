@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "      <div class=\"actions\">",
+      "replace": "      <button id=\"toolButton\" class=\"tool\" type=\"button\">🤲<small>손</small></button>\n      <button id=\"actionButton\" class=\"action\" type=\"button\">행동</button>\n      <button id=\"confirmButton\" class=\"wide-button\" type=\"button\">확인</button>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
