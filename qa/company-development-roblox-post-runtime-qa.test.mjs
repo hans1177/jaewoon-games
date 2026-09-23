@@ -62,3 +62,12 @@ test('stale published Roblox version counts as missing actual runtime execution 
   assert.match(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
   assert.match(workflow,/attempts>=3/);
 });
+
+
+test('exact Roblox foundation QA is isolated per game and cannot globally serialize multiplayer verification',()=>{
+  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id/);
+  assert.match(workflow,/scheduled-scan/);
+  assert.match(workflow,/manual-scan/);
+  assert.doesNotMatch(workflow,/group: company-development-roblox-runtime-foundation-qa\s*\n/);
+  assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
