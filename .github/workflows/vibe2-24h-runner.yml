@@ -398,7 +398,8 @@ jobs:
             node /tmp/vibe2-main/tools/company-system-ai-learning.mjs \
               --queue=.vibe2/system-ai-queue.json \
               --experience=.vibe2/experience.json \
-              --patterns=.vibe2/code-pattern-library.json | tee /tmp/vibe2-system-ai-learning.log
+              --patterns=.vibe2/code-pattern-library.json \
+              --state=.vibe2/learning-motor-state.json | tee /tmp/vibe2-system-ai-learning.log
 
             if grep -Eq '^(RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED|SYSTEM_AI_LEARNING_EXPERIENCE_ADDED|SYSTEM_AI_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*$' /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log /tmp/vibe2-system-ai-learning.log 2>/dev/null; then
               node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
