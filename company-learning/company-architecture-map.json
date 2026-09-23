@@ -1,5 +1,5 @@
 {
-  "version": 116,
+  "version": 117,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2313,7 +2313,11 @@
         "ANIMATION",
         "VFX",
         "UI_ART",
-        "VISUAL_RUNTIME_QA"
+        "VISUAL_RUNTIME_QA",
+        "CINEMATIC_DIRECTION",
+        "CHARACTER_AND_CREATURE_ACTING",
+        "ENVIRONMENTAL_STORYTELLING",
+        "CONTINUOUS_PRESENTATION_EVOLUTION"
       ],
       "usesExistingDepartment": true,
       "duplicateArtDepartmentForbidden": true,
@@ -2330,7 +2334,12 @@
       "oneTopLevelGraphicsWorkUnitPerGameCandidate": true,
       "internalRolesMayNotCreateSiblingTopLevelGraphicsPipelines": true,
       "audioAuthoringOwner": "audio",
-      "graphicsConsumesAudioEvidenceWithoutOwningAudioDepartment": true
+      "graphicsConsumesAudioEvidenceWithoutOwningAudioDepartment": true,
+      "continuousEvolutionWithinSameGraphicsProductionRoot": true,
+      "graphicsPassIsCheckpointNotTerminal": true,
+      "ownerChangeRequestDirectResponsibleSystemEdit": true,
+      "shadowOrWrapperPresentationAccumulationForbidden": true,
+      "releaseAuthorityExpansionForbidden": true
     }
   },
   "recordsGovernance": {
