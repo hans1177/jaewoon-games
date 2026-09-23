@@ -41,6 +41,7 @@ function normalize(row={}){
     evidence:uniq(row.evidence),recoveryStrategy:clean(row.recoveryStrategy),verificationPlan:uniq(row.verificationPlan),
     deterministicEvidence:uniq(row.deterministicEvidence),recoveryOwner:clean(row.recoveryOwner)||'SYSTEM_STEWARD_OR_PRIMARY_AI',
     primaryAiReview:clean(row.primaryAiReview)||'PENDING',learningPromotion:clean(row.learningPromotion)||'PENDING',
+    recurrenceCount:Math.max(0,Number(row.recurrenceCount||0)),
     retries:Math.max(0,Number(row.retries||0)),retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,
     createdAt:clean(row.createdAt)||now(),updatedAt:clean(row.updatedAt)||now()
   };
@@ -65,7 +66,9 @@ export function enqueueRecovery(queueInput,row={},options={}){
       evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
       checkpoint:item.checkpoint||x.checkpoint,sourceMutationRequired:item.sourceMutationRequired!==false,
       sourceMutationBaseline:item.sourceMutationBaseline||item.checkpoint||x.sourceMutationBaseline||x.checkpoint||null,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
-      verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),updatedAt:now()
+      verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),
+      recurrenceCount:Math.max(Number(x.recurrenceCount||0),Number(item.recurrenceCount||0)),
+      updatedAt:now()
     });
     return{queue:{...queue,tasks},added:false,reactivated,id:target.id};
   }
