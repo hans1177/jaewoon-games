@@ -58,7 +58,7 @@ local function restoreMovement(p,v)
 end
 local function speed(p,v)restoreMovement(p,v)end
 local legacyMonsterIds={DRAK="DRACULA",FRANKEN="FRANKENSTEIN",WOLF="WEREWOLF",MIRAA="MUMMY",REAPER="GRIM_REAPER"}
-local function form(p)
+p:SetAttribute("MonsterForm","DRACULA";p:SetAttribute("HumanForm","BROADCAST";p:SetAttribute("Role","WAITING";p:SetAttribute("Frozen",false;p:SetAttribute("Infected",false;p:SetAttribute("InfectionReadyAt",0; p:SetAttribute("RoundState","WAITING"; p:SetAttribute("TimeLeft",0; p:SetAttribute("ObjectivesDone",0; p:SetAttribute("ObjectivesTotal",C.ObjectiveCount; p:SetAttribute("Escaped",false; p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교"; p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"맵 준비"; local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end); if ok and typeof(d) == "table" then for _,k in ipairs({"MonsterXP","Coins","RoundsSinceMonster"}) do if typeof(d[k]) == "number" then p:SetAttribute(k, d[k /no_think
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
  id=legacyMonsterIds[id]or id
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
