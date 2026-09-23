@@ -172,6 +172,18 @@ test('DESIGN_ONLY keeps deterministic evidence while lead-model distinctness is 
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
+test('department launcher sweeps all canonical production classes without cancelling active game work',()=>{
+  assert.match(multimodelWorkflow,/const resumableTargets=games\.filter/);
+  assert.match(multimodelWorkflow,/PRODUCTION_CLASSES\.DEVELOPMENT_CONFIRMED/);
+  assert.match(multimodelWorkflow,/PRODUCTION_CLASSES\.RELEASE_CONFIRMED/);
+  assert.match(multimodelWorkflow,/const portfolioSweepTargets=\[\]/);
+  assert.match(multimodelWorkflow,/\.\.\.ownerResetTargets,\.\.\.resumableTargets,\.\.\.genericDesignTargets/);
+  assert.match(multimodelWorkflow,/selected=portfolioSweepTargets/);
+  assert.doesNotMatch(multimodelWorkflow,/group: free-artbook-departments-main[\s\S]{0,80}cancel-in-progress: true/);
+  assert.match(multimodelWorkflow,/group: free-artbook-department-\$\{\{ matrix\.target\.game_id \}\}/);
+  assert.match(multimodelWorkflow,/cancel-in-progress: false/);
+});
+
 test('Vibe2/Vibe3 remain primary integration and learning owner for direct-native implementation with isolated external AI collaboration',()=>{
   const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority;
   assert.equal(authority.authority,'VIBE_PRIMARY_INTEGRATION_AND_LEARNING_OWNER_WITH_FULL_PROCESS_COLLABORATION');
