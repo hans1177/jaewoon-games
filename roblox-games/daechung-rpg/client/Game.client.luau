@@ -60,8 +60,7 @@ local function render()
  local xp=p:GetAttribute("XP")or 0
  local hp=0;local maxHP=p:GetAttribute("MaxHP")or 100
  local h=p.Character and p.Character:FindFirstChildOfClass("Humanoid");if h then hp=math.floor(h.Health)end
- statLine.Text=string.format("Lv.%d  HP %d/%d  공격 %d
-골드 %d · 무기 T%d · 방어구 T%d",level,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1)
+ statLine.Text=string.format("Lv.%d  HP %d/%d  공격 %d\n골드 %d · 무기 T%d · 방어구 T%d",level,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1)
  local zone=p:GetAttribute("CurrentZone")or 0
  local qp=p:GetAttribute("QuestPortal")or 0
  local qk=p:GetAttribute("QuestKills")or 0
@@ -70,9 +69,7 @@ local function render()
  local pc=p:GetAttribute("PartyCount")or 0
  local pk=p:GetAttribute("PartyKills")or 0
  local contrib=p:GetAttribute("Contribution")or 0
- partyText.Text=(p:GetAttribute("PartyHuntActive")==true)and string.format("파티 %d/4
-사냥 %d/%d · 기여 %d",pc+1,pk,C.PartyHuntTarget,contrib)or string.format("파티 %d/4
-AI 두번 터치",pc+1)
+ partyText.Text=(p:GetAttribute("PartyHuntActive")==true)and string.format("파티 %d/4\n사냥 %d/%d · 기여 %d",pc+1,pk,C.PartyHuntTarget,contrib)or string.format("파티 %d/4\nAI 두번 터치",pc+1)
  local combatLocked=p:GetAttribute("InCombat")==true
  returnButton.Visible=zone>0
  returnButton.Text=combatLocked and"전투 중 귀환 불가"or"마을 귀환"
