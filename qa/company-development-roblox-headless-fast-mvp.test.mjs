@@ -56,6 +56,12 @@ test('F0 blocks when actual Luau compiler evidence is missing even if structural
 });
 
 
+test('Roblox F0 persist ignores stale source or artifact results',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+ assert.match(workflow,/ROBLOX_F0_STALE_RESULT_IGNORED/);
+ assert.match(workflow,/currentSourceRevision!==targetSourceRevision\|\|currentArtifactIdentity!==targetArtifactIdentity/);
+});
+
 test('Roblox F0 workflow uses shallow checkout and exact source revision fetch instead of full history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
