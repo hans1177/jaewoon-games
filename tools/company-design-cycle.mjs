@@ -1074,6 +1074,7 @@ const intelligenceTask={
     enemies:Array.isArray(designDraft.contentVarietyPlan?.enemiesOrChallenges)?designDraft.contentVarietyPlan.enemiesOrChallenges:[],
     objectives:Array.isArray(designDraft.contentVarietyPlan?.objectives)?designDraft.contentVarietyPlan.objectives:[]
   },
+  referenceHomage:designDraft.referenceHomagePlan||{},
   designIntegrity:designDraft.designIntegrityPlan||{},
   narrative:designDraft.narrativeDialoguePlan?.applicable===true?designDraft.narrativeDialoguePlan:undefined,
   narrativeRequired:designDraft.narrativeDialoguePlan?.applicable===true,
