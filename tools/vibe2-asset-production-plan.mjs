@@ -13,6 +13,7 @@ const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
 const readJson=(file,fallback={})=>fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
 const highEndVisualContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.highEndVisualProductionContract||{};
+const companyGraphicsLibraryContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.companyGraphicsLibrary24h||{};
 
 const WEB_DIRECT_AUTHORING=freeze([
   'svg-final-art',
@@ -150,6 +151,8 @@ export function buildVibeAssetProductionPlan({
   const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput)));
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
+  const companyLibrary=companyGraphicsLibraryContract(repoRoot);
+  const companyLibraryActive=companyLibrary?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const directCount=decisions.filter(row=>row.directAuthoring.length>0).length;
   const reuseCount=decisions.filter(row=>row.reuseCandidates.length>0).length;
   return freeze({
@@ -168,6 +171,21 @@ export function buildVibeAssetProductionPlan({
     missingTypes:freezeList(selector.missingTypes||[]),
     decisions,
     qualityProfile:highEndActive?'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION':'STANDARD_PRESENTATION',
+    companyGraphicsLibrary:freeze({
+      enabled:companyLibraryActive,
+      graphicsProductionRoot:clean(companyLibrary?.graphicsProductionRoot)||'GRAPHICS_PRODUCTION',
+      scheduler:clean(companyLibrary?.scheduler)||null,
+      platformProfile:resolvedTarget==='unity'?'UNITY':resolvedTarget==='roblox'?'ROBLOX':'WEB_REFERENCE_ONLY',
+      baseArchetypes:freezeList(companyLibrary?.characterPreparation?.baseArchetypes||[]),
+      modularParts:freezeList(companyLibrary?.characterPreparation?.modularParts||[]),
+      weaponPacks:freezeList(companyLibrary?.actionMotionLibrary?.weaponPacks||[]),
+      motionMinimums:freeze(companyLibrary?.actionMotionLibrary?.minimumCoverage||{}),
+      qualityRequirements:freezeList(companyLibrary?.actionMotionLibrary?.qualityRequirements||[]),
+      reusableLibraries:freezeList(companyLibrary?.reusableLibraries||[]),
+      preparedArtifactMayNotClaimProductionPass:companyLibrary?.promotionRules?.preparedArtifactMayNotClaimProductionPass===true,
+      runtimeVerifiedConsumerRequiredBeforePromotion:companyLibrary?.promotionRules?.runtimeVerifiedConsumerRequiredBeforeCompanyAssetPromotion===true,
+      platformSpecificReauthoringRequired:companyLibrary?.promotionRules?.platformSpecificReauthoringRequired===true
+    }),
     highEndVisual:freeze({
       enabled:highEndActive,
       target:clean(highEnd?.target)||null,
@@ -240,6 +258,9 @@ export function buildVibeAssetProductionPlan({
       graphicsPassIsCheckpointNotTerminal:highEnd?.graphicsPassMeaning==='VERIFIED_PRESENTATION_CHECKPOINT_NOT_TERMINAL_COMPLETION',
       highEndPresentationCompletionIsReleaseGate:false,
       ownerChangeRequestStabilityRequired:highEnd?.ownerChangeRequestStability?.enabled===true,
+      companyGraphicsLibrary24h:companyLibraryActive,
+      unityRobloxLibraryVariantsSeparated:companyLibrary?.promotionRules?.platformSpecificReauthoringRequired===true,
+      actionReadyMotionVarietyRequired:companyLibraryActive,
       latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
       wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
     }),
@@ -261,6 +282,9 @@ export function assetProductionGuidance(plan={}){
     '서로 다른 에셋 팩을 원형 그대로 섞은 kitbash/sample-project 느낌은 완료가 아니다. Art Bible/재질/실루엣/조명/UI/VFX 언어를 통일한다.',
     '배경은 세계관·지역·서사 맥락에 맞고 몬스터는 생태·전투 역할이 읽히는 실루엣과 표현을 가져야 한다.',
     '액션·전투 캐릭터는 Web부터 IDLE/MOVE/ATTACK/HIT/DEATH 상태를 실제 게임 상태와 연결하고 표현 런타임을 통과한 뒤 native 플랫폼으로 이어간다.',
+    plan.companyGraphicsLibrary?.enabled?'회사 공용 그래픽 라이브러리는 24시간 idle 준비를 계속하지만 연습 산출물은 바로 production asset이 아니다. 실제 게임의 Unity/Roblox 네이티브 적용과 runtime 시각·모션·모바일 QA를 통과한 것만 검증 공용 자산으로 승격한다.':'',
+    plan.companyGraphicsLibrary?.enabled?`캐릭터 플랫폼 프로필=${plan.companyGraphicsLibrary.platformProfile}; Unity/Roblox 바이너리·리그는 직접 공유하지 않고 공통 실루엣/체형/장비 의미만 공유한 뒤 네이티브 재authoring한다.`:'',
+    plan.companyGraphicsLibrary?.enabled?`액션 모션 최소 커버리지=${JSON.stringify(plan.companyGraphicsLibrary.motionMinimums)}; weaponPacks=${plan.companyGraphicsLibrary.weaponPacks.join('|')}`:'',
     '선택 순서 후보: 검증된 회사 에셋 재사용 / Vibe 직접 제작 / 별도 authoring generator 요청. 기존 에셋 재사용은 강제가 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
