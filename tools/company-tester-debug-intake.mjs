@@ -13,7 +13,7 @@ function hash(parts){return crypto.createHash('sha256').update(parts.map(clean).
 function severity(sig=''){
   const s=upper(sig);
   if(/CRASH|START_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|SAVE_CORRUPTION|MULTIPLAYER_STATE_CORRUPTION|RELEASE_BLOCKING_PLATFORM_ERROR/.test(s))return'CRITICAL';
-  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|MOVEMENT_FAILURE|CAMERA_FOUNDATION_FAILURE|RUNTIME_FOUNDATION|FOUNDATION_UNVERIFIED|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA/.test(s))return'HIGH';
+  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|MOVEMENT_FAILURE|CAMERA_FOUNDATION_FAILURE|RUNTIME_FOUNDATION|FOUNDATION_UNVERIFIED|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA|F0_SOURCE|SOURCE_INTEGRITY|SOURCE_BIND|BUILD_PACKAGE|BUILD_PREFLIGHT/.test(s))return'HIGH';
   if(/UI|AUDIO|PRESENTATION|IMPLEMENTATION|MECHANIC|SYSTEM_COUNT|MUSIC_|MOBILE_|APPROVED_SCOPE_/.test(s))return'MEDIUM';
   return'LOW';
 }
@@ -72,6 +72,24 @@ function platformTickets(item={},stamp=''){
     const rr=item.robloxRuntimeEvidence||{};
     const foundation=item.robloxRuntimeFoundationEvidence||{};
     const candidate=item.robloxRuntimeCandidateEvidence||{};
+    const failureStage=upper(item.robloxFailureStage);
+    const failureSignature=clean(item.robloxFailureSignature);
+    const preRuntimeRepairStages=new Set(['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_BUILD_OR_PACKAGE','VIBE_SHARED_MODEL_BUILD_PREFLIGHT','F0_SOURCE_INTEGRITY']);
+    const preRuntimePending=/PENDING|AWAITING|UNVERIFIED/.test(upper(failureSignature));
+    if(failureSignature&&!preRuntimePending&&preRuntimeRepairStages.has(failureStage)){
+      add(failureStage,failureSignature,[
+        ...(item.routingBlockers||[]),
+        JSON.stringify({
+          sourceRevision:item.robloxSourceCommit||null,
+          buildSourceRevision:item.robloxBuildSourceRevision||null,
+          artifactIdentity:item.robloxBuildArtifactIdentity||null,
+          buildPreflightPassed:item.robloxBuildPreflightPassed===true,
+          foundationF0Passed:item.robloxFoundationF0Passed===true
+        })
+      ],{
+        reproduction:'RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE'
+      });
+    }
     if(candidate.published===true&&item.robloxRuntimeFoundationPassed!==true){
       if(foundation.state==='BLOCKED'||clean(item.robloxFailureSignature).match(/FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|MOVEMENT_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE/)){
         add('TARGET_PLATFORM_RUNTIME_FOUNDATION',foundation.failureSignature||item.robloxFailureSignature||'ROBLOX_RUNTIME_FOUNDATION_FAILED',[JSON.stringify(foundation),JSON.stringify(candidate)]);
@@ -126,7 +144,8 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
       id:'recovery-ticket-'+t.id,priority:['CRITICAL','HIGH'].includes(t.severity)?'critical':'high',
       sourceQueue:'tester-debug',sourceTaskId:t.id,gameId:t.gameId,responsibleFiles:t.responsibleFiles,
       failureStage:t.exactFailedStage,failureSignature:t.signature,blastRadius:'single-ticket',
-      evidence:uniq([...(t.evidence||[]),`tester-debug-ticket:${t.id}`,`tester-debug-category:${t.category}`,`tester-debug-severity:${t.severity}`]),
+      recurrenceCount:Math.max(1,Number(t.occurrenceCount||1)),
+      evidence:uniq([...(t.evidence||[]),`tester-debug-ticket:${t.id}`,`tester-debug-category:${t.category}`,`tester-debug-severity:${t.severity}`,`tester-debug-occurrence-count:${Math.max(1,Number(t.occurrenceCount||1))}`]),
       recoveryStrategy:'REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE',
       verificationPlan:['RERUN_EXACT_FAILED_STAGE','INDEPENDENT_QA_WHEN_APPLICABLE','REGRESSION_WHEN_APPLICABLE','CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'],
       recoveryOwner:t.responsibleFiles.length?'SYSTEM_AI':'VIBE2_VIBE3'
