@@ -279,3 +279,10 @@ test('independent Unity QA ignores unrelated Redroid system crashes and scopes f
   assert.match(independentQaSource,/ANR in \$\{package\}\|Process \$\{package\} .* has died/);
   assert.doesNotMatch(independentQaSource,/FATAL EXCEPTION\|ANR in \$\{package\}\|Fatal signal\|Process/);
 });
+
+
+test('Unity canonical runtime starts from native source and tracked build requests',()=>{
+  assert.match(workflowSource,/push:[\s\S]*'\.build-requests\/unity\/\*\*'/);
+  assert.match(workflowSource,/push:[\s\S]*'unity-games\/\*\*'/);
+  assert.match(workflowSource,/RUNTIME_THEN_INDEPENDENT_QA_THEN_REGRESSION=ENABLED/);
+});
