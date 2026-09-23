@@ -56,6 +56,19 @@ test('repeated System-AI infrastructure failure creates one repair canary and ga
   }
 });
 
+test('shared canary wait state never recursively creates another recovery',()=>{
+  const result=escalateRecoveryCandidates({
+    systemAiQueueInput:{tasks:[
+      {id:'blocked-a',status:'queued',retries:4,blocker:'shared-signature-canary-pending:recovery-root',responsibleFiles:['tools/a.mjs']},
+      {id:'blocked-b',status:'queued',retries:7,blocker:'shared-signature-canary-pending:recovery-root',responsibleFiles:['tools/b.mjs']},
+      {id:'superseded',status:'queued',retries:9,blocker:'system-ai-duplicate-repair-superseded',lastOutcome:'SUPERSEDED_DUPLICATE_WORK',responsibleFiles:['tools/c.mjs']}
+    ]}
+  });
+  assert.equal(result.added.length,0);
+  assert.equal(result.reactivated.length,0);
+  assert.equal(result.queue.tasks.length,0);
+});
+
 test('cancelled or completed tasks never re-enter recovery escalation from stale failure evidence',()=>{
   const result=escalateRecoveryCandidates({
     gameQueueInput:{tasks:[
