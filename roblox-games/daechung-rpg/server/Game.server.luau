@@ -383,6 +383,9 @@ local function resolveIncomingAttack(p,e,attack)
   e.enragedUntil=now+4;combatFlash(e.part.Position,Color3.fromRGB(171,225,116),2)
  elseif special=="SHELL_BASH"then
   local knock=pr.Position-e.part.Position;if knock.Magnitude>.01 then pr.AssemblyLinearVelocity=knock.Unit*32+Vector3.new(0,8,0)end
+ elseif special=="GROUND_STOMP"or special=="HOWL_BLAST"then
+  local knock=pr.Position-e.part.Position;if knock.Magnitude>.01 then pr.AssemblyLinearVelocity=knock.Unit*38+Vector3.new(0,10,0)end
+  combatFlash(e.part.Position,Color3.fromRGB(224,102,72),3)
  end
 end
 local function chooseEnemyAttack(e)
@@ -525,7 +528,7 @@ local function init(p)
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("ClassName","직업 미선택")
 p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
- p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
+ p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
  p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
  msg(p,"직업을 고르고 마을 이장에게 퀘스트를 받아.")
@@ -1240,7 +1243,12 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.ADVANCE_B then accepted=chooseAdvancement(p,"B")
  elseif a==C.Actions.START_ADVANCEMENT_TRIAL then startAdvancementTrial(p);accepted=true
  elseif a==C.Actions.BLOCK_START then
-  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>0 then p:SetAttribute("Blocking",true);p:SetAttribute("BlockStartedAt",now);feedback(p,"BLOCK_READY");accepted=true end
+  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>0 then
+   p:SetAttribute("Blocking",true)
+   if now>=n(p,"ParryRearmUntil",0)then p:SetAttribute("BlockStartedAt",now);p:SetAttribute("ParryRearmUntil",now+C.ParryRearmSeconds);feedback(p,"BLOCK_READY")
+   else p:SetAttribute("BlockStartedAt",0)end
+   accepted=true
+  end
  elseif a==C.Actions.BLOCK_END then p:SetAttribute("Blocking",false);accepted=true
  elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);playerAttack(p,false);accepted=true
  elseif a==C.Actions.SKILL then p:SetAttribute("Blocking",false);playerAttack(p,true);accepted=true
