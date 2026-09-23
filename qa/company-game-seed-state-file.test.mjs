@@ -37,11 +37,12 @@ test('seed material pool normalizes to 100 materials',()=>{
   assert.equal(state.seedMaterials.length,100);
 });
 
-test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio contract',t=>{
+test('persisted GAME_SEED state follows current central machine policy contract',t=>{
   if(!fs.existsSync(stateFile)){t.skip('GAME_SEED bootstrap has not persisted state yet');return;}
   const raw=JSON.parse(fs.readFileSync(stateFile,'utf8'));
   const state=normalizeSeedState(raw);
-  assert.equal(state.policyDocument,'COMPANY_FLOW.md');
+  assert.equal(state.policyAuthority,'company-learning/platform-release-roadmap.json');
+  assert.equal('policyDocument' in state,false);
   assert.ok(Array.isArray(state.seeds));
   assert.equal('vacancies' in state,false,'legacy vacancy state must be removed by normalization');
   assert.ok(state.seeds.every(seed=>!('replacementOfSeedId' in seed)&&!('replacementVacancyId' in seed)),'seeds must not carry legacy vacancy replacement links');
@@ -60,7 +61,7 @@ test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio c
 
   for(const seed of state.seeds.filter(seed=>String(seed?.status||'').toUpperCase()==='ACTIVE')){
     const result=validateGameSeed(seed);
-    assert.equal(result.pass,true,`active GAME_SEED must satisfy current COMPANY_FLOW contract: ${seed.seedId||seed.gameId||'unknown'}\n${result.errors.join('\n')}`);
+    assert.equal(result.pass,true,`active GAME_SEED must satisfy current central GAME_SEED contract: ${seed.seedId||seed.gameId||'unknown'}\n${result.errors.join('\n')}`);
   }
 
   for(const request of state.portfolioSeedRequests){
