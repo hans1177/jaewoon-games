@@ -4,15 +4,18 @@ import fs from 'node:fs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
+const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const robloxQa=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 const headlessQa=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
 const modes=['SINGLE','COOP','COMPETITIVE','HYBRID'];
 
-test('central policy decides multiplayer mode during game design',()=>{
-  assert.match(policy,/multiplayer:\n\s+decisionStage: GAME_DESIGN/);
-  for(const mode of modes)assert.match(policy,new RegExp(`- ${mode}`));
-  assert.match(policy,/lateUnplannedMultiplayerAttachmentForbidden: true/);
+test('central policy requires multiplayer mode inside the minimum game design contract',()=>{
+  const direct=policy.directNativeDualPlatformDevelopment;
+  assert.ok(direct.minimumDesignContract.includes('MULTIPLAYER_MODE'));
+  assert.ok(direct.design.minimumAdmissionContract.requiredCommonFields.includes('multiplayerMode'));
+  assert.equal(direct.minimumDesignRequired,true);
+  assert.equal(direct.design.required,true);
+  assert.equal(direct.design.sharedCoreRequired,true);
 });
 
 test('designer schema requires one explicit canonical multiplayer mode and no legacy single-player default',()=>{
