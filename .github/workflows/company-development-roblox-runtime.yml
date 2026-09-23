@@ -29,7 +29,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-runtime
+  group: company-development-roblox-runtime-${{ inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
