@@ -182,7 +182,10 @@ jobs:
       - name: Validate current artbook safety
         run: |
           set -euo pipefail
-          node --test qa/artbook-production-pipeline.test.mjs qa/design-pipeline-no-artbook-regression.test.mjs
+          node --test qa/artbook-production-pipeline.test.mjs
+          node --test qa/company-development-queue-reconcile.test.mjs
+          node --test qa/production-diversity.test.mjs
+          node --test qa/company-status-sync-direct-native.test.mjs qa/design-pipeline-no-artbook-regression.test.mjs
 
       - name: Validate learning and deterministic recovery contracts
         run: |
