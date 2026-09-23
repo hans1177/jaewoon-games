@@ -66,3 +66,11 @@ test('canonical evaluator preserves fail-closed multiplayer and release gates', 
   assert.match(evaluator, /evidence\?\.artifactIdentity[\s\S]*item\.robloxBuildArtifactIdentity/);
   assert.match(evaluator, /item\.robloxExactRevisionPassed === true/);
 });
+
+
+test('exact Roblox F9 review is isolated per game after multiplayer acceptance',()=>{
+  assert.match(workflow,/group: company-development-roblox-f9-final-review-\$\{\{ inputs\.game_id/);
+  assert.match(workflow,/scheduled-scan/);
+  assert.match(workflow,/manual-scan/);
+  assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
+});
