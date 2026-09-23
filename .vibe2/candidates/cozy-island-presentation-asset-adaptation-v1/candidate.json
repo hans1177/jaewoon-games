@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "      <div class=\"hud-main\">",
+      "replace": "        <span>🪙 <b id=\"coinText\">40</b></span>\n        <button id=\"inventoryButton\" class=\"small-button\" type=\"button\">가방</button>\n      </div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
