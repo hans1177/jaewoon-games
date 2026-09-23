@@ -9,6 +9,9 @@ import {
 
 const directive = JSON.parse(fs.readFileSync('company-directive.json', 'utf8'));
 const policy = fs.readFileSync('COMPANY_FLOW.md', 'utf8');
+const roadmap = JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json', 'utf8'));
+const designCycleSource = fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+const designIntelligenceSource = fs.readFileSync('tools/vibe2-design-intelligence.mjs','utf8');
 
 const expectedDesignOnlyFlow = [
   'GAME_SEED',
@@ -104,4 +107,28 @@ test('numeric market claims require both source and observedAt', () => {
   assert.equal(result.pass, false);
   assert.ok(result.errors.some(error => error.includes('.source is required')));
   assert.ok(result.errors.some(error => error.includes('.observedAt is required')));
+});
+
+
+test('intelligent design evolution is canonical policy and executable code',()=>{
+  const c=roadmap.directNativeDualPlatformDevelopment.design.intelligentEvolution;
+  assert.equal(c.enabled,true);
+  assert.equal(c.totalRevisionLimit,null);
+  assert.equal(c.artificialRevisionCapForbidden,true);
+  assert.deepEqual(c.loop,['STABILIZE','UNDERSTAND','OBSERVE','DIAGNOSE','SCORE','PROPOSE','COMPARE','REVISE','VALIDATE','LEARN','REPLAN']);
+  assert.equal(c.repeatedOwnerRequest.semanticTextDeduplicationForbidden,true);
+  assert.equal(c.repeatedOwnerRequest.identicalRepeatedTextCreatesNewDesignRevision,true);
+  assert.equal(c.repeatedOwnerRequest.unlimitedRepeatsAllowed,true);
+  assert.equal(c.identityAndCreativeFreedom.identityIsAnchorNotPrison,true);
+  assert.equal(c.identityAndCreativeFreedom.genreChangeAllowed,true);
+  assert.equal(c.blueprint.minimumPlans,2);
+  assert.equal(c.contentDiversity.monotonyDetectionRequired,true);
+  assert.equal(c.literaryAndCulturalInspiration.livingAuthorStyleImitationForbidden,true);
+  assert.equal(c.narrativeAndDialogue.characterVoiceBibleRequiredForMajorSpeakingCharacters,true);
+  assert.equal(c.validationAndLearning.documentAndImplementationMustStaySynchronized,true);
+  assert.match(designCycleSource,/CANONICAL_POLICY_PATH='company-learning\/platform-release-roadmap\.json'/);
+  assert.match(designCycleSource,/designEvolution:DESIGN_EVOLUTION/);
+  assert.match(designCycleSource,/CENTRAL_DESIGN_EVOLUTION_CONTRACT/);
+  assert.match(designIntelligenceSource,/DESIGN_EVOLUTION_LOOP/);
+  assert.match(designIntelligenceSource,/identityIsAnchorNotPrison:true/);
 });
