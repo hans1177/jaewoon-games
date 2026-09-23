@@ -453,7 +453,10 @@ local function startAdvancementTrial(p)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE")
  if not classDef(classId)then msg(p,"직업을 먼저 선택해.")return end
  if n(p,"Level",1)<C.AdvancementLevel then msg(p,"전직은 Lv."..C.AdvancementLevel.."부터 가능")return end
- if tostring(p:GetAttribute("AdvancementId")or"")~=""then msg(p,"이미 1차 전직 완료 · "..classDisplay(classId,p:GetAttribute("AdvancementId")))return end
+ if tostring(p:GetAttribute("AdvancementId")or"")~=""then
+  if n(p,"Gold",0)<C.AdvancementSwitchCost then msg(p,"재전직 비용 "..C.AdvancementSwitchCost.."골드 필요")return end
+  p:SetAttribute("RespecReady",true);msg(p,"재전직 준비 완료 · A/B 중 선택하면 "..C.AdvancementSwitchCost.."골드 사용");return
+ end
  if p:GetAttribute("AdvancementTrialPassed")==true then msg(p,"전직 시험 완료 · 화면에서 A/B 전직을 선택해.")return end
  p:SetAttribute("AdvancementTrialActive",true);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("SoulCharge",0)
  msg(p,trialInstruction(classId))
@@ -845,13 +848,50 @@ local function buildWorld()
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
 
+local CLASS_ACTIONS={
+ [C.Actions.SELECT_BREAKER]="BREAKER",[C.Actions.SELECT_SHADOW]="SHADOW",[C.Actions.SELECT_RUNE]="RUNE",[C.Actions.SELECT_SOUL]="SOUL",
+}
+local function selectClass(p,classId)
+ if n(p,"CurrentZone",0)~=0 then msg(p,"직업 선택은 마을에서 가능")return false end
+ if tostring(p:GetAttribute("ClassId")or"NONE")~="NONE"then msg(p,"이미 시작 직업을 선택했어.")return false end
+ if not classDef(classId)then return false end
+ p:SetAttribute("ClassId",classId);p:SetAttribute("AdvancementId","");setStats(p,true);applyPlayerAppearance(p)
+ msg(p,"시작 직업 · "..classDisplay(classId,""));feedback(p,"CLASS_SELECTED");return true
+end
+local function chooseAdvancement(p,key)
+ if n(p,"CurrentZone",0)~=0 then msg(p,"전직은 마을에서 가능")return false end
+ local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=classDef(classId);if not cd then return false end
+ if n(p,"Level",1)<C.AdvancementLevel then msg(p,"Lv."..C.AdvancementLevel.."부터 전직 가능")return false end
+ local choice=cd.Advancements[key];if not choice then return false end
+ local old=tostring(p:GetAttribute("AdvancementId")or"")
+ if old==""then
+  if p:GetAttribute("AdvancementTrialPassed")~=true then msg(p,"전직 교관의 시험을 먼저 완료해.")return false end
+ else
+  if p:GetAttribute("RespecReady")~=true then msg(p,"전직 교관에게 재전직을 신청해.")return false end
+  if old==choice.Id then p:SetAttribute("RespecReady",false);msg(p,"이미 "..choice.Name.."이야.")return false end
+  if n(p,"Gold",0)<C.AdvancementSwitchCost then p:SetAttribute("RespecReady",false);msg(p,"재전직 골드 부족")return false end
+  p:SetAttribute("Gold",n(p,"Gold",0)-C.AdvancementSwitchCost)
+ end
+ p:SetAttribute("AdvancementId",choice.Id);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("RespecReady",false)
+ setStats(p,true);applyPlayerAppearance(p);msg(p,"1차 전직 · "..choice.Name.." · "..choice.Role);feedback(p,"ADVANCEMENT_COMPLETE");return true
+end
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"then return end
  local now=os.clock();if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
  local accepted=false
- if a==C.Actions.ATTACK then playerAttack(p,false);accepted=true
+ if CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
+ elseif a==C.Actions.ADVANCE_A then accepted=chooseAdvancement(p,"A")
+ elseif a==C.Actions.ADVANCE_B then accepted=chooseAdvancement(p,"B")
+ elseif a==C.Actions.START_ADVANCEMENT_TRIAL then startAdvancementTrial(p);accepted=true
+ elseif a==C.Actions.ATTACK then playerAttack(p,false);accepted=true
  elseif a==C.Actions.SKILL then playerAttack(p,true);accepted=true
- elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0);accepted=true end
+ elseif a==C.Actions.DODGE then
+  local r=root(p);if r then
+   local classId=tostring(p:GetAttribute("ClassId")or"NONE");local adv=tostring(p:GetAttribute("AdvancementId")or"")
+   local evade=adv=="MIRAGE_TRACKER"and .75 or .45;p:SetAttribute("EvasionUntil",now+evade)
+   if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.2)end
+   r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0);accepted=true;feedback(p,"DODGE")
+  end
  elseif a==C.Actions.RETURN_VILLAGE then
   if os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds or p:GetAttribute("InCombat")==true then msg(p,"전투 중에는 마을 귀환 불가")return end
   p:SetAttribute("CurrentZone",0);p:SetAttribute("PartyHuntActive",false);teleportPlayer(p,C.VillageCenter);setStats(p,true);msg(p,"마을 귀환 · 체력 완전 회복");accepted=true
@@ -935,7 +975,14 @@ RunService.Heartbeat:Connect(function(dt)
     local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
     if d and d.Magnitude>4 then e.part.CFrame=e.part.CFrame+ d.Unit*math.min(d.Magnitude,(e.boss and 9 or 7)*dt)end
     if tr and(tr.Position-e.part.Position).Magnitude<=5.5 and now-e.lastAttack>1.15 then
-     e.lastAttack=now;local h=hum(target);if h then h:TakeDamage(e.damage)end;lastCombat[target]=now;target:SetAttribute("InCombat",true)
+     e.lastAttack=now;local h=hum(target)
+     if h then
+      local amount=e.damage
+      if n(target,"EvasionUntil",0)>now then amount=0;feedback(target,"DODGE")
+      elseif n(target,"GuardUntil",0)>now then amount*=.55;feedback(target,"GUARD")end
+      if amount>0 then h:TakeDamage(amount)end
+     end
+     lastCombat[target]=now;target:SetAttribute("InCombat",true)
     end
    else
     local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
@@ -945,34 +992,40 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 
- -- AI 유저 10명: 파티 AI는 플레이어를 따라가고, 나머지는 사냥터를 순환한다.
+ -- AI 유저 10명: 실제 R15 Humanoid로 걷고, 직업별 전투 위치와 공격 방식을 사용한다.
  for _,ai in ipairs(aiUsers)do
-  if ai.part.Parent then
+  if ai.model and ai.model.Parent and ai.root and ai.root.Parent and ai.humanoid and ai.humanoid.Health>0 then
    local leader=nil
    for _,p in ipairs(Players:GetPlayers())do if partyHas(p,ai.id)then leader=p;break end end
    if leader then
-    local zone=n(leader,"CurrentZone",0);ai.zone=zone
-    local lr=root(leader);if lr then
-     local desired=lr.Position+Vector3.new((ai.id%3-1)*5,0,7+(ai.id%2)*3);local d=Vector3.new(desired.X-ai.part.Position.X,0,desired.Z-ai.part.Position.Z)
-     if d.Magnitude>2 then ai.part.CFrame=ai.part.CFrame+d.Unit*math.min(d.Magnitude,13*dt)end
-    end
-    if ai.def.Class=="HEALER"then
-     local h=hum(leader);if h and h.Health<h.MaxHealth and now-ai.lastAttack>1.3 then ai.lastAttack=now;h.Health=math.min(h.MaxHealth,h.Health+10)end
-    elseif zone>0 then
-     local range=ai.def.Class=="ARCHER"and 24 or 11;local e=nearestEnemy(ai.part.Position,zone,range)
-     if e and now-ai.lastAttack>(ai.def.Class=="WARRIOR"and .7 or 1.0)then
-      ai.lastAttack=now;local dmg=ai.def.Class=="WARRIOR"and 18 or ai.def.Class=="ARCHER"and 15 or 8;e.hp-=dmg;e.part:SetAttribute("HP",math.max(0,e.hp))
-      if e.hp<=0 then killEnemy(leader,e,1)end
+    local zone=n(leader,"CurrentZone",0);local lr=root(leader)
+    if lr then
+     if ai.zone~=zone then
+      ai.zone=zone;ai.model:PivotTo(lr.CFrame*CFrame.new((ai.id%3-1)*4,0,7));ai.humanoid:MoveTo(ai.root.Position)
+     end
+     local desired=aiFormation(ai,lr);if(ai.root.Position-desired).Magnitude>3.2 then moveAITo(ai,desired)end
+     if zone>0 then
+      local range=ai.classId=="RUNE"and 32 or ai.classId=="SOUL"and 30 or 24
+      local e=nearestEnemy(ai.root.Position,zone,range);if e then aiAttack(ai,leader,e,now)end
      end
     end
    else
-    if ai.zone==0 and math.random()<.002 then ai.zone=math.random(1,5);local z=portalDef(ai.zone);ai.part.CFrame=CFrame.new(z.Center+Vector3.new(math.random(-120,120),5,math.random(-120,120)))end
-    if ai.zone>0 then
-     local e=nearestEnemy(ai.part.Position,ai.zone,20)
-     if e and ai.def.Class~="HEALER" and now-ai.lastAttack>1.1 then ai.lastAttack=now;e.hp-=8+ai.weaponTier*3;e.part:SetAttribute("HP",math.max(0,e.hp));if e.hp<=0 then e.part:Destroy()end end
-     ai.gold+=dt*.3;if ai.weaponTier<5 and ai.gold>=C.WeaponPrices[ai.weaponTier+1]then ai.gold-=C.WeaponPrices[ai.weaponTier+1];ai.weaponTier+=1 end
-     if math.random()<.001 then ai.zone=0;ai.part.CFrame=CFrame.new(math.random(-60,60),6,math.random(-60,60))end
+    if ai.zone==0 then
+     if now>(ai.nextWander or 0)then
+      ai.nextWander=now+4+(ai.id%4);local a=(ai.id*1.7+now*.07)%(math.pi*2);local radius=28+(ai.id%4)*7
+      moveAITo(ai,Vector3.new(math.cos(a)*radius,5,math.sin(a)*radius))
+     end
+     if now>(ai.nextAdventure or math.huge)then
+      ai.zone=(ai.id%5)+1;local z=portalDef(ai.zone);ai.model:PivotTo(CFrame.new(z.Center+Vector3.new((ai.id%4)*5-8,5,150)));ai.nextAdventure=now+38+(ai.id%5)*4
+     end
+    else
+     local e=nearestEnemy(ai.root.Position,ai.zone,34)
+     if e then aiAttack(ai,nil,e,now)else
+      local z=portalDef(ai.zone);if z then moveAITo(ai,z.Center+Vector3.new((ai.id%5-2)*18,5,(ai.id%3-1)*22))end
+     end
+     if now>(ai.nextAdventure or math.huge)then ai.zone=0;ai.model:PivotTo(CFrame.new((ai.id%5-2)*10,5,35+(ai.id%3)*8));ai.nextAdventure=now+24+(ai.id%4)*5 end
     end
+    ai.gold+=dt*.3;if ai.weaponTier<5 and ai.gold>=C.WeaponPrices[ai.weaponTier+1]then ai.gold-=C.WeaponPrices[ai.weaponTier+1];ai.weaponTier+=1 end
    end
   end
  end
