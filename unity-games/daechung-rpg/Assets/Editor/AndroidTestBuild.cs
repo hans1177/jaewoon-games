@@ -91,7 +91,7 @@ namespace JaewoonGames.DaechungRpg.Editor
                 scenes = new[] { ScenePath },
                 locationPathName = outputDirectory,
                 target = BuildTarget.WebGL,
-                options = BuildOptions.Development
+                options = BuildOptions.None
             };
 
             Debug.Log($"[JAEWOON BUILD] Building Unity Web: {outputDirectory}");
