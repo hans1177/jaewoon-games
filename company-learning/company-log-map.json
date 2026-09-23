@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 33,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,5 +492,61 @@
   "centralPolicyExecutionEvidence": {
     "humanReadablePolicyDocsRequired": false,
     "machinePolicyHashesRequired": true
+  },
+  "designEvolutionEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution",
+    "correlationKeys": [
+      "GAME_ID",
+      "DESIGN_REVISION",
+      "SIGNAL_EVENT_ID",
+      "SIGNAL_FINGERPRINT",
+      "SOURCE_REVISION"
+    ],
+    "requiredEvidence": [
+      "OWNER_LITERAL_INTENT_WHEN_PRESENT",
+      "OWNER_LIKELY_INTENT_WHEN_PRESENT",
+      "STABILITY_TRIAGE",
+      "DESIGN_HEALTH_OBSERVATIONS",
+      "PRIORITY_SCORE",
+      "PRIORITY_SCORE_COMPONENTS",
+      "BASELINE_IDENTITY_ANCHORS",
+      "PLAN_A",
+      "PLAN_B",
+      "SELECTED_PLAN_AND_RATIONALE",
+      "MAP_REGION_VARIETY",
+      "ENEMY_ROLE_VARIETY",
+      "NARRATIVE_DIALOGUE_CONTRACT_WHEN_APPLICABLE",
+      "REFERENCE_AND_HOMAGE_PROVENANCE_WHEN_USED",
+      "PREVIOUS_DESIGN_CHECKPOINT",
+      "STRICT_DESIGN_RESULT",
+      "PLAYTEST_OR_RUNTIME_COMPARISON_WHEN_AVAILABLE",
+      "VERIFIED_LEARNING_RETURN_REFERENCE",
+      "NEXT_REPLAN_DECISION",
+      "SYMPTOM",
+      "DEFECT_CAUSE_CLASS",
+      "DEFECT_OWNER",
+      "CAUSE_EVIDENCE",
+      "DESIGN_INTEGRITY_RESULT",
+      "DUPLICATE_REPAIR_SUPPRESSION",
+      "DESIGN_EVOLUTION_REASON",
+      "BASELINE_REVIEW_AT",
+      "DEEP_REVIEW_DUE"
+    ],
+    "ownerRepeatedIdenticalRequestRequiresNewSignalEventId": true,
+    "ownerSemanticTextDeduplicationForbidden": true,
+    "automaticSignalFingerprintDeduplicationRequired": true,
+    "designPassCheckpointNotTerminal": true,
+    "unlimitedRevisionGenerationsAllowed": true,
+    "strictScoreAloneCannotProveImprovement": true,
+    "directProtectedExpressionCopyForbidden": true,
+    "releaseAuthority": false,
+    "sameSymptomDualMutationForbidden": true,
+    "unresolvedCauseMustNotInventDesignFailure": true,
+    "runtimeImplementationDefectPreservesApprovedDesignByDefault": true,
+    "verifiedDesignDefectRequiresTargetedDesignRevision": true,
+    "dailyHealthScanEvidenceRequired": true,
+    "periodicDeepReviewHours": 168,
+    "passCheckpointMayBeReopenedByNewSignalOrPeriodicReview": true
   }
 }

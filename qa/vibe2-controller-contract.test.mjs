@@ -46,8 +46,9 @@ test('learning Web artifact practice routes to isolated artifact execution inste
 
 test('fan-in controller contract directly verifies design intelligence stages and evidence gating',()=>{
   assert.deepEqual([...DESIGN_INTELLIGENCE_STAGES],[
-    'DESIGNER','CONSTRAINT_ENGINE','CRITIC','CAUSALITY_GRAPH','PLAYER_MODEL','COMBAT_ECONOMY_SIMULATOR',
-    'IMPLEMENTATION','AUTO_PLAYER','TELEMETRY','DESIGN_REVIEW','EXPERIENCE_MEMORY'
+    'STABILITY_TRIAGE','DEFECT_OWNERSHIP','DESIGNER','DESIGN_BLUEPRINT','DESIGN_INTEGRITY','CONTENT_DIVERSITY',
+    'REFERENCE_HOMAGE','NARRATIVE_DIALOGUE','CONSTRAINT_ENGINE','CRITIC','CAUSALITY_GRAPH','PLAYER_MODEL',
+    'COMBAT_ECONOMY_SIMULATOR','IMPLEMENTATION','AUTO_PLAYER','TELEMETRY','DESIGN_REVIEW','EXPERIENCE_MEMORY'
   ]);
   const design=buildVibeDesignIntelligence({
     task:{goal:'기존 코드 내부 개선',type:'implementation',responsibleFiles:['unity-games/demo/Assets/Player.cs']},

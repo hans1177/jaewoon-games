@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'tools/company-design-cycle.mjs'
+      - 'tools/vibe2-design-intelligence.mjs'
+      - 'qa/vibe2-design-intelligence.test.mjs'
       - 'tools/company-design-checkpoint-recovery.mjs'
       - 'tools/company-baseline-gate.mjs'
       - 'tools/company-design-seed-normalize.mjs'
@@ -156,7 +158,7 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const designScheduling=directive?.platformStrategy?.designStabilizationScheduling||{};
-          const engineFiles=['tools/company-design-cycle.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
+          const engineFiles=['tools/company-design-cycle.mjs','tools/vibe2-design-intelligence.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
           const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
           const canaryMarker=(()=>{try{return JSON.parse(fs.readFileSync('design-engine-canary.json','utf8'));}catch{return null;}})();
           const canaryVerified=canaryMarker?.engineDigest===engineDigest;
@@ -173,6 +175,9 @@ jobs:
             .filter(row=>String(row?.status||'').trim().toUpperCase()==='ACTIVE')
             .map(row=>String(row?.gameId||'').trim())
             .filter(Boolean));
+          const activeOwnerRequestFor=seed=>(ownerReset.requests||[]).find(row=>
+            String(row?.status||'').trim().toUpperCase()==='ACTIVE'&&String(row?.gameId||'').trim()===String(seed?.gameId||'').trim()
+          )||null;
           const designReviewEligible=seed=>{
             const status=String(seed?.status||'').trim().toUpperCase();
             if(['DISCARDED','REMOVED'].includes(status))return false;
@@ -181,9 +186,9 @@ jobs:
           const active=(state.seeds||[]).filter(designReviewEligible);
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
-          const strictPassFor=(seed)=>{
+          const latestStrictPassFor=(seed)=>{
             const gameRoot=path.join('design',String(seed.gameId));
-            if(!fs.existsSync(gameRoot))return false;
+            if(!fs.existsSync(gameRoot))return null;
             try{
               const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
               for(const date of dates){
@@ -199,10 +204,40 @@ jobs:
                   if(!evidenceAt&&date<=resetDate)continue;
                 }
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
-                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0)return true;
+                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
+                  let ownerDesignEventId=null;
+                  const revisedPath=path.join(base,'design-revised.json');
+                  if(fs.existsSync(revisedPath)){try{ownerDesignEventId=String(JSON.parse(fs.readFileSync(revisedPath,'utf8'))?.ownerDesignEventId||'').trim()||null;}catch{}}
+                  return{date,evidenceAt,review,status,ownerDesignEventId};
+                }
               }
             }catch{}
-            return false;
+            return null;
+          };
+          const strictPassFor=seed=>Boolean(latestStrictPassFor(seed));
+          const designEvolution=roadmap?.directNativeDualPlatformDevelopment?.design?.continuousIntelligentDesignEvolution||{};
+          const healthReview=designEvolution?.scheduledHealthReview||{};
+          const deepReviewHours=Math.max(24,Number(healthReview.deepReviewIntervalHours||168));
+          const designEvolutionDueFor=(seed)=>{
+            const pass=latestStrictPassFor(seed);
+            if(!pass)return{due:true,reason:'STRICT_PASS_MISSING',baselineReviewAt:0};
+            const baselineReviewAt=Number(pass.evidenceAt||0);
+            const ownerRequest=activeOwnerRequestFor(seed);
+            const currentOwnerEventId=String(ownerRequest?.revision||seed?.ownerRequestInstanceId||seed?.ownerDirectiveRevision||seed?.ownerResetRevision||'').trim();
+            if(currentOwnerEventId&&currentOwnerEventId!==String(pass.ownerDesignEventId||''))return{due:true,reason:'NEW_OWNER_EVENT',baselineReviewAt};
+            const explicitSignalTimes=[
+              Date.parse(String(ownerRequest?.updatedAt||ownerRequest?.requestedAt||ownerReset?.requestedAt||''))||0,
+              Date.parse(String(seed?.ownerRequestAt||''))||0,
+              Date.parse(String(seed?.ownerDirectiveAt||''))||0,
+              Date.parse(String(seed?.ownerDesignRevisionAt||''))||0,
+              ...(Array.isArray(seed?.designEvolutionSignals)?seed.designEvolutionSignals
+                .filter(row=>String(row?.status||'OPEN').trim().toUpperCase()!=='RESOLVED')
+                .map(row=>Date.parse(String(row?.createdAt||row?.updatedAt||''))||0):[])
+            ];
+            const newestSignal=Math.max(0,...explicitSignalTimes);
+            if(newestSignal>baselineReviewAt)return{due:true,reason:'NEW_VERIFIED_OR_OWNER_SIGNAL',baselineReviewAt};
+            if(Date.now()-baselineReviewAt>=deepReviewHours*60*60*1000)return{due:true,reason:'PERIODIC_DEEP_HEALTH_REVIEW',baselineReviewAt};
+            return{due:false,reason:'PASS_CHECKPOINT_STILL_FRESH_NO_NEW_SIGNAL',baselineReviewAt};
           };
           const platformPriority=seed=>{
             if(designScheduling.mode!=='ROBLOX_FIRST_THEN_OTHER_PLATFORMS')return 0;
@@ -260,11 +295,12 @@ jobs:
           const preservationOnly=String(process.env.PRESERVATION_ONLY||'').trim().toLowerCase()==='true';
           const preservationSeed=seed=>seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&String(seed?.OWNER_REBUILD_MODE||'').trim().toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE'&&String(seed?.productionClass||'DESIGN_ONLY').trim().toUpperCase()==='DESIGN_ONLY';
           const activeResetSeeds=active.filter(seed=>activeResetIds.has(String(seed?.gameId||'').trim()));
-          const activeResetPending=activeResetSeeds.filter(seed=>!strictPassFor(seed));
+          const activeResetPending=activeResetSeeds.filter(seed=>designEvolutionDueFor(seed).due);
           const eligible=preservationOnly
             ? active.filter(preservationSeed)
             : (activeResetPending.length?activeResetSeeds:active);
-          const pending=eligible.filter(seed=>!strictPassFor(seed)).sort((a,b)=>
+          const pending=eligible.filter(seed=>designEvolutionDueFor(seed).due).sort((a,b)=>
+            Number(strictPassFor(a))-Number(strictPassFor(b))||
             platformPriority(a)-platformPriority(b)||
             deterministicCheckpointPriority(a)-deterministicCheckpointPriority(b)||
             checkpointResumePriority(a)-checkpointResumePriority(b)||
@@ -274,7 +310,7 @@ jobs:
           const selected=canaryVerified?pending:pending.slice(0,preservationOnly?1:2);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=selected.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
+          const targets=selected.map(seed=>{const evolution=designEvolutionDueFor(seed);return{game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),design_evolution_due:evolution.due,design_evolution_reason:evolution.reason,baseline_review_at:Number(evolution.baselineReviewAt||0)};});
           const parallelMax=Math.max(1,Math.min(preservationOnly?1:(canaryVerified?designWipMax:1),targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
@@ -297,6 +333,9 @@ jobs:
           console.error('GAME_DESIGN_ONLY_STRICT_PASS_REQUIRED=YES');
           console.error(`GAME_DESIGN_WIP_SOURCE=${unboundedByPolicy?'CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH':'CANONICAL_ROADMAP_NUMERIC_CAP'}`);
           console.error(`GAME_DESIGN_SCHEDULING_MODE=${designScheduling.mode||'DEFAULT'}`);
+          console.error(`DESIGN_HEALTH_SCAN=DAILY|deep_review_hours=${deepReviewHours}`);
+          console.error('DESIGN_PASS_IS_CHECKPOINT_NOT_TERMINAL=YES');
+          console.error('DESIGN_EVOLUTION_NO_DUE_SIGNAL_MUTATION=NO');
           console.error(`GAME_DESIGN_ROBLOX_FIRST=${designScheduling.mode==='ROBLOX_FIRST_THEN_OTHER_PLATFORMS'?'YES':'NO'}`);
           console.error('GAME_DESIGN_FORCE_PROMOTION=NO');
           console.error('GAME_DESIGN_PORTFOLIO_WIDE_PASS_REQUIRED=NO');
@@ -365,6 +404,9 @@ jobs:
         env:
           TARGET_GAME_ID: ${{ matrix.target.game_id }}
           TARGET_SEED_ID: ${{ matrix.target.seed_id }}
+          TARGET_DESIGN_EVOLUTION_DUE: ${{ matrix.target.design_evolution_due }}
+          TARGET_DESIGN_EVOLUTION_REASON: ${{ matrix.target.design_evolution_reason }}
+          TARGET_BASELINE_REVIEW_AT: ${{ matrix.target.baseline_review_at }}
         shell: bash
         run: |
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
@@ -373,7 +415,7 @@ jobs:
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const designReviewEligible=x=>{const status=String(x?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||x?.promotion?.strictDesignReviewContinuesInParallel===true);};const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&designReviewEligible(x));
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
-          let strictPass=false;
+          let strictPass=false,latestPassAt=0;
           const gameRoot=path.join('design',gameId);
           if(seed&&String(seed.seedId)===seedId&&fs.existsSync(gameRoot)){
             try{
@@ -387,11 +429,17 @@ jobs:
                   if(evidenceAt&&evidenceAt<resetAt)continue;
                   if(!evidenceAt&&date<=resetDate)continue;
                 }
-                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;break;}
+                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;latestPassAt=evidenceAt;break;}
               }
             }catch{}
           }
-          console.log(`should_run=${seed&&String(seed.seedId)===seedId&&!strictPass?'true':'false'}`);
+          const targetDue=String(process.env.TARGET_DESIGN_EVOLUTION_DUE||'').trim().toLowerCase()==='true';
+          const selectedBaseline=Number(process.env.TARGET_BASELINE_REVIEW_AT||0);
+          const supersededByNewerPass=latestPassAt>selectedBaseline&&selectedBaseline>0;
+          const shouldRun=Boolean(seed&&String(seed.seedId)===seedId&&targetDue&&!supersededByNewerPass);
+          console.log(`should_run=${shouldRun?'true':'false'}`);
+          console.log(`design_evolution_reason=${String(process.env.TARGET_DESIGN_EVOLUTION_REASON||'UNKNOWN')}`);
+          console.log(`design_evolution_superseded=${supersededByNewerPass?'true':'false'}`);
           NODE
       - name: Static strict contracts
         if: steps.target.outputs.should_run == 'true'
@@ -401,6 +449,8 @@ jobs:
           node --check tools/company-strict-production-review.mjs
           node --check tools/company-design-prepromotion-repair.mjs
           node --check tools/company-design-cycle.mjs
+          node --check tools/vibe2-design-intelligence.mjs
+          node --test qa/vibe2-design-intelligence.test.mjs
           node --check tools/company-design-checkpoint-recovery.mjs
           node --check tools/company-baseline-gate.mjs
           node --check tools/company-minimum-design-contract.mjs

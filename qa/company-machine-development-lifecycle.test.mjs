@@ -264,7 +264,7 @@ assert.match(seedDesignRuntime,/const leadPhaseActive=currentPhase==='DEPARTMENT
 assert.match(seedDesignRuntime,/DESIGN_GATE_REPAIR_LOOP_DISPATCH=WAITING_FOR_GEMINI_QUOTA/);
 assert.match(queue,/WAITING_FOR_GEMINI_QUOTA/);
 assert.match(queue,/isExternalQuotaWaitingTask/);
-assert.match(designCycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=3/);
+assert.match(designCycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
 assert.match(designCycle,/checkpointV2MigrationEligible/);
 assert.match(designCycle,/checkpointV3CompatibleEngineMigrationEligible/);
 assert.match(designCycle,/4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec/);
