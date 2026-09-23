@@ -178,7 +178,12 @@ export function buildVibeAssetProductionPlan({
       worldIdentityTargets:freezeList(highEnd?.qualityHierarchy?.WORLD_IDENTITY||[]),
       backgroundAndEnvironmentFirstClass:highEnd?.defaultAssetApplication?.backgroundAndEnvironmentFirstClass===true,
       antiKitbashGateRequired:highEnd?.cohesion?.antiKitbashGateRequired===true,
-      internalPlatformReleasePresentationGateRequired:highEnd?.internalPlatformReleasePresentationGateRequired===true
+      internalPlatformReleasePresentationGateRequired:highEnd?.internalPlatformReleasePresentationGateRequired===true,
+      publicReleasePresentationGateRequired:highEnd?.publicReleasePresentationGateRequired===true,
+      presentationCompletionIsTerminal:highEnd?.presentationCompletionIsTerminal===true,
+      continuousEvolution:highEnd?.continuousEvolution?.enabled===true,
+      cinematicDirectionRequired:highEnd?.cinematicDirection?.enabled===true,
+      ownerChangeRequestStabilityRequired:highEnd?.ownerChangeRequestStability?.enabled===true
     }),
     capabilities:freeze({
       webDirectAuthoring:WEB_DIRECT_AUTHORING,
@@ -230,7 +235,13 @@ export function buildVibeAssetProductionPlan({
       assetUseRequiresRuntimeVisualQa:true,
       siblingTopLevelGraphicsTasksForbidden:true,
       internalModuleMayNotSelfAcceptGraphicsPass:true,
-      allAssetDecisionsFanInToGraphicsProductionRoot:true
+      allAssetDecisionsFanInToGraphicsProductionRoot:true,
+      continuousPresentationEvolution:highEnd?.continuousEvolution?.enabled===true,
+      graphicsPassIsCheckpointNotTerminal:highEnd?.graphicsPassMeaning==='VERIFIED_PRESENTATION_CHECKPOINT_NOT_TERMINAL_COMPLETION',
+      highEndPresentationCompletionIsReleaseGate:false,
+      ownerChangeRequestStabilityRequired:highEnd?.ownerChangeRequestStability?.enabled===true,
+      latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
+      wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
     }),
     authority:'graphics-production-input-plan-only'
   });
