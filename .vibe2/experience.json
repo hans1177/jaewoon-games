@@ -203563,7 +203563,10 @@
         "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
         "actions-run:35798873937",
         "reservation-id:35798873937:1",
-        "coding-trace:ctrace_cf97cd81e98a32448cb05af7"
+        "coding-trace:ctrace_cf97cd81e98a32448cb05af7",
+        "actions-run:35798280571",
+        "reservation-id:35798280571:1",
+        "coding-trace:ctrace_8fadae85e3fd7db92b67536b"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -203572,8 +203575,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 5,
-      "confidence": 0.8333,
+      "confirmations": 6,
+      "confidence": 0.8571,
       "capabilityApplications": [
         {
           "version": 1,
@@ -205397,6 +205400,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_660761726e3c7f868276ec44",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:ff9094c5fd04e98d94a1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1868d79235dbbc65c06d7660",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:4f3b572b1f0a4992f911"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2fbef92c284767352e098eac",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:74eba3c2381b0414ea46"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -205415,7 +205517,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 55,
+        "applicationCount": 58,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -208234,6 +208336,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_025a834f4c5d86d4f27be1a7",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:ff9094c5fd04e98d94a1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_249b35fe2eb5064ac15bf22f",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:4f3b572b1f0a4992f911"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bc9eeaf2960321760fda3158",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:74eba3c2381b0414ea46"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -208252,7 +208453,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 32,
+        "applicationCount": 35,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -209025,6 +209226,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_224527e1ef6ce261229eb525",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:ff9094c5fd04e98d94a1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2ea1ee1b16c1f0025172bf1a",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:4f3b572b1f0a4992f911"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9a371401644a65a9bae3bee6",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:74eba3c2381b0414ea46"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -209043,7 +209343,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 21,
+        "applicationCount": 24,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -209206,7 +209506,10 @@
         "coding-trace:ctrace_28b759478b82ec7a62bc1c9c",
         "actions-run:35798873937",
         "reservation-id:35798873937:1",
-        "coding-trace:ctrace_18693a18a1e42b483a70244e"
+        "coding-trace:ctrace_18693a18a1e42b483a70244e",
+        "actions-run:35798280571",
+        "reservation-id:35798280571:1",
+        "coding-trace:ctrace_7cc14fed82d5371f308b48ec"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -209215,8 +209518,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 5,
-      "confidence": 0.8333,
+      "confirmations": 6,
+      "confidence": 0.8571,
       "capabilityApplications": [
         {
           "version": 1,
@@ -210272,6 +210575,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c555008fe0c9d0ef8b65806b",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:ff9094c5fd04e98d94a1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c336fedc2612cdadcb8831b3",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:4f3b572b1f0a4992f911"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ac25a0d5abacc5addc3d4354",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:74eba3c2381b0414ea46"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -210290,7 +210692,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 32,
+        "applicationCount": 35,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -211514,6 +211916,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3b7cba2a721057bc90a08091",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:ff9094c5fd04e98d94a1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f7aca4a6f736cd23b9f6fc0a",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:4f3b572b1f0a4992f911"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fad65bc3134d425797a8ec5c",
+          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8850987b2ec889fdfd6a43ee6849496339e70fc1",
+            "actions-run:35798280571",
+            "reservation-id:35798280571:1",
+            "capability-application-sample:74eba3c2381b0414ea46"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -211532,7 +212033,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 32,
+        "applicationCount": 35,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -211952,7 +212453,11 @@
         "actions-run:35793352138",
         "reservation-id:35793352138:1",
         "coding-trace:ctrace_070c685a4a2c0ab2f39e7e73",
-        "verified-coding-failure:SYSTEM_CAUSAL_TEST_REQUIRED"
+        "verified-coding-failure:SYSTEM_CAUSAL_TEST_REQUIRED",
+        "base-main:6df1bf07b4e1d6e034fc5f839ed7968d36401c1d",
+        "actions-run:35798280571",
+        "reservation-id:35798280571:1",
+        "coding-trace:ctrace_675ad112f97fc8679be0e548"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -211961,8 +212466,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -212246,6 +212751,89 @@
         "CAPABILITY_DOMAIN:PROBLEM_DECOMPOSITION"
       ],
       "avoidPatterns": [],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_b214c4bbff3cd5497804a896",
+      "fingerprint": "fp_1hovhxv",
+      "gameId": "__vibe_system__",
+      "engine": "system",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:SYSTEM_CAUSAL_TEST_REQUIRED",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=production-authority-inactive:DESIGN_ONLY\noccurrences=7\nrecoveryGeneration=7\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "change": "strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant speculative-1 | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:SYSTEM_CAUSAL_TEST_REQUIRED",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:35798280571",
+      "evidence": [
+        "base-main:6df1bf07b4e1d6e034fc5f839ed7968d36401c1d",
+        "source-generation-failure:SYSTEM_CAUSAL_TEST_REQUIRED",
+        "actions-run:35798280571",
+        "reservation-id:35798280571:1",
+        "coding-trace:ctrace_b214c4bbff3cd5497804a896",
+        "verified-coding-failure:SYSTEM_CAUSAL_TEST_REQUIRED"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:SYSTEM_CAUSAL_TEST_REQUIRED",
+        "CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:SYSTEM_CAUSAL_TEST_REQUIRED"
+      ],
       "verified": true,
       "reusable": true,
       "confirmations": 1,
