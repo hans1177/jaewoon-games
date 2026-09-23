@@ -68,3 +68,41 @@
   Content-Type: application/javascript; charset=utf-8
   Content-Encoding: gzip
   Cache-Control: public, max-age=31536000, immutable
+
+# Unity WebGL nested Build runtime assets
+/web-games/*/Build/*.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.data
+  Content-Type: application/octet-stream
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.framework.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.loader.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache, must-revalidate
+/web-games/*/Build/*.wasm.gz
+  Content-Type: application/wasm
+  Content-Encoding: gzip
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.data.gz
+  Content-Type: application/octet-stream
+  Content-Encoding: gzip
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.framework.js.gz
+  Content-Type: application/javascript; charset=utf-8
+  Content-Encoding: gzip
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.wasm.br
+  Content-Type: application/wasm
+  Content-Encoding: br
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.data.br
+  Content-Type: application/octet-stream
+  Content-Encoding: br
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*/Build/*.framework.js.br
+  Content-Type: application/javascript; charset=utf-8
+  Content-Encoding: br
+  Cache-Control: public, max-age=31536000, immutable
