@@ -11,6 +11,7 @@ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-road
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
 const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+const plannerSource=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
 
 test('canonical high-end visual contract reuses existing graphics and asset pipeline',()=>{
   const c=roadmap.assetProductionParallelContract.highEndVisualProductionContract;
@@ -24,6 +25,16 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.continuesAfterInternalRelease,true);
   assert.equal(c.continuesAfterPublicRelease,true);
   assert.equal(c.continuousEvolution.enabled,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.enabled,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.evidenceTriggeredOnly,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.passAloneMustNotCreateNextCycle,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.sameSignalDuplicateCycleForbidden,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.unlimitedTotalCycles,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.totalCycleLimit,null);
+  assert.equal(c.continuousEvolution.cycleGeneration.maximumGeneration,null);
+  assert.equal(c.continuousEvolution.cycleGeneration.artificialCycleCapForbidden,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.centralDocumentAndImplementationMustStaySynchronized,true);
+  assert.equal(c.continuousEvolution.cycleGeneration.implementationBinding,'tools/vibe2-auto-planner.mjs::findPresentationQualityTask');
   assert.equal(c.cinematicDirection.enabled,true);
   assert.equal(c.ownerChangeRequestStability.enabled,true);
   assert.equal(c.noNewDepartment,true);
@@ -36,6 +47,13 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.runtimeQa.beforeAfterVisualRegressionRequired,true);
   assert.ok(architecture.executionTopology.assetProduction.includes('RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION'));
   assert.equal(architecture.departmentTopology.graphics.usesExistingDepartment,true);
+  assert.equal(architecture.departmentTopology.graphics.unlimitedEvidenceDrivenEvolutionGenerations,true);
+  assert.equal(architecture.departmentTopology.graphics.centralDocumentAndImplementationSynchronizationRequired,true);
+  assert.equal(logMap.graphicsProductionEvidenceContract.unlimitedEvolutionGenerationsAllowed,true);
+  assert.equal(logMap.graphicsProductionEvidenceContract.implementationBindingEvidenceRequired,true);
+  assert.match(plannerSource,/function nextGraphicsEvolutionTask\(/);
+  assert.match(plannerSource,/graphics-evolution-trigger:/);
+  assert.match(plannerSource,/graphics-evolution-unlimited-generations:yes/);
   assert.equal(logMap.highEndVisualEvidenceContract.markerOnlyEvidenceForbidden,true);
   assert.equal(logMap.highEndVisualEvidenceContract.checkpointEvidenceNotTerminalCompletion,true);
   assert.equal(logMap.highEndVisualEvidenceContract.standaloneReleaseAuthority,false);
@@ -122,6 +140,11 @@ test('graphics production is one top-level work unit with existing visual module
   assert.equal(u.soleProductionCoordinator,'assets/vibe-art-pipeline.js');
   assert.equal(u.queueContract.topLevelGraphicsWorkUnitsPerGameCandidate,1);
   assert.equal(u.queueContract.siblingTopLevelCharacterEnvironmentAnimationVfxLightingUiTasksForbidden,true);
+  assert.equal(u.queueContract.evidenceDrivenEvolutionCycle,true);
+  assert.equal(u.queueContract.graphicsPassDoesNotSelfRequeue,true);
+  assert.equal(u.queueContract.sameSignalDuplicateCycleForbidden,true);
+  assert.equal(u.queueContract.unlimitedEvidenceDrivenEvolutionGenerations,true);
+  assert.equal(u.queueContract.artificialEvolutionGenerationCapForbidden,true);
   assert.equal(u.outputContract.oneRootEvidenceRecord,true);
   assert.equal(u.outputContract.passIsVerifiedCheckpointNotTerminal,true);
   assert.equal(u.outputContract.continuousEvolutionAfterPass,true);
