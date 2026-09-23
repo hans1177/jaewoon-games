@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
   "gameNameEnglish": "Five Portal RPG: Dungeon Party",
@@ -8,7 +8,7 @@
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "authorRole": "OWNER_DIRECTIVE",
-  "updatedAt": "2026-09-24T05:35:00+09:00",
+  "updatedAt": "2026-09-24T06:15:00+09:00",
   "ownerDirectDevelopment": true,
   "content": {
     "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
@@ -123,6 +123,18 @@
       {
         "name": "어그로/리시",
         "purpose": "몬스터가 일정 거리 이상 벗어나면 어그로를 풀고 복귀."
+      },
+      {
+        "name": "막기·완벽 패링",
+        "purpose": "공격 전조를 보고 정면 막기 또는 짧은 완벽 패링 타이밍으로 피해를 막는다. 가드 게이지가 0이면 가드 브레이크, 패링은 몬스터 균형 게이지를 크게 깎는다."
+      },
+      {
+        "name": "초원 시드형 로그라이크 런",
+        "purpose": "1번 포탈 초원은 빈 런 시작 시 Seed로 방/길/전투/이벤트/보물/정예 구성을 다시 조합한다. 같은 진행 중 플레이어는 동일 런을 공유한다."
+      },
+      {
+        "name": "초원 10종 몬스터·히든 보스",
+        "purpose": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다. 비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다."
       }
     ],
     "balanceContract": {
@@ -165,14 +177,20 @@
         "저장",
         "4개 시작 직업",
         "Lv.15 1차 전직 8분기",
-        "R15 AI 유저 이동/전투 애니메이션"
+        "R15 AI 유저 이동/전투 애니메이션",
+        "막기/완벽 패링/가드 브레이크",
+        "1번 초원 시드형 랜덤런",
+        "초원 몬스터 10종",
+        "초원 히든 장소/히든 보스"
       ],
       "deferred": [
         "고급 크로스서버 매칭",
         "6번째 이후 포탈",
         "대형 퀘스트 체인",
         "2차 전직",
-        "고급 동료 성격/관계 AI"
+        "고급 동료 성격/관계 AI",
+        "2~5포탈 로그라이크 자동변형",
+        "5포탈 합계 50종 이상 기본 몬스터"
       ],
       "forbidden": [
         "자동전투가 직접 전투 대체",
@@ -206,7 +224,7 @@
       "visualIdentity": "밝은 중세 판타지 마을·무료 미디블 에셋 변형·직업별 장비 실루엣과, 포탈을 지날수록 어두워지는 초원/협곡/유적/설원/심연의 대비. 캐릭터는 R15 피규어풍이고 몬스터는 지역별 체형을 다르게 한다.",
       "audioIdentity": "도트/8비트가 아닌 경쾌한 판타지 어드벤처 BGM과 명확한 타격/회피/합동기 사운드"
     },
-    "mobileUx": "이동·공격·스킬/회피는 큰 버튼, 파티/멀티는 별도 상단 UI로 제공한다.",
+    "mobileUx": "이동·공격·스킬·홀드 막기/완벽 패링·회피는 큰 버튼으로 제공하고, 파티/멀티는 별도 상단 UI로 제공한다.",
     "robloxBuildProfile": {
       "version": 5,
       "targetPlatform": "ROBLOX",
@@ -299,7 +317,7 @@
         "client": "roblox-games/daechung-rpg/client/Game.client.luau",
         "launch": "roblox-games/daechung-rpg/launch-mvp.json"
       },
-      "launchMvpVersion": 9,
+      "launchMvpVersion": 10,
       "graphicsConcept": "RPG_STYLIZED_TOY_DARK_FANTASY",
       "runtimeWorldArtPass": "RPG_FANTASY_PORTAL_WORLD_V5",
       "runtimeCharacterArtDirection": "RPG_STYLIZED_TOY_FANTASY_R15",
