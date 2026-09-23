@@ -663,46 +663,6 @@
       "authority": "practice-and-measurement-only"
     },
     {
-      "id": "phase4-generalization-capability_ctrace_1f1be9a0c88f2a521e3fb20f",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_1f1be9a0c88f2a521e3fb20f",
-      "sourceGameId": "seed-puzzle-chromatic-cascade",
-      "targetEngine": "web",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-gd15ym",
-      "unseenProblemFingerprint": "phase4-unseen-1gvo2bc",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
       "id": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -716,46 +676,6 @@
       "holdoutGameId": "amusement-tycoon",
       "pairId": "phase4-pair-1ilhn23",
       "unseenProblemFingerprint": "phase4-unseen-nn8x6d",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_577a356116637ad2923c0bf8",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_577a356116637ad2923c0bf8",
-      "sourceGameId": "seed-single-defense-strat-celestial-bastion",
-      "targetEngine": "web",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-12losc3",
-      "unseenProblemFingerprint": "phase4-unseen-1pxzhy5",
       "pairRoles": [
         "CONTROL",
         "CHALLENGER"
@@ -863,46 +783,6 @@
       "authority": "practice-and-measurement-only"
     },
     {
-      "id": "phase4-generalization-capability_ctrace_b8d48cb4bef5453d919f5f04",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_b8d48cb4bef5453d919f5f04",
-      "sourceGameId": "seed-puzzle-chromatic-cascade",
-      "targetEngine": "web",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-83042c",
-      "unseenProblemFingerprint": "phase4-unseen-1ab5msq",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
       "id": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -983,6 +863,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 17,
+  "phase4GeneralizationCases": 14,
   "authority": "practice-and-measurement-only"
 }
