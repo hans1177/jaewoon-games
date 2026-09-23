@@ -36,7 +36,7 @@ jobs:
         with:
           ref: main
           path: main
-          fetch-depth: 0
+          fetch-depth: 1
           fetch-tags: false
 
       - name: Checkout canonical runtime state
@@ -206,6 +206,7 @@ jobs:
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
+          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.target.outputs.game_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
@@ -213,8 +214,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$SOURCE_REVISION"
           git cat-file -e "${SOURCE_REVISION}^{commit}"
-          git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
+          head_sha="$(git rev-parse HEAD)"
+          read -r compare_status merge_base < <(gh api "repos/$GITHUB_REPOSITORY/compare/${SOURCE_REVISION}...${head_sha}" --jq '[.status,.merge_base_commit.sha] | @tsv')
+          [[ "$compare_status" == 'ahead' || "$compare_status" == 'identical' ]]
+          [ "$merge_base" = "$SOURCE_REVISION" ]
           git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';

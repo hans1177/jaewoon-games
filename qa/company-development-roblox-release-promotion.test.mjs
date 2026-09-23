@@ -192,6 +192,18 @@ test('F9 binds the promoted candidate to source artifact universe place and exac
 });
 
 
+
+test('Roblox runtime candidate deployment proves canonical ancestry without full-history checkout',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.doesNotMatch(workflow,/Checkout current canonical implementation[\s\S]*?fetch-depth:\s*0/);
+  assert.match(workflow,/Checkout current canonical implementation[\s\S]*?fetch-depth:\s*1/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$SOURCE_REVISION"/);
+  assert.match(workflow,/gh api "repos\/\$GITHUB_REPOSITORY\/compare\/\$\{SOURCE_REVISION\}\.\.\.\$\{head_sha\}"/);
+  assert.match(workflow,/\[ "\$merge_base" = "\$SOURCE_REVISION" \]/);
+  assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
+  assert.doesNotMatch(workflow,/git merge-base --is-ancestor "\$SOURCE_REVISION" HEAD/);
+});
+
 test('Roblox metadata scope failure cannot invalidate a successfully published runtime candidate',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/name: Apply and verify Roblox title description and server size[\s\S]*?id: metadata[\s\S]*?continue-on-error: true/);
