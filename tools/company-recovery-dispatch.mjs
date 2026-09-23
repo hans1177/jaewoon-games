@@ -40,6 +40,14 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     let touched=0;
     if(owner==='VIBE2_VIBE3'){
       const set=new Set(ids);
+      const recoveryGameId=clean(rec.gameId);
+      if(recoveryGameId&&clean(rec.sourceQueue).toLowerCase()==='tester-debug'){
+        for(const task of gameQueue.tasks||[]){
+          if(clean(task.gameId)!==recoveryGameId)continue;
+          if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))continue;
+          if(clean(task.id))set.add(clean(task.id));
+        }
+      }
       const recurrenceCount=Math.max(1,Number(rec.recurrenceCount||0),ids.length);
       const repairMode=recurrenceCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
       const saveRepairRequired=uniq(rec.evidence).some(value=>/(?:save|load|migration|persist|storage|저장|불러오기)/i.test(value));
