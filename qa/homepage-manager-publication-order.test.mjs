@@ -327,19 +327,23 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
 
-test('Unity Web homepage links require only an existing build page, not QA gate PASS',()=>{
+test('Unity Web homepage links require a deployable bundle manifest, not QA gate PASS',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog){')[1]||'').split('function webPublishedRows')[0]||'';
   assert.match(block,/index\.html\?ts=/);
-  assert.match(block,/response\.ok/);
+  assert.match(block,/unity-web-deploy-manifest\.json\?ts=/);
+  assert.match(block,/bundleComplete===true/);
+  assert.match(block,/\['loader','data','framework','wasm'\]/);
   assert.match(block,/unityWebAvailable:true/);
+  assert.match(block,/unityWebAvailable:false/);
   assert.doesNotMatch(block,/unity-web-build\.json|unity-web-gameplay-validation\.json|bootSmoke|initialRealGameplayQa|noCriticalRuntimeError/);
   const display=roadmap.serverHomepageIntegration?.managerContract?.developmentProgressDisplay||{};
   const surface=roadmap.serverHomepageIntegration?.unityWebValidationSurface||{};
-  assert.equal(display.unityWebHomepageExposureGate,'OUTPUT_INDEX_EXISTS_ONLY');
+  assert.equal(display.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST');
   assert.equal(display.unityWebQaPassRequiredForHomepageLink,false);
   assert.equal(display.unityWebEvidenceFilesRequiredForHomepageLink,false);
-  assert.equal(surface.homepageLinkGate,'OUTPUT_INDEX_EXISTS_ONLY');
+  assert.equal(surface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST');
+  assert.equal(surface.homepageLinkRequiresDeployManifest,true);
   assert.equal(surface.homepageLinkQaPassRequired,false);
   assert.equal(surface.homepageLinkEvidenceFilesRequired,false);
   assert.equal(surface.validationEvidenceStillRequiredForQaVerdict,true);
