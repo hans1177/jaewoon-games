@@ -38,6 +38,7 @@ local foundationLast={}
 local assetCache={}
 local meadowRunCounter=0
 local meadowRunState={seed=0,hiddenBossId="",generated=false}
+local generateMeadowRun
 local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293,MedievalArmor=C.MedievalCharacterAssetId,MedievalHouseA=C.MedievalHouseAssetIds[1],MedievalHouseB=C.MedievalHouseAssetIds[2]}
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
@@ -297,6 +298,127 @@ local function combatFlash(pos,color,size)
  x.Material=Enum.Material.Neon;x.Color=color;x.Transparency=.2;x.Size=Vector3.new(size or 1.3,size or 1.3,size or 1.3);x.Position=pos;x.Parent=world
  TweenService:Create(x,TweenInfo.new(.2,Enum.EasingStyle.Quad),{Size=x.Size*2.1,Transparency=1}):Play();task.delay(.24,function()if x.Parent then x:Destroy()end end)
 end
+local function attackTelegraph(e,attack,target)
+ if not e.part or not e.part.Parent then return end
+ local unblockable=attack.Unblockable==true
+ local color=unblockable and Color3.fromRGB(235,68,72)or Color3.fromRGB(255,207,82)
+ combatFlash(e.part.Position+Vector3.new(0,1.2,0),color,unblockable and 1.9 or 1.45)
+ e.part:SetAttribute("AttackName",attack.Name or"공격");e.part:SetAttribute("AttackParryable",attack.Parryable~=false);e.part:SetAttribute("AttackUnblockable",unblockable)
+ if target then msg(target,(unblockable and"회피 필요 · "or"패링 가능 · ")..tostring(attack.Name or"공격"))end
+end
+local function facingEnemy(p,e)
+ local pr=root(p);if not pr or not e.part then return false end
+ local delta=Vector3.new(e.part.Position.X-pr.Position.X,0,e.part.Position.Z-pr.Position.Z)
+ if delta.Magnitude<.01 then return true end
+ return pr.CFrame.LookVector:Dot(delta.Unit)>.05
+end
+local function classGuardReduction(p)
+ local classId=tostring(p:GetAttribute("ClassId")or"")
+ local adv=tostring(p:GetAttribute("AdvancementId")or"")
+ if classId=="BREAKER"then return adv=="IRON_BREAKER"and .82 or .72 end
+ if classId=="SHADOW"then return .45 end
+ if classId=="RUNE"then return .56 end
+ if classId=="SOUL"then return adv=="GUARDIAN_MEDIUM"and .68 or .6 end
+ return .5
+end
+local function classParryWindow(p)
+ local classId=tostring(p:GetAttribute("ClassId")or"")
+ if classId=="SHADOW"then return C.ParryWindow+.06 end
+ if classId=="RUNE"then return C.ParryWindow+.02 end
+ if classId=="SOUL"then return C.ParryWindow+.03 end
+ return C.ParryWindow
+end
+local function staggerEnemy(e,amount,now)
+ if not e or e.hp<=0 then return end
+ e.stagger=math.max(0,(e.stagger or e.staggerMax or 40)-(amount or 20));e.part:SetAttribute("Stagger",e.stagger)
+ if e.stagger<=0 then
+  e.stunnedUntil=now+(e.boss and 2.1 or 1.45);e.attackPending=false;e.stagger=e.staggerMax or 40;e.part:SetAttribute("Stagger",e.stagger);e.part:SetAttribute("Staggered",true)
+  task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent then e.part:SetAttribute("Staggered",false)end end)
+ end
+end
+local function resolveIncomingAttack(p,e,attack)
+ local h=hum(p);local pr=root(p);if not h or not pr or h.Health<=0 or not e.part or not e.part.Parent then return end
+ local now=os.clock()
+ if n(p,"EvasionUntil",0)>now then feedback(p,"DODGE");msg(p,"회피 성공");return end
+ local damage=(e.damage or 8)*(attack.DamageMult or 1)
+ if e.enragedUntil and e.enragedUntil>now then damage*=1.22 end
+ local blocking=p:GetAttribute("Blocking")==true and n(p,"GuardBrokenUntil",0)<=now and facingEnemy(p,e)
+ if blocking and attack.Parryable~=false then
+  local started=n(p,"BlockStartedAt",0)
+  if started>0 and now-started<=classParryWindow(p)then
+   p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
+   feedback(p,"PARRY");msg(p,"완벽 패링 · "..tostring(attack.Name or"공격"))
+   staggerEnemy(e,(attack.GuardDamage or 20)*1.55,now)
+   local classId=tostring(p:GetAttribute("ClassId")or"");local adv=tostring(p:GetAttribute("AdvancementId")or"")
+   if classId=="BREAKER"then p:SetAttribute("GuardUntil",now+1.2)end
+   if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.4)end
+   if classId=="RUNE"then p:SetAttribute("RuneElement",n(p,"RuneElement",1)%3+1)end
+   if classId=="SOUL"then p:SetAttribute("SoulCharge",math.min(5,n(p,"SoulCharge",0)+1))end
+   return
+  end
+ end
+ if blocking and attack.Unblockable~=true then
+  local guard=math.max(0,n(p,"Guard",C.GuardMax)-(attack.GuardDamage or 20));p:SetAttribute("Guard",guard)
+  damage*=1-classGuardReduction(p);feedback(p,"BLOCK");msg(p,"막기 · "..math.floor(guard).."/"..C.GuardMax)
+  if guard<=0 then
+   p:SetAttribute("Blocking",false);p:SetAttribute("GuardBrokenUntil",now+C.GuardBreakSeconds);feedback(p,"GUARD_BREAK");msg(p,"가드 브레이크")
+   damage*=1.8
+  end
+ elseif blocking and attack.Unblockable==true then
+  feedback(p,"UNBLOCKABLE_HIT");msg(p,"막을 수 없는 공격!")
+ end
+ if damage>0 then h:TakeDamage(damage)end
+ lastCombat[p]=now;p:SetAttribute("InCombat",true)
+ local special=tostring(attack.Special or"")
+ if special=="POISON_STING"and h.Health>0 then
+  task.spawn(function()for _=1,3 do task.wait(.7);if h.Parent and h.Health>0 then h:TakeDamage(math.max(1,(e.damage or 7)*.22))end end end)
+ elseif special=="ROOT_SNARE"or special=="ROOT_ERUPTION"then
+  local old=h.WalkSpeed;h.WalkSpeed=math.min(old,7);task.delay(1.1,function()if h.Parent then h.WalkSpeed=old end end)
+ elseif special=="HOWL_COMMAND"then
+  e.enragedUntil=now+4;combatFlash(e.part.Position,Color3.fromRGB(171,225,116),2)
+ elseif special=="SHELL_BASH"then
+  pr.AssemblyLinearVelocity=(pr.Position-e.part.Position).Unit*32+Vector3.new(0,8,0)
+ end
+end
+local function chooseEnemyAttack(e)
+ local def=e.def
+ if def and typeof(def.Attacks)=="table"and #def.Attacks>0 then
+  e.attackIndex=((e.attackIndex or 0)%#def.Attacks)+1
+  if e.boss and e.hp/e.max<.5 and #def.Attacks>=3 then e.attackIndex=math.max(2,e.attackIndex)end
+  return def.Attacks[e.attackIndex]
+ end
+ if def and typeof(def.Attack)=="table"then return def.Attack end
+ return {Name="기본 공격",Telegraph=.4,Cooldown=1.2,Range=5.5,Parryable=true,GuardDamage=20,Special="STRIKE"}
+end
+local function beginEnemyAttack(e,target,now)
+ if e.attackPending or now<(e.stunnedUntil or 0)then return end
+ local attack=chooseEnemyAttack(e);if not attack then return end
+ e.attackPending=true;e.lastAttack=now;attackTelegraph(e,attack,target)
+ local special=tostring(attack.Special or"")
+ if special=="CHARGE"or special=="ANTLER_CHARGE"or special=="MOON_POUNCE"then
+  local tr=root(target);if tr then
+   local d=Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
+   if d.Magnitude>.1 then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,5)end
+  end
+ elseif special=="FEINT_SLASH"then
+  task.delay(math.max(.18,(attack.Telegraph or .7)*.45),function()if e.part and e.part.Parent then combatFlash(e.part.Position,Color3.fromRGB(255,229,125),.85)end end)
+ end
+ local telegraph=attack.Telegraph or .4
+ task.delay(telegraph,function()
+  if not e.part or not e.part.Parent or e.hp<=0 then e.attackPending=false;return end
+  local hits=math.max(1,attack.Hits or 1);local gap=attack.HitGap or .2
+  task.spawn(function()
+   for hit=1,hits do
+    if e.hp<=0 or not e.part.Parent then break end
+    local tr=root(target);local hh=hum(target);local range=(attack.Range or 5.5)+1.5
+    if tr and hh and hh.Health>0 and(tr.Position-e.part.Position).Magnitude<=range then resolveIncomingAttack(target,e,attack)end
+    if hit<hits then task.wait(gap)end
+   end
+   e.attackPending=false
+  end)
+ end)
+end
+
 local function applyPlayerAppearance(p)
  local c=p.Character;if not c then return end
  decorateCharacterModel(c,tostring(p:GetAttribute("ClassId")or"NONE"),(p.UserId%7)+1,tostring(p:GetAttribute("AdvancementId")or""))
