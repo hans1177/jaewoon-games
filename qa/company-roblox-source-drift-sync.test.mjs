@@ -116,3 +116,9 @@ test('source drift workflow avoids full repository history checkout while fetchi
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
   assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$BEFORE_SHA"/);
 });
+
+test('changed-source workflow binds homepage sync dependencies from main',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/company-shared-context\.mjs/);
+  assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
+});
