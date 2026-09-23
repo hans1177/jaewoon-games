@@ -117,3 +117,26 @@ test('Open Cloud engine probe reports missing scope without fabricating evidence
  assert.equal(r.engineExecuted,false);
  assert.equal(r.exactVersion,false);
 });
+
+
+test('multiplayer evidence stays release-blocking but does not block continued development',()=>{
+ const broken=structuredClone(good);delete broken.checkpoints.MULTIPLAYER_SYNC;
+ const r=validateRobloxRuntimeFoundationEvidence({sentinel:broken,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
+ assert.equal(r.runtimeFoundationPassed,true);
+ assert.equal(r.developmentContinuationPassed,true);
+ assert.equal(r.runtimeAcceptancePassed,false);
+ assert.equal(r.multiplayerPromotionPending,true);
+ assert.equal(r.f7MultiplayerFoundationPassed,false);
+});
+
+test('post-runtime QA preserves independent and regression progress while multiplayer promotion evidence is pending',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true/);
+ assert.match(workflow,/robloxIndependentQaPassed=true/);
+ assert.match(workflow,/robloxRegressionPassed=true/);
+ assert.match(workflow,/robloxParallelMultiplayerValidationPending=true/);
+ assert.match(workflow,/ROBLOX_MULTIPLAYER_PROMOTION_EVIDENCE_PENDING/);
+ assert.match(workflow,/robloxPromotionBlockers=\['roblox-multiplayer-evidence-pending'\]/);
+ assert.match(workflow,/routingBlockers=\[\]/);
+ assert.doesNotMatch(workflow,/f9Ids\.push\(item\.gameId\)[\s\S]{0,800}ROBLOX_MULTIPLAYER_PARALLEL_NON_BLOCKING/);
+});
