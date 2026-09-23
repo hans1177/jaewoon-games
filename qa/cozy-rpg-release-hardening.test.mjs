@@ -112,7 +112,7 @@ test('대충 RPG 초원은 패링 전투와 시드형 로그라이크 런을 구
  assert.match(rpgConfig,/BLOCK_START="BLOCK_START"/);
  assert.equal((rpgConfig.match(/Id="(?:GRASS_WOLF|DIRE_WOLF|CHARGE_BOAR|THORN_WASP|FOREST_LIZARD|HORN_DEER|VINE_CRAWLER|MEADOW_BANDIT|WOLF_TAMER|MOSS_TURTLE)"/g)||[]).length,10);
  assert.equal((rpgConfig.match(/Id="(?:WHITE_FANG|ANCIENT_HEART)"/g)||[]).length,2);assert.match(rpgConfig,/Id="GOLDEN_ANTLER"/);
- for(const marker of ['ProceduralRun','MeadowRunSeed','MeadowRunBossDefeated','SecretGrove','SecretRuneStone','MemoryAltar','HiddenChest','HIDDEN_BOSS_APPEAR','PARRY','GUARD_BREAK','AttackUnblockable','staggerEnemy','beginEnemyAttack','ParryRearmUntil'])assert.match(rpgServer,new RegExp(marker));
+ for(const marker of ['ProceduralRun','MeadowRunSeed','MeadowRunBossDefeated','RunBossSeal','Dormant','wakeMeadowRunBossIfReady','SecretGrove','SecretRuneStone','MemoryAltar','HiddenChest','HIDDEN_BOSS_APPEAR','PARRY','GUARD_BREAK','AttackUnblockable','staggerEnemy','beginEnemyAttack','ParryRearmUntil'])assert.match(rpgServer,new RegExp(marker));
  assert.match(rpgServer,/generateMeadowRun=function\(seed\)/);
  assert.match(rpgClient,/C\.Actions\.BLOCK_START/);
  assert.match(rpgClient,/KeyCode==Enum\.KeyCode\.F/);
