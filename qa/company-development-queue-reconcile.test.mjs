@@ -173,6 +173,10 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   const source=fs.readFileSync('tools/company-development-queue-reconcile.mjs','utf8');
   assert.match(workflow,/id:\s*queue_state/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
+  assert.match(workflow,/dispatch_allowed/);
+  assert.match(workflow,/RECONCILE_ALLOWED_DISPATCH_SUPPRESSED_QUEUE_INVALID/);
+  assert.match(workflow,/RECONCILE_ALLOWED_DISPATCH_SUPPRESSED_ACTIVE_GAME_WORK/);
+  assert.match(workflow,/DEVELOPMENT_QUEUE_RECONCILIATION_PERSISTED=YES/);
   assert.match(workflow,/company-minimum-design-contract\.mjs/);
   assert.match(source,/game-seed-state\.json/);
   assert.match(workflow,/MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT/);
@@ -180,4 +184,6 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.doesNotMatch(workflow,/COMPANY_FLOW\.md/);
   assert.doesNotMatch(workflow,/webValidationRequired!==true/);
   assert.doesNotMatch(workflow,/musicValidationRequired!==true/);
+  assert.doesNotMatch(workflow,/Company Status Sync\n/);
+  assert.doesNotMatch(workflow,/outputs\.defer|DEFER_QUEUE_INVALID|DEFER_ACTIVE_GAME_WORK/);
 });
