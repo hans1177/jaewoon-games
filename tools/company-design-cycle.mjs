@@ -23,9 +23,11 @@ const localDesignerModel=clean(process.env.COMPANY_VIBE_LOCAL_MODEL||'qwen3:1.7b
 const localDesignerFallbackReady=clean(process.env.COMPANY_LOCAL_DESIGN_FALLBACK_READY).toLowerCase()==='true';
 const authorizedLeadModelPool=uniq(ai.modelPool||[]);
 const policyLeadModelList=ROLES.map(role=>clean(ai.departmentLeadModels?.[role]));
-if(policyLeadModelList.some(model=>!model)||new Set(policyLeadModelList).size!==ROLES.length)throw new Error('GEMINI_POLICY_LEAD_MODELS_INVALID');
+const departmentLeadModelsMustBeDistinct=ai.departmentLeadModelsMustBeDistinct!==false;
+if(policyLeadModelList.some(model=>!model))throw new Error('GEMINI_POLICY_LEAD_MODELS_MISSING');
+if(departmentLeadModelsMustBeDistinct&&new Set(policyLeadModelList).size!==ROLES.length)throw new Error('GEMINI_POLICY_LEAD_MODELS_INVALID');
 if(policyLeadModelList.some(model=>!authorizedLeadModelPool.includes(model)))throw new Error('GEMINI_POLICY_LEAD_MODEL_OUTSIDE_POOL');
-const configuredLeadModels=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'').split(','));
+const configuredLeadModels=clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'').split(',').map(clean).filter(Boolean);
 const geminiLeadModelList=configuredLeadModels.length?configuredLeadModels:policyLeadModelList;
 if(geminiLeadModelList.some(model=>!authorizedLeadModelPool.includes(model)))throw new Error('GEMINI_UNAUTHORIZED_LEAD_MODEL');
 const authorizedDesignerModels=uniq([
@@ -83,7 +85,7 @@ function geminiThinkingConfigFor(model){
 if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
 const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
 const distinctLeadModels=uniq(Object.values(leadModels));
-if(distinctLeadModels.length<ROLES.length)throw new Error(`GEMINI_DISTINCT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
+if(departmentLeadModelsMustBeDistinct&&distinctLeadModels.length<ROLES.length)throw new Error(`GEMINI_DISTINCT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
 const primaryLeadModelSet=new Set(distinctLeadModels);
 const configuredLeadFallbackModels=Object.fromEntries(ROLES.map(role=>[role,[]]));
 for(const entry of geminiLeadFallbackLaneSpec.split(';').map(clean).filter(Boolean)){
@@ -95,7 +97,7 @@ for(const entry of geminiLeadFallbackLaneSpec.split(';').map(clean).filter(Boole
 }
 const leadCandidateModels=Object.fromEntries(ROLES.map(role=>[role,uniq([leadModels[role],...configuredLeadFallbackModels[role]])]));
 const leadCandidateOwner=new Map();
-for(const role of ROLES)for(const model of leadCandidateModels[role]){const owner=leadCandidateOwner.get(model);if(owner&&owner!==role)throw new Error(`GEMINI_LEAD_FAILOVER_COLLISION: ${model}:${owner}:${role}`);leadCandidateOwner.set(model,role);}
+for(const role of ROLES)for(const model of leadCandidateModels[role]){const owner=leadCandidateOwner.get(model);if(departmentLeadModelsMustBeDistinct&&owner&&owner!==role)throw new Error(`GEMINI_LEAD_FAILOVER_COLLISION: ${model}:${owner}:${role}`);if(!owner)leadCandidateOwner.set(model,role);}
 console.log(`GEMINI_DISTINCT_LEAD_FAILOVER_LANES=${ROLES.map(role=>`${role}:${leadCandidateModels[role].join('>')}`).join(',')}`);
 const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,[leadModels[role]]]));
 const independentReviewTasks={};
