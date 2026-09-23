@@ -89,6 +89,7 @@ namespace JaewoonGames.DaechungRpg
     public sealed class GameSaveData
     {
         public int version = 1;
+        public string gameId = "daechung-rpg";
         public PlayerState player = new();
     }
 
@@ -185,6 +186,8 @@ namespace JaewoonGames.DaechungRpg
     public sealed class GameCore : MonoBehaviour
     {
         private const string SaveKey = "daechung-rpg-save-v1";
+        private const string SaveGameId = "daechung-rpg";
+        private const int CurrentSaveVersion = 1;
 
         public PlayerState Player { get; private set; } = new();
 
@@ -277,9 +280,46 @@ namespace JaewoonGames.DaechungRpg
 
         public void Save()
         {
-            var data = new GameSaveData { player = Player };
+            var data = new GameSaveData { version = CurrentSaveVersion, gameId = SaveGameId, player = Player };
             PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(data));
             PlayerPrefs.Save();
+        }
+
+        private static bool TryNormalizeSaveData(GameSaveData data, out GameSaveData normalized, out string error)
+        {
+            normalized = data;
+            error = null;
+            if (data == null)
+            {
+                error = "SAVE_PAYLOAD_INVALID";
+                return false;
+            }
+            if (data.version <= 0)
+            {
+                data.version = 1;
+            }
+            if (data.version > CurrentSaveVersion)
+            {
+                error = "SAVE_VERSION_UNSUPPORTED";
+                return false;
+            }
+            if (data.version < CurrentSaveVersion)
+            {
+                error = $"SAVE_MIGRATION_MISSING:{data.version}->{CurrentSaveVersion}";
+                return false;
+            }
+            if (string.IsNullOrEmpty(data.gameId))
+            {
+                data.gameId = SaveGameId;
+            }
+            else if (!string.Equals(data.gameId, SaveGameId, StringComparison.Ordinal))
+            {
+                error = "SAVE_GAME_ID_MISMATCH";
+                return false;
+            }
+            data.player ??= new PlayerState();
+            normalized = data;
+            return true;
         }
 
         public void Load()
@@ -293,7 +333,13 @@ namespace JaewoonGames.DaechungRpg
             try
             {
                 var data = JsonUtility.FromJson<GameSaveData>(PlayerPrefs.GetString(SaveKey));
-                Player = data?.player ?? new PlayerState();
+                if (!TryNormalizeSaveData(data, out var normalized, out var saveError))
+                {
+                    Debug.LogError($"JAEWOON_SAVE_LOAD_BLOCKED game={SaveGameId} reason={saveError}");
+                    Player = new PlayerState();
+                    return;
+                }
+                Player = normalized.player;
 
                 if (Player.level < 1)
                 {
