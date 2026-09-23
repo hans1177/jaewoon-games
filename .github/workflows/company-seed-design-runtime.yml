@@ -32,6 +32,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  VIBE2_CONTROL_BRANCH: vibe2-unreal-core
   COMPANY_MODEL_PHASE_CONCURRENCY: '2'
   COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'
   # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
@@ -120,6 +121,23 @@ jobs:
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
+      - name: Load latest Vibe portfolio redesign signals
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f /tmp/design-portfolio-decisions.json
+          if git ls-remote --exit-code --heads origin "$VIBE2_CONTROL_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$VIBE2_CONTROL_BRANCH"
+            if git cat-file -e "origin/$VIBE2_CONTROL_BRANCH:.vibe2/portfolio-decisions.json" 2>/dev/null; then
+              git show "origin/$VIBE2_CONTROL_BRANCH:.vibe2/portfolio-decisions.json" > /tmp/design-portfolio-decisions.json
+              node -e "JSON.parse(require('fs').readFileSync('/tmp/design-portfolio-decisions.json','utf8')); console.log('DESIGN_EVOLUTION_PORTFOLIO_SIGNAL=READY')"
+            else
+              echo 'DESIGN_EVOLUTION_PORTFOLIO_SIGNAL=NONE'
+            fi
+          else
+            echo 'DESIGN_EVOLUTION_PORTFOLIO_SIGNAL=CONTROL_BRANCH_MISSING'
+          fi
+          echo 'DESIGN_EVOLUTION_PORTFOLIO_SIGNAL_ROLE=READ_ONLY_CAUSAL_EVIDENCE'
       - name: Synchronize active owner design reset seeds
         shell: bash
         run: |
@@ -179,6 +197,19 @@ jobs:
             return status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true;
           };
           const active=(state.seeds||[]).filter(designReviewEligible);
+          const portfolio=(()=>{try{return JSON.parse(fs.readFileSync('/tmp/design-portfolio-decisions.json','utf8'));}catch{return{decisions:[]};}})();
+          const designEvolutionSignalFor=seed=>{
+            const row=(portfolio.decisions||[]).find(item=>String(item?.gameId||'').trim()===String(seed?.gameId||'').trim()&&String(item?.decision||'').trim().toUpperCase()==='REDESIGN');
+            if(!row)return null;
+            const causal={
+              gameId:String(seed?.gameId||'').trim(),decision:'REDESIGN',reason:String(row?.reason||'').trim(),
+              development:{failedTasks:Number(row?.evidence?.development?.failedTasks||0),repeatedFailureSignal:Number(row?.evidence?.development?.repeatedFailureSignal||0)},
+              qa:{criticalRuntimeOrGateBlocker:row?.evidence?.qa?.criticalRuntimeOrGateBlocker===true},
+              balance:{structuralCoreFailure:row?.evidence?.balance?.structuralCoreFailure===true}
+            };
+            const fingerprint=createHash('sha256').update(JSON.stringify(causal)).digest('hex').slice(0,24);
+            return{source:'DEPARTMENT_PORTFOLIO_REDIRECT',fingerprint,reason:causal.reason,causal};
+          };
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           const strictPassFor=(seed)=>{
@@ -199,7 +230,16 @@ jobs:
                   if(!evidenceAt&&date<=resetDate)continue;
                 }
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
-                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0)return true;
+                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
+                  const evolution=status?.designEvolution||{};
+                  const ownerEvent=seed?.ownerRepeatedRequestCreatesNewDesignRevision===true
+                    ?String(seed?.ownerRequestInstanceId||seed?.ownerResetRevision||'').trim()
+                    :'';
+                  if(ownerEvent&&String(evolution.ownerRequestEventId||'').trim()!==ownerEvent)continue;
+                  const autoSignal=designEvolutionSignalFor(seed);
+                  if(autoSignal&&String(evolution.autoSignalFingerprint||'').trim()!==autoSignal.fingerprint)continue;
+                  return true;
+                }
               }
             }catch{}
             return false;
@@ -274,7 +314,17 @@ jobs:
           const selected=canaryVerified?pending:pending.slice(0,preservationOnly?1:2);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=selected.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
+          const targets=selected.map(seed=>{
+            const signal=designEvolutionSignalFor(seed);
+            return{
+              game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,
+              target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,
+              multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),
+              design_evolution_signal_source:signal?.source||'NONE',
+              design_evolution_signal_fingerprint:signal?.fingerprint||'',
+              design_evolution_signal_reason:signal?.reason||''
+            };
+          });
           const parallelMax=Math.max(1,Math.min(preservationOnly?1:(canaryVerified?designWipMax:1),targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
@@ -365,11 +415,13 @@ jobs:
         env:
           TARGET_GAME_ID: ${{ matrix.target.game_id }}
           TARGET_SEED_ID: ${{ matrix.target.seed_id }}
+          DESIGN_EVOLUTION_SIGNAL_FINGERPRINT: ${{ matrix.target.design_evolution_signal_fingerprint }}
         shell: bash
         run: |
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';import path from 'node:path';
           const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
+          const autoSignalFingerprint=String(process.env.DESIGN_EVOLUTION_SIGNAL_FINGERPRINT||'').trim();
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const designReviewEligible=x=>{const status=String(x?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||x?.promotion?.strictDesignReviewContinuesInParallel===true);};const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&designReviewEligible(x));
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
@@ -387,7 +439,15 @@ jobs:
                   if(evidenceAt&&evidenceAt<resetAt)continue;
                   if(!evidenceAt&&date<=resetDate)continue;
                 }
-                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;break;}
+                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
+                  const evolution=status?.designEvolution||{};
+                  const ownerEvent=seed?.ownerRepeatedRequestCreatesNewDesignRevision===true
+                    ?String(seed?.ownerRequestInstanceId||seed?.ownerResetRevision||'').trim()
+                    :'';
+                  if(ownerEvent&&String(evolution.ownerRequestEventId||'').trim()!==ownerEvent)continue;
+                  if(autoSignalFingerprint&&String(evolution.autoSignalFingerprint||'').trim()!==autoSignalFingerprint)continue;
+                  strictPass=true;break;
+                }
               }
             }catch{}
           }
@@ -414,6 +474,9 @@ jobs:
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
+          DESIGN_EVOLUTION_SIGNAL_SOURCE: ${{ matrix.target.design_evolution_signal_source }}
+          DESIGN_EVOLUTION_SIGNAL_FINGERPRINT: ${{ matrix.target.design_evolution_signal_fingerprint }}
+          DESIGN_EVOLUTION_SIGNAL_REASON: ${{ matrix.target.design_evolution_signal_reason }}
         shell: bash
         run: |
           set +e
@@ -611,6 +674,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           COMPANY_GEMINI_LEAD_FALLBACK_LANES: ${{ steps.gemini_quota.outputs.fallback_lanes }}
           COMPANY_LOCAL_DESIGN_FALLBACK_READY: ${{ steps.design_local.outputs.ready || 'false' }}
+          DESIGN_EVOLUTION_SIGNAL_SOURCE: ${{ matrix.target.design_evolution_signal_source }}
+          DESIGN_EVOLUTION_SIGNAL_FINGERPRINT: ${{ matrix.target.design_evolution_signal_fingerprint }}
+          DESIGN_EVOLUTION_SIGNAL_REASON: ${{ matrix.target.design_evolution_signal_reason }}
         shell: bash
         run: |
           set -euo pipefail
