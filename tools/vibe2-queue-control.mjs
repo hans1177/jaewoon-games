@@ -748,7 +748,7 @@ export function runQueueCommand(args = {}) {
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_TARGET;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
@@ -758,7 +758,7 @@ export function runQueueCommand(args = {}) {
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_TARGET;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     if (clean(args.output)) {
@@ -810,7 +810,7 @@ export function runQueueCommand(args = {}) {
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_TARGET;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const neuron = recordVibeNeuronResult(queue, row, { expectedVariants: optionalMaxConcurrent(args['expected-variants']) ?? 1 });
     queue = neuron.queue;
     if (neuron.updated) writeJson(file, queue);
@@ -854,9 +854,7 @@ export function runQueueCommand(args = {}) {
     writeJson(file, queue);
     if(adaptiveEligible)writeJson(controlFileFrom(args), nextControl);
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
-    const reservationMaxConcurrentTasks=adaptiveEligible
-      ? adaptiveRequestedMax(nextControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks })
-      : configuredMaxConcurrentTasks;
+    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     result = {
       command, executionLane, adaptiveEligible, updated: merged.applied.length > 0, telemetry,
       adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged,
@@ -876,9 +874,7 @@ export function runQueueCommand(args = {}) {
       const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
       const adaptiveControl=readParallelismControl(args);
       const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_TARGET;
-      const reservationMaxConcurrentTasks=executionLane==='game-primary'
-        ? adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks })
-        : configuredMaxConcurrentTasks;
+      const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
       const summary=summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane });
       result = {
         command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, reservationMaxConcurrentTasks,
