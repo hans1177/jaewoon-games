@@ -34,7 +34,7 @@ jobs:
           set -euo pipefail
           git config user.name "jaewoon-company-ai"
           git config user.email "actions@users.noreply.github.com"
-          git add -- index.html assets/vibe-company-orchestration-bridge.js COMPANY_FLOW.md HOMEPAGE_OPERATIONS.md .github/agents/director.agent.md ASSET_RULES.md
+          git add -- index.html assets/vibe-company-orchestration-bridge.js company-learning/platform-release-roadmap.json HOMEPAGE_OPERATIONS.md .github/agents/director.agent.md ASSET_RULES.md
           if git diff --cached --quiet; then
             echo "Evolution wiring already applied."
             exit 0
@@ -50,7 +50,7 @@ jobs:
             --base main \
             --head "$branch" \
             --title 'company-ai: wire artbook health learning and quality systems' \
-            --body "Automated company evolution wiring proposal.\n\n- workflow run: ${GITHUB_RUN_ID}\n- policy review required for COMPANY_FLOW.md changes\n- direct main write: NO")"
+            --body "Automated company evolution wiring proposal.\n\n- workflow run: ${GITHUB_RUN_ID}\n- policy review required for company-learning/platform-release-roadmap.json changes\n- direct main write: NO")"
 
           echo "COMPANY_EVOLUTION_PR=$pr_url"
           echo "PUBLIC_MAIN_WRITE=NO"
