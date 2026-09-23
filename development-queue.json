@@ -609,11 +609,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-open-cloud-luau-execution-scope-missing",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-runtime-foundation-stale-version"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-23T16:38:08.373Z",
+      "updatedAt": "2026-09-23T18:17:19.520Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -747,7 +746,7 @@
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8cc2dcd86c7aae408b9202ab590f06a464e05c1c",
@@ -901,7 +900,7 @@
         "multiplayerQaPassed": false,
         "actualPlatformRuntime": true
       },
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -1134,16 +1133,33 @@
         "universeId": "10767445769",
         "placeId": "126302702438348",
         "expectedVersionNumber": 20,
-        "requiredScope": "universe.place.luau-execution-session:10767445769:write",
-        "httpStatus": 403,
-        "errorCode": "PERMISSION_DENIED",
-        "failureStage": "CREATE",
-        "observedAt": "2026-09-23T16:38:08.373Z",
-        "authority": "roblox-open-cloud-engine-permission-evidence"
+        "observedVersionNumber": 19,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": false,
+        "blockers": [
+          "exactVersion",
+          "checkpointOrder",
+          "checkpoint:SERVER_BOOT",
+          "checkpoint:MODULE_GRAPH_READY",
+          "checkpoint:WORLD_READY",
+          "checkpoint:SPAWN_READY",
+          "checkpoint:CHARACTER_READY",
+          "checkpoint:GROUND_CONTACT",
+          "checkpoint:CAMERA_READY",
+          "checkpoint:INPUT_READY",
+          "checkpoint:MOVEMENT_CONFIRMED",
+          "checkpoint:REMOTE_ROUNDTRIP",
+          "checkpoint:CORE_LOOP_READY",
+          "checkpoint:SAVE_ROUNDTRIP",
+          "checkpoint:MULTIPLAYER_SYNC"
+        ],
+        "observedAt": "2026-09-23T18:17:19.520Z",
+        "authority": "stale-runtime-sentinel-observation"
       },
       "robloxF9ReleaseRegressionPassed": false,
       "robloxF9ReleaseRegressionEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-23T16:17:01.398Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-23T18:17:19.520Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -4138,7 +4154,7 @@
       "robloxReleasePublishedAt": null
     }
   ],
-  "updatedAt": "2026-09-23T17:29:52.033Z",
+  "updatedAt": "2026-09-23T18:17:19.520Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
