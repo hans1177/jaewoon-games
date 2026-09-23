@@ -86,3 +86,26 @@ test('promoted owner-reset seeds remain eligible for parallel strict design revi
   assert.match(workflow,/status==='ACTIVE'\|\|x\?\.promotion\?\.strictDesignReviewContinuesInParallel===true/);
   assert.doesNotMatch(workflow,/find\(x=>String\(x\.gameId\)===gameId&&String\(x\.status\)\.toUpperCase\(\)==='ACTIVE'\)/);
 });
+
+
+test('design runtime keeps PASS as checkpoint and schedules recurring design health review',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/cron: '0 16 \* \* \*'/);
+  assert.match(workflow,/designEvolutionDueFor/);
+  assert.match(workflow,/deepReviewIntervalHours\|\|168/);
+  assert.match(workflow,/NEW_VERIFIED_OR_OWNER_SIGNAL/);
+  assert.match(workflow,/PERIODIC_DEEP_HEALTH_REVIEW/);
+  assert.match(workflow,/PASS_CHECKPOINT_STILL_FRESH_NO_NEW_SIGNAL/);
+  assert.match(workflow,/DESIGN_PASS_IS_CHECKPOINT_NOT_TERMINAL=YES/);
+  assert.match(workflow,/design_evolution_due/);
+  assert.match(workflow,/TARGET_DESIGN_EVOLUTION_DUE/);
+  assert.match(workflow,/DESIGN_EVOLUTION_NO_DUE_SIGNAL_MUTATION=NO/);
+  assert.doesNotMatch(workflow,/const pending=eligible\.filter\(seed=>!strictPassFor\(seed\)\)/);
+});
+
+test('design runtime binds design intelligence into engine digest and static QA',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/tools\/vibe2-design-intelligence\.mjs/);
+  assert.match(workflow,/node --check tools\/vibe2-design-intelligence\.mjs/);
+  assert.match(workflow,/node --test qa\/vibe2-design-intelligence\.test\.mjs/);
+});
