@@ -451,3 +451,13 @@ test('Roblox runtime persist writers serialize with the shared company runtime w
   assert.match(sourcePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
   assert.match(packagePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
 });
+
+
+test('Roblox game source pushes route through exact changed-source sync instead of broad runtime batch',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const sync=fs.readFileSync(new URL('../.github/workflows/company-roblox-source-drift-sync.yml',import.meta.url),'utf8');
+  const runtimePush=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_dispatch:'));
+  assert.doesNotMatch(runtimePush,/roblox-games\/\*\*/);
+  assert.match(sync,/paths:\s*\n\s*- 'roblox-games\/\*\*'/);
+  assert.match(sync,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id=/);
+});
