@@ -256,7 +256,7 @@ jobs:
           node --input-type=module <<'NODE' > /tmp/models.txt
           import fs from 'node:fs';
           const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const roles=Array.isArray(d.ai?.departments)&&d.ai.departments.length?d.ai.departments:['planning','graphics','development','qa','balance','audio'];
+          const roles=Array.isArray(d.ai?.departments)&&d.ai.departments.length?d.ai.departments:['planning','graphics','development','qa','audio'];
           const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];
           const reviewCount=Math.max(Number(d.ai?.minDistinctModelsPerDepartment||1),Number(d.ai?.departmentReviewModelCount||1));
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
@@ -298,7 +298,7 @@ jobs:
           import path from 'node:path';
           import {PRODUCTION_CLASSES,normalizeProductionClass} from './tools/production-classification.mjs';
           const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const roles=Array.isArray(d.ai?.departments)&&d.ai.departments.length?d.ai.departments:['planning','graphics','development','qa','balance','audio'];
+          const roles=Array.isArray(d.ai?.departments)&&d.ai.departments.length?d.ai.departments:['planning','graphics','development','qa','audio'];
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
           if(d.ai?.departmentLeadModelsMustBeDistinct!==false&&new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||1))throw new Error('configured lead models do not satisfy minimum distinct lead count');
           const gameId=process.env.ARTBOOK_GAME_ID;
@@ -333,7 +333,7 @@ jobs:
           }else if(actualClass===PRODUCTION_CLASSES.DESIGN_ONLY){
             if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('design baseline gate missing');
             if(s.status!=='COMPLETE')throw new Error('design cycle incomplete');
-            const designRoles=['planning','graphics','development','qa','balance'];
+            const designRoles=['planning','graphics','development','qa','audio'];
             const actualRoles=Array.isArray(s.departments?.roles)?s.departments.roles:[];
             if(Number(s.departments?.count||0)!==designRoles.length||designRoles.some(role=>!actualRoles.includes(role))||actualRoles.some(role=>!designRoles.includes(role)))throw new Error('design department contract failed');
             if(s.departments?.reviewMode!=='DETERMINISTIC_DEPARTMENT_EVIDENCE'||s.departments?.aiReviewUsed!==false||s.runtimeMetrics?.deterministicDepartmentEvidence!==true)throw new Error('design deterministic department evidence missing');
