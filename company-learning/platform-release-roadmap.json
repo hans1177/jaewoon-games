@@ -1,5 +1,5 @@
 {
-  "version": 291,
+  "version": 292,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -42,10 +42,10 @@
     "legacyWebFirstPolicyRemoved": true
   },
   "livingMotionVisualQualityContract": {
-    "version": 3,
+    "version": 4,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
-    "objective": "LIVING_CONTINUOUS_MOTION_STRONG_GAME_FEEL_STYLE_ADAPTABLE_ASSETS_BEFORE_OPTIONAL_HIGH_FIDELITY_REALISM",
+    "objective": "CONTINUOUS_HIGH_END_CINEMATIC_GAME_PRESENTATION_EVOLUTION_WITH_LIVING_MOTION_CHARACTER_ACTING_ENVIRONMENTAL_STORYTELLING_AND_GAME_SPECIFIC_AUDIO_VISUAL_DIRECTION_WITHOUT_CREATING_A_STANDALONE_RELEASE_GATE",
     "appliesToStages": [
       "MINIMUM_DESIGN_PREPARATION",
       "TARGET_PLATFORM_SOURCE_BIND",
@@ -83,7 +83,12 @@
       "placeholderMonsterOrCharacterForbiddenAtFinalWebPass": true,
       "contextMismatchBackgroundForbiddenAtFinalWebPass": true,
       "enemyIdentityMustDifferBySilhouetteMotionOrBehaviorNotColorOnly": true,
-      "visualRegressionAgainstLastPassingPresentationForbidden": true
+      "visualRegressionAgainstLastPassingPresentationForbidden": true,
+      "presentationQualityIsContinuousEvolutionNotTerminalCompletion": true,
+      "cinematicDescriptionMeansSceneIntentActingCompositionMaterialEnvironmentMotionAndAudioVisualSynchronizationNotRawFidelityAlone": true,
+      "graphicsPassIsVerifiedCheckpointNotEndOfGraphicsWork": true,
+      "highEndPresentationCompletionMayNotBecomeStandaloneInternalOrPublicReleaseAuthority": true,
+      "ownerChangeRequestsMustRefineExistingResponsibleImplementationInsteadOfAccumulatingWrappersOrShadowOverrides": true
     },
     "assetAdaptation": {
       "originalAssetMustRemainPreserved": true,
@@ -316,7 +321,9 @@
         "SAVE_AND_GAMEPLAY_SEMANTICS_UNCHANGED"
       ],
       "visualPassCannotOverrideGameplayOrRuntimeFailure": true,
-      "highFidelityAssetQualityCannotCompensateForBrokenMotionOrInput": true
+      "highFidelityAssetQualityCannotCompensateForBrokenMotionOrInput": true,
+      "highEndPresentationDeficitCreatesGraphicsEvolutionDebtNotStandaloneReleaseAuthority": true,
+      "graphicsCheckpointFailureRoutesGraphicsRepairWithoutCreatingAutomaticWholeGameReleaseStop": true
     },
     "implementationReadiness": {
       "centralMachinePolicyMustBeReadBeforeWork": true,
@@ -385,15 +392,142 @@
       },
       "primitiveLifecycle": {
         "prototype": "PRIMITIVE_PARTS_ALLOWED_FOR_FAST_FUNCTIONAL_PROTOTYPE",
-        "internalPlaytest": "PRIMARY_CHARACTERS_ENEMIES_AND_BOSSES_REQUIRE_REAL_OR_EXPLICITLY_APPROVED_STYLIZED_ASSETS",
-        "final": "PRIMARY_CHARACTER_ENEMY_BOSS_PRIMITIVE_PLACEHOLDERS_FORBIDDEN",
+        "internalPlaytest": "PRIMARY_ACTOR_PLACEHOLDER_REMAINS_TRACKED_HIGH_PRIORITY_VISUAL_DEBT_AND_PRESENTATION_QUALITY_ALONE_DOES_NOT_CREATE_A_STANDALONE_NATIVE_RELEASE_GATE",
+        "final": "PUBLIC_OR_POST_RELEASE_PRIMARY_PLACEHOLDER_IS_HIGH_PRIORITY_VISUAL_DEBT_FOR_CONTINUOUS_REPLACEMENT_NOT_AN_INDEPENDENT_RELEASE_AUTHORITY",
         "fallbackMustCreateVisualDebt": true
       },
       "visualDebt": {
         "requiredForTemporaryPlaceholders": true,
         "debtMustRemainVisibleUntilReplacedOrExplicitlyApproved": true,
-        "internalPlaytestPrioritizesGameplayCriticalVisualDebt": true
+        "internalPlaytestPrioritizesGameplayCriticalVisualDebt": true,
+        "continuousEvolutionAfterRelease": true,
+        "releaseAuthority": false
       }
+    },
+    "continuousEvolution": {
+      "enabled": true,
+      "scope": "ALL_ACTIVE_DEVELOPMENT_CONFIRMED_RELEASE_CONFIRMED_AND_POST_RELEASE_GAMES",
+      "startsDuringNativeDevelopment": true,
+      "continuesAfterInternalRelease": true,
+      "continuesAfterPublicRelease": true,
+      "terminalPresentationCompletionState": false,
+      "checkpointState": "GRAPHICS_PASS",
+      "checkpointMeaning": "CURRENT_PRESENTATION_SCOPE_VERIFIED_NOT_FINAL_COMPLETION",
+      "repairState": "ASSET_REPAIR_REQUIRED",
+      "nextSignalSources": [
+        "OWNER_CHANGE_REQUEST",
+        "INTERNAL_PLAYTEST",
+        "PUBLIC_PLAYTEST_OR_TELEMETRY_WHEN_AVAILABLE",
+        "VISUAL_DEBT",
+        "RUNTIME_CAPTURE_COMPARISON",
+        "PLATFORM_PERFORMANCE_EVIDENCE"
+      ],
+      "priorityOrder": [
+        "BROKEN_OR_UNREADABLE_PRESENTATION",
+        "OWNER_EXPLICIT_CHANGE_REQUEST",
+        "HERO_CHARACTER_CREATURE_AND_SIGNATURE_MOMENTS",
+        "CORE_GAMEPLAY_ACTION_READABILITY_AND_FEEL",
+        "WORLD_IDENTITY_AND_ENVIRONMENTAL_STORYTELLING",
+        "ANIMATION_AND_SECONDARY_MOTION",
+        "VFX_CAMERA_LIGHTING_AUDIO_COHESION",
+        "SECONDARY_POLISH"
+      ],
+      "globalReleaseStopForUnfinishedHighEndPolishForbidden": true,
+      "existingRuntimeQaSecurityAndReleaseGatesRemainAuthoritative": true
+    },
+    "cinematicDirection": {
+      "enabled": true,
+      "target": "PROFESSIONAL_CINEMATIC_REALTIME_GAME_DIRECTION",
+      "rawFidelityAloneInsufficient": true,
+      "sceneIntentRequired": [
+        "EMOTIONAL_INTENT",
+        "RISK_OR_TENSION",
+        "PLAYER_FOCUS_TARGET",
+        "WORLD_CONTEXT",
+        "GAMEPLAY_READABILITY"
+      ],
+      "characterAndCreatureActing": [
+        "POSTURE_AND_WEIGHT",
+        "GAZE_AND_TARGET_FOCUS",
+        "ANTICIPATION",
+        "CONTACT_AND_IMPACT",
+        "RECOVERY",
+        "HIT_REACTION",
+        "FATIGUE_OR_ALERTNESS_WHEN_RELEVANT",
+        "SPECIES_OR_ROLE_SPECIFIC_DEATH"
+      ],
+      "motionLayers": [
+        "PRIMARY_MOTION",
+        "SECONDARY_MOTION",
+        "PROCEDURAL_RESPONSE"
+      ],
+      "motionQuality": [
+        "ACCELERATION_DECELERATION",
+        "TURN_INTERPOLATION",
+        "STATE_BLEND",
+        "WEIGHT_TRANSFER",
+        "GROUND_OR_SLOPE_RESPONSE_WHEN_SUPPORTED",
+        "DIRECTIONAL_HIT_RESPONSE",
+        "NON_MECHANICAL_IDLE_VARIATION"
+      ],
+      "environmentalStorytelling": [
+        "FOREGROUND_MIDGROUND_BACKGROUND_COMPOSITION",
+        "LANDMARK_FOCUS",
+        "WEAR_DAMAGE_MOISTURE_DUST_SCORCH_AND_AGE_WHEN_CONTEXTUAL",
+        "LIVED_IN_OR_ABANDONED_TRACES",
+        "REGION_ECOLOGY_AND_DANGER_GRADIENT",
+        "AMBIENT_WORLD_MOTION"
+      ],
+      "materialStorytelling": true,
+      "gameSpecificVfxLanguage": true,
+      "vfxIntensityHierarchy": [
+        "AMBIENT",
+        "NORMAL",
+        "HEAVY",
+        "CRITICAL_OR_SIGNATURE",
+        "BOSS_OR_ULTIMATE"
+      ],
+      "adaptiveAudioBinding": {
+        "audioAuthoringOwner": "audio",
+        "graphicsConsumesAndBindsAudioEvidence": true,
+        "conceptFitRequired": true,
+        "stateFit": [
+          "EXPLORATION",
+          "DISCOVERY_OR_TENSION",
+          "COMBAT",
+          "DANGER",
+          "BOSS",
+          "VICTORY",
+          "REST_OR_HUB",
+          "SPECIAL_EVENT"
+        ],
+        "visualDepartmentMayNotCreateIndependentAudioAuthority": true
+      },
+      "platformSpecificReauthoringRequired": true,
+      "mobileReadabilityAndPerformancePreserved": true
+    },
+    "ownerChangeRequestStability": {
+      "enabled": true,
+      "latestExplicitOwnerIntentWinsWithinSameScope": true,
+      "conflictingPriorIntentMustBeReplacedNotStacked": true,
+      "currentImplementationMustBeReadBeforeMutation": true,
+      "affectedScopeMustBeCalculatedBeforeMutation": true,
+      "existingResponsibleSystemDirectModificationPreferred": true,
+      "preserveUnaffectedBehavior": true,
+      "preserveGameplayBalanceSaveProgressionEconomyAndHitSemantics": true,
+      "wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden": true,
+      "duplicateImplementationForSameResponsibilityForbidden": true,
+      "sequence": [
+        "READ_CURRENT_IMPLEMENTATION_AND_CURRENT_CENTRAL_POLICY",
+        "RESOLVE_LATEST_EXPLICIT_OWNER_INTENT",
+        "CALCULATE_AFFECTED_SCOPE",
+        "MODIFY_EXISTING_RESPONSIBLE_SYSTEM",
+        "REMOVE_OR_REPLACE_CONFLICTING_OLD_BEHAVIOR_IN_SAME_SCOPE",
+        "PRESERVE_UNAFFECTED_BEHAVIOR",
+        "REVALIDATE_CHANGED_SCOPE",
+        "RUN_RELATED_REGRESSION",
+        "REBIND_CURRENT_CENTRAL_POLICY_AND_EVIDENCE"
+      ]
     }
   },
   "platformRepresentativeSets": {
@@ -11710,18 +11844,18 @@
       "genericPrimitiveAssemblyCannotBeDeclaredFinalHighQuality": true
     },
     "highEndVisualProductionContract": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
-      "purpose": "MAKE_PURPOSEFUL_GAME_SPECIFIC_ASSETS_AND_COHERENT_ART_DIRECTION_THE_DEFAULT_PRESENTATION_STATE_WHILE_PRESERVING_GAMEPLAY_AUTHORITY",
+      "purpose": "CONTINUOUSLY_EVOLVE_PURPOSEFUL_GAME_SPECIFIC_ASSETS_CINEMATIC_DIRECTION_MOTION_VFX_WORLD_DESCRIPTION_AND_AUDIO_VISUAL_COHESION_WITHIN_EXISTING_GRAPHICS_PRODUCTION_WITHOUT_TREATING_HIGH_END_COMPLETION_AS_A_RELEASE_GATE",
       "scope": "ALL_ACTIVE_DEVELOPMENT_CONFIRMED_AND_RELEASE_CONFIRMED_ROBLOX_UNITY_GAMES",
       "developmentAdmissionGate": false,
       "runsInParallelWithNativeDevelopment": true,
       "strictDesignReviewRunsInParallel": true,
       "internalPlaytestCandidateMayExistBeforeFinalPresentationGate": true,
-      "internalPlatformReleasePresentationGateRequired": true,
-      "publicReleasePresentationGateRequired": true,
+      "internalPlatformReleasePresentationGateRequired": false,
+      "publicReleasePresentationGateRequired": false,
       "noNewDepartment": true,
       "executionOwner": "EXISTING_GRAPHICS_DEPARTMENT_PLUS_VIBE_IMPLEMENTATION",
       "designInputs": {
@@ -11889,7 +12023,11 @@
         "animationVfxAudioCameraLightingCohesionRequired": true,
         "platformSpecificPerformanceEvidenceRequired": true,
         "markerOnlyPassForbidden": true,
-        "finalFailureState": "ASSET_REPAIR_REQUIRED"
+        "finalFailureState": "ASSET_REPAIR_REQUIRED",
+        "graphicsCheckpointOnly": true,
+        "highEndDeficitDoesNotCreateStandaloneReleaseBlocker": true,
+        "actualBrokenPresentationStillRoutesToExistingRepairState": true,
+        "releaseAuthorityExpansion": false
       },
       "preservation": {
         "gameplayBalanceSaveProgressionEconomyAndHitSemanticsImmutableForPresentationOnlyWork": true,
@@ -11898,10 +12036,140 @@
       },
       "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
       "graphicsProductionUnificationAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
-      "internalVisualModulesAreNotIndependentProductionAuthorities": true
+      "internalVisualModulesAreNotIndependentProductionAuthorities": true,
+      "presentationCompletionIsTerminal": false,
+      "continuesAfterInternalRelease": true,
+      "continuesAfterPublicRelease": true,
+      "releaseAuthority": "NONE_HIGH_END_PRESENTATION_EVOLVES_IN_PARALLEL_EXISTING_NATIVE_RUNTIME_QA_SECURITY_AND_RELEASE_GATES_REMAIN_AUTHORITATIVE",
+      "graphicsPassMeaning": "VERIFIED_PRESENTATION_CHECKPOINT_NOT_TERMINAL_COMPLETION",
+      "continuousEvolution": {
+        "enabled": true,
+        "scope": "ALL_ACTIVE_DEVELOPMENT_CONFIRMED_RELEASE_CONFIRMED_AND_POST_RELEASE_GAMES",
+        "startsDuringNativeDevelopment": true,
+        "continuesAfterInternalRelease": true,
+        "continuesAfterPublicRelease": true,
+        "terminalPresentationCompletionState": false,
+        "checkpointState": "GRAPHICS_PASS",
+        "checkpointMeaning": "CURRENT_PRESENTATION_SCOPE_VERIFIED_NOT_FINAL_COMPLETION",
+        "repairState": "ASSET_REPAIR_REQUIRED",
+        "nextSignalSources": [
+          "OWNER_CHANGE_REQUEST",
+          "INTERNAL_PLAYTEST",
+          "PUBLIC_PLAYTEST_OR_TELEMETRY_WHEN_AVAILABLE",
+          "VISUAL_DEBT",
+          "RUNTIME_CAPTURE_COMPARISON",
+          "PLATFORM_PERFORMANCE_EVIDENCE"
+        ],
+        "priorityOrder": [
+          "BROKEN_OR_UNREADABLE_PRESENTATION",
+          "OWNER_EXPLICIT_CHANGE_REQUEST",
+          "HERO_CHARACTER_CREATURE_AND_SIGNATURE_MOMENTS",
+          "CORE_GAMEPLAY_ACTION_READABILITY_AND_FEEL",
+          "WORLD_IDENTITY_AND_ENVIRONMENTAL_STORYTELLING",
+          "ANIMATION_AND_SECONDARY_MOTION",
+          "VFX_CAMERA_LIGHTING_AUDIO_COHESION",
+          "SECONDARY_POLISH"
+        ],
+        "globalReleaseStopForUnfinishedHighEndPolishForbidden": true,
+        "existingRuntimeQaSecurityAndReleaseGatesRemainAuthoritative": true
+      },
+      "cinematicDirection": {
+        "enabled": true,
+        "target": "PROFESSIONAL_CINEMATIC_REALTIME_GAME_DIRECTION",
+        "rawFidelityAloneInsufficient": true,
+        "sceneIntentRequired": [
+          "EMOTIONAL_INTENT",
+          "RISK_OR_TENSION",
+          "PLAYER_FOCUS_TARGET",
+          "WORLD_CONTEXT",
+          "GAMEPLAY_READABILITY"
+        ],
+        "characterAndCreatureActing": [
+          "POSTURE_AND_WEIGHT",
+          "GAZE_AND_TARGET_FOCUS",
+          "ANTICIPATION",
+          "CONTACT_AND_IMPACT",
+          "RECOVERY",
+          "HIT_REACTION",
+          "FATIGUE_OR_ALERTNESS_WHEN_RELEVANT",
+          "SPECIES_OR_ROLE_SPECIFIC_DEATH"
+        ],
+        "motionLayers": [
+          "PRIMARY_MOTION",
+          "SECONDARY_MOTION",
+          "PROCEDURAL_RESPONSE"
+        ],
+        "motionQuality": [
+          "ACCELERATION_DECELERATION",
+          "TURN_INTERPOLATION",
+          "STATE_BLEND",
+          "WEIGHT_TRANSFER",
+          "GROUND_OR_SLOPE_RESPONSE_WHEN_SUPPORTED",
+          "DIRECTIONAL_HIT_RESPONSE",
+          "NON_MECHANICAL_IDLE_VARIATION"
+        ],
+        "environmentalStorytelling": [
+          "FOREGROUND_MIDGROUND_BACKGROUND_COMPOSITION",
+          "LANDMARK_FOCUS",
+          "WEAR_DAMAGE_MOISTURE_DUST_SCORCH_AND_AGE_WHEN_CONTEXTUAL",
+          "LIVED_IN_OR_ABANDONED_TRACES",
+          "REGION_ECOLOGY_AND_DANGER_GRADIENT",
+          "AMBIENT_WORLD_MOTION"
+        ],
+        "materialStorytelling": true,
+        "gameSpecificVfxLanguage": true,
+        "vfxIntensityHierarchy": [
+          "AMBIENT",
+          "NORMAL",
+          "HEAVY",
+          "CRITICAL_OR_SIGNATURE",
+          "BOSS_OR_ULTIMATE"
+        ],
+        "adaptiveAudioBinding": {
+          "audioAuthoringOwner": "audio",
+          "graphicsConsumesAndBindsAudioEvidence": true,
+          "conceptFitRequired": true,
+          "stateFit": [
+            "EXPLORATION",
+            "DISCOVERY_OR_TENSION",
+            "COMBAT",
+            "DANGER",
+            "BOSS",
+            "VICTORY",
+            "REST_OR_HUB",
+            "SPECIAL_EVENT"
+          ],
+          "visualDepartmentMayNotCreateIndependentAudioAuthority": true
+        },
+        "platformSpecificReauthoringRequired": true,
+        "mobileReadabilityAndPerformancePreserved": true
+      },
+      "ownerChangeRequestStability": {
+        "enabled": true,
+        "latestExplicitOwnerIntentWinsWithinSameScope": true,
+        "conflictingPriorIntentMustBeReplacedNotStacked": true,
+        "currentImplementationMustBeReadBeforeMutation": true,
+        "affectedScopeMustBeCalculatedBeforeMutation": true,
+        "existingResponsibleSystemDirectModificationPreferred": true,
+        "preserveUnaffectedBehavior": true,
+        "preserveGameplayBalanceSaveProgressionEconomyAndHitSemantics": true,
+        "wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden": true,
+        "duplicateImplementationForSameResponsibilityForbidden": true,
+        "sequence": [
+          "READ_CURRENT_IMPLEMENTATION_AND_CURRENT_CENTRAL_POLICY",
+          "RESOLVE_LATEST_EXPLICIT_OWNER_INTENT",
+          "CALCULATE_AFFECTED_SCOPE",
+          "MODIFY_EXISTING_RESPONSIBLE_SYSTEM",
+          "REMOVE_OR_REPLACE_CONFLICTING_OLD_BEHAVIOR_IN_SAME_SCOPE",
+          "PRESERVE_UNAFFECTED_BEHAVIOR",
+          "REVALIDATE_CHANGED_SCOPE",
+          "RUN_RELATED_REGRESSION",
+          "REBIND_CURRENT_CENTRAL_POLICY_AND_EVIDENCE"
+        ]
+      }
     },
     "graphicsProductionUnification": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "externalWorkUnit": "GRAPHICS_PRODUCTION",
@@ -11935,7 +12203,10 @@
         "perStageAtomicCompletionAllowed": true,
         "globalGraphicsWaveBarrierForbidden": true,
         "duplicateGraphicsProductionRootForSameGameCandidateForbidden": true,
-        "failedInternalScopeRoutesToSameRootRepairState": "ASSET_REPAIR_REQUIRED"
+        "failedInternalScopeRoutesToSameRootRepairState": "ASSET_REPAIR_REQUIRED",
+        "continuousImprovementAfterGraphicsPass": true,
+        "graphicsPassMayGenerateLaterPolishWork": true,
+        "highEndCompletionMayNotCreateGlobalReleaseBarrier": true
       },
       "authorityBoundaries": {
         "graphicsDepartmentOwnsVisualProductionDirection": true,
@@ -11944,7 +12215,8 @@
         "graphicsMayConsumeAudioEvidenceAndBindAudioPresentation": true,
         "graphicsMayNotCreateIndependentAudioDepartmentAuthority": true,
         "gameplayAuthorityExpansionForbidden": true,
-        "qaSecurityReleaseAuthorityExpansionForbidden": true
+        "qaSecurityReleaseAuthorityExpansionForbidden": true,
+        "releaseAuthorityExpansionForbidden": true
       },
       "outputContract": {
         "passState": "GRAPHICS_PASS",
@@ -11956,7 +12228,12 @@
         "rawCaptureDuplicationForbidden": true,
         "artBibleAndTargetFramesBoundAtRoot": true,
         "assetProvenanceAndTransformHistoryBoundAtRoot": true,
-        "runtimeVisualQaAndPerformanceBoundAtRoot": true
+        "runtimeVisualQaAndPerformanceBoundAtRoot": true,
+        "passIsVerifiedCheckpointNotTerminal": true,
+        "continuousEvolutionAfterPass": true,
+        "presentationCompletionIsTerminal": false,
+        "releaseAuthority": false,
+        "ownerChangeRequestScopeMustPreserveUnaffectedBehavior": true
       },
       "compatibility": {
         "existingVisualModulesRetainedAsInternalModules": true,
