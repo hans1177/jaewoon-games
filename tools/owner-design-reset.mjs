@@ -19,18 +19,36 @@ export function activeOwnerDesignResetRequests(file=OWNER_DESIGN_RESET_FILE){
 
 export function ownerDesignResetRequestForGame(gameId,file=OWNER_DESIGN_RESET_FILE){
   const id=clean(gameId);
-  return activeOwnerDesignResetRequests(file).find(request=>clean(request.gameId)===id)||null;
+  const matches=activeOwnerDesignResetRequests(file).filter(request=>clean(request.gameId)===id);
+  return matches.at(-1)||null;
+}
+
+function ownerDesignResetEventForGame(gameId,file=OWNER_DESIGN_RESET_FILE){
+  const id=clean(gameId),queue=loadOwnerDesignResetQueue(file),rows=Array.isArray(queue.requests)?queue.requests:[];
+  let match=null,index=-1;
+  for(let i=0;i<rows.length;i++){
+    const request=rows[i];
+    if(clean(request?.status).toUpperCase()!=='ACTIVE'||clean(request?.gameId)!==id||!request?.seed)continue;
+    match=request;index=i;
+  }
+  if(!match)return null;
+  const eventId=clean(match.requestInstanceId||match.requestId||match.requestedAt||match.updatedAt)||`${clean(match.revision)||'OWNER_RESET'}#${index+1}`;
+  return{request:match,index,eventId};
 }
 
 export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE){
-  const request=ownerDesignResetRequestForGame(gameId,file);
-  if(!request)return null;
+  const event=ownerDesignResetEventForGame(gameId,file);
+  if(!event)return null;
+  const request=event.request;
   const seed=clone(request.seed);
   seed.gameId=clean(request.gameId);
   seed.gameName=clean(request.gameName||seed.gameName||seed.gameId);
   seed.status='ACTIVE';
   seed.generation='OWNER_REDESIGN_RESET';
   seed.ownerResetRevision=clean(request.revision||seed.ownerResetRevision||'OWNER_RESET');
+  seed.ownerRequestInstanceId=event.eventId;
+  seed.ownerRequestSequence=event.index+1;
+  seed.ownerRepeatedRequestCreatesNewDesignRevision=true;
   seed.productionClass='DESIGN_ONLY';
   seed.productionClassSource='OWNER_REDESIGN_RESET_2026-09-13';
   seed.lifecycleState='DESIGN_ONLY';
@@ -47,7 +65,8 @@ export function ensureOwnerDesignResetSeed(state,gameId,{file=OWNER_DESIGN_RESET
   const index=state.seeds.findIndex(seed=>clean(seed?.gameId)===clean(gameId));
   if(index<0){state.seeds.push(reset);return {seed:reset,changed:true};}
   const current=state.seeds[index];
-  if(clean(current?.ownerResetRevision)===clean(reset.ownerResetRevision))return {seed:current,changed:false};
+  if(clean(current?.ownerResetRevision)===clean(reset.ownerResetRevision)
+    &&clean(current?.ownerRequestInstanceId)===clean(reset.ownerRequestInstanceId))return {seed:current,changed:false};
   state.seeds[index]=reset;
   return {seed:reset,changed:true};
 }
