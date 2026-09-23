@@ -1,5 +1,5 @@
 {
-  "version": 96,
+  "version": 97,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T09:01:00+09:00",
+  "updatedAt": "2026-09-23T09:47:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2739,7 +2739,9 @@
         "missingResultRecovery": "tools/company-system-ai-queue.mjs::handoffMissingSystemAiResults",
         "reserveSerialization": "company-system-ai-reserve-control",
         "fanInIsolation": "company-system-ai-fanin-${github.run_id}-${github.run_attempt}",
-        "fanInWriteMode": "OPTIMISTIC_LATEST_STATE_REPLAY_MAX_5"
+        "fanInWriteMode": "OPTIMISTIC_LATEST_STATE_REPLAY_MAX_5",
+        "reservationCollisionRecovery": "RELOAD_LATEST_CONTROL_BRANCH_RECOMPUTE_AND_RETRY_UP_TO_8_PER_RUN",
+        "latestVerifiedReserveRunId": 35803294553
       },
       "bottleneckSensor": {
         "queueSources": [
@@ -2781,7 +2783,11 @@
         "systemAiAdapter": "tools/company-system-ai-learning-context.mjs",
         "outcomeAttribution": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes",
         "sameGameSameFailurePriority": true,
-        "failedStrategyReuseGuard": true
+        "failedStrategyReuseGuard": true,
+        "promotion": "tools/company-system-ai-learning.mjs",
+        "durableState": "vibe2-unreal-core:.vibe2/learning-motor-state.json",
+        "exactKnowledgeTraceRequired": true,
+        "freshVerifiedAcceptanceRequired": true
       }
     },
     "invariants": {
@@ -2802,6 +2808,16 @@
       "centralPolicyQaRun": 2261,
       "integratedRegressionRun": 7913,
       "securityImmuneRun": 3154
+    },
+    "latestRuntimeEvidence": {
+      "reserveRunId": 35803294553,
+      "reserveResult": "PASS",
+      "branchCollisionsRecovered": 2,
+      "successfulAttempt": 3,
+      "queueDepthObserved": 267,
+      "recommendedBatch": 19,
+      "reservedDisjointWorkers": 2,
+      "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
     }
   }
 }
