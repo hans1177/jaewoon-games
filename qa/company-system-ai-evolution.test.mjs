@@ -98,9 +98,14 @@ test('exact duplicate bottleneck repairs coalesce before reservation without los
       sourceMutationRequired:true,createdAt:'2026-09-23T00:02:00Z',evidence:['recovery-queue:r3']
     },
     {
+      id:'checkpoint-newer',status:'queued',priority:'high',taskType:'bottleneck-repair',gameId:'demo',
+      goal:'repair the same verified bottleneck',responsibleFiles:['web-games/demo/index.html'],
+      sourceMutationRequired:true,sourceMutationBaseline:'newer-baseline',createdAt:'2026-09-23T00:03:00Z'
+    },
+    {
       id:'distinct',status:'queued',priority:'high',taskType:'bottleneck-repair',gameId:'demo',
       goal:'repair a different verified bottleneck',responsibleFiles:['tools/distinct.mjs'],
-      sourceMutationRequired:true,createdAt:'2026-09-23T00:03:00Z'
+      sourceMutationRequired:true,createdAt:'2026-09-23T00:04:00Z'
     }
   ]};
   const compacted=coalesceQueuedSystemAiDuplicateRepairs(queue,{at:Date.parse('2026-09-23T00:10:00Z')});
@@ -118,11 +123,13 @@ test('exact duplicate bottleneck repairs coalesce before reservation without los
     assert.ok(row.evidence.includes('retry-budget-consumed:NO'));
     assert.ok(row.evidence.includes('learning-penalty:NO'));
   }
+  assert.equal(compacted.queue.tasks.find(x=>x.id==='checkpoint-newer').status,'queued');
   assert.equal(compacted.queue.tasks.find(x=>x.id==='distinct').status,'queued');
 
   const reserved=reserveSystemAiBatch(queue,{max:4,reservationId:'run:dedupe',at:Date.parse('2026-09-23T00:10:00Z')});
   assert.equal(reserved.coalesced,2);
   assert.deepEqual(new Set(reserved.reserved.map(x=>x.id)),new Set(['repair-a','distinct']));
+  assert.equal(reserved.queue.tasks.find(x=>x.id==='checkpoint-newer').status,'queued');
 });
 
 test('reserve chooses one representative canary for a shared failure signature while disjoint work stays parallel',()=>{
