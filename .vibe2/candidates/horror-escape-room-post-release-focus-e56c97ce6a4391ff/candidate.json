@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": "local function form(p)",
+      "replace": "local function form(p)\n local id=p:GetAttribute(\"MonsterForm\")or\"DRACULA\"\n id=legacyMonsterIds[id]or id\n for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end\n return C.MonsterForms[1]\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
