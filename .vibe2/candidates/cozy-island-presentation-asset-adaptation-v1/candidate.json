@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "      <div class=\"hud-main\">",
+      "replace": "      <div class=\"hud-main\"><strong id=\"dayText\">1일차</strong><span id=\"timeText\">오전 8:00</span><span id=\"weatherText\">☀️ 맑음</span></div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
