@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
+      - 'roblox-games/.company-runtime-trigger'
   workflow_dispatch:
     inputs:
       game_id:
