@@ -608,7 +608,8 @@ jobs:
       - name: Checkout publication baseline
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
 
       - name: Download install-verified APK
         uses: actions/download-artifact@v4
@@ -741,7 +742,8 @@ jobs:
       - name: Checkout runtime failure baseline
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
 
       - name: Keep owner test APK available and mark runtime gate failed
         shell: bash
