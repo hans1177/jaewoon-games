@@ -433,3 +433,12 @@ test('stale historical Roblox runtime executions cannot roll source or package s
   assert.match(workflow,/ROBLOX_PACKAGE_STALE_RESULT_IGNORED=/);
   assert.match(workflow,/boundSourceRevision!==resultSourceRevision/);
 });
+
+
+test('Roblox source and package workers avoid full repository history checkout',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+  assert.ok((workflow.match(/fetch-depth:\s*1/g)||[]).length>=6);
+  assert.ok((workflow.match(/fetch-tags:\s*false/g)||[]).length>=6);
+  assert.match(workflow,/git fetch --no-tags origin "\$\{\{ matrix\.sourceRevision \}\}"/);
+});
