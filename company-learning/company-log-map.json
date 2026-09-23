@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 27,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -378,7 +378,7 @@
     ]
   },
   "highEndVisualEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
     "evidenceScope": "PER_GAME_PER_PLATFORM_CANDIDATE_REVISION",
     "correlationKeys": [
@@ -407,11 +407,14 @@
     "artifactReferencesAndHashesPreferred": true,
     "finalFailureState": "ASSET_REPAIR_REQUIRED",
     "unifiedRoot": "graphics-production-evidence",
-    "independentTopLevelEvidenceAuthority": false
+    "independentTopLevelEvidenceAuthority": false,
+    "checkpointEvidenceNotTerminalCompletion": true,
+    "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
+    "standaloneReleaseAuthority": false
   },
   "updatedAt": "2026-09-23",
   "graphicsProductionEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
     "recordKind": "graphics-production-evidence",
     "rootScope": "ONE_PER_GAME_CANDIDATE_REVISION",
@@ -442,7 +445,13 @@
     "separateCharacterEnvironmentAnimationVfxTopLevelEvidenceRecordsForbidden": true,
     "repairUpdatesSameGraphicsProductionRoot": true,
     "passState": "GRAPHICS_PASS",
-    "failState": "ASSET_REPAIR_REQUIRED"
+    "failState": "ASSET_REPAIR_REQUIRED",
+    "graphicsPassIsCheckpointNotTerminal": true,
+    "continuousEvolutionAfterPassAllowed": true,
+    "releaseAuthority": false,
+    "ownerChangeRequestScopeEvidenceRequired": true,
+    "directResponsibleSystemMutationEvidencePreferred": true,
+    "wrapperOrShadowAccumulationEvidenceForbidden": true
   },
   "centralPolicyExecutionEvidence": {
     "humanReadablePolicyDocsRequired": false,
