@@ -1,5 +1,5 @@
 {
-  "version": 123,
+  "version": 129,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -89,7 +89,11 @@
       "VIBE_SOURCE_WORKER",
       "INCREMENTAL_QA",
       "PERFORMANCE_SANITY",
-      "FAN_IN_REGRESSION"
+      "FAN_IN_REGRESSION",
+      "CAUSAL_GAME_ERROR_REPAIR",
+      "SCENARIO_AND_INVARIANT_QA",
+      "SAVE_AND_MULTIPLAYER_COMPATIBILITY_QA",
+      "FULL_REGRESSION_FAN_IN"
     ],
     "assetProduction": [
       "GRAPHICS_PRODUCTION",
@@ -134,7 +138,25 @@
         "assets/vibe-visual-quality-gate.js"
       ],
       "siblingTopLevelVisualPipelinesForbidden": true
-    }
+    },
+    "gameErrorRepair": [
+      "CAPTURE_FAILURE_AND_EXACT_SIGNATURE",
+      "PREPATCH_SCENARIO_REPRODUCTION",
+      "DESIGN_IMPLEMENTATION_MIXED_CAUSE_CLASSIFICATION",
+      "RESPONSIBLE_SYSTEM_AND_FILE_BINDING",
+      "LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT_COMPARISON_WHEN_AVAILABLE",
+      "DIRECT_RESPONSIBLE_SYSTEM_REPAIR",
+      "ORIGINAL_SCENARIO_REPLAY",
+      "GAME_SPECIFIC_INVARIANT_VALIDATION",
+      "SAVE_LOAD_MIGRATION_VALIDATION_WHEN_APPLICABLE",
+      "TWO_PLUS_PLAYER_LIFECYCLE_VALIDATION_WHEN_APPLICABLE",
+      "IMPACT_SCOPED_QA",
+      "FULL_REGRESSION_FAN_IN",
+      "ACCEPT_OR_ROLLBACK_REQUEUE",
+      "MACHINE_ONLY_TWO_PLUS_CLIENT_MULTIPLAYER_REPRODUCTION",
+      "JOIN_LEAVE_REJOIN_LATE_JOIN_AUTHORITATIVE_SYNC_VALIDATION",
+      "USER_ASSISTANCE_NOT_REQUIRED_FOR_MULTIPLAYER_PASS"
+    ]
   },
   "workerRoles": {
     "VIBE2_VIBE3": "GAME_SOURCE_IMPLEMENTATION_OWNER",
@@ -166,7 +188,15 @@
     "currentMainRebindRequiredAfterCentralPolicyChange": true,
     "vibeWorkerPreflightMustUseCurrentMainPolicySha": true,
     "afterCentralDocumentWrite": "RELOAD_ROADMAP_LOG_ARCHITECTURE_SECURITY_AND_VERIFY_SHARED_CONTEXT",
-    "shadowDocumentationSystemForbidden": true
+    "shadowDocumentationSystemForbidden": true,
+    "gameErrorRepairContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair",
+    "gameErrorRepairMustRebindCurrentMainPolicy": true,
+    "gameErrorRepairCannotCreateShadowQaOrRepairPipeline": true,
+    "nonCanonicalPolicySemanticsForbidden": true,
+    "policyAuthoritySource": "company-learning/platform-release-roadmap.json",
+    "humanPolicyMirrorRequired": false,
+    "legacyPolicyMirrorRemoved": true,
+    "completedOneShotMigrationArtifactsRetired": true
   },
   "forbidden": [
     "WORK_WITHOUT_SHARED_CONTEXT",
@@ -2046,7 +2076,6 @@
   "assetProductionParallelism": {
     "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
-    "policyMirror": "COMPANY_FLOW.md#assetProductionParallel",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "codeAndAssetWorkMayRunConcurrently": true,
     "isolatedResponsibilitiesRequired": true,
@@ -2401,33 +2430,15 @@
     "webAdmissionAuthority": false,
     "humanReadableSyncDocumentRequired": false,
     "designEvolution": {
+      "role": "STRUCTURAL_BINDINGS_ONLY",
+      "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution",
       "root": "EXISTING_DESIGN_RUNTIME",
       "coordinator": "tools/company-design-cycle.mjs",
       "intelligence": "tools/vibe2-design-intelligence.mjs",
       "learning": "tools/vibe2-learning-motor.mjs",
-      "loop": "STABILIZE_UNDERSTAND_OBSERVE_DIAGNOSE_PRIORITIZE_BLUEPRINT_PROPOSE_COMPARE_REVISE_VALIDATE_LEARN_REPLAN_EXPAND",
-      "newDesignPipelineForbidden": true,
-      "unlimitedRevisions": true,
-      "repeatedOwnerRequestCreatesNewRevision": true,
-      "automaticSignalDeduplicationPreserved": true,
-      "baseConceptReferenceNotPrison": true,
-      "genreChallengeAllowed": true,
-      "stabilityRepairPreemptsCreativeExpansion": true,
-      "planABRequiredForMaterialChange": true,
-      "antiMonotonyRequired": true,
-      "narrativeDialogueVoiceContractRequiredWhenApplicable": true,
-      "verifiedLearningReturnsToExistingLearningMotor": true,
-      "causalDefectOwnershipRequired": true,
-      "sameSymptomDesignAndImplementationDoubleMutationForbidden": true,
-      "unresolvedCauseRequiresTraceBeforeMutation": true,
-      "designIntegrityReachabilityChecksRequired": true,
-      "runtimeBugRoutesToExistingDevelopmentQaRepair": true,
-      "verifiedDesignContradictionRoutesToExistingDesignRuntime": true,
-      "dailyDesignHealthScan": true,
-      "periodicDeepReviewHours": 168,
-      "newOwnerOrVerifiedSignalBypassesPeriodicInterval": true,
-      "passCheckpointDoesNotDisableFutureDesignReview": true,
-      "scheduler": ".github/workflows/company-seed-design-runtime.yml"
+      "scheduler": ".github/workflows/company-seed-design-runtime.yml",
+      "policyAuthority": false,
+      "semanticMirrorForbidden": true
     }
   },
   "releaseExposureLifecycle": {
@@ -2771,9 +2782,9 @@
   },
   "updatedAt": "2026-09-23",
   "centralDocumentationTopology": {
-    "version": 1,
+    "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
-    "role": "STRUCTURAL_MIRROR_AND_BINDING_POINTERS_ONLY",
+    "role": "STRUCTURAL_BINDINGS_AND_COMPATIBILITY_POINTERS_ONLY",
     "policyCreationAuthority": "company-learning/platform-release-roadmap.json",
     "canonicalSetSource": "company-learning/platform-release-roadmap.json#centralDocumentation.canonicalSet",
     "branchRoleSource": "company-learning/company-architecture-map.json#branches",
@@ -2787,7 +2798,19 @@
     ],
     "duplicatePolicyReplicationForbidden": true,
     "runtimeStateMayNotCreatePolicy": true,
-    "vibeControlStateMayNotCreatePolicy": true
+    "vibeControlStateMayNotCreatePolicy": true,
+    "policySemanticsDefinedInCentralOnly": true,
+    "manualPolicyMirrorForbidden": true,
+    "legacyCompatibilityPointers": [
+      "COMPANY_FLOW.md",
+      "company-learning/PLATFORM_RELEASE_ROADMAP.md",
+      "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
+      "company-learning/UNITY_WEB_FIRST_STAGE.md",
+      "company-learning/PRIMARY_THREE_FAST_MVP.md",
+      "company-learning/VIBE3_ENGINE.md"
+    ],
+    "legacyPointerFilesMayNotContainExecutablePolicySemantics": true,
+    "historicalPolicyIsGitHistoryNotLiveDocument": true
   },
   "plannedExecutionEnhancements": {
     "version": 1,

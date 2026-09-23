@@ -385,9 +385,9 @@ test('24H safety-net refills free game slots while preserving queue-level confli
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'"));
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '20'"));
   assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
-  assert(safetyNetWorkflow.includes('const effectiveMax=configuredMax;'));
+  assert(safetyNetWorkflow.includes('const effectiveMax=Math.max(adaptiveMin,Math.min(configuredMax,controlTarget));'));
   assert(safetyNetWorkflow.includes("echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'"));
-  assert.equal(safetyNetWorkflow.includes('Math.min(configuredMax,controlTarget)'),false);
+  assert.equal(safetyNetWorkflow.includes('Math.min(configuredMax,controlTarget)'),true);
   assert(safetyNetWorkflow.includes("lane_max: '256'"));
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
@@ -659,7 +659,7 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:14'));
+  assert(resultStep.includes('version:15'));
   assert(resultStep.includes('workLock'));
   assert(resultStep.includes('phase4BenchmarkVerification'));
   assert(resultStep.includes('knowledgeApplication'));

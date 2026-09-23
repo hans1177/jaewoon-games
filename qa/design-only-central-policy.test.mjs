@@ -8,7 +8,7 @@ import {
 } from '../tools/company-game-seed-contract.mjs';
 
 const directive = JSON.parse(fs.readFileSync('company-directive.json', 'utf8'));
-const policy = fs.readFileSync('COMPANY_FLOW.md', 'utf8');
+const roadmap = JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json', 'utf8'));
 
 const expectedDesignOnlyFlow = [
   'GAME_SEED',
@@ -37,14 +37,15 @@ const expectedBaselineRequirements = [
   'STRICT_DESIGN_HARD_FAILURES_EMPTY'
 ];
 
-test('DESIGN_ONLY machine flow follows COMPANY_FLOW exactly at the stage level', () => {
+test('DESIGN_ONLY machine flow follows the canonical machine policy at the stage level', () => {
   assert.equal(directive.policyDocument, 'company-learning/platform-release-roadmap.json');
   assert.deepEqual(directive.classes.DESIGN_ONLY.requiredFlow, expectedDesignOnlyFlow);
   assert.deepEqual(directive.classes.DESIGN_ONLY.baselineReadyRequires, expectedBaselineRequirements);
   assert.equal(directive.classes.DESIGN_ONLY.readyState, 'DESIGN_BASELINE_READY');
   assert.equal(directive.classes.DESIGN_ONLY.sourceCodeAutoDevelopment, false);
   assert.equal(directive.classes.DESIGN_ONLY.directResultMode, true);
-  assert.match(policy, /GAME_SEED:\n  stage: BEFORE_GAME_DESIGNER_DRAFT/);
+  assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
 });
 
 test('Vibe2 starts at DEVELOPMENT_CONFIRMED and is inactive in DESIGN_ONLY', () => {
@@ -53,7 +54,7 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and is inactive in DESIGN_ONLY', () 
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass, 'DESIGN_ONLY'), false);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED, 'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED, 'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
-  assert.match(policy, /Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
+  assert.equal(roadmap.developmentLifecycleMachine.gameDevelopmentAuthority.appliesFromStage,'MINIMUM_DESIGN_CONTRACT_READY');
 });
 
 test('GAME_SEED machine contract mirrors central required fields and platform decisions', () => {

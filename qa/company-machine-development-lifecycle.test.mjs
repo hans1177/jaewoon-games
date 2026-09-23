@@ -36,7 +36,7 @@ assert.equal(roadmap.fortniteUefn.learningAllowed,true);
 assert.equal(roadmap.fortniteUefn.ownerStartRequired,true);
 assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.FORTNITE_UEFN.state,'OWNER_HOLD');
 assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.FORTNITE_UEFN.verifiedLearningCollectionContinues,true);
-assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
 assert.equal(lifecycle.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(lifecycle.humanDocumentRequired,false);
 assert.equal(lifecycle.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
@@ -65,10 +65,10 @@ for(const step of [
   'PROMOTE_PUBLIC_RELEASE_ONLY_AFTER_PLATFORM_SPECIFIC_ACCEPTANCE',
   'PERSIST_VERIFIED_LEARNING_AND_CREATE_NEXT_FOCUS_CYCLE'
 ]) assert(work.executionOrder.includes(step),step);
-assert.equal(work.webWorker.enabled,false);
-assert.equal(work.webWorker.status,'LEGACY_DISABLED');
-assert.equal(work.webWorker.developmentAdmissionAuthority,false);
-assert.equal(work.webWorker.replacement,'DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT');
+assert.equal(Object.hasOwn(work,'webWorker'),false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebMode,'VALIDATION_SURFACE_ONLY');
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
 assert.equal(work.selectedPlatformWorker.sharedMinimumDesignMustCarryForward,true);
 assert.equal(work.selectedPlatformWorker.platformSpecificImplementationRequired,true);
 assert.equal(work.selectedPlatformWorker.platformSpecificRuntimeQaRegressionRequired,true);
@@ -102,9 +102,12 @@ assert.equal(continuation.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(continuation.humanDocumentRequired,false);
 assert.equal(continuation.sourceOfTruth,'company-learning/platform-release-roadmap.json');
 assert.equal(continuation.objective,'MINIMUM_SHARED_DESIGN_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION_THEN_INTERNAL_PLAYTEST_AND_POST_RELEASE_FOCUSED_DEVELOPMENT');
-assert.equal(continuation.webBaseImplementation.enabled,false);
-assert.equal(continuation.webBaseImplementation.status,'LEGACY_DISABLED');
-assert.equal(continuation.webBaseImplementation.developmentAdmissionAuthority,false);
+assert.equal(Object.hasOwn(continuation,'webBaseImplementation'),false);
+assert.equal(Object.hasOwn(lifecycle,'webToPlatformHandoff'),false);
+assert.equal(Object.hasOwn(lifecycle,'webFirstImplementation'),false);
+assert.equal(Object.hasOwn(lifecycle,'missingWebBaselinePlanning'),false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface.requiredForDevelopmentAdmission,false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface.requiredForNativeRuntimePass,false);
 assert.equal(continuation.nativePlatformContinuation.startsFromSharedMinimumDesign,true);
 assert.equal(continuation.nativePlatformContinuation.concurrentRobloxUnity,true);
 assert.equal(continuation.nativePlatformContinuation.secondImplementationContinuesFromWebBase,false);
@@ -128,10 +131,6 @@ for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','TARGET_PLATFORM_SOURCE_BIND
   assert(continuation.verifiedLearningMaxUse.applyAt.includes(stage),stage);
 }
 
-assert.equal(lifecycle.webToPlatformHandoff.required,false);
-assert.equal(lifecycle.webToPlatformHandoff.status,'LEGACY_DISABLED');
-assert.equal(lifecycle.webToPlatformHandoff.webRole,'NONE');
-assert.equal(lifecycle.webToPlatformHandoff.replacement,'MINIMUM_DUAL_PLATFORM_DESIGN_HANDOFF');
 assert.match(webRuntime,/Resolve direct native development/);
 assert.match(webRuntime,/DIRECT_NATIVE_MACHINE_CONTRACT=PASS/);
 assert.match(webRuntime,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
@@ -149,9 +148,6 @@ assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.ok(bootstrap.includes('PolicySource = "company-learning/platform-release-roadmap.json"'));
-assert.equal(lifecycle.webToPlatformHandoff.required,false);
-assert.equal(lifecycle.webFirstImplementation.enabled,false);
-assert.equal(lifecycle.missingWebBaselinePlanning.enabled,false);
 assert.equal(lifecycle.directNativeDualPlatformDevelopment.webStageSkipped,true);
 assert.equal(lifecycle.directNativeDualPlatformDevelopment.webGateSkipped,true);
 
@@ -192,28 +188,11 @@ assert.match(queue,/postReleaseCaretakerMode: 'per-game-persistent'/);
 assert.match(queue,/isPostReleaseFocused/);
 assert.match(queue,/postReleaseFocusedTaskId/);
 
-const webFirst=lifecycle.webFirstImplementation;
-assert.equal(webFirst.enabled,false);
-assert.equal(webFirst.status,'LEGACY_DISABLED');
-assert.equal(webFirst.developmentAdmissionAuthority,false);
-assert.equal(webFirst.replacement,'DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT');
-assert.equal(webFirst.authority,'VIBE_IMPLEMENTATION_OWNER');
-assert.equal(webFirst.existingSourceAssessmentRequired,true);
-assert.equal(webFirst.assessmentOwner,'VIBE_EXPLORATION');
-assert.deepEqual(webFirst.assessmentStrategies,['KEEP_AND_CONTINUE','PARTIAL_REPAIR','MAJOR_REWORK','FULL_REBUILD']);
-assert.equal(webFirst.fullRebuildRequires,'EXPLORATION_FULL_REBUILD_DECISION');
-assert.equal(webFirst.prototypeMarkerAloneCannotForceRebuild,true);
-assert.equal(webFirst.existingSourceMustBeReadBeforeDecision,true);
-assert.equal(webFirst.approvedDesignComparisonRequired,true);
-assert.equal(webFirst.approvedScopeCoverageRequired,true);
-assert.equal(webFirst.gameplaySignalAssessmentRequired,true);
-assert.equal(webFirst.preserveReusableSystems,true);
-assert.equal(webFirst.preserveSaveMeaningWhenCompatible,true);
-assert.equal(webFirst.missingSourceAction,'VIBE_NEW_WEB_BASE_IMPLEMENTATION');
-assert.equal(webFirst.existingSourceAction,'ASSESS_THEN_IMPLEMENT');
-assert.equal(webFirst.companyBootstrapMayGenerateGameSource,false);
-assert.equal(webFirst.companyBootstrapMayRepairGameSource,false);
-assert.equal(webFirst.companyRuntimeRole,'ROUTE_VALIDATE_FAN_IN_ONLY');
+assert.equal(Object.hasOwn(lifecycle,'webFirstImplementation'),false);
+assert.equal(roadmap.webCompanion.role,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
+assert.equal(roadmap.webCompanion.developmentAdmissionGate,false);
+assert.equal(roadmap.webCompanion.releaseGate,false);
+assert.equal(roadmap.webCompanion.cannotReplaceNativeRuntimeEvidence,true);
 const quota=lifecycle.modelQuotaContinuity;
 assert.equal(quota.enabled,true);
 assert.equal(quota.designProviderPolicy,'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK');

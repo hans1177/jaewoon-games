@@ -116,6 +116,88 @@ test('causal replay executes supported node tests only after verified prepatch r
   assert.equal(result.causalReplay.canonicalQaStillRequired,true);
 });
 
+test('game repair QA accepts autonomous two-client harness evidence without owner participation',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.js'),'export const repaired = true;\n','utf8');
+  for(const file of ['scenario.test.mjs','invariant.test.mjs','multiplayer.test.mjs']){
+    fs.writeFileSync(path.join(sourceRoot,'qa',file),[
+      "import test from 'node:test';",
+      "import assert from 'node:assert/strict';",
+      `test('${file}',()=>assert.equal(true,true));`
+    ].join('\n')+'\n','utf8');
+  }
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/demo',changedFiles:['index.js'],
+    exploration:{editContract:{
+      causalReplay:{version:2,required:true,prePatchReproduced:true,nodeTestTargets:['qa/scenario.test.mjs'],executable:true,mode:'NODE_TEST_TARGETS',status:'READY_FOR_POSTPATCH_REPLAY'},
+      gameRepair:{
+        version:1,required:true,failureStage:'WEB_RUNTIME',failureSignature:'multiplayer-sync-bug',
+        prePatchReproduced:true,responsibleSystem:'NETWORK_SYNC',responsibleFiles:['index.js'],
+        revisions:{lastKnownGoodRevision:'good',firstBrokenRevision:'broken',currentRevision:'current'},
+        originalScenarioReplay:{required:true},
+        invariants:{required:true,testTargets:['qa/invariant.test.mjs']},
+        saveMigration:{required:false,testTargets:[]},
+        multiplayerLifecycle:{
+          required:true,minimumPlayers:2,userAssistanceRequired:false,testTargets:['qa/multiplayer.test.mjs'],
+          automation:{
+            required:true,minimumSyntheticOrRealClients:2,
+            machineDrivenScenarios:['TWO_CLIENT_JOIN_AND_READY','ONE_CLIENT_REJOIN','LATE_JOIN_STATE_RECONCILIATION','AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC'],
+            actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:true
+          }
+        },
+        repeatCount:3,repairMode:'ROOT_CAUSE_MODE'
+      }
+    }}
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:autonomous-multiplayer'});
+  assert.equal(result.gameRepairQa.originalScenarioReplay,'PASS');
+  assert.equal(result.gameRepairQa.invariants,'PASS');
+  assert.equal(result.gameRepairQa.multiplayerLifecycle,'PASS_AUTOMATED_HARNESS');
+  assert.equal(result.gameRepairQa.multiplayerAutomation.userAssistanceRequired,false);
+  assert.equal(result.gameRepairQa.multiplayerAutomation.minimumSyntheticOrRealClients,2);
+  assert.equal(result.gameRepairQa.repairMode,'ROOT_CAUSE_MODE');
+  assert.equal(result.gameRepairQa.readyForFanIn,true);
+});
+
+test('multiplayer repair stays unverified when autonomous harness evidence is missing',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.js'),'export const repaired = true;\n','utf8');
+  for(const file of ['scenario.test.mjs','invariant.test.mjs']){
+    fs.writeFileSync(path.join(sourceRoot,'qa',file),[
+      "import test from 'node:test';",
+      "import assert from 'node:assert/strict';",
+      `test('${file}',()=>assert.equal(true,true));`
+    ].join('\n')+'\n','utf8');
+  }
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/demo',changedFiles:['index.js'],
+    exploration:{editContract:{
+      causalReplay:{version:2,required:true,prePatchReproduced:true,nodeTestTargets:['qa/scenario.test.mjs'],executable:true,mode:'NODE_TEST_TARGETS'},
+      gameRepair:{
+        version:1,required:true,
+        originalScenarioReplay:{required:true},
+        invariants:{required:true,testTargets:['qa/invariant.test.mjs']},
+        saveMigration:{required:false,testTargets:[]},
+        multiplayerLifecycle:{
+          required:true,minimumPlayers:2,userAssistanceRequired:false,testTargets:[],
+          automation:{required:true,minimumSyntheticOrRealClients:2,machineDrivenScenarios:['TWO_CLIENT_JOIN_AND_READY']}
+        }
+      }
+    }}
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:multiplayer-missing-harness'});
+  assert.equal(result.gameRepairQa.multiplayerLifecycle,'PENDING_AUTONOMOUS_HARNESS_EVIDENCE');
+  assert.equal(result.gameRepairQa.multiplayerAutomation.userAssistanceRequired,false);
+  assert.equal(result.gameRepairQa.readyForFanIn,false);
+  assert.equal(result.outcome,'PASS');
+});
+
 test('declared executable causal replay fails closed when the replay target is missing',()=>{
   const root=repo();
   const sourceRoot=path.join(root,'web-games/demo');

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(repoRoot, relative), 'utf8');
-const flow = read('COMPANY_FLOW.md');
+const roadmap = JSON.parse(read('company-learning/platform-release-roadmap.json'));
 const runner = read('tools/company-release-production-cycle.mjs');
 
 function assertOrdered(text, tokens, label) {
@@ -19,47 +19,22 @@ function assertOrdered(text, tokens, label) {
   }
 }
 
-function centralReleaseFlow(text) {
-  const start = text.indexOf('\n  RELEASE_CONFIRMED:\n    executionMode: GATED_DIRECT_RELEASE_PRODUCTION');
-  assert.ok(start >= 0, 'COMPANY_FLOW: selected-platform RELEASE_CONFIRMED flow missing');
-  const end = text.indexOf('\npromotion:', start);
-  assert.ok(end > start, 'COMPANY_FLOW: RELEASE_CONFIRMED flow boundary missing');
-  return text.slice(start, end);
-}
-
-test('central RELEASE_CONFIRMED policy keeps the selected-platform gated direct release order', () => {
-  const releaseFlow = centralReleaseFlow(flow);
-  assertOrdered(releaseFlow, [
-    'RELEASE_CONFIRMED:',
-    'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
-    'target: PROJECT_SELECTED_PLATFORM',
-    '- LOAD_DEVELOPMENT_BASELINE',
-    '- CORE_DESIGN_LOCK',
-    '- VIBE2_PRIMARY_DEVELOPMENT',
-    '- BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE',
-    '- TARGET_PLATFORM_BUILD_OR_PACKAGE',
-    '- FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',
-    '- TARGET_PLATFORM_RUNTIME_VALIDATION',
-    '- INDEPENDENT_QA_AND_REGRESSION',
-    '- FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW',
-    '- VIBE2_FIX_AND_REBUILD_LOOP_IF_REQUIRED',
-    '- RELEASE_GATE',
-    '- RELEASE_BASELINE',
-    '- ARTBOOK_EDITOR_FINAL_REVISION',
-  ], 'COMPANY_FLOW RELEASE_CONFIRMED');
-
-  for (const token of [
-    'targetPlatformProjectRequired: true',
-    'sourceTreeBindingRequired: true',
-    'currentBuildEvidenceBindingRequired: true',
-    'buildPreflightIsNotFinalApproval: true',
-    'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true',
-    'independentQaSeparatedFromVibe2SelfCheck: true',
-    'sourceChangeInvalidatesOldBuildValidation: true',
-    'aiMayInventBuildPass: false',
-    'aiMayInventDeviceValidationPass: false',
-    'aiMayInventIndependentQaPass: false',
-  ]) assert.ok(releaseFlow.includes(token), `central release contract missing: ${token}`);
+test('central native release policy keeps runtime QA regression and public exposure fail closed', () => {
+  const direct=roadmap.directNativeDualPlatformDevelopment;
+  const gate=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
+  assert.equal(direct.status,'OWNER_DIRECT_LOCKED');
+  assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
+  assert.equal(direct.platformSpecificIndependentQaRequired,true);
+  assert.equal(direct.platformSpecificRegressionRequired,true);
+  assert.equal(direct.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
+  assert.equal(gate.internalRelease.foundationValidationRequired,true);
+  assert.equal(gate.internalRelease.actualRuntimeFoundationF1ThroughF4Required,true);
+  assert.equal(gate.secondGate.requiredBeforeExternalPublicRelease,true);
+  for(const required of ['NATIVE_RUNTIME_PASS','INDEPENDENT_QA_PASS','REGRESSION_PASS','PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS']){
+    assert.ok(gate.secondGate.commonRequirements.includes(required),required);
+  }
+  assert.equal(gate.publicExposure.explicitExternalPublicationEvidenceRequiredAfterSecondGate,true);
+  assert.equal(gate.publicExposure.secondGatePassAloneDoesNotClaimPublication,true);
 });
 
 test('current Unity provider binds implementation/build evidence to current Unity source', () => {

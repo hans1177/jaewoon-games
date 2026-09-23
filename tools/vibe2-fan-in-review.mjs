@@ -43,6 +43,20 @@ function candidateIdentityFailures(task={},row={},candidateBranch=null){
   if(!clean(row?.baseMainSha)||clean(identity.baseMainSha)!==clean(row?.baseMainSha))failures.push('candidate-identity-base-main');
   return failures;
 }
+function gameRepairEvidenceFailures(row={}){
+  const repair=row?.gameRepairQa&&typeof row.gameRepairQa==='object'?row.gameRepairQa:null;
+  if(!repair||repair.required!==true)return[];
+  const failures=[];
+  if(repair.prePatchReproduced!==true)failures.push('game-repair-prepatch-reproduction');
+  if(!clean(repair.responsibleSystem))failures.push('game-repair-responsible-system');
+  if(clean(repair.originalScenarioReplay)!=='PASS')failures.push('game-repair-original-scenario');
+  if(clean(repair.invariants)!=='PASS')failures.push('game-repair-invariants');
+  if(!['PASS','NOT_APPLICABLE'].includes(clean(repair.saveMigration)))failures.push('game-repair-save-migration');
+  if(!['PASS_AUTOMATED_HARNESS','NOT_APPLICABLE'].includes(clean(repair.multiplayerLifecycle)))failures.push('game-repair-multiplayer-lifecycle');
+  if(clean(repair.multiplayerLifecycle)!=='NOT_APPLICABLE'&&repair?.multiplayerAutomation?.userAssistanceRequired!==false)failures.push('game-repair-multiplayer-must-be-machine-verified');
+  if(repair.readyForFanIn!==true)failures.push('game-repair-ready-for-fan-in');
+  return[...new Set(failures)];
+}
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
 function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa|awaiting.*supervised-review/i.test(clean(task.blocker));}
 function releaseCandidateFromEvidence(evidence=new Set()){
@@ -76,7 +90,10 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       const rows=resultRows.filter(row=>clean(row?.taskId)===clean(task.id));
       selectedResult=rows.find(row=>resultCandidateBranch(row)===candidateBranch)||rows.find(row=>clean(row?.outcome).toUpperCase()==='PASS')||null;
       if(!selectedResult)missing.push('candidate-identity-result');
-      else missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
+      else {
+        missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
+        missing.push(...gameRepairEvidenceFailures(selectedResult));
+      }
     }
     const uniqueMissing=[...new Set(missing)];
     if(uniqueMissing.length){
@@ -87,6 +104,12 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      if(selectedResult?.gameRepairQa?.required===true){
+        evidence.add('game-repair-source-evidence:PASS');
+        evidence.add('game-repair-impact-regression:PASS');
+        evidence.add('game-repair-full-regression:PASS');
+        evidence.add('game-repair-user-assistance-required:NO');
+      }
       verifiedCodingTraceSamples.add(resultSampleId(selectedResult)||clean(task.id));
       if(selectedResult)selectedResultByTaskId.set(clean(task.id),selectedResult);
       const rootCause=verifyNeuralRootCause({

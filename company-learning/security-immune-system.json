@@ -1,5 +1,5 @@
 {
-  "version": 31,
+  "version": 33,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -491,5 +491,20 @@
     "humanReadablePolicyDocumentRequiredForExecution": false,
     "legacyWebFirstFallbackForbidden": true,
     "strictScoreAdmissionReactivationForbidden": true
+  },
+  "gameErrorRepairSecurity": {
+    "version": 2,
+    "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair.securityPreservation",
+    "role": "SECURITY_ENFORCEMENT_BINDING_ONLY",
+    "policyAuthority": false,
+    "policySemanticsDefinedInCentralOnly": true,
+    "enforcementBindings": [
+      "tools/company-security-steward.mjs",
+      "tools/company-recovery-dispatch.mjs",
+      "tools/vibe2-fan-in-review.mjs",
+      "qa/company-security-steward.test.mjs"
+    ],
+    "failureRoute": "EXISTING_SECURITY_RECOVERY",
+    "authorityExpansion": false
   }
 }

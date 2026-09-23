@@ -1,5 +1,5 @@
 {
-  "version": 33,
+  "version": 35,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -494,8 +494,11 @@
     "machinePolicyHashesRequired": true
   },
   "designEvolutionEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution",
+    "role": "EVIDENCE_AND_CORRELATION_ONLY",
+    "policyAuthority": false,
+    "policySemanticsDefinedInCentralOnly": true,
     "correlationKeys": [
       "GAME_ID",
       "DESIGN_REVISION",
@@ -532,21 +535,43 @@
       "DESIGN_EVOLUTION_REASON",
       "BASELINE_REVIEW_AT",
       "DEEP_REVIEW_DUE"
+    ]
+  },
+  "gameErrorRepairLogContract": {
+    "version": 2,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair",
+    "role": "LOG_FORMAT_AND_CORRELATION_ONLY",
+    "policyAuthority": false,
+    "policySemanticsDefinedInCentralOnly": true,
+    "scope": "ONLY_WHEN_GAME_ERROR_REPAIR_OR_CAUSAL_REPLAY_EXECUTES",
+    "requiredMarkers": [
+      "GAME_REPAIR_FAILURE_STAGE",
+      "GAME_REPAIR_FAILURE_SIGNATURE",
+      "GAME_REPAIR_PREPATCH_REPRODUCED=YES|NO",
+      "GAME_REPAIR_RESPONSIBLE_SYSTEM",
+      "GAME_REPAIR_RESPONSIBLE_FILES",
+      "GAME_REPAIR_LAST_KNOWN_GOOD_REVISION",
+      "GAME_REPAIR_FIRST_BROKEN_REVISION",
+      "GAME_REPAIR_CURRENT_REVISION",
+      "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY=PASS|PENDING_RUNTIME_EVIDENCE|NOT_APPLICABLE",
+      "GAME_REPAIR_INVARIANTS=PASS|PENDING_RUNTIME_EVIDENCE|NOT_APPLICABLE",
+      "GAME_REPAIR_SAVE_MIGRATION=PASS|PENDING_RUNTIME_EVIDENCE|NOT_APPLICABLE",
+      "GAME_REPAIR_MULTIPLAYER_LIFECYCLE=PASS_AUTOMATED_HARNESS|PENDING_AUTONOMOUS_HARNESS_EVIDENCE|INVALID_AUTOMATION_CONTRACT|NOT_APPLICABLE",
+      "GAME_REPAIR_USER_ASSISTANCE_REQUIRED=NO",
+      "GAME_REPAIR_IMPACT_REGRESSION=PASS|FAIL",
+      "GAME_REPAIR_FULL_REGRESSION_REQUIRED=YES",
+      "GAME_REPAIR_REPEAT_COUNT",
+      "GAME_REPAIR_MODE=FOCUSED_REPAIR|ROOT_CAUSE_MODE",
+      "GAME_REPAIR_READY_FOR_FAN_IN=YES|NO"
     ],
-    "ownerRepeatedIdenticalRequestRequiresNewSignalEventId": true,
-    "ownerSemanticTextDeduplicationForbidden": true,
-    "automaticSignalFingerprintDeduplicationRequired": true,
-    "designPassCheckpointNotTerminal": true,
-    "unlimitedRevisionGenerationsAllowed": true,
-    "strictScoreAloneCannotProveImprovement": true,
-    "directProtectedExpressionCopyForbidden": true,
-    "releaseAuthority": false,
-    "sameSymptomDualMutationForbidden": true,
-    "unresolvedCauseMustNotInventDesignFailure": true,
-    "runtimeImplementationDefectPreservesApprovedDesignByDefault": true,
-    "verifiedDesignDefectRequiresTargetedDesignRevision": true,
-    "dailyHealthScanEvidenceRequired": true,
-    "periodicDeepReviewHours": 168,
-    "passCheckpointMayBeReopenedByNewSignalOrPeriodicReview": true
+    "repeatedFailureDedupeBy": [
+      "GAME_ID",
+      "FAILURE_STAGE",
+      "FAILURE_SIGNATURE"
+    ],
+    "rawDuplicateFailureSpamForbidden": true,
+    "rawSavePayloadLoggingForbidden": true,
+    "rawPrivateReasoningLogged": false,
+    "structuredEvidenceRequiredForAcceptance": true
   }
 }

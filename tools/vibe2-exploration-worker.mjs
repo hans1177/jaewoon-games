@@ -250,13 +250,87 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     clean(row?.kind).toUpperCase()==='SYSTEM'?'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED':''
   ]).filter(Boolean);
   const causalReplay=compileCausalReplayPlan({order,failures,testTargets,diagnosticReplayBaseline});
+  const repairShared=order?.workPackage?.sharedContext?.gameRepair&&typeof order.workPackage.sharedContext.gameRepair==='object'?order.workPackage.sharedContext.gameRepair:{};
+  const repairFailureStage=clean(order?.selectedTask?.failureStage||order?.failureStage||repairShared.failureStage)||null;
+  const repairFailureSignature=clean(order?.selectedTask?.failureSignature||order?.selectedTask?.blocker||order?.failureSignature||repairShared.failureSignature)||null;
+  const lastKnownGoodRevision=clean(repairShared.lastKnownGoodRevision||order?.selectedTask?.lastKnownGoodRevision)||null;
+  const firstBrokenRevision=clean(repairShared.firstBrokenRevision||order?.selectedTask?.firstBrokenRevision)||null;
+  const currentRevision=clean(repairShared.currentRevision||process.env.VIBE2_BASE_MAIN_SHA)||null;
+  const repairRepeatCount=Math.max(0,Number(repairShared.repeatCount||order?.selectedTask?.recurrenceCount||0)||0);
+  const repairMode=repairRepeatCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
+  const saveRequired=(sourceAnalysis.storageKeys||[]).length>0||/(?:localStorage|indexedDB|PlayerPrefs|DataStoreService|save|load|persist|저장|불러오기)/i.test(sourceText);
+  const multiplayerRequired=/(?:RemoteEvent|RemoteFunction|NetworkVariable|Netcode|Photon|Mirror|multiplayer|server.?authorit|client.?server|co-?op|pvp|멀티|협동|동기화)/i.test(sourceText+' '+requirementText);
+  const classifiedTargets=unique(testTargets||[]);
+  const gameRepair={
+    version:1,
+    required:failures.length>0,
+    failureStage:repairFailureStage,
+    failureSignature:repairFailureSignature,
+    prePatchReproduced:causalReplay.prePatchReproduced===true,
+    responsibleSystem:causalReplay.verifiedResponsibleSystem||primarySystems[0]||null,
+    responsibleFiles:responsibleFiles.slice(0,16),
+    revisions:{lastKnownGoodRevision,firstBrokenRevision,currentRevision,historyAvailable:Boolean(lastKnownGoodRevision||firstBrokenRevision)},
+    originalScenarioReplay:{
+      required:failures.length>0,
+      coveredByCausalReplay:causalReplay.executable===true,
+      identicalOrEquivalentInputStateRequired:true,
+      testTargets:causalReplay.nodeTestTargets||[]
+    },
+    invariants:{
+      required:failures.length>0,
+      ids:(codingArchitecture?.invariants||[]).map(row=>row.id).filter(Boolean),
+      testTargets:classifiedTargets.filter(value=>/(?:invariant|state|progress|quest|wave|combat|scenario|integration)/i.test(value)).slice(0,8)
+    },
+    saveMigration:{
+      required:saveRequired,
+      stableKeys:(sourceAnalysis.storageKeys||[]).slice(0,24),
+      testTargets:classifiedTargets.filter(value=>/(?:save|load|migration|persist|storage)/i.test(value)).slice(0,8)
+    },
+    multiplayerLifecycle:{
+      required:multiplayerRequired,
+      minimumPlayers:2,
+      userAssistanceRequired:false,
+      manualOwnerParticipationMayNotBeRequiredForPass:true,
+      testTargets:classifiedTargets.filter(value=>/(?:multi|network|sync|join|rejoin|server|client|remote)/i.test(value)).slice(0,8),
+      automation:{
+        required:multiplayerRequired,
+        minimumSyntheticOrRealClients:2,
+        machineDrivenScenarios:[
+          'TWO_CLIENT_JOIN_AND_READY',
+          'SIMULTANEOUS_CORE_ACTION',
+          'SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE',
+          'ONE_CLIENT_LEAVE',
+          'ONE_CLIENT_REJOIN',
+          'LATE_JOIN_STATE_RECONCILIATION',
+          'AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC',
+          'DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK'
+        ],
+        deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable:true,
+        actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:true,
+        unavailableAutomationAction:'KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION',
+        userReportedSuccessCannotReplaceMachineEvidence:true
+      }
+    },
+    repeatCount:repairRepeatCount,
+    repairMode,
+    sameApproachWithoutNewCausalEvidenceForbidden:repairMode==='ROOT_CAUSE_MODE',
+    impactRegressionRequired:true,
+    fullRegressionFanInRequired:true,
+    unchangedSourceRevalidationForbidden:true,
+    directResponsibleSystemRepairRequired:true,
+    authorityExpanded:false
+  };
   const requiredFocusedChecks=unique([
     ...impactRows.flatMap(row=>row.requiredChecks||[]),
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
     ...hotspotChecks,
     ...(causalReplay.executable?['CAUSAL_REPLAY_POSTPATCH_REQUIRED']:[]),
+    ...(failures.length?['GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY','GAME_REPAIR_INVARIANT_VALIDATION']:[]),
+    ...(saveRequired?['GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION']:[]),
+    ...(multiplayerRequired?['GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION']:[]),
+    ...(repairMode==='ROOT_CAUSE_MODE'?['ROOT_CAUSE_COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT','ROOT_CAUSE_RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED']:[]),
     ...(testTargets||[]).map(value=>'TEST_TARGET:'+value)
-  ]).slice(0,24);
+  ]).slice(0,32);
   const strategyHint=failures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
     :primaryTargets.length?'RESPONSIBILITY_FIRST'
     :sourceAnalysis.present?'PRESERVE_PATCH_RESPONSIBLE_SCOPE'
@@ -310,6 +384,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     },
     requiredFocusedChecks,
     causalReplay,
+    gameRepair,
     patchRecipe,
     codingArchitecture:{
       developmentMode:codingArchitecture?.developmentMode||null,
@@ -474,6 +549,9 @@ export function explorationGuidance(handoff={}){
       `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,
       ...(handoff.editContract.causalReplay?.required===true?[
         `[CAUSAL REPLAY CONTRACT] mode=${handoff.editContract.causalReplay.mode||'PLAN_ONLY'}; prepatch=${handoff.editContract.causalReplay.prePatchReproduced===true?'REPRODUCED':'NOT_REPRODUCED'}; executable=${handoff.editContract.causalReplay.executable===true?'YES':'NO'}`,
+`[GAME REPAIR CONTRACT] required=${handoff.editContract.gameRepair?.required===true?'YES':'NO'}; mode=${handoff.editContract.gameRepair?.repairMode||'FOCUSED_REPAIR'}; repeat=${Number(handoff.editContract.gameRepair?.repeatCount||0)}; save=${handoff.editContract.gameRepair?.saveMigration?.required===true?'REQUIRED':'N/A'}; multiplayer=${handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?'AUTONOMOUS_2PLUS_CLIENT_REQUIRED':'N/A'}; owner-help=${handoff.editContract.gameRepair?.multiplayerLifecycle?.userAssistanceRequired===false?'FORBIDDEN_AS_REQUIREMENT':'N/A'}; full-regression=${handoff.editContract.gameRepair?.fullRegressionFanInRequired===true?'REQUIRED':'NO'}`,
+        handoff.editContract.gameRepair?.repairMode==='ROOT_CAUSE_MODE'?'ROOT CAUSE MODE: 같은 실패에 미세패치를 더 쌓지 말고 last-known-good/first-broken/current와 책임 그래프를 비교해 원인 분류 후 기존 책임 시스템을 직접 수정한다.':'',
+        handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?'MULTIPLAYER REPAIR: 사용자에게 두 번째 클라이언트나 수동 재현을 요구하지 않는다. 자동 2+ 클라이언트/결정론적 하네스로 동시행동·이탈·재접속·늦은 참가·서버 권한 동기화를 검증한다. 플랫폼 런타임이 없으면 PASS로 가장하지 말고 자동 재큐/미검증 상태를 유지한다.':'',
         ...(handoff.editContract.causalReplay.mode==='DIAGNOSTIC_RESCAN'&&handoff.editContract.causalReplay.executable===true?[
           `CAUSAL DIAGNOSTIC TARGET=${handoff.editContract.causalReplay.diagnosticType||'UNKNOWN'}:${handoff.editContract.causalReplay.diagnosticFile||'UNKNOWN'}; line=${handoff.editContract.causalReplay.diagnosticLine??'UNKNOWN'}; needle=${handoff.editContract.causalReplay.diagnosticNeedle||'UNKNOWN'}; verified-system=${handoff.editContract.causalReplay.verifiedResponsibleSystem||'UNKNOWN'}`,
           handoff.editContract.causalReplay.diagnosticMicroTask?`CAUSAL DIAGNOSTIC REPAIR=${handoff.editContract.causalReplay.diagnosticMicroTask}`:'' ,

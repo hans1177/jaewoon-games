@@ -234,6 +234,37 @@ test('causal replay becomes executable only with explicit prepatch reproduction 
   assert.ok(result.editContract.requiredFocusedChecks.includes('CAUSAL_REPLAY_POSTPATCH_REQUIRED'));
   assert.equal(result.editContract.causalReplay.canonicalQaStillRequired,true);
 });
+test('exploration compiles autonomous multiplayer game repair contract and root-cause escalation',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'web-games/multi-repair');
+  write(path.join(root,'index.js'),[
+    'const players=new Map();',
+    'function serverAuthoritativeSync(id,state){ players.set(id,state); return players.size; }',
+    'function saveGame(){ localStorage.setItem("multi-save","1"); }'
+  ].join('\n')+'\n');
+  write(path.join(root,'qa/network-sync.test.mjs'),"import test from 'node:test'; test('two clients sync',()=>{});\n");
+  const order={
+    run:true,taskId:'multi-repair',gameId:'multi-repair',target:'web',
+    goal:'multiplayer network sync join rejoin 오류를 자동으로 수정한다',
+    source:{root:'web-games/multi-repair',responsibleFiles:['web-games/multi-repair/index.js'],ignoredPaths:[]},
+    selectedTask:{evidence:['runtime-failure:MULTIPLAYER_SYNC','causal-replay-prepatch:FAIL_REPRODUCED'],lastOutcome:'FAIL',recurrenceCount:3,failureStage:'WEB_RUNTIME',failureSignature:'MULTIPLAYER_SYNC'},
+    workPackage:{id:'multi-repair-wp',sharedContext:{diagnosticEvidence:['runtime-failure:MULTIPLAYER_SYNC','causal-replay-prepatch:FAIL_REPRODUCED'],gameRepair:{repeatCount:3,lastKnownGoodRevision:'good-sha',firstBrokenRevision:'bad-sha',currentRevision:'current-sha'}}}
+  };
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.editContract.gameRepair.required,true);
+  assert.equal(result.editContract.gameRepair.repairMode,'ROOT_CAUSE_MODE');
+  assert.equal(result.editContract.gameRepair.saveMigration.required,true);
+  assert.equal(result.editContract.gameRepair.multiplayerLifecycle.required,true);
+  assert.equal(result.editContract.gameRepair.multiplayerLifecycle.userAssistanceRequired,false);
+  assert.equal(result.editContract.gameRepair.multiplayerLifecycle.minimumPlayers,2);
+  assert.equal(result.editContract.gameRepair.multiplayerLifecycle.automation.required,true);
+  assert.equal(result.editContract.gameRepair.multiplayerLifecycle.automation.minimumSyntheticOrRealClients,2);
+  assert.equal(result.editContract.gameRepair.revisions.lastKnownGoodRevision,'good-sha');
+  assert.equal(result.editContract.gameRepair.revisions.firstBrokenRevision,'bad-sha');
+  assert.equal(result.editContract.gameRepair.revisions.currentRevision,'current-sha');
+  assert.ok(result.editContract.requiredFocusedChecks.includes('GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION'));
+});
+
 test('performance sanity is read only, requires exploration evidence, and budgets candidate growth',()=>{
   const cwd=tempRoot();
   const player=path.join(cwd,'unity-games/demo/Assets/Player.cs');
@@ -374,6 +405,43 @@ test('fan in review passes only after exploration implementation test and perfor
   assert.ok(blocked.queue.tasks[0].evidence.includes('package-review-missing:performance'));
 });
 
+test('fan in blocks unverified game repair and accepts autonomous multiplayer evidence',()=>{
+  const baseTask={
+    gameId:'demo',target:'web',goal:'repair',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    sourceRoot:'web-games/demo',responsibleFiles:['index.js'],
+    evidence:['role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS']
+  };
+  const blockedQueue={version:5,maxConcurrentTasks:20,tasks:[{...baseTask,id:'repair-blocked',evidence:[...baseTask.evidence,'vibe2/candidate/repair-blocked-primary-run']}]};
+  const blockedResult={
+    version:15,taskId:'repair-blocked',outcome:'PASS',candidateBranch:'vibe2/candidate/repair-blocked-primary-run',baseMainSha:'abc123',
+    candidateIdentity:{taskId:'repair-blocked',gameId:'demo',target:'web',sourceRoot:'web-games/demo',baseMainSha:'abc123'},
+    gameRepairQa:{
+      required:true,prePatchReproduced:true,responsibleSystem:'NETWORK_SYNC',originalScenarioReplay:'PASS',
+      invariants:'PASS',saveMigration:'NOT_APPLICABLE',multiplayerLifecycle:'PENDING_AUTONOMOUS_HARNESS_EVIDENCE',
+      multiplayerAutomation:{userAssistanceRequired:false},readyForFanIn:false
+    }
+  };
+  const blocked=finalizeVibe2FanInReview({queue:blockedQueue,results:[blockedResult],taskIds:['repair-blocked']});
+  assert.equal(blocked.pass,false);
+  assert.ok(blocked.reviewed[0].missing.includes('game-repair-multiplayer-lifecycle'));
+  assert.equal(blocked.releaseCandidates.length,0);
+
+  const passQueue={version:5,maxConcurrentTasks:20,tasks:[{...baseTask,id:'repair-pass',evidence:[...baseTask.evidence,'vibe2/candidate/repair-pass-primary-run']}]};
+  const passResult={
+    ...blockedResult,taskId:'repair-pass',candidateBranch:'vibe2/candidate/repair-pass-primary-run',
+    candidateIdentity:{...blockedResult.candidateIdentity,taskId:'repair-pass'},
+    gameRepairQa:{
+      ...blockedResult.gameRepairQa,multiplayerLifecycle:'PASS_AUTOMATED_HARNESS',
+      multiplayerAutomation:{userAssistanceRequired:false,minimumSyntheticOrRealClients:2},readyForFanIn:true
+    }
+  };
+  const pass=finalizeVibe2FanInReview({queue:passQueue,results:[passResult],taskIds:['repair-pass']});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.releaseCandidates.length,1);
+  assert.ok(pass.queue.tasks[0].evidence.includes('game-repair-source-evidence:PASS'));
+  assert.ok(pass.queue.tasks[0].evidence.includes('game-repair-user-assistance-required:NO'));
+});
+
 test('fan in review skips retrying failures instead of blocking queue persistence',()=>{
   const queue={version:5,maxConcurrentTasks:20,tasks:[{id:'retry',gameId:'demo',target:'web',goal:'retry',status:'queued',lastOutcome:'FAIL',retries:1,sourceRoot:'web-games/demo',evidence:['failure-cause:incremental-qa-failed']}]};
   const result=finalizeVibe2FanInReview({queue,taskIds:['retry']});
@@ -406,6 +474,8 @@ test('continuous workflow executes task-local exploration before implementation 
   assert(workflow.includes('VIBE2_EXPLORATION_FILE=.vibe2/exploration.json'));
   assert(workflow.indexOf('Build task-local exploration handoff') < workflow.indexOf('Generate isolated candidate from pinned main contract'));
   assert(workflow.includes('Run impact-first incremental QA role'));
+  assert(workflow.includes("const gameRepairQa=incrementalQaReport?.gameRepairQa"));
+  assert(workflow.includes('game-repair-user-assistance-required:NO'));
   assert(workflow.includes('Run read-only performance sanity role'));
   assert(workflow.includes('VIBE2_REGRESSION_ROLE=PASS'));
   assert(workflow.includes('tools/vibe2-fan-in-review.mjs'));

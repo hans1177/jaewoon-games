@@ -24,16 +24,54 @@ patch('assets/vibe-company-orchestration-bridge.js',text=>{
   return text;
 });
 
-appendOnce('COMPANY_FLOW.md','## 제작 자산·건강·학습 순환',`
-- 게임 초안은 폐기 문서가 아니라 \`game-artbooks.json\` 에디션 자산으로 보존한다. 한 에디션은 최대 10컷이며 컨셉아트, 스토리, 계획 의도, 테스트 결과, 실패/수정 이유를 함께 남긴다.
-- 공개된 아트북은 GitHub Issue를 실제 의견 스레드로 사용한다. 부서 AI는 서로의 답을 복사하지 않고 독립 1차 검토 → 반론/테스트 → 총괄 결론 순서로 의견을 낸다. 근거 없는 역할극 댓글과 같은 말 반복은 금지한다.
-- 공개 홈페이지 게임은 \`Public Game Health\`가 주기적으로 360px 브라우저 스모크 플레이, JS 오류, 실패 요청, 재로딩을 검사한다. Web 보관판은 오류를 발견해도 본체를 자동 수정하지 않고 버그 기억/재개발 근거로 기록한다.
-- 버그는 \`company-learning/bug-memory.json\`에 증상 → 원인 → 수정 → 재발방지 순으로 축적한다. 검증된 새로운 사후학습만 소량 경험치 대상이며 같은 실패 반복에는 XP를 주지 않는다.
-- 부서 XP가 올라가면 \`assets/company-quality-bar.js\`의 회사 품질바도 올라가 새 초안의 근거, 대안, 회귀, 저장, 모바일, 실기기 기준을 강화한다. 권한은 증가하지 않는다.
-- \`asset-health.json\`은 에셋 존재/출처/라이선스/애니메이션 증거를 점검한다.
-- 이미 공개 승인된 빌드가 심각하게 망가졌고 과거 SHA-256 검증 건강판이 있을 때만 \`public-release-baselines.json\`의 안정판 표시를 사용할 수 있다. 새 게임 공개 승인으로 확대 해석하지 않는다.
-- 연구 결과는 \`company-learning/research-notes.json\`으로 누적하고 다른 프로젝트에서 검증된 패턴을 재사용한다.
-`);
+{
+  const file='company-learning/platform-release-roadmap.json';
+  const roadmap=JSON.parse(read(file));
+  roadmap.companyEvolutionQualityLoop={
+    version:1,
+    authority:'CENTRAL_MACHINE_POLICY',
+    sourceOfTruth:'company-learning/platform-release-roadmap.json#companyEvolutionQualityLoop',
+    artbook:{
+      preservedProductionAsset:true,
+      maxFramesPerEdition:10,
+      records:['CONCEPT_ART','STORY','PLAN_INTENT','TEST_RESULT','FAILURE_AND_REPAIR_REASON'],
+      discussionUsesGitHubIssueEvidence:true,
+      unsupportedRoleplayOrDuplicateCommentsForbidden:true
+    },
+    publicGameHealth:{
+      periodicMobileBrowserSmoke:true,
+      viewportWidthPx:360,
+      checks:['JS_ERROR','FAILED_REQUEST','RELOAD','PLAYABLE_ENTRY'],
+      webArchiveFailureDoesNotAutoMutateNativeGameSource:true,
+      verifiedFailureMayCreateBugMemoryAndRedevelopmentEvidence:true
+    },
+    bugLearning:{
+      path:'company-learning/bug-memory.json',
+      requiredChain:['SYMPTOM','CAUSE','REPAIR','RECURRENCE_PREVENTION'],
+      repeatedFailureDoesNotEarnExperience:true,
+      verifiedNovelPostmortemMayEarnExperience:true
+    },
+    qualityBar:{
+      implementation:'assets/company-quality-bar.js',
+      verifiedDepartmentExperienceMayRaiseQualityRequirements:true,
+      executionAuthorityExpansion:false
+    },
+    assetHealth:{
+      statePath:'asset-health.json',
+      checks:['ASSET_EXISTS','SOURCE','LICENSE','ANIMATION_EVIDENCE']
+    },
+    rollback:{
+      baselinePath:'public-release-baselines.json',
+      allowedOnlyForVerifiedPreviouslyHealthyPublicBuild:true,
+      cannotCreateNewPublicReleaseApproval:true
+    },
+    research:{
+      notesPath:'company-learning/research-notes.json',
+      verifiedPatternsMayBeReusedAcrossProjects:true
+    }
+  };
+  fs.writeFileSync(file,JSON.stringify(roadmap,null,2)+'\n');
+}
 
 appendOnce('HOMEPAGE_OPERATIONS.md','## 게임 아트북과 공개 건강 상태',`
 - 공개 승인된 제작 기록은 게임 아트북 형태로 홈페이지에서 최대 10컷까지 바로 볼 수 있다.

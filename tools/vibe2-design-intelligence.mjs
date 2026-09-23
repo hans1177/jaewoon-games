@@ -133,20 +133,55 @@ function evaluateBlueprint(task = {}, designer = {}) {
   const alternatives = [
     ...(Array.isArray(source.alternatives) ? source.alternatives : []),
     ...(Array.isArray(task.designAlternatives) ? task.designAlternatives : [])
-  ].map((row, index) => typeof row === 'string'
-    ? { label:index===0?'PLAN_A':index===1?'PLAN_B':`PLAN_${index+1}`, concept:clean(row) }
-    : { label:clean(row?.label) || (index===0?'PLAN_A':index===1?'PLAN_B':`PLAN_${index+1}`), concept:clean(row?.concept || row?.summary || row?.idea), genre:clean(row?.genre), validation:clean(row?.validation) }
-  ).filter((row) => row.concept);
+  ].map((row, index) => {
+    if (typeof row === 'string') return { label:index===0?'PLAN_A':index===1?'PLAN_B':`PLAN_${index+1}`, concept:clean(row) };
+    return {
+      label:clean(row?.label) || (index===0?'PLAN_A':index===1?'PLAN_B':`PLAN_${index+1}`),
+      concept:clean(row?.concept || row?.summary || row?.idea),
+      playerFantasy:clean(row?.playerFantasy),
+      genreDirection:clean(row?.genreDirection || row?.genre),
+      coreLoopShift:clean(row?.coreLoopShift),
+      mapTopologyRegionRoles:clean(row?.mapTopologyRegionRoles || row?.mapWorldPlan),
+      landmarksTraversal:clean(row?.landmarksTraversal),
+      enemyEcosystemCounterplay:clean(row?.enemyEcosystemCounterplay || row?.enemyChallengePlan),
+      bossSignatureMoments:clean(row?.bossSignatureMoments),
+      progressionEconomy:clean(row?.progressionEconomy),
+      questStoryEventFlow:clean(row?.questStoryEventFlow || row?.storyDirection),
+      failureRetryRecovery:clean(row?.failureRetryRecovery || row?.risks),
+      platformAdaptation:clean(row?.platformAdaptation),
+      implementationScope:clean(row?.implementationScope),
+      validationPlan:clean(row?.validationPlan || row?.validation)
+    };
+  }).filter((row) => row.concept);
+
   const material = task.materialDesignChange === true || designer.designChange === true;
   const issues = [];
+  const requiredAlternativeFields = [
+    'concept','playerFantasy','coreLoopShift','mapTopologyRegionRoles','landmarksTraversal',
+    'enemyEcosystemCounterplay','bossSignatureMoments','progressionEconomy','questStoryEventFlow',
+    'failureRetryRecovery','platformAdaptation','implementationScope','validationPlan'
+  ];
+
   if (material && alternatives.length < 2) issues.push('PLAN_A_B_REQUIRED_FOR_MATERIAL_DESIGN_CHANGE');
+  if (material) {
+    for (const row of alternatives) {
+      const missing=requiredAlternativeFields.filter((key)=>!clean(row?.[key]));
+      if(missing.length)issues.push(`PLAN_REQUIRED_AXES_MISSING:${row.label}:${missing.join('|')}`);
+    }
+  }
+
   const selected = clean(source.selectedPlan || task.selectedDesignPlan);
-  if (material && alternatives.length >= 2 && !selected) issues.push('SELECTED_PLAN_AND_RATIONALE_REQUIRED');
+  const selectedRationale=clean(source.selectedRationale || task.selectedDesignRationale);
+  if (material && alternatives.length >= 2 && !selected) issues.push('SELECTED_PLAN_REQUIRED');
+  if (material && selected && !selectedRationale) issues.push('SELECTED_PLAN_RATIONALE_REQUIRED');
+
   return stage('DESIGN_BLUEPRINT', issues.length ? 'ADVISORY' : 'READY', {
     materialDesignChange:material,
     alternatives:freezeList(alternatives.map(freeze)),
     selectedPlan:selected || null,
-    selectedRationale:clean(source.selectedRationale || task.selectedDesignRationale) || null,
+    selectedRationale:selectedRationale || null,
+    requiredAlternativeFields:freezeList(requiredAlternativeFields),
+    eachAlternativeMustCoverRequiredAxes:true,
     genreChallengeAllowed:true,
     baseConceptIsReferenceNotPrison:true,
     identityAnchors:freezeList(unique(source.identityAnchors || task.identityAnchors || [])),
@@ -166,7 +201,10 @@ function evaluateDesignIntegrity(task = {}) {
     ['mapObjectivesReachable','MAP_ROUTE_AND_OBJECTIVE_REACHABILITY'],
     ['economyFeasible','RESOURCE_AND_REQUIRED_COST_FEASIBILITY'],
     ['counterplayFeasible','ENEMY_COUNTERPLAY_FEASIBILITY'],
-    ['saveCompatible','SAVE_MEANING_AND_MIGRATION_COMPATIBILITY']
+    ['bossPhaseTransitionsReachable','BOSS_PHASE_TRANSITION_REACHABILITY'],
+    ['multiplayerLifecycleFeasible','MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY'],
+    ['saveCompatible','SAVE_MEANING_AND_MIGRATION_COMPATIBILITY'],
+    ['narrativeCausalityConsistent','NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY']
   ];
   const results = checks.map(([key,label]) => freeze({ key,label,value:supplied[key] === true ? 'PASS' : supplied[key] === false ? 'FAIL' : 'UNVERIFIED' }));
   const failed = results.filter((row) => row.value === 'FAIL').map((row) => row.label);
@@ -187,20 +225,37 @@ function evaluateContentDiversity(task = {}) {
   if(task.mapVarietyRequired===true&&regions.length<2)issues.push('MAP_REGION_VARIETY_REQUIRED');
   if(task.enemyVarietyRequired===true&&enemies.length<2)issues.push('ENEMY_OR_CHALLENGE_ROLE_VARIETY_REQUIRED');
   if(task.objectiveVarietyRequired===true&&objectives.length<2)issues.push('OBJECTIVE_ROLE_VARIETY_REQUIRED');
-  const regionSignatures = new Set(regions.map((row) => clean([row?.traversal,row?.riskReward,row?.landmark,row?.encounterPattern,row?.resourcePressure,row?.storyContext].filter(Boolean).join('|')).toLowerCase()).filter(Boolean));
-  const enemySignatures = new Set(enemies.map((row) => clean([row?.behavior,row?.counterplay,row?.positioning,row?.timing,row?.mobility,row?.groupRole,row?.identity,row?.rewardMeaning].filter(Boolean).join('|')).toLowerCase()).filter(Boolean));
+
+  const regionAxes=['traversal','riskReward','landmark','encounterPattern','resourcePressure','storyContext'];
+  const enemyAxes=['behavior','counterplay','positioning','timing','mobility','groupRole','identity','rewardMeaning'];
+  const signature=(row,axes)=>clean(axes.map((key)=>row?.[key]).filter(Boolean).join('|')).toLowerCase();
+  const differenceCount=(a,b,axes)=>axes.reduce((count,key)=>count+(clean(a?.[key]).toLowerCase()!==clean(b?.[key]).toLowerCase()?1:0),0);
+
+  const regionSignatures = new Set(regions.map((row) => signature(row,regionAxes)).filter(Boolean));
+  const enemySignatures = new Set(enemies.map((row) => signature(row,enemyAxes)).filter(Boolean));
   if (regions.length >= 2 && regionSignatures.size < Math.min(2, regions.length)) issues.push('MAP_REGION_TEMPLATE_MONOTONY');
   if (enemies.length >= 2 && enemySignatures.size < Math.min(2, enemies.length)) issues.push('ENEMY_ROLE_TEMPLATE_MONOTONY');
+
+  for(let i=0;i<regions.length;i++)for(let j=i+1;j<regions.length;j++){
+    const diff=differenceCount(regions[i],regions[j],regionAxes);
+    if(diff<2)issues.push(`MAP_REGION_PAIR_INSUFFICIENT_DIFFERENTIATION:${i}:${j}:${diff}`);
+  }
+  for(let i=0;i<enemies.length;i++)for(let j=i+1;j<enemies.length;j++){
+    const diff=differenceCount(enemies[i],enemies[j],enemyAxes);
+    if(diff<2)issues.push(`ENEMY_PAIR_INSUFFICIENT_DIFFERENTIATION:${i}:${j}:${diff}`);
+  }
+
   if (objectives.length >= 3 && new Set(objectives.map((row) => clean(row?.role || row?.type || row).toLowerCase())).size < 2) issues.push('OBJECTIVE_TEMPLATE_MONOTONY');
+
   return stage('CONTENT_DIVERSITY', issues.length ? 'VARIETY_DEBT' : 'CHECKED', {
     regionCount:regions.length,
     enemyOrChallengeCount:enemies.length,
     objectiveCount:objectives.length,
+    pairwiseMinimumDifferentiators:2,
     colorOrStatOnlyDifferentiationInsufficient:true,
-    issues:freezeList(issues)
+    issues:freezeList(unique(issues))
   });
 }
-
 
 function evaluateReferenceHomage(task = {}) {
   const supplied = task.referenceHomage && typeof task.referenceHomage === 'object' ? task.referenceHomage : {};

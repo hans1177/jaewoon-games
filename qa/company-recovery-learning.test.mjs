@@ -259,6 +259,49 @@ test('scoped Vibe game bottleneck dispatch creates supervised System-AI repair t
   assert.equal(task.workerSelfAcceptance,false);
 });
 
+test('game repair dispatch enters root-cause mode and never requires owner help for multiplayer',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const recovery={tasks:[{
+    id:'r-game-root',status:'queued',sourceQueue:'vibe2',sourceTaskId:'missing-game-task',
+    gameId:'demo',responsibleFiles:['web-games/demo/index.html'],contextFiles:[],
+    failureStage:'WEB_RUNTIME',failureSignature:'network-sync-repeat',recoveryOwner:'SYSTEM_AI',
+    recoveryStrategy:'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE'],recurrenceCount:3,
+    evidence:['failure-cause:network-sync-repeat','multiplayer-sync','save-load']
+  }]};
+  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  const task=dispatched.systemAi.tasks.find(x=>x.id==='recovery-r-game-root');
+  assert.ok(task);
+  assert.equal(task.repairMode,'ROOT_CAUSE_MODE');
+  assert.equal(task.gameRepairContract.mode,'ROOT_CAUSE_MODE');
+  assert.equal(task.gameRepairContract.multiplayerLifecycleValidationRequired,true);
+  assert.equal(task.gameRepairContract.multiplayerUserAssistanceRequired,false);
+  assert.equal(task.gameRepairContract.multiplayerMinimumAutomatedClients,2);
+  assert.equal(task.gameRepairContract.saveMigrationValidationRequired,true);
+  assert.ok(task.acceptanceCriteria.some(x=>/user assistance is not required/i.test(x)));
+  assert.ok(task.acceptanceCriteria.some(x=>/last known good first broken and current/i.test(x)));
+});
+
+test('Vibe-owned recovery task receives the same causal game repair contract',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const recovery={tasks:[{
+    id:'r-vibe-game',status:'queued',sourceQueue:'vibe2',sourceTaskId:'game-task',
+    gameId:'demo',failureStage:'WEB_RUNTIME',failureSignature:'multiplayer-repeat',recoveryOwner:'VIBE2_VIBE3',
+    recoveryStrategy:'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE'],recurrenceCount:3,
+    evidence:['failure-cause:multiplayer-repeat','multiplayer-sync']
+  }]};
+  const gameQueueInput={tasks:[{id:'game-task',gameId:'demo',status:'failed',responsibleFiles:['web-games/demo/index.html'],evidence:[]}]};
+  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput,systemAiQueueInput:{tasks:[]}});
+  const task=dispatched.gameQueue.tasks.find(x=>x.id==='game-task');
+  assert.equal(task.repairMode,'ROOT_CAUSE_MODE');
+  assert.equal(task.userAssistanceRequired,false);
+  assert.equal(task.gameRepairContract.multiplayerLifecycleValidationRequired,true);
+  assert.equal(task.gameRepairContract.multiplayerUserAssistanceRequired,false);
+  assert.equal(task.gameRepairContract.multiplayerMinimumAutomatedClients,2);
+  assert.ok(task.evidence.includes('game-repair-user-assistance-required:NO'));
+});
+
 test('recovery queue uses unlimited causal repair and never terminal-fails from retry count',()=>{
   let q=enqueueRecovery({tasks:[]},{
     sourceQueue:'vibe2',sourceTaskId:'unlimited',failureStage:'TARGET_PLATFORM_RUNTIME',

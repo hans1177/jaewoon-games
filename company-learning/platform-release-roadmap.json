@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 305,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -748,15 +748,6 @@
   },
   "phases": [
     {
-      "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
-      "priority": 2,
-      "entryGate": false,
-      "objective": "FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE",
-      "blocksUnityDevelopment": false,
-      "blocksFortniteDevelopment": false,
-      "status": "SUPERSEDED_BY_EQUAL_UNITY_ROBLOX_PRIORITY"
-    },
-    {
       "id": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
       "priority": 1,
       "entryGate": false,
@@ -956,12 +947,6 @@
       "PUBLIC_RELEASE",
       "POST_RELEASE_FOCUSED_DEVELOPMENT"
     ],
-    "webToPlatformHandoff": {
-      "required": false,
-      "status": "LEGACY_DISABLED",
-      "webRole": "NONE",
-      "replacement": "MINIMUM_DUAL_PLATFORM_DESIGN_HANDOFF"
-    },
     "targetPlatformDevelopment": {
       "allowedPlatforms": [
         "ROBLOX",
@@ -1534,50 +1519,12 @@
       "domainMasteryLevelLimit": null,
       "verifiedMasteryGrowthUnbounded": true
     },
-    "webFirstImplementation": {
-      "authority": "VIBE_IMPLEMENTATION_OWNER",
-      "existingSourceAssessmentRequired": true,
-      "assessmentOwner": "VIBE_EXPLORATION",
-      "assessmentStrategies": [
-        "KEEP_AND_CONTINUE",
-        "PARTIAL_REPAIR",
-        "MAJOR_REWORK",
-        "FULL_REBUILD"
-      ],
-      "fullRebuildRequires": "EXPLORATION_FULL_REBUILD_DECISION",
-      "prototypeMarkerAloneCannotForceRebuild": true,
-      "existingSourceMustBeReadBeforeDecision": true,
-      "approvedDesignComparisonRequired": true,
-      "approvedScopeCoverageRequired": true,
-      "gameplaySignalAssessmentRequired": true,
-      "preserveReusableSystems": true,
-      "preserveSaveMeaningWhenCompatible": true,
-      "preserveGameIdentity": true,
-      "missingSourceAction": "VIBE_NEW_WEB_BASE_IMPLEMENTATION",
-      "existingSourceAction": "ASSESS_THEN_IMPLEMENT",
-      "verifiedLearningReuseRequired": true,
-      "transformativeRecombinationRawCopyForbidden": true,
-      "companyBootstrapMayGenerateGameSource": false,
-      "companyBootstrapMayRepairGameSource": false,
-      "companyRuntimeRole": "ROUTE_VALIDATE_FAN_IN_ONLY",
-      "enabled": false,
-      "status": "LEGACY_DISABLED",
-      "developmentAdmissionAuthority": false,
-      "replacement": "DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT"
-    },
     "machineOnlyProjectContinuation": {
       "version": 2,
       "authority": "MACHINE_EXECUTION_CONTRACT",
       "humanDocumentRequired": false,
       "sourceOfTruth": "company-learning/platform-release-roadmap.json",
       "objective": "MINIMUM_SHARED_DESIGN_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION_THEN_INTERNAL_PLAYTEST_AND_POST_RELEASE_FOCUSED_DEVELOPMENT",
-      "webBaseImplementation": {
-        "enabled": false,
-        "status": "LEGACY_DISABLED",
-        "developmentAdmissionAuthority": false,
-        "replacement": "MINIMUM_DESIGN_CONTRACT_READY",
-        "disposablePrototype": false
-      },
       "nativePlatformContinuation": {
         "selectedPlatformSource": "design-revised.json#content.platformProfiles",
         "supported": [
@@ -1862,13 +1809,6 @@
         "company-learning/vibe3-task-playbooks.json",
         "company-learning/vibe2-code-pattern-library.json"
       ],
-      "webWorker": {
-        "enabled": false,
-        "status": "LEGACY_DISABLED",
-        "developmentAdmissionAuthority": false,
-        "replacement": "DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT",
-        "legacyWebMaintenanceMayContinueWhenExplicitlyTargeted": true
-      },
       "selectedPlatformWorker": {
         "owner": "VIBE2_VIBE3",
         "instruction": "IMPLEMENT_PLATFORM_NATIVE_BEHAVIOR_FROM_SHARED_MINIMUM_DESIGN_AND_PLATFORM_PROFILE_WITHOUT_SILENT_SCOPE_DROP",
@@ -3206,17 +3146,6 @@
         "automaticAdoptionViaPrAllowedAfterAllEvolutionGatesPass": true
       }
     },
-    "webIterationPolicy": {
-      "continuouslyEditable": true,
-      "ownerMayRequestFurtherRevisionAfterPass": true,
-      "passedEvidenceInvalidatedByRelevantSourceChangeOnly": true,
-      "revalidateAfterRelevantRevision": true,
-      "competitiveQualityParityWithTargetPlatform": true,
-      "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
-      "webPassDoesNotMeanReleaseReadyByItself": true,
-      "scope": "LEGACY_WEB_MAINTENANCE_ONLY",
-      "developmentAdmissionAuthority": false
-    },
     "releaseMaturityGate": {
       "prematureReleaseForbidden": true,
       "singleRuntimePassInsufficient": true,
@@ -3411,31 +3340,6 @@
         "saveVersioningContract",
         "saveRestoreEvidenceContract"
       ]
-    },
-    "missingWebBaselinePlanning": {
-      "authority": "MACHINE_EXECUTION_CONTRACT",
-      "source": "company-runtime/development-queue.json",
-      "activeDevelopmentConfirmedItemsMustEnterPlanner": true,
-      "existingWebArchiveRequiredForPlanning": false,
-      "missingWebSourceAction": "CREATE_WEB_BASE_IMPLEMENTATION_TASK",
-      "taskIdTemplate": "<gameId>-web-base-implementation-v1",
-      "sourceRootTemplate": "web-games/<gameId>",
-      "entryFile": "index.html",
-      "bootstrapAllowed": true,
-      "homepageExposureBeforeEntryExists": false,
-      "saveNormalizationContractMustRemainAttached": true,
-      "workerAuthorityField": "workerPolicy.sourceRootBootstrapAllowed",
-      "workerAuthorityEvidence": "source-root-bootstrap-required",
-      "workerAuthorityGoalMarker": "SOURCE_ROOT_BOOTSTRAP_ALLOWED",
-      "explorationMayUseSyntheticReadOnlyBootstrapContext": true,
-      "sourceWorkerMayCreateMissingRootOnlyOnIsolatedCandidateBranch": true,
-      "sourceWorkerBootstrapFileLimit": 1,
-      "sourceWorkerBootstrapEntryFile": "index.html",
-      "missingRootWithoutExplicitBootstrapAuthority": "BLOCK",
-      "enabled": false,
-      "status": "LEGACY_DISABLED",
-      "developmentAdmissionAuthority": false,
-      "replacement": "MINIMUM_DESIGN_CONTRACT_READY_AND_NATIVE_SOURCE_BIND"
     },
     "developmentToolAuthority": {
       "version": 1,
@@ -5314,12 +5218,6 @@
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
   "humanDocumentRequired": false,
-  "legacyPolicyMirror": {
-    "path": "COMPANY_FLOW.md",
-    "authoritative": false,
-    "requiredForExecution": false,
-    "mayCreatePolicy": false
-  },
   "platformPriorityInvariant": {
     "mode": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
     "schedulingOrder": [
@@ -5994,13 +5892,9 @@
       "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
       "workDocumentsCannotOverrideCentralPolicy": true,
       "centralPolicyPath": "company-learning/platform-release-roadmap.json",
-      "legacyHumanPolicyMirror": "COMPANY_FLOW.md",
-      "legacyMirrorAuthoritative": false,
       "genrePresentationAndCommercialReadinessMirrored": true,
       "syncTargets": [
         "company-learning/platform-release-roadmap.json",
-        "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
-        "COMPANY_FLOW.md",
         ".github/agents/planning.agent.md",
         ".github/agents/development.agent.md",
         ".github/agents/graphics.agent.md",
@@ -6010,7 +5904,9 @@
         "tools/company-selected-platform-router.mjs",
         "assets/homepage-enhancements.js",
         "_worker.js"
-      ]
+      ],
+      "syncRelevantCanonicalDocumentsOnEveryPolicyChange": true,
+      "humanPolicyMirrorRequired": false
     },
     "directiveMirrorRequired": true,
     "directiveMirrorMayNotOverrideCentral": true,
@@ -6304,8 +6200,7 @@
       "noNewPipeline": true,
       "noQualityGateWeakening": true,
       "platformSpecificEvidenceStillRequired": true,
-      "internalPlaytestIsActiveCoDevelopment": true,
-      "legacyWebMaintenanceNotDeleted": true
+      "internalPlaytestIsActiveCoDevelopment": true
     },
     "systemAiEvolution20260923": {
       "authority": "OWNER_DIRECTIVE_2026-09-23",
@@ -6383,6 +6278,27 @@
         "gameWorkerProviderCapacityRunnerRevision": "86c7defe4b3fd6c03562e5ae860e73f04a07a51f",
         "gameWorkerAdaptiveCapRemovedTestRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd"
       }
+    },
+    "centralPolicyCleanup20260923": {
+      "authority": "OWNER_DIRECTIVE",
+      "result": "CENTRAL_POLICY_ONLY",
+      "removedDuplicateHumanPolicyMirrors": true,
+      "removedCompletedTemporaryMigrationArtifacts": true,
+      "runtimeHistoryAndCompatibilityEvidencePreserved": true,
+      "currentMachineContractsRemainSourceOfTruth": true
+    },
+    "legacyWebFirstCleanup20260923": {
+      "removedInactiveFields": [
+        "developmentLifecycleMachine.webToPlatformHandoff",
+        "developmentLifecycleMachine.webFirstImplementation",
+        "developmentLifecycleMachine.missingWebBaselinePlanning",
+        "developmentLifecycleMachine.webIterationPolicy",
+        "developmentLifecycleMachine.machineWorkInstruction.webWorker",
+        "developmentLifecycleMachine.machineOnlyProjectContinuation.webBaseImplementation",
+        "phases.ROBLOX_FAST_RELEASE_STABILIZATION"
+      ],
+      "activeUnityWebRole": "VALIDATION_SURFACE_ONLY",
+      "nativeDevelopmentAuthority": "directNativeDualPlatformDevelopment"
     }
   },
   "vibeExecutionLaneContract": {
@@ -15236,9 +15152,8 @@
       "daechungRpgCanonicalSource": "unity-games/daechung-rpg",
       "daechungRpgLegacyWebPreservedForReferenceAndFallback": true
     },
-    "centralSyncDocument": "company-learning/UNITY_WEB_FIRST_STAGE.md",
+    "centralSyncDocument": "company-learning/platform-release-roadmap.json#unityWebFirstStage",
     "vibeContract": "company-learning/vibe3-engine-contract.json#unityWebFirstStage",
-    "vibeHumanSpec": "company-learning/VIBE3_ENGINE.md#unity-web-1차-게임-제작학습-동기화",
     "unitySourceSpec": "unity-games/README.md",
     "contractValidationWorkflow": ".github/workflows/vibe3-engine-contract.yml",
     "executionBindings": {
@@ -15306,7 +15221,8 @@
     "validationSurfaceOnly": true,
     "nativeDevelopmentMayRunWithoutWebBuild": true,
     "nativeReleaseMayRunWithoutWebBuild": true,
-    "homepageTestLinkEnabled": true
+    "homepageTestLinkEnabled": true,
+    "humanPolicySpecRequired": false
   },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
@@ -15430,7 +15346,11 @@
         "implementationBindings": [
           "tools/vibe2-design-intelligence.mjs::buildVibeDesignIntelligence",
           "tools/company-design-cycle.mjs",
-          "tools/vibe2-learning-motor.mjs"
+          "tools/vibe2-learning-motor.mjs",
+          "assets/vibe-quality-intelligence.js::diagnoseVibeReplayRegression",
+          "assets/vibe-quality-intelligence.js::classifyVibePatchSaturation",
+          "tools/vibe2-incremental-qa.mjs::runCausalReplay",
+          "tools/company-recovery-dispatch.mjs"
         ],
         "loop": [
           "STABILIZE",
@@ -15527,7 +15447,22 @@
             "VALIDATION_PLAN"
           ],
           "highImpactChangeMinimumAlternatives": 2,
-          "winnerRule": "HIGHEST_EXPECTED_PLAYER_VALUE_AND_DISTINCTNESS_WITH_ACCEPTABLE_STABILITY_REGRESSION_AND_IMPLEMENTATION_RISK"
+          "winnerRule": "HIGHEST_EXPECTED_PLAYER_VALUE_AND_DISTINCTNESS_WITH_ACCEPTABLE_STABILITY_REGRESSION_AND_IMPLEMENTATION_RISK",
+          "alternativeRequiredAxes": [
+            "CONCEPT_AND_PLAYER_FANTASY",
+            "CORE_LOOP_AND_SESSION_RHYTHM",
+            "MAP_TOPOLOGY_AND_REGION_ROLES",
+            "LANDMARKS_AND_TRAVERSAL",
+            "ENEMY_ECOSYSTEM_AND_COUNTERPLAY",
+            "BOSS_AND_SIGNATURE_MOMENTS",
+            "PROGRESSION_AND_ECONOMY",
+            "QUEST_STORY_OR_EVENT_FLOW_WHEN_RELEVANT",
+            "FAILURE_RETRY_AND_RECOVERY",
+            "PLATFORM_ADAPTATION",
+            "IMPLEMENTATION_SCOPE",
+            "VALIDATION_PLAN"
+          ],
+          "eachAlternativeMustCoverRequiredAxes": true
         },
         "antiMonotony": {
           "enabled": true,
@@ -15716,6 +15651,167 @@
           "passCheckpointDoesNotDisableFutureReview": true,
           "noDueSignalAction": "NO_DESIGN_MUTATION_KEEP_RUNTIME_LIVE",
           "artificialLifetimeRevisionCap": null
+        },
+        "gameErrorRepair": {
+          "version": 1,
+          "status": "ACTIVE_EXECUTABLE_CONTRACT",
+          "authority": "OWNER_DIRECTIVE_2026-09-23",
+          "objective": "REPAIR_PLAYER_VISIBLE_GAME_FAILURES_BY_REPRODUCING_THE_EXACT_FAILURE_FINDING_THE_CAUSAL_RESPONSIBLE_SYSTEM_MODIFYING_THAT_SYSTEM_DIRECTLY_AND_PROVING_THE_FIX_WITH_SCENARIO_INVARIANT_SAVE_MULTIPLAYER_AND_REGRESSION_EVIDENCE",
+          "priority": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION",
+          "requiredFlow": [
+            "CAPTURE_PLAYER_VISIBLE_FAILURE",
+            "REPRODUCE_PRE_PATCH_WITH_IDENTICAL_OR_EQUIVALENT_INPUT_STATE",
+            "CLASSIFY_IMPLEMENTATION_DESIGN_MIXED_OR_UNRESOLVED_CAUSE",
+            "IDENTIFY_CAUSAL_RESPONSIBLE_SYSTEM_AND_FILES",
+            "COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_AND_CURRENT_WHEN_HISTORY_EXISTS",
+            "MODIFY_EXISTING_RESPONSIBLE_SYSTEM_DIRECTLY",
+            "RERUN_ORIGINAL_FAILURE_SCENARIO",
+            "VALIDATE_GAME_STATE_INVARIANTS",
+            "VALIDATE_SAVE_LOAD_AND_MIGRATION_WHEN_SAVE_EXISTS",
+            "VALIDATE_MULTIPLAYER_LIFECYCLE_WHEN_MULTIPLAYER_EXISTS",
+            "RUN_IMPACT_SCOPED_REGRESSION",
+            "RUN_FULL_REGRESSION_FAN_IN",
+            "ACCEPT_ONLY_VERIFIED_FIX_OTHERWISE_ROLLBACK_OR_REQUEUE"
+          ],
+          "scenarioQa": {
+            "required": true,
+            "canonicalScenarios": [
+              "BOOT_TO_FIRST_ACTION",
+              "MOVE_INTERACT_COMBAT_OR_CORE_ACTION",
+              "DAMAGE_DEATH_RETRY_OR_SESSION_RECOVERY_WHEN_APPLICABLE",
+              "SAVE_EXIT_RELOAD_RESTORE_WHEN_SAVE_EXISTS",
+              "MAP_REGION_OBJECTIVE_OR_QUEST_PROGRESS_WHEN_APPLICABLE",
+              "BOSS_OR_SIGNATURE_COMPLETION_WHEN_APPLICABLE",
+              "MOBILE_TOUCH_JOYSTICK_BUTTON_AND_VIEWPORT",
+              "MULTIPLAYER_JOIN_PLAY_LEAVE_REJOIN_SYNC_WHEN_MULTIPLAYER_EXISTS"
+            ],
+            "actualRuntimeEvidencePreferred": true,
+            "staticOrMarkerOnlyPassForbiddenForRuntimeFailure": true,
+            "originalFailureScenarioMustBeReplayedAfterRepair": true
+          },
+          "lastKnownGoodComparison": {
+            "enabled": true,
+            "compareWhenHistoryExists": [
+              "LAST_KNOWN_GOOD_REVISION",
+              "FIRST_BROKEN_REVISION",
+              "CURRENT_REVISION"
+            ],
+            "sameRelevantScenarioAndStatePreferred": true,
+            "missingHistoryDoesNotAuthorizeGuessing": true
+          },
+          "invariantValidation": {
+            "required": true,
+            "commonExamples": [
+              "FINITE_VALID_PLAYER_STATE",
+              "NO_INVALID_NEGATIVE_OR_NAN_CRITICAL_STATE",
+              "DEAD_OR_REMOVED_ENTITY_CANNOT_CONTINUE_AUTHORITATIVE_ACTION",
+              "REWARD_OR_QUEST_COMPLETION_NOT_DUPLICATED",
+              "EQUIPPED_ITEM_MUST_EXIST_AND_BE_OWNED",
+              "SPAWN_AND_REQUIRED_OBJECTIVES_REMAIN_REACHABLE",
+              "WAVE_PHASE_OR_PROGRESS_SEQUENCE_CANNOT_SKIP_REQUIRED_STATE",
+              "AUTHORITATIVE_GAMEPLAY_RESULT_MATCHES_APPROVED_RULES"
+            ],
+            "gameSpecificInvariantsMustBeDerivedFromApprovedDesignAndExistingImplementation": true,
+            "invariantChangeMayNotHideARealFailure": true
+          },
+          "saveCompatibility": {
+            "requiredWhenSaveExists": true,
+            "sequence": [
+              "LOAD_LAST_COMPATIBLE_SAVE",
+              "MIGRATE_IF_SCHEMA_CHANGED",
+              "PLAY_AND_MUTATE_MEANINGFUL_PROGRESS",
+              "SAVE_NEW_STATE",
+              "RELOAD_NEW_STATE",
+              "COMPARE_PRESERVED_MEANING"
+            ],
+            "stableKeysAndMeaningPreservedByDefault": true,
+            "schemaChangeRequiresExplicitMigration": true,
+            "silentResetOrProgressLossForbidden": true,
+            "migrationFailureBlocksRepairAcceptance": true
+          },
+          "multiplayerLifecycle": {
+            "requiredWhenMultiplayerExists": true,
+            "minimumPlayers": 2,
+            "scenarios": [
+              "SIMULTANEOUS_CORE_ACTION",
+              "SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE",
+              "PLAYER_LEAVE",
+              "PLAYER_REJOIN",
+              "LATE_JOIN",
+              "AUTHORITATIVE_STATE_SYNC"
+            ],
+            "serverAuthorityAndRemoteValidationMustRemainIntact": true,
+            "singlePlayerEvidenceCannotProveMultiplayerRepair": true,
+            "userAssistanceRequired": false,
+            "manualOwnerParticipationMayNotBeRequiredForPass": true,
+            "automation": {
+              "required": true,
+              "minimumSyntheticOrRealClients": 2,
+              "machineDrivenScenarios": [
+                "TWO_CLIENT_JOIN_AND_READY",
+                "SIMULTANEOUS_CORE_ACTION",
+                "SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE",
+                "ONE_CLIENT_LEAVE",
+                "ONE_CLIENT_REJOIN",
+                "LATE_JOIN_STATE_RECONCILIATION",
+                "AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC",
+                "DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK"
+              ],
+              "deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable": true,
+              "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": true,
+              "unavailableAutomationAction": "KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION",
+              "userReportedSuccessCannotReplaceMachineEvidence": true
+            }
+          },
+          "repairCompletion": {
+            "requiredEvidence": [
+              "PRE_PATCH_FAILURE_REPRODUCED",
+              "CAUSAL_RESPONSIBLE_SYSTEM_IDENTIFIED",
+              "RESPONSIBLE_SOURCE_MUTATED",
+              "ORIGINAL_SCENARIO_PASSES_AFTER_REPAIR",
+              "RELATED_GAME_INVARIANTS_PASS",
+              "SAVE_MIGRATION_PASS_WHEN_APPLICABLE",
+              "MULTIPLAYER_LIFECYCLE_PASS_WHEN_APPLICABLE",
+              "IMPACT_REGRESSION_PASS",
+              "FULL_REGRESSION_FAN_IN_PASS"
+            ],
+            "errorLogDisappearanceAloneInsufficient": true,
+            "unchangedSourceRevalidationForbidden": true,
+            "wrapperOverrideOrShadowRepairForbidden": true,
+            "rollbackOrRequeueRequiredOnFailedVerification": true
+          },
+          "repeatedFailureEscalation": {
+            "enabled": true,
+            "sameFailureSignatureThreshold": 3,
+            "action": [
+              "STOP_MICRO_PATCH_ACCUMULATION",
+              "RELOAD_RESPONSIBILITY_GRAPH",
+              "REPRODUCE_FIRST_FAILURE",
+              "COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT",
+              "RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED_OR_UNRESOLVED",
+              "REPAIR_OR_REDESIGN_ORIGINAL_RESPONSIBLE_SYSTEM",
+              "RERUN_ORIGINAL_FAILURE_AND_FULL_REGRESSION"
+            ],
+            "repeatedSameApproachWithoutNewCausalEvidenceForbidden": true,
+            "noArtificialRetryCap": true
+          },
+          "preservation": {
+            "gameplayBalanceProgressionSaveMeaningDropsRewardsHitCooldownAndMultiplayerIntentPreservedUnlessExplicitlyAuthorized": true,
+            "existingResponsibleSystemDirectModificationPreferred": true,
+            "duplicateRepairImplementationForbidden": true,
+            "unaffectedBehaviorPreserved": true
+          },
+          "securityPreservation": {
+            "repairMayNotMoveAuthoritativeDamageRewardSaveOrEconomyToClient": true,
+            "remoteValidationAndRateLimitWeakeningForbidden": true,
+            "saveMigrationMayNotSilentlyResetOrDuplicateProtectedProgress": true,
+            "multiplayerRepairRequiresAuthoritativeStateConsistency": true,
+            "testWeakeningToMakeRepairPassForbidden": true,
+            "securityRelevantRepairRequiresExistingSecurityRescan": true,
+            "wrapperShadowOverrideSecurityBypassForbidden": true,
+            "exactAffectedScopeIsolationRequired": true,
+            "failureAction": "QUARANTINE_SECURITY_RELEVANT_REPAIR_AND_ROUTE_EXISTING_SECURITY_RECOVERY"
+          }
         }
       }
     },
@@ -15784,7 +15880,7 @@
     "strictDesignReviewRunsInParallel": true
   },
   "centralDocumentation": {
-    "version": 2,
+    "version": 3,
     "status": "CANONICAL_MACHINE_DOCUMENTATION_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-22",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -15805,8 +15901,7 @@
       "company-learning/platform-release-roadmap.json": "ONLY_CANONICAL_POLICY_CREATION_AUTHORITY",
       "company-learning/company-log-map.json": "LOG_LOCATION_CORRELATION_AND_EVIDENCE_CONTRACT_ONLY",
       "company-learning/company-architecture-map.json": "EXECUTION_TOPOLOGY_AND_STRUCTURAL_MIRROR_ONLY",
-      "company-learning/security-immune-system.json": "SECURITY_ENFORCEMENT_BOUND_TO_CENTRAL_POLICY_ONLY",
-      "COMPANY_FLOW.md": "LEGACY_POINTER_AND_COMPATIBILITY_MIRROR_NON_AUTHORITATIVE"
+      "company-learning/security-immune-system.json": "SECURITY_ENFORCEMENT_BOUND_TO_CENTRAL_POLICY_ONLY"
     },
     "branchRoles": {
       "main": "CANONICAL_CODE_AND_MACHINE_POLICY",
@@ -15828,7 +15923,9 @@
       "architectureTopologyChangeRequiresArchitectureMapUpdate": true,
       "loggingContractChangeRequiresLogMapUpdate": true,
       "securityContractChangeRequiresSecurityPolicyUpdate": true,
-      "policyChangeRequiresCurrentMainRebind": true
+      "policyChangeRequiresCurrentMainRebind": true,
+      "legacyHumanPolicyMirrorForbidden": true,
+      "completedOneShotMigrationArtifactsMustBeRemoved": true
     },
     "synchronization": {
       "beforeWorkLoadAndValidateCanonicalSet": true,
@@ -15858,7 +15955,8 @@
       "preserveExistingDocumentStructure": true,
       "updateExistingCanonicalSectionBeforeAddingNewDocument": true,
       "centralContractChangeMustRecordChangeRecord": true,
-      "postWriteSharedContextResyncRequired": true
+      "postWriteSharedContextResyncRequired": true,
+      "removeSupersededPolicyMirrorsInsteadOfMaintainingThem": true
     },
     "humanReadableArtifactPolicy": {
       "humanReadablePolicyMirrorRequired": false,
@@ -15886,6 +15984,28 @@
       "noSeparateDocumentationPipeline": true,
       "humanReadableSyncDocumentRequired": false,
       "machinePolicyAndCompiledProjectionOnly": true
+    },
+    "legacyPolicyCleanup": {
+      "status": "REMOVED_FROM_ACTIVE_REPOSITORY",
+      "removedAt": "2026-09-23",
+      "reason": "CENTRAL_MACHINE_POLICY_IS_THE_ONLY_POLICY_AUTHORITY_AND_HUMAN_POLICY_MIRRORS_CREATE_STALE_OR_CONTRADICTORY_DUPLICATION",
+      "removedHumanPolicyMirrors": [
+        "COMPANY_FLOW.md",
+        "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
+        "company-learning/PLATFORM_RELEASE_ROADMAP.md",
+        "company-learning/PRIMARY_THREE_FAST_MVP.md",
+        "company-learning/UNITY_WEB_FIRST_STAGE.md",
+        "company-learning/VIBE3_ENGINE.md"
+      ],
+      "removedMigrationArtifacts": [
+        ".github/workflows/temp-cloud-designer-cutover-v2.yml",
+        ".github/workflows/temp-design-v2-wireup.yml",
+        ".github/workflows/one-shot-common-development-policy.yml",
+        "tools/temp-migrate-stage-gate-v2.mjs",
+        "tools/apply-common-development-quality-policy.mjs"
+      ],
+      "gitHistoryRemainsAuditSource": true,
+      "compatibilityPolicyMustLiveInCanonicalMachineContractNotDeletedMirrors": true
     }
   },
   "canonicalProductionDepartments": {
@@ -15909,25 +16029,5 @@
     "strictDesignContinuesParallelWithDevelopment": true,
     "activeDevelopmentMayNotGloballyDeferStrictDesign": true,
     "unityWebRole": "VALIDATION_SURFACE_ONLY"
-  },
-  "legacyPolicyCleanup": {
-    "version": 1,
-    "authority": "OWNER_DIRECTIVE_2026-09-23",
-    "status": "ACTIVE",
-    "machinePolicyOnly": true,
-    "removedSemantics": [
-      "WEB_FIRST_DEVELOPMENT_ADMISSION",
-      "WEB_80_OR_90_NATIVE_DISPATCH_GATE",
-      "STRICT_DESIGN_SCORE_AS_NATIVE_DEVELOPMENT_ADMISSION",
-      "MANDATORY_FULL_WEB_COMPANION",
-      "PRE_WEB_POST_WEB_ARTBOOK_LIFECYCLE_AUTHORITY",
-      "HUMAN_SYNC_DOCUMENT_REQUIRED_FOR_EXECUTION"
-    ],
-    "preservedCompatibility": [
-      "EXISTING_WEB_ARCHIVES",
-      "OPTIONAL_UNITY_WEB_VALIDATION_SURFACE",
-      "HOMEPAGE_UNITY_WEB_TEST_LINK_WHEN_VERIFIED",
-      "WEB_DERIVED_LEARNING_MAY_EXIST_BUT_CANNOT_CLAIM_NATIVE_PASS"
-    ]
   }
 }

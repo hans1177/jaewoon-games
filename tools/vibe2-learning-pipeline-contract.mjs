@@ -9,6 +9,7 @@ const includesAll = (text, tokens, label) => {
 };
 
 const contract = readJson('company-learning/canonical-learning-pipeline.json');
+const roadmap = readJson('company-learning/platform-release-roadmap.json');
 const expectedChain = [
   'VALIDATED_EVIDENCE',
   'DISTILLATION_INGEST',
@@ -23,7 +24,10 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 1, 'contract.version');
+eq(contract.version, 2, 'contract.version');
+eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
+eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
+eq(contract.policyAuthority, false, 'contract.policyAuthority');
 eq(contract.status, 'LOCKED', 'contract.status');
 eq(JSON.stringify(contract.canonicalChain), JSON.stringify(expectedChain), 'canonicalChain');
 eq(contract.pipelineLock.existingPipelineIsAuthoritative, true, 'existingPipelineIsAuthoritative');
@@ -41,31 +45,24 @@ eq(contract.trainingPolicy.maxProjectShare, 0.75, 'maxProjectShare');
 eq(contract.trainingPolicy.promotionGate, 'FIXED_HOLDOUT_AB_THEN_CANARY', 'promotionGate');
 
 const portableWeb=contract.portableWebLearning;
-eq(portableWeb?.enabled, true, 'portable Web learning enabled');
-eq(portableWeb?.sourceRequirement, 'VERIFIED_CANONICAL_WEB_GAME_QA_ONLY', 'portable Web source requirement');
-eq(portableWeb?.feedsExistingCanonicalTrainingSamples, true, 'portable Web canonical sample root');
-eq(portableWeb?.feedsSharedV3Memory, true, 'portable Web shared V3 memory');
-eq(portableWeb?.robloxMayRetrieveAsContext, true, 'Web to Roblox portable context');
+eq(portableWeb?.enabled, false, 'legacy portable Web learning disabled');
+eq(portableWeb?.sourceRequirement, 'NONE', 'legacy portable Web source requirement');
+eq(portableWeb?.feedsExistingCanonicalTrainingSamples, false, 'legacy Web cannot feed canonical samples');
+eq(portableWeb?.feedsSharedV3Memory, false, 'legacy Web cannot feed shared V3 memory');
+eq(portableWeb?.robloxMayRetrieveAsContext, false, 'legacy Web cannot become Roblox context');
 eq(portableWeb?.webEvidenceCountsAsRobloxVerifiedEvidence, false, 'Web evidence must not become Roblox evidence');
 eq(portableWeb?.webEvidenceMaySatisfyRobloxDatasetGate, false, 'Web evidence must not satisfy Roblox dataset gate');
 eq(portableWeb?.webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate, false, 'Web evidence must not satisfy Roblox runtime/publishing gate');
 eq(portableWeb?.robloxSpecificLearningStillRequiresRealVerifiedRobloxEvidence, true, 'Roblox-specific learning evidence');
 eq(portableWeb?.separateCronOrPipelineAllowed, false, 'portable Web parallel pipeline');
 eq(portableWeb?.thresholdLoweringAllowed, false, 'portable Web threshold lowering');
+eq(portableWeb?.status, 'LEGACY_DISABLED', 'legacy Web learning status');
 
-const companyFlow = readText('COMPANY_FLOW.md');
-includesAll(companyFlow, [
-  'existingPipelineIsAuthoritative: true',
-  'adHocBypassChainForbidden: true',
-  'wrapperOrShadowChainForbidden: true',
-  'duplicateTriggerPathForbidden: true',
-  'status: VERIFIED_RUNTIME_PASS_TRUE',
-  'role: AUXILIARY_PORTABLE_LEARNING_EVIDENCE',
-  'cannotSatisfyNativePlatformRuntimeGate: true',
-  'useExistingCanonicalDistillationOnly: true',
-  'newTrainerOrCronForbidden: true',
-  'newParallelTrainerForbidden: true',
-], 'COMPANY_FLOW');
+eq(JSON.stringify(roadmap.canonicalLearningChain), JSON.stringify(expectedChain), 'central canonical learning chain');
+eq(roadmap.parallelLearningPipelineAllowed, false, 'central parallel learning pipeline policy');
+eq(roadmap.webCompanion?.role, 'UNITY_WEB_VALIDATION_SURFACE_ONLY', 'central Web role');
+eq(roadmap.webCompanion?.developmentAdmissionGate, false, 'central Web development admission');
+eq(roadmap.webCompanion?.cannotReplaceNativeRuntimeEvidence, true, 'central Web native evidence boundary');
 
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);
 includesAll(ingestWorkflow, [
@@ -121,7 +118,7 @@ eq(request.execution?.githubHostedTrainingAllowed, false, 'training request host
 eq(request.execution?.paidApiAllowed, false, 'training request paid API policy');
 
 console.log('VIBE2_LEARNING_PIPELINE_CONTRACT=PASS');
-console.log('PORTABLE_WEB_LEARNING_BOUNDARY=PASS');
+console.log('LEGACY_WEB_LEARNING_DISABLED=PASS');
 console.log('BLOCK_BLAST_SUCCESS_LEARNING_METHOD=LOCKED_RUN30');
 console.log(`BLOCK_BLAST_QA_ACCEPTED=${status.tasks.qa.accepted}`);
 console.log(`BLOCK_BLAST_QA_TRAIN=${status.tasks.qa.train}`);
