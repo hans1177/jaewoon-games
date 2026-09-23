@@ -70,7 +70,7 @@ function numericEvidence(task={},prefix=''){
   return Number.isFinite(value)?value:null;
 }
 function stableRepairFailureSignature(task={}){
-  const signature=clean(failureSignatureOf(task));
+  const signature=clean(task.failureSignature);
   return /^shared-signature-canary-pending:/i.test(signature)?'':signature;
 }
 function duplicateRepairIdentity(task={}){
@@ -87,6 +87,8 @@ function duplicateRepairIdentity(task={}){
     acceptanceCriteria:unique(task.acceptanceCriteria).sort(),
     verificationCommands:unique(task.verificationCommands).sort(),
     sourceMutationRequired:task.sourceMutationRequired===true,
+    sourceMutationBaseline:clean(task.sourceMutationBaseline),
+    knownGoodRevision:clean(task.knownGoodRevision),
     failureClass:clean(task.failureClass).toUpperCase(),
     failureSignature:stableRepairFailureSignature(task)
   });
