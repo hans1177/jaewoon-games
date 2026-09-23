@@ -334,7 +334,7 @@ local function staggerEnemy(e,amount,now)
  if not e or e.hp<=0 then return end
  e.stagger=math.max(0,(e.stagger or e.staggerMax or 40)-(amount or 20));e.part:SetAttribute("Stagger",e.stagger)
  if e.stagger<=0 then
-  e.stunnedUntil=now+(e.boss and 2.1 or 1.45);e.attackPending=false;e.stagger=e.staggerMax or 40;e.part:SetAttribute("Stagger",e.stagger);e.part:SetAttribute("Staggered",true)
+  e.stunnedUntil=now+(e.boss and 2.1 or 1.45);e.attackPending=false;e.attackToken=(e.attackToken or 0)+1;e.stagger=e.staggerMax or 40;e.part:SetAttribute("Stagger",e.stagger);e.part:SetAttribute("Staggered",true)
   task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent then e.part:SetAttribute("Staggered",false)end end)
  end
 end
@@ -398,7 +398,7 @@ end
 local function beginEnemyAttack(e,target,now)
  if e.attackPending or now<(e.stunnedUntil or 0)then return end
  local attack=chooseEnemyAttack(e);if not attack then return end
- e.attackPending=true;e.lastAttack=now;e.nextAttackAt=now+(attack.Cooldown or 1.2);attackTelegraph(e,attack,target)
+ e.attackPending=true;e.attackToken=(e.attackToken or 0)+1;local attackToken=e.attackToken;e.lastAttack=now;e.nextAttackAt=now+(attack.Cooldown or 1.2);attackTelegraph(e,attack,target)
  local special=tostring(attack.Special or"");local tr0=root(target)
  if tr0 then
   local flat=Vector3.new(tr0.Position.X,e.part.Position.Y,tr0.Position.Z)
@@ -416,11 +416,11 @@ local function beginEnemyAttack(e,target,now)
  end
  local telegraph=attack.Telegraph or .4
  task.delay(telegraph,function()
-  if not e.part or not e.part.Parent or e.hp<=0 then e.attackPending=false;return end
+  if not e.part or not e.part.Parent or e.hp<=0 or e.attackToken~=attackToken then e.attackPending=false;return end
   local hits=math.max(1,attack.Hits or 1);local gap=attack.HitGap or .2
   task.spawn(function()
    for hit=1,hits do
-    if e.hp<=0 or not e.part.Parent then break end
+    if e.hp<=0 or not e.part.Parent or e.attackToken~=attackToken then break end
     local tr=root(target);local hh=hum(target);local range=(attack.Range or 5.5)+1.5
     if tr and hh and hh.Health>0 and(tr.Position-e.part.Position).Magnitude<=range then resolveIncomingAttack(target,e,attack)end
     if hit<hits then task.wait(gap)end
@@ -886,7 +886,7 @@ local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)
  local gold=spec and spec.Gold or(boss and z.Boss and z.Boss.Gold or z.RewardGold)
  local xp=spec and spec.XP or(boss and z.Boss and z.Boss.XP or z.RewardXP)
  local stagger=spec and spec.Stagger or(boss and 120 or 40)
- local e={part=part,zone=z.Id,hp=hp,max=hp,damage=damage,gold=gold,xp=xp,spawn=spawn,boss=boss==true,hiddenBoss=hiddenBoss==true,def=spec,lastAttack=0,target=nil,attackPending=false,attackIndex=0,stagger=stagger,staggerMax=stagger,stunnedUntil=0,speed=spec and spec.Speed or(boss and 9 or 7)}
+ local e={part=part,zone=z.Id,hp=hp,max=hp,damage=damage,gold=gold,xp=xp,spawn=spawn,boss=boss==true,hiddenBoss=hiddenBoss==true,def=spec,lastAttack=0,target=nil,attackPending=false,attackIndex=0,stagger=stagger,staggerMax=stagger,stunnedUntil=0,speed=spec and spec.Speed or(boss and 9 or 7),runSeed=z.Id==1 and meadowRunState.seed or 0}
  part:SetAttribute("HP",hp);part:SetAttribute("MaxHP",hp);part:SetAttribute("Zone",z.Id);part:SetAttribute("EnemyId",spec and spec.Id or"DEFAULT");part:SetAttribute("Stagger",stagger);part:SetAttribute("StaggerMax",stagger);part:SetAttribute("HiddenBoss",hiddenBoss==true)
  local status=Instance.new("BillboardGui");status.Name="EnemyStatus";status.Size=UDim2.fromOffset(boss and 110 or 84,12);status.StudsOffset=Vector3.new(0,boss and 7.4 or 5.7,0);status.AlwaysOnTop=false;status.MaxDistance=80;status.Parent=part
  local hpBack=Instance.new("Frame");hpBack.Name="HPBack";hpBack.Size=UDim2.new(1,0,.45,0);hpBack.BackgroundColor3=Color3.fromRGB(48,45,46);hpBack.BorderSizePixel=0;hpBack.Parent=status
@@ -955,7 +955,7 @@ generateMeadowRun=function(seed)
  local old=zone:FindFirstChild("ProceduralRun");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="ProceduralRun";f.Parent=zone
  meadowRunCounter+=1;seed=math.floor(tonumber(seed)or(100000+game.PlaceVersion*31+meadowRunCounter*97));local rng=Random.new(seed)
- meadowRunState={seed=seed,hiddenBossId="",generated=true};workspace:SetAttribute("MeadowRunSeed",seed);workspace:SetAttribute("MeadowHiddenBossDefeated",false)
+ meadowRunState={seed=seed,hiddenBossId="",generated=true};workspace:SetAttribute("MeadowRunSeed",seed);workspace:SetAttribute("MeadowHiddenBossDefeated",false);workspace:SetAttribute("MeadowHiddenBossId","")
  local roomKinds={"START","COMBAT","COMBAT","EVENT","ELITE","COMBAT","TREASURE","EXIT"}
  for i=2,#roomKinds-1 do local j=rng:NextInteger(2,#roomKinds-1);roomKinds[i],roomKinds[j]=roomKinds[j],roomKinds[i]end
  roomKinds[1]="START";roomKinds[#roomKinds]="EXIT"
@@ -1056,8 +1056,9 @@ local function killEnemy(p,e,contribution)
   workspace:SetAttribute("MeadowHiddenBossDefeated",true);msg(p,"히든 보스 격파 · "..display);feedback(p,"HIDDEN_BOSS_KILL")
  else
   msg(p,(e.boss and"보스 격파 · "or"처치 · ")..display);feedback(p,e.boss and"BOSS_KILL"or"KILL")
+  local killedRun=e.runSeed
   task.delay(e.boss and 18 or 8,function()
-   if world and world.Parent then spawnEnemy(z,e.boss,math.random(1,80),e.def,nil,false)end
+   if world and world.Parent and(z.Id~=1 or meadowRunState.seed==killedRun)then spawnEnemy(z,e.boss,math.random(1,80),e.def,nil,false)end
   end)
  end
 end
