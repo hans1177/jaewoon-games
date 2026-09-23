@@ -184,6 +184,20 @@ test('department launcher sweeps all canonical production classes without cancel
   assert.match(multimodelWorkflow,/cancel-in-progress: false/);
 });
 
+test('department launcher delegates DEVELOPMENT_CONFIRMED to one canonical direct-native runtime',()=>{
+  assert.match(multimodelWorkflow,/native_development_required/);
+  assert.match(multimodelWorkflow,/native_development_ids/);
+  assert.match(multimodelWorkflow,/productionSelected=selected\.filter\(row=>row\.productionClass!==PRODUCTION_CLASSES\.DEVELOPMENT_CONFIRMED\)/);
+  assert.match(multimodelWorkflow,/gh workflow run company-development-confirmed-runtime\.yml/);
+  assert.match(multimodelWorkflow,/DEPARTMENT_NATIVE_DEVELOPMENT_DISPATCH=SKIP_ACTIVE_RUNTIME/);
+  assert.match(multimodelWorkflow,/actions: write/);
+  assert.doesNotMatch(pipeline,/await run\('tools\/company-development-validation-cycle\.mjs'\)/);
+  assert.doesNotMatch(pipeline,/await run\('tools\/company-development-disposition-gate\.mjs'\)/);
+  assert.match(pipeline,/DEVELOPMENT_EXECUTION_MODE=DIRECT_NATIVE_DUAL_PLATFORM/);
+  assert.match(pipeline,/DEVELOPMENT_RUNTIME_OWNER=\.github\/workflows\/company-development-confirmed-runtime\.yml/);
+  assert.match(pipeline,/DEVELOPMENT_LEGACY_WEB_FIRST_VALIDATION=DISABLED/);
+});
+
 test('Vibe2/Vibe3 remain primary integration and learning owner for direct-native implementation with isolated external AI collaboration',()=>{
   const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority;
   assert.equal(authority.authority,'VIBE_PRIMARY_INTEGRATION_AND_LEARNING_OWNER_WITH_FULL_PROCESS_COLLABORATION');
