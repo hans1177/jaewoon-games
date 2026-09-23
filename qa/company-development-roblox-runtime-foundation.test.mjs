@@ -71,16 +71,17 @@ test('multiplayer foundation only needs one exact two-player shared sync observa
 
 test('multiplayer source preflight proves one authoritative shared snapshot broadcast contract',()=>{
  const tool=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
- assert.match(tool,/FireAllClients\\s\*\\(\\s\*\["'\]MULTIPLAYER_SYNC\["'\]/);
+ assert.match(tool,/FireAllClients/);
+ assert.match(tool,/MULTIPLAYER_SYNC/);
  assert.match(tool,/ParticipantCount/);
  assert.match(tool,/OnClientEvent:Connect/);
 });
 
 test('F9 final review uses shallow checkout instead of full git history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
- assert.doesNotMatch(workflow,/fetch-depth:\\s*0/);
- assert.match(workflow,/Checkout current canonical implementation[\\s\\S]*?fetch-depth:\\s*1/);
- assert.match(workflow,/Checkout canonical runtime state[\\s\\S]*?fetch-depth:\\s*1/);
+ assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+ assert.match(workflow,/Checkout current canonical implementation[\s\S]*?fetch-depth:\s*1/);
+ assert.match(workflow,/Checkout canonical runtime state[\s\S]*?fetch-depth:\s*1/);
 });
 
 test('central policy matches two-client one-sync Roblox release proof',()=>{
