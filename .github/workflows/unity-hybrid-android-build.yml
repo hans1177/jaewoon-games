@@ -37,7 +37,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
 
       - name: Resolve build request
         id: request
@@ -49,6 +50,9 @@ jobs:
           else
             before='${{ github.event.before }}'
             if [[ -n "$before" && ! "$before" =~ ^0+$ ]]; then
+              if ! git cat-file -e "$before^{commit}" 2>/dev/null; then
+                git fetch --no-tags --depth=1 origin "$before"
+              fi
               mapfile -t files < <(git diff --name-only "$before" "$GITHUB_SHA" -- '.build-requests/unity/*.json')
             else
               mapfile -t files < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- '.build-requests/unity/*.json')
