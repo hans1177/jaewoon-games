@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -203741,105 +203739,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_738a5a6c5547f8c58e43bb4b",
-          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_0966f757d28b32279f69c787",
-            "capability_ctrace_383f1508b1e716e1b7848811"
-          ],
-          "evidence": [
-            "base-main:7fdeaa4a83499264f0a803e11b5bc3a95ccbfbeb",
-            "actions-run:35793352138",
-            "reservation-id:35793352138:1",
-            "capability-application-sample:30ade564c150d5393780"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_a9d7aaca625c842263d806e9",
-          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_0966f757d28b32279f69c787",
-            "capability_ctrace_383f1508b1e716e1b7848811"
-          ],
-          "evidence": [
-            "base-main:7fdeaa4a83499264f0a803e11b5bc3a95ccbfbeb",
-            "actions-run:35793352138",
-            "reservation-id:35793352138:1",
-            "capability-application-sample:0baa3e0d68305cdd66f4"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_62ed70a48718a1c200f885ac",
-          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_0966f757d28b32279f69c787",
-            "capability_ctrace_383f1508b1e716e1b7848811"
-          ],
-          "evidence": [
-            "base-main:7fdeaa4a83499264f0a803e11b5bc3a95ccbfbeb",
-            "actions-run:35793352138",
-            "reservation-id:35793352138:1",
-            "capability-application-sample:b90598b0a1d3341715eb"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_3f3cb7a03c12cdc87faa5c22",
           "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
           "workKey": null,
@@ -205861,6 +205760,105 @@
             "actions-run:35800091699",
             "reservation-id:35800091699:1",
             "capability-application-sample:8765f2ba4a6516df530f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2b38cf53c15f82d65959b1fa",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:2052b78aa753523160b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b651af445d86a3175b64ed67",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:befb86dbc25d3d02ffa8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7b437a73f80f7ffa3ef7277e",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:719c9156c032657cfa23"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -207977,7 +207975,11 @@
         "base-main:a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd",
         "actions-run:35801408975",
         "reservation-id:35801408975:1",
-        "coding-trace:ctrace_6879d1adaeaf5e77ebb1cff1"
+        "coding-trace:ctrace_6879d1adaeaf5e77ebb1cff1",
+        "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+        "actions-run:35800053569",
+        "reservation-id:35800053569:1",
+        "coding-trace:ctrace_2bcf358d1165d46cdf9e080f"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -207986,8 +207988,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 6,
-      "confidence": 0.8571,
+      "confirmations": 7,
+      "confidence": 0.875,
       "capabilityApplications": [
         {
           "version": 1,
@@ -209633,6 +209635,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_00e725833f28c554837a9434",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:2052b78aa753523160b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fb2304365c901e3881e3c842",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:befb86dbc25d3d02ffa8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_20c72e77eb53f9a4f0dcebbd",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:719c9156c032657cfa23"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -209651,7 +209752,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 50,
+        "applicationCount": 53,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -209724,7 +209825,11 @@
         "base-main:a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd",
         "actions-run:35801408975",
         "reservation-id:35801408975:1",
-        "coding-trace:ctrace_54b16834be545d867949c1ec"
+        "coding-trace:ctrace_54b16834be545d867949c1ec",
+        "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+        "actions-run:35800053569",
+        "reservation-id:35800053569:1",
+        "coding-trace:ctrace_3411f5c2d41f1d6fff6dceba"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -209733,8 +209838,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 6,
-      "confidence": 0.8571,
+      "confirmations": 7,
+      "confidence": 0.875,
       "capabilityApplications": [
         {
           "version": 1,
@@ -210919,6 +211024,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_710247a491d82002cbbaf388",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:2052b78aa753523160b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f6ea2ff22f3d8ee5bef4f286",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:befb86dbc25d3d02ffa8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0dda04c1c4c9128e34ef66ec",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:719c9156c032657cfa23"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -210937,7 +211141,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 36,
+        "applicationCount": 39,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -211007,7 +211211,11 @@
         "base-main:a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd",
         "actions-run:35801408975",
         "reservation-id:35801408975:1",
-        "coding-trace:ctrace_ec37851721d2e9a37f4f3daf"
+        "coding-trace:ctrace_ec37851721d2e9a37f4f3daf",
+        "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+        "actions-run:35800053569",
+        "reservation-id:35800053569:1",
+        "coding-trace:ctrace_426581186753a0682b33ac9e"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -211016,8 +211224,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 5,
-      "confidence": 0.8333,
+      "confirmations": 6,
+      "confidence": 0.8571,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -212875,6 +213083,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_362ff7e5b6f597155af49a52",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:2052b78aa753523160b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2af2c4f67ae3f4f49e91f707",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:befb86dbc25d3d02ffa8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f433cfc95cf2f8c96cb8fa4b",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:719c9156c032657cfa23"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -212893,7 +213200,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 53,
+        "applicationCount": 56,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -214823,6 +215130,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d370e73b7f2ed68f866fb227",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:2052b78aa753523160b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_04b7ca97d2f4f18b5bede6aa",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:befb86dbc25d3d02ffa8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_27da458154d2228b9ee8c227",
+          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_1981e22d7ce6d0655400a0e7",
+            "capability_ctrace_383f1508b1e716e1b7848811",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_9826195dac24dccb5a25672d"
+          ],
+          "evidence": [
+            "base-main:8e34bb96708fcb88d32487ca4ed90c26558a19ff",
+            "actions-run:35800053569",
+            "reservation-id:35800053569:1",
+            "capability-application-sample:719c9156c032657cfa23"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -214841,7 +215247,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 53,
+        "applicationCount": 56,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
