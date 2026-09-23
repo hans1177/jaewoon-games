@@ -12,6 +12,13 @@ const worker=path.join(root,'tools','company-development-unity-web-worker.mjs');
 const run=(args,cwd=root)=>execFileSync(process.execPath,[worker,...args],{cwd,encoding:'utf8'});
 const temp=()=>fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-worker-'));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
+const writeBundle=(web,gameId)=>{
+  const build=path.join(web,'Build');fs.mkdirSync(build,{recursive:true});
+  fs.writeFileSync(path.join(build,`${gameId}.loader.js`),'loader');
+  fs.writeFileSync(path.join(build,`${gameId}.data`),'data');
+  fs.writeFileSync(path.join(build,`${gameId}.framework.js`),'framework');
+  fs.writeFileSync(path.join(build,`${gameId}.wasm`),'wasm');
+};
 
 test('missing canonical Unity source requests Vibe bootstrap instead of legacy HTML fallback',()=>{
   const dir=temp();
@@ -37,7 +44,7 @@ test('complete Unity Web child evidence produces public build and first-stage pa
     const output=path.join(dir,'out');
     fs.mkdirSync(web,{recursive:true});
     fs.writeFileSync(baseline,'{"version":1,"game":"worker-pass-game"}\n');
-    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');\n    writeBundle(web,gameId);
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS',sourceCommit:'abc'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:true,
@@ -74,6 +81,25 @@ test('complete Unity Web child evidence produces public build and first-stage pa
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
+test('index-only Unity Web child output is rejected as undeployable',()=>{
+  const dir=temp();
+  try{
+    const gameId='worker-index-only-game';
+    const baseline=path.join(dir,'design-revised.json');
+    const web=path.join(dir,'child','artifact','web-games',gameId);
+    const output=path.join(dir,'out');
+    fs.mkdirSync(web,{recursive:true});
+    fs.writeFileSync(baseline,'{"version":1}\n');
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS'});
+    writeJson(path.join(web,'unity-web-gameplay-validation.json'),{version:1,engine:'UNITY_WEB',gameId,pass:true});
+    run(['result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,`--baseline=${baseline}`,'--source-tree=tree','--build-run-id=1',`--child-root=${path.join(dir,'child')}`,`--output-root=${output}`]);
+    const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
+    assert.equal(result.pass,false);
+    assert.match(result.update.unityWebValidationSurfaceFailureReason,/DEPLOY_BUNDLE_INCOMPLETE/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
 test('boolean-only Unity Web evidence cannot satisfy the final gate',()=>{
   const dir=temp();
   try{
@@ -84,7 +110,7 @@ test('boolean-only Unity Web evidence cannot satisfy the final gate',()=>{
     const output=path.join(dir,'out');
     fs.mkdirSync(web,{recursive:true});
     fs.writeFileSync(baseline,'{"version":1}\n');
-    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');\n    writeBundle(web,gameId);
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:true,
@@ -115,7 +141,7 @@ test('incomplete Unity Web gate fails closed and does not publish build',()=>{
     const output=path.join(dir,'out');
     fs.mkdirSync(web,{recursive:true});
     fs.writeFileSync(baseline,'{"version":1}\n');
-    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');\n    writeBundle(web,gameId);
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:false,
