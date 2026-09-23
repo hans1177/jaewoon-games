@@ -31,7 +31,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
 
       - uses: actions/setup-node@v4
         with:
@@ -56,6 +57,9 @@ jobs:
           if [[ -n "$REQUESTED_GAME_ID" ]]; then
             changed="$REQUESTED_GAME_ID"
           elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+              git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+            fi
             changed="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ | awk -F/ 'NF>=3 {print $2}' | sort -u | paste -sd, -)"
             if [[ -z "$changed" ]] && git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/.company-runtime-trigger | grep -q .; then
               changed="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | tr -d '[:space:]')"
