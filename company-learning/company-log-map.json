@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -404,6 +404,43 @@
     "markerOnlyEvidenceForbidden": true,
     "rawBinaryDuplicationInLogsForbidden": true,
     "artifactReferencesAndHashesPreferred": true,
-    "finalFailureState": "ASSET_REPAIR_REQUIRED"
+    "finalFailureState": "ASSET_REPAIR_REQUIRED",
+    "unifiedRoot": "graphics-production-evidence",
+    "independentTopLevelEvidenceAuthority": false
+  },
+  "updatedAt": "2026-09-23",
+  "graphicsProductionEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
+    "recordKind": "graphics-production-evidence",
+    "rootScope": "ONE_PER_GAME_CANDIDATE_REVISION",
+    "correlationKeys": [
+      "GAME_ID",
+      "CANDIDATE_SHA",
+      "SOURCE_REVISION",
+      "GRAPHICS_PRODUCTION_ID",
+      "FAILURE_STAGE",
+      "FAILURE_SIGNATURE"
+    ],
+    "rootRequired": [
+      "ART_BIBLE_BINDING",
+      "VISUAL_TARGET_FRAME_BINDING",
+      "ASSET_PROVENANCE_AND_TRANSFORM_HISTORY",
+      "HERO_QUALITY_SUMMARY",
+      "ENVIRONMENT_WORLD_COMPOSITION_SUMMARY",
+      "ANIMATION_VFX_UI_LIGHTING_PRESENTATION_SUMMARY",
+      "ROBLOX_CHILD_EVIDENCE_REFERENCE",
+      "UNITY_CHILD_EVIDENCE_REFERENCE",
+      "BEFORE_AFTER_VISUAL_REGRESSION",
+      "PLATFORM_PERFORMANCE_SUMMARY",
+      "FINAL_VISUAL_QA_RESULT"
+    ],
+    "perPlatformChildEvidenceMayRemainPlatformSpecific": true,
+    "rawRuntimeCaptureDuplicationAtRootForbidden": true,
+    "artifactReferencesAndHashesPreferred": true,
+    "separateCharacterEnvironmentAnimationVfxTopLevelEvidenceRecordsForbidden": true,
+    "repairUpdatesSameGraphicsProductionRoot": true,
+    "passState": "GRAPHICS_PASS",
+    "failState": "ASSET_REPAIR_REQUIRED"
   }
 }
