@@ -23,6 +23,9 @@ on:
       - '.github/agents/balance.agent.md'
       - 'tools/production-classification.mjs'
       - 'tools/design-only-promotion-sync.mjs'
+      - 'tools/company-development-queue-reconcile.mjs'
+      - '.github/workflows/company-development-queue-reconcile.yml'
+      - 'qa/company-development-queue-reconcile.test.mjs'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-uefn-platform.mjs'
@@ -113,6 +116,9 @@ on:
       - '.github/agents/balance.agent.md'
       - 'tools/production-classification.mjs'
       - 'tools/design-only-promotion-sync.mjs'
+      - 'tools/company-development-queue-reconcile.mjs'
+      - '.github/workflows/company-development-queue-reconcile.yml'
+      - 'qa/company-development-queue-reconcile.test.mjs'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-uefn-platform.mjs'
@@ -202,6 +208,7 @@ jobs:
           node --test qa/company-constitution-enforcer.test.mjs
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
+          node --check tools/company-development-queue-reconcile.mjs
           node --check tools/company-selected-platform-router.mjs
           node --check tools/company-development-unity-platform.mjs
           node --check tools/company-development-uefn-platform.mjs
@@ -227,6 +234,8 @@ jobs:
           node --check assets/vibe-presentation-director.js
           node --test \
             qa/company-direct-native-policy-contract.test.mjs \
+            qa/company-development-queue-reconcile.test.mjs \
+            qa/design-promotion-workflow-contract.test.mjs \
             qa/company-high-end-visual-contract.test.mjs \
             qa/vibe-visual-runtime-quality.test.mjs \
             qa/vibe2-native-asset-production.test.mjs \
