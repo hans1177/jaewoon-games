@@ -644,8 +644,8 @@
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/daechung-rpg",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -672,10 +672,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-source-preflight-failed"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-23T10:20:04.002Z",
+      "updatedAt": "2026-09-23T10:20:38.939Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -808,8 +808,8 @@
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
@@ -3894,7 +3894,7 @@
       "robloxReleasePublishedAt": null
     }
   ],
-  "updatedAt": "2026-09-23T10:20:04.002Z",
+  "updatedAt": "2026-09-23T10:20:38.939Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
