@@ -1063,7 +1063,7 @@
       "UNITY"
     ],
     "webDevelopmentStageRemoved": true,
-    "unityWebEnabled": false,
+    "unityWebEnabled": true,
     "minimumDesignRequired": true,
     "sameGameBothPlatformsRequired": true,
     "platformSpecificImplementationRequired": true,
@@ -1073,7 +1073,18 @@
     "internalReleaseFirst": true,
     "internalPlaytestStage": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
     "fortniteUefnState": "OWNER_HOLD",
-    "noArtificialGlobalGameCountCap": true
+    "noArtificialGlobalGameCountCap": true,
+    "unityWebRequired": false,
+    "unityWebGateRequired": false,
+    "unityWebMode": "VALIDATION_SURFACE_ONLY",
+    "unityWebValidationSurface": {
+      "enabled": true,
+      "optional": true,
+      "sameCanonicalUnityProjectRequired": true,
+      "requiredForDevelopmentAdmission": false,
+      "requiredForNativeRuntimePass": false,
+      "requiredForInternalRelease": false
+    }
   },
   "highEndVisualProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
