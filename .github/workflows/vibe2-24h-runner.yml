@@ -111,10 +111,10 @@ env:
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
   VIBE2_24H_GEMINI_ALLOWED: 'false'
 
-# Keep each 24H cycle start independent so stale workflow-level concurrency
-# cannot block the continuity chain. Shared control state is reconciled optimistically in plan.
+# Keep one continuous scheduler chain. Multiple wake signals collapse into one
+# pending cycle while the running cycle still dispatches its successor unconditionally.
 concurrency:
-  group: vibe2-24h-cycle-${{ github.run_id }}
+  group: vibe2-24h-cycle-singleton
   cancel-in-progress: false
 
 jobs:
