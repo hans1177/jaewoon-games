@@ -95,6 +95,7 @@ assert.equal(uxReject.minimumRequired,75);
 
 
 const strictReviewSource=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
+const designCycleSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 assert.match(strictReviewSource,/scoreDesignGateV2/);
 assert.match(strictReviewSource,/designContent\.identity\|\|seed\.DISTINCT_IDENTITY/);
 assert.match(strictReviewSource,/designContent\.coreLoop/);
@@ -114,3 +115,17 @@ for(const platform of ['UNITY','ROBLOX','FORTNITE_UEFN']){
   assert.ok(platformResult.evidenceLevels.PLATFORM_FIT_DESIGN>=80,`${platform} platform fit should be connected`);
   assert.ok(!platformResult.criticalAxisFailures.includes('PLATFORM_FIT_DESIGN'),`${platform} must not fail solely because identifier is shorter than prose fields`);
 }
+
+
+assert.match(designCycleSource,/conceptBlueprint:CONCEPT_BLUEPRINT/);
+assert.match(designCycleSource,/designAlternatives:\{type:'array',minItems:2/);
+assert.match(designCycleSource,/contentDiversityPlan:CONTENT_DIVERSITY_PLAN/);
+assert.match(designCycleSource,/creativeChallenge:CREATIVE_CHALLENGE/);
+assert.match(designCycleSource,/narrativeDirection:NARRATIVE_DIRECTION/);
+assert.match(designCycleSource,/PLAN_A와 PLAN_B/);
+assert.match(designCycleSource,/숫자\/색만 바꾼 복제를 피하고/);
+assert.match(designCycleSource,/장르 혼합·장르 전환/);
+assert.match(designCycleSource,/캐릭터별 어휘·격식·문장리듬/);
+assert.match(designCycleSource,/PUBLIC_DOMAIN/);
+assert.match(designCycleSource,/OWNER_REQUEST_EVENT_ID=/);
+console.log('CONTINUOUS_DESIGN_SCHEMA_CONTRACT=PASS');
