@@ -1,6 +1,10 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
   workflow_dispatch:
     inputs:
       game_id:
@@ -68,6 +72,7 @@ jobs:
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         shell: bash
         run: |
@@ -82,7 +87,15 @@ jobs:
             validateRobloxRuntimeFoundationEvidence,
           } from './tools/company-development-roblox-runtime-foundation.mjs';
 
-          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(!requested&&process.env.EVENT_NAME==='push'){
+            const triggerPath='roblox-games/.company-runtime-trigger';
+            if(fs.existsSync(triggerPath)){
+              requested=String(fs.readFileSync(triggerPath,'utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
+            }
+          }
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID:'+requested);
+          console.log('ROBLOX_FOUNDATION_REQUESTED_GAME_ID='+(requested||'ALL_PENDING'));
           const queuePath='../runtime/development-queue.json';
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
           const candidates=(q.items||[]).filter(item=>{
