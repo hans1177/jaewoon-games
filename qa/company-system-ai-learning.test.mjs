@@ -9,7 +9,7 @@ test('ordinary System AI result promotes only after verified Primary-AI acceptan
     systemAiInput:{tasks:[{
       id:'sys-accepted',status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',department:'infrastructure',
       goal:'repair workflow routing',responsibleFiles:['tools/router.mjs'],verificationCommands:['node --test qa/router.test.mjs'],
-      evidence:['actions-run:1','verification:success','primary-ai-review:PASS','changed-file:tools/router.mjs','source-mutation-sha:abc123']
+      evidence:['actions-run:1','verification:success','primary-ai-review:PASS','changed-file:tools/router.mjs','source-mutation-sha:abc123','learning-knowledge-id:CODE_PATTERN:prior-router']
     }]},
     experienceInput:{version:3,records:[]},libraryInput:{patterns:[]}
   });
@@ -18,6 +18,9 @@ test('ordinary System AI result promotes only after verified Primary-AI acceptan
   assert.equal(result.experience.records[0].authority,'VERIFIED_SYSTEM_AI_LEARNING');
   assert.equal(result.library.patterns[0].authority,'VERIFIED_SYSTEM_AI_CODE_PATTERN');
   assert.equal(result.queue.tasks[0].learningPromotion,'PROMOTED');
+  assert.equal(result.knowledgeOutcomesAdded,1);
+  assert.equal(result.knowledgePositiveApplications,1);
+  assert.equal(result.mastery.knowledgeAttribution.entries['CODE_PATTERN:prior-router'].verifiedApplications,1);
 });
 
 test('unreviewed System AI PASS candidate is not promoted',()=>{
@@ -88,6 +91,8 @@ test('24H runner executes System AI learning before verified-learning motor reru
   const motor=workflow.indexOf('SYSTEM_AI_LEARNING_EXPERIENCE_ADDED');
   assert.ok(fanIn>=0&&motor>fanIn);
   assert.match(workflow,/SYSTEM_AI_LEARNING_PATTERNS_ADDED/);
+  assert.match(workflow,/--state=\.vibe2\/learning-motor-state\.json/);
+  assert.match(workflow,/SYSTEM_AI_LEARNING_KNOWLEDGE_OUTCOMES_ADDED/);
   assert.match(workflow,/vibe2-system-ai-learning\.log/);
 });
 
