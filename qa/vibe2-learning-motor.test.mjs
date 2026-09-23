@@ -9,6 +9,7 @@ import {
   applyVerifiedCodingCalibration,
   applyVerifiedArchitectureDriftOutcomes,
   applyVerifiedKnowledgeOutcomes,
+  applyVerifiedGraphicsEvolutionOutcomes,
   architectureDriftRiskForTask,
   architectureDriftGuidance,
   buildCodingConstitution,
@@ -1016,3 +1017,41 @@ test('preferred knowledge outranks otherwise similar candidate knowledge after v
   assert.equal(ctx.codePatterns[0].id,'preferred-save');
 });
 
+
+
+test('verified graphics evolution outcomes learn positive negative and repeated owner insufficiency',()=>{
+  const pass={
+    id:'gfx-pass',gameId:'g1',target:'web',status:'verified',
+    evidence:[
+      'graphics-evolution:evidence-driven','presentation-pass:ANIMATION_FEEL',
+      'graphics-evolution-trigger-source:OWNER_CHANGE_REQUEST','graphics-evolution-priority-score:168',
+      'graphics-evolution-owner-repeat-count:2','graphics-evolution-alternatives-required:YES',
+      'graphics-evolution-signal-event:req-2','graphics-evolution-selected-approach:PROCEDURAL_WEIGHT_PLUS_AUTHORED_ATTACK',
+      'graphics-evolution-verified-result-return-to-learning-required'
+    ]
+  };
+  const fail={
+    id:'gfx-fail',gameId:'g1',target:'web',status:'failed',
+    evidence:[
+      'graphics-evolution:evidence-driven','presentation-pass:VFX',
+      'graphics-evolution-trigger-source:RUNTIME_CAPTURE_COMPARISON','graphics-evolution-priority-score:110',
+      'graphics-evolution-owner-repeat-count:0','graphics-evolution-alternatives-required:YES',
+      'graphics-evolution-signal-event:auto-vfx','failure-cause:fan-in-regression-failed'
+    ]
+  };
+  const learned=applyVerifiedGraphicsEvolutionOutcomes({}, {tasks:[pass,fail]});
+  assert.equal(learned.added,2);
+  assert.equal(learned.positive,1);
+  assert.equal(learned.negative,1);
+  assert.equal(learned.repeatedOwnerInsufficient,1);
+  const ownerRow=learned.state.graphicsEvolutionMemory.entries['g1|ANIMATION_FEEL|OWNER_CHANGE_REQUEST'];
+  assert.equal(ownerRow.verifiedPasses,1);
+  assert.equal(ownerRow.ownerRepeatInsufficientSignals,1);
+  assert.equal(ownerRow.highestPriorityScore,168);
+  assert.equal(ownerRow.alternativesRequiredCount,1);
+  assert.equal(ownerRow.lastSelectedApproach,'PROCEDURAL_WEIGHT_PLUS_AUTHORED_ATTACK');
+  const failRow=learned.state.graphicsEvolutionMemory.entries['g1|VFX|RUNTIME_CAPTURE_COMPARISON'];
+  assert.equal(failRow.verifiedRegressions,1);
+  const deduped=applyVerifiedGraphicsEvolutionOutcomes(learned.state,{tasks:[pass,fail]});
+  assert.equal(deduped.added,0);
+});
