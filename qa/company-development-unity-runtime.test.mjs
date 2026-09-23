@@ -316,7 +316,7 @@ test('Unity hybrid router avoids full repository history and fetches only the ev
 
 test('Unity direct native changes override unrelated representative canary selection',()=>{
   assert.match(workflowSource,/REQUESTED_GAME_IDS/);
-  assert.match(workflowSource,/build-requests\/unity\/\[\^\/\]\+[^\\n]*json/);
+  assert.match(workflowSource,/build-requests\/unity\/\[\^\/\]\+[^\r\n]*json/);
   assert.match(workflowSource,/unity-games\/\[\^\/\]\+\//);
   assert.match(workflowSource,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/\$GITHUB_SHA"/);
   assert.match(workflowSource,/const requestedRows=requestedIds\.length\?rows\.filter/);
