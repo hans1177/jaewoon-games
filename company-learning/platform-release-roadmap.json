@@ -1,5 +1,5 @@
 {
-  "version": 309,
+  "version": 310,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -11550,7 +11550,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 7,
+    "version": 8,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -11701,7 +11701,7 @@
     "assetAcquisitionAndReuse": {
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-09-22",
-      "implementationState": "DOCUMENTED_DESIGN_PENDING",
+      "implementationState": "ACTIVE_EXECUTABLE_CONTRACT",
       "order": [
         "VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY",
         "LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET",
@@ -12346,6 +12346,205 @@
         "existingModulePublicExportsMayRemainForCompatibility": true,
         "modulesMayNotActAsIndependentTopLevelProductionAuthorities": true,
         "newShadowGraphicsPipelineForbidden": true
+      }
+    },
+    "companyGraphicsLibrary24h": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
+      "executionOwner": "EXISTING_GRAPHICS_DEPARTMENT_PLUS_VIBE_IMPLEMENTATION",
+      "newTopLevelGraphicsPipeline": false,
+      "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "idleGeneration": {
+        "enabled": true,
+        "continuous24h": true,
+        "usesExistingLearningIdleLane": true,
+        "productionWorkAlwaysPreemptsLibraryPractice": true,
+        "ownerRequestGameRepairAndReleaseWorkHigherPriority": true,
+        "noArtificialGenerationCap": true,
+        "stopWhenHigherPriorityWorkNeedsCapacity": true,
+        "rawPracticeArtifactIsNotCompanyAsset": true,
+        "practicePurpose": "EXPAND_VARIETY_REHEARSE_PLATFORM_ADAPTATION_AND_DISCOVER_REUSABLE_PATTERNS_BEFORE_GAME_CONSUMPTION"
+      },
+      "promotionLifecycle": [
+        "PREPARED_VARIANT_OR_PRACTICE_ARTIFACT",
+        "GAME_SPECIFIC_PLATFORM_ADAPTATION",
+        "ACTUAL_RUNTIME_VISUAL_AND_MOTION_QA",
+        "MOBILE_PERFORMANCE_AND_READABILITY_QA",
+        "LICENSE_AND_PROVENANCE_VERIFICATION",
+        "VERIFIED_COMPANY_ASSET_OR_RIG_CAPABILITY"
+      ],
+      "promotionRules": {
+        "preparedArtifactMayNotClaimProductionPass": true,
+        "runtimeVerifiedConsumerRequiredBeforeCompanyAssetPromotion": true,
+        "positivePromotionRequiresVerifiedPass": true,
+        "failedVariantRemainsLearningOnly": true,
+        "originalAssetImmutable": true,
+        "derivedAssetProvenanceRequired": true,
+        "directCrossPlatformBinaryReuseForbidden": true,
+        "platformSpecificReauthoringRequired": true
+      },
+      "characterPreparation": {
+        "sharedDesignIdentity": [
+          "SILHOUETTE",
+          "BODY_PROPORTION",
+          "FACE_AND_HEAD_DIRECTION",
+          "MATERIAL_AND_PALETTE_LANGUAGE",
+          "EQUIPMENT_ATTACHMENT_SEMANTICS",
+          "COMBAT_STYLE",
+          "LOCOMOTION_STYLE",
+          "HIT_AND_DEATH_CHARACTER"
+        ],
+        "baseArchetypes": [
+          "HUMANOID_LIGHT",
+          "HUMANOID_STANDARD",
+          "HUMANOID_HEAVY",
+          "QUADRUPED",
+          "INSECT",
+          "REPTILE",
+          "FLYING",
+          "GOLEM",
+          "AMORPHOUS",
+          "LARGE_BOSS"
+        ],
+        "modularParts": [
+          "HEAD",
+          "BODY",
+          "HANDS",
+          "HAIR_OR_HORNS",
+          "CLOTHING_OR_ARMOR",
+          "WEAPON",
+          "EQUIPMENT",
+          "DECORATION"
+        ],
+        "unity": {
+          "separateNativeVariantRequired": true,
+          "rigProfiles": [
+            "HUMANOID",
+            "GENERIC"
+          ],
+          "capabilities": [
+            "ANIMATOR",
+            "BLEND_TREE",
+            "AVATAR_MASK",
+            "IK_OR_ANIMATION_RIGGING",
+            "SECONDARY_MOTION",
+            "LOD"
+          ],
+          "mobileOptimizationRequired": true
+        },
+        "roblox": {
+          "separateNativeVariantRequired": true,
+          "rigProfiles": [
+            "R15_COMPATIBLE",
+            "CUSTOM_RIG_WHEN_GAME_REQUIRES"
+          ],
+          "capabilities": [
+            "MOTOR6D",
+            "ATTACHMENT",
+            "ANIMATOR",
+            "ANIMATION_TRACK",
+            "SECONDARY_MOTION_WITH_MOBILE_BUDGET"
+          ],
+          "mobileOptimizationRequired": true
+        }
+      },
+      "actionMotionLibrary": {
+        "target": "ACTION_GAME_READY_VARIETY",
+        "minimumCoverage": {
+          "idleVariants": 4,
+          "locomotionDirections": 8,
+          "turnVariants": 3,
+          "jumpPhases": [
+            "START",
+            "AIR",
+            "LAND"
+          ],
+          "dodgeVariants": 4,
+          "lightComboAttacks": 3,
+          "heavyAttacks": 2,
+          "aerialAttacks": 2,
+          "dashOrGapCloserAttacks": 2,
+          "guardAndParry": [
+            "GUARD",
+            "GUARD_HIT",
+            "PARRY"
+          ],
+          "directionalHitReactions": 4,
+          "hitStrengthLevels": 3,
+          "knockdownRecovery": [
+            "KNOCKBACK",
+            "KNOCKDOWN",
+            "GET_UP"
+          ],
+          "deathVariants": 3,
+          "skillOrCastVariants": 3,
+          "interactionVariants": 3
+        },
+        "weaponPacks": [
+          "UNARMED",
+          "ONE_HAND_SWORD",
+          "TWO_HAND_SWORD",
+          "SPEAR",
+          "AXE",
+          "HAMMER",
+          "BOW",
+          "FIREARM",
+          "STAFF_OR_WAND"
+        ],
+        "qualityRequirements": [
+          "ANTICIPATION_ACCELERATION_IMPACT_HIT_STOP_RECOIL_RECOVERY",
+          "SPEED_BASED_LOCOMOTION_BLEND",
+          "ACCELERATION_DECELERATION",
+          "TURN_SMOOTHING",
+          "FOOT_SLIDE_CONTROL",
+          "UPPER_LOWER_BODY_LAYERING_WHEN_SUPPORTED",
+          "SECONDARY_MOTION",
+          "DIRECTIONAL_HIT_REACTION",
+          "NON_MECHANICAL_IDLE_VARIATION",
+          "IMPACT_EVENT_SYNC"
+        ],
+        "variationRule": "DO_NOT_SATISFY_VARIETY_BY_SPEED_SCALE_OR_COLOR_ONLY"
+      },
+      "reusableLibraries": [
+        "CHARACTER_ARCHETYPE_LIBRARY",
+        "CREATURE_RIG_LIBRARY",
+        "ACTION_MOTION_LIBRARY",
+        "WEAPON_MOTION_LIBRARY",
+        "VFX_LIBRARY",
+        "ENVIRONMENT_KIT_LIBRARY",
+        "UI_PRESENTATION_LIBRARY"
+      ],
+      "diversityPolicy": {
+        "fillCoverageGapsBeforeNearDuplicateVariants": true,
+        "rotateArchetypeWeaponBiomeAndMotionStyle": true,
+        "repeatedGenerationMustChangeMeaningfulSilhouetteMotionOrPresentationAxis": true,
+        "gameSpecificStyleLockAlwaysOverridesGenericLibraryLook": true,
+        "oneGlobalPresetMustNotFlattenGameIdentity": true
+      },
+      "consumerOrder": [
+        "SAME_GAME_VERIFIED_ASSET",
+        "VERIFIED_COMPANY_ASSET_OR_RIG_CAPABILITY",
+        "LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET",
+        "LICENSE_VERIFIED_EXTERNAL_ASSET",
+        "DERIVE_OR_RECONSTRUCT",
+        "CREATE_NEW"
+      ],
+      "learningBinding": {
+        "learningMotor": "company-learning/vibe2-learning-motor.json",
+        "idleGenerator": "tools/vibe2-learning-motor.mjs",
+        "assetPlanner": "tools/vibe2-asset-production-plan.mjs",
+        "artCoordinator": "assets/vibe-art-pipeline.js",
+        "verifiedPromotionUsesExistingLearningMotor": true,
+        "separateLearningPipelineForbidden": true
+      },
+      "preservation": {
+        "gameplayBalanceSaveProgressionEconomyDropsRewardsHitCooldownAndMultiplayerIntentImmutableForLibraryWork": true,
+        "presentationOnlyWorkMayNotMoveAuthorityFromGameplay": true,
+        "noWrapperOverrideOrShadowGraphicsPipeline": true,
+        "existingGameAssetsAndSaveDataMustNotBeBrokenByLibraryConsumption": true
       }
     }
   },
