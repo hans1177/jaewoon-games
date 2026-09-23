@@ -67,3 +67,12 @@ test('seed design runtime keeps owner reset review parallel with active developm
   assert.match(workflow,/OWNER_ACTIVE_DESIGN_RESET_TARGETS=/);
   assert.match(workflow,/OWNER_ACTIVE_DESIGN_RESET_PENDING=/);
 });
+
+
+test('design runtime persists only the target seed and cannot overwrite newer shared seed state',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/SEED_RUNTIME_TARGET_MERGE=YES/);
+  assert.match(workflow,/TARGET_SEED_MERGE_SOURCE_MISSING/);
+  assert.match(workflow,/runtime\.seeds\[index\]=seed/);
+  assert.doesNotMatch(workflow,/checkout "\$generated_commit" -- game-seed-state\.json/);
+});
