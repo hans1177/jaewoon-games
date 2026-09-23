@@ -61,5 +61,7 @@ test('promotion dispatches both native lanes and does not use Unity Web as a pro
   assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NONE/);
   assert.match(promotion,/UNITY_WEB_ROLE=OPTIONAL_NON_BLOCKING_VALIDATION_SURFACE/);
   assert.match(promotion,/legacy Web admission key remains/);
+  assert.match(promotion,/legacy Web development step remains/);
+  assert.doesNotMatch(promotion,/currentStep\\|\\|'[^']*'\\)!==['\"]TARGET_PLATFORM_SOURCE_BIND/);
   assert.match(promotion,/ONE_PLATFORM_REQUEST_STARTS_BOTH=YES/);
 });
