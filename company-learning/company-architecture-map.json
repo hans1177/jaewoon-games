@@ -1,5 +1,5 @@
 {
-  "version": 100,
+  "version": 101,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T10:18:00+09:00",
+  "updatedAt": "2026-09-23T10:21:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2777,7 +2777,11 @@
           "RESERVATION_WAIT_MS",
           "FAN_IN_WAIT_MS"
         ],
-        "workflowMetricBindingRevision": "1c90f8242d7f78f257c39cba5dcfd3184f58e689"
+        "workflowMetricBindingRevision": "1c90f8242d7f78f257c39cba5dcfd3184f58e689",
+        "reservationWaitPopulation": "RUNNABLE_QUEUED_ONLY",
+        "canaryDependencyWaitExcluded": true,
+        "unresolvedDependenciesExcluded": true,
+        "runnableReservationWaitMetricRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051"
       },
       "caretaker": {
         "feeder": "tools/vibe2-post-release-focus.mjs",
@@ -2841,10 +2845,10 @@
       "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
     },
     "latestImplementationSync": {
-      "revision": "1c2275c3cd6e725dcef00ecdfee80dd125f756ca",
+      "revision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
       "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
-      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
-      "testRevision": "17fef35122561283b3c16d29b8cf07a37dc3e82d"
+      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_METRIC_CONFIRMATION",
+      "testRevision": "eb55d7a130b819c6fd7863b947bb779bc91c2378"
     }
   }
 }
