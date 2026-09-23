@@ -146,7 +146,8 @@ local function render()
  local xp=p:GetAttribute("XP")or 0
  local hp=0;local maxHP=p:GetAttribute("MaxHP")or 100
  local h=p.Character and p.Character:FindFirstChildOfClass("Humanoid");if h then hp=math.floor(h.Health)end
- local mastery=p:GetAttribute("MasteryLevel")or 0;local levelLabel=level>=(C.LevelCap or 60)and("Lv."..level.." MAX")or("Lv."..level)\n statLine.Text=string.format("%s  HP %d/%d  공격 %d\n골드 %d · 무기 T%d · 방어구 T%d · 유물 %s%s",levelLabel,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1,tostring(p:GetAttribute("RelicId")or"NONE"),mastery>0 and(" · 숙련 "..mastery)or"")
+ local mastery=p:GetAttribute("MasteryLevel")or 0;local levelLabel=level>=(C.LevelCap or 60)and("Lv."..level.." MAX")or("Lv."..level)
+ statLine.Text=string.format("%s  HP %d/%d  공격 %d\n골드 %d · 무기 T%d · 방어구 T%d · 유물 %s%s",levelLabel,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1,tostring(p:GetAttribute("RelicId")or"NONE"),mastery>0 and(" · 숙련 "..mastery)or"")
  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=C.Classes[classId];local adv=tostring(p:GetAttribute("AdvancementId")or"");local second=tostring(p:GetAttribute("SecondAdvancementId")or"")
  local advName="";if cd and adv~=""then for _,a in pairs(cd.Advancements)do if a.Id==adv then advName=" → "..a.Name;if second~=""and a.SecondId==second then advName=advName.." → "..(a.SecondName or second)end;break end end end
  classBadge.Text=(cd and cd.Name or"직업 미선택")..advName
