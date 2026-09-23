@@ -151,6 +151,8 @@ test('system AI workflow wires sensing, exact reservation identity, missing-resu
   const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
   assert.match(workflow,/company-system-ai-bottleneck-sensor\.mjs/);
   assert.match(workflow,/SYSTEM_AI_ADAPTIVE_RESERVE_MAX=/);
+  assert.match(workflow,/for attempt in 1 2 3 4 5 6 7 8; do/);
+  assert.match(workflow,/COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY=/);
   assert.match(workflow,/EXPECTED_RESERVATION_ID: system-ai:\$\{\{ github\.run_id \}\}:\$\{\{ github\.run_attempt \}\}/);
   assert.match(workflow,/assignment reservation changed:/);
   assert.match(workflow,/--command=handoff-missing/);
