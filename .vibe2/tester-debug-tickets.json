@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-23T10:26:22.603Z",
+  "updatedAt": "2026-09-23T10:27:18.037Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -22,8 +22,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T22:30:14.467Z",
-      "updatedAt": "2026-09-23T10:26:22.601Z",
-      "occurrenceCount": 438
+      "updatedAt": "2026-09-23T10:27:18.034Z",
+      "occurrenceCount": 439
     },
     {
       "id": "bug-7d114ff3812bf7516f00",
@@ -46,8 +46,74 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T23:20:59.209Z",
-      "updatedAt": "2026-09-23T10:26:22.601Z",
-      "occurrenceCount": 436
+      "updatedAt": "2026-09-23T10:27:18.034Z",
+      "occurrenceCount": 437
+    },
+    {
+      "id": "bug-183929560b1819ca79e1",
+      "gameId": "horror-escape-room",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-static-revalidation-failed",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"f736cb13a07039bdab572d00be3f684c5d208b9b\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T10:27:18.034Z",
+      "updatedAt": "2026-09-23T10:27:18.034Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-06912c56eec73d463251",
+      "gameId": "line-defense",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-tree-missing",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:existing-source-tree-missing:SOURCE_TREE_MISSING",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T10:27:18.034Z",
+      "updatedAt": "2026-09-23T10:27:18.034Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-f1f45de215a280a3885b",
+      "gameId": "territory-war",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-static-revalidation-failed",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"957db34d959c4525db5e9e948cb076e7e2f1a034\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T10:27:18.034Z",
+      "updatedAt": "2026-09-23T10:27:18.034Z",
+      "occurrenceCount": 1
     }
   ]
 }
