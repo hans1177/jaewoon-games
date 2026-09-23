@@ -194,17 +194,18 @@ test('multiplayer evidence stays release-blocking but does not block continued d
  assert.equal(r.f7MultiplayerFoundationPassed,false);
 });
 
-test('post-runtime QA preserves independent and regression progress while multiplayer promotion evidence is pending',()=>{
+test('post-runtime QA preserves independent and regression progress while shared two-client sync is pending',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true/);
  assert.match(workflow,/robloxIndependentQaPassed=true/);
  assert.match(workflow,/robloxRegressionPassed=true/);
  assert.match(workflow,/robloxParallelMultiplayerValidationPending=true/);
- assert.match(workflow,/ROBLOX_FINAL_REVIEW_PENDING/);
- assert.match(workflow,/robloxPromotionBlockers=\['roblox-full-multiplayer-evidence-pending-public-release-only'\]/);
- assert.match(workflow,/routingBlockers=\[\]/);
- assert.match(workflow,/f9Ids\.push\(item\.gameId\)/);
- assert.match(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+ assert.match(workflow,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
+ assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
+ assert.match(workflow,/robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
+ assert.match(workflow,/routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
+ assert.doesNotMatch(workflow,/f9Ids\.push\(item\.gameId\)[\s\S]*ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
+ assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
 });
 
 
