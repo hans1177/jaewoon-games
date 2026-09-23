@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import { promoteVerifiedSystemAiLearning } from '../tools/company-system-ai-learning.mjs';
 import { buildSystemAiLearningContext } from '../tools/company-system-ai-learning-context.mjs';
 
+const systemAiLearningSource=fs.readFileSync('tools/company-system-ai-learning.mjs','utf8');
+
 test('ordinary System AI result promotes only after verified Primary-AI acceptance',()=>{
   const result=promoteVerifiedSystemAiLearning({
     systemAiInput:{tasks:[{
@@ -92,7 +94,7 @@ test('24H runner executes System AI learning before verified-learning motor reru
   assert.ok(fanIn>=0&&motor>fanIn);
   assert.match(workflow,/SYSTEM_AI_LEARNING_PATTERNS_ADDED/);
   assert.match(workflow,/--state=\.vibe2\/learning-motor-state\.json/);
-  assert.match(workflow,/SYSTEM_AI_LEARNING_KNOWLEDGE_OUTCOMES_ADDED/);
+  assert.match(systemAiLearningSource,/SYSTEM_AI_LEARNING_KNOWLEDGE_OUTCOMES_ADDED/);
   assert.match(workflow,/vibe2-system-ai-learning\.log/);
 });
 
