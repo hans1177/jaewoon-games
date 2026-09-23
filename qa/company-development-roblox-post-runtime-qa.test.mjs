@@ -2,81 +2,35 @@ import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const workflowPath = '.github/workflows/company-development-roblox-post-runtime-qa.yml';
-const probePath = 'tools/company-development-roblox-mobile-independent-qa.luau';
+const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 
-function read(path) {
-  return fs.readFileSync(path, 'utf8');
-}
-
-test('Roblox post-runtime QA stays exact-artifact and real-Studio only', () => {
-  const workflow = read(workflowPath);
-  assert.match(workflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(workflow, /ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'/);
-  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1/);
-  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION/);
-  assert.match(workflow, /max-parallel: 1/);
-  assert.match(workflow, /EXPECTED_ARTIFACT/);
-  assert.match(workflow, /Get-FileHash -Algorithm SHA256/);
-  assert.match(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
-  assert.match(workflow, /company-development-roblox-runtime-smoke\.luau/);
-  assert.match(workflow, /ROBLOX_MOBILE_CONTROL_UI_PASS=YES/);
-  assert.match(workflow, /ROBLOX_INDEPENDENT_QA_PASS=YES/);
-  assert.match(workflow, /ROBLOX_REGRESSION_PASS=YES/);
-  assert.match(workflow, /ROBLOX_RELEASE_CLAIM=NO/);
-  assert.doesNotMatch(workflow, /windows-latest/);
+test('Roblox runtime foundation QA uses Open Cloud sentinel and never Studio',()=>{
+  assert.match(workflow,/name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA/);
+  assert.match(workflow,/runs-on: ubuntu-latest/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY/);
+  assert.match(workflow,/fetchRobloxRuntimeFoundationEvidence/);
+  assert.match(workflow,/validateRobloxRuntimeFoundationEvidence/);
+  assert.match(workflow,/native-foundation-sentinel-v1|company-development-roblox-runtime-foundation\.mjs/);
+  assert.doesNotMatch(workflow,/roblox-studio-authenticated/);
+  assert.doesNotMatch(workflow,/RobloxStudioBeta\.exe/);
+  assert.doesNotMatch(workflow,/ExecuteMultiplayerTestAsync/);
 });
 
-test('mobile independent QA uses Studio device simulation and real UI interaction', () => {
-  const probe = read(probePath);
-  assert.match(probe, /StudioDeviceSimulatorService/);
-  assert.match(probe, /Enum\.DeviceForm\.Phone/);
-  assert.match(probe, /Enum\.ScreenOrientation\.Portrait/);
-  assert.match(probe, /UserInputService\.TouchEnabled/);
-  assert.match(probe, /CreateVirtualInput\(\)/);
-  assert.match(probe, /SendMouseButton/);
-  assert.match(probe, /ApprovedScopeHud/);
-  assert.match(probe, /LastApprovedScope/);
-  assert.match(probe, /ExecuteMultiplayerTestAsync\(1/);
-  assert.match(probe, /ROBLOX_MOBILE_CONTROL_UI_PASS=YES/);
-  assert.match(probe, /ROBLOX_INDEPENDENT_QA_PASS=YES/);
+test('missing actual runtime observation escalates after repeated automatic attempts',()=>{
+  assert.match(workflow,/robloxRuntimeRetryCount=attempts/);
+  assert.match(workflow,/attempts>=3/);
+  assert.match(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
+  assert.match(workflow,/roblox-actual-runtime-executor-unavailable/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_PENDING/);
 });
 
-test('owner-focused secondary Roblox enters native mobile QA and regression without changing canonical Unity',()=>{
-  const workflow=read(workflowPath);
-  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
-  assert.match(workflow,/ownerFocusRobloxRuntimePassed===true/);
-  assert.match(workflow,/ownerFocusRobloxServerClientBoundaryPassed===true/);
-  assert.match(workflow,/artifactIdentity:artifact,secondaryOwnerFocus/);
-  assert.match(workflow,/secondaryOwnerFocus=\(\$env:SECONDARY_OWNER_FOCUS -eq 'true'\)/);
-  assert.match(workflow,/ownerFocusRobloxPostRuntimeQaEvidence/);
-  assert.match(workflow,/ownerFocusRobloxIndependentQaPassed=independent/);
-  assert.match(workflow,/ownerFocusRobloxRegressionPassed=regression/);
-  assert.match(workflow,/ownerFocusRobloxAssetPipelineState=regression\?'QA_READY'/);
-  const start=workflow.indexOf('if(secondaryOwnerFocus){',workflow.indexOf('Persist exact post-runtime QA state'));
-  const end=workflow.indexOf('continue;',start);
-  assert.ok(start>=0&&end>start,'secondary post-runtime persist branch missing');
-  const block=workflow.slice(start,end);
-  assert.doesNotMatch(block,/selectedPlatform\s*[:=]/);
-  assert.doesNotMatch(block,/targetPlatform\s*[:=]/);
-  assert.doesNotMatch(block,/currentStep\s*[:=]/);
-  assert.doesNotMatch(block,/canonicalState\s*[:=]/);
-});
-
-
-test('post-runtime Studio QA is manual-only, exact-game, single-session and local-place',()=>{
-  const workflow=read(workflowPath);
-  assert.match(workflow,/studio_qa_approved:/);
-  assert.match(workflow,/game_id:/);
-  assert.match(workflow,/STUDIO_QA_APPROVED: \$\{\{ inputs\.studio_qa_approved \}\}/);
-  assert.match(workflow,/GITHUB_EVENT_NAME==='workflow_dispatch'/);
-  assert.match(workflow,/GITHUB_ACTOR\|\|''\)!=='github-actions\[bot\]'/);
-  assert.match(workflow,/ROBLOX_STUDIO_QA_UNATTENDED_AUTORUN=FORBIDDEN/);
-  assert.match(workflow,/ROBLOX_STUDIO_QA_MANUAL_APPROVAL_REQUIRED=YES/);
-  assert.match(workflow,/if\(item\.gameId!==manualGameId\)continue;/);
-  assert.match(workflow,/max-parallel: 1/);
-  assert.match(workflow,/--localPlaceFile/);
-  assert.doesNotMatch(workflow,/--placeId/);
-  assert.doesNotMatch(workflow,/--universeId/);
-  assert.doesNotMatch(workflow,/PublishAsync/);
+test('foundation QA remains fail-closed and exact-candidate bound',()=>{
+  assert.match(workflow,/candidate\.sourceRevision===sourceRevision/);
+  assert.match(workflow,/candidate\.artifactIdentity===artifactIdentity/);
+  assert.match(workflow,/candidate\.versionNumber/);
+  assert.match(workflow,/runtimeAcceptancePassed/);
+  assert.match(workflow,/robloxDatastoreRejoinPassed/);
+  assert.match(workflow,/robloxMultiplayerQaPassed/);
+  assert.match(workflow,/ROBLOX_FINAL_REVIEW_PENDING/);
 });
