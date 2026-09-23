@@ -205,6 +205,52 @@ jobs:
             node -e 'const fs=require("fs");const project=process.argv[1];const catalog=JSON.parse(fs.readFileSync("game-catalog.json","utf8"));const game=(catalog.games||[]).find(x=>x.id===process.env.GAME_ID);if(!game)throw new Error(`runtime catalog game missing: ${process.env.GAME_ID}`);game.selectedPlatform="UNITY";game.targetPlatform="UNITY";game.unityProjectPath=project;game.productionClass="DEVELOPMENT_CONFIRMED";game.homepagePublicationApproved=false;game.publishTestBuildWhenReady=false;fs.writeFileSync("game-catalog.json",JSON.stringify(catalog,null,2)+"\n");' "$PROJECT"
           }
 
+          direct_request=".build-requests/unity/${GAME_ID}.json"
+          if [[ -f "$PROJECT/ProjectSettings/ProjectVersion.txt" ]]; then
+            [[ -f "$direct_request" ]] || { echo "UNITY_EXISTING_SOURCE_BUILD_REQUEST_MISSING=$GAME_ID" >&2; exit 12; }
+            branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
+            git config user.name 'jaewoon-development-unity-runtime'
+            git config user.email 'actions@users.noreply.github.com'
+            git checkout -b "$branch"
+            source_commit="$(git rev-parse HEAD)"
+            mkdir -p "$(dirname "$REQUEST")"
+            node - "$direct_request" "$REQUEST" "$GAME_ID" "$PROJECT" "$source_commit" "$GITHUB_RUN_ID" <<'NODE'
+          const fs=require('fs');
+          const [directFile,file,gameId,projectPath,sourceCommit,runId]=process.argv.slice(2);
+          const direct=JSON.parse(fs.readFileSync(directFile,'utf8').replace(/^\uFEFF/,''));
+          const directProject=String(direct.projectPath||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'');
+          if(Number(direct.version)!==1||String(direct.gameId||'')!==gameId||directProject!==projectPath||!String(direct.buildMethod||'').trim()){
+            throw new Error('UNITY_EXISTING_SOURCE_BUILD_REQUEST_INVALID:'+gameId);
+          }
+          const out={
+            version:1,
+            requestId:`development-unity-${gameId}-${runId}`,
+            gameId,
+            projectPath,
+            buildMethod:String(direct.buildMethod).trim(),
+            sourceCommit,
+            productionClass:'DEVELOPMENT_CONFIRMED',
+            purpose:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+            homepagePublicationApproved:false,
+            publishTestBuildWhenReady:false,
+            releaseAuthority:false,
+          };
+          const applicationId=String(direct.applicationId||'').trim();
+          if(applicationId)out.applicationId=applicationId;
+          fs.writeFileSync(file,JSON.stringify(out,null,2)+'\n');
+          NODE
+            git add "$REQUEST"
+            git diff --cached --check
+            git commit -m "ci: validate existing $GAME_ID Unity source [skip ci]"
+            request_commit="$(git rev-parse HEAD)"
+            git push origin HEAD:"$branch"
+            echo "source_revision=$request_commit" >> "$GITHUB_OUTPUT"
+            echo "branch=$branch" >> "$GITHUB_OUTPUT"
+            echo 'source_reused=true' >> "$GITHUB_OUTPUT"
+            echo 'CHANGE_DETECTION=CURRENT_MAIN_SOURCE_REUSED'
+            exit 0
+          fi
+
           reuse_branch=''
           reuse_source=''
           if [[ -n "$EXISTING_BRANCH" ]]; then
