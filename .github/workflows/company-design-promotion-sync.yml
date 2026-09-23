@@ -98,15 +98,18 @@ jobs:
             if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error(`dual native target pair missing: ${seed.gameId}`);
             if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
             if(item.platformDesignProfiles?.UNITY?.jsonPointer!=='/content/platformProfiles/UNITY')throw new Error(`Unity platform profile missing: ${seed.gameId}`);
-            if(item.webValidationRequired!==false||item.musicValidationRequired!==false)throw new Error(`legacy Web gate still active: ${seed.gameId}`);
-            if(String(item.currentStep||'')!=='TARGET_PLATFORM_SOURCE_BIND')throw new Error(`native source bind not active: ${seed.gameId}`);
+            for(const key of ['webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired','webSourcePath','postWebArtbookRequired','webFirstGatePassed','webSecondGateRequired'])if(Object.hasOwn(item,key))throw new Error(`legacy Web admission key remains: ${seed.gameId}:${key}`);
+            const step=String(item.currentStep||'').trim();
+            if(!step)throw new Error(`native development step missing: ${seed.gameId}`);
+            if(/^(WEB_|WAITING_WEB|FULL_APPROVED_SCOPE_WEB|RETURN_TO_WEB)/.test(step))throw new Error(`legacy Web development step remains: ${seed.gameId}:${step}`);
             const project=(portfolio.projects||[]).find(row=>row.slug===seed.gameId);
             if(project?.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);
           }
           console.log(`ACTIVE_DEVELOPMENT_CONFIRMED_SEED_COUNT=${confirmed}`);
           console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY');
           console.log('STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE');
-          console.log('UNITY_WEB_GATE=DISABLED');
+          console.log('UNITY_WEB_PROMOTION_GATE=NONE');
+          console.log('UNITY_WEB_ROLE=OPTIONAL_NON_BLOCKING_VALIDATION_SURFACE');
           console.log('DUAL_NATIVE_QUEUE_INVARIANT=PASS');
           NODE
 
