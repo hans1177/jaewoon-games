@@ -142,12 +142,7 @@ function evaluateNarrativeContract(task = {}) {
   const supplied = task.narrative && typeof task.narrative === 'object' ? task.narrative : {};
   const required = task.narrativeRequired === true || Object.keys(supplied).length > 0
     || /story|narrative|quest|dialogue|character|스토리|서사|퀘스트|대화|대사|캐릭터|세계관|복선|반전/.test(goal.toLowerCase());
-  if (!required) return freeze({
-    required:false,
-    status:'NOT_APPLICABLE',
-    issues:freezeList([]),
-    authorityExpanded:false
-  });
+  if (!required) return freeze({required:false,status:'NOT_APPLICABLE',issues:freezeList([]),authorityExpanded:false});
   const worldRules = unique(supplied.worldRules || task.worldRules || []);
   const characterGoals = unique(supplied.characterGoals || task.characterGoals || []);
   const plotBeats = unique(supplied.plotBeats || task.plotBeats || []);
@@ -155,31 +150,145 @@ function evaluateNarrativeContract(task = {}) {
   const foreshadowing = unique(supplied.foreshadowing || task.foreshadowing || []);
   const payoffs = unique(supplied.payoffs || task.payoffs || []);
   const dialogueRules = unique(supplied.dialogueRules || task.dialogueRules || []);
+  const dialogueMaterial=task.dialogueRequired===true||/dialogue|conversation|대화|대사|말투|화법/.test(goal.toLowerCase())||Array.isArray(supplied.characterVoices)||Array.isArray(supplied.dialogueScenes);
+  const characterVoices=freezeList((Array.isArray(supplied.characterVoices)?supplied.characterVoices:[]).map((row,index)=>freeze({
+    id:clean(row?.id||row?.name)||'character-'+(index+1),
+    roleBackground:clean(row?.roleBackground||row?.background||row?.role),
+    relationship:clean(row?.relationship||row?.relationshipToListener),
+    register:clean(row?.register||row?.formality||row?.speechRegister),
+    vocabulary:clean(row?.vocabulary||row?.sentenceRhythm),
+    emotionalBaseline:clean(row?.emotionalBaseline),
+    currentEmotion:clean(row?.currentEmotion),
+    knowledgeBoundary:clean(row?.knowledgeBoundary),
+    wantNeed:clean(row?.wantNeed||row?.want||row?.goal),
+    hiddenIntent:clean(row?.hiddenIntent),
+    avoidSaying:clean(row?.avoidSaying||row?.taboos),
+    speechTraits:clean(row?.speechTraits)
+  })));
+  const dialogueScenes=freezeList((Array.isArray(supplied.dialogueScenes)?supplied.dialogueScenes:[]).map((row,index)=>freeze({
+    id:clean(row?.id)||'scene-'+(index+1),
+    objective:clean(row?.objective||row?.sceneObjective),
+    wants:clean(row?.wants||row?.whoWantsWhat),
+    relationshipState:clean(row?.relationshipState),
+    knownUnknown:clean(row?.knownUnknown||row?.knownAndUnknownInformation),
+    subtext:clean(row?.subtext),
+    conflict:clean(row?.conflict||row?.tension),
+    beatChange:clean(row?.beatChange),
+    playerInformation:clean(row?.playerInformation),
+    foreshadowing:clean(row?.foreshadowing),
+    payoffLink:clean(row?.payoffLink),
+    reversalReveal:clean(row?.reversalReveal||row?.reveal),
+    expositionDump:row?.expositionDump===true,
+    knowledgeLeak:row?.knowledgeLeak===true,
+    voiceDrift:row?.voiceDrift===true
+  })));
   const issues = [];
   if (!worldRules.length) issues.push('NARRATIVE_WORLD_RULES_NOT_BOUND');
   if (!characterGoals.length) issues.push('CHARACTER_WANT_NEED_OR_CONFLICT_NOT_BOUND');
   if (!plotBeats.length && !questStates.length) issues.push('PLOT_OR_QUEST_CAUSALITY_NOT_BOUND');
   if (foreshadowing.length && !payoffs.length) issues.push('FORESHADOWING_WITHOUT_TRACKED_PAYOFF');
+  const revealPresent=plotBeats.some(value=>/twist|reveal|reversal|반전|폭로|진실/.test(value.toLowerCase()));
+  if(revealPresent&&!foreshadowing.length)issues.push('MAJOR_REVEAL_WITHOUT_PRIOR_FAIR_CLUE');
+  if(dialogueMaterial){
+    if(supplied.grammarReviewed!==true)issues.push('DIALOGUE_GRAMMAR_AND_NATURALNESS_REVIEW_NOT_BOUND');
+    if(!characterVoices.length)issues.push('CHARACTER_VOICE_BIBLE_REQUIRED');
+    if(!dialogueScenes.length)issues.push('DIALOGUE_SCENE_OBJECTIVES_REQUIRED');
+    for(const voice of characterVoices){
+      if(!voice.roleBackground||!voice.register||!voice.vocabulary||!voice.emotionalBaseline||!voice.knowledgeBoundary||!voice.wantNeed)issues.push('CHARACTER_VOICE_INCOMPLETE:'+voice.id);
+    }
+    const signatures=characterVoices.map(row=>[row.register,row.vocabulary,row.speechTraits].map(clean).join('|').toLowerCase()).filter(Boolean);
+    if(signatures.length>=2&&new Set(signatures).size===1)issues.push('ALL_MAJOR_CHARACTERS_SHARE_SAME_VOICE');
+    for(const scene of dialogueScenes){
+      if(!scene.objective||!scene.relationshipState||!scene.knownUnknown||(!scene.subtext&&!scene.conflict))issues.push('DIALOGUE_SCENE_CONTEXT_INCOMPLETE:'+scene.id);
+      if(scene.expositionDump)issues.push('EXPOSITION_DUMP_DIALOGUE:'+scene.id);
+      if(scene.knowledgeLeak)issues.push('CHARACTER_KNOWLEDGE_LEAK:'+scene.id);
+      if(scene.voiceDrift)issues.push('UNEXPLAINED_CHARACTER_VOICE_DRIFT:'+scene.id);
+    }
+  }
   return freeze({
-    required:true,
-    status:issues.length ? 'ADVISORY' : 'READY',
-    worldRules:freezeList(worldRules),
-    characterGoals:freezeList(characterGoals),
-    plotBeats:freezeList(plotBeats),
-    questStates:freezeList(questStates),
-    foreshadowing:freezeList(foreshadowing),
-    payoffs:freezeList(payoffs),
-    dialogueRules:freezeList(dialogueRules),
-    issues:freezeList(unique(issues)),
+    required:true,status:issues.length?'ADVISORY':'READY',
+    worldRules:freezeList(worldRules),characterGoals:freezeList(characterGoals),plotBeats:freezeList(plotBeats),questStates:freezeList(questStates),
+    foreshadowing:freezeList(foreshadowing),payoffs:freezeList(payoffs),dialogueRules:freezeList(dialogueRules),
+    dialogueMaterial,grammarReviewed:supplied.grammarReviewed===true,characterVoices,dialogueScenes,issues:freezeList(unique(issues)),
     principles:freezeList([
       'WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT',
       'QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE',
       'MEANINGFUL_CHOICES_REQUIRE_OBSERVABLE_CONSEQUENCE',
-      'DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_AND_SCENE_OBJECTIVE',
+      'DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_RELATIONSHIP_AND_SCENE_OBJECTIVE',
+      'CHARACTER_VOICE_MUST_REFLECT_ROLE_RELATIONSHIP_EMOTION_KNOWLEDGE_AND_HIDDEN_INTENT',
+      'TWISTS_REQUIRE_FAIR_PRIOR_CLUES_WHEN_REVEAL_STRUCTURE_DEPENDS_ON_THEM',
+      'FORESHADOWING_MUST_TRACK_PAYOFF_OR_INTENTIONAL_OPEN_QUESTION',
       'DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION'
-    ]),
-    authorityExpanded:false
+    ]),authorityExpanded:false
   });
+}
+
+function normalizeStabilityIssues(task={}){
+  const rows=Array.isArray(task.stabilityIssues)?task.stabilityIssues:Array.isArray(task.knownIssues)?task.knownIssues:[];
+  return freezeList(rows.map((row,index)=>typeof row==='string'
+    ?freeze({id:'issue-'+(index+1),severity:/crash|fatal|softlock|save|desync|regression|진행.?막|세이브|크래시|동기화|회귀/i.test(row)?'HIGH':'LOW',kind:'UNCLASSIFIED',summary:clean(row),playerExposure:null})
+    :freeze({id:clean(row?.id)||'issue-'+(index+1),severity:clean(row?.severity).toUpperCase()||'LOW',kind:clean(row?.kind).toUpperCase()||'UNCLASSIFIED',summary:clean(row?.summary||row?.issue||row?.text),playerExposure:Number.isFinite(Number(row?.playerExposure))?Number(row.playerExposure):null})
+  ).filter(row=>row.summary));
+}
+function evaluateStabilization(task={}){
+  const issues=normalizeStabilityIssues(task);
+  const critical=issues.filter(row=>['CRITICAL','HIGH'].includes(row.severity)||/CRASH|BOOT|SOFTLOCK|PROGRESSION|SAVE|INPUT|DESYNC|AUTHORITY|REGRESSION|CORE_RULE/.test(row.kind));
+  const repeatedMinor=issues.filter(row=>row.severity==='LOW'&&Number(row.playerExposure||0)>=3);
+  const redesignCausal=task.redesignCausallyRequired===true;
+  return freeze({status:critical.length?'REPAIR_FIRST':'STABLE_ENOUGH_FOR_DESIGN_EXPLORATION',issues,critical:freezeList(critical),repeatedMinorEscalations:freezeList(repeatedMinor),speculativeExpansionAllowed:critical.length===0||redesignCausal,redesignCausallyRequired:redesignCausal,priority:'STABILIZE_BEFORE_SPECULATIVE_EXPANSION'});
+}
+function evaluateDesignHealth(task={},designer={}){
+  const rows=Array.isArray(task.designHealthFindings)?task.designHealthFindings:Array.isArray(task.playtestFindings)?task.playtestFindings:[];
+  const findings=freezeList(rows.map((row,index)=>typeof row==='string'
+    ?freeze({id:'finding-'+(index+1),domain:'GENERAL',severity:'MEDIUM',finding:clean(row),playerExposure:1,repeated:1})
+    :freeze({id:clean(row?.id)||'finding-'+(index+1),domain:clean(row?.domain).toUpperCase()||'GENERAL',severity:clean(row?.severity).toUpperCase()||'MEDIUM',finding:clean(row?.finding||row?.summary||row?.text),playerExposure:Math.max(0,Number(row?.playerExposure)||0),repeated:Math.max(1,Number(row?.repeated)||1)})
+  ).filter(row=>row.finding));
+  const severityScore={CRITICAL:40,HIGH:28,MEDIUM:16,LOW:6};
+  let score=designer?.ownerEventId?100:0;
+  score+=Math.max(0,(designer?.ownerRepeatCount||0)-1)*20;
+  for(const row of findings)score+=(severityScore[row.severity]||10)+Math.min(12,row.playerExposure*2)+Math.min(12,(row.repeated-1)*3);
+  return freeze({status:findings.length?'EVIDENCE_AVAILABLE':'AWAITING_VERIFIED_FINDINGS',findings,priorityScore:score,ownerPriority:Boolean(designer?.ownerEventId),inspectedAxes:freezeList(['FIRST_1_5_20_MINUTES','CORE_FUN','GOAL_CLARITY','PLAYER_CHOICE','RISK_REWARD','PROGRESSION','CONTENT_VARIETY','MAP_REGION_VARIETY','ENEMY_ROLE_VARIETY','QUEST_VARIETY','BOSS_SIGNATURE_MOMENTS','PLATFORM_FIT'])});
+}
+function evaluateBlueprint(task={},designer={}){
+  const supplied=task.designBlueprint&&typeof task.designBlueprint==='object'?task.designBlueprint:{};
+  const requiredSections=['conceptPremise','designPillars','emotionalGameplayArc','first1_5_20Minutes','coreAndMetaLoop','signatureSystems','mapRegionsLandmarks','contentRhythm','enemyBossRoles','questEventStructure','progressionEconomyReward','failureRetryRecovery','platformProfiles','implementationImpact','validationPlan'];
+  const missing=requiredSections.filter(key=>{const value=supplied[key];return !(clean(value)||(Array.isArray(value)&&value.length));});
+  const issues=[];
+  if(designer?.designChange&&designer.alternatives.length<2)issues.push('PLAN_A_AND_PLAN_B_REQUIRED');
+  if(designer?.designChange&&missing.length)issues.push(...missing.map(key=>'DETAILED_BLUEPRINT_SECTION_MISSING:'+key));
+  return freeze({required:designer?.designChange===true,status:issues.length?'ADVISORY':'READY',planA:designer?.alternatives?.[0]||null,planB:designer?.alternatives?.[1]||null,alternatives:designer?.alternatives||freezeList([]),requiredSections:freezeList(requiredSections),missingSections:freezeList(missing),issues:freezeList(unique(issues)),comparisonAxes:freezeList(['CORE_FUN_GAIN','OWNER_INTENT_FIT','IDENTITY_COHERENCE','NOVELTY','PLAYER_CLARITY','EXTENSIBILITY','IMPLEMENTATION_COST','PLATFORM_FIT','REGRESSION_RISK','REVERSIBILITY'])});
+}
+function evaluateCreativeChallenge(task={},designer={}){
+  const currentGenre=clean(task.currentGenre||task?.approvedDesign?.genre);
+  const proposedGenre=clean(task.proposedGenre);
+  const genrePivot=Boolean(currentGenre&&proposedGenre&&currentGenre.toLowerCase()!==proposedGenre.toLowerCase());
+  const evidenceAvailable=Boolean(clean(task.genrePivotEvidence)||(Array.isArray(task.designHealthFindings)&&task.designHealthFindings.length)||task.ownerDirective===true);
+  const alternatives=designer?.alternatives||[];
+  const issues=[];
+  if(genrePivot&&alternatives.length<2)issues.push('GENRE_PIVOT_REQUIRES_IDENTITY_PRESERVING_AND_PIVOT_ALTERNATIVES');
+  if(genrePivot&&!evidenceAvailable)issues.push('GENRE_PIVOT_REQUIRES_OWNER_OR_VERIFIED_EVIDENCE');
+  return freeze({identityIsAnchorNotPrison:true,currentGenre:currentGenre||null,proposedGenre:proposedGenre||null,genrePivot,genrePivotAllowed:!genrePivot||(alternatives.length>=2&&evidenceAvailable),levels:freezeList(['SAFE_EXPANSION','BOLD_EXPERIMENT','GENRE_HYBRIDIZATION','GENRE_PIVOT']),selectedLevel:clean(task.creativeChallengeLevel).toUpperCase()||'SAFE_EXPANSION',reversiblePrototypePreferred:genrePivot||clean(task.creativeChallengeLevel).toUpperCase()==='BOLD_EXPERIMENT',issues:freezeList(issues)});
+}
+function evaluateContentDiversity(task={},designer={}){
+  const regions=Array.isArray(task.mapRegions)?task.mapRegions:[];
+  const enemies=Array.isArray(task.enemyRoster)?task.enemyRoster:Array.isArray(task.monsterRoster)?task.monsterRoster:[];
+  const quests=Array.isArray(task.questPatterns)?task.questPatterns:[];
+  const roleValue=(row,...keys)=>keys.map(key=>clean(row?.[key])).find(Boolean)||'';
+  const issues=[];
+  if(regions.length>=2){const gameplay=new Set(regions.map(row=>roleValue(row,'gameplayFunction','role','dangerProfile')).filter(Boolean).map(x=>x.toLowerCase()));if(gameplay.size<2)issues.push('MAP_REGIONS_DIFFER_ONLY_BY_THEME_OR_PALETTE');}else if(designer?.designChange)issues.push('MAP_REGION_VARIETY_NOT_DEMONSTRATED');
+  if(enemies.length>=3){const roles=new Set(enemies.map(row=>roleValue(row,'role','behavior','counterplay')).filter(Boolean).map(x=>x.toLowerCase()));if(roles.size<2)issues.push('ENEMY_ROSTER_ROLE_VARIETY_TOO_LOW');}else if(designer?.designChange)issues.push('ENEMY_CREATURE_ROLE_VARIETY_NOT_DEMONSTRATED');
+  if(quests.length>=3){const types=new Set(quests.map(row=>roleValue(row,'type','stateChange','playerChoice')).filter(Boolean).map(x=>x.toLowerCase()));if(types.size<2)issues.push('QUEST_TEMPLATE_REPETITION_RISK');}
+  return freeze({status:issues.length?'ADVISORY':'READY',mapRegionCount:regions.length,enemyCreatureCount:enemies.length,questPatternCount:quests.length,issues:freezeList(unique(issues)),requiredAxes:freezeList(['ROLE','PLAYER_RESPONSE','UNIQUE_BEHAVIOR','COUNTERPLAY','WORLD_CONTEXT','REWARD_MEANING','MOTION_OR_PRESENTATION_IDENTITY'])});
+}
+function evaluateLiteraryInspiration(task={}){
+  const supplied=Array.isArray(task.inspirations)?task.inspirations:Array.isArray(task?.narrative?.inspirations)?task.narrative.inspirations:[];
+  const rows=freezeList(supplied.map((row,index)=>typeof row==='string'
+    ?freeze({id:'inspiration-'+(index+1),title:clean(row),mode:'ABSTRACT_STRUCTURE_OR_MOTIF',publicDomain:null,expressionCopy:false,livingAuthorStyle:false})
+    :freeze({id:clean(row?.id)||'inspiration-'+(index+1),title:clean(row?.title||row?.work),mode:clean(row?.mode).toUpperCase()||'ABSTRACT_STRUCTURE_OR_MOTIF',publicDomain:row?.publicDomain===true?true:row?.publicDomain===false?false:null,expressionCopy:row?.expressionCopy===true,livingAuthorStyle:row?.livingAuthorStyle===true})
+  ).filter(row=>row.title));
+  const issues=[];
+  for(const row of rows){if(row.expressionCopy)issues.push('PROTECTED_EXPRESSION_COPY_FORBIDDEN:'+row.id);if(row.livingAuthorStyle)issues.push('LIVING_AUTHOR_STYLE_IMITATION_FORBIDDEN:'+row.id);if(row.mode==='DIRECT_MOTIF_HOMAGE'&&row.publicDomain!==true)issues.push('DIRECT_HOMAGE_REQUIRES_CONFIRMED_PUBLIC_DOMAIN_OR_CLEAR_RIGHTS:'+row.id);}
+  return freeze({allowed:true,inspirations:rows,status:issues.length?'ADVISORY':'READY',publicDomainPreferredForDirectMotifHomage:true,abstractStructureThemeMotifArchetypeAllowed:true,gameDistinctIdentityRequired:true,issues:freezeList(unique(issues))});
 }
 
 function normalizeGraph(task = {}) {
