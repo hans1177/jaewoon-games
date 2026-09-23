@@ -107,7 +107,7 @@ test('daechung-rpg foundation evidence is deduped and uses actual roundtrip sema
  assert.match(actualClient,/REMOTE_PONG[\s\S]*REMOTE_ROUNDTRIP/);
  assert.match(actualClient,/foundationRemote:FireServer\("REMOTE_PING"\)/);
  const worldBuild=actualServer.indexOf('\nbuildWorld()\n');
- const playerBinding=actualServer.indexOf('Players.PlayerAdded:Connect(function(p)');
+ const playerBinding=actualServer.indexOf('Players.PlayerAdded:Connect(bindPlayer)');
  assert.ok(worldBuild>0&&playerBinding>worldBuild,'world and safe spawn must exist before player binding');
 });
 
