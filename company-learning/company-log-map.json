@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -154,7 +154,9 @@
       "SYSTEM_AI_LEARNING_KNOWLEDGE_OUTCOMES_ADDED",
       "COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY",
       "COMPANY_SYSTEM_AI_CONTROL_WRITE",
-      "SYSTEM_AI_PENDING_RUNS"
+      "SYSTEM_AI_PENDING_RUNS",
+      "COMPANY_SYSTEM_AI_DUPLICATE_REPAIRS_COALESCED",
+      "COMPANY_SYSTEM_AI_DUPLICATE_REPAIR_GROUPS"
     ],
     "rawModelOutputStored": false,
     "rawModelOutputSha256Required": true,
@@ -214,7 +216,11 @@
       "latestImplementationRevision": "f2c7dc0fca00a0046a50160680c92a895c80d3d8",
       "failureClassifierRevision": "6a7959814875d7471f8d5a288491d59679d840e2",
       "liveWaitMetricBindingRevision": "1c90f8242d7f78f257c39cba5dcfd3184f58e689",
-      "incrementalLiveVerification": "PENDING_NEXT_NATURAL_SYSTEM_AI_WORKER_RUN"
+      "incrementalLiveVerification": "PENDING_NEXT_NATURAL_SYSTEM_AI_WORKER_RUN",
+      "duplicateRepairCoalescingRevision": "9ab01df47287ae1ae836e71b9d7be843db8ff867",
+      "duplicateRepairCheckpointRevision": "24d941a8e5bf75a37ea54b35cbd351b5daae5bad",
+      "duplicateRepairTestRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8",
+      "duplicateRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
     }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
