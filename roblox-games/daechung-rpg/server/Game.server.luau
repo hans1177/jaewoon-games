@@ -732,11 +732,13 @@ local function makeZone(z)
  end
 end
 
-local function enemyModel(parent,z,pos,boss)
- local rootPart=ppart(parent,boss and(z.Boss.Name)or z.Enemy,boss and Vector3.new(6.4,7.2,4.6)or Vector3.new(4.2,4.6,5.2),pos,boss and Color3.fromRGB(66,44,82)or z.Color,boss and Enum.Material.Slate or Enum.Material.SmoothPlastic)
+local function enemyModel(parent,z,pos,boss,enemyDef)
+ local spec=enemyDef or(boss and z.Boss or nil);local displayName=spec and spec.Name or z.Enemy
+ local bossVisual=boss and z.Theme~="MEADOW"
+ local rootPart=ppart(parent,displayName,boss and Vector3.new(6.8,7.5,6.2)or Vector3.new(4.2,4.6,5.2),pos,boss and Color3.fromRGB(66,44,82)or z.Color,boss and Enum.Material.Slate or Enum.Material.SmoothPlastic)
  rootPart.CanCollide=true;rootPart.Transparency=1
  local function add(nm,size,off,col,mat,shape,rot)return attach(rootPart,nm,size,off,col,mat,shape,rot)end
- if boss then
+ if bossVisual then
   local body=Color3.fromRGB(92,67,108);local armor=Color3.fromRGB(58,52,72)
   add("BossBody",Vector3.new(5.8,5.8,4.2),Vector3.new(0,-1.1,0),body,Enum.Material.Slate,Enum.PartType.Ball)
   add("BossChest",Vector3.new(5.4,2.2,4),Vector3.new(0,.1,-.35),armor,Enum.Material.Metal,Enum.PartType.Ball)
@@ -749,19 +751,60 @@ local function enemyModel(parent,z,pos,boss)
   add("BossHornR",Vector3.new(.7,.7,3.2),Vector3.new(1.25,4.85,-.2),z.Color,Enum.Material.Neon,nil,Vector3.new(-20,0,18))
   add("BossCore",Vector3.new(1.35,1.35,.42),Vector3.new(0,.3,-2.15),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
  elseif z.Theme=="MEADOW"then
-  local fur=Color3.fromRGB(100,92,82);local dark=Color3.fromRGB(72,68,62)
-  add("WolfBody",Vector3.new(4.1,2.6,5.5),Vector3.new(0,-1.35,.2),fur,Enum.Material.Fabric,Enum.PartType.Ball)
-  add("WolfChest",Vector3.new(3.6,2.9,3.8),Vector3.new(0,-1.1,-1.15),Color3.fromRGB(111,103,92),Enum.Material.Fabric,Enum.PartType.Ball)
-  add("WolfHead",Vector3.new(2.8,2.35,2.8),Vector3.new(0,-.55,-3.2),fur,Enum.Material.Fabric,Enum.PartType.Ball)
-  add("WolfMuzzle",Vector3.new(1.9,1.15,1.75),Vector3.new(0,-.75,-4.55),Color3.fromRGB(126,111,94),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-   add("WolfEyeL",Vector3.new(.22,.25,.15),Vector3.new(-.62,-.25,-4.45),Color3.fromRGB(245,191,68),Enum.Material.Neon,Enum.PartType.Ball)
-   add("WolfEyeR",Vector3.new(.22,.25,.15),Vector3.new(.62,-.25,-4.45),Color3.fromRGB(245,191,68),Enum.Material.Neon,Enum.PartType.Ball)
-   add("WolfFangL",Vector3.new(.18,.52,.18),Vector3.new(-.38,-1.15,-5.15),Color3.fromRGB(238,232,211),Enum.Material.SmoothPlastic)
-   add("WolfFangR",Vector3.new(.18,.52,.18),Vector3.new(.38,-1.15,-5.15),Color3.fromRGB(238,232,211),Enum.Material.SmoothPlastic)
-  add("WolfEarL",Vector3.new(.62,1.15,.58),Vector3.new(-.85,.85,-3.1),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,-18))
-  add("WolfEarR",Vector3.new(.62,1.15,.58),Vector3.new(.85,.85,-3.1),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,18))
-  for _,x in ipairs({-1.15,1.15})do for _,zz in ipairs({-1.25,1.45})do add("WolfLeg",Vector3.new(2.2,.62,.62),Vector3.new(x,-3.05,zz),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))end end
-  add("WolfTail",Vector3.new(3.2,.55,.55),Vector3.new(0,-1,3),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,28,28))
+  local id=spec and spec.Id or"GRASS_WOLF";local scale=boss and 1.34 or 1
+  local function S(v)return v*scale end
+  if id=="GRASS_WOLF"or id=="DIRE_WOLF"or id=="WHITE_FANG"then
+   local fur=id=="WHITE_FANG"and Color3.fromRGB(226,232,220)or id=="DIRE_WOLF"and Color3.fromRGB(60,58,61)or Color3.fromRGB(100,92,82)
+   local dark=id=="WHITE_FANG"and Color3.fromRGB(160,174,166)or Color3.fromRGB(72,68,62)
+   add("WolfBody",S(Vector3.new(4.1,2.6,5.5)),S(Vector3.new(0,-1.35,.2)),fur,Enum.Material.Fabric,Enum.PartType.Ball)
+   add("WolfChest",S(Vector3.new(3.6,2.9,3.8)),S(Vector3.new(0,-1.1,-1.15)),fur,Enum.Material.Fabric,Enum.PartType.Ball)
+   add("WolfHead",S(Vector3.new(2.8,2.35,2.8)),S(Vector3.new(0,-.55,-3.2)),fur,Enum.Material.Fabric,Enum.PartType.Ball)
+   add("WolfMuzzle",S(Vector3.new(1.9,1.15,1.75)),S(Vector3.new(0,-.75,-4.55)),dark,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("WolfEyeL",S(Vector3.new(.22,.25,.15)),S(Vector3.new(-.62,-.25,-4.45)),id=="WHITE_FANG"and Color3.fromRGB(116,215,255)or Color3.fromRGB(245,191,68),Enum.Material.Neon,Enum.PartType.Ball)
+   add("WolfEyeR",S(Vector3.new(.22,.25,.15)),S(Vector3.new(.62,-.25,-4.45)),id=="WHITE_FANG"and Color3.fromRGB(116,215,255)or Color3.fromRGB(245,191,68),Enum.Material.Neon,Enum.PartType.Ball)
+   add("WolfEarL",S(Vector3.new(.62,1.15,.58)),S(Vector3.new(-.85,.85,-3.1)),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,-18))
+   add("WolfEarR",S(Vector3.new(.62,1.15,.58)),S(Vector3.new(.85,.85,-3.1)),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,18))
+   for _,x in ipairs({-1.15,1.15})do for _,zz in ipairs({-1.25,1.45})do add("WolfLeg",S(Vector3.new(2.2,.62,.62)),S(Vector3.new(x,-3.05,zz)),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))end end
+   add("WolfTail",S(Vector3.new(3.2,.55,.55)),S(Vector3.new(0,-1,3)),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,28,28))
+   if id=="WHITE_FANG"then add("MoonCrest",S(Vector3.new(.3,2.4,2.4)),S(Vector3.new(0,1.5,-.2)),Color3.fromRGB(154,224,255),Enum.Material.Neon,Enum.PartType.Cylinder,Vector3.new(0,0,90))end
+  elseif id=="CHARGE_BOAR"then
+   add("BoarBody",Vector3.new(5.4,3.5,6.2),Vector3.new(0,-1.4,.2),Color3.fromRGB(103,77,61),Enum.Material.Fabric,Enum.PartType.Ball)
+   add("BoarHead",Vector3.new(3.8,3.1,3.5),Vector3.new(0,-.8,-3.5),Color3.fromRGB(122,89,66),Enum.Material.Fabric,Enum.PartType.Ball)
+   add("BoarSnout",Vector3.new(2.4,1.4,1.7),Vector3.new(0,-1,-5),Color3.fromRGB(151,105,82),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("TuskL",Vector3.new(.35,.35,1.9),Vector3.new(-.9,-1.3,-5.5),Color3.fromRGB(234,224,196),Enum.Material.SmoothPlastic,nil,Vector3.new(18,0,-12))
+   add("TuskR",Vector3.new(.35,.35,1.9),Vector3.new(.9,-1.3,-5.5),Color3.fromRGB(234,224,196),Enum.Material.SmoothPlastic,nil,Vector3.new(18,0,12))
+  elseif id=="THORN_WASP"then
+   add("WaspBody",Vector3.new(2.2,2.2,4.2),Vector3.new(0,-.4,0),Color3.fromRGB(222,181,58),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("WaspStripe",Vector3.new(2.35,.6,2.2),Vector3.new(0,-.4,.8),Color3.fromRGB(47,44,41),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("WingL",Vector3.new(.18,2.6,3.2),Vector3.new(-1.4,.6,.3),Color3.fromRGB(194,229,232),Enum.Material.Glass,nil,Vector3.new(0,0,-28))
+   add("WingR",Vector3.new(.18,2.6,3.2),Vector3.new(1.4,.6,.3),Color3.fromRGB(194,229,232),Enum.Material.Glass,nil,Vector3.new(0,0,28))
+   add("Stinger",Vector3.new(.35,.35,2.4),Vector3.new(0,-.4,3),Color3.fromRGB(79,58,52),Enum.Material.Metal,nil,Vector3.new(90,0,0))
+  elseif id=="FOREST_LIZARD"then
+   add("LizardBody",Vector3.new(4.6,2.1,6.4),Vector3.new(0,-1.5,.2),Color3.fromRGB(88,133,78),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("LizardHead",Vector3.new(3,2.1,3.3),Vector3.new(0,-1,-3.7),Color3.fromRGB(105,151,90),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("LizardTail",Vector3.new(.9,.9,6.2),Vector3.new(0,-1.4,5),Color3.fromRGB(72,116,70),Enum.Material.SmoothPlastic,Enum.PartType.Cylinder,Vector3.new(90,0,0))
+  elseif id=="HORN_DEER"then
+   add("DeerBody",Vector3.new(4,2.8,5.6),Vector3.new(0,-1.4,.3),Color3.fromRGB(145,107,68),Enum.Material.Fabric,Enum.PartType.Ball)
+   add("DeerHead",Vector3.new(2.5,2.6,2.6),Vector3.new(0,.15,-3.2),Color3.fromRGB(158,119,75),Enum.Material.Fabric,Enum.PartType.Ball)
+   add("AntlerL",Vector3.new(.32,3.4,.32),Vector3.new(-.75,2,-3.1),Color3.fromRGB(100,78,54),Enum.Material.Wood,nil,Vector3.new(0,0,-25))
+   add("AntlerR",Vector3.new(.32,3.4,.32),Vector3.new(.75,2,-3.1),Color3.fromRGB(100,78,54),Enum.Material.Wood,nil,Vector3.new(0,0,25))
+  elseif id=="VINE_CRAWLER"or id=="ANCIENT_HEART"then
+   local big=id=="ANCIENT_HEART"and 1.4 or 1
+   add("VineCore",Vector3.new(4.8,5.2,4.2)*big,Vector3.new(0,-1,0),Color3.fromRGB(75,104,61),Enum.Material.Wood,Enum.PartType.Ball)
+   add("VineGlow",Vector3.new(1.2,1.2,.45)*big,Vector3.new(0,-.5,-2.2)*big,Color3.fromRGB(119,230,112),Enum.Material.Neon,Enum.PartType.Ball)
+   for i=1,4 do local a=i/4*math.pi*2;add("VineArm",Vector3.new(.55,.55,5.2)*big,Vector3.new(math.cos(a)*2.6,-1.5,math.sin(a)*2.6),Color3.fromRGB(55,92,49),Enum.Material.Wood,Enum.PartType.Cylinder,Vector3.new(0,math.deg(a),25))end
+   if id=="ANCIENT_HEART"then add("AncientCrown",Vector3.new(5.6,1.2,5.6),Vector3.new(0,2.8,0),Color3.fromRGB(89,126,68),Enum.Material.Grass,Enum.PartType.Ball)end
+  elseif id=="MEADOW_BANDIT"or id=="WOLF_TAMER"then
+   local cloth=id=="WOLF_TAMER"and Color3.fromRGB(84,105,63)or Color3.fromRGB(116,72,54)
+   add("BanditTorso",Vector3.new(3.1,3.6,2),Vector3.new(0,-1.25,0),cloth,Enum.Material.Fabric,Enum.PartType.Ball)
+   add("BanditHead",Vector3.new(2.35,2.3,2.2),Vector3.new(0,1.25,-.05),Color3.fromRGB(199,155,120),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("BanditHood",Vector3.new(2.65,1.05,2.6),Vector3.new(0,2,.05),Color3.fromRGB(65,57,48),Enum.Material.Fabric,Enum.PartType.Ball)
+   add(id=="WOLF_TAMER"and"TamerSpear"or"BanditBlade",Vector3.new(4.2,.28,.3),Vector3.new(2.15,-1.25,-.35),Color3.fromRGB(170,172,178),Enum.Material.Metal,Enum.PartType.Cylinder,Vector3.new(0,0,90))
+  elseif id=="MOSS_TURTLE"then
+   add("TurtleShell",Vector3.new(5.8,2.8,6),Vector3.new(0,-1.3,.4),Color3.fromRGB(74,101,62),Enum.Material.Slate,Enum.PartType.Ball)
+   add("Moss",Vector3.new(5.1,1.1,5.2),Vector3.new(0,.1,.4),Color3.fromRGB(74,126,67),Enum.Material.Grass,Enum.PartType.Ball)
+   add("TurtleHead",Vector3.new(2.4,2,2.8),Vector3.new(0,-1.1,-3.6),Color3.fromRGB(99,127,79),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  end
  elseif z.Theme=="SNOW"then
   local fur=Color3.fromRGB(218,230,235);local shade=Color3.fromRGB(116,140,150);local dark=Color3.fromRGB(70,91,101)
   add("SnowBeastBody",Vector3.new(5.4,3.6,6.6),Vector3.new(0,-1.4,.2),fur,Enum.Material.Fabric,Enum.PartType.Ball)
@@ -810,7 +853,7 @@ local function enemyModel(parent,z,pos,boss)
    add("KnightCape",Vector3.new(3.1,4.1,.2),Vector3.new(0,-1,.95),Color3.fromRGB(36,31,48),Enum.Material.Fabric)
    add("KnightShield",Vector3.new(.5,3.3,2.6),Vector3.new(-2.7,-1.2,0),Color3.fromRGB(67,60,83),Enum.Material.Metal)
  end
- label(rootPart,boss and("BOSS · "..z.Boss.Name)or z.Enemy,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
+ label(rootPart,boss and("BOSS · "..displayName)or displayName,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
  return rootPart
 end
 local function spawnEnemy(z,boss,index)
