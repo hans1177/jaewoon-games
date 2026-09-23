@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 27,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -443,5 +443,15 @@
       "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
       "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
     }
+  },
+  "unityWebValidationSecurity": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "validationSurfaceOnly": true,
+    "nativeReleaseAuthority": false,
+    "developmentAdmissionAuthority": false,
+    "canonicalSourceMustRemainUnityProject": true,
+    "directLegacyWebGameAuthoringForbidden": true,
+    "mayNotChangeGameplayBalanceToPassBrowserValidation": true
   }
 }
