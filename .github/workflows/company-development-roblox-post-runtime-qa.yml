@@ -216,7 +216,9 @@ jobs:
               checkpointPass:result.checkpointPass,
               checkpointOrderPassed:result.checkpointOrderPassed,
               runtimeFoundationPassed:result.runtimeFoundationPassed,
+              developmentContinuationPassed:result.developmentContinuationPassed,
               runtimeAcceptancePassed:result.runtimeAcceptancePassed,
+              multiplayerPromotionPending:result.multiplayerPromotionPending,
               blockers:result.blockers,
             }));
             if(result.exactGame===true&&result.exactPlace===true&&result.exactVersion!==true){
@@ -332,9 +334,58 @@ jobs:
             }else{
               const cp=result.checkpointPass||{};
               const groundFailure=result.exactVersion===true&&cp.CHARACTER_READY===true&&cp.GROUND_CONTACT!==true;
-              item.robloxIndependentQaPassed=false;
-              item.robloxRegressionPassed=false;
-              if(groundFailure){
+              const multiplayerOnlyPending=result.developmentContinuationPassed===true&&result.multiplayerPromotionPending===true;
+              if(multiplayerOnlyPending){
+                item.robloxIndependentQaPassed=true;
+                item.robloxIndependentQaPassedAt=stamp;
+                item.robloxRegressionPassed=true;
+                item.robloxRegressionPassedAt=stamp;
+                item.robloxParallelMultiplayerValidationPending=true;
+                item.robloxPostRuntimeQaEvidence={
+                  version:3,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  artifactRunId:Number(candidate.artifactRunId||0),
+                  candidateVersionNumber:Number(candidate.versionNumber),
+                  runtimeFoundationEvidence:evidence,
+                  exactRevision:true,
+                  independentQaPassed:true,
+                  regressionPassed:true,
+                  multiplayerQaPassed:false,
+                  multiplayerValidationMode:'PARALLEL_NON_BLOCKING_DEVELOPMENT_RELEASE_BLOCKING_ONLY',
+                  actualRuntimeEvidence:true,
+                  deterministicQa:[
+                    'qa/company-development-roblox-runtime-foundation.test.mjs',
+                    'qa/company-development-roblox-headless-fast-mvp.test.mjs',
+                    'qa/company-tester-debug-intake.test.mjs',
+                  ],
+                  authority:'existing-independent-qa-native-foundation-v3',
+                  verifiedAt:stamp,
+                };
+                item.currentStep='TARGET_PLATFORM_REGRESSION';
+                item.canonicalState='ROBLOX_DEVELOPMENT_CONTINUES_MULTIPLAYER_PENDING';
+                item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                item.robloxFailureSignature='ROBLOX_MULTIPLAYER_PROMOTION_EVIDENCE_PENDING';
+                item.routingBlockers=[];
+                item.robloxPromotionBlockers=['roblox-multiplayer-evidence-pending'];
+                if(item.executionEvidence){
+                  item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+                  item.executionEvidence.runtimePassed=false;
+                  item.executionEvidence.independentQaPassed=true;
+                  item.executionEvidence.regressionPassed=true;
+                  item.executionEvidence.failureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                  item.executionEvidence.failureSignature='ROBLOX_MULTIPLAYER_PROMOTION_EVIDENCE_PENDING';
+                }
+                console.log('ROBLOX_MULTIPLAYER_PARALLEL_NON_BLOCKING='+item.gameId);
+                pending++;
+              }else{
+                item.robloxIndependentQaPassed=false;
+                item.robloxRegressionPassed=false;
+                item.robloxParallelMultiplayerValidationPending=false;
+                item.robloxPromotionBlockers=[];
+                if(groundFailure){
                 item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
                 item.robloxFailureSignature='GROUND_CONTACT_FAILURE';
                 item.routingBlockers=['roblox-ground-contact-failure'];
@@ -349,6 +400,7 @@ jobs:
                 item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
                 item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
                 pending++;
+                }
               }
             }
             item.updatedAt=stamp;changed=true;
