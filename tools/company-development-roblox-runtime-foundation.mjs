@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 const clean=v=>String(v??'').trim();
 const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','CORE_LOOP_READY'];
 const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'];
+export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-session:write';
 
 export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',placeId='',versionNumber=0}={}){
   const checkpoints=sentinel&&typeof sentinel.checkpoints==='object'&&sentinel.checkpoints?sentinel.checkpoints:{};
@@ -100,7 +101,7 @@ export async function probeRobloxOpenCloudEngine({
     body:JSON.stringify({script,timeout:'20s'}),
   });
   const createdDecoded=await decode(created,'CREATE');
-  if(created.status===401||created.status===403)return Object.freeze({available:false,permissionDenied:true,status:created.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION'});
+  if(created.status===401||created.status===403)return Object.freeze({available:false,permissionDenied:true,status:created.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'CREATE',requiredScope:ROBLOX_LUAU_EXECUTION_WRITE_SCOPE,errorCode:clean(createdDecoded.body?.code)||null,errorMessage:clean(createdDecoded.body?.message)||null});
   if(!created.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_${created.status}:${createdDecoded.text.slice(0,300)}`);
   const rawPath=clean(createdDecoded.body?.path).replace(/^\/+/, '').replace(/^cloud\/v2\//,'');
   if(!rawPath)throw new Error('ROBLOX_OPEN_CLOUD_ENGINE_TASK_PATH_MISSING');
@@ -112,7 +113,7 @@ export async function probeRobloxOpenCloudEngine({
     if(delay>0)await new Promise(resolve=>setTimeout(resolve,delay));
     const response=await fetchImpl(taskUrl,{headers:{'x-api-key':key}});
     const decoded=await decode(response,'TASK');
-    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION'});
+    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'TASK_POLL',requiredScope:ROBLOX_LUAU_EXECUTION_WRITE_SCOPE,errorCode:clean(decoded.body?.code)||null,errorMessage:clean(decoded.body?.message)||null});
     if(!response.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_TASK_HTTP_${response.status}:${decoded.text.slice(0,300)}`);
     task=decoded.body;
   }
@@ -120,6 +121,7 @@ export async function probeRobloxOpenCloudEngine({
   if(state!=='COMPLETE')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
   const logsResponse=await fetchImpl(`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}});
   const logsDecoded=await decode(logsResponse,'LOGS');
+  if(logsResponse.status===401||logsResponse.status===403)return Object.freeze({available:false,permissionDenied:true,status:logsResponse.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'LOGS',requiredScope:ROBLOX_LUAU_EXECUTION_WRITE_SCOPE,errorCode:clean(logsDecoded.body?.code)||null,errorMessage:clean(logsDecoded.body?.message)||null,taskPath:rawPath});
   if(!logsResponse.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_LOGS_HTTP_${logsResponse.status}:${logsDecoded.text.slice(0,300)}`);
   const rows=Array.isArray(logsDecoded.body?.luauExecutionSessionTaskLogs)?logsDecoded.body.luauExecutionSessionTaskLogs:[];
   const messages=[];
