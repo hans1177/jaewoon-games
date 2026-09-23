@@ -99,7 +99,7 @@ test('대충 RPG에는 지정된 10명 AI와 파티사냥 기여도 시스템이
 
 test('대충 RPG UI는 포탈 이동을 월드에 맡기고 전투/귀환/파티 상태를 직관적으로 분리한다',()=>{
  for(const marker of ['RPGTopHUD','QuestObjective','PartyStatus','CombatDock','BlockParry','ReturnVillage','MultiplayerCode','공격','스킬','막기','회피','마을 귀환','AI 두번 터치'])assert.match(rpgClient,new RegExp(marker));
- assert.match(rpgClient,/combat\\.Size=UDim2\\.fromOffset\\(62,232\\)/);
+ assert.match(rpgClient,/combat\.Size=UDim2\.fromOffset\(62,232\)/);
  assert.match(rpgClient,/returnButton\.Visible=zone>0/);
  assert.match(rpgClient,/전투 중 귀환 불가/);
  assert.match(rpgClient,/멀티 코드 /);
