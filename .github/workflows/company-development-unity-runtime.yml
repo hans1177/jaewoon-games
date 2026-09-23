@@ -31,10 +31,6 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-unity-runtime
-  cancel-in-progress: false
-
 jobs:
   prepare:
     name: prepare selected-platform Unity queue
