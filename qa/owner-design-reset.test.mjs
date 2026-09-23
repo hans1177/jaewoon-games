@@ -5,27 +5,25 @@ import os from 'node:os';
 import path from 'node:path';
 import {ensureOwnerDesignResetSeed,materializeOwnerDesignResetSeeds} from '../tools/owner-design-reset.mjs';
 
-const targets=new Set(['bug-defense','insect-survival','survival']);
-
-test('owner redesign reset removes old public Web/artbook claims for exactly the three requested games',()=>{
+test('active owner reset seeds stay DESIGN_ONLY inputs even when catalog development has already started',()=>{
+  const queue=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-  for(const id of targets){
-    const game=catalog.games.find(row=>row.id===id);
-    assert.ok(game,`catalog game missing: ${id}`);
-    assert.equal(game.productionClass,'DESIGN_ONLY');
-    assert.equal(game.productionClassSource,'OWNER_REDESIGN_RESET_2026-09-13');
-    assert.equal(game.hasWebArchive,false);
-    assert.equal(game.homepageWebPlayable,false);
-    assert.equal('webPath' in game,false);
-    assert.equal(game.designBaselineMigration,'OWNER_RESET_TO_DESIGN_ONLY');
+  const active=(queue.requests||[]).filter(row=>String(row?.status||'').toUpperCase()==='ACTIVE');
+  assert.ok(active.length>0);
+  const promoted=[];
+  for(const request of active){
+    assert.ok(request.gameId);
+    assert.ok(request.seed);
+    assert.equal(request.seed.status,'ACTIVE');
+    assert.equal(request.seed.productionClass,'DESIGN_ONLY');
+    assert.equal(request.seed.UNITY_WEB_VALIDATION_SURFACE?.role,'VALIDATION_SURFACE_ONLY');
+    assert.equal(request.seed.UNITY_WEB_VALIDATION_SURFACE?.canonicalSourceRoot,`unity-games/${request.gameId}`);
+    assert.equal(request.seed.UNITY_WEB_VALIDATION_SURFACE?.outputRoot,`web-games/${request.gameId}`);
+    assert.equal(request.seed.UNITY_WEB_VALIDATION_SURFACE?.legacyDirectWebAuthoring,false);
+    const game=(catalog.games||[]).find(row=>row.id===request.gameId);
+    if(game?.productionClass==='DEVELOPMENT_CONFIRMED')promoted.push(request.gameId);
   }
-  const artbooks=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
-  assert.equal(artbooks.artbooks.some(row=>targets.has(row.gameId)),false);
-  assert.equal(artbooks.dailySubmissions.some(row=>targets.has(row.gameId)),false);
-  for(const id of targets){
-    assert.equal(fs.existsSync(path.join('web-games',id)),false,`old Web tree still exists: ${id}`);
-    assert.equal(fs.existsSync(path.join('artbook-submissions',id)),false,`old artbook tree still exists: ${id}`);
-  }
+  assert.ok(promoted.length>0,'parallel strict-design review must cover already promoted development games too');
 });
 
 test('owner reset intake materializes canonical DESIGN_ONLY seeds without duplicate parallel state',()=>{
@@ -55,4 +53,17 @@ test('all-games reset workflow binds expected reset set to current DESIGN_ONLY c
   assert.match(workflow,/OWNER_DESIGN_RESET_GAME_IDS_MISMATCH/);
   assert.match(workflow,/OWNER_ALL_GAMES_DESIGN_RESET_CATALOG_BINDING=PASS/);
   assert.match(workflow,/gh workflow run company-seed-design-runtime\.yml/);
+});
+
+
+test('seed design runtime keeps owner reset review parallel with active development',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN/);
+  assert.doesNotMatch(workflow,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
+  assert.match(workflow,/materializeOwnerDesignResetSeeds/);
+  assert.match(workflow,/ensureOwnerDesignResetSeed/);
+  assert.match(workflow,/activeResetIds/);
+  assert.match(workflow,/activeResetPending\.length\?activeResetSeeds:active/);
+  assert.match(workflow,/OWNER_ACTIVE_DESIGN_RESET_TARGETS=/);
+  assert.match(workflow,/OWNER_ACTIVE_DESIGN_RESET_PENDING=/);
 });
