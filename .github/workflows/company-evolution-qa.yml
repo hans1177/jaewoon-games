@@ -69,7 +69,7 @@ jobs:
           for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE']){
             if(!lifecycle.includes(stage))throw new Error(`canonical lifecycle stage missing: ${stage}`);
           }
-          const roles=['planning','graphics','development','qa','balance'];
+          const roles=['planning','graphics','development','qa','audio'];
           const pool=[...new Set(directive.ai?.modelPool||[])];
           const reviewCount=Number(directive.ai?.departmentReviewModelCount||1);
           const leads=roles.map(role=>directive.ai?.departmentLeadModels?.[role]).filter(Boolean);
@@ -119,7 +119,7 @@ jobs:
           grep -Fq 'design/**/android-runtime-validation.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/independent-release-qa.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq "'unity-games/**'" .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT' tools/artbook-production-pipeline.mjs
+          grep -Fq 'DEVELOPMENT_EXECUTION_MODE=DIRECT_NATIVE_DUAL_PLATFORM' tools/artbook-production-pipeline.mjs
           grep -Fq 'RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION' tools/artbook-production-pipeline.mjs
           grep -Fq 'RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED' tools/artbook-production-pipeline.mjs
           grep -Fq 'currentUnitySourceTreeSha' tools/company-release-production-cycle.mjs
