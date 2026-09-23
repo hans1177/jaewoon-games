@@ -1119,6 +1119,9 @@ jobs:
           let manifest={};
           const candidateManifest=clean(process.env.CANDIDATE_MANIFEST);
           if(candidateManifest&&fs.existsSync(candidateManifest))manifest=JSON.parse(fs.readFileSync(candidateManifest,'utf8'));
+          let incrementalQaReport={};
+          if(fs.existsSync('/tmp/vibe2-incremental-qa.json'))incrementalQaReport=JSON.parse(fs.readFileSync('/tmp/vibe2-incremental-qa.json','utf8'));
+          const gameRepairQa=incrementalQaReport?.gameRepairQa&&typeof incrementalQaReport.gameRepairQa==='object'?incrementalQaReport.gameRepairQa:null;
           let workOrder={};
           if(fs.existsSync('/tmp/vibe2-work-order.json'))workOrder=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const explorationFile=clean(process.env.EXPLORATION_FILE);
@@ -1190,6 +1193,19 @@ jobs:
             clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)&&`causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)&&`causal-replay-prepatch-reproduced:${clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_STATUS)==='EXECUTED_PASS'&&clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES'&&clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED).toUpperCase()==='YES'&&clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM)&&clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM).toUpperCase()!=='NONE'&&`independent-qa-verified-responsible-system:${clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM).toUpperCase()}`,
+            gameRepairQa?.required===true?'game-repair-required:YES':'',
+            gameRepairQa?.required===true&&clean(gameRepairQa.failureStage)&&`game-repair-failure-stage:${clean(gameRepairQa.failureStage)}`,
+            gameRepairQa?.required===true&&clean(gameRepairQa.failureSignature)&&`game-repair-failure-signature:${clean(gameRepairQa.failureSignature)}`,
+            gameRepairQa?.required===true?`game-repair-prepatch-reproduced:${gameRepairQa.prePatchReproduced===true?'YES':'NO'}`:'',
+            gameRepairQa?.required===true&&clean(gameRepairQa.responsibleSystem)&&`game-repair-responsible-system:${clean(gameRepairQa.responsibleSystem)}`,
+            gameRepairQa?.required===true?`game-repair-original-scenario:${clean(gameRepairQa.originalScenarioReplay)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-invariants:${clean(gameRepairQa.invariants)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-save-migration:${clean(gameRepairQa.saveMigration)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-multiplayer-lifecycle:${clean(gameRepairQa.multiplayerLifecycle)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-ready-for-fan-in:${gameRepairQa.readyForFanIn===true?'YES':'NO'}`:'',
+            gameRepairQa?.required===true?'game-repair-user-assistance-required:NO':'',
+            gameRepairQa?.required===true&&clean(gameRepairQa.repairMode)&&`game-repair-mode:${clean(gameRepairQa.repairMode)}`,
+            gameRepairQa?.required===true?`game-repair-repeat-count:${Number(gameRepairQa.repeatCount||0)}`:'',
             clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)&&`architecture-drift-status:${clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)&&`architecture-drift-risk:${clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)&&`architecture-drift-score:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)}`,
@@ -1357,7 +1373,7 @@ jobs:
             authorityExpanded:false
           }:null;
           const workLock={required:workLockRequired,acquired:process.env.WORK_LOCK_ACQUIRED==='true',id:clean(process.env.WORK_LOCK_ID)||null,reason:clean(process.env.WORK_LOCK_REASON)||null,worker:'vibe2',baseSha:clean(workOrder?.compiledWorkContract?.workLock?.baseSha)||clean(process.env.BASE_SHA)||null,files:Array.isArray(workOrder?.compiledWorkContract?.workLock?.files)?workOrder.compiledWorkContract.workLock.files:[],releaseRule:clean(workOrder?.compiledWorkContract?.workLock?.releaseRule)||null};
-          const result={version:14,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
+          const result={version:15,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,gameRepairQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
