@@ -96,6 +96,17 @@ test('system AI control conflict retry reloads latest control branch and recompu
 });
 
 
+test('workflow wait telemetry separates runnable reservation, fan-in job wait, and supervisor review',()=>{
+  assert.match(workflow,/SYSTEM_AI_RESERVATION_WAIT_MS=\$reservation_wait_ms/);
+  assert.match(workflow,/SYSTEM_AI_FAN_IN_WAIT_MS=\$fan_in_wait_ms/);
+  assert.match(workflow,/SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS=\$supervisor_review_wait_ms/);
+  assert.match(workflow,/actions\/runs\/\$\{run\.id\}\/jobs\?per_page=100/);
+  assert.match(workflow,/String\(j\.name\|\|''\)==='fan_in'/);
+  assert.match(workflow,/awaiting-supervisor/);
+  assert.match(workflow,/--supervisor-review-wait-ms="\$supervisor_review_wait_ms"/);
+  assert.match(workflow,/Math\.max\(\.\.\.stamps\)/);
+});
+
 test('verification-only System AI tasks run deterministic contracts before any model call',()=>{
   const preverify=workflow.indexOf('- name: Verify existing verifier contract before model');
   const implement=workflow.indexOf('- name: Execute external AI assignment');
