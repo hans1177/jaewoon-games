@@ -1,6 +1,6 @@
 // 파일명: tools/company-status-sync.mjs
 // 역할: 총괄 감독 상태와 의미 기반 제작 분류/선택 플랫폼 상태를 최신 상태로 동기화한다.
-// 원칙: productionClass가 유일한 정식 제작 분류이며 DEVELOPMENT_CONFIRMED는 승인된 설계 전체 분량의 Web 동반 게임 검증 후 선택 플랫폼으로 진행한다.
+// 원칙: productionClass가 유일한 정식 제작 분류이며 DEVELOPMENT_CONFIRMED는 최소 공통 설계 후 Roblox+Unity 네이티브를 동시 진행한다.
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
@@ -10,7 +10,6 @@ import {
   productionClassCounts,
   productionClassOf,
 } from './production-classification.mjs';
-import { WEB_VALIDATION_SCHEMA_VERSION } from './company-web-validation-evidence-contract.mjs';
 import { ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog } from './game-catalog-normalization.mjs';
 
 const companyPath='company-status.json';
@@ -23,19 +22,20 @@ const runtimeCatalogPath=process.env.COMPANY_RUNTIME_GAME_CATALOG_PATH||'';
 const seedStatePath=process.env.COMPANY_SEED_STATE_PATH||'game-seed-state.json';
 const centralPolicyPath='company-learning/platform-release-roadmap.json';
 const ownerWebGameIdsPath=process.env.COMPANY_OWNER_WEB_GAME_IDS_PATH||'';
-const PLATFORM_PRIORITY=['ROBLOX','UNITY','FORTNITE_UEFN'];
+const PLATFORM_PRIORITY=['ROBLOX','UNITY'];
 const CENTRAL_POLICY_REQUIRED_STAGES=[
-  'WEB_BASE_IMPLEMENTATION',
-  'WEB_RUNTIME_VALIDATION',
-  'TARGET_PLATFORM_SOURCE_BIND',
+  'MINIMUM_DESIGN_CONTRACT_READY',
+  'ROBLOX_UNITY_NATIVE_SOURCE_BIND',
   'TARGET_PLATFORM_RUNTIME',
   'TARGET_PLATFORM_INDEPENDENT_QA',
   'TARGET_PLATFORM_REGRESSION',
-  'RELEASE_PROMOTION',
+  'INTERNAL_PLATFORM_RELEASE',
+  'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+  'PUBLIC_RELEASE_READY',
 ];
 
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
-const roles=['planning','development','qa','graphics','balance','director'];
+const roles=['planning','development','qa','graphics','audio','director'];
 const clean=value=>String(value??'').trim();
 const focusScore=project=>{
   const explicit=Number(project?.developmentFocus?.total);
@@ -70,30 +70,9 @@ export function normalizeSelectedPlatform(value){
   return '';
 }
 const optionalJson=(filesystem,file,fallback)=>{try{return JSON.parse(filesystem.readFileSync(file,'utf8'));}catch{return fallback;}};
-const bindingMatches=(current,initial)=>{const c=clean(current),i=clean(initial);return !c||(Boolean(i)&&c===i);};
-const requiresRevalidation=row=>[row?.canonicalState,row?.currentStep,row?.homepageTestVerdict,row?.formalImplementationVerdict,row?.resumeStage]
-  .some(value=>{const v=clean(value).toUpperCase();return v.includes('REWORK')||v.includes('REVALIDATION');});
 const playModeLabel=value=>{const v=clean(value).toUpperCase();if(v==='SINGLE')return'싱글';if(v==='COOP')return'협동';if(v==='COMPETITIVE')return'경쟁';if(v==='HYBRID')return'혼합';return'플레이 방식 미평가';};
 const latestById=(rows,idField)=>{const map=new Map();for(const row of Array.isArray(rows)?rows:[]){const id=clean(row?.[idField]);if(!id)continue;const old=map.get(id);const t=Date.parse(row?.ROBLOX_GENRE_REVIEWED_AT||row?.updatedAt||row?.webValidationLastAttemptAt||row?.createdAt||row?.enqueuedAt||'')||0;const oldT=Date.parse(old?.ROBLOX_GENRE_REVIEWED_AT||old?.updatedAt||old?.webValidationLastAttemptAt||old?.createdAt||old?.enqueuedAt||'')||0;if(!old||t>=oldT)map.set(id,row);}return map;};
-const developmentHomepageScore=row=>{
-  if(!row)return{score:null,label:'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
-  if(requiresRevalidation(row))return{score:null,label:'재검증 필요',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
-  const schema=Number(row.webInitialCycleValidationSchemaVersion);
-  const raw=row.webInitialCycleStrictScore;
-  const score=raw===null||raw===undefined||raw===''?NaN:Number(raw);
-  const valid=row.webInitialCyclePassed===true
-    &&Number.isFinite(schema)&&schema>=WEB_VALIDATION_SCHEMA_VERSION
-    &&row.webInitialCycleMusicValidationPassed===true
-    &&bindingMatches(row.webSourceIndexSha256,row.webInitialCycleSourceIndexSha256)
-    &&bindingMatches(row.webDesignBaselineSha256,row.webInitialCycleDesignBaselineSha256)
-    &&Number.isFinite(score)&&score>=0&&score<=100;
-  if(valid)return{score,label:`${score}점`,current:true,source:'SERVER_DEVELOPMENT_QUEUE'};
-  const stale=row.webInitialCyclePassed===true
-    &&Number.isFinite(schema)&&schema>=WEB_VALIDATION_SCHEMA_VERSION
-    &&row.webInitialCycleMusicValidationPassed===true
-    &&(!bindingMatches(row.webSourceIndexSha256,row.webInitialCycleSourceIndexSha256)||!bindingMatches(row.webDesignBaselineSha256,row.webInitialCycleDesignBaselineSha256));
-  return{score:null,label:stale?'재검증 필요':'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
-};
+const developmentHomepageScore=()=>({score:null,label:'점수 미평가',current:false,source:'DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT'});
 const homepageLatestWork=(game,queue)=>clean(queue?.homepageRecentWork||game?.homepageRecentWork||queue?.currentStep||queue?.resumeStage||queue?.canonicalState)||'개발 작업 정보 없음';
 
 export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={}}={}){
@@ -121,7 +100,7 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
       scoreLabel:score.label,
       scoreCurrent:score.current,
       scoreSource:score.source,
-      validationSchemaVersion:Number(queue?.webInitialCycleValidationSchemaVersion)||null,
+      validationSchemaVersion:null,
       genre:baseGenres,
       genreLabel,
       subgenre:platform==='ROBLOX'?robloxSubgenre:'',
@@ -157,37 +136,54 @@ export function platformTargetEngine(platform){
 }
 
 export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
+  let machine=null;
   if(filesystem?.existsSync?.(centralPolicyPath)){
-    const machine=JSON.parse(filesystem.readFileSync(centralPolicyPath,'utf8'));
+    machine=JSON.parse(filesystem.readFileSync(centralPolicyPath,'utf8'));
     if(machine.authority!=='MACHINE_EXECUTION_CONTRACT'||machine.machineSourceOfTruth!==centralPolicyPath||machine.humanDocumentRequired!==false)throw new Error('canonical machine production policy invalid');
     const stages=machine?.developmentLifecycleMachine?.stages||[];
     for(const stage of CENTRAL_POLICY_REQUIRED_STAGES)if(!stages.includes(stage))throw new Error(`canonical machine lifecycle stage missing: ${stage}`);
+    const direct=machine?.directNativeDualPlatformDevelopment||{};
+    if(direct.status!=='OWNER_DIRECT_LOCKED'||direct.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'||direct.canonicalDevelopmentAdmissionAuthority!==true||direct.strictDesignScoreRequiredForDevelopmentAdmission!==false||direct.legacyWebFirstFallbackForbidden!==true)throw new Error('canonical direct-native development policy invalid');
   }
+  const direct=machine?.directNativeDualPlatformDevelopment||{};
+  const supported=Array.isArray(direct.supportedDevelopmentPlatforms)&&direct.supportedDevelopmentPlatforms.length
+    ?direct.supportedDevelopmentPlatforms.filter(platform=>PLATFORM_PRIORITY.includes(platform))
+    :[...PLATFORM_PRIORITY];
   company.policy ||= {};
   const policy=company.policy;
   policy.sourceOfTruth=centralPolicyPath;
   policy.policyAuthority='MACHINE_EXECUTION_CONTRACT';
   policy.primaryPlatform='ROBLOX';
-  policy.allowedTargetPlatforms=[...PLATFORM_PRIORITY];
-  policy.platformPriority=[...PLATFORM_PRIORITY];
+  policy.allowedTargetPlatforms=[...supported];
+  policy.platformPriority=[...supported];
   policy.priorityMeaning='DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY';
   policy.primaryPlatformIsDefaultNotLock=true;
-  policy.allThreePlatformsMayBeDevelopedConcurrently=true;
+  policy.concurrentTargetPlatforms=['ROBLOX','UNITY'];
+  policy.requestEitherStartsBoth=true;
+  policy.onePlatformFailureDoesNotCancelOther=true;
   policy.platformRoadmapPhaseEntryGatesForbidden=true;
-  policy.webGames='mandatory-full-approved-scope-companion';
+  policy.developmentAdmission='MINIMUM_DUAL_PLATFORM_DESIGN_READY';
+  policy.strictDesignScoreRequiredForAdmission=false;
+  policy.strictDesignReviewRunsInParallel=true;
+  policy.webGames='optional-unity-web-validation-surface';
   policy.existingWebMaintenance=true;
   policy.webGamesRemainPlayable=true;
-  policy.newWebGameProduction=true;
-  policy.webPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
-  policy.webCompanionRequiredForEveryGame=true;
+  policy.newWebGameProduction=false;
+  policy.webPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
+  policy.webCompanionRequiredForEveryGame=false;
   policy.approvedDesignScopeMustBeFullyImplemented=true;
   policy.silentScopeReductionForbidden=true;
   policy.webEvidenceMayReplaceNativePlatformEvidence=false;
   policy.webGameplayValidationTestbedAllowed=true;
-  policy.webGameplayValidationRequired=true;
-  policy.musicValidationRequired=true;
-  policy.webBeforeTargetPlatformByDefault=true;
-  policy.targetPlatformMayRunImmediately=false;
+  policy.webGameplayValidationRequired=false;
+  policy.musicValidationRequired=false;
+  policy.webBeforeTargetPlatformByDefault=false;
+  policy.targetPlatformMayRunImmediately=true;
+  policy.unityWebValidationRequired=false;
+  policy.unityWebValidationGateAuthority=false;
+  policy.fortniteUefnAutomaticDevelopment=false;
+  policy.fortniteUefnState='OWNER_HOLD';
+  delete policy.allThreePlatformsMayBeDevelopedConcurrently;
   delete policy.futurePrimaryTarget;
   delete policy.webGameDevelopment;
   return policy;
@@ -257,22 +253,28 @@ function synchronizePlatformPolicy(portfolio){
   release.engine='PROJECT_SELECTED_PLATFORM';
   release.featureDevelopmentOnWeb=false;
   release.webArchiveMaintenance='FAST_RUNTIME_INCIDENT_ONLY';
-  development.engine='PROJECT_SELECTED_PLATFORM';
-  development.scope='FULL_APPROVED_WEB_COMPANION_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION';
-  development.webPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
-  development.webCompanionRequired=true;
+  development.engine='ROBLOX_UNITY_DIRECT_NATIVE';
+  development.scope='MINIMUM_DESIGN_THEN_ROBLOX_UNITY_CONCURRENT';
+  development.admissionAuthority='MINIMUM_DUAL_PLATFORM_DESIGN_READY';
+  development.concurrentTargetPlatforms=['ROBLOX','UNITY'];
+  development.strictDesignScoreRequiredForAdmission=false;
+  development.strictDesignReviewRunsInParallel=true;
+  development.webPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
+  development.webCompanionRequired=false;
   development.approvedDesignScopeMustBeFullyImplemented=true;
   development.webEvidenceMayReplaceNativePlatformEvidence=false;
-  development.webGameplayValidationRequired=true;
-  development.musicValidationRequired=true;
-  development.webBeforeTargetPlatformByDefault=true;
-  development.targetPlatformMayRunImmediately=false;
+  development.webGameplayValidationRequired=false;
+  development.musicValidationRequired=false;
+  development.webBeforeTargetPlatformByDefault=false;
+  development.targetPlatformMayRunImmediately=true;
+  development.onePlatformFailureDoesNotCancelOther=true;
   portfolio.developmentFocusPolicy ||= {};
-  portfolio.developmentFocusPolicy.selection='AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT';
+  portfolio.developmentFocusPolicy.selection='AUTO_NATIVE_READINESS_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT';
   portfolio.developmentFocusPolicy.platformPriority=[...PLATFORM_PRIORITY];
   portfolio.developmentFocusPolicy.priorityMeaning='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE';
-  portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform=true;
+  portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform=false;
   portfolio.developmentFocusPolicy.nativePlatformEvidenceStillRequired=true;
+  portfolio.developmentFocusPolicy.nativeDevelopmentAdmission='MINIMUM_DUAL_PLATFORM_DESIGN_READY';
   delete portfolio.developmentFocusPolicy.requiredWebGameplayAndMusicValidationBeforeTargetPlatform;
   delete portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus;
   delete portfolio.developmentFocusPolicy.developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus;
@@ -291,16 +293,20 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     if(![PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,PRODUCTION_CLASSES.RELEASE_CONFIRMED].includes(seedClass))continue;
     if(projectSlugs.has(gameId)||!bySlug.has(gameId))continue;
     const game=bySlug.get(gameId);
-    const webSource=clean(seed?.sourcePath)||clean(game?.webPath).replace(/^\/+|\/+$/g,'')||`web-games/${gameId}`;
+    const selected=normalizeSelectedPlatform(seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.productionTarget)||'ROBLOX';
+    const nativePaths={ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`};
+    const nativeSource=clean(seed?.targetSourcePaths?.[selected])||clean(seed?.sourcePath)||nativePaths[selected]||nativePaths.ROBLOX;
     portfolio.projects.push({
       id:`RUNTIME-${gameId}`,
       slug:gameId,
       name:clean(seed?.gameName)||clean(game?.name)||gameId,
-      sourcePath:webSource,
+      sourcePath:nativeSource,
       productionClass:seedClass,
       productionClassSource:'COMPANY_RUNTIME_PROMOTED_SEED',
       profileStatus:seedClass,
-      selectedPlatform:normalizeSelectedPlatform(seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.productionTarget),
+      selectedPlatform:selected,
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      targetSourcePaths:nativePaths,
       developmentFocus:{total:0},
       runtimeSynthesized:true
     });
@@ -335,11 +341,10 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     const baseline=baselineRank(book);
     const targetPlatform=selectedPlatformOf(project,game);
     const platformReady=targetPlatformReady(project,game,targetPlatform,filesystem);
-    const playable=game?.homepageWebPlayable===true;
     const score=focusScore(project);
     const family=gameplayFamily(game);
     const productionClassSource=runtimeClass?.source||clean(game?.productionClassSource||project?.productionClassSource)||'CURRENT_EVIDENCE_STATE';
-    const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
+    const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0);
     return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,catalogPresent,lifecycleState,evidenceScore,gameplayFamily:family,productionClass,productionClassSource};
   });
 
@@ -377,19 +382,22 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
       }
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       project.profileStatus='DEVELOPMENT_CONFIRMED';
-      project.webPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
-      project.webCompanionRequired=true;
+      project.mode='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT';
+      project.targetEngine='roblox-unity-native';
+      project.concurrentTargetPlatforms=['ROBLOX','UNITY'];
+      project.targetSourcePaths={
+        ROBLOX:clean(project?.targetSourcePaths?.ROBLOX)||`roblox-games/${project.slug}`,
+        UNITY:clean(project?.targetSourcePaths?.UNITY)||`unity-games/${project.slug}`
+      };
+      project.webPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
+      project.webCompanionRequired=false;
+      project.webValidationRequired=false;
       project.approvedDesignScopeMustBeFullyImplemented=true;
       project.webEvidenceMayReplaceNativePlatformEvidence=false;
-      project.webGameplayValidationRequired=true;
-      project.musicValidationRequired=true;
-      if(targetPlatform){
-        project.mode='FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT';
-        project.targetEngine=platformTargetEngine(targetPlatform);
-      }else{
-        project.mode='FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED';
-        project.targetEngine='platform-selection-required';
-      }
+      project.webGameplayValidationRequired=false;
+      project.musicValidationRequired=false;
+      project.strictDesignScoreRequiredForAdmission=false;
+      project.strictDesignReviewRunsInParallel=true;
     }else{
       project.profileStatus='DESIGN_ONLY';
       project.mode='REDESIGN';
@@ -417,8 +425,9 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
       game.productionTarget=targetPlatform?platformTargetEngine(targetPlatform):'platform-selection-required';
       game.homepageStage=targetPlatform?`출시확정 · ${platformLabel(targetPlatform)}`:'출시확정 · 플랫폼 선택 필요';
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
-      game.productionTarget=targetPlatform?platformTargetEngine(targetPlatform):'platform-selection-required';
-      game.homepageStage=targetPlatform?`개발확정 · Web 전체분량 검증 → ${platformLabel(targetPlatform)}`:'개발확정 · Web 전체분량 검증 → 플랫폼 선택 필요';
+      game.productionTarget='ROBLOX_UNITY';
+      game.concurrentTargetPlatforms=['ROBLOX','UNITY'];
+      game.homepageStage='개발확정 · Roblox + Unity 앱 동시개발';
     }else{
       game.productionTarget='design-only';
       if(!isHold(project))game.homepageStage='기획 · 아트북/컨셉/설계 최적화';
@@ -445,7 +454,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     developmentConfirmedGameIds:developmentIds,
     designOnlyGameIds:designIds,
     lifecycle:{active:rows.filter(row=>row.lifecycleState==='ACTIVE').map(row=>row.project.id),paused:rows.filter(row=>row.lifecycleState==='PAUSED').map(row=>row.project.id),rebuild:rows.filter(row=>row.lifecycleState==='REBUILD').map(row=>row.project.id),retired:rows.filter(row=>row.lifecycleState==='RETIRED').map(row=>row.project.id),removed:rows.filter(row=>row.lifecycleState==='REMOVED').map(row=>row.project.id)},
-    pipeline:{target:60,count:liveRows.length,activeDevelopmentWipMax:20,deficit:Math.max(0,60-liveRows.length)},
+    pipeline:{target:60,count:liveRows.length,activeDevelopmentWipMax:null,capacityOnly:true,noArtificialGlobalGameCountCap:true,deficit:Math.max(0,60-liveRows.length)},
     ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,lifecycleState:row.lifecycleState,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,targetPlatform:row.targetPlatform||null,targetPlatformReady:row.targetPlatformReady,sourceReady:row.sourceReady})),
   };
   delete portfolio.productionTierState;
