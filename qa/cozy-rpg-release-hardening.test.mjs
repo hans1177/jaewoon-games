@@ -72,33 +72,46 @@ test('대충 RPG는 3번과 5번 지역 보스, 어그로/복귀 거리, 전투�
  assert.match(rpgServer,/p:SetAttribute\("CurrentZone",0\)/);
 });
 
-test('대충 RPG 성장/상점은 레벨당 체력+10 공격+10과 장비 5단계를 가진다',()=>{
- assert.match(rpgConfig,/LevelHPGain=10/);
- assert.match(rpgConfig,/LevelAttackGain=10/);
+test('대충 RPG 성장은 Lv60 만렙, Lv40 2차 완성형, 무기/방어구/유물 3슬롯을 가진다',()=>{
+ assert.match(rpgConfig,/LevelCap=60/);
+ assert.match(rpgConfig,/SecondAdvancementLevel=40/);
+ assert.match(rpgConfig,/EquipmentSlots=\{"Weapon","Armor","Relic"\}/);
  assert.match(rpgConfig,/WeaponPrices=\{50,120,240,420,700\}/);
  assert.match(rpgConfig,/ArmorPrices=\{45,110,220,390,650\}/);
- assert.match(rpgServer,/WeaponMerchant/);
- assert.match(rpgServer,/ArmorMerchant/);
- assert.match(rpgServer,/while xp>=level\*100/);
+ assert.match(rpgServer,/MasteryXP/);
+ assert.match(rpgServer,/SecondAdvancementId/);
 });
 
-test('대충 RPG에는 지정된 10명 AI와 파티사냥 기여도 시스템이 있다',()=>{
- for(const pair of [['NONE',2],['HEALER',2],['WARRIOR',3],['ARCHER',3]]){
-  const re=new RegExp('Class="'+pair[0]+'"','g');assert.equal((rpgConfig.match(re)||[]).length,pair[1]);
- }
- assert.match(rpgServer,/ClickDetector/);
- assert.match(rpgServer,/한 번 더 눌러 파티 초대\/제외/);
+test('대충 RPG는 보스 첫 처치 동료 해금과 플레이어+최대3 동료 파티를 구현한다',()=>{
+ for(const id of ['GOLDEN_ANTLER','WHITE_FANG','ANCIENT_HEART','RUIN_GUARDIAN','ABYSS_LORD'])assert.match(rpgConfig,new RegExp('Id="'+id+'"'));
+ assert.match(rpgConfig,/BossCompanions=\{/);
+ assert.match(rpgServer,/UnlockedCompanions/);
+ assert.match(rpgServer,/unlockBossCompanion/);
+ assert.match(rpgServer,/makeBossCompanionRoster/);
+ assert.match(rpgServer,/spawnActiveCompanion/);
+ assert.match(rpgServer,/동료 슬롯 3칸/);
+ assert.match(rpgServer,/DamagePerLevel/);
  assert.match(rpgConfig,/PartyHuntTarget=15/);
  assert.match(rpgServer,/Contribution/);
- assert.match(rpgServer,/파티 사냥 완료/);
- assert.match(rpgServer,/ai\.def\.Class=="HEALER"/);
- assert.match(rpgServer,/h\.Health=math\.min\(h\.MaxHealth,h\.Health\+10\)/);
 });
 
 test('대충 RPG UI는 포탈 이동을 월드에 맡기고 전투/귀환/파티 상태를 직관적으로 분리한다',()=>{
- for(const marker of ['RPGTopHUD','QuestObjective','PartyStatus','CombatDock','ReturnVillage','MultiplayerCode','공격','스킬','회피','마을 귀환','AI 두번 터치'])assert.match(rpgClient,new RegExp(marker));
- assert.match(rpgClient,/combat\.Size=UDim2\.fromOffset\(62,174\)/);
+ for(const marker of ['RPGTopHUD','QuestObjective','PartyStatus','CombatDock','BlockParry','ReturnVillage','MultiplayerCode','공격','스킬','막기','회피','마을 귀환','동료 두번 터치'])assert.match(rpgClient,new RegExp(marker));
+ assert.ok(rpgClient.includes('combat.Size=UDim2.fromOffset(62,232)'));
  assert.match(rpgClient,/returnButton\.Visible=zone>0/);
  assert.match(rpgClient,/전투 중 귀환 불가/);
  assert.match(rpgClient,/멀티 코드 /);
+});
+
+
+test('대충 RPG 초원은 패링 전투와 시드형 로그라이크 런을 구현한다',()=>{
+ assert.match(rpgConfig,/GuardMax=100/);
+ assert.match(rpgConfig,/ParryWindow=\.22/);assert.match(rpgConfig,/ParryRearmSeconds=\.34/);
+ assert.match(rpgConfig,/BLOCK_START="BLOCK_START"/);
+ assert.equal((rpgConfig.match(/Id="(?:GRASS_WOLF|DIRE_WOLF|CHARGE_BOAR|THORN_WASP|FOREST_LIZARD|HORN_DEER|VINE_CRAWLER|MEADOW_BANDIT|WOLF_TAMER|MOSS_TURTLE)"/g)||[]).length,10);
+ assert.match(rpgConfig,/HiddenBosses=\{[\s\S]*Id="WHITE_FANG"[\s\S]*Id="ANCIENT_HEART"/);assert.match(rpgConfig,/Id="GOLDEN_ANTLER"/);
+ for(const marker of ['ProceduralRun','MeadowRunSeed','MeadowRunBossDefeated','RunBossSeal','Dormant','wakeMeadowRunBossIfReady','SecretGrove','SecretRuneStone','MemoryAltar','HiddenChest','HIDDEN_BOSS_APPEAR','PARRY','GUARD_BREAK','AttackUnblockable','staggerEnemy','beginEnemyAttack','ParryRearmUntil'])assert.match(rpgServer,new RegExp(marker));
+ assert.match(rpgServer,/generateMeadowRun=function\(seed\)/);
+ assert.match(rpgClient,/C\.Actions\.BLOCK_START/);
+ assert.match(rpgClient,/KeyCode==Enum\.KeyCode\.F/);
 });

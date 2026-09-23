@@ -28,18 +28,18 @@ test('포근섬은 넓은 기본섬과 채집/NPC/몹 밀도를 가진다',()=>{
  assert.doesNotMatch(server,/part\(world,"Sea"/);
 });
 
-test('대충 RPG는 작은 단일 필드가 아니라 5개 대형 지역과 인구/몬스터 밀도를 가진다',()=>{
+test('대충 RPG는 5개 대형 지역과 보스 실루엣을 재사용한 수집형 동료를 가진다',()=>{
  const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
  const config=read('roblox-games/daechung-rpg/shared/GameConfig.luau');
  assert.match(server,/Vector3\.new\(440,2,440\)/);
  assert.match(server,/for i=1,34 do themedProp/);
  assert.match(server,/for i=1,10 do spawnEnemy/);
- assert.match(server,/AIUsers/);
+ assert.match(server,/BossCompanionRoster/);
+ assert.match(server,/ActiveBossCompanions/);
  assert.match(server,/VillageHouse/);
- assert.doesNotMatch(server,/CreateHumanoidModelFromDescription/);
- for(const marker of ['RPG_FANTASY_SILHOUETTE_WORLD_V4','ChiefCape','SwordGuard','HealerHood','MarketStall','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
+ for(const marker of ['RPG_FANTASY_PORTAL_WORLD_V5','RPG_STYLIZED_TOY_FANTASY_R15','MedievalAssetArmor','MedievalVillageHouse','ChiefCape','SwordGuard','HealerHood','MarketStall','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
  assert.doesNotMatch(server,/local r=ppart\(parent,name,Vector3\.new\(3\.1,4\.2,2\.1\)\*scale/);
- assert.equal((config.match(/Class="(?:NONE|HEALER|WARRIOR|ARCHER)"/g)||[]).length,10);
+ assert.match(config,/BossCompanions=\{/);
 });
 
 test('심야는 이동 가능한 어둠과 지도별 시각 기준점을 가진다',()=>{
