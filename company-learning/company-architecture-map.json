@@ -1,5 +1,5 @@
 {
-  "version": 102,
+  "version": 103,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2760,7 +2760,15 @@
         "repairWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
         "supersededRepairDependencyRewire": "TO_CANONICAL_REPAIR_TASK",
         "supersededRepairBlockerRewire": "TO_CANONICAL_REPAIR_TASK",
-        "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e"
+        "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
+        "producerSideRepairReuse": "tools/company-recovery-dispatch.mjs",
+        "stableRepairIdentity": "tools/company-system-ai-queue.mjs::systemAiRepairWorkIdentity",
+        "producerDedupeMarker": "system-ai-producer-dedupe:REUSED_EXISTING_REPAIR",
+        "producerReuseNonterminalOnly": true,
+        "producerReusePreservesDistinctCheckpoint": true,
+        "supersededDependencyRewire": "tools/company-system-ai-queue.mjs::coalesceQueuedSystemAiDuplicateRepairs",
+        "producerSideRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
+        "producerSideRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f"
       },
       "bottleneckSensor": {
         "queueSources": [
@@ -2853,7 +2861,10 @@
       "revision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
       "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
       "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
-      "testRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9"
+      "testRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
+      "producerSideRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
+      "producerSideRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
+      "producerSideRepairReuseState": "IMPLEMENTED_TEST_COVERED_PENDING_NEXT_RECOVERY_DISPATCH_AND_RESERVE_CYCLE"
     }
   }
 }
