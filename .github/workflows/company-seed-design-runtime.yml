@@ -190,9 +190,15 @@ jobs:
                 const base=path.join(gameRoot,date);
                 const statusPath=path.join(base,'cycle-status.json');
                 const strictPath=path.join(base,'strict-design-review.json');
+                const revisedPath=path.join(base,'design-revised.json');
                 if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
                 const status=JSON.parse(fs.readFileSync(statusPath,'utf8'));
                 const review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                if(String(seed?.ownerRequestInstanceId||'').trim()){
+                  if(!fs.existsSync(revisedPath))continue;
+                  const revised=JSON.parse(fs.readFileSync(revisedPath,'utf8'));
+                  if(String(revised?.ownerRequestInstanceId||'').trim()!==String(seed.ownerRequestInstanceId).trim())continue;
+                }
                 const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
                 if(resetAt){
                   if(evidenceAt&&evidenceAt<resetAt)continue;
@@ -379,9 +385,14 @@ jobs:
             try{
               const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
               for(const date of dates){
-                const base=path.join(gameRoot,date),statusPath=path.join(base,'cycle-status.json'),strictPath=path.join(base,'strict-design-review.json');
+                const base=path.join(gameRoot,date),statusPath=path.join(base,'cycle-status.json'),strictPath=path.join(base,'strict-design-review.json'),revisedPath=path.join(base,'design-revised.json');
                 if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
                 const status=JSON.parse(fs.readFileSync(statusPath,'utf8')),review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                if(String(seed?.ownerRequestInstanceId||'').trim()){
+                  if(!fs.existsSync(revisedPath))continue;
+                  const revised=JSON.parse(fs.readFileSync(revisedPath,'utf8'));
+                  if(String(revised?.ownerRequestInstanceId||'').trim()!==String(seed.ownerRequestInstanceId).trim())continue;
+                }
                 const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
                 if(resetAt){
                   if(evidenceAt&&evidenceAt<resetAt)continue;
@@ -1110,8 +1121,14 @@ jobs:
             let selected=null;
             for(const date of dates){
               const reviewPath=path.join(root,date,'strict-design-review.json');
+              const revisedPath=path.join(root,date,'design-revised.json');
               if(!fs.existsSync(reviewPath))continue;
               const review=JSON.parse(fs.readFileSync(reviewPath,'utf8'));
+              if(String(seed?.ownerRequestInstanceId||'').trim()){
+                if(!fs.existsSync(revisedPath))continue;
+                const revised=JSON.parse(fs.readFileSync(revisedPath,'utf8'));
+                if(String(revised?.ownerRequestInstanceId||'').trim()!==String(seed.ownerRequestInstanceId).trim())continue;
+              }
               const score=Number(review.totalScore);
               if(!Number.isFinite(score)||score<0||score>100)continue;
               const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
@@ -1192,6 +1209,10 @@ jobs:
               for(const date of dates){
                 const base=`design/${seed.gameId}/${date}`;
                 const status=JSON.parse(show(`${base}/cycle-status.json`));const review=JSON.parse(show(`${base}/strict-design-review.json`));
+                if(String(seed?.ownerRequestInstanceId||'').trim()){
+                  let revised=null;try{revised=JSON.parse(show(`${base}/design-revised.json`));}catch{}
+                  if(String(revised?.ownerRequestInstanceId||'').trim()!==String(seed.ownerRequestInstanceId).trim())continue;
+                }
                 const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
                 if(resetAt){
                   if(evidenceAt&&evidenceAt<resetAt)continue;
