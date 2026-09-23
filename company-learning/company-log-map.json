@@ -1,5 +1,5 @@
 {
-  "version": 32,
+  "version": 33,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -528,7 +528,10 @@
       "DEFECT_OWNER",
       "CAUSE_EVIDENCE",
       "DESIGN_INTEGRITY_RESULT",
-      "DUPLICATE_REPAIR_SUPPRESSION"
+      "DUPLICATE_REPAIR_SUPPRESSION",
+      "DESIGN_EVOLUTION_REASON",
+      "BASELINE_REVIEW_AT",
+      "DEEP_REVIEW_DUE"
     ],
     "ownerRepeatedIdenticalRequestRequiresNewSignalEventId": true,
     "ownerSemanticTextDeduplicationForbidden": true,
@@ -541,6 +544,9 @@
     "sameSymptomDualMutationForbidden": true,
     "unresolvedCauseMustNotInventDesignFailure": true,
     "runtimeImplementationDefectPreservesApprovedDesignByDefault": true,
-    "verifiedDesignDefectRequiresTargetedDesignRevision": true
+    "verifiedDesignDefectRequiresTargetedDesignRevision": true,
+    "dailyHealthScanEvidenceRequired": true,
+    "periodicDeepReviewHours": 168,
+    "passCheckpointMayBeReopenedByNewSignalOrPeriodicReview": true
   }
 }
