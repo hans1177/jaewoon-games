@@ -192,8 +192,10 @@ jobs:
           [[ -n "$pid_after" ]] || { echo 'process died during independent QA' >&2; exit 15; }
           adb exec-out screencap -p > qa-artifacts/unity-independent-qa/screen.png
           adb logcat -d > qa-artifacts/unity-independent-qa/logcat.txt
-          if grep -Eiq "FATAL EXCEPTION|ANR in ${package}|Fatal signal|Process ${package} .* has died" qa-artifacts/unity-independent-qa/logcat.txt; then
-            echo 'fatal runtime signal found during independent QA' >&2
+          awk -v pid="$pid_after" '$3==pid {print}' qa-artifacts/unity-independent-qa/logcat.txt > qa-artifacts/unity-independent-qa/app-logcat.txt
+          if grep -Eiq 'FATAL EXCEPTION|Fatal signal' qa-artifacts/unity-independent-qa/app-logcat.txt \
+            || grep -Eiq "ANR in ${package}|Process ${package} .* has died" qa-artifacts/unity-independent-qa/logcat.txt; then
+            echo 'fatal runtime signal found for tested package during independent QA' >&2
             exit 16
           fi
 
