@@ -1,5 +1,5 @@
 {
-  "version": 288,
+  "version": 289,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T11:38:00+09:00",
+  "updatedAt": "2026-09-23",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9238,7 +9238,23 @@
         "nextRuntimeStep": "CONFIRM_OR_MATERIALIZE_COMPANY_RUNTIME_GAME_SEED_THEN_RUN_STRICT_DESIGN"
       }
     },
-    "staticQa": "tools/vibe2-incremental-qa.mjs"
+    "staticQa": "tools/vibe2-incremental-qa.mjs",
+    "highEndVisualProductionBinding": {
+      "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
+      "reuseExistingPipeline": true,
+      "newShadowPipelineForbidden": true,
+      "implementationTargets": [
+        "assets/vibe-art-pipeline.js",
+        "tools/vibe2-asset-production-plan.mjs",
+        "assets/vibe-visual-quality-gate.js",
+        "assets/vibe-visual-autopilot.js",
+        "assets/vibe-presentation-director.js"
+      ],
+      "qaTargets": [
+        "qa/vibe-visual-runtime-quality.test.mjs",
+        "qa/vibe2-native-asset-production.test.mjs"
+      ]
+    }
   },
   "supervisedWebGameProduction": {
     "version": 1,
@@ -11539,7 +11555,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 5,
+    "version": 6,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -11720,6 +11736,194 @@
       "actualRuntimePresentationRequiredForGraphicsPass": true,
       "artSpecWithoutBoundAssetCannotPass": true,
       "genericPrimitiveAssemblyCannotBeDeclaredFinalHighQuality": true
+    },
+    "highEndVisualProductionContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-23",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
+      "purpose": "MAKE_PURPOSEFUL_GAME_SPECIFIC_ASSETS_AND_COHERENT_ART_DIRECTION_THE_DEFAULT_PRESENTATION_STATE_WHILE_PRESERVING_GAMEPLAY_AUTHORITY",
+      "scope": "ALL_ACTIVE_DEVELOPMENT_CONFIRMED_AND_RELEASE_CONFIRMED_ROBLOX_UNITY_GAMES",
+      "developmentAdmissionGate": false,
+      "runsInParallelWithNativeDevelopment": true,
+      "strictDesignReviewRunsInParallel": true,
+      "internalPlaytestCandidateMayExistBeforeFinalPresentationGate": true,
+      "internalPlatformReleasePresentationGateRequired": true,
+      "publicReleasePresentationGateRequired": true,
+      "noNewDepartment": true,
+      "executionOwner": "EXISTING_GRAPHICS_DEPARTMENT_PLUS_VIBE_IMPLEMENTATION",
+      "designInputs": {
+        "required": [
+          "ART_BIBLE",
+          "GAME_STYLE_LOCK",
+          "VISUAL_TARGET_FRAMES",
+          "HERO_QUALITY_TARGETS",
+          "MATERIAL_LANGUAGE",
+          "ENVIRONMENT_LANGUAGE",
+          "ANIMATION_LANGUAGE",
+          "VFX_LANGUAGE",
+          "LIGHTING_CAMERA_LANGUAGE",
+          "UI_LANGUAGE"
+        ],
+        "designMayEvolveDuringDevelopment": true,
+        "gameplayRulesMayNotBeChangedForVisualConvenience": true
+      },
+      "visualTargetFrames": {
+        "required": true,
+        "roles": [
+          "PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP",
+          "PRIMARY_ENEMY_OR_CREATURE_CLOSEUP",
+          "CORE_GAMEPLAY_ACTION",
+          "WORLD_OR_REGION_WIDE",
+          "MOBILE_GAMEPLAY_HUD",
+          "KEY_LANDMARK_OR_HUB",
+          "BOSS_OR_SIGNATURE_ENCOUNTER"
+        ],
+        "targetFramesAreDirectionNotFakeRuntimeEvidence": true,
+        "actualRuntimeComparisonRequired": true
+      },
+      "defaultAssetApplication": {
+        "enabled": true,
+        "rule": "PURPOSEFUL_ASSET_PRESENTATION_IS_DEFAULT_FOR_ALL_VISIBLE_GAME_ELEMENTS",
+        "categories": [
+          "PLAYER_CHARACTER",
+          "ENEMIES",
+          "BOSSES",
+          "NPCS",
+          "WEAPONS",
+          "TOOLS",
+          "ITEMS",
+          "BUILDINGS",
+          "INTERACTABLES",
+          "TERRAIN",
+          "BACKGROUND",
+          "FOLIAGE",
+          "PROPS",
+          "UI_ICONS",
+          "VFX",
+          "AMBIENCE",
+          "AUDIO"
+        ],
+        "backgroundAndEnvironmentFirstClass": true,
+        "primitiveFallbackPrototypeOnly": true,
+        "primitiveFallbackCreatesVisualDebt": true,
+        "unresolvedPrimitiveOrGenericPlaceholderCannotPassPresentation": true,
+        "stockOrSampleProjectLookCannotPassFinalPresentation": true
+      },
+      "qualityHierarchy": {
+        "HERO": [
+          "PLAYER_CHARACTER",
+          "PRIMARY_BOSS",
+          "PRIMARY_ENEMY",
+          "SIGNATURE_WEAPON_OR_TOOL",
+          "KEY_LANDMARK",
+          "STARTING_HUB_OR_FIRST_REGION"
+        ],
+        "WORLD_IDENTITY": [
+          "REGION_ENVIRONMENT",
+          "ARCHITECTURE",
+          "TERRAIN",
+          "FOLIAGE",
+          "SET_DRESSING",
+          "LIGHTING",
+          "ATMOSPHERE"
+        ],
+        "SUPPORT": [
+          "SECONDARY_ENEMIES",
+          "SECONDARY_ITEMS",
+          "DECORATION",
+          "UI_POLISH",
+          "SECONDARY_VFX_AUDIO"
+        ],
+        "heroQualityMustLeadStyleBaseline": true
+      },
+      "assetMutationAndExpansion": {
+        "enabled": true,
+        "rightsVerificationBeforeMutationRequired": true,
+        "originalAssetImmutable": true,
+        "derivedAssetPathRequired": true,
+        "transformHistoryAndParentProvenanceRequired": true,
+        "allowedCapabilities": [
+          "CROP_SCALE_ROTATE",
+          "RECOLOR_CONTRAST_LIGHTING",
+          "MATERIAL_REAUTHORING",
+          "SILHOUETTE_REDESIGN",
+          "PART_SEPARATION_AND_RECOMPOSITION",
+          "KITBASH_FROM_RIGHTS_VERIFIED_PARTS",
+          "PROPORTION_AND_DETAIL_VARIATION",
+          "REGION_VARIANTS",
+          "ELITE_AND_BOSS_DERIVATIVES",
+          "ANIMATION_RIG_PREPARATION",
+          "VFX_DERIVATIVES",
+          "LOD_AND_MOBILE_OPTIMIZATION"
+        ],
+        "unverifiedDerivativeUseForbidden": true,
+        "assetPackRawDropInIsNotCompletion": true
+      },
+      "worldComposition": {
+        "required": true,
+        "layers": [
+          "FOREGROUND",
+          "MIDGROUND",
+          "BACKGROUND"
+        ],
+        "landmarkPerMajorRegionRequired": true,
+        "setDressingRequired": true,
+        "environmentalStorytellingRequired": true,
+        "navigationAndCombatReadabilityRequired": true,
+        "biomeAndRegionDifferentiationRequired": true,
+        "emptyBackgroundOrSparsePrototypeWorldCannotPass": true
+      },
+      "presentationStack": {
+        "bindToGameplayEvents": true,
+        "channels": [
+          "ANIMATION",
+          "VFX",
+          "AUDIO",
+          "CAMERA",
+          "UI_FEEDBACK",
+          "LIGHTING"
+        ],
+        "presentationOnlyTimingMayNotChangeAuthoritativeGameplayResult": true,
+        "bossAndSignatureEventsNeedDedicatedPresentation": true,
+        "motionIdentityRequiredForPrimaryActors": true
+      },
+      "cohesion": {
+        "antiKitbashGateRequired": true,
+        "commonArtBibleRequired": true,
+        "commonMaterialLanguageRequired": true,
+        "commonSilhouetteLanguageRequired": true,
+        "commonLightingLanguageRequired": true,
+        "commonUiAndVfxLanguageRequired": true,
+        "mismatchedAssetPackLookAction": "ASSET_REPAIR_REQUIRED",
+        "genericSampleProjectLookAction": "ASSET_REPAIR_REQUIRED"
+      },
+      "platformAdaptation": {
+        "sharedIdentityRequired": true,
+        "directVisualAssetParityNotRequired": true,
+        "unityAndRobloxPlatformSpecificReauthoringExpected": true,
+        "unityMayUsePlatformAppropriateMaterialsLightingShadersAndLod": true,
+        "robloxMayUsePlatformAppropriatePartsMeshesMaterialsLightingAndEffects": true,
+        "mobileReadabilityAndPerformanceRequired": true
+      },
+      "runtimeQa": {
+        "actualRuntimeCaptureRequired": true,
+        "highEndGoldenSceneRolesRequired": true,
+        "targetFrameComparisonRequired": true,
+        "beforeAfterVisualRegressionRequired": true,
+        "visualHierarchyRequired": true,
+        "heroAssetPlaceholderForbidden": true,
+        "environmentCoverageRequired": true,
+        "animationVfxAudioCameraLightingCohesionRequired": true,
+        "platformSpecificPerformanceEvidenceRequired": true,
+        "markerOnlyPassForbidden": true,
+        "finalFailureState": "ASSET_REPAIR_REQUIRED"
+      },
+      "preservation": {
+        "gameplayBalanceSaveProgressionEconomyAndHitSemanticsImmutableForPresentationOnlyWork": true,
+        "existingLicenseAndProvenancePolicyReused": true,
+        "existingQaSecurityReleaseGatesMayNotBeWeakened": true
+      }
     }
   },
   "weatherPresentationContract": {
