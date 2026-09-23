@@ -140,7 +140,9 @@ export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()
     while(canonicalByDuplicate.has(current)&&guard++<queue.tasks.length)current=canonicalByDuplicate.get(current);
     return current;
   };
-  let rewired=0;
+  const taskById=new Map(queue.tasks.map(task=>[clean(task.id),task]));
+  const sharedInfrastructureRepair=task=>unique(task?.evidence).includes('shared-system-ai-infrastructure-repair:YES');
+  let rewired=0,scopeReconciled=0;
   const tasks=queue.tasks.map(task=>{
     const supersededBy=newlySuperseded.has(task.id)?canonicalByDuplicate.get(task.id):null;
     if(supersededBy)return{
@@ -161,17 +163,28 @@ export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()
     };
 
     const remappedDependencies=unique((task.dependencies||[]).map(canonicalFor).filter(id=>id!==task.id));
+    const validDependencies=remappedDependencies.filter(id=>{
+      const dep=taskById.get(id);
+      if(!dep||clean(dep.taskType).toLowerCase()!=='bottleneck-repair')return true;
+      if(sharedInfrastructureRepair(dep))return true;
+      return overlap(task,dep);
+    });
+    const scopeRemoved=validDependencies.length!==remappedDependencies.length;
     const blockerMatch=clean(task.blocker).match(/^shared-signature-canary-pending:(.+)$/i);
     const blockerCanonical=blockerMatch?canonicalFor(blockerMatch[1]):null;
-    const dependencyRewired=JSON.stringify(remappedDependencies)!==JSON.stringify(unique(task.dependencies||[]))
-      ||Boolean(blockerMatch&&blockerCanonical!==blockerMatch[1]);
+    const blockerTarget=blockerCanonical?taskById.get(blockerCanonical):null;
+    const blockerScopeValid=!blockerMatch||!blockerTarget||sharedInfrastructureRepair(blockerTarget)||overlap(task,blockerTarget);
+    const nextBlocker=blockerMatch&&!blockerScopeValid?null:(blockerMatch&&blockerCanonical?('shared-signature-canary-pending:'+blockerCanonical):task.blocker);
+    const dependencyRewired=JSON.stringify(validDependencies)!==JSON.stringify(unique(task.dependencies||[]))
+      ||nextBlocker!==task.blocker;
     const meta=canonicalMeta.get(task.id);
     if(!meta&&!dependencyRewired)return task;
     if(dependencyRewired)rewired+=1;
+    if(scopeRemoved||!blockerScopeValid)scopeReconciled+=1;
     return{
       ...task,
-      dependencies:remappedDependencies,
-      blocker:blockerMatch&&blockerCanonical?('shared-signature-canary-pending:'+blockerCanonical):task.blocker,
+      dependencies:validDependencies,
+      blocker:nextBlocker,
       ...(meta?{
         recurrenceCount:meta.recurrenceCount,
         relatedTaskIds:unique([...(task.relatedTaskIds||[]),...meta.duplicateIds])
@@ -180,12 +193,13 @@ export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()
       evidence:unique([
         ...(task.evidence||[]),
         ...(meta?['system-ai-duplicate-repair-coalesced:YES','system-ai-coalesced-count:'+(meta.duplicateIds.length+1)]:[]),
-        ...(dependencyRewired?['system-ai-duplicate-dependency-rewired:YES']:[])
+        ...(dependencyRewired?['system-ai-duplicate-dependency-rewired:YES']:[]),
+        ...((scopeRemoved||!blockerScopeValid)?['system-ai-cross-scope-canary-dependency-removed:YES']:[])
       ])
     };
   });
-  if(!coalesced&&!rewired)return{queue,coalesced:0,groups:0,rewired:0};
-  return{queue:{...queue,tasks},coalesced,groups:canonicalMeta.size,rewired};
+  if(!coalesced&&!rewired&&!scopeReconciled)return{queue,coalesced:0,groups:0,rewired:0,scopeReconciled:0};
+  return{queue:{...queue,tasks},coalesced,groups:canonicalMeta.size,rewired,scopeReconciled};
 }
 export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Date.now()}={}){
   const queue=normalizeSystemAiQueue(queueInput),task=normalizeTask(taskInput);
@@ -406,7 +420,7 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId='',a
   const stamp=new Date(at).toISOString();
   const rid=clean(reservationId)||`system-ai-security-recovery:${at}`;
   const tasks=queue.tasks.map(t=>t.id===taskId?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled};
 }
 
 export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now()}={}){
@@ -440,7 +454,7 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
       evidence:unique([...(t.evidence||[]),`system-ai-impact-score:${impact.score}`,`system-ai-blocked-task-count:${impact.blockedTaskCount}`,`system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`,...(impact.commonBottleneck&&impact.signature?[`system-ai-representative-canary:${impact.signature}`]:[]),...(t.previousReservationId?[`system-ai-handoff-to-reservation:${rid}`]:[])])
     };
   });
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
 }
 export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now()}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
@@ -461,7 +475,7 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',lease
   const chosenIds=new Set(chosen.map(x=>x.id)),stamp=now();
   const rid=clean(reservationId)||`system-ai-target:${Date.now()}`;
   const tasks=queue.tasks.map(t=>chosenIds.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled};
 }
 export function applySystemAiResults(queueInput,results=[]){
   let queue=normalizeSystemAiQueue(queueInput);const byResult=new Map((results||[]).map(r=>[clean(r.taskId),r]).filter(([id])=>id));
@@ -614,4 +628,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   if(Number.isFinite(Number(result.coalesced)))console.log(`COMPANY_SYSTEM_AI_DUPLICATE_REPAIRS_COALESCED=${Number(result.coalesced)}`);
   if(Number.isFinite(Number(result.coalescedGroups)))console.log(`COMPANY_SYSTEM_AI_DUPLICATE_REPAIR_GROUPS=${Number(result.coalescedGroups)}`);
   if(Number.isFinite(Number(result.rewired)))console.log(`COMPANY_SYSTEM_AI_SUPERSEDED_DEPENDENCIES_REWIRED=${Number(result.rewired)}`);
+  if(Number.isFinite(Number(result.scopeReconciled)))console.log(`COMPANY_SYSTEM_AI_CROSS_SCOPE_CANARY_DEPENDENCIES_REMOVED=${Number(result.scopeReconciled)}`);
 }
