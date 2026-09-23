@@ -38,6 +38,7 @@ jobs:
           path: main
           fetch-depth: 0
           fetch-tags: false
+          filter: blob:none
 
       - name: Checkout canonical runtime state
         uses: actions/checkout@v4
