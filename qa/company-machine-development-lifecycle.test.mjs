@@ -65,10 +65,10 @@ for(const step of [
   'PROMOTE_PUBLIC_RELEASE_ONLY_AFTER_PLATFORM_SPECIFIC_ACCEPTANCE',
   'PERSIST_VERIFIED_LEARNING_AND_CREATE_NEXT_FOCUS_CYCLE'
 ]) assert(work.executionOrder.includes(step),step);
-assert.equal(work.webWorker.enabled,false);
-assert.equal(work.webWorker.status,'LEGACY_DISABLED');
-assert.equal(work.webWorker.developmentAdmissionAuthority,false);
-assert.equal(work.webWorker.replacement,'DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT');
+assert.equal(Object.hasOwn(work,'webWorker'),false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebMode,'VALIDATION_SURFACE_ONLY');
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
 assert.equal(work.selectedPlatformWorker.sharedMinimumDesignMustCarryForward,true);
 assert.equal(work.selectedPlatformWorker.platformSpecificImplementationRequired,true);
 assert.equal(work.selectedPlatformWorker.platformSpecificRuntimeQaRegressionRequired,true);
