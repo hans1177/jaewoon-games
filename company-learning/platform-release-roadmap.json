@@ -1,5 +1,5 @@
 {
-  "version": 301,
+  "version": 302,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5314,15 +5314,6 @@
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
   "humanDocumentRequired": false,
-  "legacyPolicyMirror": {
-    "path": "COMPANY_FLOW.md",
-    "authoritative": false,
-    "requiredForExecution": false,
-    "mayCreatePolicy": false,
-    "mode": "POINTER_ONLY",
-    "replicatedPolicyContentForbidden": true,
-    "canonicalReference": "company-learning/platform-release-roadmap.json"
-  },
   "platformPriorityInvariant": {
     "mode": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
     "schedulingOrder": [
@@ -5997,13 +5988,9 @@
       "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
       "workDocumentsCannotOverrideCentralPolicy": true,
       "centralPolicyPath": "company-learning/platform-release-roadmap.json",
-      "legacyHumanPolicyMirror": "COMPANY_FLOW.md",
-      "legacyMirrorAuthoritative": false,
       "genrePresentationAndCommercialReadinessMirrored": true,
       "syncTargets": [
         "company-learning/platform-release-roadmap.json",
-        "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
-        "COMPANY_FLOW.md",
         ".github/agents/planning.agent.md",
         ".github/agents/development.agent.md",
         ".github/agents/graphics.agent.md",
@@ -6013,7 +6000,9 @@
         "tools/company-selected-platform-router.mjs",
         "assets/homepage-enhancements.js",
         "_worker.js"
-      ]
+      ],
+      "syncRelevantCanonicalDocumentsOnEveryPolicyChange": true,
+      "humanPolicyMirrorRequired": false
     },
     "directiveMirrorRequired": true,
     "directiveMirrorMayNotOverrideCentral": true,
@@ -6386,6 +6375,14 @@
         "gameWorkerProviderCapacityRunnerRevision": "86c7defe4b3fd6c03562e5ae860e73f04a07a51f",
         "gameWorkerAdaptiveCapRemovedTestRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd"
       }
+    },
+    "centralPolicyCleanup20260923": {
+      "authority": "OWNER_DIRECTIVE",
+      "result": "CENTRAL_POLICY_ONLY",
+      "removedDuplicateHumanPolicyMirrors": true,
+      "removedCompletedTemporaryMigrationArtifacts": true,
+      "runtimeHistoryAndCompatibilityEvidencePreserved": true,
+      "currentMachineContractsRemainSourceOfTruth": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -15967,7 +15964,7 @@
     "strictDesignReviewRunsInParallel": true
   },
   "centralDocumentation": {
-    "version": 2,
+    "version": 3,
     "status": "CANONICAL_MACHINE_DOCUMENTATION_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-22",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -15988,8 +15985,7 @@
       "company-learning/platform-release-roadmap.json": "ONLY_CANONICAL_POLICY_CREATION_AUTHORITY",
       "company-learning/company-log-map.json": "LOG_LOCATION_CORRELATION_AND_EVIDENCE_CONTRACT_ONLY",
       "company-learning/company-architecture-map.json": "EXECUTION_TOPOLOGY_AND_STRUCTURAL_MIRROR_ONLY",
-      "company-learning/security-immune-system.json": "SECURITY_ENFORCEMENT_BOUND_TO_CENTRAL_POLICY_ONLY",
-      "COMPANY_FLOW.md": "LEGACY_POINTER_AND_COMPATIBILITY_MIRROR_NON_AUTHORITATIVE"
+      "company-learning/security-immune-system.json": "SECURITY_ENFORCEMENT_BOUND_TO_CENTRAL_POLICY_ONLY"
     },
     "branchRoles": {
       "main": "CANONICAL_CODE_AND_MACHINE_POLICY",
@@ -16011,7 +16007,9 @@
       "architectureTopologyChangeRequiresArchitectureMapUpdate": true,
       "loggingContractChangeRequiresLogMapUpdate": true,
       "securityContractChangeRequiresSecurityPolicyUpdate": true,
-      "policyChangeRequiresCurrentMainRebind": true
+      "policyChangeRequiresCurrentMainRebind": true,
+      "legacyHumanPolicyMirrorForbidden": true,
+      "completedOneShotMigrationArtifactsMustBeRemoved": true
     },
     "synchronization": {
       "beforeWorkLoadAndValidateCanonicalSet": true,
@@ -16041,7 +16039,8 @@
       "preserveExistingDocumentStructure": true,
       "updateExistingCanonicalSectionBeforeAddingNewDocument": true,
       "centralContractChangeMustRecordChangeRecord": true,
-      "postWriteSharedContextResyncRequired": true
+      "postWriteSharedContextResyncRequired": true,
+      "removeSupersededPolicyMirrorsInsteadOfMaintainingThem": true
     },
     "humanReadableArtifactPolicy": {
       "humanReadablePolicyMirrorRequired": false,
@@ -16070,21 +16069,27 @@
       "humanReadableSyncDocumentRequired": false,
       "machinePolicyAndCompiledProjectionOnly": true
     },
-    "nonCanonicalHumanDocuments": {
-      "mode": "POINTER_ONLY_OR_IMPLEMENTATION_NOTE_NO_POLICY_REPLICATION",
-      "executionAuthority": false,
-      "mayCreatePolicy": false,
-      "mayOverrideCentralPolicy": false,
-      "replicatedPolicySemanticsForbidden": true,
-      "compatibilityPaths": [
+    "legacyPolicyCleanup": {
+      "status": "REMOVED_FROM_ACTIVE_REPOSITORY",
+      "removedAt": "2026-09-23",
+      "reason": "CENTRAL_MACHINE_POLICY_IS_THE_ONLY_POLICY_AUTHORITY_AND_HUMAN_POLICY_MIRRORS_CREATE_STALE_OR_CONTRADICTORY_DUPLICATION",
+      "removedHumanPolicyMirrors": [
         "COMPANY_FLOW.md",
-        "company-learning/PLATFORM_RELEASE_ROADMAP.md",
         "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
-        "company-learning/UNITY_WEB_FIRST_STAGE.md",
+        "company-learning/PLATFORM_RELEASE_ROADMAP.md",
         "company-learning/PRIMARY_THREE_FAST_MVP.md",
+        "company-learning/UNITY_WEB_FIRST_STAGE.md",
         "company-learning/VIBE3_ENGINE.md"
       ],
-      "canonicalReference": "company-learning/platform-release-roadmap.json"
+      "removedMigrationArtifacts": [
+        ".github/workflows/temp-cloud-designer-cutover-v2.yml",
+        ".github/workflows/temp-design-v2-wireup.yml",
+        ".github/workflows/one-shot-common-development-policy.yml",
+        "tools/temp-migrate-stage-gate-v2.mjs",
+        "tools/apply-common-development-quality-policy.mjs"
+      ],
+      "gitHistoryRemainsAuditSource": true,
+      "compatibilityPolicyMustLiveInCanonicalMachineContractNotDeletedMirrors": true
     }
   },
   "canonicalProductionDepartments": {
