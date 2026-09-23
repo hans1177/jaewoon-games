@@ -10926,7 +10926,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-23T11:57:05.928Z"
+      "updatedAt": "2026-09-23T11:57:20.213Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16756,7 +16756,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-23T11:57:05.954Z"
+      "updatedAt": "2026-09-23T11:57:20.232Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -19814,7 +19814,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-23T11:57:05.964Z"
+      "updatedAt": "2026-09-23T11:57:20.239Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118601,11 +118601,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-23T11:57:06.255Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-23T11:57:06.255Z"
-      ]
+      "updatedAt": "2026-09-23T11:57:06.255Z"
     },
     {
       "id": "recovery-7482d2b825ca91e17b35",
@@ -144101,15 +144097,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-23T11:57:06.255Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-23T11:57:06.255Z"
-      ]
+      "updatedAt": "2026-09-23T11:57:06.255Z"
     },
     {
       "id": "recovery-f7cd6a198912a519f708",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "critical",
       "sourceQueue": "vibe2",
       "sourceTaskId": "daechung-rpg-save-null-guards",
@@ -144192,11 +144184,15 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.521Z",
-      "updatedAt": "2026-09-23T11:57:05.914Z"
+      "updatedAt": "2026-09-23T11:57:20.543Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-09-23T11:57:20.543Z"
+      ]
     },
     {
       "id": "recovery-828f178e7d13218d39e5",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "high",
       "sourceQueue": "vibe2",
       "sourceTaskId": "daechung-rpg-region-controls-4-7",
@@ -144264,7 +144260,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.548Z",
-      "updatedAt": "2026-09-23T11:57:05.940Z"
+      "updatedAt": "2026-09-23T11:57:20.543Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-09-23T11:57:20.543Z"
+      ]
     }
   ]
 }
