@@ -164,7 +164,8 @@ const strictDesignerFeedback={
   improvementTargets:Array.isArray(latestDesignFeedbackEvent?.improvementTargets)?latestDesignFeedbackEvent.improvementTargets:[],
   recordedAt:clean(latestDesignFeedbackEvent?.recordedAt)||null
 };
-const evidence={game,gameSeed:seed,factPack,designLearningContext,centralPolicy:'COMPANY_FLOW.md'};
+const unityWebValidationSurfaceContract={role:'UNITY_WEB_VALIDATION_SURFACE_ONLY',separateGameTarget:false,canonicalSource:'SAME_UNITY_PROJECT',outputRoot:'web-games/<gameId>/',nativeGateAuthority:false,designRequirements:['UNITY_PROFILE_MUST_REMAIN_WEBGL_COMPATIBLE_WHEN_BUILDABLE','TOUCH_INPUT_AND_MOBILE_UI_MUST_WORK_IN_BROWSER_VALIDATION','BROWSER_PERFORMANCE_BUDGET_MUST_NOT_REQUIRE_SEPARATE_GAMEPLAY_RULES','WEB_VALIDATION_MAY_NOT_CHANGE_CORE_GAME_RULES_OR_BALANCE']};
+const evidence={game,gameSeed:seed,factPack,designLearningContext,unityWebValidationSurfaceContract,centralPolicy:'COMPANY_FLOW.md'};
 const DESIGN_CHECKPOINT_CONTRACT_VERSION=3;
 const checkpointPath=path.join(base,'design-checkpoint.json');
 const progressPath=path.join(base,'design-progress.json');
@@ -983,7 +984,7 @@ async function callDesignerModel(system,user,schema,options={}){
 async function generateDesignerDraft(){
   const preservationDirective=ownerPreservationDesign?' 이 seed는 기존 게임 보존형 표현 업그레이드다. 기존 세계관·지역·스토리·퀘스트·전투·제작·진행·밸런스·드랍·세이브·hit/cooldown 의미를 절대 재설계하지 않는다. 새 스킬·게이지·패널티·보상·자원·해금 규칙을 추가하지 않고 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→AUDIO_FEEL→CAMERA_LANGUAGE→POLISH_MOBILE 표현 패스만 설계한다.':'';
   const system=`너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.${preservationDirective}`;
-  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
+  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. UNITY platformProfiles는 네이티브와 별개 게임을 설계하지 말고 같은 canonical Unity 프로젝트가 Unity Web/WebGL 검증 표면에서도 동작하도록 터치 입력·모바일 UI·브라우저 성능·WebGL 호환성을 포함한다. Unity Web은 릴리스 플랫폼이나 별도 게임 규칙이 아니며 핵심 규칙·밸런스를 바꾸지 않는다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
   try{
     const full=await callDesignerModel(system,user,DESIGN,{predict:4096,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
     console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
