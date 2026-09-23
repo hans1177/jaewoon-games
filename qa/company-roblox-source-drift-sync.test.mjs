@@ -133,3 +133,12 @@ test('single changed Roblox game redispatches exact runtime game id',()=>{
   assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id=/);
   assert.match(workflow,/ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:/);
 });
+
+
+test('source drift sync has a dedicated non-starving concurrency lane',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer\s*\n\s*cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH"[\s\S]*git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
