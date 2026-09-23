@@ -142,3 +142,15 @@ test('source drift sync has a dedicated non-starving concurrency lane',()=>{
   assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH"[\s\S]*git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
+
+
+test('source drift persist recomputes derived runtime state after push conflicts',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+ const persist=workflow.slice(workflow.indexOf('- name: Persist runtime synchronization'),workflow.indexOf('- name: Dispatch canonical Roblox runtime for fresh build'));
+ assert.match(persist,/regenerate_runtime_state\(\)/);
+ assert.match(persist,/git -C \/tmp\/company-runtime reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+ assert.match(persist,/node tools\/company-roblox-source-drift-sync\.mjs/);
+ assert.match(persist,/node company-homepage-platform-exposure-sync\.mjs/);
+ assert.doesNotMatch(persist,/git rebase/);
+ assert.match(persist,/ROBLOX_SOURCE_SYNC_RUNTIME_PERSIST=PASS/);
+});
