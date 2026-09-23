@@ -384,7 +384,9 @@ test('24H safety-net refills free game slots while preserving queue-level confli
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'"));
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '20'"));
   assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
-  assert(safetyNetWorkflow.includes('const effectiveMax=Math.max(adaptiveMin,Math.min(configuredMax,controlTarget));'));
+  assert(safetyNetWorkflow.includes('const effectiveMax=configuredMax;'));
+  assert(safetyNetWorkflow.includes("echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'"));
+  assert.equal(safetyNetWorkflow.includes('Math.min(configuredMax,controlTarget)'),false);
   assert(safetyNetWorkflow.includes("lane_max: '256'"));
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
