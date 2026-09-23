@@ -70,7 +70,8 @@ function defaultMaterial(index,timestamp=null){
 export function normalizeSeedState(raw={}){
   const state=raw&&typeof raw==='object'&&!Array.isArray(raw)?structuredClone(raw):{};
   state.version=Math.max(2,Number(state.version)||0);
-  state.policyDocument='COMPANY_FLOW.md';
+  delete state.policyDocument;
+  state.policyAuthority='company-learning/platform-release-roadmap.json';
   if(!Array.isArray(state.categories)||!state.categories.length)state.categories=[...DEFAULT_SEED_CATEGORIES];
   if(!Array.isArray(state.seeds))state.seeds=[];
   else state.seeds=state.seeds.map(seed=>{
@@ -110,7 +111,7 @@ export function loadSeedState(file=GAME_SEED_STATE_FILE){return normalizeSeedSta
 export function saveSeedState(state,file=GAME_SEED_STATE_FILE){writeJson(file,normalizeSeedState(state));}
 export function ensureSeedMaterialPool(state,{timestamp=new Date().toISOString(),target=SEED_MATERIAL_POOL_TARGET}={}){
   const normalized=normalizeSeedState(state);
-  state.version=normalized.version;state.policyDocument=normalized.policyDocument;state.seedMaterialPolicy=normalized.seedMaterialPolicy;
+  state.version=normalized.version;state.policyAuthority=normalized.policyAuthority;delete state.policyDocument;state.seedMaterialPolicy=normalized.seedMaterialPolicy;
   state.seedMaterials=normalized.seedMaterials;
   const active=state.seedMaterials.filter(x=>x.status==='AVAILABLE'||x.status==='RESERVED');
   let nextIndex=state.seedMaterials.length;

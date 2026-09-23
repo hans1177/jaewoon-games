@@ -14,6 +14,18 @@ const clean=v=>String(v??'').trim();
 const nowIso=()=>new Date().toISOString();
 const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLATFORM||'',seed)||'ROBLOX';
 const directNativeSourcePaths=gameId=>({ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`});
+const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
+  'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
+  'webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault','webSourcePath','webFirstGatePassed',
+  'webSecondGateRequired','webPlatformHandoff','unityWebFirstStagePassed','vibeWebImplementationRequired',
+  'vibeWebRequestedStage','vibeWebImplementationReason','postPromotionArtbookRequired','postWebArtbookRequired'
+]);
+const removeLegacyWebAdmissionFields=target=>{
+  if(!target||typeof target!=='object')return target;
+  for(const key of LEGACY_WEB_ADMISSION_KEYS)delete target[key];
+  return target;
+};
+
 
 function assertCanonicalDirectNativePolicy(root='.'){
   const roadmap=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{});
@@ -89,18 +101,6 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
       ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'},
       UNITY:{source:design.file,jsonPointer:'/content/platformProfiles/UNITY'}
     },
-    webValidationRequired:false,
-    musicValidationRequired:false,
-    webSourcePath:null,
-    webFirstGatePassed:false,
-    webSecondGateRequired:false,
-    webPlatformHandoff:null,
-    unityWebFirstStagePassed:false,
-    vibeWebImplementationRequired:false,
-    vibeWebRequestedStage:null,
-    vibeWebImplementationReason:null,
-    postPromotionArtbookRequired:false,
-    postWebArtbookRequired:false,
     artbookTiming:'PARALLEL_NATIVE_PRESENTATION_SUPPORT',
     ownerPreservationPresentationUpgrade,
     presentationFirstPass:ownerPreservationPresentationUpgrade?'ASSET_ADAPTATION':(item.presentationFirstPass||null),
@@ -114,6 +114,7 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
     enqueuedAt:item.enqueuedAt||stamp,
     updatedAt:stamp
   });
+  removeLegacyWebAdmissionFields(item);
   return item;
 }
 function demoteStaleAdmission({seed,queue,portfolio,catalog,gameId,reason,stamp}){
@@ -139,11 +140,11 @@ function demoteStaleAdmission({seed,queue,portfolio,catalog,gameId,reason,stamp}
     profileStatus:'DESIGN_ONLY',
     mode:'MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED',
     productionTier:3,
-    webValidationRequired:false,
     updatedAt:stamp
   });
+  removeLegacyWebAdmissionFields(project);
   const game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
-  if(game)Object.assign(game,{
+  if(game){Object.assign(game,{
     productionClass:'DESIGN_ONLY',
     productionClassSource:reason,
     productionTier:3,
@@ -152,7 +153,7 @@ function demoteStaleAdmission({seed,queue,portfolio,catalog,gameId,reason,stamp}
     homepageTestCandidate:false,
     homepageStage:'최소 Roblox/Unity 설계 보강 필요',
     updatedAt:stamp
-  });
+  });removeLegacyWebAdmissionFields(game);}
 }
 function syncReadyMirrors({seed,design,portfolio,catalog,queue,stamp}){
   const gameId=clean(seed.gameId);
@@ -205,11 +206,11 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,stamp}){
     concurrentTargetPlatforms:['ROBLOX','UNITY'],
     targetSourcePaths:paths,
     sourcePath:paths[selectedPlatform]||paths.ROBLOX,
-    webValidationRequired:false,
     designBaselineSource:design.file,
     platformDesignProfiles:seed.platformDesignProfiles,
     updatedAt:stamp
   });
+  removeLegacyWebAdmissionFields(project);
 
   let game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
   if(!game){
@@ -232,6 +233,7 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,stamp}){
     homepageWebPlayable:Boolean(game.homepageWebPlayable),
     updatedAt:stamp
   });
+  removeLegacyWebAdmissionFields(game);
 
   let item=(queue.items||[]).find(row=>clean(row?.gameId)===gameId);
   if(!item){item={};queue.items.push(item);}
@@ -248,6 +250,8 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const queuePath=p('development-queue.json');
 
   const state=readJson(seedPath,{version:1,seeds:[]});
+  delete state.policyDocument;
+  state.policyAuthority='company-learning/platform-release-roadmap.json';
   materializeOwnerDesignResetSeeds(state,{file:p('owner-design-reset-queue.json')});
   const portfolio=readJson(portfolioPath,{version:1,projects:[]});
   const catalog=readJson(catalogPath,{version:1,games:[]});
@@ -285,9 +289,10 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   portfolio.updatedAt=stamp;
   catalog.updatedAt=stamp;
   queue.updatedAt=stamp;
-  queue.webValidationPolicy='OPTIONAL_UNITY_WEB_VALIDATION_SURFACE_NON_BLOCKING';
+  delete queue.webValidationPolicy;
   queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
   queue.developmentGameWipMax=null;
+  for(const item of queue.items||[])if(clean(item?.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED')removeLegacyWebAdmissionFields(item);
 
   writeJson(seedPath,state);
   writeJson(portfolioPath,portfolio);

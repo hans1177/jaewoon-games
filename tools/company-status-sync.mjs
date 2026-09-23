@@ -37,6 +37,17 @@ const CENTRAL_POLICY_REQUIRED_STAGES=[
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
 const roles=['planning','development','qa','graphics','audio','director'];
 const clean=value=>String(value??'').trim();
+const LEGACY_WEB_POLICY_KEYS=Object.freeze([
+  'webGames','existingWebMaintenance','webGamesRemainPlayable','newWebGameProduction','webPurpose',
+  'webCompanionRequiredForEveryGame','webEvidenceMayReplaceNativePlatformEvidence','webGameplayValidationTestbedAllowed',
+  'webGameplayValidationRequired','musicValidationRequired','webBeforeTargetPlatformByDefault',
+  'unityWebValidationRequired','unityWebValidationGateAuthority'
+]);
+const LEGACY_PROJECT_WEB_KEYS=Object.freeze([
+  'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
+  'webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault'
+]);
+const deleteKeys=(target,keys)=>{if(target&&typeof target==='object')for(const key of keys)delete target[key];return target;};
 const focusScore=project=>{
   const explicit=Number(project?.developmentFocus?.total);
   if(Number.isFinite(explicit))return explicit;
@@ -165,22 +176,11 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   policy.developmentAdmission='MINIMUM_DUAL_PLATFORM_DESIGN_READY';
   policy.strictDesignScoreRequiredForAdmission=false;
   policy.strictDesignReviewRunsInParallel=true;
-  policy.webGames='optional-unity-web-validation-surface';
-  policy.existingWebMaintenance=true;
-  policy.webGamesRemainPlayable=true;
-  policy.newWebGameProduction=false;
-  policy.webPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
-  policy.webCompanionRequiredForEveryGame=false;
   policy.approvedDesignScopeMustBeFullyImplemented=true;
   policy.silentScopeReductionForbidden=true;
-  policy.webEvidenceMayReplaceNativePlatformEvidence=false;
-  policy.webGameplayValidationTestbedAllowed=true;
-  policy.webGameplayValidationRequired=false;
-  policy.musicValidationRequired=false;
-  policy.webBeforeTargetPlatformByDefault=false;
   policy.targetPlatformMayRunImmediately=true;
-  policy.unityWebValidationRequired=false;
-  policy.unityWebValidationGateAuthority=false;
+  policy.unityWebValidationPolicySource=centralPolicyPath+'#directNativeDualPlatformDevelopment.unityWebValidationSurface';
+  deleteKeys(policy,LEGACY_WEB_POLICY_KEYS);
   policy.fortniteUefnAutomaticDevelopment=false;
   policy.fortniteUefnState='OWNER_HOLD';
   delete policy.allThreePlatformsMayBeDevelopedConcurrently;
@@ -259,20 +259,15 @@ function synchronizePlatformPolicy(portfolio){
   development.concurrentTargetPlatforms=['ROBLOX','UNITY'];
   development.strictDesignScoreRequiredForAdmission=false;
   development.strictDesignReviewRunsInParallel=true;
-  development.webPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
-  development.webCompanionRequired=false;
   development.approvedDesignScopeMustBeFullyImplemented=true;
-  development.webEvidenceMayReplaceNativePlatformEvidence=false;
-  development.webGameplayValidationRequired=false;
-  development.musicValidationRequired=false;
-  development.webBeforeTargetPlatformByDefault=false;
   development.targetPlatformMayRunImmediately=true;
+  deleteKeys(development,LEGACY_PROJECT_WEB_KEYS);
   development.onePlatformFailureDoesNotCancelOther=true;
   portfolio.developmentFocusPolicy ||= {};
   portfolio.developmentFocusPolicy.selection='AUTO_NATIVE_READINESS_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT';
   portfolio.developmentFocusPolicy.platformPriority=[...PLATFORM_PRIORITY];
   portfolio.developmentFocusPolicy.priorityMeaning='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE';
-  portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform=false;
+  delete portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform;
   portfolio.developmentFocusPolicy.nativePlatformEvidenceStillRequired=true;
   portfolio.developmentFocusPolicy.nativeDevelopmentAdmission='MINIMUM_DUAL_PLATFORM_DESIGN_READY';
   delete portfolio.developmentFocusPolicy.requiredWebGameplayAndMusicValidationBeforeTargetPlatform;
@@ -389,13 +384,8 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
         ROBLOX:clean(project?.targetSourcePaths?.ROBLOX)||`roblox-games/${project.slug}`,
         UNITY:clean(project?.targetSourcePaths?.UNITY)||`unity-games/${project.slug}`
       };
-      project.webPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
-      project.webCompanionRequired=false;
-      project.webValidationRequired=false;
       project.approvedDesignScopeMustBeFullyImplemented=true;
-      project.webEvidenceMayReplaceNativePlatformEvidence=false;
-      project.webGameplayValidationRequired=false;
-      project.musicValidationRequired=false;
+      deleteKeys(project,LEGACY_PROJECT_WEB_KEYS);
       project.strictDesignScoreRequiredForAdmission=false;
       project.strictDesignReviewRunsInParallel=true;
     }else{

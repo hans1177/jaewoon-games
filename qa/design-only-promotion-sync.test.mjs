@@ -107,10 +107,11 @@ test('minimum dual-platform design promotes immediately while strict review stay
   assert.equal(item.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
   assert.equal(item.canonicalState,'PENDING_DUAL_NATIVE_SOURCE_BIND');
   assert.equal(item.minimumDesignContract.pass,true);
-  assert.equal(item.webValidationRequired,false);
-  assert.equal(item.musicValidationRequired,false);
-  assert.equal(item.webSourcePath,null);
+  for(const key of ['webValidationRequired','musicValidationRequired','webSourcePath','webFirstGatePassed','webSecondGateRequired','webPlatformHandoff','postWebArtbookRequired'])assert.equal(Object.hasOwn(item,key),false,key);
   assert.equal(item.artbookTiming,'PARALLEL_NATIVE_PRESENTATION_SUPPORT');
+  const state=read(root,'game-seed-state.json');
+  assert.equal(state.policyAuthority,'company-learning/platform-release-roadmap.json');
+  assert.equal(Object.hasOwn(state,'policyDocument'),false);
 });
 
 test('legacy Android preference maps to Unity but still starts both native lanes',()=>{
