@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { applyVerifiedKnowledgeOutcomes } from './vibe2-learning-motor.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -48,7 +49,41 @@ function generalizedSystem(task={}){
   if(/web-games|roblox-games|unity-games|unreal-games|godot-games/i.test(text))return'GAME_IMPLEMENTATION';
   return'SYSTEM_ENGINEERING';
 }
-export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInput={},libraryInput={}}={}){
+
+function knowledgeRefs(task={}){
+  return uniq((task.evidence||[])
+    .map(clean)
+    .filter(x=>x.startsWith('learning-knowledge-id:'))
+    .map(x=>clean(x.slice('learning-knowledge-id:'.length))));
+}
+function inferredTarget(task={}){
+  const files=(task.responsibleFiles||[]).map(x=>clean(x).replaceAll('\\','/'));
+  if(files.some(x=>x.startsWith('web-games/')))return'web';
+  if(files.some(x=>x.startsWith('roblox-games/')))return'roblox';
+  if(files.some(x=>x.startsWith('unity-games/')))return'unity';
+  if(files.some(x=>x.startsWith('unreal-games/')))return'unreal';
+  if(files.some(x=>x.startsWith('godot-games/')))return'godot';
+  if(clean(task.department).toLowerCase()==='planning-growth-marketing'||clean(task.id).startsWith('marketing-'))return'marketing';
+  return'system';
+}
+function verifiedKnowledgeOutcomeTasks(tasks=[]){
+  return (tasks||[]).flatMap(task=>{
+    const gate=classification(task);
+    const refs=knowledgeRefs(task);
+    if(!gate.eligible||!refs.length)return[];
+    const evidence=uniq([
+      ...(task.evidence||[]),
+      'learning-knowledge-ids:'+encodeURIComponent(JSON.stringify(refs)),
+      'role-result:regression:PASS',
+      'role-result:review:PASS',
+      'candidate-identity:PASS',
+      ...(Number(task.retries||0)===0?['coding-candidate-first-attempt:YES']:[]),
+      ...(clean(task.failureSignature)?['coding-failure-fingerprint:'+clean(task.failureSignature)]:[])
+    ]);
+    return[{...task,target:inferredTarget(task),evidence}];
+  });
+}
+export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInput={},libraryInput={},masteryInput={}}={}){
   const queue={...systemAiInput,tasks:(systemAiInput.tasks||[]).map(x=>({...x}))};
   const experience={version:Number(experienceInput.version||3),policy:{...(experienceInput.policy||{}),verifiedEvidenceRequired:true,rawExternalModelOutputForbidden:true,systemAiSelfAcceptanceForbidden:true},records:[...(experienceInput.records||[])]};
   const library={version:Number(libraryInput.version||1),kind:'vibe2-verified-code-pattern-library',policy:{...(libraryInput.policy||{}),rawCodeStored:false,systemAiPatternRequiresVerifiedAcceptance:true},patterns:[...(libraryInput.patterns||[])]};
@@ -106,21 +141,28 @@ export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInpu
     return{...task,learningPromotion:'PROMOTED',learningFingerprint:fingerprint,learningPromotedAt:stamp};
   });
   library.patterns=library.patterns.slice(-2500);
-  return{queue,experience,library,experienceAdded,patternsAdded};
+  const knowledgeOutcomeTasks=verifiedKnowledgeOutcomeTasks(queue.tasks);
+  const knowledgeOutcome=applyVerifiedKnowledgeOutcomes(masteryInput,{tasks:knowledgeOutcomeTasks});
+  return{queue,experience,library,mastery:knowledgeOutcome.state,experienceAdded,patternsAdded,knowledgeOutcomesAdded:knowledgeOutcome.added||0,knowledgePositiveApplications:knowledgeOutcome.positive||0,knowledgeNegativeApplications:knowledgeOutcome.negative||0};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
   const queueFile=clean(args.queue)||'.vibe2/system-ai-queue.json';
   const experienceFile=clean(args.experience)||'.vibe2/experience.json';
   const patternsFile=clean(args.patterns)||'.vibe2/code-pattern-library.json';
+  const stateFile=clean(args.state)||'.vibe2/learning-motor-state.json';
   const result=promoteVerifiedSystemAiLearning({
     systemAiInput:readJson(queueFile,{tasks:[]}),
     experienceInput:readJson(experienceFile,{version:3,records:[]}),
-    libraryInput:readJson(patternsFile,{patterns:[]})
+    libraryInput:readJson(patternsFile,{patterns:[]}),
+    masteryInput:readJson(stateFile,{})
   });
   writeJson(queueFile,result.queue);
   writeJson(experienceFile,result.experience);
   writeJson(patternsFile,result.library);
+  if(result.knowledgeOutcomesAdded>0)writeJson(stateFile,result.mastery);
   console.log('SYSTEM_AI_LEARNING_EXPERIENCE_ADDED='+result.experienceAdded);
   console.log('SYSTEM_AI_LEARNING_PATTERNS_ADDED='+result.patternsAdded);
+  console.log('SYSTEM_AI_LEARNING_KNOWLEDGE_OUTCOMES_ADDED='+result.knowledgeOutcomesAdded);
+  console.log('SYSTEM_AI_LEARNING_KNOWLEDGE_POSITIVE='+result.knowledgePositiveApplications);
 }
