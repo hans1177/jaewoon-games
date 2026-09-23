@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -272,7 +272,15 @@
       "pushQaOnlyRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
       "pushQaOnlyTestRevision": "7514d87deae8799f9891eaf67fe2a684dcccd55b",
       "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c",
-      "pushQaReserveLockIsolationTestRevision": "eec5aa2219bc4523bb08f0c4d9d293772f0bbc2e"
+      "pushQaReserveLockIsolationTestRevision": "eec5aa2219bc4523bb08f0c4d9d293772f0bbc2e",
+      "systemAiExternalMatrixCapacityRevision": "e0968e099aed84a75444639186c60541c84f9377",
+      "systemAiExternalMatrixCapacityTestRevision": "a15ba49c058743cea3e1fcde0413bc7952f72097",
+      "systemAiConfiguredBatchMax": 256,
+      "systemAiStrategyMaxParallel": null,
+      "gameWorkerAdaptiveCapRemovedRevision": "d685c17caa8da473e89b280a365bd6adb264b49d",
+      "gameWorkerProviderCapacityRunnerRevision": "86c7defe4b3fd6c03562e5ae860e73f04a07a51f",
+      "gameWorkerAdaptiveCapRemovedTestRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd",
+      "gameWorkerProviderCapacityLiveVerification": "PENDING_NEXT_GAME_PRIMARY_WAVE"
     },
     "metricSemantics": {
       "SYSTEM_AI_RESERVATION_WAIT_MS": {
