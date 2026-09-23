@@ -407,6 +407,29 @@ function knowledgeStateFor(master={},source='',id=''){
   return clean(master?.knowledgeAttribution?.entries?.[key]?.state)||'VERIFIED';
 }
 
+function normalizeGraphicsEvolutionMemory(input={}){
+  const source=input&&typeof input==='object'?input:{};
+  const entries={};
+  for(const [key,rowRaw] of Object.entries(source.entries||{})){
+    const row=rowRaw&&typeof rowRaw==='object'?rowRaw:{};
+    entries[clean(key)]={
+      gameId:clean(row.gameId)||null,
+      pass:upper(row.pass)||null,
+      signalSource:upper(row.signalSource)||null,
+      verifiedPasses:Math.max(0,Number(row.verifiedPasses)||0),
+      verifiedRegressions:Math.max(0,Number(row.verifiedRegressions)||0),
+      ownerRepeatInsufficientSignals:Math.max(0,Number(row.ownerRepeatInsufficientSignals)||0),
+      highestPriorityScore:Math.max(0,Number(row.highestPriorityScore)||0),
+      alternativesRequiredCount:Math.max(0,Number(row.alternativesRequiredCount)||0),
+      lastSelectedApproach:clean(row.lastSelectedApproach)||null,
+      lastOutcome:upper(row.lastOutcome)||null,
+      lastEvidence:clean(row.lastEvidence)||null,
+      lastUpdatedAt:clean(row.lastUpdatedAt)||null
+    };
+  }
+  return{version:1,seenOutcomeIds:uniq(source.seenOutcomeIds||[]),entries};
+}
+
 export function createMasteryState(seed={}){
   const domains={};
   for(const d of MASTERY_DOMAINS){
@@ -430,6 +453,7 @@ export function createMasteryState(seed={}){
     codingConstitution:normalizeCodingConstitution(seed.codingConstitution),
     productionConfidence:normalizeProductionConfidence(seed.productionConfidence),
     knowledgeAttribution:normalizeKnowledgeAttribution(seed.knowledgeAttribution),
+    graphicsEvolutionMemory:normalizeGraphicsEvolutionMemory(seed.graphicsEvolutionMemory),
     updatedAt:clean(seed.updatedAt)||null
   };
 }
@@ -1730,6 +1754,60 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={},q
   };
 }
 
+function lastGraphicsEvolutionMarker(evidence=[],prefix=''){
+  return (evidence||[]).map(clean).filter(value=>value.startsWith(prefix)).at(-1)?.slice(prefix.length)||'';
+}
+export function applyVerifiedGraphicsEvolutionOutcomes(stateInput={},queueInput={}){
+  const state=createMasteryState(stateInput);
+  const memory=normalizeGraphicsEvolutionMemory(state.graphicsEvolutionMemory);
+  const seen=new Set(memory.seenOutcomeIds||[]);
+  let added=0,positive=0,negative=0,repeatedOwnerInsufficient=0;
+  for(const task of queueInput?.tasks||[]){
+    const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
+    if(!evidence.includes('graphics-evolution:evidence-driven'))continue;
+    const status=lower(task.status);
+    const verifiedPass=['verified','done'].includes(status);
+    const verifiedRegression=status==='failed'&&evidence.some(value=>/failure-cause:fan-in-regression-failed|role-result:regression:FAIL/i.test(value));
+    if(!verifiedPass&&!verifiedRegression)continue;
+    const outcome=verifiedPass?'PASS':'REGRESSION_FAIL';
+    const pass=upper(lastGraphicsEvolutionMarker(evidence,'presentation-pass:'))||'UNKNOWN';
+    const source=upper(lastGraphicsEvolutionMarker(evidence,'graphics-evolution-trigger-source:'))||'UNKNOWN';
+    const score=Math.max(0,Number(lastGraphicsEvolutionMarker(evidence,'graphics-evolution-priority-score:'))||0);
+    const repeatCount=Math.max(0,Number(lastGraphicsEvolutionMarker(evidence,'graphics-evolution-owner-repeat-count:'))||0);
+    const alternatives=upper(lastGraphicsEvolutionMarker(evidence,'graphics-evolution-alternatives-required:'))==='YES';
+    const approach=clean(lastGraphicsEvolutionMarker(evidence,'graphics-evolution-selected-approach:'));
+    const eventIdentity=lastGraphicsEvolutionMarker(evidence,'graphics-evolution-signal-event:')||clean(task.id);
+    const runIdentity=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||eventIdentity;
+    const outcomeId='graphics_evolution_'+hash([clean(task.id),runIdentity,outcome].join('|'));
+    if(seen.has(outcomeId))continue;
+    const gameId=clean(task.gameId)||'unknown';
+    const key=[gameId,pass,source].join('|');
+    const row=memory.entries[key]||{
+      gameId,pass,signalSource:source,verifiedPasses:0,verifiedRegressions:0,
+      ownerRepeatInsufficientSignals:0,highestPriorityScore:0,alternativesRequiredCount:0,
+      lastSelectedApproach:null,lastOutcome:null,lastEvidence:null,lastUpdatedAt:null
+    };
+    if(outcome==='PASS'){row.verifiedPasses+=1;positive+=1;}
+    else{row.verifiedRegressions+=1;negative+=1;}
+    if(source==='OWNER_CHANGE_REQUEST'&&repeatCount>=2){
+      row.ownerRepeatInsufficientSignals+=1;
+      repeatedOwnerInsufficient+=1;
+    }
+    if(alternatives)row.alternativesRequiredCount+=1;
+    row.highestPriorityScore=Math.max(row.highestPriorityScore,score);
+    if(approach)row.lastSelectedApproach=approach;
+    row.lastOutcome=outcome;
+    row.lastEvidence=outcomeId;
+    row.lastUpdatedAt=new Date().toISOString();
+    memory.entries[key]=row;
+    seen.add(outcomeId);added+=1;
+  }
+  memory.seenOutcomeIds=[...seen].slice(-5000);
+  state.graphicsEvolutionMemory=memory;
+  state.updatedAt=new Date().toISOString();
+  return{state,added,positive,negative,repeatedOwnerInsufficient};
+}
+
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
@@ -1737,15 +1815,16 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const calibrationApplied=applyVerifiedCodingCalibration(strategyApplied.state,queueInput);
   const driftApplied=applyVerifiedArchitectureDriftOutcomes(calibrationApplied.state,queueInput);
   const knowledgeApplied=applyVerifiedKnowledgeOutcomes(driftApplied.state,queueInput);
-  const constitution=buildCodingConstitution(knowledgeApplied.state);
-  knowledgeApplied.state.codingConstitution=constitution;
-  knowledgeApplied.state.updatedAt=new Date().toISOString();
-  const benchmark=buildBenchmarkLadder(knowledgeApplied.state,experienceInput,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(knowledgeApplied.state,benchmark);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,knowledgeApplied.state);
+  const graphicsApplied=applyVerifiedGraphicsEvolutionOutcomes(knowledgeApplied.state,queueInput);
+  const constitution=buildCodingConstitution(graphicsApplied.state);
+  graphicsApplied.state.codingConstitution=constitution;
+  graphicsApplied.state.updatedAt=new Date().toISOString();
+  const benchmark=buildBenchmarkLadder(graphicsApplied.state,experienceInput,companyQueueInput);
+  const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:knowledgeApplied.state,
+    state:graphicsApplied.state,
     addedExperience:applied.added,
     addedCodePatterns:patternApplied.added,
     addedCodingStrategyOutcomes:strategyApplied.added,
@@ -1756,6 +1835,10 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     addedKnowledgeAttributionOutcomes:knowledgeApplied.added||0,
     knowledgePositiveApplications:knowledgeApplied.positive||0,
     knowledgeNegativeApplications:knowledgeApplied.negative||0,
+    addedGraphicsEvolutionOutcomes:graphicsApplied.added||0,
+    graphicsEvolutionPositiveOutcomes:graphicsApplied.positive||0,
+    graphicsEvolutionNegativeOutcomes:graphicsApplied.negative||0,
+    graphicsEvolutionRepeatedOwnerInsufficientSignals:graphicsApplied.repeatedOwnerInsufficient||0,
     codingConstitutionRuleCount:constitution.rules.length,
     benchmark,
     idlePractice,
@@ -1796,6 +1879,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_KNOWLEDGE_ATTRIBUTION_OUTCOMES_ADDED=${result.addedKnowledgeAttributionOutcomes||0}`);
   console.log(`VIBE2_KNOWLEDGE_POSITIVE_APPLICATIONS=${result.knowledgePositiveApplications||0}`);
   console.log(`VIBE2_KNOWLEDGE_NEGATIVE_APPLICATIONS=${result.knowledgeNegativeApplications||0}`);
+  console.log(`VIBE2_GRAPHICS_EVOLUTION_OUTCOMES_ADDED=${result.addedGraphicsEvolutionOutcomes||0}`);
+  console.log(`VIBE2_GRAPHICS_EVOLUTION_POSITIVE=${result.graphicsEvolutionPositiveOutcomes||0}`);
+  console.log(`VIBE2_GRAPHICS_EVOLUTION_NEGATIVE=${result.graphicsEvolutionNegativeOutcomes||0}`);
+  console.log(`VIBE2_GRAPHICS_EVOLUTION_REPEATED_OWNER_INSUFFICIENT=${result.graphicsEvolutionRepeatedOwnerInsufficientSignals||0}`);
   console.log(`VIBE2_CODING_CONSTITUTION_RULES=${result.codingConstitutionRuleCount||0}`);
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_BENCHMARK_CASES=${result.benchmark.phase4GeneralizationCases||0}`);
