@@ -1,5 +1,23 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1o1k6zv",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-roblox-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/client/Game.client.luau"
+      ],
+      "baseSha": "231528315f728bfba8368605a77364f5f59178bf",
+      "acquiredAt": "2026-09-23T10:09:52.537Z",
+      "expiresAt": "2026-09-23T10:54:52.537Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-roblox-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
