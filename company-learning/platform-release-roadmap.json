@@ -1,5 +1,5 @@
 {
-  "version": 289,
+  "version": 290,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -9255,6 +9255,19 @@
         "qa/vibe2-native-asset-production.test.mjs",
         "qa/company-high-end-visual-contract.test.mjs"
       ]
+    },
+    "graphicsProductionUnifiedBinding": {
+      "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
+      "soleCoordinator": "assets/vibe-art-pipeline.js",
+      "inputPlanner": "tools/vibe2-asset-production-plan.mjs",
+      "internalModules": [
+        "assets/vibe-visual-autopilot.js",
+        "assets/vibe-presentation-director.js",
+        "assets/vibe-visual-quality-gate.js"
+      ],
+      "oneTopLevelWorkUnit": true,
+      "oneRootEvidenceRecord": true,
+      "shadowPipelineForbidden": true
     }
   },
   "supervisedWebGameProduction": {
@@ -11556,7 +11569,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 6,
+    "version": 7,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -11924,6 +11937,74 @@
         "gameplayBalanceSaveProgressionEconomyAndHitSemanticsImmutableForPresentationOnlyWork": true,
         "existingLicenseAndProvenancePolicyReused": true,
         "existingQaSecurityReleaseGatesMayNotBeWeakened": true
+      },
+      "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
+      "graphicsProductionUnificationAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
+      "internalVisualModulesAreNotIndependentProductionAuthorities": true
+    },
+    "graphicsProductionUnification": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-23",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "externalWorkUnit": "GRAPHICS_PRODUCTION",
+      "purpose": "ONE_GAME_ONE_COHERENT_GRAPHICS_PRODUCTION_ROOT_INSTEAD_OF_SCATTERED_TOP_LEVEL_VISUAL_TASKS",
+      "scope": "PER_GAME_CANDIDATE_REVISION_ACROSS_ROBLOX_AND_UNITY_NATIVE_PRESENTATION",
+      "developmentAdmissionGate": false,
+      "runsInParallelWithNativeDevelopment": true,
+      "soleProductionCoordinator": "assets/vibe-art-pipeline.js",
+      "inputPlanner": "tools/vibe2-asset-production-plan.mjs",
+      "internalModules": {
+        "visualDirection": "assets/vibe-visual-autopilot.js",
+        "presentation": "assets/vibe-presentation-director.js",
+        "runtimeQuality": "assets/vibe-visual-quality-gate.js"
+      },
+      "internalStages": [
+        "ART_DIRECTION_AND_VISUAL_TARGET_LOCK",
+        "ASSET_INVENTORY_ACQUISITION_AND_MUTATION",
+        "HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS",
+        "ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING",
+        "MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING",
+        "ANIMATION_AND_MOTION_IDENTITY",
+        "VFX_UI_AND_PRESENTATION_BINDING",
+        "RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION",
+        "PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN"
+      ],
+      "queueContract": {
+        "topLevelGraphicsWorkUnitsPerGameCandidate": 1,
+        "siblingTopLevelCharacterEnvironmentAnimationVfxLightingUiTasksForbidden": true,
+        "internalStagesMayFanOutWhenResponsibleFilesAreDisjoint": true,
+        "internalFanOutMustFanInToSameGraphicsProductionRoot": true,
+        "perStageAtomicCompletionAllowed": true,
+        "globalGraphicsWaveBarrierForbidden": true,
+        "duplicateGraphicsProductionRootForSameGameCandidateForbidden": true,
+        "failedInternalScopeRoutesToSameRootRepairState": "ASSET_REPAIR_REQUIRED"
+      },
+      "authorityBoundaries": {
+        "graphicsDepartmentOwnsVisualProductionDirection": true,
+        "vibeOwnsGameSourceMutation": true,
+        "audioAuthoringOwner": "audio",
+        "graphicsMayConsumeAudioEvidenceAndBindAudioPresentation": true,
+        "graphicsMayNotCreateIndependentAudioDepartmentAuthority": true,
+        "gameplayAuthorityExpansionForbidden": true,
+        "qaSecurityReleaseAuthorityExpansionForbidden": true
+      },
+      "outputContract": {
+        "passState": "GRAPHICS_PASS",
+        "activeState": "GRAPHICS_PRODUCTION_ACTIVE",
+        "repairState": "ASSET_REPAIR_REQUIRED",
+        "oneRootEvidenceRecord": true,
+        "evidenceRecordKind": "graphics-production-evidence",
+        "perPlatformChildEvidenceReferencesRequired": true,
+        "rawCaptureDuplicationForbidden": true,
+        "artBibleAndTargetFramesBoundAtRoot": true,
+        "assetProvenanceAndTransformHistoryBoundAtRoot": true,
+        "runtimeVisualQaAndPerformanceBoundAtRoot": true
+      },
+      "compatibility": {
+        "existingVisualModulesRetainedAsInternalModules": true,
+        "existingModulePublicExportsMayRemainForCompatibility": true,
+        "modulesMayNotActAsIndependentTopLevelProductionAuthorities": true,
+        "newShadowGraphicsPipelineForbidden": true
       }
     }
   },
