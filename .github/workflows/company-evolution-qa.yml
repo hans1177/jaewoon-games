@@ -27,7 +27,6 @@ jobs:
           node --check tools/production-classification.mjs
           node --check tools/artbook-fact-pack.mjs
           node --check tools/company-design-cycle.mjs
-          node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-release-stale-artifact-guard.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
@@ -52,19 +51,9 @@ jobs:
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const machineSource='company-learning/platform-release-roadmap.json';
           const policy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
-          const legacyMirror=fs.readFileSync('COMPANY_FLOW.md','utf8');
           if(directive.policyDocument!==machineSource||directive.machineSourceOfTruth!==machineSource)throw new Error('machine settings must point to canonical platform release roadmap');
           if(directive.authority!=='MACHINE_EXECUTION_CONTRACT')throw new Error('company directive machine authority missing');
           if(policy.authority!=='MACHINE_EXECUTION_CONTRACT'||policy.machineSourceOfTruth!==machineSource||policy.humanDocumentRequired!==false)throw new Error('canonical machine policy authority invalid');
-          for(const token of [
-            `sourceOfTruth: ${machineSource}`,
-            'authority: LEGACY_POLICY_MIRROR',
-            'authoritative: false',
-            'legacyPolicyMirror: true',
-            `canonicalMachineAuthority: MACHINE_EXECUTION_CONTRACT`
-          ]){
-            if(!legacyMirror.includes(token))throw new Error(`legacy policy mirror pointer missing: ${token}`);
-          }
           const lifecycle=policy.developmentLifecycleMachine?.stages||[];
           for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE']){
             if(!lifecycle.includes(stage))throw new Error(`canonical lifecycle stage missing: ${stage}`);
@@ -82,7 +71,7 @@ jobs:
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
           const dev=directive.classes?.DEVELOPMENT_CONFIRMED||{};
-          if(dev.executionMode!=='DIRECT_NATIVE_DUAL_PLATFORM'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.webBeforeTargetPlatformByDefault!==false||dev.targetPlatformMayRunImmediately!==true||dev.webGameplayValidationRequired!==false||dev.webCompanionValidationRequired!==false||dev.webCandidateMustPassBeforeTargetPlatformDispatch!==false||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true)throw new Error('DEVELOPMENT_CONFIRMED direct-native settings missing');
+          if(dev.executionMode!=='DIRECT_NATIVE_DUAL_PLATFORM'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.admissionAuthority!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY'||dev.strictDesignScoreRequiredForAdmission!==false||dev.strictDesignReviewRunsInParallel!==true||dev.targetPlatformMayRunImmediately!==true||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true||dev.unityWebValidationSurface?.nativeGateAuthority!==false)throw new Error('DEVELOPMENT_CONFIRMED direct-native settings missing');
           const release=directive.classes?.RELEASE_CONFIRMED||{};
           if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED selected-platform gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
@@ -96,9 +85,6 @@ jobs:
           if(!(sourceBind>=0&&build>sourceBind&&runtime>build&&independentQa>runtime&&finalReview>independentQa))throw new Error('selected-platform direct-native release review order invalid');
           for(const state of ['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
           for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
-          for(const obsoletePolicyMirror of ['AGENTS.md','HOMEPAGE_OPERATIONS.md']){
-            if(fs.existsSync(obsoletePolicyMirror))throw new Error(`obsolete human-readable policy mirror must stay removed: ${obsoletePolicyMirror}`);
-          }
           console.log('CENTRAL_POLICY=PASS');
           console.log(`DEPARTMENT_LEAD_DISTINCTNESS_REQUIRED=NO`);
           console.log(`CONFIGURED_DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
@@ -112,7 +98,6 @@ jobs:
           set -euo pipefail
           grep -Fq 'Pull configured free department models' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'DEPARTMENT_LEAD_PREFLIGHT=PASS' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'tools/company-development-validation-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'tools/company-release-production-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/vibe2-release-implementation.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/unity-android-build.json' .github/workflows/artbook-free-department-bots.yml
@@ -144,7 +129,7 @@ jobs:
           node --test qa/release-stale-artifact-guard.test.mjs
           node --test qa/tier1-development-baseline-gate.test.mjs
           node --test qa/company-design-pre-gate-resume.test.mjs
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-development-validation-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
           fi
@@ -155,10 +140,11 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-          const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
-          for(const token of ['web-gameplay-validation.json','targetEvidenceFile','development-revalidation.json','selected-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
-          for(const token of ['aiMayInventValidationPass:false','web-gameplay-validation-failed','technical-validation-failed','revalidation-required:','artbookOnlyAfterBaselineReady:true'])if(!cycle.includes(token))throw new Error(`development cycle contract missing: ${token}`);
+          for(const token of ['minimum-dual-platform-design-required','targetEvidenceFile','development-revalidation.json','selected-native-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY','supportingOnly:true'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
+          if(gate.includes("webGameplay:{required:true"))throw new Error('Web gameplay may not regain development admission authority');
           console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
+          console.log('DEVELOPMENT_ADMISSION=MINIMUM_DESIGN_PLUS_NATIVE_EVIDENCE');
+          console.log('UNITY_WEB_ADMISSION_AUTHORITY=NONE');
           NODE
 
       - name: Validate RELEASE_CONFIRMED evidence and Vibe2 handoff cannot be faked

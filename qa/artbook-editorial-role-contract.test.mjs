@@ -3,12 +3,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
-const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const machineSource='company-learning/platform-release-roadmap.json';
 const machinePolicy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-const devCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const releaseCycle=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const roles=['planning','graphics','development','qa','audio'];
@@ -20,12 +18,6 @@ test('one canonical machine policy source owns class design meeting and release 
   assert.equal(machinePolicy.machineSourceOfTruth,machineSource);
   assert.equal(machinePolicy.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(machinePolicy.humanDocumentRequired,false);
-  assert.match(flow,/sourceOfTruth: company-learning\/platform-release-roadmap\.json/);
-  assert.match(flow,/authority: LEGACY_POLICY_MIRROR/);
-  assert.match(flow,/authoritative: false/);
-  assert.match(flow,/canonicalMachineAuthority: MACHINE_EXECUTION_CONTRACT/);
-  assert.match(flow,/machineContractsMayMirrorPolicyButCannotCreatePolicy: true/);
-  assert.match(flow,/evidenceFilesCannotCreatePolicy: true/);
 });
 
 test('GAME_SEED mirrors the current selected-platform policy while preserving legacy input compatibility',()=>{
@@ -45,14 +37,6 @@ test('GAME_SEED mirrors the current selected-platform policy while preserving le
   assert.equal(GAME_SEED_POLICY.targetSessionMinutes,30);
   assert.equal(GAME_SEED_POLICY.initialTargetPlatform,'ROBLOX');
   assert.deepEqual([...GAME_SEED_POLICY.allowedTargetPlatforms],['ROBLOX','UNITY','FORTNITE_UEFN']);
-  assert.match(flow,/initialTargetPlatform: ROBLOX/);
-  assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
-  assert.match(flow,/poolTarget: 100/);
-  assert.match(flow,/combinePerGameSeed:[\s\S]*?min: 2[\s\S]*?max: 4/);
-  assert.match(flow,/meaningfulMinutesRequiredAtInitialGeneration: null/);
-  assert.match(flow,/finalContentDepthMinutesRequired: 30/);
-  assert.match(flow,/thirtyMinuteInitialGenerationHardGateForbidden: true/);
-  assert.match(flow,/decisionStage: GAME_DESIGN/);
 });
 
 test('GAME_SEED validator accepts any allowed selected platform and rejects unsupported targets',()=>{
@@ -77,22 +61,28 @@ test('GAME_SEED validator accepts any allowed selected platform and rejects unsu
   assert.ok(invalid.errors.some(x=>x.includes('.observedAt is required')));
 });
 
-test('DESIGN_ONLY flow and baseline mirror current central requirements',()=>{
+test('DESIGN_ONLY is only the transient minimum-design preparation state',()=>{
   const design=directive.classes.DESIGN_ONLY;
-  assert.equal(design.requiredFlow[0],'GAME_SEED');
-  assert.equal(design.requiredFlow[1],'GAME_DESIGNER_DRAFT');
-  for(const token of [
-    'GAME_SEED_COMPLETE','DISTINCT_GAME_IDENTITY','CORE_FUN_CLEAR',
-    'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD','MARKET_TARGET_DIRECTION_RECORDED',
-    'TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED',
-    'MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED',
-    'DETERMINISTIC_DESIGN_PRE_GATE_PASS','DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED',
-    'STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'
-  ])assert.ok(design.baselineReadyRequires.includes(token),`missing DESIGN_ONLY requirement: ${token}`);
-  assert.equal(design.readyState,'DESIGN_BASELINE_READY');
-  assert.match(flow,/TARGET_PLATFORM_UX_DIRECTION_DEFINED/);
-  assert.match(flow,/DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED/);
-  assert.match(flow,/STRICT_DESIGN_SCORE_AT_LEAST_80/);
+  assert.equal(design.status,'TRANSIENT_PRE_MINIMUM_DESIGN');
+  assert.equal(design.developmentAdmissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_CONTRACT_ONLY');
+  assert.equal(design.strictDesignScoreRequiredForAdmission,false);
+  assert.equal(design.strictDesignReviewRunsInParallelAfterAdmission,true);
+  assert.deepEqual(design.requiredFlow,[
+    'GAME_SEED',
+    'COMMON_CORE_MINIMUM_DESIGN',
+    'ROBLOX_PLATFORM_PROFILE',
+    'UNITY_PLATFORM_PROFILE',
+    'MINIMUM_DUAL_PLATFORM_DESIGN_CONTRACT'
+  ]);
+  assert.deepEqual(design.baselineReadyRequires,[
+    'GAME_SEED_COMPLETE',
+    'MINIMUM_COMMON_CORE_READY',
+    'ROBLOX_PLATFORM_PROFILE_READY',
+    'UNITY_PLATFORM_PROFILE_READY',
+    'PLATFORM_PROFILES_DISTINCT'
+  ]);
+  assert.equal(design.readyState,'MINIMUM_DESIGN_READY');
+  assert.equal(design.longLivedPromotionGate,false);
 });
 
 test('development and release preserve direct lead review without forcing distinct lead models',()=>{
@@ -104,11 +94,8 @@ test('development and release preserve direct lead review without forcing distin
   assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments,1);
   assert.equal(directive.ai.departmentReviewModelCount,1);
   assert.equal(directive.ai.leadDistinctnessPolicy,'NOT_REQUIRED_FOR_EXECUTION');
-  assert.match(flow,/designOnlyReviewMode: DETERMINISTIC_EVIDENCE_NO_AI_VERDICT/);
-  assert.match(flow,/allModelsWithinDepartmentMustBeDistinct: false/);
   assert.match(cycle,/deterministic_department_evidence/);
   assert.doesNotMatch(cycle,/GEMINI_RESOLVED_DISTINCT_LEAD_GATE/);
-  assert.match(devCycle,/DEPARTMENT_LEAD_GATE/);
   assert.match(releaseCycle,/DEPARTMENT_LEAD_GATE/);
 });
 
@@ -119,7 +106,6 @@ test('DESIGN_ONLY uses deterministic evidence without AI meeting or rebuttal lay
   assert.equal(directive.ai.meeting.crossDepartmentRebuttalRounds,0);
   assert.equal(directive.ai.meeting.rebuttalOwner,null);
   assert.equal(directive.ai.meeting.designOnlyRevisionInput,'DETERMINISTIC_FAILED_AXIS_EVIDENCE');
-  assert.match(flow,/designOnlyReviewMode: DETERMINISTIC_EVIDENCE_NO_AI_VERDICT/);
   assert.match(cycle,/deterministic_department_evidence/);
   assert.doesNotMatch(cycle,/rebuttalAuthoredByDepartmentLeads:true/);
 });
@@ -138,25 +124,28 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
   assert.equal(authority.externalAiSelfAcceptance,false);
   assert.equal(authority.externalAiDirectMainWrite,false);
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
-  assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
-test('DEVELOPMENT_CONFIRMED starts Roblox and Unity directly from minimum shared design without a Web gate',()=>{
+test('DEVELOPMENT_CONFIRMED starts Roblox and Unity from minimum shared design while Unity Web stays optional',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.equal(dev.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
   assert.equal(dev.resumeFromLatestEvidence,true);
-  assert.equal(dev.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
+  assert.equal(dev.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  assert.equal(dev.strictDesignScoreRequiredForAdmission,false);
+  assert.equal(dev.strictDesignReviewRunsInParallel,true);
   assert.equal(dev.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
-  assert.equal(dev.webBeforeTargetPlatformByDefault,false);
   assert.equal(dev.targetPlatformMayRunImmediately,true);
-  assert.equal(dev.webGameplayValidationRequired,false);
-  assert.equal(dev.webCompanionValidationRequired,false);
+  assert.deepEqual(dev.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(dev.onePlatformFailureDoesNotCancelOther,true);
   assert.equal(dev.approvedScopeCompletionRequired,true);
-  assert.equal(dev.musicValidationRequired,false);
-  assert.equal(dev.webCandidateMustPassBeforeTargetPlatformDispatch,false);
   assert.equal(dev.platformSpecificValidationRequired,true);
   assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
   assert.deepEqual(dev.waitingStates,[]);
+  assert.equal(dev.unityWebValidationSurface.enabled,true);
+  assert.equal(dev.unityWebValidationSurface.optional,true);
+  assert.equal(dev.unityWebValidationSurface.sameCanonicalUnityProjectRequired,true);
+  assert.equal(dev.unityWebValidationSurface.nativeGateAuthority,false);
+  assert.equal(dev.unityWebValidationSurface.missingOrFailedBuildDoesNotBlockNative,true);
   for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'])assert.ok(dev.requiredFlow.includes(token));
   assert.equal(machinePolicy.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
   assert.deepEqual(machinePolicy.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
@@ -207,7 +196,5 @@ test('artbook authorship and provenance rules remain unchanged',()=>{
   assert.equal(directive.ai.artbookEditor.departmentPageAuthorship,false);
   assert.equal(directive.ai.artbookEditor.mayInventNewClaims,false);
   assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInDevelopmentClass,false);
-  assert.match(flow,/ArtbookEditor:[\s\S]*?singleEditor: true/);
-  assert.match(flow,/mayInventNewClaims: false/);
   assert.match(pipeline,/DEPARTMENT_ARTBOOK_AUTHORSHIP=NO/);
 });

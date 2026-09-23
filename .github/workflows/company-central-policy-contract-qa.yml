@@ -3,7 +3,6 @@ name: Company Central Policy Contract QA
 on:
   pull_request:
     paths:
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-log-map.json'
@@ -34,7 +33,6 @@ on:
       - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
-      - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
@@ -50,7 +48,6 @@ on:
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
-      - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/company-homepage-top30-contract.test.mjs'
@@ -95,7 +92,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-log-map.json'
@@ -125,7 +121,6 @@ on:
       - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
-      - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
@@ -140,7 +135,6 @@ on:
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
-      - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/company-homepage-top30-contract.test.mjs'
@@ -214,7 +208,6 @@ jobs:
           node --check tools/company-strict-production-review.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-development-unity-evidence.mjs
-          node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
           node --check tools/company-development-roblox-source-reconcile.mjs
@@ -237,7 +230,6 @@ jobs:
             qa/company-platform-speed-policy.test.mjs \
             qa/company-minimum-design-contract.test.mjs \
             qa/company-selected-platform-router.test.mjs \
-            qa/company-development-validation-selected-platform.test.mjs \
             qa/company-development-unity-runtime.test.mjs \
             qa/company-development-roblox-runtime.test.mjs \
             qa/company-development-roblox-runtime-continuation.test.mjs \

@@ -53,16 +53,18 @@ test('lifecycle has no active Web-first handoff and treats internal playtest as 
 
 test('directive mirror cannot reactivate legacy Web-first development',()=>{
   assert.equal(directive.currentExecutionMode,'DIRECT_NATIVE_ROBLOX_UNITY');
-  assert.equal(directive.legacyWebFirstPolicy.status,'LEGACY_DISABLED');
-  assert.equal(directive.legacyWebFirstPolicy.developmentAdmissionAuthority,false);
+  assert.equal(directive.legacyWebFirstPolicy.status,'REMOVED');
+  assert.equal(directive.legacyWebFirstPolicy.compatibilitySurfaceOnly,'UNITY_WEB_VALIDATION_SURFACE');
   assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebEnabled,true);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebRequired,false);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebMode,'VALIDATION_SURFACE_ONLY');
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.strictDesignScoreRequiredForAdmission,false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.strictDesignReviewRunsInParallel,true);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface.nativeGateAuthority,false);
   assert.equal(directive.classes.RELEASE_CONFIRMED.webCompanionRequired,false);
   assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
   assert.equal(directive.ai.vibe2.ownsInternalPlaytestRepair,true);

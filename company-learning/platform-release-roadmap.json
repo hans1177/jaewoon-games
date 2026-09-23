@@ -1,5 +1,5 @@
 {
-  "version": 290,
+  "version": 291,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -22,69 +22,24 @@
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
   "webCompanion": {
+    "version": 2,
+    "status": "DEPRECATED_COMPATIBILITY_ALIAS",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebValidationSurface",
+    "role": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
     "requiredForEveryGame": false,
     "requiredAcross": [],
-    "approvedScopeMustBeFullyImplemented": true,
-    "featureParity": "FULL_APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION",
-    "silentFeatureOmissionForbidden": true,
-    "prototypeDoesNotSatisfyCompletion": true,
-    "webRuntimePassRequiredForDevelopmentBaseline": true,
-    "webRuntimePassRequiredForReleaseBaseline": true,
-    "cannotReplaceNativeRuntimeEvidence": true,
-    "learningRole": "AUXILIARY_PORTABLE_LEARNING_EVIDENCE",
-    "canonicalDistillationOnly": true,
-    "newTrainerOrCronForbidden": true,
-    "continuouslyEditableDuringDevelopment": true,
-    "validationMayRepeatAfterEachMeaningfulRevision": true,
-    "runtimePassIsReleaseSignal": false,
-    "competitiveQualityParityWithNative": true,
-    "competitiveQualityContract": "tools/company-common-development-quality-contract.mjs",
-    "competitiveQualityAxes": [
-      "core-loop-quality",
-      "implementation-completeness",
-      "content-depth",
-      "category-fit",
-      "ux-readability",
-      "progression-and-balance",
-      "performance-and-stability",
-      "distinctiveness"
-    ],
-    "releaseRequiresFreshCompetitiveRevalidation": true,
-    "singleWebPassCannotTriggerRelease": true,
-    "genreSpecificUiAnimationRequired": true,
-    "artDirectionStyleLockRequiredBeforePresentationImplementation": true,
-    "commercialReadinessRequiredBeforeNativeDispatch": true,
-    "placeholderOrContextMismatchCannotPass": true,
-    "twoStageGate": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-21",
-      "enabled": true,
-      "firstGate": {
-        "purpose": "PLATFORM_DEVELOPMENT_ADMISSION",
-        "passEffect": "ALLOW_TARGET_PLATFORM_DEVELOPMENT",
-        "nativePlatformsMayDevelopAfterPass": true,
-        "releaseClaimAllowed": false,
-        "nativeRuntimeEvidenceStillRequired": true
-      },
-      "secondGate": {
-        "purpose": "POST_PLATFORM_WEB_REVALIDATION",
-        "activatesAfterFirstGatePlatformAdmission": true,
-        "authority": "OWNER_DIRECTIVE",
-        "criteriaSource": "OWNER_INSTRUCTIONS",
-        "independentFromFirstGate": true,
-        "mayNotRetroactivelyBlockAlreadyAuthorizedPlatformDevelopment": true,
-        "requiredBeforeFinalReleaseDecision": true
-      }
-    },
-    "engine": "DISABLED",
-    "canonicalSourceRoot": "unity-games/<gameId>/",
-    "publicBuildRoot": "web-games/<gameId>/",
-    "directWebAuthoringDefault": false,
-    "unityProjectIsCanonicalSource": false,
-    "webGamesIsBuildOutput": false,
-    "postGatePipelineUnchanged": true,
     "developmentAdmissionGate": false,
-    "legacyCompatibilityOnly": true
+    "releaseGate": false,
+    "requiredForDevelopmentBaseline": false,
+    "requiredForReleaseBaseline": false,
+    "mayBlockNativeDevelopment": false,
+    "mayBlockNativeRelease": false,
+    "cannotReplaceNativeRuntimeEvidence": true,
+    "canonicalSourceRoot": "unity-games/<gameId>/",
+    "outputRoot": "web-games/<gameId>/",
+    "buildOnlyWhenCanonicalUnityProjectSupportsIt": true,
+    "missingOrFailedBuildAction": "KEEP_NATIVE_LANES_RUNNING_AND_MARK_WEB_TEST_UNAVAILABLE",
+    "legacyWebFirstPolicyRemoved": true
   },
   "livingMotionVisualQualityContract": {
     "version": 3,
@@ -92,13 +47,15 @@
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "objective": "LIVING_CONTINUOUS_MOTION_STRONG_GAME_FEEL_STYLE_ADAPTABLE_ASSETS_BEFORE_OPTIONAL_HIGH_FIDELITY_REALISM",
     "appliesToStages": [
-      "WEB_BASE_IMPLEMENTATION",
-      "WEB_RUNTIME_VALIDATION",
+      "MINIMUM_DESIGN_PREPARATION",
       "TARGET_PLATFORM_SOURCE_BIND",
       "TARGET_PLATFORM_RUNTIME",
       "TARGET_PLATFORM_INDEPENDENT_QA",
       "TARGET_PLATFORM_REGRESSION",
-      "POST_RELEASE_FOCUSED_DEVELOPMENT"
+      "INTERNAL_PLATFORM_RELEASE",
+      "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "POST_RELEASE_FOCUSED_DEVELOPMENT",
+      "UNITY_WEB_VALIDATION_SURFACE_OPTIONAL"
     ],
     "priorityOrder": [
       "CORE_GAMEPLAY_LOGIC",
@@ -375,11 +332,12 @@
       "workOrderContract": "tools/vibe2-continuous-runner.mjs",
       "staticQa": "tools/vibe2-incremental-qa.mjs",
       "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs",
-      "canonicalWebRuntimeQaConnected": true,
       "runtimeContractMarker": "data-presentation-quality-version=\"1\"",
       "runtimeValidation": "tools/company-development-web-gameplay-validation.mjs",
       "ciVerified": true,
-      "verifiedWorkflowRunId": 35450038247
+      "verifiedWorkflowRunId": 35450038247,
+      "unityWebValidationSurfaceQaConnected": true,
+      "unityWebValidationIsNativeGate": false
     },
     "runtimeArtDirection": {
       "version": 1,
@@ -15039,7 +14997,7 @@
     "executionCapacityMayQueueWithoutChangingEligibility": true,
     "fortniteUefnAutomaticDevelopment": false,
     "fortniteUefnState": "OWNER_HOLD",
-    "version": 2,
+    "version": 3,
     "automaticPairing": {
       "ROBLOX": [
         "ROBLOX",
@@ -15152,7 +15110,13 @@
       "requiredForPublicRelease": false,
       "missingOrFailedWebBuildAction": "KEEP_NATIVE_LANES_RUNNING_AND_MARK_WEB_TEST_UNAVAILABLE",
       "verifiedBuildMayExposeHomepageTestLink": true
-    }
+    },
+    "canonicalDevelopmentAdmissionAuthority": true,
+    "legacyWebFirstFallbackForbidden": true,
+    "legacyStrictScoreAdmissionForbidden": true,
+    "designOnlyIsTransientPreMinimumDesignState": true,
+    "minimumDesignPromotionIsPerGame": true,
+    "strictDesignReviewRunsInParallel": true
   },
   "centralDocumentation": {
     "version": 2,
@@ -15254,7 +15218,9 @@
       "staleWorkContractMayNotCompleteWork": true,
       "manualArchitectureMirrorUpdateNotRequiredForPolicySemanticChange": true,
       "topologyRegistryChangeStillRequiresArchitectureMapChange": true,
-      "noSeparateDocumentationPipeline": true
+      "noSeparateDocumentationPipeline": true,
+      "humanReadableSyncDocumentRequired": false,
+      "machinePolicyAndCompiledProjectionOnly": true
     }
   },
   "canonicalProductionDepartments": {
@@ -15278,5 +15244,25 @@
     "strictDesignContinuesParallelWithDevelopment": true,
     "activeDevelopmentMayNotGloballyDeferStrictDesign": true,
     "unityWebRole": "VALIDATION_SURFACE_ONLY"
+  },
+  "legacyPolicyCleanup": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-23",
+    "status": "ACTIVE",
+    "machinePolicyOnly": true,
+    "removedSemantics": [
+      "WEB_FIRST_DEVELOPMENT_ADMISSION",
+      "WEB_80_OR_90_NATIVE_DISPATCH_GATE",
+      "STRICT_DESIGN_SCORE_AS_NATIVE_DEVELOPMENT_ADMISSION",
+      "MANDATORY_FULL_WEB_COMPANION",
+      "PRE_WEB_POST_WEB_ARTBOOK_LIFECYCLE_AUTHORITY",
+      "HUMAN_SYNC_DOCUMENT_REQUIRED_FOR_EXECUTION"
+    ],
+    "preservedCompatibility": [
+      "EXISTING_WEB_ARCHIVES",
+      "OPTIONAL_UNITY_WEB_VALIDATION_SURFACE",
+      "HOMEPAGE_UNITY_WEB_TEST_LINK_WHEN_VERIFIED",
+      "WEB_DERIVED_LEARNING_MAY_EXIST_BUT_CANNOT_CLAIM_NATIVE_PASS"
+    ]
   }
 }

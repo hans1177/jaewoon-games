@@ -90,47 +90,37 @@ test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and s
   assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
 });
 
-test('DESIGN_ONLY stops at strict design baseline; promoted work follows direct-native Roblox and Unity development',()=>{
+test('DESIGN_ONLY is transient until the minimum dual-platform design contract is ready',()=>{
   const design=directive.classes.DESIGN_ONLY;
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
+  assert.equal(design.status,'TRANSIENT_PRE_MINIMUM_DESIGN');
+  assert.equal(design.developmentAdmissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_CONTRACT_ONLY');
+  assert.equal(design.strictDesignScoreRequiredForAdmission,false);
+  assert.equal(design.strictDesignReviewRunsInParallelAfterAdmission,true);
   assert.deepEqual(design.requiredFlow,[
-    'GAME_SEED','GAME_DESIGNER_DRAFT','DETERMINISTIC_PRE_GATE','FAILED_AXIS_DESIGNER_REPAIR_MAX_2',
-    'DETERMINISTIC_DEPARTMENT_EVIDENCE','DETERMINISTIC_REVALIDATION',
-    'STRICT_DESIGN_REVIEW','DESIGN_BASELINE_GATE'
+    'GAME_SEED','COMMON_CORE_MINIMUM_DESIGN','ROBLOX_PLATFORM_PROFILE','UNITY_PLATFORM_PROFILE','MINIMUM_DUAL_PLATFORM_DESIGN_CONTRACT'
   ]);
-  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED','DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED','STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'])assert.ok(design.baselineReadyRequires.includes(token));
-  assert.equal(design.readyState,'DESIGN_BASELINE_READY');
-  assert.equal(design.sourceCodeAutoDevelopment,false);
-  assert.equal(design.artbookBeforePromotionForbidden,true);
-  assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
-  assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
+  assert.deepEqual(design.baselineReadyRequires,[
+    'GAME_SEED_COMPLETE','MINIMUM_COMMON_CORE_READY','ROBLOX_PLATFORM_PROFILE_READY','UNITY_PLATFORM_PROFILE_READY','PLATFORM_PROFILES_DISTINCT'
+  ]);
+  assert.equal(design.readyState,'MINIMUM_DESIGN_READY');
+  assert.equal(design.longLivedPromotionGate,false);
   assert.equal(development.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
-  assert.equal(development.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
-  assert.equal(development.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
-  assert.equal(development.webBeforeTargetPlatformByDefault,false);
+  assert.equal(development.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  assert.equal(development.strictDesignScoreRequiredForAdmission,false);
+  assert.equal(development.strictDesignReviewRunsInParallel,true);
+  assert.deepEqual(development.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(development.onePlatformFailureDoesNotCancelOther,true);
   assert.equal(development.targetPlatformMayRunImmediately,true);
-  assert.equal(development.webGameplayValidationRequired,false);
-  assert.equal(development.webCompanionValidationRequired,false);
-  assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,false);
-  assert.equal(development.legacyWebGateStatus,'LEGACY_DISABLED');
   for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','TARGETED_REPAIR_AND_REVALIDATION','PUBLIC_RELEASE_READY'])assert.ok(development.requiredFlow.includes(token),token);
-  assert.equal(development.preWebArtbookForbidden,true);
-  assert.equal(development.postWebArtbookRequiredForHomepage,true);
-  assert.equal(development.approvedScopeCompletionRequired,true);
+  assert.equal(development.presentationSupport.graphicsRoot,'GRAPHICS_PRODUCTION');
+  assert.equal(development.presentationSupport.audioAuthoringOwner,'audio');
+  assert.equal(development.presentationSupport.artbookRunsInParallel,true);
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
   assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
   assert.equal(directive.ai.vibe2.ownsSelectedPlatformImplementation,true);
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
-  assert.match(designCycle,/GAME_SEED_REQUIRED/);
-  assert.match(designCycle,/sameModelAsDraft:false/);
-  assert.match(designCycle,/fiveDepartmentLeadReviewCompleted:false/);
-  assert.match(designCycle,/DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE/);
-  assert.match(designCycle,/AbortSignal\.timeout\(effectiveTimeoutMs\)/);
-  assert.doesNotMatch(designCycle,/VIBE2_VALIDATION_LEARNING|vibe2-validator/);
-  assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
-  assert.doesNotMatch(pipeline,/await run\('tools\/company-design-artbook\.mjs'\)/);
-  assert.match(pipeline,/DESIGN_ONLY_VIBE2_USED=NO/);
 });
 
 test('Unity Web is the browser validation surface of the same canonical Unity project',()=>{
@@ -255,28 +245,20 @@ test('Vibe2/Vibe3 remain primary integration and learning owner for direct-nativ
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
 });
 
-test('direct-native development keeps Web optional while preserving approved scope and native evidence gates',()=>{
+test('direct-native development keeps Unity Web optional and preserves native evidence gates',()=>{
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   const release=directive.classes.RELEASE_CONFIRMED;
-  assert.equal(directive.production.webCompanion.requiredForEveryGame,false);
-  assert.equal(directive.production.webCompanion.appliesToAllTargetPlatforms,false);
-  assert.equal(directive.production.webCompanion.role,'UNITY_WEB_VALIDATION_SURFACE');
-  assert.equal(directive.production.webCompanion.developmentAdmissionAuthority,false);
-  assert.equal(directive.production.webCompanion.silentFeatureOmissionForbidden,true);
-  assert.equal(directive.production.webCompanion.nativePlatformReleaseStillRequiresNativeEvidence,true);
-  assert.equal(directive.production.approvedScopeCompletion.approvedDesignBaselineMustBeFullyImplemented,true);
-  assert.equal(directive.production.approvedScopeCompletion.prototypeCannotSatisfyCompletionOrReleaseCandidateGate,true);
+  const web=development.unityWebValidationSurface;
   assert.equal(development.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
-  assert.equal(development.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
+  assert.equal(development.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(development.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
-  assert.equal(development.webBeforeTargetPlatformByDefault,false);
   assert.equal(development.targetPlatformMayRunImmediately,true);
-  assert.equal(development.webGameplayValidationRequired,false);
-  assert.equal(development.webCompanionValidationRequired,false);
   assert.equal(development.approvedScopeCompletionRequired,true);
-  assert.equal(development.musicValidationRequired,false);
-  assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,false);
-  assert.equal(development.webCandidateFormalImplementationPassRequiredBeforeTargetPlatformDispatch,false);
+  assert.equal(web.enabled,true);
+  assert.equal(web.optional,true);
+  assert.equal(web.sameCanonicalUnityProjectRequired,true);
+  assert.equal(web.nativeGateAuthority,false);
+  assert.equal(web.missingOrFailedBuildDoesNotBlockNative,true);
   for(const token of ['ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'])assert.ok(development.requiredFlow.includes(token),token);
   for(const token of ['PLATFORM_SPECIFIC_SOURCE_EXISTS','PLATFORM_SPECIFIC_RUNTIME_PASS','PLATFORM_SPECIFIC_INDEPENDENT_QA_PASS','PLATFORM_SPECIFIC_REGRESSION_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
   assert.equal(release.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
@@ -307,29 +289,21 @@ test('Web learning evidence is auxiliary and cannot replace native platform evid
   assert.match(nativeDatasetGate,/real verified/);
 });
 
-test('equal-tier design stabilization preserves canonical Web-first development and quality gates',()=>{
+test('equal-tier scheduling keeps strict design as a parallel quality signal, not admission authority',()=>{
   const strategy=directive.platformStrategy.designStabilizationScheduling;
   assert.equal(strategy.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
   assert.deepEqual(strategy.sortKeys,['READINESS_FIRST','ESTIMATED_EXECUTION_EFFICIENCY','OLDEST_PENDING_FIRST']);
   assert.equal(strategy.unityRobloxEqualPriority,true);
   assert.equal(strategy.perGameIndependentCompletion,true);
   assert.equal(strategy.portfolioBarrierForbidden,true);
-  assert.equal(strategy.doesNotChangePassThreshold,true);
-  assert.equal(strategy.doesNotOverrideHardFailures,true);
-  assert.equal(strategy.forcePromotionForbidden,true);
+  assert.equal(strategy.strictDesignQualityTargetScore,80);
+  assert.equal(strategy.developmentAdmissionUsesStrictScore,false);
+  assert.equal(strategy.hardDesignFailuresCreateParallelRepair,true);
   assert.equal(directive.executionPause.stopAfterStage,'NONE');
-  assert.equal(directive.executionPause.webDevelopmentPaused,false);
   assert.equal(directive.executionPause.developmentConfirmedQueueAllowed,true);
   assert.equal(directive.executionPause.developmentRuntimeDispatchAllowed,true);
-  assert.equal(directive.executionPause.webImplementationStartForbiddenUntilOwnerResume,false);
-  assert.equal(directive.executionPause.designPromotionMayContinueWhileWebPaused,true);
-  assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
   assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
   assert.equal(roadmap.legacyPolicyMirror.requiredForExecution,false);
-  assert.match(flow,/forcePromotionForbidden: true/);
-  assert.match(flow,/stopAfterStage: NONE/);
-  assert.match(flow,/webDevelopmentPaused: false/);
-  assert.match(flow,/developmentRuntimeDispatchAllowed: true/);
 });
 
 test('Unity and Roblox share the active first development tier while Fortnite UEFN remains owner-held',()=>{
@@ -408,7 +382,8 @@ test('development WIP is policy-unbounded while execution capacity and gates rem
   assert.equal(roadmap.developmentSpeedExecution.internalArtificialConcurrencyCapsForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMax,256);
   assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
-  assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
+  assert.equal(directive.executionPause.strictDesignReviewParallel,true);
+  assert.equal(directive.stageGateScoringV2.designScoreRole,'PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION');
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
 });
