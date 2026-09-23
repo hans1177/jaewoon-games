@@ -71,6 +71,23 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(logMap.highEndVisualEvidenceContract.checkpointEvidenceNotTerminalCompletion,true);
   assert.equal(logMap.highEndVisualEvidenceContract.standaloneReleaseAuthority,false);
   assert.equal(security.highEndAssetTransformationSecurity.protections.unverifiedExternalAssetUseForbidden,true);
+  const library=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h;
+  assert.equal(library.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(library.graphicsProductionRoot,'GRAPHICS_PRODUCTION');
+  assert.equal(library.idleGeneration.continuous24h,true);
+  assert.equal(library.idleGeneration.usesExistingLearningIdleLane,true);
+  assert.equal(library.idleGeneration.productionWorkAlwaysPreemptsLibraryPractice,true);
+  assert.deepEqual(library.characterPreparation.unity.separateNativeVariantRequired,true);
+  assert.deepEqual(library.characterPreparation.roblox.separateNativeVariantRequired,true);
+  assert.equal(library.actionMotionLibrary.minimumCoverage.idleVariants>=4,true);
+  assert.equal(library.actionMotionLibrary.minimumCoverage.lightComboAttacks>=3,true);
+  assert.equal(library.actionMotionLibrary.minimumCoverage.deathVariants>=3,true);
+  assert.ok(library.actionMotionLibrary.weaponPacks.includes('ONE_HAND_SWORD'));
+  assert.ok(library.actionMotionLibrary.weaponPacks.includes('FIREARM'));
+  assert.equal(library.promotionRules.preparedArtifactMayNotClaimProductionPass,true);
+  assert.equal(library.promotionRules.runtimeVerifiedConsumerRequiredBeforeCompanyAssetPromotion,true);
+  assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.platformSeparation.includes('UNITY'),true);
+  assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.platformSeparation.includes('ROBLOX'),true);
 });
 
 test('asset and direction planners consume one high-end profile without Web-first admission',()=>{
@@ -90,6 +107,14 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(plan.policy.continuousPresentationEvolution,true);
   assert.equal(plan.policy.graphicsPassIsCheckpointNotTerminal,true);
   assert.equal(plan.policy.highEndPresentationCompletionIsReleaseGate,false);
+  assert.equal(plan.companyGraphicsLibrary.enabled,true);
+  assert.equal(plan.companyGraphicsLibrary.platformProfile,'UNITY');
+  assert.equal(plan.companyGraphicsLibrary.platformSpecificReauthoringRequired,true);
+  assert.equal(plan.companyGraphicsLibrary.motionMinimums.idleVariants>=4,true);
+  assert.ok(plan.companyGraphicsLibrary.weaponPacks.includes('HAMMER'));
+  assert.equal(plan.policy.companyGraphicsLibrary24h,true);
+  assert.equal(plan.policy.unityRobloxLibraryVariantsSeparated,true);
+  assert.equal(plan.policy.actionReadyMotionVarietyRequired,true);
 
   const art=createVibeArtPipeline({request:'하이엔드 캐릭터 배경 보스 애니메이션 VFX',target:'roblox',quality:3});
   assert.equal(art.version,6);
