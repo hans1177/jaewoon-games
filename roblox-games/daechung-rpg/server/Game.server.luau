@@ -159,7 +159,7 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
  end
  return r
 end
-local function tree(parent,pos,scale)local function tree(parent,pos,scale)
+local function tree(parent,pos,scale)
  scale=scale or 1
  local trunk=ppart(parent,"TreeTrunk",Vector3.new(2.2,8,2.2)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(91,67,47),Enum.Material.Wood)
  local crown=ppart(parent,"TreeCrown",Vector3.new(7.5,7.5,7.5)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(62,120,68),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
