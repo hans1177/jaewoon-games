@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 54,
-  "updatedAt": "2026-09-23",
+  "revision": 55,
+  "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -952,27 +952,42 @@
     }
   },
   "internalReleaseFastMvp": {
-    "version": 1,
-    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "version": 2,
+    "authority": "OWNER_DIRECTIVE_2026-09-24",
+    "policyDocument": "company-learning/platform-release-roadmap.json",
     "appliesTo": "ROBLOX_PRIVATE_OR_RESTRICTED_INTERNAL_RELEASE",
     "publicReleaseUnaffected": true,
     "gates": [
       "EXACT_SOURCE_ROJO_PACKAGE",
       "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
-      "CORE_HEADLESS_QA",
-      "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_PUBLISH"
+      "F0_SOURCE_INTEGRITY",
+      "PRIVATE_RUNTIME_CANDIDATE",
+      "ACTUAL_RUNTIME_FOUNDATION_F1_THROUGH_F6_AND_F8",
+      "INDEPENDENT_QA",
+      "REGRESSION",
+      "F9_INTERNAL_REVIEW"
     ],
-    "coreHeadlessQa": [
-      "SERVER_CLIENT_AUTHORITY",
-      "REMOTE_SECURITY",
-      "MOBILE_INPUT_UI",
-      "SAVE_REJOIN_WHEN_APPLICABLE",
-      "MULTIPLAYER_STATE_SYNC_WHEN_APPLICABLE",
-      "EXACT_ARTIFACT_BINDING"
-    ],
-    "separateIndependentQaRequired": false,
-    "separateRegressionStageRequired": false,
-    "separateFinalReviewRequired": false,
+    "simplifiedMultiplayerForInternalRelease": {
+      "allowed": true,
+      "requiredEvidence": [
+        "F0_MULTIPLAYER_STATE_SYNC_CONTRACT_PASS",
+        "SERVER_CLIENT_BOUNDARY_PASS",
+        "SAVE_REJOIN_PASS_WHEN_APPLICABLE",
+        "NO_CURRENT_CRITICAL_OR_HIGH_MULTIPLAYER_FAILURE"
+      ],
+      "actualTwoPlusClientPlatformObservationRequired": false,
+      "mayClaimFullMultiplayerQa": false,
+      "mayClaimPublicReleaseReady": false
+    },
+    "publicReleaseMultiplayerGate": {
+      "fullTwoPlusClientPlatformEvidenceRequired": true,
+      "authoritativeStateSyncRequired": true,
+      "joinLeaveRejoinRequiredWhenApplicable": true,
+      "lateJoinRequiredWhenApplicable": true
+    },
+    "separateIndependentQaRequired": true,
+    "separateRegressionStageRequired": true,
+    "separateFinalReviewRequired": true,
     "webRevalidationRequired": false,
     "robloxStudioRequired": false,
     "departmentMultiModelRequired": false,
