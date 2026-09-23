@@ -236,6 +236,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     fingerprint:checkpointFingerprint,
     policyDigest,
     engineDigest,
+    designEvolution:designEvolutionSignal,
     status:'IN_PROGRESS',
     phases:designCheckpoint.phases,
     tasks:designCheckpoint.tasks,
@@ -256,7 +257,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_MIGRATED=${previousContractVersion===2?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'}|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}|replay=NO`);
 }else if(!checkpointReusable){
-  designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,designEvolution:designEvolutionSignal,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   writeJson(checkpointPath,designCheckpoint);
   console.log('DESIGN_CHECKPOINT_RESET=YES');
 }else{
@@ -266,6 +267,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   designCheckpoint.slowPhases=designCheckpoint.slowPhases&&typeof designCheckpoint.slowPhases==='object'?designCheckpoint.slowPhases:{};
   designCheckpoint.completedPhases=Array.isArray(designCheckpoint.completedPhases)?designCheckpoint.completedPhases:[];
   designCheckpoint.engineDigest=engineDigest;
+  designCheckpoint.designEvolution=designEvolutionSignal;
   designCheckpoint.status='IN_PROGRESS';
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
