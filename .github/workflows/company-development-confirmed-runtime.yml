@@ -17,7 +17,6 @@ on:
       - 'tools/design-only-promotion-sync.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-architecture-map.json'
-      - 'company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-minimum-design-contract.test.mjs'
   workflow_dispatch:
@@ -77,7 +76,9 @@ jobs:
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
           if(d.automaticPairing?.ROBLOX?.join(',')!=='ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY,ROBLOX')throw new Error('BIDIRECTIONAL_AUTO_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
-          if(!fs.existsSync('company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md'))throw new Error('CENTRAL_SYNC_DOCUMENT_REQUIRED');
+          if(d.canonicalDevelopmentAdmissionAuthority!==true)throw new Error('DIRECT_NATIVE_ADMISSION_AUTHORITY_REQUIRED');
+          if(d.legacyWebFirstFallbackForbidden!==true)throw new Error('LEGACY_WEB_FIRST_FALLBACK_FORBIDDEN');
+          if(d.strictDesignScoreRequiredForDevelopmentAdmission!==false)throw new Error('STRICT_DESIGN_ADMISSION_FORBIDDEN');
           console.log('DIRECT_NATIVE_MACHINE_CONTRACT=PASS');
           NODE
 
