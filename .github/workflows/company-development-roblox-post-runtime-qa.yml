@@ -68,6 +68,43 @@ jobs:
           node --test             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-tester-debug-intake.test.mjs
           echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
 
+      - name: Probe exact Roblox Open Cloud engine execution
+        working-directory: main
+        continue-on-error: true
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {probeRobloxOpenCloudEngine} from './tools/company-development-roblox-runtime-foundation.mjs';
+          let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(!requested&&process.env.EVENT_NAME==='push'){
+            const triggerPath='roblox-games/.company-runtime-trigger';
+            if(fs.existsSync(triggerPath))requested=String(fs.readFileSync(triggerPath,'utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
+          }
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const candidates=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            const c=item.robloxRuntimeCandidateEvidence||{};
+            return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
+          });
+          for(const item of candidates.slice(0,4)){
+            const c=item.robloxRuntimeCandidateEvidence;
+            const result=await probeRobloxOpenCloudEngine({
+              universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
+              apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
+            });
+            console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify({gameId:item.gameId,versionNumber:Number(c.versionNumber),...result}));
+          }
+          NODE
+
       - name: Read exact runtime sentinel and persist tester QA evidence
         working-directory: main
         env:
