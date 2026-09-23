@@ -14,7 +14,7 @@ on:
 
 permissions:
   contents: read
-  actions: read
+  actions: write
 
 concurrency:
   group: unity-android-independent-qa-${{ inputs.run_id || github.event.workflow_run.id }}
@@ -231,6 +231,19 @@ jobs:
           echo "INDEPENDENT_BUILD_ID=$BUILD_SHA"
           echo "INDEPENDENT_SOURCE_COMMIT=$BUILD_SOURCE_COMMIT"
           echo "INDEPENDENT_SOURCE_TREE=$BUILD_SOURCE_TREE"
+
+      - name: Dispatch exact artifact regression
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run unity-android-regression.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f run_id="${{ steps.upstream.outputs.run_id }}"
+          echo "UNITY_ANDROID_REGRESSION_DISPATCHED=${{ steps.upstream.outputs.run_id }}"
 
       - name: Upload independent Unity QA evidence
         if: always()
