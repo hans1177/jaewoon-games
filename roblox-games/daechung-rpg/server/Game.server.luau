@@ -843,7 +843,7 @@ local function buildWorld()
  Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
  makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
  for _,z in ipairs(C.Portals)do for i=1,10 do spawnEnemy(z,false,i)end;if z.Boss then spawnEnemy(z,true,1)end end
- workspace:SetAttribute("WorldArtPass","RPG_FANTASY_SILHOUETTE_WORLD_V4")
+ workspace:SetAttribute("WorldArtPass","RPG_FANTASY_SILHOUETTE_WORLD_V5");workspace:SetAttribute("CharacterArtDirection","RPG_STYLIZED_TOY_FANTASY_R15");workspace:SetAttribute("MedievalAssetBase",tostring(C.MedievalCharacterAssetId))
  foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
@@ -927,10 +927,12 @@ buildWorld()
 
 local function bindPlayer(p)
  load(p)
+ local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
+ p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
-  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter);validateCharacterFoundation(p,c)
+  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
  end)
- if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);validateCharacterFoundation(p,p.Character)end)end
+ if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
