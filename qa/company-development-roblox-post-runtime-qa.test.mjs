@@ -34,3 +34,12 @@ test('foundation QA remains fail-closed and exact-candidate bound',()=>{
   assert.match(workflow,/robloxMultiplayerQaPassed/);
   assert.match(workflow,/ROBLOX_FINAL_REVIEW_PENDING/);
 });
+
+
+test('foundation workflow edits self-trigger exact current game revalidation',()=>{
+  assert.match(workflow,/push:\s*\n\s*branches: \[main\][\s\S]*company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(workflow,/EVENT_NAME: \$\{\{ github\.event_name \}\}/);
+  assert.match(workflow,/roblox-games\/\.company-runtime-trigger/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID=/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID/);
+});
