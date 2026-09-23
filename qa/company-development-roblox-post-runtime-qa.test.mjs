@@ -52,3 +52,13 @@ test('foundation QA emits machine-readable exact blocker evidence',()=>{
   assert.match(workflow,/checkpointOrderPassed:result\.checkpointOrderPassed/);
   assert.match(workflow,/blockers:result\.blockers/);
 });
+
+
+test('stale published Roblox version counts as missing actual runtime execution and escalates',()=>{
+  assert.match(workflow,/result\.exactGame===true&&result\.exactPlace===true&&result\.exactVersion!==true/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_STALE_RUNTIME=/);
+  assert.match(workflow,/stale-runtime-sentinel-observation/);
+  assert.match(workflow,/roblox-runtime-foundation-stale-version/);
+  assert.match(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
+  assert.match(workflow,/attempts>=3/);
+});
