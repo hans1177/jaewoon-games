@@ -182,6 +182,44 @@ jobs:
               runtimeAcceptancePassed:result.runtimeAcceptancePassed,
               blockers:result.blockers,
             }));
+            if(result.exactGame===true&&result.exactPlace===true&&result.exactVersion!==true){
+              const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
+              item.robloxRuntimeRetryCount=attempts;
+              item.robloxRuntimeLastObservationAttemptAt=stamp;
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxRuntimeFoundationEvidence={
+                version:1,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                universeId:String(candidate.universeId),
+                placeId:String(candidate.placeId),
+                expectedVersionNumber:Number(candidate.versionNumber),
+                observedVersionNumber:Number(sentinel.placeVersion||0),
+                exactGame:result.exactGame,
+                exactPlace:result.exactPlace,
+                exactVersion:false,
+                blockers:result.blockers,
+                observedAt:stamp,
+                authority:'stale-runtime-sentinel-observation',
+              };
+              if(attempts>=3){
+                item.robloxFailureSignature='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE';
+                item.routingBlockers=['roblox-actual-runtime-executor-unavailable','roblox-runtime-foundation-stale-version'];
+                console.log(`ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=${item.gameId}:attempt=${attempts}:staleVersion=${Number(sentinel.placeVersion||0)}:expectedVersion=${Number(candidate.versionNumber)}`);
+                failed++;
+              }else{
+                item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                item.routingBlockers=['roblox-runtime-foundation-stale-version'];
+                console.log(`ROBLOX_FOUNDATION_STALE_RUNTIME=${item.gameId}:attempt=${attempts}:staleVersion=${Number(sentinel.placeVersion||0)}:expectedVersion=${Number(candidate.versionNumber)}`);
+                pending++;
+              }
+              item.updatedAt=stamp;
+              changed=true;
+              continue;
+            }
             const evidence={
               ...result,
               sourceRevision,
