@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": " for _,ai in ipairs(aiUsers)do",
+      "replace": "  if e.dormant==true then\n   e.part.AssemblyLinearVelocity=Vector3.zero\n  else\n   local target,bd=nil,z.Aggro\n   for _,p in ipairs(Players:GetPlayers())do\n    if n(p,\"CurrentZone\",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end\n  end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

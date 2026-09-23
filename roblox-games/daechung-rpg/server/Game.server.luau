@@ -1434,7 +1434,13 @@ RunService.Heartbeat:Connect(function(dt)
  end
 
  -- 보스 동료: 해금한 보스 중 최대 3명을 편성하고, 전투력은 리더 레벨에 자동 동기화한다.
- for _,ai in ipairs(aiUsers)do
+  if e.dormant==true then
+   e.part.AssemblyLinearVelocity=Vector3.zero
+  else
+   local target,bd=nil,z.Aggro
+   for _,p in ipairs(Players:GetPlayers())do
+    if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
+  end
   local leader=ai.owner
   if leader and leader.Parent and partyHas(leader,ai.id)and ai.root and ai.root.Parent then
    local zone=n(leader,"CurrentZone",0);local lr=root(leader)
