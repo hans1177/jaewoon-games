@@ -670,10 +670,11 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
+        "roblox-actual-runtime-executor-unavailable",
         "roblox-runtime-foundation-stale-version"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-23T16:01:23.813Z",
+      "updatedAt": "2026-09-23T16:04:51.757Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -807,7 +808,7 @@
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8cc2dcd86c7aae408b9202ab590f06a464e05c1c",
@@ -959,7 +960,7 @@
         "multiplayerQaPassed": false,
         "actualPlatformRuntime": true
       },
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -1213,12 +1214,12 @@
           "checkpoint:SAVE_ROUNDTRIP",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
-        "observedAt": "2026-09-23T16:01:23.813Z",
+        "observedAt": "2026-09-23T16:04:51.757Z",
         "authority": "stale-runtime-sentinel-observation"
       },
       "robloxF9ReleaseRegressionPassed": false,
       "robloxF9ReleaseRegressionEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-23T16:01:23.813Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-23T16:04:51.757Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -4213,7 +4214,7 @@
       "robloxReleasePublishedAt": null
     }
   ],
-  "updatedAt": "2026-09-23T16:01:23.813Z",
+  "updatedAt": "2026-09-23T16:04:51.757Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
