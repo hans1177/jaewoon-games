@@ -42,7 +42,7 @@ test('continuous runner loads distilled external AI and emits exact knowledge tr
   assert.match(runner,/exactInjectedKnowledgeIds/);
   assert.match(workflow,/learning-knowledge-ids:/);
   assert.match(workflow,/knowledgeApplication/);
-  assert.match(workflow,/version:14/);
+  assert.match(workflow,/version:15/);
   assert.match(workflow,/workLock/);
 });
 
