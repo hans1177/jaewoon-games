@@ -1,5 +1,5 @@
 {
-  "version": 133,
+  "version": 134,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2463,7 +2463,18 @@
       "canonicalSource": "unity-games/<gameId>/",
       "outputRoot": "web-games/<gameId>/",
       "dispatchOwner": ".github/workflows/unity-web-first-stage-build.yml",
-      "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml"
+      "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+      "homepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST",
+      "deployManifest": "web-games/<gameId>/unity-web-deploy-manifest.json",
+      "requiredRuntimeBundle": [
+        "LOADER_JS",
+        "DATA",
+        "FRAMEWORK_JS",
+        "WASM"
+      ],
+      "indexOnlyPublicationForbidden": true,
+      "nestedBuildDirectoryMustBeTracked": true,
+      "cloudflareSingleAssetMaxBytes": 26214400
     },
     "admissionAuthority": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
     "strictDesignScoreAdmissionAuthority": false,
@@ -2797,7 +2808,13 @@
     "webPlaySurfaceDisabled": false,
     "unityWebDisabled": false,
     "internalAndPublicReleaseStatesPerPlatform": true,
-    "webPlaySurfaceRole": "UNITY_WEB_VALIDATION_SURFACE"
+    "webPlaySurfaceRole": "UNITY_WEB_VALIDATION_SURFACE",
+    "unityWebExposure": {
+      "source": "web-games/<gameId>/",
+      "gate": "DEPLOYABLE_BUNDLE_MANIFEST",
+      "staleCatalogAvailabilityMustFailClosed": true,
+      "qaPassStillSeparateFromHomepageLink": true
+    }
   },
   "developmentPipeline": {
     "focusedCaretakers": {
