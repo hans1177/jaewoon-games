@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -156,7 +156,10 @@
       "COMPANY_SYSTEM_AI_CONTROL_WRITE",
       "SYSTEM_AI_PENDING_RUNS",
       "COMPANY_SYSTEM_AI_DUPLICATE_REPAIRS_COALESCED",
-      "COMPANY_SYSTEM_AI_DUPLICATE_REPAIR_GROUPS"
+      "COMPANY_SYSTEM_AI_DUPLICATE_REPAIR_GROUPS",
+      "SYSTEM_AI_PRODUCER_DEDUPE",
+      "SYSTEM_AI_REPAIR_IDENTITY",
+      "SYSTEM_AI_DUPLICATE_DEPENDENCY_REWIRED"
     ],
     "rawModelOutputStored": false,
     "rawModelOutputSha256Required": true,
@@ -203,7 +206,15 @@
       "failureClassifierEvidenceMarkers": [
         "qa-contract-drift:UNVERIFIED",
         "system-ai-qa-contract-claim:FAIL_CLOSED"
-      ]
+      ],
+      "producerSideRecoveryReuse": {
+        "binding": "tools/company-recovery-dispatch.mjs",
+        "identity": "tools/company-system-ai-queue.mjs::systemAiRepairWorkIdentity",
+        "reuseMarker": "system-ai-producer-dedupe:REUSED_EXISTING_REPAIR",
+        "dependencyRewireMarker": "system-ai-duplicate-dependency-rewired:YES",
+        "exactCheckpointIdentityPreserved": true,
+        "rawPrivateReasoningLogged": false
+      }
     },
     "runtimeEvidence": {
       "latestReserveRunId": 35803294553,
