@@ -1,5 +1,5 @@
 {
-  "version": 121,
+  "version": 122,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2416,7 +2416,13 @@
       "planABRequiredForMaterialChange": true,
       "antiMonotonyRequired": true,
       "narrativeDialogueVoiceContractRequiredWhenApplicable": true,
-      "verifiedLearningReturnsToExistingLearningMotor": true
+      "verifiedLearningReturnsToExistingLearningMotor": true,
+      "causalDefectOwnershipRequired": true,
+      "sameSymptomDesignAndImplementationDoubleMutationForbidden": true,
+      "unresolvedCauseRequiresTraceBeforeMutation": true,
+      "designIntegrityReachabilityChecksRequired": true,
+      "runtimeBugRoutesToExistingDevelopmentQaRepair": true,
+      "verifiedDesignContradictionRoutesToExistingDesignRuntime": true
     }
   },
   "releaseExposureLifecycle": {
