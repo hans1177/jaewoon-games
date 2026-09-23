@@ -262,3 +262,11 @@ test('Unity cloud APK build keeps LFS but avoids full Git history',()=>{
   assert.match(cloudBuildSource,/name: Checkout[\s\S]*fetch-depth:\s*1[\s\S]*fetch-tags:\s*false[\s\S]*lfs:\s*true/);
   assert.doesNotMatch(cloudBuildSource,/fetch-depth:\s*0/);
 });
+
+
+test('independent Unity QA launches exact APK activity without monkey',()=>{
+  assert.match(independentQaSource,/launchable-activity: name=/);
+  assert.match(independentQaSource,/launch_component="\$package\/\$activity"/);
+  assert.match(independentQaSource,/adb shell am start -W -n "\$launch_component"/);
+  assert.doesNotMatch(independentQaSource,/adb shell monkey/);
+});
