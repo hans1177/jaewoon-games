@@ -159,6 +159,34 @@ test('duplicate repair coalescing keeps different known-good revisions separate'
   assert.deepEqual(compacted.queue.tasks.map(x=>x.status),['queued','queued']);
 });
 
+test('historical superseded repair dependency is rewired without new duplicate coalescing',()=>{
+  const queue={tasks:[
+    {
+      id:'repair-a',status:'queued',priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
+      goal:'repair verified bottleneck',responsibleFiles:['web-games/demo/index.html'],
+      sourceMutationRequired:true,createdAt:'2026-09-23T00:00:00Z'
+    },
+    {
+      id:'repair-old',status:'cancelled',priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
+      goal:'repair verified bottleneck',responsibleFiles:['web-games/demo/index.html'],
+      sourceMutationRequired:true,blocker:'system-ai-duplicate-repair-superseded',lastOutcome:'SUPERSEDED_DUPLICATE_WORK',
+      evidence:['system-ai-duplicate-repair-superseded-by:repair-a'],createdAt:'2026-09-23T00:01:00Z'
+    },
+    {
+      id:'dependent',status:'queued',priority:'normal',taskType:'ordinary',gameId:'demo',
+      goal:'wait for repair',responsibleFiles:['tools/dependent.mjs'],
+      dependencies:['repair-old'],blocker:'shared-signature-canary-pending:repair-old',createdAt:'2026-09-23T00:02:00Z'
+    }
+  ]};
+  const result=coalesceQueuedSystemAiDuplicateRepairs(queue,{at:Date.parse('2026-09-23T00:10:00Z')});
+  assert.equal(result.coalesced,0);
+  assert.equal(result.rewired,1);
+  const dependent=result.queue.tasks.find(x=>x.id==='dependent');
+  assert.deepEqual(dependent.dependencies,['repair-a']);
+  assert.equal(dependent.blocker,'shared-signature-canary-pending:repair-a');
+  assert.ok(dependent.evidence.includes('system-ai-duplicate-dependency-rewired:YES'));
+});
+
 test('reserve chooses one representative canary for a shared failure signature while disjoint work stays parallel',()=>{
   const queue={tasks:[
     {id:'a',status:'queued',priority:'critical',goal:'a',responsibleFiles:['tools/a.mjs'],failureSignature:'COMMON_X',createdAt:'2026-09-23T00:00:00Z'},
