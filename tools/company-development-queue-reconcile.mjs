@@ -1,226 +1,208 @@
-// Canonical DEVELOPMENT_CONFIRMED queue reconciliation.
-// GAME_CATALOG lifecycle is authoritative. Existing progress is preserved.
+// Canonical DEVELOPMENT_CONFIRMED direct-native queue reconciliation.
+// Authority: machine roadmap + active GAME_SEED + minimum dual-platform design.
+// This reconciler never creates Web-first admission state.
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
+import {resolveSelectedPlatform} from './company-selected-platform-router.mjs';
 
-const ACTIVE_STATES=new Set(['ACTIVE','REBUILD']);
 const MACHINE_POLICY_SOURCE='company-learning/platform-release-roadmap.json';
+const ACTIVE_LIFECYCLE=new Set(['ACTIVE','REBUILD']);
+const ACTIVE_SEED_STATUS=new Set(['ACTIVE']);
+const DIRECT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
+const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
+  'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
+  'webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault','webSourcePath','webFirstGatePassed',
+  'webSecondGateRequired','webPlatformHandoff','unityWebFirstStagePassed','vibeWebImplementationRequired',
+  'vibeWebRequestedStage','vibeWebImplementationReason','postPromotionArtbookRequired','postWebArtbookRequired',
+  'webValidationPassedAt','musicValidationPassed','webPromotionRevalidationPassed','formalImplementationPassed',
+  'formalImplementationVerdict','webInitialCyclePassed','webInitialCyclePassedAt','webInitialCycleEvidencePath',
+  'webInitialCycleSourcePath','webInitialCycleSourceIndexSha256','webInitialCycleDesignBaselineSha256',
+  'webInitialCycleValidationSchemaVersion','webInitialCycleStrictScore','webInitialCycleStrictReviewPath',
+  'webInitialCycleSourceRevision','webInitialCycleMusicValidationPassed','homepageTestEligible','homepageTestCandidate',
+  'homepageTestScore','homepageTestVerdict','ownerWebDevelopmentResetAppliedFor','ownerWebDevelopmentResetAppliedAt'
+]);
+
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
-const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
+const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
-const webSourcePathOf=gameId=>`web-games/${gameId}`;
-const webResetTokenOf=game=>clean(game?.ownerWebSourceRevision||game?.productionClassSource||game?.lifecycleReason||'OWNER_WEB_DEVELOPMENT_RESET');
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const directPaths=gameId=>({ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`});
+const removeLegacy=item=>{for(const key of LEGACY_WEB_ADMISSION_KEYS)delete item[key];return item;};
 
-function latestDesignBaseline(root,gameId){
-  const gameRoot=path.join(root,'design',gameId);
-  if(!fs.existsSync(gameRoot))return null;
-  const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
-  for(const date of dates){
-    const revised=path.join(gameRoot,date,'design-revised.json');
-    const status=readJson(path.join(gameRoot,date,'cycle-status.json'),null);
-    if(!fs.existsSync(revised))continue;
-    if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true){
-      return {date,source:path.relative(root,revised).replaceAll('\\','/')};
-    }
-  }
-  return null;
+function assertDirectNativePolicy(roadmap={}){
+  const d=roadmap?.directNativeDualPlatformDevelopment||{};
+  const web=d?.unityWebValidationSurface||{};
+  const ok=roadmap?.authority==='MACHINE_EXECUTION_CONTRACT'
+    &&d.status==='OWNER_DIRECT_LOCKED'
+    &&d.mode==='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'
+    &&d.canonicalDevelopmentAdmissionAuthority===true
+    &&d.minimumDesignRequired===true
+    &&d.strictDesignScoreRequiredForDevelopmentAdmission===false
+    &&d.legacyWebFirstFallbackForbidden===true
+    &&d.webDevelopmentStageRemoved===true
+    &&Array.isArray(d.supportedDevelopmentPlatforms)
+    &&d.supportedDevelopmentPlatforms.join(',')==='ROBLOX,UNITY'
+    &&web.requiredForDevelopmentAdmission===false;
+  if(!ok)throw new Error('CANONICAL_DIRECT_NATIVE_POLICY_REQUIRED');
+  return d;
 }
 
-function mergeDuplicate(base,extra){
-  for(const [key,value] of Object.entries(extra||{})){
-    if(base[key]===undefined||base[key]===null||base[key]==='')base[key]=value;
+function activeSeedById(seedState={}){
+  const map=new Map();
+  for(const seed of seedState?.seeds||[]){
+    const id=clean(seed?.gameId);if(!id)continue;
+    const old=map.get(id);
+    const t=Date.parse(seed?.updatedAt||seed?.createdAt||'')||0;
+    const oldT=Date.parse(old?.updatedAt||old?.createdAt||'')||0;
+    if(!old||t>=oldT)map.set(id,seed);
   }
-  return base;
+  return map;
 }
-
-function applyOwnerWebDevelopmentReset(item,game,stamp){
-  if(game?.webDevelopmentResetRequired!==true)return false;
-  const token=webResetTokenOf(game);
-  if(item.ownerWebDevelopmentResetAppliedFor===token)return false;
-  item.currentStep='FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP';
-  item.canonicalState='RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION';
-  item.status='ACTIVE';
-  item.webValidationRequired=true;
-  item.musicValidationRequired=true;
-  item.webValidationPassedAt=null;
-  item.musicValidationPassed=false;
-  item.webPromotionRevalidationPassed=false;
-  item.formalImplementationPassed=false;
-  item.formalImplementationVerdict='REVISE';
-  item.homepageTestEligible=false;
-  item.homepageTestCandidate=false;
-  item.homepageTestScore=null;
-  item.homepageTestVerdict='WAITING_CONTENT_DEVELOPMENT_REWORK';
-  item.webInitialCyclePassed=false;
-  item.webInitialCyclePassedAt='';
-  item.webInitialCycleEvidencePath='';
-  item.webInitialCycleSourcePath='';
-  item.webInitialCycleSourceIndexSha256='';
-  item.webInitialCycleDesignBaselineSha256='';
-  item.webInitialCycleValidationSchemaVersion=0;
-  item.webInitialCycleStrictScore=null;
-  item.webInitialCycleStrictReviewPath='';
-  item.webInitialCycleSourceRevision='';
-  item.webInitialCycleMusicValidationPassed=false;
-  item.routingBlockers=[];
-  item.resumeStage='FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP';
-  item.failureCount=0;
-  item.executionEvidence=null;
-  item.ownerWebDevelopmentResetAppliedFor=token;
-  item.ownerWebDevelopmentResetAppliedAt=stamp;
-  item.updatedAt=stamp;
-  return true;
+function progressMatchesDesign(item,design){
+  return item?.minimumDesignContract?.pass===true
+    &&clean(item?.minimumDesignContract?.source)===clean(design?.file)
+    &&Array.isArray(item?.concurrentTargetPlatforms)
+    &&item.concurrentTargetPlatforms.includes('ROBLOX')
+    &&item.concurrentTargetPlatforms.includes('UNITY')
+    &&clean(item?.currentStep)
+    &&!/^WEB_|^WAITING_WEB|FULL_APPROVED_SCOPE_WEB/.test(upper(item?.currentStep));
+}
+function bindSaveContract(item,roadmap={}){
+  const save=roadmap?.developmentLifecycleMachine?.saveNormalization||{};
+  item.saveNormalizationRequired=save.authority==='MACHINE_EXECUTION_CONTRACT';
+  item.saveMeaningPreservationRequired=save.preserveExistingCompatibleSaveMeaning===true;
+  item.saveVersioningContract=clean(save.canonicalWebModule)||'assets/save-versioning.js';
+  item.saveRestoreEvidenceContract=clean(save.webRestoreEvidenceEvaluator)||'tools/company-web-save-restore-evidence.mjs';
+}
+function normalizeItem(oldItem,{game,seed,design,roadmap,stamp}){
+  const gameId=clean(game.id);
+  const selected=resolveSelectedPlatform(seed,game,oldItem)||'ROBLOX';
+  const paths=directPaths(gameId);
+  const preserve=progressMatchesDesign(oldItem,design);
+  const item={...oldItem};
+  Object.assign(item,{
+    gameId,
+    seedId:item.seedId||seed?.seedId||null,
+    gameName:item.gameName||seed?.gameName||game?.name||gameId,
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+    lifecycleState:upper(game?.lifecycleState||'ACTIVE'),
+    status:['ACTIVE','PENDING'].includes(upper(item.status))?upper(item.status):'ACTIVE',
+    selectedPlatform:selected,
+    targetPlatform:selected,
+    concurrentTargetPlatforms:[...DIRECT_PLATFORMS],
+    platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+    bidirectionalAutoPair:true,
+    requestEitherStartsBoth:true,
+    targetSourcePaths:paths,
+    robloxProjectPath:paths.ROBLOX,
+    unityProjectPath:paths.UNITY,
+    targetSourcePath:paths[selected]||paths.ROBLOX,
+    sourcePath:paths[selected]||paths.ROBLOX,
+    designBaselineSource:design.file,
+    designDate:design.date,
+    minimumDesignContract:{
+      version:1,pass:true,source:design.file,date:design.date,
+      commonCoreReady:true,platformProfiles:{ROBLOX:true,UNITY:true,distinct:true}
+    },
+    platformDesignProfiles:{
+      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'},
+      UNITY:{source:design.file,jsonPointer:'/content/platformProfiles/UNITY'}
+    },
+    artbookTiming:'PARALLEL_NATIVE_PRESENTATION_SUPPORT',
+    internalReleaseTarget:{
+      ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE',
+      UNITY:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'
+    },
+    externalReleasePolicy:'PLATFORM_INDEPENDENT_AFTER_OWN_QA',
+    currentStep:preserve?item.currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+    canonicalState:preserve?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    enqueuedAt:item.enqueuedAt||stamp
+  });
+  removeLegacy(item);
+  bindSaveContract(item,roadmap);
+  return item;
 }
 
 export function reconcileDevelopmentQueue({root='.'}={}){
-  const catalogPath=path.join(root,'game-catalog.json');
-  const queuePath=path.join(root,'development-queue.json');
-  const catalog=readJson(catalogPath,{version:1,games:[]});
+  const p=(...parts)=>path.join(root,...parts);
+  const catalog=readJson(p('game-catalog.json'),{version:1,games:[]});
+  const seedState=readJson(p('game-seed-state.json'),{version:1,seeds:[]});
+  const queuePath=p('development-queue.json');
   const queue=readJson(queuePath,{version:1,items:[]});
-  const roadmap=readJson(path.join(root,MACHINE_POLICY_SOURCE),{});
-  const developmentGameWipMax=Number(roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax||0);
-  const savePolicy=roadmap?.developmentLifecycleMachine?.saveNormalization||{};
-  const bindSaveContract=item=>{
-    item.saveNormalizationRequired=savePolicy.authority==='MACHINE_EXECUTION_CONTRACT';
-    item.saveMeaningPreservationRequired=savePolicy.preserveExistingCompatibleSaveMeaning===true;
-    item.saveVersioningContract=clean(savePolicy.canonicalWebModule)||'assets/save-versioning.js';
-    item.saveRestoreEvidenceContract=clean(savePolicy.webRestoreEvidenceEvaluator)||'tools/company-web-save-restore-evidence.mjs';
-    return item;
-  };
-  catalog.games ||= [];
-  queue.items ||= [];
+  const roadmap=readJson(p(MACHINE_POLICY_SOURCE),{});
+  assertDirectNativePolicy(roadmap);
 
-  const catalogById=new Map(catalog.games.map(game=>[clean(game?.id),game]).filter(([id])=>id));
-  const unique=new Map();
+  catalog.games ||= [];
+  seedState.seeds ||= [];
+  queue.items ||= [];
+  const seeds=activeSeedById(seedState);
+  const oldById=new Map();
   let duplicateRemoved=0;
   for(const row of queue.items){
-    const gameId=clean(row?.gameId);
-    if(!gameId)continue;
-    if(unique.has(gameId)){
-      mergeDuplicate(unique.get(gameId),row);
-      duplicateRemoved++;
-    }else unique.set(gameId,{...row});
+    const id=clean(row?.gameId);if(!id)continue;
+    if(oldById.has(id)){duplicateRemoved++;continue;}
+    oldById.set(id,row);
   }
 
-  const next=[];
-  const removed=[];
-  const created=[];
-  const preserved=[];
-  const reset=[];
   const stamp=new Date().toISOString();
+  const next=[],created=[],removed=[],rebound=[],preserved=[];
+  const seen=new Set();
 
-  for(const [gameId,item] of unique){
-    const game=catalogById.get(gameId);
-    const lifecycle=upper(game?.lifecycleState||'ACTIVE');
-    const eligible=Boolean(game)&&upper(game?.productionClass)==='DEVELOPMENT_CONFIRMED'&&ACTIVE_STATES.has(lifecycle);
-    if(!eligible){removed.push(gameId);continue;}
-    item.productionClass='DEVELOPMENT_CONFIRMED';
-    item.lifecycleState=lifecycle;
-    item.status='ACTIVE';
-    item.gameName=item.gameName||game.name||gameId;
-    item.webSourcePath=item.webSourcePath||webSourcePathOf(gameId);
-    item.sourcePath=item.sourcePath||item.webSourcePath;
-    item.webValidationRequired=true;
-    item.musicValidationRequired=true;
-    bindSaveContract(item);
-    item.homepageTestCandidate=item.homepageTestCandidate===true;
-    if(item.postPromotionArtbookRequired===undefined)item.postPromotionArtbookRequired=false;
-    if(item.postWebArtbookRequired===undefined)item.postWebArtbookRequired=true;
-    if(!item.artbookTiming)item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';
-    if(!item.selectedPlatform&&game.selectedPlatform)item.selectedPlatform=game.selectedPlatform;
-    if(!item.targetPlatform&&game.selectedPlatform)item.targetPlatform=game.selectedPlatform;
-    const hasExistingWeb=fs.existsSync(path.join(root,item.webSourcePath,'index.html'));
-    if(applyOwnerWebDevelopmentReset(item,game,stamp)){
-      reset.push(gameId);
-    }else if(hasExistingWeb){
-      if(item.designComplete===undefined)item.designComplete=true;
-      if(!item.designGateState)item.designGateState='DESIGN_COMPLETE_EXISTING_GAME_CONTINUATION';
-      if(!item.currentStep||item.currentStep==='WEB_PLAYABLE_BOOTSTRAP')item.currentStep='WEB_GAMEPLAY_AND_MUSIC_VALIDATION';
-      if(!item.canonicalState||item.canonicalState==='WAITING_WEB_PLAYABLE_BOOTSTRAP')item.canonicalState='WAITING_WEB_GAMEPLAY_VALIDATION';
-      item.existingGameContinuation=true;
-    }
-    next.push(item);
-    preserved.push(gameId);
-  }
-
-  const queuedIds=new Set(next.map(row=>clean(row.gameId)));
   for(const game of catalog.games){
-    const gameId=clean(game?.id);
+    const gameId=clean(game?.id);if(!gameId)continue;
     const lifecycle=upper(game?.lifecycleState||'ACTIVE');
-    if(!gameId||upper(game?.productionClass)!=='DEVELOPMENT_CONFIRMED'||!ACTIVE_STATES.has(lifecycle)||queuedIds.has(gameId))continue;
-    const webSourcePath=webSourcePathOf(gameId);
-    const hasExistingWeb=fs.existsSync(path.join(root,webSourcePath,'index.html'));
-    const baseline=latestDesignBaseline(root,gameId);
-    const selectedPlatform=clean(game.selectedPlatform||game.targetPlatform||'');
-    const forceWebDevelopment=game?.webDevelopmentResetRequired===true;
-    const item={
-      gameId,
-      seedId:null,
-      gameName:game.name||gameId,
-      productionClass:'DEVELOPMENT_CONFIRMED',
-      lifecycleState:lifecycle,
-      status:'ACTIVE',
-      sourcePath:webSourcePath,
-      webSourcePath,
-      selectedPlatform:selectedPlatform||null,
-      targetPlatform:selectedPlatform||null,
-      designBaselineSource:baseline?.source||null,
-      designDate:baseline?.date||null,
-      designComplete:hasExistingWeb||Boolean(baseline),
-      designGateState:hasExistingWeb?'DESIGN_COMPLETE_EXISTING_GAME_CONTINUATION':baseline?'DESIGN_BASELINE_READY':'WAITING_DESIGN_BASELINE',
-      currentStep:forceWebDevelopment?'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP':hasExistingWeb?'WEB_GAMEPLAY_AND_MUSIC_VALIDATION':'WEB_PLAYABLE_BOOTSTRAP',
-      canonicalState:forceWebDevelopment?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':hasExistingWeb?'WAITING_WEB_GAMEPLAY_VALIDATION':'WAITING_WEB_PLAYABLE_BOOTSTRAP',
-      webValidationRequired:true,
-      musicValidationRequired:true,
-      webValidationPassedAt:null,
-      musicValidationPassed:false,
-      homepageTestEligible:false,
-      homepageTestCandidate:false,
-      homepageTestScore:null,
-      homepageTestVerdict:forceWebDevelopment?'WAITING_CONTENT_DEVELOPMENT_REWORK':'WAITING_WEB_STRICT_REVIEW',
-      formalImplementationPassed:false,
-      formalImplementationVerdict:forceWebDevelopment?'REVISE':null,
-      webPromotionRevalidationPassed:false,
-      postPromotionArtbookRequired:false,
-      postWebArtbookRequired:true,
-      artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
-      existingGameContinuation:hasExistingWeb,
-      preservationPolicy:'PRESERVE_EXISTING_REAL_GAME_BEFORE_REGENERATION',
-      queueSource:'CANONICAL_DEVELOPMENT_QUEUE_RECONCILE',
-      enqueuedAt:stamp,
-      webValidationQueuedAt:stamp,
-      resumeStage:forceWebDevelopment?'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP':null,
-      failureCount:0,
-      routingBlockers:[],
-      saveNormalizationRequired:savePolicy.authority==='MACHINE_EXECUTION_CONTRACT',
-      saveMeaningPreservationRequired:savePolicy.preserveExistingCompatibleSaveMeaning===true,
-      saveVersioningContract:clean(savePolicy.canonicalWebModule)||'assets/save-versioning.js',
-      saveRestoreEvidenceContract:clean(savePolicy.webRestoreEvidenceEvaluator)||'tools/company-web-save-restore-evidence.mjs',
-      ownerWebDevelopmentResetAppliedFor:forceWebDevelopment?webResetTokenOf(game):null,
-      ownerWebDevelopmentResetAppliedAt:forceWebDevelopment?stamp:null
-    };
-    next.push(item);
-    queuedIds.add(gameId);
-    created.push(gameId);
-    if(forceWebDevelopment)reset.push(gameId);
+    const seed=seeds.get(gameId)||null;
+    const seedActive=Boolean(seed)&&ACTIVE_SEED_STATUS.has(upper(seed?.status));
+    const seedConfirmed=upper(seed?.productionClass)==='DEVELOPMENT_CONFIRMED';
+    const catalogConfirmed=upper(game?.productionClass)==='DEVELOPMENT_CONFIRMED';
+    const lifecycleActive=ACTIVE_LIFECYCLE.has(lifecycle);
+    const design=latestMinimumDesign(root,gameId);
+
+    if(!catalogConfirmed||!lifecycleActive||!seedActive||!seedConfirmed||!design)continue;
+
+    const old=oldById.get(gameId)||{};
+    const normalized=normalizeItem(old,{game,seed,design,roadmap,stamp});
+    const before={...old}; delete before.updatedAt;
+    const after={...normalized}; delete after.updatedAt;
+    if(!oldById.has(gameId)){normalized.updatedAt=stamp;created.push(gameId);}
+    else if(!same(before,after)){normalized.updatedAt=stamp;rebound.push(gameId);}
+    else preserved.push(gameId);
+    next.push(normalized);
+    seen.add(gameId);
   }
 
-  const before=JSON.stringify(queue.items);
-  const after=JSON.stringify(next);
-  const policyChanged=clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE;
-  const wipChanged=Number.isInteger(developmentGameWipMax)&&developmentGameWipMax>0&&Number(queue.developmentGameWipMax)!==developmentGameWipMax;
-  const changed=before!==after||duplicateRemoved>0||policyChanged||wipChanged;
+  for(const id of oldById.keys())if(!seen.has(id))removed.push(id);
+
+  const beforeItems=JSON.stringify(queue.items);
+  const afterItems=JSON.stringify(next);
+  const metadataChanged=
+    clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE||
+    queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT'||
+    queue.developmentGameWipMax!==null||
+    queue.reconciliationPolicy!=='ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE';
+
+  const changed=beforeItems!==afterItems||duplicateRemoved>0||metadataChanged;
   if(changed){
     queue.items=next;
     queue.routerPolicy=MACHINE_POLICY_SOURCE;
-    if(Number.isInteger(developmentGameWipMax)&&developmentGameWipMax>0)queue.developmentGameWipMax=developmentGameWipMax;
+    queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
+    queue.developmentGameWipMax=null;
+    queue.reconciliationPolicy='ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE';
+    delete queue.webValidationPolicy;
     queue.updatedAt=stamp;
-    queue.reconciliationPolicy='CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE';
     writeJson(queuePath,queue);
   }
-  return {changed,created,removed,reset,duplicateRemoved,preserved,queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE,developmentGameWipMax:Number(queue.developmentGameWipMax||0)};
+
+  return {
+    changed,created,removed,rebound,preserved,duplicateRemoved,
+    queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE,
+    nativeDevelopmentPolicy:'MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT',
+    developmentGameWipMax:null
+  };
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -228,9 +210,11 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_QUEUE_RECONCILE_CHANGED=${result.changed?'YES':'NO'}`);
   console.log(`DEVELOPMENT_QUEUE_CREATED=${result.created.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_REMOVED=${result.removed.join(',')||'NONE'}`);
-  console.log(`DEVELOPMENT_QUEUE_WEB_RESET=${result.reset.join(',')||'NONE'}`);
+  console.log(`DEVELOPMENT_QUEUE_REBOUND=${result.rebound.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_DUPLICATES_REMOVED=${result.duplicateRemoved}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
   console.log(`DEVELOPMENT_QUEUE_ROUTER_POLICY=${result.routerPolicy}`);
-  console.log(`DEVELOPMENT_QUEUE_WIP_MAX=${result.developmentGameWipMax}`);
+  console.log(`DEVELOPMENT_QUEUE_NATIVE_POLICY=${result.nativeDevelopmentPolicy}`);
+  console.log('DEVELOPMENT_QUEUE_WIP_MAX=NONE');
+  console.log('UNITY_WEB_ADMISSION_AUTHORITY=NONE');
 }

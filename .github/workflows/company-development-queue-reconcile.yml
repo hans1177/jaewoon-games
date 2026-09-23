@@ -8,11 +8,10 @@ on:
       - 'tools/company-development-queue-reconcile.mjs'
       - 'qa/company-development-queue-reconcile.test.mjs'
       - 'tools/design-only-promotion-sync.mjs'
-      - '.github/workflows/company-design-only-promotion-sync.yml'
+      - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-status-sync.yml'
       - '.github/workflows/company-development-queue-reconcile.yml'
       - 'game-catalog.json'
-      - 'COMPANY_FLOW.md'
   workflow_run:
     workflows:
       - Company DESIGN_ONLY Promotion Sync
@@ -100,26 +99,33 @@ jobs:
             git checkout -B development-queue-reconcile-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             git clean -fd
-            git checkout origin/main -- tools/company-development-queue-reconcile.mjs company-learning/platform-release-roadmap.json
-            git reset -- tools/company-development-queue-reconcile.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
+            git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json
+            git reset -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
 
             node tools/company-development-queue-reconcile.mjs
 
             node --input-type=module <<'NODE'
             import fs from 'node:fs';
-            const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
             const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-            const active=new Set(['ACTIVE','REBUILD']);
-            const expected=(catalog.games||[]).filter(game=>String(game.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&active.has(String(game.lifecycleState||'ACTIVE').toUpperCase())).map(game=>String(game.id||'').trim()).filter(Boolean).sort();
-            const actual=(queue.items||[]).map(item=>String(item.gameId||'').trim()).filter(Boolean).sort();
-            if(new Set(actual).size!==actual.length)throw new Error('duplicate development queue gameId');
-            if(JSON.stringify(actual)!==JSON.stringify(expected))throw new Error(`development queue invariant mismatch expected=${expected.join(',')} actual=${actual.join(',')}`);
+            const ids=(queue.items||[]).map(item=>String(item.gameId||'').trim()).filter(Boolean);
+            if(new Set(ids).size!==ids.length)throw new Error('duplicate development queue gameId');
+            if(queue.routerPolicy!=='company-learning/platform-release-roadmap.json')throw new Error('machine router policy required');
+            if(queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT')throw new Error('direct-native queue policy required');
+            if(queue.developmentGameWipMax!==null)throw new Error('internal game WIP cap forbidden');
             for(const item of queue.items||[]){
               if(item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`non-development item remains: ${item.gameId}`);
-              if(item.webValidationRequired!==true||item.musicValidationRequired!==true)throw new Error(`validation contract missing: ${item.gameId}`);
+              if(item.minimumDesignContract?.pass!==true)throw new Error(`minimum design missing: ${item.gameId}`);
+              if(item.platformExecutionMode!=='ROBLOX_UNITY_CONCURRENT_SAME_GAME')throw new Error(`dual-native execution missing: ${item.gameId}`);
+              const targets=new Set(item.concurrentTargetPlatforms||[]);
+              if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error(`dual-native targets missing: ${item.gameId}`);
+              if(!item.platformDesignProfiles?.ROBLOX?.source||!item.platformDesignProfiles?.UNITY?.source)throw new Error(`platform design profiles missing: ${item.gameId}`);
+              for(const legacy of ['webValidationRequired','musicValidationRequired','webSourcePath','webPurpose','webFirstGatePassed']){
+                if(Object.hasOwn(item,legacy))throw new Error(`legacy Web admission field remains: ${item.gameId}:${legacy}`);
+              }
             }
-            console.log(`DEVELOPMENT_QUEUE_INVARIANT_COUNT=${actual.length}`);
-            console.log('DEVELOPMENT_QUEUE_CANONICAL_LIFECYCLE_INVARIANT=PASS');
+            console.log(`DEVELOPMENT_QUEUE_INVARIANT_COUNT=${ids.length}`);
+            console.log('DEVELOPMENT_QUEUE_DIRECT_NATIVE_INVARIANT=PASS');
+            console.log('UNITY_WEB_ADMISSION_AUTHORITY=NONE');
           NODE
 
             git add -- development-queue.json

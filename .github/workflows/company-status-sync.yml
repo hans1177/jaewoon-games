@@ -14,6 +14,7 @@ on:
       - Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA
       - Company DEVELOPMENT_CONFIRMED Roblox Final Review Revalidation
       - Company DEVELOPMENT_CONFIRMED Roblox Release Promotion
+      - Company Development Queue Reconcile
       - Owner Roblox Dedicated Private Experiences
     types: [completed]
   push:
@@ -154,7 +155,6 @@ jobs:
           const valid=new Set(classes);
           const allowedPlatforms=new Set(['ROBLOX','UNITY']);
           const activeLifecycleStates=new Set(['ACTIVE','REBUILD']);
-          const requiredWebPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
           const normalize=value=>{
             const raw=String(value??'').trim().toUpperCase().replaceAll('-','_');
             if(raw==='ROBLOX')return 'ROBLOX';
@@ -187,12 +187,12 @@ jobs:
             if(platform&&!allowedPlatforms.has(platform))throw new Error(`development selected-platform mismatch: ${project.id}`);
             if(project.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT'||project.targetEngine!=='roblox-unity-native')throw new Error(`development direct-native mode mismatch: ${project.id}`);
             if(JSON.stringify(project.concurrentTargetPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error(`development concurrent targets missing: ${project.id}`);
-            if(project.webPurpose!==requiredWebPurpose||project.webCompanionRequired!==false||project.webValidationRequired!==false)throw new Error(`development Unity Web validation role mismatch: ${project.id}`);
             if(project.approvedDesignScopeMustBeFullyImplemented!==true)throw new Error(`development approved-scope requirement missing: ${project.id}`);
-            if(project.webEvidenceMayReplaceNativePlatformEvidence!==false)throw new Error(`development native-evidence boundary missing: ${project.id}`);
-            if(project.webGameplayValidationRequired!==false||project.musicValidationRequired!==false)throw new Error(`development Web/music admission authority revived: ${project.id}`);
             if(project.strictDesignScoreRequiredForAdmission!==false||project.strictDesignReviewRunsInParallel!==true)throw new Error(`development strict-design admission contract mismatch: ${project.id}`);
             if(!project.targetSourcePaths?.ROBLOX||!project.targetSourcePaths?.UNITY)throw new Error(`development native source roots missing: ${project.id}`);
+            for(const legacy of ['webPurpose','webCompanionRequired','webValidationRequired','webEvidenceMayReplaceNativePlatformEvidence','webGameplayValidationRequired','musicValidationRequired','webBeforeTargetPlatformByDefault']){
+              if(Object.hasOwn(project,legacy))throw new Error(`development legacy Web projection remains: ${project.id}:${legacy}`);
+            }
           }
           if(design.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('design target mismatch');
           const releasePolicy=portfolio.productionClassPolicy?.classes?.RELEASE_CONFIRMED||{};
@@ -205,18 +205,15 @@ jobs:
             JSON.stringify(developmentPolicy.concurrentTargetPlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||
             developmentPolicy.strictDesignScoreRequiredForAdmission!==false||
             developmentPolicy.strictDesignReviewRunsInParallel!==true||
-            developmentPolicy.webPurpose!==requiredWebPurpose||
-            developmentPolicy.webCompanionRequired!==false||
             developmentPolicy.approvedDesignScopeMustBeFullyImplemented!==true||
-            developmentPolicy.webEvidenceMayReplaceNativePlatformEvidence!==false||
-            developmentPolicy.webGameplayValidationRequired!==false||
-            developmentPolicy.musicValidationRequired!==false||
-            developmentPolicy.webBeforeTargetPlatformByDefault!==false||
             developmentPolicy.targetPlatformMayRunImmediately!==true||
             developmentPolicy.onePlatformFailureDoesNotCancelOther!==true
           )throw new Error('development direct-native policy mismatch');
+          for(const legacy of ['webPurpose','webCompanionRequired','webEvidenceMayReplaceNativePlatformEvidence','webGameplayValidationRequired','musicValidationRequired','webBeforeTargetPlatformByDefault']){
+            if(Object.hasOwn(developmentPolicy,legacy))throw new Error(`development policy legacy Web projection remains: ${legacy}`);
+          }
           const focusPolicy=portfolio.developmentFocusPolicy||{};
-          if(focusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform!==false)throw new Error('legacy full-Web companion focus policy revived');
+          if(Object.hasOwn(focusPolicy,'requiredFullApprovedWebCompanionBeforeTargetPlatform'))throw new Error('legacy full-Web companion focus policy remains');
           if(focusPolicy.nativeDevelopmentAdmission!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY')throw new Error('minimum-design admission focus policy missing');
           if(focusPolicy.nativePlatformEvidenceStillRequired!==true)throw new Error('native platform evidence focus policy missing');
           if(Object.hasOwn(focusPolicy,'requiredWebGameplayAndMusicValidationBeforeTargetPlatform'))throw new Error('legacy first-playable Web focus policy remains');
