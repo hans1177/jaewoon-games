@@ -237,6 +237,8 @@ test('system AI workflow wires sensing, exact reservation identity, missing-resu
   assert.match(workflow,/company-system-ai-bottleneck-sensor\.mjs/);
   assert.match(workflow,/SYSTEM_AI_PENDING_RUNS=/);
   assert.match(workflow,/SYSTEM_AI_RESERVATION_WAIT_MS=/);
+  assert.match(workflow,/reservation_wait_ms=.*shared-signature-canary-pending:/);
+  assert.match(workflow,/reservation_wait_ms=.*byId\.get/);
   assert.match(workflow,/SYSTEM_AI_FAN_IN_WAIT_MS=/);
   assert.match(workflow,/--pending-runs="\$pending_runs"/);
   assert.match(workflow,/--reservation-wait-ms="\$reservation_wait_ms"/);
