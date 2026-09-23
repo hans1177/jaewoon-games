@@ -321,9 +321,7 @@
         "SAVE_AND_GAMEPLAY_SEMANTICS_UNCHANGED"
       ],
       "visualPassCannotOverrideGameplayOrRuntimeFailure": true,
-      "highFidelityAssetQualityCannotCompensateForBrokenMotionOrInput": true,
-      "highEndPresentationDeficitCreatesGraphicsEvolutionDebtNotStandaloneReleaseAuthority": true,
-      "graphicsCheckpointFailureRoutesGraphicsRepairWithoutCreatingAutomaticWholeGameReleaseStop": true
+      "highFidelityAssetQualityCannotCompensateForBrokenMotionOrInput": true
     },
     "implementationReadiness": {
       "centralMachinePolicyMustBeReadBeforeWork": true,
@@ -404,131 +402,8 @@
         "releaseAuthority": false
       }
     },
-    "continuousEvolution": {
-      "enabled": true,
-      "scope": "ALL_ACTIVE_DEVELOPMENT_CONFIRMED_RELEASE_CONFIRMED_AND_POST_RELEASE_GAMES",
-      "startsDuringNativeDevelopment": true,
-      "continuesAfterInternalRelease": true,
-      "continuesAfterPublicRelease": true,
-      "terminalPresentationCompletionState": false,
-      "checkpointState": "GRAPHICS_PASS",
-      "checkpointMeaning": "CURRENT_PRESENTATION_SCOPE_VERIFIED_NOT_FINAL_COMPLETION",
-      "repairState": "ASSET_REPAIR_REQUIRED",
-      "nextSignalSources": [
-        "OWNER_CHANGE_REQUEST",
-        "INTERNAL_PLAYTEST",
-        "PUBLIC_PLAYTEST_OR_TELEMETRY_WHEN_AVAILABLE",
-        "VISUAL_DEBT",
-        "RUNTIME_CAPTURE_COMPARISON",
-        "PLATFORM_PERFORMANCE_EVIDENCE"
-      ],
-      "priorityOrder": [
-        "BROKEN_OR_UNREADABLE_PRESENTATION",
-        "OWNER_EXPLICIT_CHANGE_REQUEST",
-        "HERO_CHARACTER_CREATURE_AND_SIGNATURE_MOMENTS",
-        "CORE_GAMEPLAY_ACTION_READABILITY_AND_FEEL",
-        "WORLD_IDENTITY_AND_ENVIRONMENTAL_STORYTELLING",
-        "ANIMATION_AND_SECONDARY_MOTION",
-        "VFX_CAMERA_LIGHTING_AUDIO_COHESION",
-        "SECONDARY_POLISH"
-      ],
-      "globalReleaseStopForUnfinishedHighEndPolishForbidden": true,
-      "existingRuntimeQaSecurityAndReleaseGatesRemainAuthoritative": true
-    },
-    "cinematicDirection": {
-      "enabled": true,
-      "target": "PROFESSIONAL_CINEMATIC_REALTIME_GAME_DIRECTION",
-      "rawFidelityAloneInsufficient": true,
-      "sceneIntentRequired": [
-        "EMOTIONAL_INTENT",
-        "RISK_OR_TENSION",
-        "PLAYER_FOCUS_TARGET",
-        "WORLD_CONTEXT",
-        "GAMEPLAY_READABILITY"
-      ],
-      "characterAndCreatureActing": [
-        "POSTURE_AND_WEIGHT",
-        "GAZE_AND_TARGET_FOCUS",
-        "ANTICIPATION",
-        "CONTACT_AND_IMPACT",
-        "RECOVERY",
-        "HIT_REACTION",
-        "FATIGUE_OR_ALERTNESS_WHEN_RELEVANT",
-        "SPECIES_OR_ROLE_SPECIFIC_DEATH"
-      ],
-      "motionLayers": [
-        "PRIMARY_MOTION",
-        "SECONDARY_MOTION",
-        "PROCEDURAL_RESPONSE"
-      ],
-      "motionQuality": [
-        "ACCELERATION_DECELERATION",
-        "TURN_INTERPOLATION",
-        "STATE_BLEND",
-        "WEIGHT_TRANSFER",
-        "GROUND_OR_SLOPE_RESPONSE_WHEN_SUPPORTED",
-        "DIRECTIONAL_HIT_RESPONSE",
-        "NON_MECHANICAL_IDLE_VARIATION"
-      ],
-      "environmentalStorytelling": [
-        "FOREGROUND_MIDGROUND_BACKGROUND_COMPOSITION",
-        "LANDMARK_FOCUS",
-        "WEAR_DAMAGE_MOISTURE_DUST_SCORCH_AND_AGE_WHEN_CONTEXTUAL",
-        "LIVED_IN_OR_ABANDONED_TRACES",
-        "REGION_ECOLOGY_AND_DANGER_GRADIENT",
-        "AMBIENT_WORLD_MOTION"
-      ],
-      "materialStorytelling": true,
-      "gameSpecificVfxLanguage": true,
-      "vfxIntensityHierarchy": [
-        "AMBIENT",
-        "NORMAL",
-        "HEAVY",
-        "CRITICAL_OR_SIGNATURE",
-        "BOSS_OR_ULTIMATE"
-      ],
-      "adaptiveAudioBinding": {
-        "audioAuthoringOwner": "audio",
-        "graphicsConsumesAndBindsAudioEvidence": true,
-        "conceptFitRequired": true,
-        "stateFit": [
-          "EXPLORATION",
-          "DISCOVERY_OR_TENSION",
-          "COMBAT",
-          "DANGER",
-          "BOSS",
-          "VICTORY",
-          "REST_OR_HUB",
-          "SPECIAL_EVENT"
-        ],
-        "visualDepartmentMayNotCreateIndependentAudioAuthority": true
-      },
-      "platformSpecificReauthoringRequired": true,
-      "mobileReadabilityAndPerformancePreserved": true
-    },
-    "ownerChangeRequestStability": {
-      "enabled": true,
-      "latestExplicitOwnerIntentWinsWithinSameScope": true,
-      "conflictingPriorIntentMustBeReplacedNotStacked": true,
-      "currentImplementationMustBeReadBeforeMutation": true,
-      "affectedScopeMustBeCalculatedBeforeMutation": true,
-      "existingResponsibleSystemDirectModificationPreferred": true,
-      "preserveUnaffectedBehavior": true,
-      "preserveGameplayBalanceSaveProgressionEconomyAndHitSemantics": true,
-      "wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden": true,
-      "duplicateImplementationForSameResponsibilityForbidden": true,
-      "sequence": [
-        "READ_CURRENT_IMPLEMENTATION_AND_CURRENT_CENTRAL_POLICY",
-        "RESOLVE_LATEST_EXPLICIT_OWNER_INTENT",
-        "CALCULATE_AFFECTED_SCOPE",
-        "MODIFY_EXISTING_RESPONSIBLE_SYSTEM",
-        "REMOVE_OR_REPLACE_CONFLICTING_OLD_BEHAVIOR_IN_SAME_SCOPE",
-        "PRESERVE_UNAFFECTED_BEHAVIOR",
-        "REVALIDATE_CHANGED_SCOPE",
-        "RUN_RELATED_REGRESSION",
-        "REBIND_CURRENT_CENTRAL_POLICY_AND_EVIDENCE"
-      ]
-    }
+    "highEndEvolutionAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
+    "highEndEvolutionRole": "MOTION_AND_PRESENTATION_FOUNDATION_CONSUMED_BY_EXISTING_GRAPHICS_PRODUCTION"
   },
   "platformRepresentativeSets": {
     "representativeSetSizePerPlatform": 6,
@@ -12142,7 +12017,12 @@
           "visualDepartmentMayNotCreateIndependentAudioAuthority": true
         },
         "platformSpecificReauthoringRequired": true,
-        "mobileReadabilityAndPerformancePreserved": true
+        "mobileReadabilityAndPerformancePreserved": true,
+        "motionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.livingMotion",
+        "animationFeelAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.animationFeel",
+        "cameraFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.cameraLanguage",
+        "vfxFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.vfx",
+        "noDuplicateMotionPolicy": true
       },
       "ownerChangeRequestStability": {
         "enabled": true,
@@ -12166,7 +12046,8 @@
           "RUN_RELATED_REGRESSION",
           "REBIND_CURRENT_CENTRAL_POLICY_AND_EVIDENCE"
         ]
-      }
+      },
+      "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract"
     },
     "graphicsProductionUnification": {
       "version": 2,
