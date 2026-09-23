@@ -26,7 +26,7 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.cohesion.antiKitbashGateRequired,true);
   assert.equal(c.visualTargetFrames.roles.length,7);
   assert.equal(c.runtimeQa.beforeAfterVisualRegressionRequired,true);
-  assert.ok(architecture.executionTopology.assetProduction.includes('HIGH_END_RUNTIME_VISUAL_QA'));
+  assert.ok(architecture.executionTopology.assetProduction.includes('RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION'));
   assert.equal(architecture.departmentTopology.graphics.usesExistingDepartment,true);
   assert.equal(logMap.highEndVisualEvidenceContract.markerOnlyEvidenceForbidden,true);
   assert.equal(security.highEndAssetTransformationSecurity.protections.unverifiedExternalAssetUseForbidden,true);
