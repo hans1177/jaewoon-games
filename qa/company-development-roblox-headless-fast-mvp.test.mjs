@@ -110,3 +110,15 @@ test('daechung-rpg foundation evidence is deduped and uses actual roundtrip sema
  const playerBinding=actualServer.indexOf('Players.PlayerAdded:Connect(function(p)');
  assert.ok(worldBuild>0&&playerBinding>worldBuild,'world and safe spawn must exist before player binding');
 });
+
+
+test('daechung-rpg runtime foundation survives late player binding and transient checkpoint writes',()=>{
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ assert.match(server,/for attempt=1,4 do[\s\S]*foundationStore:UpdateAsync/);
+ assert.match(server,/Players\.PlayerAdded:Connect\(bindPlayer\)/);
+ assert.match(server,/for _,p in ipairs\(Players:GetPlayers\(\)\)do bindPlayer\(p\)end/);
+ assert.match(server,/if name=="REMOTE_PING"then[\s\S]*if name=="REMOTE_ROUNDTRIP"then[\s\S]*local now=os\.clock\(\)/);
+ assert.match(client,/local foundationRoundtrip=false/);
+ assert.match(client,/for _=1,20 do[\s\S]*foundationRemote:FireServer\("REMOTE_PING"\)[\s\S]*task\.wait\(\.5\)/);
+});
