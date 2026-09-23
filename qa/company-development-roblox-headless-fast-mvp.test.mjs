@@ -89,3 +89,24 @@ test('F0 workflow preserves blocker evidence even when validation fails',()=>{
   const tool=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
   assert.match(tool,/ROBLOX_FOUNDATION_F0_BLOCKERS=/);
 });
+
+
+test('daechung-rpg foundation evidence is deduped and uses actual roundtrip semantics',()=>{
+ const actualConfig=fs.readFileSync('roblox-games/daechung-rpg/shared/GameConfig.luau','utf8');
+ const actualServer=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const actualClient=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ const actualProject=fs.readFileSync('roblox-games/daechung-rpg/default.project.json','utf8');
+ const r=inspectHeadlessSourceTexts({gameId:'daechung-rpg',sourcePath:'roblox-games/daechung-rpg',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:1,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config:actualConfig,server:actualServer,client:actualClient,project:actualProject});
+ assert.equal(r.pass,true,r.blockers.join(','));
+ assert.match(actualServer,/if foundationSeen\[name\]then return true end/);
+ assert.match(actualServer,/foundationStore:GetAsync\("latest"\)/);
+ assert.match(actualServer,/store:RemoveAsync\(probeKey\)/);
+ assert.match(actualServer,/if #members>=2 then foundationCheckpoint\("MULTIPLAYER_SYNC"/);
+ assert.match(actualServer,/if accepted then foundationCheckpoint\("CORE_LOOP_READY"/);
+ assert.match(actualServer,/name=="REMOTE_PING"[\s\S]*FireClient\(p,"REMOTE_PONG"\)/);
+ assert.match(actualClient,/REMOTE_PONG[\s\S]*REMOTE_ROUNDTRIP/);
+ assert.match(actualClient,/foundationRemote:FireServer\("REMOTE_PING"\)/);
+ const worldBuild=actualServer.indexOf('\nbuildWorld()\n');
+ const playerBinding=actualServer.indexOf('Players.PlayerAdded:Connect(function(p)');
+ assert.ok(worldBuild>0&&playerBinding>worldBuild,'world and safe spawn must exist before player binding');
+});
