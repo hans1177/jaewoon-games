@@ -1,32 +1,30 @@
 {
   "version": 1,
-  "revision": 52,
+  "revision": 53,
   "updatedAt": "2026-09-23",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
   "documentationSynchronization": {
     "centralPolicyFirst": true,
-    "workDocumentsMustMirrorCurrentCentralPolicy": true,
-    "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
-    "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
-    "workDocumentsCannotOverrideCentralPolicy": true,
-    "centralPolicyPath": "company-learning/platform-release-roadmap.json",
-    "legacyHumanPolicyMirror": "COMPANY_FLOW.md",
-    "legacyMirrorAuthoritative": false,
-    "genrePresentationAndCommercialReadinessMirrored": true,
+    "machinePolicyPath": "company-learning/platform-release-roadmap.json",
+    "machinePolicyCompanions": [
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "executionProjectionsMustMatchCentralPolicy": true,
+    "implementationMayStartAfterMachineContextValidation": true,
+    "humanReadableDocumentRequired": false,
+    "humanReadableDocumentMayCreateOrOverridePolicy": false,
     "syncTargets": [
-      "company-learning/platform-release-roadmap.json",
-      "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
-      "COMPANY_FLOW.md",
-      ".github/agents/planning.agent.md",
-      ".github/agents/development.agent.md",
-      ".github/agents/graphics.agent.md",
-      ".github/agents/qa.agent.md",
-      ".github/agents/audio.agent.md",
-      "tools/vibe2-auto-planner.mjs",
+      "company-directive.json",
+      "tools/company-shared-context.mjs",
       "tools/company-selected-platform-router.mjs",
-      "assets/homepage-enhancements.js",
+      "tools/design-only-promotion-sync.mjs",
+      "tools/company-minimum-design-contract.mjs",
+      "tools/company-baseline-gate.mjs",
+      "assets/vibe-art-pipeline.js",
       "_worker.js"
     ]
   },
@@ -901,7 +899,7 @@
   },
   "stageGateScoringV2": {
     "version": 2,
-    "policyDocument": "COMPANY_FLOW.md",
+    "policyDocument": "company-learning/platform-release-roadmap.json",
     "scoreScalePerGate": 100,
     "scoresIndependentBetweenGates": true,
     "bonusPointsForbidden": true,
@@ -915,15 +913,9 @@
       100
     ],
     "criticalAxisMinimumPercent": 75,
-    "webStrictComposition": {
-      "commonGameQuality": 55,
-      "categorySpecificQuality": 25,
-      "webPlatformQuality": 20
-    },
     "currentThresholds": {
       "design": 80,
       "web": 80,
-      "webPlatformPromotion": 90,
       "targetPlatformCompletion": 90,
       "release": 90
     },
@@ -936,17 +928,17 @@
       "scoreStoredPerExpansion": true
     },
     "releaseScoreImmutableAfterRelease": true,
-    "continuousContentExpansionAfterRelease": true
+    "continuousContentExpansionAfterRelease": true,
+    "designScoreRole": "PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION",
+    "webScoreRole": "OPTIONAL_UNITY_WEB_VALIDATION_QUALITY_ONLY"
   },
   "executionPause": {
     "ownerDirectiveRecordedAt": "2026-09-18",
     "stopAfterStage": "NONE",
-    "webDevelopmentPaused": false,
     "developmentConfirmedQueueAllowed": true,
     "developmentRuntimeDispatchAllowed": true,
-    "webImplementationStartForbiddenUntilOwnerResume": false,
-    "designPromotionMayContinueWhileWebPaused": true,
-    "strictDesignGateMustRemainUnchanged": true
+    "nativeDevelopmentPaused": false,
+    "strictDesignReviewParallel": true
   },
   "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
   "authority": "MACHINE_EXECUTION_CONTRACT",
