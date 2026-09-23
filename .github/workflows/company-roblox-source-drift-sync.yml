@@ -38,6 +38,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Bind current main source revision
+        id: main
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Validate changed-source synchronization contract
         run: |
           node --check tools/company-roblox-source-drift-sync.mjs
@@ -59,6 +64,9 @@ jobs:
           elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
               git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+            fi
+            if ! git cat-file -e "$CURRENT_SHA^{commit}" 2>/dev/null; then
+              git fetch --no-tags --depth=1 origin "$CURRENT_SHA"
             fi
             changed="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ | awk -F/ 'NF>=3 {print $2}' | sort -u | paste -sd, -)"
             if [[ -z "$changed" ]] && git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/.company-runtime-trigger | grep -q .; then
@@ -82,7 +90,7 @@ jobs:
         if: steps.changed.outputs.game_ids != ''
         env:
           CHANGED_GAME_IDS: ${{ steps.changed.outputs.game_ids }}
-          SOURCE_REVISION: ${{ github.sha }}
+          SOURCE_REVISION: ${{ steps.main.outputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
