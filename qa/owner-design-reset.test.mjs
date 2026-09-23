@@ -86,3 +86,32 @@ test('promoted owner-reset seeds remain eligible for parallel strict design revi
   assert.match(workflow,/status==='ACTIVE'\|\|x\?\.promotion\?\.strictDesignReviewContinuesInParallel===true/);
   assert.doesNotMatch(workflow,/find\(x=>String\(x\.gameId\)===gameId&&String\(x\.status\)\.toUpperCase\(\)==='ACTIVE'\)/);
 });
+
+
+test('repeated identical owner design request creates a new event even when revision text is the same',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-reset-repeat-'));
+  const queue=path.join(dir,'queue.json');
+  const make=(requestInstanceId)=>({revision:'SAME-TEXT-REVISION',requestInstanceId,gameId:'x',gameName:'X',status:'ACTIVE',seed:{seedId:'S1',GAME_CATEGORY:'CASUAL',INITIAL_TARGET_PLATFORM:'UNITY'}});
+  fs.writeFileSync(queue,JSON.stringify({requests:[make('event-1')]}));
+  const state={version:1,seeds:[]};
+  const first=ensureOwnerDesignResetSeed(state,'x',{file:queue});
+  assert.equal(first.changed,true);
+  assert.equal(first.seed.ownerRequestInstanceId,'event-1');
+  assert.equal(first.seed.ownerRequestSequence,1);
+  fs.writeFileSync(queue,JSON.stringify({requests:[make('event-1'),make('event-2')]}));
+  const second=ensureOwnerDesignResetSeed(state,'x',{file:queue});
+  assert.equal(second.changed,true);
+  assert.equal(second.seed.ownerResetRevision,'SAME-TEXT-REVISION');
+  assert.equal(second.seed.ownerRequestInstanceId,'event-2');
+  assert.equal(second.seed.ownerRequestSequence,2);
+  const third=ensureOwnerDesignResetSeed(state,'x',{file:queue});
+  assert.equal(third.changed,false);
+});
+
+test('design runtime requires strict PASS to match latest owner request event',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const matches=workflow.match(/ownerRequestInstanceId/g)||[];
+  assert.ok(matches.length>=8,'scheduler revalidation score sync and continuation must bind owner request event');
+  assert.match(workflow,/design-revised\.json/);
+  assert.match(workflow,/revised\?\.ownerRequestInstanceId/);
+});
