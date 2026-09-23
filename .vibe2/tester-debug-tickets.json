@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-23T11:53:47.807Z",
+  "updatedAt": "2026-09-23T11:54:41.176Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -22,8 +22,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T22:30:14.467Z",
-      "updatedAt": "2026-09-23T11:53:47.805Z",
-      "occurrenceCount": 512
+      "updatedAt": "2026-09-23T11:54:41.174Z",
+      "occurrenceCount": 513
     },
     {
       "id": "bug-7d114ff3812bf7516f00",
@@ -46,8 +46,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T23:20:59.209Z",
-      "updatedAt": "2026-09-23T11:53:47.805Z",
-      "occurrenceCount": 510
+      "updatedAt": "2026-09-23T11:54:41.174Z",
+      "occurrenceCount": 511
     },
     {
       "id": "bug-183929560b1819ca79e1",
@@ -68,8 +68,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T11:53:47.805Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-09-23T11:54:41.174Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-06912c56eec73d463251",
@@ -90,8 +90,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T11:53:47.805Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-09-23T11:54:41.174Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-f1f45de215a280a3885b",
@@ -112,8 +112,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T11:53:47.805Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-09-23T11:54:41.174Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-2cfb0882ff23baaef682",
@@ -136,6 +136,27 @@
       "createdAt": "2026-09-23T11:04:31.930Z",
       "updatedAt": "2026-09-23T11:05:52.075Z",
       "occurrenceCount": 2
+    },
+    {
+      "id": "bug-c56861641c064996c2d1",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "FOUNDATION",
+      "signature": "ROBLOX_RUNTIME_FOUNDATION_UNVERIFIED",
+      "reproduction": "RUN_EXISTING_GAME_TESTER_F0_TO_F4_FOUNDATION_SCENARIO_ON_EXACT_PRIVATE_RUNTIME_CANDIDATE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"8e02c08feb9561405a20b68204f349ddaafcd253\",\"artifactIdentity\":\"sha256:8fa5f7d89e34dd6dc4f8dedc45384cae9f919929f527a0e24177c3951517301f\",\"artifactRunId\":35856625480,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":19,\"workflowRunId\":35856925481,\"publishedAt\":\"2026-09-23T11:53:48.176Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "route": "GAME_TESTER_FOUNDATION_EXECUTION",
+      "repairEligible": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T11:54:41.174Z",
+      "updatedAt": "2026-09-23T11:54:41.174Z",
+      "occurrenceCount": 1
     }
   ]
 }
