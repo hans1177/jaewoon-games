@@ -106,6 +106,12 @@ test('exact duplicate bottleneck repairs coalesce before reservation without los
       id:'distinct',status:'queued',priority:'high',taskType:'bottleneck-repair',gameId:'demo',
       goal:'repair a different verified bottleneck',responsibleFiles:['tools/distinct.mjs'],
       sourceMutationRequired:true,createdAt:'2026-09-23T00:04:00Z'
+    },
+    {
+      id:'dependent',status:'queued',priority:'normal',taskType:'ordinary',gameId:'demo',
+      goal:'wait for canonical repair',responsibleFiles:['tools/dependent.mjs'],
+      dependencies:['repair-b','repair-c'],blocker:'shared-signature-canary-pending:repair-c',
+      createdAt:'2026-09-23T00:05:00Z'
     }
   ]};
   const compacted=coalesceQueuedSystemAiDuplicateRepairs(queue,{at:Date.parse('2026-09-23T00:10:00Z')});
@@ -125,6 +131,10 @@ test('exact duplicate bottleneck repairs coalesce before reservation without los
   }
   assert.equal(compacted.queue.tasks.find(x=>x.id==='checkpoint-newer').status,'queued');
   assert.equal(compacted.queue.tasks.find(x=>x.id==='distinct').status,'queued');
+  const dependent=compacted.queue.tasks.find(x=>x.id==='dependent');
+  assert.deepEqual(dependent.dependencies,['repair-a']);
+  assert.equal(dependent.blocker,'shared-signature-canary-pending:repair-a');
+  assert.ok(dependent.evidence.includes('system-ai-duplicate-dependency-rewired:YES'));
 
   const reserved=reserveSystemAiBatch(queue,{max:4,reservationId:'run:dedupe',at:Date.parse('2026-09-23T00:10:00Z')});
   assert.equal(reserved.coalesced,2);
