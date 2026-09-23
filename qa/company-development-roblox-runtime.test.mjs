@@ -461,3 +461,11 @@ test('Roblox game source pushes route through exact changed-source sync instead 
   assert.match(sync,/paths:\s*\n\s*- 'roblox-games\/\*\*'/);
   assert.match(sync,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id=/);
 });
+
+
+test('exact Roblox runtime dispatch has an isolated workflow concurrency lane',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/source-bootstrap:[\s\S]*group: company-runtime-writer/);
+  assert.match(workflow,/technical-persist:[\s\S]*group: company-runtime-writer/);
+});
