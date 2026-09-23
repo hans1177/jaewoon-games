@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -312,7 +312,9 @@
       "liveBottleneckTelemetryMayNotExpandAuthority": true,
       "dependencyWaitStateMayNotCreateRecursiveRecoveryAuthority": true,
       "supersededRepairDependencyRewireMayNotExpandWritableScope": true,
-      "supersededRepairDependencyRewireMustPreserveCheckpointIdentity": true
+      "supersededRepairDependencyRewireMustPreserveCheckpointIdentity": true,
+      "historicalDependencyRepairMayOnlyFollowRecordedSupersededByEvidence": true,
+      "historicalDependencyRepairMayNotExpandWritableScope": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -352,7 +354,10 @@
       "supersededRepairDependencyRewireAuthorityExpansion": false,
       "producerRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
       "producerRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
-      "producerRepairReuseAuthorityExpansion": false
+      "producerRepairReuseAuthorityExpansion": false,
+      "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
+      "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
+      "historicalSupersededDependencyRepairAuthorityExpansion": false
     },
     "producerSideRepairReuse": {
       "binding": "tools/company-recovery-dispatch.mjs",
