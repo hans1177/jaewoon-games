@@ -1,5 +1,5 @@
 {
-  "version": 304,
+  "version": 305,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -15152,9 +15152,8 @@
       "daechungRpgCanonicalSource": "unity-games/daechung-rpg",
       "daechungRpgLegacyWebPreservedForReferenceAndFallback": true
     },
-    "centralSyncDocument": "company-learning/UNITY_WEB_FIRST_STAGE.md",
+    "centralSyncDocument": "company-learning/platform-release-roadmap.json#unityWebFirstStage",
     "vibeContract": "company-learning/vibe3-engine-contract.json#unityWebFirstStage",
-    "vibeHumanSpec": "company-learning/VIBE3_ENGINE.md#unity-web-1차-게임-제작학습-동기화",
     "unitySourceSpec": "unity-games/README.md",
     "contractValidationWorkflow": ".github/workflows/vibe3-engine-contract.yml",
     "executionBindings": {
@@ -15222,7 +15221,8 @@
     "validationSurfaceOnly": true,
     "nativeDevelopmentMayRunWithoutWebBuild": true,
     "nativeReleaseMayRunWithoutWebBuild": true,
-    "homepageTestLinkEnabled": true
+    "homepageTestLinkEnabled": true,
+    "humanPolicySpecRequired": false
   },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
