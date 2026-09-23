@@ -36,10 +36,11 @@ test('대충 RPG는 작은 단일 필드가 아니라 5개 대형 지역과 인�
  assert.match(server,/for i=1,10 do spawnEnemy/);
  assert.match(server,/AIUsers/);
  assert.match(server,/VillageHouse/);
- assert.doesNotMatch(server,/CreateHumanoidModelFromDescription/);
- for(const marker of ['RPG_FANTASY_SILHOUETTE_WORLD_V4','ChiefCape','SwordGuard','HealerHood','MarketStall','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
+ assert.match(server,/CreateHumanoidModelFromDescription/);
+ assert.match(server,/PathfindingService:CreatePath/);
+ for(const marker of ['RPG_FANTASY_PORTAL_WORLD_V5','RPG_STYLIZED_TOY_FANTASY_R15','MedievalAssetArmor','MedievalVillageHouse','ChiefCape','SwordGuard','HealerHood','MarketStall','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
  assert.doesNotMatch(server,/local r=ppart\(parent,name,Vector3\.new\(3\.1,4\.2,2\.1\)\*scale/);
- assert.equal((config.match(/Class="(?:NONE|HEALER|WARRIOR|ARCHER)"/g)||[]).length,10);
+ assert.equal((config.match(/Class="(?:BREAKER|SHADOW|RUNE|SOUL)"/g)||[]).length,10);
 });
 
 test('심야는 이동 가능한 어둠과 지도별 시각 기준점을 가진다',()=>{
