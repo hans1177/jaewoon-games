@@ -51,6 +51,12 @@ local Config={
     {Id="WOLF_TAMER",Name="늑대 조련사",HP=105,Damage=10,Gold=24,XP=30,Speed=7,Stagger=52,Attack={Name="사냥 명령",Telegraph=.7,Cooldown=2.5,Range=17,Parryable=true,GuardDamage=16,Special="HOWL_COMMAND"}},
     {Id="MOSS_TURTLE",Name="이끼등 거북",HP=165,Damage=16,Gold=23,XP=31,Speed=4,Stagger=85,Attack={Name="등껍질 박치기",Telegraph=.9,Cooldown=2.25,Range=6,Parryable=true,GuardDamage=45,Special="SHELL_BASH"}}
    },
+   RunBoss={Id="GOLDEN_ANTLER",Name="금빛 큰뿔",HP=760,Damage=27,Gold=180,XP=220,Speed=9,Stagger=175,
+    Attacks={
+     {Name="황금뿔 돌진",Telegraph=.72,Cooldown=2.0,Range=12,Parryable=true,GuardDamage=42,Special="ANTLER_CHARGE"},
+     {Name="대지 짓밟기",Telegraph=1.0,Cooldown=2.7,Range=13,Parryable=false,Unblockable=true,Special="GROUND_STOMP",DamageMult=1.15},
+     {Name="삼연속 돌진",Telegraph=.58,Cooldown=2.4,Range=11,Parryable=true,GuardDamage=28,Special="FANG_CHAIN",Hits=3,HitGap=.26}
+    }},
    HiddenBosses={
     {Id="WHITE_FANG",Name="백색 송곳니",HP=520,Damage=22,Gold=125,XP=150,Speed=12,Stagger=125,
      Attacks={
