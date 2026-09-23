@@ -16,13 +16,15 @@ test('Roblox runtime foundation QA uses Open Cloud sentinel and never Studio',()
   assert.doesNotMatch(workflow,/ExecuteMultiplayerTestAsync/);
 });
 
-test('missing actual runtime observation escalates after repeated automatic attempts',()=>{
+test('missing actual runtime observation remains on the exact failed gate with unlimited causal repair',()=>{
   assert.match(workflow,/robloxRuntimeRetryCount=attempts/);
-  assert.match(workflow,/attempts>=3/);
-  assert.match(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
-  assert.match(workflow,/roblox-actual-runtime-executor-unavailable/);
-  assert.match(workflow,/ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_PENDING/);
+  assert.match(workflow,/roblox-runtime-foundation-awaiting-observation/);
+  assert.match(workflow,/retryPolicy=UNLIMITED_CAUSAL_REPAIR/);
+  assert.doesNotMatch(workflow,/attempts>=3/);
+  assert.doesNotMatch(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
+  assert.doesNotMatch(workflow,/roblox-actual-runtime-executor-unavailable/);
+  assert.doesNotMatch(workflow,/ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=/);
 });
 
 test('foundation QA remains fail-closed and exact-candidate bound',()=>{
@@ -54,13 +56,14 @@ test('foundation QA emits machine-readable exact blocker evidence',()=>{
 });
 
 
-test('stale published Roblox version counts as missing actual runtime execution and escalates',()=>{
+test('stale published Roblox version stays retryable and preserves exact runtime foundation stage',()=>{
   assert.match(workflow,/result\.exactGame===true&&result\.exactPlace===true&&result\.exactVersion!==true/);
   assert.match(workflow,/ROBLOX_FOUNDATION_STALE_RUNTIME=/);
   assert.match(workflow,/stale-runtime-sentinel-observation/);
   assert.match(workflow,/roblox-runtime-foundation-stale-version/);
-  assert.match(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
-  assert.match(workflow,/attempts>=3/);
+  assert.match(workflow,/retryPolicy=UNLIMITED_CAUSAL_REPAIR/);
+  assert.doesNotMatch(workflow,/ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE/);
+  assert.doesNotMatch(workflow,/attempts>=3/);
 });
 
 
