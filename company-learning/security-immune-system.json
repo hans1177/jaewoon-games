@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -325,7 +325,10 @@
       "crossScopeDependencyReconciliationMayNotExpandWritableScope": true,
       "pushQaMayNotMutateSystemAiQueue": true,
       "pushQaMayNotReserveWorkers": true,
-      "pushQaMayNotHoldRealReserveMutationLock": true
+      "pushQaMayNotHoldRealReserveMutationLock": true,
+      "parallelCapacityExpansionMayNotExpandWorkerAuthority": true,
+      "parallelCapacityExpansionMayNotBypassDeterministicQa": true,
+      "sharedQueueMutationRemainsSerialized": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -395,7 +398,11 @@
       "crossScopeCanaryAuthorityExpansion": false,
       "pushQaOnlyRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
       "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c",
-      "pushQaAuthorityExpansion": false
+      "pushQaAuthorityExpansion": false,
+      "systemAiExternalMatrixCapacityRevision": "e0968e099aed84a75444639186c60541c84f9377",
+      "gameWorkerAdaptiveCapRemovedRevision": "d685c17caa8da473e89b280a365bd6adb264b49d",
+      "gameWorkerProviderCapacityRunnerRevision": "86c7defe4b3fd6c03562e5ae860e73f04a07a51f",
+      "parallelCapacityAuthorityExpansion": false
     },
     "producerSideRepairReuse": {
       "binding": "tools/company-recovery-dispatch.mjs",
