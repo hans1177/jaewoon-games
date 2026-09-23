@@ -379,7 +379,6 @@
       "graphics": "llama3.2:1b",
       "development": "llama3.2:1b",
       "qa": "llama3.2:1b",
-      "balance": "llama3.2:1b",
       "audio": "llama3.2:1b"
     },
     "gameDesigner": {
@@ -424,7 +423,6 @@
       "graphics",
       "development",
       "qa",
-      "balance",
       "audio"
     ],
     "departmentModeByClass": {
@@ -513,8 +511,7 @@
       "collaborationWith": [
         "graphics",
         "development",
-        "qa",
-        "balance"
+        "qa"
       ],
       "implementationFeedsVibeLearning": true,
       "targetPlatforms": [
@@ -530,7 +527,22 @@
     "robloxPreflightModel": "llama3.2:1b",
     "robloxValidationMode": "HEADLESS_FAST_MVP",
     "robloxStudioExecutionAllowed": false,
-    "robloxStudioEvidenceRequired": false
+    "robloxStudioEvidenceRequired": false,
+    "departmentResponsibilityMerge": {
+      "balance": {
+        "mergedInto": [
+          "planning",
+          "qa"
+        ],
+        "separateDepartment": false,
+        "preservedResponsibilities": [
+          "CORE_LOOP_BALANCE_REVIEW",
+          "PROGRESSION_ECONOMY_BALANCE",
+          "REWARD_AND_DIFFICULTY_RISK",
+          "NUMERIC_GAMEPLAY_REGRESSION"
+        ]
+      }
+    }
   },
   "classes": {
     "DESIGN_ONLY": {
