@@ -711,6 +711,141 @@ function presentationStagesForProject(project={}){
   const genreGuide=genreCommercialGuidance(project),commercialGuide=commercialReadinessGuidance();
   return stages.map(stage=>({...stage,goal:`${stage.goal}\n[GENRE_PRESENTATION_GUIDANCE] ${genreGuide}\n[COMMERCIAL_READINESS_GUIDANCE] ${commercialGuide}`}));
 }
+const PRESENTATION_EVOLUTION_SIGNAL_PRIORITY=Object.freeze({OWNER_CHANGE_REQUEST:0,RUNTIME_CAPTURE_COMPARISON:1,VISUAL_DEBT:2,PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE:3,INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK:4});
+const PRESENTATION_EVOLUTION_PASSES=Object.freeze(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
+function presentationRelevantText(value=''){
+  return /(?:graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|idle|walk|run|turn|impact|vfx|effect|particle|trail|audio|music|bgm|sound|sfx|camera|frame|fps|performance|mobile|readability|placeholder|primitive|silhouette|style|cinematic|art.?direction|design|detail|그래픽|비주얼|연출|에셋|모델|환경|배경|재질|조명|애니|움직임|모션|공격 ?모션|이펙트|효과|음악|브금|사운드|카메라|프레임|성능|가독성|플레이스홀더|실루엣|스타일|시네마틱|디자인|외형|묘사|디테일|컨셉)/i.test(clean(value));
+}
+function graphicsEvolutionAffectedPasses(text=''){
+  const value=clean(text),passes=[];
+  const add=pass=>{if(PRESENTATION_EVOLUTION_PASSES.includes(pass)&&!passes.includes(pass))passes.push(pass);};
+  if(/(?:\b(?:asset|model|environment|background|terrain|material|lighting|placeholder|primitive|silhouette|style|landmark|art)\b|에셋|모델|환경|배경|재질|조명|실루엣|외형|디자인|디테일|컨셉)/i.test(value))add('ASSET_ADAPTATION');
+  if(/(?:\b(?:motion|animation|move|movement|idle|walk|run|turn|smooth|blend|weight|locomotion|secondary|procedural)\b|애니|움직임|모션|걷|달리|회전|부드럽|체중|보조모션)/i.test(value))add('LIVING_MOTION');
+  if(/(?:attack|hit|death|impact|recoil|anticipat|recover|combat.?feel|attack.?motion|피격|사망|타격|공격모션|공격 모션|반동|후딜|전투연출)/i.test(value))add('ANIMATION_FEEL');
+  if(/(?:vfx|effect|particle|trail|flash|telegraph|shockwave|spark|이펙트|효과|파티클|트레일|섬광)/i.test(value))add('VFX');
+  if(/(?:audio|music|bgm|sound|sfx|ambient|음악|브금|사운드|효과음|환경음)/i.test(value))add('AUDIO_FEEL');
+  if(/(?:camera|shake|zoom|shot|cinematic|카메라|줌|화면흔들|시네마틱)/i.test(value))add('CAMERA_LANGUAGE');
+  if(/(?:mobile|frame|fps|performance|clutter|readability|accessib|touch|ui|모바일|프레임|성능|가독성|접근성|터치|화면가림)/i.test(value))add('POLISH_MOBILE');
+  if(!passes.length&&presentationRelevantText(value))add('POLISH_MOBILE');
+  return passes;
+}
+function graphicsEvolutionSignalFingerprint(signal={}){
+  return stableHash([clean(signal.source),clean(signal.key),clean(signal.text).replace(/\s+/g,' ').toLowerCase()].join('|'));
+}
+function presentationPrefix(project={}){
+  return clean(project.engine).toLowerCase()==='web'?clean(project.gameId):`${clean(project.gameId)}-${clean(project.engine).toLowerCase()}`;
+}
+function isPresentationTaskRecord(item={}){
+  const evidence=(item.evidence||[]).map(clean);
+  return evidence.some(value=>value.startsWith('presentation-pass:'))||/-presentation-[a-z-]+-v\d+$/.test(clean(item.id));
+}
+function collectGraphicsEvolutionSignals(project={},queue={tasks:[]}){
+  const signals=[];
+  const push=(source,key,text)=>{
+    const value=clean(text);
+    if(!value||!presentationRelevantText(value))return;
+    const affectedPasses=graphicsEvolutionAffectedPasses(value);
+    if(!affectedPasses.length)return;
+    const signal={source,key:clean(key)||source,text:value,affectedPasses};
+    signal.fingerprint=graphicsEvolutionSignalFingerprint(signal);
+    signal.priority=PRESENTATION_EVOLUTION_SIGNAL_PRIORITY[source]??99;
+    if(!signals.some(row=>row.fingerprint===signal.fingerprint))signals.push(signal);
+  };
+  const runtimeEvidence=[
+    clean(project.queueVibeWebImplementationReason),
+    ...(project.queueStrictImplementationHardFailures||[]),
+    ...(project.queueRoutingBlockers||[]),
+    ...(project.developmentValidation?.blockers||[])
+  ].filter(Boolean);
+  for(const value of runtimeEvidence){
+    if(/(?:frame|fps|performance|mobile.*(?:visual|effect|presentation)|presentation.*performance)/i.test(value))push('PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE','runtime-performance',value);
+    else if(/(?:placeholder|primitive|asset|model|background|silhouette|style|visual.?debt)/i.test(value))push('VISUAL_DEBT','runtime-visual-debt',value);
+    else push('RUNTIME_CAPTURE_COMPARISON','runtime-presentation',value);
+  }
+  for(const item of Array.isArray(queue?.tasks)?queue.tasks:[]){
+    if(clean(item.gameId)!==clean(project.gameId))continue;
+    const status=clean(item.status).toLowerCase();
+    if(isPresentationTaskRecord(item))continue;
+    const evidence=(item.evidence||[]).map(clean).filter(Boolean);
+    if(item.ownerDirective===true&&status==='verified'&&presentationRelevantText(item.goal))push('OWNER_CHANGE_REQUEST',clean(item.id),clean(item.goal));
+    if(status!=='verified')continue;
+    for(const marker of evidence){
+      if(!presentationRelevantText(marker))continue;
+      if(/^owner-presentation-change:/i.test(marker))push('OWNER_CHANGE_REQUEST',clean(item.id),marker.slice('owner-presentation-change:'.length));
+      else if(/(?:visual.?debt|placeholder|primitive)/i.test(marker))push('VISUAL_DEBT',clean(item.id),marker);
+      else if(/(?:frame|fps|performance)/i.test(marker))push('PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE',clean(item.id),marker);
+      else if(/(?:playtest|feedback)/i.test(marker))push('INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK',clean(item.id),marker);
+      else if(/(?:runtime|regression|failure|failed|issue|readability|clutter)/i.test(marker))push('RUNTIME_CAPTURE_COMPARISON',clean(item.id),marker);
+    }
+  }
+  return signals.sort((a,b)=>a.priority-b.priority||a.fingerprint.localeCompare(b.fingerprint));
+}
+function presentationEvolutionTasksForFingerprint(queue={},fingerprint=''){
+  return (Array.isArray(queue?.tasks)?queue.tasks:[]).filter(item=>(item.evidence||[]).some(value=>clean(value)===`graphics-evolution-trigger:${fingerprint}`));
+}
+function presentationEvolutionCycleNumber(queue={},prefix=''){
+  let max=1;
+  for(const item of Array.isArray(queue?.tasks)?queue.tasks:[]){
+    const id=clean(item.id);
+    if(!id.startsWith(`${prefix}-presentation-`))continue;
+    const match=/-v(\d+)$/.exec(id);
+    if(match)max=Math.max(max,Number(match[1])||1);
+  }
+  return max+1;
+}
+function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
+  const signals=collectGraphicsEvolutionSignals(project,queue);
+  if(!signals.length)return null;
+  const prefix=presentationPrefix(project);
+  for(const signal of signals){
+    const existing=presentationEvolutionTasksForFingerprint(queue,signal.fingerprint);
+    if(existing.some(item=>['queued','running','blocked','failed'].includes(clean(item.status).toLowerCase())))return null;
+    const completedPasses=new Set(existing.filter(item=>clean(item.status).toLowerCase()==='verified').flatMap(item=>(item.evidence||[]).filter(value=>clean(value).startsWith('presentation-pass:')).map(value=>clean(value).slice('presentation-pass:'.length).toUpperCase())));
+    const remaining=signal.affectedPasses.filter(pass=>!completedPasses.has(pass));
+    if(!remaining.length)continue;
+    const cycle=existing.length
+      ?Math.max(...existing.map(item=>Number(/-v(\d+)$/.exec(clean(item.id))?.[1]||0)),2)
+      :presentationEvolutionCycleNumber(queue,prefix);
+    const pass=remaining[0],stage=stages.find(row=>row.pass===pass);
+    if(!stage)continue;
+    const id=`${prefix}-presentation-${stage.key}-v${cycle}`;
+    if(hasTask(queue,id)){
+      if(!taskVerified(queue,id))return null;
+      continue;
+    }
+    const signalText=clean(signal.text).slice(0,800);
+    const goal=`${stage.goal}\n[GRAPHICS_EVOLUTION_CYCLE] cycle=${cycle}; trigger=${signal.source}; fingerprint=${signal.fingerprint}; affected=${signal.affectedPasses.join(',')}\n새 근거: ${signalText}\n이 근거와 직접 관련된 기존 책임 시스템만 수정한다. 같은 신호로 완료된 범위를 반복 재작업하지 않고 영향 없는 게임플레이·저장·밸런스·판정은 보존한다.`;
+    const out=task(id,project,goal,[relative],signal.source==='OWNER_CHANGE_REQUEST'?'owner-immediate':'normal','medium',[
+      'asset-production-parallel:v1',
+      'presentation-quality-pipeline:v1',
+      `presentation-pass:${stage.pass}`,
+      'graphics-evolution:evidence-driven',
+      `graphics-evolution-cycle:${cycle}`,
+      `graphics-evolution-trigger-source:${signal.source}`,
+      `graphics-evolution-trigger:${signal.fingerprint}`,
+      `graphics-evolution-affected-passes:${signal.affectedPasses.join(',')}`,
+      'graphics-evolution-unlimited-generations:yes',
+      'graphics-evolution-pass-alone-does-not-requeue',
+      'graphics-evolution-same-signal-duplicate-forbidden',
+      'presentation-preserve-gameplay-semantics',
+      'presentation-runtime-qa-required',
+      'graphics-pass-real-asset-binding-runtime-required',
+      'mobile-performance-qa-required',
+      'presentation-marker-only-pass:forbidden'
+    ]);
+    out.workUnits=4;
+    out.assetProductionLane=true;
+    out.estimatedRisk='high';
+    out.speculativeEligible=true;
+    out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
+    out.atomicCompletionRequired=true;
+    out.graphicsEvolutionCycle=cycle;
+    out.graphicsEvolutionTrigger={source:signal.source,fingerprint:signal.fingerprint,affectedPasses:[...signal.affectedPasses]};
+    out.evidence=[...new Set([...(out.evidence||[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required'])];
+    return out;
+  }
+  return null;
+}
 export function findPresentationQualityTask(project,repoRoot,queue){
   const engine=clean(project.engine).toLowerCase();
   if(!['web','unity','roblox'].includes(engine))return null;
@@ -721,7 +856,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
   const stages=presentationStagesForProject(project);
   let previousId=null;
   for(const stage of stages){
-    const prefix=project.engine==='web'?project.gameId:`${project.gameId}-${project.engine}`;
+    const prefix=presentationPrefix(project);
     const id=`${prefix}-presentation-${stage.key}-v1`;
     if(hasTask(queue,id)){
       if(!taskVerified(queue,id))return null;
@@ -760,7 +895,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
     ])];
     return out;
   }
-  return null;
+  return nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages);
 }
 export function findWebPresentationQualityTask(project,repoRoot,queue){
   if(clean(project?.engine).toLowerCase()!=='web')return null;
