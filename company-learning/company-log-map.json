@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,5 +492,42 @@
   "centralPolicyExecutionEvidence": {
     "humanReadablePolicyDocsRequired": false,
     "machinePolicyHashesRequired": true
+  },
+  "designEvolutionEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.intelligentEvolution",
+    "recordScope": "PER_GAME_PER_DESIGN_REVISION_EVENT",
+    "requiredFields": [
+      "GAME_ID",
+      "DESIGN_REVISION",
+      "TRIGGER_SOURCE",
+      "TRIGGER_EVENT_ID",
+      "OWNER_REPEAT_COUNT",
+      "CURRENT_DESIGN_CHECKPOINT",
+      "STABILITY_BLOCKERS",
+      "OWNER_LITERAL_REQUEST",
+      "OWNER_INTERPRETED_INTENT",
+      "INTENT_UNCERTAINTY",
+      "DESIGN_HEALTH_FINDINGS",
+      "PRIORITY_SCORE_OR_RATIONALE",
+      "PLAN_A",
+      "PLAN_B",
+      "ALTERNATIVES_REVIEWED",
+      "SELECTED_PLAN",
+      "IDENTITY_ANCHORS_PRESERVED_OR_INTENTIONALLY_REVISED",
+      "GENRE_CHANGE_DECISION",
+      "CONTENT_DIVERSITY_REVIEW",
+      "NARRATIVE_DIALOGUE_REVIEW_WHEN_APPLICABLE",
+      "STRICT_DESIGN_REVIEW_RESULT",
+      "BEFORE_AFTER_PLAY_EVIDENCE_WHEN_AVAILABLE",
+      "VERIFIED_LEARNING_RETURN_REFERENCE",
+      "NEXT_REPLAN_DECISION"
+    ],
+    "repeatedOwnerIdenticalTextRequiresDistinctEventId": true,
+    "ownerSemanticTextDeduplicationForbidden": true,
+    "automaticSameEvidenceDeduplicationAllowed": true,
+    "positiveLearningRequiresVerifiedRuntimeOrPlayEvidence": true,
+    "negativeReviseOrDropLearningAllowedWithVerifiedCause": true,
+    "noNewTopLevelDesignEvidenceAuthority": true
   }
 }
