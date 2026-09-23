@@ -155,6 +155,9 @@ export function buildVibeAssetProductionPlan({
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
+    graphicsProductionRoot:'GRAPHICS_PRODUCTION',
+    externalTopLevelGraphicsWorkUnit:false,
+    plannerRole:'GRAPHICS_PRODUCTION_INPUT_ONLY',
     gameId:clean(task.gameId)||null,
     target:resolvedTarget,
     implementationOwner:'VIBE2_VIBE3',
@@ -224,17 +227,21 @@ export function buildVibeAssetProductionPlan({
       gameplaySaveProgressionEconomyMutationForbiddenForAssetReasons:true,
       sourceAndTransformProvenanceRequiredForReuse:true,
       authoringGeneratorRequestDoesNotCountAsAssetCompleted:true,
-      assetUseRequiresRuntimeVisualQa:true
+      assetUseRequiresRuntimeVisualQa:true,
+      siblingTopLevelGraphicsTasksForbidden:true,
+      internalModuleMayNotSelfAcceptGraphicsPass:true,
+      allAssetDecisionsFanInToGraphicsProductionRoot:true
     }),
-    authority:'vibe-game-implementation-asset-production-advisory'
+    authority:'graphics-production-input-plan-only'
   });
 }
 
 export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
-    '[VIBE ASSET PRODUCTION - implementation owner decision]',
-    'Vibe2/Vibe3가 게임 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 직접 선택한다.',
+    '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    '이 계획은 독립 그래픽 작업이 아니다. 모든 에셋 결정은 단일 GRAPHICS_PRODUCTION 루트에 입력되고 같은 루트에서 캐릭터·환경·애니메이션·VFX·조명·UI와 함께 fan-in 된다.',
+    'Vibe2/Vibe3가 게임 소스 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 선택한다.',
     '에셋 선택 전에 승인 설계·최신 아트북에서 게임별 Art Bible, Style Lock, Material/Environment/Animation/VFX/Lighting/UI 언어와 Visual Target Frame을 먼저 확정한다.',
     '기본값은 플레이어·적·NPC·무기·아이템·건축물·지형·배경·식생·소품·UI·VFX·오디오까지 목적 있는 에셋을 적용하는 것이다. primitive/샘플 모형은 prototype fallback만 허용하고 Visual Debt로 남긴다.',
     'Hero 품질 대상(플레이어, 주 보스/적, 시그니처 무기, 핵심 랜드마크/시작지역)은 전체 게임의 스타일 기준점으로 먼저 완성한다.',
