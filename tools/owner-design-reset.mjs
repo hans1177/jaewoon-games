@@ -19,7 +19,8 @@ export function activeOwnerDesignResetRequests(file=OWNER_DESIGN_RESET_FILE){
 
 export function ownerDesignResetRequestForGame(gameId,file=OWNER_DESIGN_RESET_FILE){
   const id=clean(gameId);
-  return activeOwnerDesignResetRequests(file).find(request=>clean(request.gameId)===id)||null;
+  const matches=activeOwnerDesignResetRequests(file).filter(request=>clean(request.gameId)===id);
+  return matches.at(-1)||null;
 }
 
 export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE){
@@ -31,6 +32,8 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
   seed.status='ACTIVE';
   seed.generation='OWNER_REDESIGN_RESET';
   seed.ownerResetRevision=clean(request.revision||seed.ownerResetRevision||'OWNER_RESET');
+  seed.ownerRequestInstanceId=clean(request.requestId||request.revision||seed.ownerRequestInstanceId||seed.ownerResetRevision);
+  seed.ownerRepeatedRequestCreatesNewDesignRevision=true;
   seed.productionClass='DESIGN_ONLY';
   seed.productionClassSource='OWNER_REDESIGN_RESET_2026-09-13';
   seed.lifecycleState='DESIGN_ONLY';
@@ -53,10 +56,12 @@ export function ensureOwnerDesignResetSeed(state,gameId,{file=OWNER_DESIGN_RESET
 }
 
 export function materializeOwnerDesignResetSeeds(state,{file=OWNER_DESIGN_RESET_FILE}={}){
+  const active=activeOwnerDesignResetRequests(file);
   const changed=[];
-  for(const request of activeOwnerDesignResetRequests(file)){
-    const result=ensureOwnerDesignResetSeed(state,request.gameId,{file});
-    if(result.changed)changed.push(request.gameId);
+  const gameIds=[...new Set(active.map(request=>clean(request.gameId)).filter(Boolean))];
+  for(const gameId of gameIds){
+    const result=ensureOwnerDesignResetSeed(state,gameId,{file});
+    if(result.changed)changed.push(gameId);
   }
-  return {changed,activeCount:activeOwnerDesignResetRequests(file).length};
+  return {changed,activeCount:active.length};
 }
