@@ -286,3 +286,12 @@ test('Unity canonical runtime starts from native source and tracked build reques
   assert.match(workflowSource,/push:[\s\S]*'unity-games\/\*\*'/);
   assert.match(workflowSource,/RUNTIME_THEN_INDEPENDENT_QA_THEN_REGRESSION=ENABLED/);
 });
+
+
+test('Unity runtime has no retired validation-cycle dependency',()=>{
+  assert.doesNotMatch(workflowSource,/company-development-validation-cycle\.mjs/);
+  assert.doesNotMatch(workflowSource,/cycle-status\.json/);
+  assert.doesNotMatch(workflowSource,/steps\.meeting\.outputs\.state/);
+  assert.match(workflowSource,/Revalidate shared worker context before Unity checkpoint/);
+  assert.match(workflowSource,/const canonical=process\.env\.MEETING_STATE\|\|'WAITING_TARGET_PLATFORM_VALIDATION'/);
+});
