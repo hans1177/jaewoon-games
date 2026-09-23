@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import {classifySystemAiFailure} from '../tools/company-system-ai-failure-classifier.mjs';
 import {analyzeSystemAiBottlenecks} from '../tools/company-system-ai-bottleneck-sensor.mjs';
 import {reviewSystemAiQaContract} from '../tools/company-system-ai-qa-contract-review.mjs';
-import {reserveSystemAiBatch,applySystemAiResults,handoffMissingSystemAiResults,coalesceQueuedSystemAiDuplicateRepairs} from '../tools/company-system-ai-queue.mjs';
+import {reserveSystemAiBatch,reserveSystemAiTargets,applySystemAiResults,handoffMissingSystemAiResults,coalesceQueuedSystemAiDuplicateRepairs} from '../tools/company-system-ai-queue.mjs';
 import {buildSystemAiLearningContext} from '../tools/company-system-ai-learning-context.mjs';
 
 const policy={version:270,policySource:'company-learning/platform-release-roadmap.json',authority:'MACHINE_EXECUTION_CONTRACT'};
@@ -185,6 +185,20 @@ test('historical superseded repair dependency is rewired without new duplicate c
   assert.deepEqual(dependent.dependencies,['repair-a']);
   assert.equal(dependent.blocker,'shared-signature-canary-pending:repair-a');
   assert.ok(dependent.evidence.includes('system-ai-duplicate-dependency-rewired:YES'));
+});
+
+test('targeted reserve repairs historical superseded dependency before selecting target',()=>{
+  const queue={tasks:[
+    {id:'repair-a',status:'done',taskType:'bottleneck-repair',goal:'repair',responsibleFiles:['tools/repair.mjs'],createdAt:'2026-09-23T00:00:00Z'},
+    {id:'repair-old',status:'cancelled',taskType:'bottleneck-repair',goal:'repair',responsibleFiles:['tools/repair.mjs'],blocker:'system-ai-duplicate-repair-superseded',lastOutcome:'SUPERSEDED_DUPLICATE_WORK',evidence:['system-ai-duplicate-repair-superseded-by:repair-a'],createdAt:'2026-09-23T00:01:00Z'},
+    {id:'target',status:'queued',goal:'target',responsibleFiles:['tools/target.mjs'],dependencies:['repair-old'],blocker:'shared-signature-canary-pending:repair-old',createdAt:'2026-09-23T00:02:00Z'}
+  ]};
+  const result=reserveSystemAiTargets(queue,{ids:['target'],reservationId:'targeted:1',at:Date.parse('2026-09-23T00:10:00Z')});
+  assert.equal(result.rewired,1);
+  assert.deepEqual(result.reserved.map(x=>x.id),['target']);
+  const target=result.queue.tasks.find(x=>x.id==='target');
+  assert.deepEqual(target.dependencies,['repair-a']);
+  assert.equal(target.status,'running');
 });
 
 test('reserve chooses one representative canary for a shared failure signature while disjoint work stays parallel',()=>{
