@@ -29,16 +29,30 @@ function textOf(task={},result={},qaReview={}){
   ].map(clean).filter(Boolean).join(' ');
 }
 
-function explicitClass(result={}){
+function evidenceSet(task={},result={}){
+  return new Set([...(task.evidence||[]),...(result.evidence||[])].map(clean).filter(Boolean));
+}
+function verifiedQaDriftProof(task={},result={},qaReview={}){
+  const nested=result?.qaContractReview&&typeof result.qaContractReview==='object'?result.qaContractReview:{};
+  const review=qaReview&&Object.keys(qaReview).length?qaReview:nested;
+  const evidence=evidenceSet(task,result);
+  return (review?.verifiedContractDrift===true&&review?.allowed!==false)
+    ||(evidence.has('qa-contract-drift:VERIFIED')&&evidence.has('current-policy-implementation-agreement:PASS'));
+}
+function explicitClass(result={},allowStaleQa=false){
   const raw=upper(result.failureClass);
+  if(raw==='STALE_QA_CONTRACT'&&!allowStaleQa)return null;
   if(SYSTEM_AI_FAILURE_CLASSES.includes(raw))return raw;
   if(raw==='INFRASTRUCTURE_CONTRACT_FAILURE')return'RUNNER_OR_INFRASTRUCTURE_FAILURE';
   return null;
 }
 
 export function classifySystemAiFailure({task={},result={},qaReview={}}={}){
-  const explicit=explicitClass(result)||explicitClass(task);
-  const text=textOf(task,result,qaReview);
+  const qaDriftVerified=verifiedQaDriftProof(task,result,qaReview);
+  const effectiveQaReview=qaReview&&Object.keys(qaReview).length?qaReview:(result?.qaContractReview||{});
+  const staleQaClaimed=upper(result.failureClass)==='STALE_QA_CONTRACT'||upper(task.failureClass)==='STALE_QA_CONTRACT';
+  const explicit=explicitClass(result,qaDriftVerified)||explicitClass(task,qaDriftVerified);
+  const text=textOf(task,result,effectiveQaReview);
   const security=upper(result?.security?.verdict);
   let failureClass=explicit;
 
@@ -48,7 +62,8 @@ export function classifySystemAiFailure({task={},result={},qaReview={}}={}){
   if(!failureClass&&/LOCK|RESERVATION|LEASE_EXPIRED|WORK_LOCK|CONCURRENCY|PUSH_CONFLICT|NON_FAST_FORWARD/i.test(text))failureClass='RESERVATION_OR_LOCK_CONTENTION';
   if(!failureClass&&/RUNNER|INFRASTRUCTURE|CHECKOUT|SETUP-NODE|OLLAMA.*(?:INSTALL|START|CACHE)|ENOSPC|ENOMEM|EAI_AGAIN|ECONNRESET/i.test(text))failureClass='RUNNER_OR_INFRASTRUCTURE_FAILURE';
   if(!failureClass&&/RATE.?LIMIT|QUOTA|SERVICE_UNAVAILABLE|EXTERNAL_SERVICE|HTTP_?(?:401|403|429|5\d\d)|AUTHENTICATION|TOKEN_MISSING/i.test(text))failureClass='EXTERNAL_SERVICE_OR_CREDENTIAL_FAILURE';
-  if(!failureClass&&qaReview?.verifiedContractDrift===true)failureClass='STALE_QA_CONTRACT';
+  if(!failureClass&&qaDriftVerified)failureClass='STALE_QA_CONTRACT';
+  if(!failureClass&&staleQaClaimed&&!qaDriftVerified)failureClass='UNKNOWN_REQUIRES_CAUSAL_DIAGNOSIS';
   if(!failureClass&&upper(result.outcome)==='FAIL'&&/IMPLEMENT|VERIFY|TEST|QA|SOURCE|BUILD|RUNTIME/i.test(text))failureClass='IMPLEMENTATION_DEFECT';
   if(!failureClass)failureClass='UNKNOWN_REQUIRES_CAUSAL_DIAGNOSIS';
 
@@ -76,12 +91,13 @@ export function classifySystemAiFailure({task={},result={},qaReview={}}={}){
     workerHandoffRecommended:['RESERVATION_OR_LOCK_CONTENTION','RUNNER_OR_INFRASTRUCTURE_FAILURE'].includes(failureClass),
     securityReviewRequired:securityBoundary,
     primaryAiCollaborationRequired:securityBoundary||policyMismatch||unknown||Number(task.recurrenceCount||task.retries||0)>=2,
-    qaContractDriftVerified:staleQa,
+    qaContractDriftVerified:staleQa&&qaDriftVerified,
     evidence:uniq([
       'system-ai-failure-class:'+failureClass,
       'system-ai-failure-route:'+route,
       'retry-budget-consumed:'+(infrastructureLike?'NO':'YES'),
-      'learning-penalty:'+(infrastructureLike?'NO':'YES')
+      'learning-penalty:'+(infrastructureLike?'NO':'YES'),
+      ...(staleQaClaimed&&!qaDriftVerified?['qa-contract-drift:UNVERIFIED','system-ai-qa-contract-claim:FAIL_CLOSED']:[])
     ])
   };
 }
