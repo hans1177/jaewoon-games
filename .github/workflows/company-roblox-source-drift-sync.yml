@@ -136,11 +136,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          passed="$(node -e "const r=require('/tmp/roblox-source-drift-results.json');process.stdout.write(String(r.filter(x=>x.pass===true).length))")"
+          mapfile -t passed_ids < <(node -e "const r=require('/tmp/roblox-source-drift-results.json');for(const x of r.filter(x=>x.pass===true))console.log(x.gameId)")
+          passed="${#passed_ids[@]}"
           echo "ROBLOX_CHANGED_SOURCE_REVALIDATED=$passed"
-          if [[ "$passed" =~ ^[1-9][0-9]*$ ]]; then
+          if [[ "$passed" == '1' ]]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="${passed_ids[0]}"
+            echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:${passed_ids[0]}"
+          elif [[ "$passed" =~ ^[2-9][0-9]*$ || "$passed" =~ ^[1-9][0-9]+$ ]]; then
             gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=YES'
+            echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=BATCH'
           else
             echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=NO'
           fi
