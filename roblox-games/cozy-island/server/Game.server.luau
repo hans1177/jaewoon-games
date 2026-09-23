@@ -231,7 +231,7 @@ local function attackBase(p)
  return true
 end
 
-local function spawnMob(kind,pos)
+locallocal r=part(folder,isRaider and"IslandRaider"or"WildBoar",isRaider and Vector3.new(3.2,5.4,2.5)or Vector3.new(5.4,3.2,6.5),pos,isRaider and Color3.fromRGB(137,75,66)or Color3.fromRGB(113,83,64),Enum.Material.SmoothPlastic)
  local folder=world:FindFirstChild("HomeMobs")or Instance.new("Folder");folder.Name="HomeMobs";folder.Parent=world
  local isRaider=kind=="RAIDER";local hp=isRaider and C.HomeIslandMobs.RaiderHP or C.HomeIslandMobs.BoarHP
  local damage=isRaider and C.HomeIslandMobs.RaiderDamage or C.HomeIslandMobs.BoarDamage
