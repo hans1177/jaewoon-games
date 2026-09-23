@@ -73,8 +73,7 @@ function stableRepairFailureSignature(task={}){
   const signature=clean(task.failureSignature);
   return /^shared-signature-canary-pending:/i.test(signature)?'':signature;
 }
-function duplicateRepairIdentity(task={}){
-  if(clean(task.status).toLowerCase()!=='queued')return null;
+export function systemAiRepairWorkIdentity(task={}){
   if(clean(task.taskType).toLowerCase()!=='bottleneck-repair')return null;
   const responsibleFiles=unique(task.responsibleFiles).sort();
   if(!responsibleFiles.length||!clean(task.goal))return null;
@@ -92,6 +91,10 @@ function duplicateRepairIdentity(task={}){
     failureClass:clean(task.failureClass).toUpperCase(),
     failureSignature:stableRepairFailureSignature(task)
   });
+}
+function duplicateRepairIdentity(task={}){
+  if(clean(task.status).toLowerCase()!=='queued')return null;
+  return systemAiRepairWorkIdentity(task);
 }
 export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()}={}){
   const queue=normalizeSystemAiQueue(queueInput);
