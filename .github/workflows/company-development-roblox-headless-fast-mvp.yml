@@ -190,8 +190,16 @@ jobs:
           const stamp=new Date().toISOString();
           for(const target of expected){
             const item=(q.items||[]).find(x=>x.gameId===target.gameId);if(!item)continue;
+            const currentSourceRevision=String(item.robloxSourceCommit||'').trim();
+            const currentArtifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const targetSourceRevision=String(target.sourceRevision||'').trim();
+            const targetArtifactIdentity=String(target.artifactIdentity||'').trim();
+            if(currentSourceRevision!==targetSourceRevision||currentArtifactIdentity!==targetArtifactIdentity){
+              console.log('ROBLOX_F0_STALE_RESULT_IGNORED='+target.gameId);
+              continue;
+            }
             const e=byId.get(target.gameId);
-            const exact=e?.pass===true&&e.sourceRevision===item.robloxSourceCommit&&e.artifactIdentity===item.robloxBuildArtifactIdentity;
+            const exact=e?.pass===true&&e.sourceRevision===currentSourceRevision&&e.artifactIdentity===currentArtifactIdentity;
             item.robloxFoundationF0Passed=exact;
             item.robloxFoundationF0Evidence=exact?e:null;
             item.robloxFoundationF0PassedAt=exact?stamp:null;
