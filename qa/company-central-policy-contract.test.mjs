@@ -382,7 +382,8 @@ test('development WIP is policy-unbounded while execution capacity and gates rem
   assert.equal(roadmap.developmentSpeedExecution.internalArtificialConcurrencyCapsForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMax,256);
   assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
-  assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
+  assert.equal(directive.executionPause.strictDesignReviewParallel,true);
+  assert.equal(directive.stageGateScoringV2.designScoreRole,'PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION');
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
 });
