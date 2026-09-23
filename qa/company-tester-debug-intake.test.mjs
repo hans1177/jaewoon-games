@@ -101,3 +101,29 @@ test('tester debug recovery binds by game id and enters ROOT_CAUSE_MODE on third
  assert.ok(task.evidence.includes('game-repair-repeat-count:3'));
  assert.equal(result.recovery.tasks[0].status,'dispatched');
 });
+
+
+test('actual runtime executor unavailability routes to System AI infrastructure recovery',()=>{
+ const dev={items:[{
+  gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',
+  robloxSourceCommit:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  robloxFoundationF0Passed:true,robloxRuntimeFoundationPassed:false,robloxRuntimePassed:false,
+  robloxRuntimeRetryCount:3,robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+  robloxFailureSignature:'ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE',
+  robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'1',placeId:'2',versionNumber:3}
+ }]};
+ const result=ingestTesterDebug({developmentQueue:dev,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
+ const ticket=result.tickets.tickets.find(x=>x.gameId==='daechung-rpg'&&x.signature==='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE');
+ assert.ok(ticket);
+ assert.equal(ticket.severity,'HIGH');
+ assert.equal(ticket.category,'PLATFORM');
+ assert.equal(ticket.route,'SYSTEM_AI_RUNTIME_EXECUTOR_RECOVERY');
+ assert.deepEqual(ticket.responsibleFiles,[
+  '.github/workflows/company-development-roblox-post-runtime-qa.yml',
+  'tools/company-development-roblox-runtime-foundation.mjs'
+ ]);
+ const recovery=result.recovery.tasks.find(x=>x.sourceTaskId===ticket.id);
+ assert.ok(recovery);
+ assert.equal(recovery.recoveryOwner,'SYSTEM_AI');
+ assert.equal(recovery.failureStage,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+});
