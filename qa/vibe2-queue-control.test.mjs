@@ -168,7 +168,7 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });
 
-test('game-primary summary uses current atomic reservation cap instead of external queue boundary',()=>{
+test('game-primary reservation uses provider boundary while adaptive max remains advisory',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-primary-summary-'));
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
@@ -187,21 +187,24 @@ test('game-primary summary uses current atomic reservation cap instead of extern
 
   const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20'});
   assert.equal(summary.summary.persistentMaxConcurrentTasks,256);
-  assert.equal(summary.summary.requestedMaxConcurrentTasks,20);
-  assert.equal(summary.summary.effectiveMaxConcurrentTasks,20);
-  assert.equal(summary.summary.freeSlots,13);
+  assert.equal(summary.summary.requestedMaxConcurrentTasks,256);
+  assert.equal(summary.summary.effectiveMaxConcurrentTasks,256);
+  assert.equal(summary.summary.freeSlots,249);
 
   const reserved=runQueueCommand({
     command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20',
     'reservation-id':'current:1','reservation-run':'current','reserved-at':'2026-09-20T10:01:00Z',output:batchFile
   });
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
-  assert.equal(reserved.reservationMaxConcurrentTasks,20);
+  assert.equal(reserved.adaptiveMaxConcurrentTasks,20);
+  assert.equal(reserved.reservationMaxConcurrentTasks,256);
   assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,20);
-  assert.equal(batch.scheduler.freeSlotsBeforeReservation,13);
-  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,20);
-  assert.equal(reserved.summary.freeSlots,0);
+  assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,20);
+  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,256);
+  assert.equal(batch.scheduler.freeSlotsBeforeReservation,249);
+  assert.equal(reserved.tasks.length,20);
+  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,256);
+  assert.equal(reserved.summary.freeSlots,229);
 });
 
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
