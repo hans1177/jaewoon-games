@@ -1,5 +1,5 @@
 {
-  "version": 120,
+  "version": 121,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2356,6 +2356,27 @@
       "automaticSignalDeduplicationPreserved": true,
       "verifiedOutcomeReturnsToExistingLearningMotor": true,
       "highImpactAlternativeReviewWithinSameGraphicsRoot": true
+    },
+    "designEvolution": {
+      "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousDesignEvolution",
+      "usesExistingPlanningDesignRuntime": true,
+      "designGenerator": "tools/company-design-cycle.mjs",
+      "designIntelligence": "tools/vibe2-design-intelligence.mjs",
+      "verifiedLearning": "tools/vibe2-learning-motor.mjs",
+      "strictReviewRuntime": ".github/workflows/company-seed-design-runtime.yml",
+      "noNewDesignDepartment": true,
+      "noShadowDesignPipeline": true,
+      "loop": "STABILIZE_UNDERSTAND_OBSERVE_DIAGNOSE_SCORE_PROPOSE_COMPARE_REVISE_VALIDATE_LEARN_REPLAN_EXPAND",
+      "unlimitedRevisions": true,
+      "repeatedIdenticalOwnerRequestCreatesNewRevision": true,
+      "automaticSignalDeduplicationPreserved": true,
+      "stabilityFirst": true,
+      "detailedBlueprintRequired": true,
+      "planAPlanBRequired": true,
+      "creativeChallengeAllowed": true,
+      "genreShiftChallengerAllowed": true,
+      "contentDiversityRequired": true,
+      "narrativeDialogueRealismUsesExistingNarrativeContract": true
     }
   },
   "recordsGovernance": {
