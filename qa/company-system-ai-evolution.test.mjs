@@ -132,6 +132,23 @@ test('exact duplicate bottleneck repairs coalesce before reservation without los
   assert.equal(reserved.queue.tasks.find(x=>x.id==='checkpoint-newer').status,'queued');
 });
 
+test('duplicate repair coalescing keeps different verified checkpoints separate',()=>{
+  const common={
+    status:'queued',priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
+    goal:'repair the same verified bottleneck',responsibleFiles:['web-games/demo/index.html'],
+    sourceMutationRequired:true,acceptanceCriteria:['restore verified behavior'],verificationCommands:['node --test qa/demo.test.mjs']
+  };
+  const queue={tasks:[
+    {...common,id:'baseline-a',sourceMutationBaseline:'source-a',knownGoodRevision:'known-good-a',createdAt:'2026-09-23T00:00:00Z'},
+    {...common,id:'baseline-b',sourceMutationBaseline:'source-b',knownGoodRevision:'known-good-a',createdAt:'2026-09-23T00:01:00Z'},
+    {...common,id:'known-good-b',sourceMutationBaseline:'source-a',knownGoodRevision:'known-good-b',createdAt:'2026-09-23T00:02:00Z'}
+  ]};
+  const compacted=coalesceQueuedSystemAiDuplicateRepairs(queue,{at:Date.parse('2026-09-23T00:10:00Z')});
+  assert.equal(compacted.coalesced,0);
+  assert.equal(compacted.groups,0);
+  assert.deepEqual(compacted.queue.tasks.map(x=>x.status),['queued','queued','queued']);
+});
+
 test('reserve chooses one representative canary for a shared failure signature while disjoint work stays parallel',()=>{
   const queue={tasks:[
     {id:'a',status:'queued',priority:'critical',goal:'a',responsibleFiles:['tools/a.mjs'],failureSignature:'COMMON_X',createdAt:'2026-09-23T00:00:00Z'},
