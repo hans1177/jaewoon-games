@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -335,15 +335,11 @@
     "version": 1,
     "launcher": ".github/workflows/artbook-free-department-bots.yml",
     "requiredMarkers": [
-      "PORTFOLIO_SWEEP_TARGETS",
-      "OWNER_RESET_PRIORITY_TARGETS",
-      "PRODUCTION_TARGET_COUNT",
-      "NATIVE_DEVELOPMENT_TARGETS",
-      "DEPARTMENT_NATIVE_DEVELOPMENT_IDS",
-      "DEPARTMENT_NATIVE_ACTIVE_RUNS",
-      "DEPARTMENT_NATIVE_DEVELOPMENT_DISPATCH=YES|SKIP_ACTIVE_RUNTIME",
-      "DEPARTMENT_NATIVE_DEVELOPMENT_OWNER=company-development-confirmed-runtime.yml",
-      "DEPARTMENT_PROVIDER_PREFLIGHT=PASS"
+      "OWNER_ACTIVE_DESIGN_RESET_COUNT",
+      "OWNER_ACTIVE_DESIGN_RESET_TARGETS",
+      "OWNER_ACTIVE_DESIGN_RESET_PENDING",
+      "GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN",
+      "GAME_SEED_DESIGN_TARGET_COUNT"
     ],
     "liveVerification": "PENDING_NEXT_DEPARTMENT_WORKFLOW_RUN",
     "revisions": {
@@ -354,7 +350,17 @@
       "nativeDelegate": "da19705e37720bfb78494a62aca7b1922c2ac298",
       "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
       "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
-    }
+    },
+    "canonicalDepartments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "audio"
+    ],
+    "departmentCount": 5,
+    "balanceStandaloneMarkerForbidden": true,
+    "audioDepartmentRequired": true
   },
   "unityWebGameDevelopmentEvidence": {
     "version": 1,
