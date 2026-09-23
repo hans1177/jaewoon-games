@@ -670,10 +670,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-runtime-foundation-stale-version"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-23T15:57:28.030Z",
+      "updatedAt": "2026-09-23T16:00:26.158Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -959,7 +959,7 @@
         "multiplayerQaPassed": false,
         "actualPlatformRuntime": true
       },
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -1185,69 +1185,17 @@
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
       "robloxRuntimeFoundationEvidence": {
-        "version": 3,
-        "platform": "ROBLOX",
+        "version": 1,
         "gameId": "daechung-rpg",
+        "sourceRevision": "8cc2dcd86c7aae408b9202ab590f06a464e05c1c",
+        "artifactIdentity": "sha256:c17c957f88e0dc2510a83c3f94ef4b9b11ac1498f8e2ef591560f029522c2c3d",
+        "universeId": "10767445769",
         "placeId": "126302702438348",
-        "placeVersion": 20,
+        "expectedVersionNumber": 20,
+        "observedVersionNumber": 19,
         "exactGame": true,
         "exactPlace": true,
         "exactVersion": false,
-        "requirements": {
-          "saveEnabled": true,
-          "multiplayerRequired": true
-        },
-        "requiredCheckpoints": [
-          "SERVER_BOOT",
-          "MODULE_GRAPH_READY",
-          "WORLD_READY",
-          "SPAWN_READY",
-          "CHARACTER_READY",
-          "GROUND_CONTACT",
-          "CAMERA_READY",
-          "INPUT_READY",
-          "MOVEMENT_CONFIRMED",
-          "REMOTE_ROUNDTRIP",
-          "CORE_LOOP_READY",
-          "SAVE_ROUNDTRIP",
-          "MULTIPLAYER_SYNC"
-        ],
-        "checkpointPass": {
-          "SERVER_BOOT": false,
-          "MODULE_GRAPH_READY": false,
-          "WORLD_READY": false,
-          "SPAWN_READY": false,
-          "CHARACTER_READY": false,
-          "GROUND_CONTACT": false,
-          "CAMERA_READY": false,
-          "INPUT_READY": false,
-          "MOVEMENT_CONFIRMED": false,
-          "REMOTE_ROUNDTRIP": false,
-          "CORE_LOOP_READY": false,
-          "SAVE_ROUNDTRIP": false,
-          "MULTIPLAYER_SYNC": false
-        },
-        "checkpointOrderPassed": false,
-        "foundationCausalOrder": [
-          "SERVER_BOOT",
-          "MODULE_GRAPH_READY",
-          "WORLD_READY",
-          "SPAWN_READY",
-          "CHARACTER_READY",
-          "GROUND_CONTACT"
-        ],
-        "f1ServerBootPassed": false,
-        "f2WorldFoundationPassed": false,
-        "f3CharacterFoundationPassed": false,
-        "f4PhysicsAndMovementPassed": false,
-        "f5InputCameraUiPassed": false,
-        "f6CoreServicesPassed": false,
-        "f7MultiplayerFoundationPassed": false,
-        "f8GameplaySystemsPassed": false,
-        "runtimeFoundationPassed": false,
-        "runtimeAcceptancePassed": false,
-        "actualRuntimeEvidence": true,
-        "state": "BLOCKED",
         "blockers": [
           "exactVersion",
           "checkpointOrder",
@@ -1265,17 +1213,12 @@
           "checkpoint:SAVE_ROUNDTRIP",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
-        "authority": "existing-game-tester-roblox-runtime-foundation-v1",
-        "sourceRevision": "8cc2dcd86c7aae408b9202ab590f06a464e05c1c",
-        "artifactIdentity": "sha256:c17c957f88e0dc2510a83c3f94ef4b9b11ac1498f8e2ef591560f029522c2c3d",
-        "artifactRunId": 35884600293,
-        "universeId": "10767445769",
-        "candidateVersionNumber": 20,
-        "observedAt": "2026-09-23T15:57:28.030Z",
-        "workflowRunId": 35885296242
+        "observedAt": "2026-09-23T16:00:26.158Z",
+        "authority": "stale-runtime-sentinel-observation"
       },
       "robloxF9ReleaseRegressionPassed": false,
-      "robloxF9ReleaseRegressionEvidence": null
+      "robloxF9ReleaseRegressionEvidence": null,
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-23T16:00:26.158Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -4270,7 +4213,7 @@
       "robloxReleasePublishedAt": null
     }
   ],
-  "updatedAt": "2026-09-23T16:00:05.217Z",
+  "updatedAt": "2026-09-23T16:00:26.158Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
