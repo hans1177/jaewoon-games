@@ -84,7 +84,7 @@ test('F9 final review uses shallow checkout instead of full git history',()=>{
  assert.match(workflow,/Checkout canonical runtime state[\s\S]*?fetch-depth:\s*1/);
 });
 
-test('central policy matches two-client one-sync Roblox release proof',()=>{
+test('central policy matches shared two-client one-sync internal and public release proof',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
  const f7=stack.layers.find(layer=>layer.id==='F7');
@@ -96,6 +96,12 @@ test('central policy matches two-client one-sync Roblox release proof',()=>{
  assert.equal(proof.actualRuntimeCheckpoint,'MULTIPLAYER_SYNC');
  assert.equal(proof.singleSyncObservationSufficient,true);
  assert.equal(proof.longCombatOrDungeonRunRequired,false);
+ assert.deepEqual(proof.appliesTo,['INTERNAL_RELEASE','PUBLIC_RELEASE']);
+ assert.equal(proof.sameProofReusedForInternalAndPublic,true);
+ assert.equal(proof.duplicatePublicMultiplayerCheckRequired,false);
+ assert.equal(proof.internalAndPublicVersionMustMatch,true);
+ assert.equal(proof.republishForPublicPromotionForbidden,true);
+ assert.equal(stack.releaseGate.f9Checkout.sameCheckoutContractForInternalAndPublic,true);
 });
 
 test('runtime acceptance stays pending until actual gameplay core-loop action occurs',()=>{
@@ -202,18 +208,18 @@ test('post-runtime QA preserves independent and regression progress while multip
 });
 
 
-test('simplified multiplayer evidence can promote internal release without claiming full multiplayer pass',()=>{
+test('two-client sync pending stays before F9 and cannot promote either internal or public release',()=>{
  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
- assert.match(runtime,/robloxInternalMultiplayerSimplifiedPassed=/);
- assert.match(runtime,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
- assert.match(runtime,/f9Ids\.push\(item\.gameId\)/);
- assert.match(runtime,/roblox-full-multiplayer-evidence-pending-public-release-only/);
- assert.match(finalReview,/const simplifiedInternalMultiplayer=/);
- assert.match(finalReview,/const internalRuntimeAcceptance=fullRuntimeAcceptance\|\|simplifiedInternalMultiplayer/);
- assert.match(finalReview,/SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS/);
- assert.match(finalReview,/fullMultiplayerQaPassed:item\.robloxMultiplayerQaPassed===true/);
- assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:!fullRuntimeAcceptance/);
- assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
- assert.match(finalReview,/item\.robloxPublicRelease=false/);
+ assert.match(runtime,/ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
+ assert.match(runtime,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
+ assert.match(runtime,/roblox-two-client-one-sync-pending/);
+ assert.doesNotMatch(runtime,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+ assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
+ assert.match(finalReview,/runtime\.f7MultiplayerFoundationPassed===true/);
+ assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
+ assert.match(finalReview,/const publicRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
+ assert.doesNotMatch(finalReview,/SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS/);
+ assert.match(finalReview,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
+ assert.match(finalReview,/item\.robloxPublicReleaseVersionNumber=Number\(candidate\.versionNumber\)/);
 });
