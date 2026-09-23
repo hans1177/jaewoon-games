@@ -127,3 +127,24 @@ test('actual runtime executor unavailability routes to System AI infrastructure 
  assert.equal(recovery.recoveryOwner,'SYSTEM_AI');
  assert.equal(recovery.failureStage,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
 });
+
+test('exact engine without player runtime session routes to tester execution without code-repair churn',()=>{
+ const dev={items:[{
+  gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',
+  robloxSourceCommit:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  robloxFoundationF0Passed:true,robloxRuntimeFoundationPassed:false,robloxRuntimePassed:false,
+  robloxRuntimeRetryCount:4,robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+  robloxFailureSignature:'ROBLOX_ACTUAL_PLAYER_RUNTIME_SESSION_UNAVAILABLE',
+  routingBlockers:['roblox-actual-player-runtime-session-unavailable','roblox-runtime-foundation-stale-version'],
+  robloxRuntimeFoundationEvidence:{authority:'stale-runtime-sentinel-observation',expectedVersionNumber:20,observedVersionNumber:19},
+  robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'1',placeId:'2',versionNumber:20}
+ }]};
+ const result=ingestTesterDebug({developmentQueue:dev,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
+ const ticket=result.tickets.tickets.find(x=>x.gameId==='daechung-rpg'&&x.signature==='ROBLOX_ACTUAL_PLAYER_RUNTIME_SESSION_UNAVAILABLE');
+ assert.ok(ticket);
+ assert.equal(ticket.route,'GAME_TESTER_RUNTIME_SESSION_EXECUTION');
+ assert.equal(ticket.repairEligible,false);
+ assert.deepEqual(ticket.responsibleFiles,[]);
+ assert.equal(result.recovery.tasks.some(x=>x.sourceTaskId===ticket.id),false);
+});
+
