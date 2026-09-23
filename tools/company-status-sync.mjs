@@ -37,6 +37,17 @@ const CENTRAL_POLICY_REQUIRED_STAGES=[
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
 const roles=['planning','development','qa','graphics','audio','director'];
 const clean=value=>String(value??'').trim();
+const LEGACY_WEB_POLICY_KEYS=Object.freeze([
+  'webGames','existingWebMaintenance','webGamesRemainPlayable','newWebGameProduction','webPurpose',
+  'webCompanionRequiredForEveryGame','webEvidenceMayReplaceNativePlatformEvidence','webGameplayValidationTestbedAllowed',
+  'webGameplayValidationRequired','musicValidationRequired','webBeforeTargetPlatformByDefault',
+  'unityWebValidationRequired','unityWebValidationGateAuthority'
+]);
+const LEGACY_PROJECT_WEB_KEYS=Object.freeze([
+  'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
+  'webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault'
+]);
+const deleteKeys=(target,keys)=>{if(target&&typeof target==='object')for(const key of keys)delete target[key];return target;};
 const focusScore=project=>{
   const explicit=Number(project?.developmentFocus?.total);
   if(Number.isFinite(explicit))return explicit;
