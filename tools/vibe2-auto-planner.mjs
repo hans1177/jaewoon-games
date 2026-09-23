@@ -714,13 +714,13 @@ function presentationStagesForProject(project={}){
 const PRESENTATION_EVOLUTION_SIGNAL_PRIORITY=Object.freeze({OWNER_CHANGE_REQUEST:0,RUNTIME_CAPTURE_COMPARISON:1,VISUAL_DEBT:2,PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE:3,INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK:4});
 const PRESENTATION_EVOLUTION_PASSES=Object.freeze(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 function presentationRelevantText(value=''){
-  return /(?:graphics?|visual|presentation|asset|model|character|monster|enemy|boss|map|world|environment|background|terrain|material|lighting|animation|motion|move|idle|walk|run|turn|attack|hit|death|impact|vfx|effect|particle|trail|audio|music|bgm|sound|sfx|camera|frame|fps|performance|mobile|readability|placeholder|primitive|silhouette|style|cinematic|그래픽|비주얼|연출|에셋|모델|캐릭터|몬스터|몹|보스|맵|환경|배경|재질|조명|애니|움직임|공격모션|피격|사망|이펙트|효과|음악|브금|사운드|카메라|프레임|성능)/i.test(clean(value));
+  return /(?:graphics?|visual|presentation|asset|model|character|monster|enemy|boss|map|world|environment|background|terrain|material|lighting|animation|motion|move|idle|walk|run|turn|attack|hit|death|impact|vfx|effect|particle|trail|audio|music|bgm|sound|sfx|camera|frame|fps|performance|mobile|readability|placeholder|primitive|silhouette|style|cinematic|그래픽|비주얼|연출|에셋|모델|캐릭터|몬스터|몹|보스|맵|환경|배경|재질|조명|애니|움직임|모션|공격 ?모션|피격|사망|이펙트|효과|음악|브금|사운드|카메라|프레임|성능)/i.test(clean(value));
 }
 function graphicsEvolutionAffectedPasses(text=''){
   const value=clean(text),passes=[];
   const add=pass=>{if(PRESENTATION_EVOLUTION_PASSES.includes(pass)&&!passes.includes(pass))passes.push(pass);};
   if(/(?:asset|model|character|monster|enemy|boss|map|world|environment|background|terrain|material|lighting|placeholder|primitive|silhouette|style|landmark|에셋|모델|캐릭터|몬스터|몹|보스|맵|환경|배경|재질|조명|실루엣)/i.test(value))add('ASSET_ADAPTATION');
-  if(/(?:motion|animation|move|movement|idle|walk|run|turn|smooth|blend|weight|locomotion|secondary|procedural|애니|움직임|걷|달리|회전|부드럽|체중|보조모션)/i.test(value))add('LIVING_MOTION');
+  if(/(?:motion|animation|move|movement|idle|walk|run|turn|smooth|blend|weight|locomotion|secondary|procedural|애니|움직임|모션|걷|달리|회전|부드럽|체중|보조모션)/i.test(value))add('LIVING_MOTION');
   if(/(?:attack|hit|death|impact|recoil|anticipat|recover|combat.?feel|attack.?motion|피격|사망|타격|공격모션|공격 모션|반동|후딜|전투연출)/i.test(value))add('ANIMATION_FEEL');
   if(/(?:vfx|effect|particle|trail|flash|telegraph|shockwave|spark|이펙트|효과|파티클|트레일|섬광)/i.test(value))add('VFX');
   if(/(?:audio|music|bgm|sound|sfx|ambient|음악|브금|사운드|효과음|환경음)/i.test(value))add('AUDIO_FEEL');
