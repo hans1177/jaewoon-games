@@ -153,6 +153,7 @@ function evaluateBlueprint(task = {}, designer = {}) {
       validationPlan:clean(row?.validationPlan || row?.validation)
     };
   }).filter((row) => row.concept);
+
   const material = task.materialDesignChange === true || designer.designChange === true;
   const issues = [];
   const requiredAlternativeFields = [
@@ -160,6 +161,7 @@ function evaluateBlueprint(task = {}, designer = {}) {
     'enemyEcosystemCounterplay','bossSignatureMoments','progressionEconomy','questStoryEventFlow',
     'failureRetryRecovery','platformAdaptation','implementationScope','validationPlan'
   ];
+
   if (material && alternatives.length < 2) issues.push('PLAN_A_B_REQUIRED_FOR_MATERIAL_DESIGN_CHANGE');
   if (material) {
     for (const row of alternatives) {
@@ -167,10 +169,12 @@ function evaluateBlueprint(task = {}, designer = {}) {
       if(missing.length)issues.push(`PLAN_REQUIRED_AXES_MISSING:${row.label}:${missing.join('|')}`);
     }
   }
+
   const selected = clean(source.selectedPlan || task.selectedDesignPlan);
   const selectedRationale=clean(source.selectedRationale || task.selectedDesignRationale);
   if (material && alternatives.length >= 2 && !selected) issues.push('SELECTED_PLAN_REQUIRED');
   if (material && selected && !selectedRationale) issues.push('SELECTED_PLAN_RATIONALE_REQUIRED');
+
   return stage('DESIGN_BLUEPRINT', issues.length ? 'ADVISORY' : 'READY', {
     materialDesignChange:material,
     alternatives:freezeList(alternatives.map(freeze)),
@@ -221,14 +225,17 @@ function evaluateContentDiversity(task = {}) {
   if(task.mapVarietyRequired===true&&regions.length<2)issues.push('MAP_REGION_VARIETY_REQUIRED');
   if(task.enemyVarietyRequired===true&&enemies.length<2)issues.push('ENEMY_OR_CHALLENGE_ROLE_VARIETY_REQUIRED');
   if(task.objectiveVarietyRequired===true&&objectives.length<2)issues.push('OBJECTIVE_ROLE_VARIETY_REQUIRED');
+
   const regionAxes=['traversal','riskReward','landmark','encounterPattern','resourcePressure','storyContext'];
   const enemyAxes=['behavior','counterplay','positioning','timing','mobility','groupRole','identity','rewardMeaning'];
   const signature=(row,axes)=>clean(axes.map((key)=>row?.[key]).filter(Boolean).join('|')).toLowerCase();
   const differenceCount=(a,b,axes)=>axes.reduce((count,key)=>count+(clean(a?.[key]).toLowerCase()!==clean(b?.[key]).toLowerCase()?1:0),0);
+
   const regionSignatures = new Set(regions.map((row) => signature(row,regionAxes)).filter(Boolean));
   const enemySignatures = new Set(enemies.map((row) => signature(row,enemyAxes)).filter(Boolean));
   if (regions.length >= 2 && regionSignatures.size < Math.min(2, regions.length)) issues.push('MAP_REGION_TEMPLATE_MONOTONY');
   if (enemies.length >= 2 && enemySignatures.size < Math.min(2, enemies.length)) issues.push('ENEMY_ROLE_TEMPLATE_MONOTONY');
+
   for(let i=0;i<regions.length;i++)for(let j=i+1;j<regions.length;j++){
     const diff=differenceCount(regions[i],regions[j],regionAxes);
     if(diff<2)issues.push(`MAP_REGION_PAIR_INSUFFICIENT_DIFFERENTIATION:${i}:${j}:${diff}`);
@@ -237,7 +244,9 @@ function evaluateContentDiversity(task = {}) {
     const diff=differenceCount(enemies[i],enemies[j],enemyAxes);
     if(diff<2)issues.push(`ENEMY_PAIR_INSUFFICIENT_DIFFERENTIATION:${i}:${j}:${diff}`);
   }
+
   if (objectives.length >= 3 && new Set(objectives.map((row) => clean(row?.role || row?.type || row).toLowerCase())).size < 2) issues.push('OBJECTIVE_TEMPLATE_MONOTONY');
+
   return stage('CONTENT_DIVERSITY', issues.length ? 'VARIETY_DEBT' : 'CHECKED', {
     regionCount:regions.length,
     enemyOrChallengeCount:enemies.length,
