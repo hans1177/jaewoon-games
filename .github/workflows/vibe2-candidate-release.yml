@@ -190,11 +190,29 @@ jobs:
               const status=JSON.parse(execFileSync('git',['show',`origin/main:${file}`],{encoding:'utf8'}));
               const gate=status?.baselineGate;
               const e=gate?.evidence||{};
-              if(gate?.policyDocument==='COMPANY_FLOW.md'&&gate?.state==='DEVELOPMENT_BASELINE_READY'&&gate?.ready===true&&e.webGameplay?.pass===true&&e.unityProject?.present===true&&e.unityTechnical?.pass===true){ready=true;break;}
+              const minimumDesignPass=e.minimumDesign?.pass===true;
+              const unityProjectPass=e.unityProject?.present===true||(
+                e.targetPlatformProject?.platform==='UNITY'&&e.targetPlatformProject?.present===true
+              );
+              const unityTechnicalPass=e.unityTechnical?.pass===true||(
+                e.targetPlatformTechnical?.platform==='UNITY'&&e.targetPlatformTechnical?.pass===true
+              );
+              const webIsNonBlocking=e.webGameplay?.required!==true;
+              if(
+                gate?.policyDocument==='company-learning/platform-release-roadmap.json'
+                &&gate?.state==='DEVELOPMENT_BASELINE_READY'
+                &&gate?.ready===true
+                &&minimumDesignPass
+                &&unityProjectPass
+                &&unityTechnicalPass
+                &&webIsNonBlocking
+              ){ready=true;break;}
             }catch{}
           }
           if(!ready){console.error(`RELEASE_GATE_BLOCKED=${game}:DEVELOPMENT_BASELINE_REQUIRED`);process.exit(1);}
           console.log(`RELEASE_DEVELOPMENT_BASELINE_GATE=${game}:PASS`);
+          console.log('RELEASE_DEVELOPMENT_ADMISSION=MINIMUM_DESIGN_PLUS_UNITY_NATIVE_EVIDENCE');
+          console.log('UNITY_WEB_RELEASE_GATE_AUTHORITY=NONE');
           NODE
           fi
 
@@ -466,7 +484,7 @@ jobs:
           fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main --quiet
+          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
@@ -636,7 +654,7 @@ jobs:
           fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main --quiet
+          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
@@ -704,7 +722,7 @@ jobs:
           fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main --quiet
+          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
