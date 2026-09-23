@@ -41,10 +41,6 @@ permissions:
   contents: write
   pull-requests: write
 
-concurrency:
-  group: free-artbook-departments-main
-  cancel-in-progress: true
-
 env:
   OLLAMA_HOST: 127.0.0.1:11434
 
@@ -118,15 +114,23 @@ jobs:
             row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&
             String(row.game?.designBaselineMigration||'').trim()!=='DO_NOT_REGENERATE_THROUGH_DESIGN_ONLY'
           ));
+          const resumableTargets=games.filter(row=>[
+            PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,
+            PRODUCTION_CLASSES.RELEASE_CONFIRMED
+          ].includes(row.productionClass));
+          const portfolioSweepTargets=[];
+          const seenPortfolioTargets=new Set();
+          for(const row of [...ownerResetTargets,...resumableTargets,...genericDesignTargets]){
+            if(seenPortfolioTargets.has(row.game.id))continue;
+            seenPortfolioTargets.add(row.game.id);
+            portfolioSweepTargets.push(row);
+          }
 
           let selected=[];
           if(requested){
             const target=games.find(row=>row.game.id===requested);
             if(!target)throw new Error(`Unknown or unclassified game_id: ${requested}`);
             selected=[target];
-          }else if(ownerResetTargets.length){
-            selected=ownerResetTargets;
-            console.error(`OWNER_RESET_PRIORITY_TARGETS=${selected.map(row=>row.game.id).join(',')}`);
           }else if(eventName==='push'){
             let changed=[];
             try{changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);}catch{}
@@ -149,11 +153,13 @@ jobs:
                 releaseIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED
               ));
             }else{
-              selected=genericDesignTargets;
+              selected=portfolioSweepTargets;
             }
           }else{
-            selected=genericDesignTargets;
+            selected=portfolioSweepTargets;
           }
+          console.error(`PORTFOLIO_SWEEP_TARGETS=${portfolioSweepTargets.length}`);
+          console.error(`OWNER_RESET_PRIORITY_TARGETS=${ownerResetTargets.map(row=>row.game.id).join(',')||'NONE'}`);
 
           const now=new Date();
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
@@ -176,6 +182,9 @@ jobs:
         target: ${{ fromJSON(needs.resolve-production-targets.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    concurrency:
+      group: free-artbook-department-${{ matrix.target.game_id }}
+      cancel-in-progress: false
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
