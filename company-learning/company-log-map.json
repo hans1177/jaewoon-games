@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -161,7 +161,8 @@
       "SYSTEM_AI_REPAIR_IDENTITY",
       "SYSTEM_AI_DUPLICATE_DEPENDENCY_REWIRED",
       "COMPANY_SYSTEM_AI_SUPERSEDED_DEPENDENCIES_REWIRED",
-      "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS"
+      "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS",
+      "COMPANY_SYSTEM_AI_CROSS_SCOPE_CANARY_DEPENDENCIES_REMOVED"
     ],
     "rawModelOutputStored": false,
     "rawModelOutputSha256Required": true,
@@ -259,7 +260,14 @@
         "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
         "2095f85bb419149c14168a135d72aa456de7747c"
       ],
-      "preciseWaitLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN"
+      "preciseWaitLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+      "responsibilityScopedRecoveryCohortRevision": "599a575779e96093841aa2c81fbbac5cc1fbad03",
+      "crossScopeCanaryReconciliationRevision": "16a40328b8d05c4416cad1672606ad38cb489a18",
+      "crossScopeCanaryReconciliationTests": [
+        "2a7ab4957c5c670ca03ea689a384fa0aab471147",
+        "c556915ea3022ef8002dec8acba9b2bb95e78e7d"
+      ],
+      "crossScopeCanaryLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN"
     },
     "metricSemantics": {
       "SYSTEM_AI_RESERVATION_WAIT_MS": {
@@ -287,7 +295,8 @@
     },
     "durableQueueEvidenceMarkers": [
       "system-ai-duplicate-dependency-rewired:YES",
-      "system-ai-duplicate-repair-superseded-by:<canonical-task-id>"
+      "system-ai-duplicate-repair-superseded-by:<canonical-task-id>",
+      "system-ai-cross-scope-canary-dependency-removed:YES"
     ]
   },
   "securityPolicy": "company-learning/security-immune-system.json",
