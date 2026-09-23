@@ -168,7 +168,6 @@ jobs:
             if(!exactCandidate){
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
-              item.robloxRuntimeRetryCount=0;
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH';
               item.routingBlockers=['roblox-runtime-candidate-identity-mismatch'];
@@ -189,6 +188,7 @@ jobs:
                 &&priorRetryCount===0;
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
+              item.robloxRuntimeRetryCount=0;
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.robloxFailureSignature=failureSignature;
               item.routingBlockers=['roblox-open-cloud-luau-execution-scope-missing','roblox-runtime-foundation-awaiting-observation'];
