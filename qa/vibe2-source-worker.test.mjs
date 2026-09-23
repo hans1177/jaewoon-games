@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
+import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
 function write(file, content) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content, 'utf8'); }
@@ -25,6 +26,40 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
     workerPolicy: { directMainWrite: false }
   };
 }
+
+test('repeated identical failure signature escalates to root cause mode instead of counting unrelated failures',()=>{
+  const result=classifyVibePatchSaturation({
+    responsibleFiles:['web-games/demo/index.html'],
+    threshold:3,
+    attempts:[
+      {status:'FAIL',failureSignature:'same-sync',responsibleFiles:['web-games/demo/index.html']},
+      {status:'FAIL',failureSignature:'other-ui',responsibleFiles:['web-games/demo/index.html']},
+      {status:'REPAIR_REQUIRED',failureSignature:'same-sync',responsibleFiles:['web-games/demo/index.html']},
+      {status:'FAILED',failureSignature:'same-sync',responsibleFiles:['web-games/demo/index.html']}
+    ]
+  });
+  assert.equal(result.saturated,true);
+  assert.equal(result.mode,'ROOT_CAUSE_MODE');
+  assert.equal(result.repeatedFailureSignature,'same-sync');
+  assert.equal(result.repeatCount,3);
+  assert.equal(result.sameApproachWithoutNewCausalEvidenceForbidden,true);
+  assert.ok(result.actions.includes('COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT'));
+});
+
+test('different failure signatures do not falsely trigger root cause saturation',()=>{
+  const result=classifyVibePatchSaturation({
+    responsibleFiles:['web-games/demo/index.html'],
+    threshold:3,
+    attempts:[
+      {status:'FAIL',failureSignature:'a',responsibleFiles:['web-games/demo/index.html']},
+      {status:'FAIL',failureSignature:'b',responsibleFiles:['web-games/demo/index.html']},
+      {status:'FAIL',failureSignature:'c',responsibleFiles:['web-games/demo/index.html']}
+    ]
+  });
+  assert.equal(result.saturated,false);
+  assert.equal(result.mode,'FOCUSED_REPAIR');
+  assert.equal(result.repeatCount,1);
+});
 
 test('JSON source generation uses bounded context and structured output mode',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
