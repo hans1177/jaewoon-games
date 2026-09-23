@@ -96,10 +96,23 @@ jobs:
             const post=item.robloxPostRuntimeQaEvidence||{};
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const fullRuntimeAcceptance=
+              item.robloxRuntimePassed===true
+              &&runtime.runtimeAcceptancePassed===true
+              &&item.robloxMultiplayerQaPassed===true;
+            const simplifiedInternalMultiplayer=
+              runtime.developmentContinuationPassed===true
+              &&item.robloxParallelMultiplayerValidationPending===true
+              &&item.robloxInternalMultiplayerSimplifiedPassed===true
+              &&item.robloxFoundationF0Evidence?.multiplayerSyncContractPassed===true
+              &&item.robloxServerClientBoundaryPassed===true
+              &&item.robloxDatastoreRejoinPassed===true
+              &&post.multiplayerValidationMode==='PARALLEL_NON_BLOCKING_DEVELOPMENT_RELEASE_BLOCKING_ONLY';
+            const internalRuntimeAcceptance=fullRuntimeAcceptance||simplifiedInternalMultiplayer;
             const exact=
               item.robloxFoundationF0Passed===true
               &&item.robloxRuntimeFoundationPassed===true
-              &&item.robloxRuntimePassed===true
+              &&internalRuntimeAcceptance===true
               &&item.robloxIndependentQaPassed===true
               &&item.robloxRegressionPassed===true
               &&candidate.published===true
@@ -115,7 +128,6 @@ jobs:
               &&runtime.exactGame===true
               &&runtime.exactPlace===true
               &&runtime.exactVersion===true
-              &&runtime.runtimeAcceptancePassed===true
               &&Number(runtime.candidateVersionNumber)===Number(candidate.versionNumber)
               &&post.sourceRevision===sourceRevision
               &&post.artifactIdentity===artifactIdentity
@@ -168,7 +180,12 @@ jobs:
               versionNumber:Number(candidate.versionNumber),
               published:true,
               actualRuntimeFoundationPassed:true,
-              runtimeAcceptancePassed:true,
+              runtimeAcceptancePassed:fullRuntimeAcceptance,
+              internalReleaseRuntimeAccepted:true,
+              multiplayerVerificationMode:fullRuntimeAcceptance?'FULL_PLATFORM_MULTIPLAYER_PASS':'SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS',
+              fullMultiplayerQaPassed:item.robloxMultiplayerQaPassed===true,
+              simplifiedInternalMultiplayerPassed:simplifiedInternalMultiplayer,
+              publicReleaseMultiplayerVerificationPending:!fullRuntimeAcceptance,
               independentQaPassed:true,
               regressionPassed:true,
               finalReviewPassed:true,
@@ -183,6 +200,7 @@ jobs:
             item.robloxReleaseVersionNumber=Number(candidate.versionNumber);
             item.robloxPublicReleaseReady=false;
             item.robloxPublicRelease=false;
+            item.robloxPromotionBlockers=fullRuntimeAcceptance?[]:['roblox-full-multiplayer-evidence-pending-public-release-only'];
             item.robloxReleaseClaim=false;
             item.robloxReleasePublishedAt=null;
             item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
