@@ -1,5 +1,5 @@
 {
-  "version": 126,
+  "version": 127,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -194,7 +194,10 @@
     "gameErrorRepairCannotCreateShadowQaOrRepairPipeline": true,
     "legacyPolicyPointerValidationRequired": true,
     "nonCanonicalPolicySemanticsForbidden": true,
-    "policyAuthoritySource": "company-learning/platform-release-roadmap.json"
+    "policyAuthoritySource": "company-learning/platform-release-roadmap.json",
+    "humanPolicyMirrorRequired": false,
+    "legacyPolicyMirrorRemoved": true,
+    "completedOneShotMigrationArtifactsRetired": true
   },
   "forbidden": [
     "WORK_WITHOUT_SHARED_CONTEXT",
@@ -2074,7 +2077,6 @@
   "assetProductionParallelism": {
     "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
-    "policyMirror": "COMPANY_FLOW.md#assetProductionParallel",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "codeAndAssetWorkMayRunConcurrently": true,
     "isolatedResponsibilitiesRequired": true,
