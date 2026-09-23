@@ -1,5 +1,5 @@
 {
-  "version": 285,
+  "version": 286,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T11:05:20+09:00",
+  "updatedAt": "2026-09-23T11:16:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -13865,7 +13865,19 @@
         "fullPortfolioSweepTest": "6cc10c25178c0e80a97195a59ffdc369d9879097",
         "nativeDevelopmentDelegation": "da19705e37720bfb78494a62aca7b1922c2ac298",
         "legacyWebFirstRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
-        "nativeDelegationTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
+        "nativeDelegationTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4",
+        "unityWebDesignBinding": "309e353a7ed02ae0d1c8975511754d84dfd1e3e2",
+        "unityWebDirectiveAlignment": "9d7b98132356a0b03d9962a50c17a180feaf1a7d",
+        "unityWebRuntimeSummary": "163b2e887fe5b1a5de71b273a31394af7aef148f"
+      },
+      "unityWebValidationSurface": {
+        "enabled": true,
+        "role": "NON_BLOCKING_VALIDATION_SURFACE",
+        "canonicalSource": "unity-games/<gameId>/",
+        "outputRoot": "web-games/<gameId>/",
+        "runtimeOwner": ".github/workflows/unity-web-first-stage-build.yml",
+        "nativeReleaseGate": false,
+        "developmentAdmissionGate": false
       }
     }
   },
