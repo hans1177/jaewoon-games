@@ -80,21 +80,27 @@ test('homepage Roblox link prefers the dedicated canonical publication target ov
   assert.match(snap.centralPolicyFingerprint,/^[a-f0-9]{64}$/);
 });
 
-test('homepage exposes Unity Web only as a verified validation surface',()=>{
+test('homepage exposes Unity Web only as an optional same-project validation surface',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
+  const web=policy.directNativeDualPlatformDevelopment.unityWebValidationSurface;
   assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
   assert.equal(snap.unityWebEnabled,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+  assert.equal(web.sameCanonicalUnityProjectRequired,true);
+  assert.equal(web.requiredForDevelopmentAdmission,false);
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'OUTPUT_INDEX_EXISTS_ONLY');
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkQaPassRequired,false);
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkEvidenceFilesRequired,false);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.match(renderer,/Unity Web 테스트/);
-  assert.match(renderer,/unity-web-build\.json/);
-  assert.match(renderer,/unity-web-gameplay-validation\.json/);
-  assert.match(renderer,/unityWebValidationVerified===true/);
-  assert.match(renderer,/projectPath===\`unity-games\/\$\{id\}\`/);
-  assert.match(renderer,/href=\`\/web-games\/\$\{gameIdOf\(game\)\}\/`/);
-  assert.doesNotMatch(renderer,/Boolean\(canonicalWebHref\(game\)\)\);/);
+  assert.match(renderer,/bindAvailableUnityWebSurfaces\(catalog\)/);
+  assert.match(renderer,/projectPath===`unity-games\/\$\{id\}`/);
+  assert.match(renderer,/href=`\/web-games\/\$\{id\}\//);
+  assert.match(renderer,/fetch\(`\$\{href\}index\.html\?ts=/);
+  assert.match(renderer,/unityWebAvailable:true/);
+  assert.match(renderer,/Unity Web · 개발중/);
+  assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
 });
 
 test('homepage platform exposure fails closed when central policy adds a platform without an implementation adapter',()=>{
