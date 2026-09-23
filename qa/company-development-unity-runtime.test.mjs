@@ -325,6 +325,12 @@ test('distinct Unity runtime runs are not globally serialized while runtime pers
 });
 
 
+test('Unity runtime does not reapply shared cross-platform step filtering after platform eligibility',()=>{
+  assert.match(workflowSource,/return platformDevelopmentEligible\(item,'UNITY'\);/);
+  assert.doesNotMatch(workflowSource,/const step=String\(item\.currentStep\|\|''\)\.toUpperCase\(\);[\s\S]*WAITING_UNITY_REVALIDATION/);
+});
+
+
 test('Unity direct native changes override unrelated representative canary selection',()=>{
   assert.match(workflowSource,/REQUESTED_GAME_IDS/);
   assert.match(workflowSource,/test\("\^\\\\\.build-requests\/unity\/\[\^\/\]\+\\\\\.json\$"\)/);
