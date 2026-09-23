@@ -1,5 +1,5 @@
 {
-  "version": 271,
+  "version": 272,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T09:00:00+09:00",
+  "updatedAt": "2026-09-23T09:47:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6346,7 +6346,12 @@
       "centralPolicyOnly": true,
       "implementationState": "IMPLEMENTED_QA_VERIFIED_ACTIVE_RUNTIME",
       "implementationRevision": "5e1dc153d62167c95da3ec1465217a4f24193dd8",
-      "verifiedAt": "2026-09-23T09:00:00+09:00"
+      "verifiedAt": "2026-09-23T09:00:00+09:00",
+      "postImplementationSync": {
+        "reserveCollisionHardening": "VERIFIED_RUNTIME_RUN_612_RESERVE_SUCCESS",
+        "verifiedLearningOutcomeFeedback": "IMPLEMENTED_PENDING_FULL_WORKER_FANIN_RUNTIME_OBSERVATION",
+        "revision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
+      }
     }
   },
   "vibeExecutionLaneContract": {
@@ -14069,7 +14074,9 @@
           "qa/company-system-ai-evolution.test.mjs",
           "qa/company-system-ai-worker.test.mjs",
           "qa/company-system-ai-supervision-loop.test.mjs",
-          "qa/vibe2-post-release-focus.test.mjs"
+          "qa/vibe2-post-release-focus.test.mjs",
+          "tools/company-system-ai-learning.mjs",
+          "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes"
         ],
         "verifiedEvidence": {
           "implementationRevision": "5e1dc153d62167c95da3ec1465217a4f24193dd8",
@@ -14084,7 +14091,29 @@
           "securityImmuneRun": 3154,
           "securityImmune": "SUCCESS"
         },
-        "runtimeState": "ACTIVE_WITH_SERIALIZED_RESERVE_PARALLEL_WORKERS_DURABLE_RUN_UNIQUE_FANIN"
+        "runtimeState": "ACTIVE_WITH_SERIALIZED_RESERVE_PARALLEL_WORKERS_DURABLE_RUN_UNIQUE_FANIN",
+        "runtimeHardening": {
+          "serializedReservationMutation": true,
+          "optimisticBranchCollisionRecompute": true,
+          "branchCollisionAttemptsPerRun": 8,
+          "latestVerifiedReserveRun": 612,
+          "latestVerifiedReserveRunId": 35803294553,
+          "latestVerifiedReserveResult": "RESERVE_SUCCESS_AFTER_2_COLLISIONS_ON_ATTEMPT_3",
+          "bottleneckObservedQueueDepth": 267,
+          "bottleneckRecommendedBatch": 19,
+          "actualDisjointReserved": 2
+        },
+        "verifiedLearningFeedback": {
+          "producer": "tools/company-system-ai-learning.mjs",
+          "outcomeEngine": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes",
+          "durableState": "vibe2-unreal-core:.vibe2/learning-motor-state.json",
+          "exactKnowledgeIdRequired": true,
+          "acceptedOrDeterministicallyVerifiedOnly": true,
+          "dedupeByExistingKnowledgeOutcomeEventId": true,
+          "crossGameTransformativeAdaptationRequired": true,
+          "rawCrossGameCopyForbidden": true
+        },
+        "latestImplementationRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
       }
     }
   },
