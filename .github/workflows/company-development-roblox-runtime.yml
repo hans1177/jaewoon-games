@@ -320,6 +320,9 @@ jobs:
     name: persist Roblox source-bind results
     needs: [source-plan, source-worker]
     if: always() && needs.source-plan.result == 'success'
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -797,6 +800,9 @@ jobs:
     name: persist Roblox package checkpoints
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
