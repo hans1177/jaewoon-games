@@ -1183,3 +1183,113 @@ test('central Unity Web owner lock routes DEVELOPMENT_CONFIRMED first-stage work
   assert.match(task.goal,/1차 Web 게임 원본을 unity-games\//);
   assert.match(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
 });
+
+
+function verifiedPresentationFoundation(project,root){
+  const tasks=[];
+  for(let i=0;i<7;i++){
+    const next=findWebPresentationQualityTask(project,root,{tasks});
+    assert.ok(next,'expected presentation foundation pass '+i);
+    tasks.push({...next,status:'verified'});
+  }
+  return tasks;
+}
+
+test('graphics evolution does not self-requeue without a new presentation signal',()=>{
+  const root=tempRepo();
+  const gameId='graphics-evolution-idle';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Graphics Evolution Idle',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const tasks=verifiedPresentationFoundation(project,root);
+  assert.equal(findWebPresentationQualityTask(project,root,{tasks}),null);
+});
+
+test('new owner presentation signal reopens only affected stages and same signal cannot loop',()=>{
+  const root=tempRepo();
+  const gameId='graphics-evolution-owner';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Graphics Evolution Owner',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const foundation=verifiedPresentationFoundation(project,root);
+  const ownerSignal={
+    id:'owner-bear-motion-1',gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'곰 움직임과 공격 모션을 더 무겁고 부드럽게 바꿔',
+    releaseState:'development-confirmed',status:'verified',ownerDirective:true,evidence:['owner-directive:graphics']
+  };
+  const first=findWebPresentationQualityTask(project,root,{tasks:[...foundation,ownerSignal]});
+  assert.equal(first.id,`${gameId}-presentation-living-motion-v2`);
+  assert.equal(first.graphicsEvolutionCycle,2);
+  assert.equal(first.graphicsEvolutionTrigger.source,'OWNER_CHANGE_REQUEST');
+  assert.deepEqual(first.graphicsEvolutionTrigger.affectedPasses,['LIVING_MOTION','ANIMATION_FEEL']);
+  assert.ok(first.evidence.includes('graphics-evolution-unlimited-generations:yes'));
+
+  const second=findWebPresentationQualityTask(project,root,{tasks:[...foundation,ownerSignal,{...first,status:'verified'}]});
+  assert.equal(second.id,`${gameId}-presentation-animation-feel-v2`);
+  const done=[...foundation,ownerSignal,{...first,status:'verified'},{...second,status:'verified'}];
+  assert.equal(findWebPresentationQualityTask(project,root,{tasks:done}),null);
+});
+
+test('new presentation evidence advances to the next unlimited evolution generation',()=>{
+  const root=tempRepo();
+  const gameId='graphics-evolution-next';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Graphics Evolution Next',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const foundation=verifiedPresentationFoundation(project,root);
+  const oldCycle={
+    id:`${gameId}-presentation-vfx-v999`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'old graphics cycle',releaseState:'development-confirmed',status:'verified',
+    evidence:['presentation-pass:VFX','graphics-evolution:evidence-driven','graphics-evolution-cycle:999','graphics-evolution-trigger:old-signal']
+  };
+  const ownerSignal={
+    id:'owner-camera-1000',gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'보스 카메라 줌과 화면 연출을 더 자연스럽게 바꿔',
+    releaseState:'development-confirmed',status:'verified',ownerDirective:true,evidence:['owner-directive:graphics']
+  };
+  const next=findWebPresentationQualityTask(project,root,{tasks:[...foundation,oldCycle,ownerSignal]});
+  assert.equal(next.id,`${gameId}-presentation-camera-language-v1000`);
+  assert.equal(next.graphicsEvolutionCycle,1000);
+  assert.ok(next.evidence.includes('graphics-evolution-unlimited-generations:yes'));
+});
+
+test('runtime presentation problem evidence can reopen the matching graphics scope',()=>{
+  const root=tempRepo();
+  const gameId='graphics-evolution-runtime';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={
+    gameId,name:'Graphics Evolution Runtime',engine:'web',releaseState:'development-confirmed',
+    projectPath:`web-games/${gameId}`,
+    developmentValidation:{blockers:['VFX_CLUTTER_RUNTIME_READABILITY_REGRESSION']}
+  };
+  const foundation=verifiedPresentationFoundation(project,root);
+  const next=findWebPresentationQualityTask(project,root,{tasks:foundation});
+  assert.equal(next.id,`${gameId}-presentation-vfx-v2`);
+  assert.equal(next.graphicsEvolutionTrigger.source,'RUNTIME_CAPTURE_COMPARISON');
+  assert.deepEqual(next.graphicsEvolutionTrigger.affectedPasses,['VFX']);
+});
+
+test('unrelated gameplay owner change does not create a graphics evolution cycle',()=>{
+  const root=tempRepo();
+  const gameId='graphics-evolution-unrelated';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Graphics Evolution Unrelated',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const foundation=verifiedPresentationFoundation(project,root);
+  const ownerSignal={
+    id:'owner-gold-change',gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'몬스터 처치 골드를 30에서 35로 바꿔',
+    releaseState:'development-confirmed',status:'verified',ownerDirective:true,evidence:['owner-directive:gameplay']
+  };
+  assert.equal(findWebPresentationQualityTask(project,root,{tasks:[...foundation,ownerSignal]}),null);
+});
