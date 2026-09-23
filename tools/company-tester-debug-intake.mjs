@@ -13,7 +13,7 @@ function hash(parts){return crypto.createHash('sha256').update(parts.map(clean).
 function severity(sig=''){
   const s=upper(sig);
   if(/CRASH|START_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|SAVE_CORRUPTION|MULTIPLAYER_STATE_CORRUPTION|RELEASE_BLOCKING_PLATFORM_ERROR/.test(s))return'CRITICAL';
-  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|MOVEMENT_FAILURE|CAMERA_FOUNDATION_FAILURE|RUNTIME_FOUNDATION|FOUNDATION_UNVERIFIED|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA|F0_SOURCE|SOURCE_INTEGRITY|SOURCE_BIND|BUILD_PACKAGE|BUILD_PREFLIGHT/.test(s))return'HIGH';
+  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|MOVEMENT_FAILURE|CAMERA_FOUNDATION_FAILURE|RUNTIME_FOUNDATION|FOUNDATION_UNVERIFIED|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA|F0_SOURCE|SOURCE_INTEGRITY|SOURCE_BIND|BUILD_PACKAGE|BUILD_PREFLIGHT|EXECUTOR_UNAVAILABLE/.test(s))return'HIGH';
   if(/UI|AUDIO|PRESENTATION|IMPLEMENTATION|MECHANIC|SYSTEM_COUNT|MUSIC_|MOBILE_|APPROVED_SCOPE_/.test(s))return'MEDIUM';
   return'LOW';
 }
@@ -63,7 +63,7 @@ function platformTickets(item={},stamp=''){
     out.push({id:'bug-'+hash([gameId,platform,stage,signature]),gameId,surface:platform||'PLATFORM',phase:'NATIVE_RUNTIME_OR_REGRESSION',
       severity:severity(signature),category:category(signature),signature,
       reproduction:clean(options.reproduction)||'RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE',
-      responsibleFiles:options.responsibleFiles===false?[]:responsibleFiles(item,platform),evidence:uniq(evidence),exactFailedStage:clean(stage||'TARGET_PLATFORM_RUNTIME'),
+      responsibleFiles:Array.isArray(options.responsibleFiles)?uniq(options.responsibleFiles):(options.responsibleFiles===false?[]:responsibleFiles(item,platform)),evidence:uniq(evidence),exactFailedStage:clean(stage||'TARGET_PLATFORM_RUNTIME'),
       route:clean(options.route)||'FOCUSED_REPAIR_AND_RECOVERY',repairEligible:options.repairEligible!==false,status:'OPEN',createdAt:stamp,updatedAt:stamp});
   };
   const ex=item.executionEvidence||{};
@@ -91,7 +91,19 @@ function platformTickets(item={},stamp=''){
       });
     }
     if(candidate.published===true&&item.robloxRuntimeFoundationPassed!==true){
-      if(foundation.state==='BLOCKED'||clean(item.robloxFailureSignature).match(/FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|MOVEMENT_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE/)){
+      if(failureSignature==='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE'){
+        add('TARGET_PLATFORM_RUNTIME_FOUNDATION',failureSignature,[
+          JSON.stringify(candidate),
+          `runtime-observation-attempts:${Math.max(0,Number(item.robloxRuntimeRetryCount||0))}`
+        ],{
+          reproduction:'RESTORE_MACHINE_DRIVEN_ACTUAL_ROBLOX_RUNTIME_OBSERVATION_FOR_THE_EXACT_PRIVATE_CANDIDATE_AND_RERUN_FOUNDATION_QA',
+          responsibleFiles:[
+            '.github/workflows/company-development-roblox-post-runtime-qa.yml',
+            'tools/company-development-roblox-runtime-foundation.mjs'
+          ],
+          route:'SYSTEM_AI_RUNTIME_EXECUTOR_RECOVERY'
+        });
+      }else if(foundation.state==='BLOCKED'||clean(item.robloxFailureSignature).match(/FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|MOVEMENT_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE/)){
         add('TARGET_PLATFORM_RUNTIME_FOUNDATION',foundation.failureSignature||item.robloxFailureSignature||'ROBLOX_RUNTIME_FOUNDATION_FAILED',[JSON.stringify(foundation),JSON.stringify(candidate)]);
       }else{
         add('TARGET_PLATFORM_RUNTIME_FOUNDATION','ROBLOX_RUNTIME_FOUNDATION_UNVERIFIED',[JSON.stringify(candidate)],{
