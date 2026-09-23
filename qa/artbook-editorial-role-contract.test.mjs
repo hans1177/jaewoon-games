@@ -77,22 +77,28 @@ test('GAME_SEED validator accepts any allowed selected platform and rejects unsu
   assert.ok(invalid.errors.some(x=>x.includes('.observedAt is required')));
 });
 
-test('DESIGN_ONLY flow and baseline mirror current central requirements',()=>{
+test('DESIGN_ONLY is only the transient minimum-design preparation state',()=>{
   const design=directive.classes.DESIGN_ONLY;
-  assert.equal(design.requiredFlow[0],'GAME_SEED');
-  assert.equal(design.requiredFlow[1],'GAME_DESIGNER_DRAFT');
-  for(const token of [
-    'GAME_SEED_COMPLETE','DISTINCT_GAME_IDENTITY','CORE_FUN_CLEAR',
-    'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD','MARKET_TARGET_DIRECTION_RECORDED',
-    'TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED',
-    'MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED',
-    'DETERMINISTIC_DESIGN_PRE_GATE_PASS','DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED',
-    'STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'
-  ])assert.ok(design.baselineReadyRequires.includes(token),`missing DESIGN_ONLY requirement: ${token}`);
-  assert.equal(design.readyState,'DESIGN_BASELINE_READY');
-  assert.match(flow,/TARGET_PLATFORM_UX_DIRECTION_DEFINED/);
-  assert.match(flow,/DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED/);
-  assert.match(flow,/STRICT_DESIGN_SCORE_AT_LEAST_80/);
+  assert.equal(design.status,'TRANSIENT_PRE_MINIMUM_DESIGN');
+  assert.equal(design.developmentAdmissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_CONTRACT_ONLY');
+  assert.equal(design.strictDesignScoreRequiredForAdmission,false);
+  assert.equal(design.strictDesignReviewRunsInParallelAfterAdmission,true);
+  assert.deepEqual(design.requiredFlow,[
+    'GAME_SEED',
+    'COMMON_CORE_MINIMUM_DESIGN',
+    'ROBLOX_PLATFORM_PROFILE',
+    'UNITY_PLATFORM_PROFILE',
+    'MINIMUM_DUAL_PLATFORM_DESIGN_CONTRACT'
+  ]);
+  assert.deepEqual(design.baselineReadyRequires,[
+    'GAME_SEED_COMPLETE',
+    'MINIMUM_COMMON_CORE_READY',
+    'ROBLOX_PLATFORM_PROFILE_READY',
+    'UNITY_PLATFORM_PROFILE_READY',
+    'PLATFORM_PROFILES_DISTINCT'
+  ]);
+  assert.equal(design.readyState,'MINIMUM_DESIGN_READY');
+  assert.equal(design.longLivedPromotionGate,false);
 });
 
 test('development and release preserve direct lead review without forcing distinct lead models',()=>{
@@ -141,22 +147,26 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
   assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
-test('DEVELOPMENT_CONFIRMED starts Roblox and Unity directly from minimum shared design without a Web gate',()=>{
+test('DEVELOPMENT_CONFIRMED starts Roblox and Unity from minimum shared design while Unity Web stays optional',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.equal(dev.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
   assert.equal(dev.resumeFromLatestEvidence,true);
-  assert.equal(dev.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
+  assert.equal(dev.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  assert.equal(dev.strictDesignScoreRequiredForAdmission,false);
+  assert.equal(dev.strictDesignReviewRunsInParallel,true);
   assert.equal(dev.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
-  assert.equal(dev.webBeforeTargetPlatformByDefault,false);
   assert.equal(dev.targetPlatformMayRunImmediately,true);
-  assert.equal(dev.webGameplayValidationRequired,false);
-  assert.equal(dev.webCompanionValidationRequired,false);
+  assert.deepEqual(dev.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(dev.onePlatformFailureDoesNotCancelOther,true);
   assert.equal(dev.approvedScopeCompletionRequired,true);
-  assert.equal(dev.musicValidationRequired,false);
-  assert.equal(dev.webCandidateMustPassBeforeTargetPlatformDispatch,false);
   assert.equal(dev.platformSpecificValidationRequired,true);
   assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
   assert.deepEqual(dev.waitingStates,[]);
+  assert.equal(dev.unityWebValidationSurface.enabled,true);
+  assert.equal(dev.unityWebValidationSurface.optional,true);
+  assert.equal(dev.unityWebValidationSurface.sameCanonicalUnityProjectRequired,true);
+  assert.equal(dev.unityWebValidationSurface.nativeGateAuthority,false);
+  assert.equal(dev.unityWebValidationSurface.missingOrFailedBuildDoesNotBlockNative,true);
   for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'])assert.ok(dev.requiredFlow.includes(token));
   assert.equal(machinePolicy.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
   assert.deepEqual(machinePolicy.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
