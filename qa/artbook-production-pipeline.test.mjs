@@ -37,13 +37,15 @@ test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops befo
   assert.match(source,/PAID_API=NO/);
 });
 
-test('DEVELOPMENT_CONFIRMED keeps gated validation and disposition before later artbook revision',()=>{
-  const dev=source.indexOf("await run('tools/company-development-validation-cycle.mjs')");
-  const gate=source.indexOf("await run('tools/company-baseline-gate.mjs')",dev);
-  const disposition=source.indexOf("await run('tools/company-development-disposition-gate.mjs')",gate);
-  assert.ok(dev>=0&&gate>dev&&disposition>gate);
-  assert.match(source,/DEVELOPMENT_DISPOSITION_GATE=ENABLED/);
-  assert.match(source,/DEVELOPMENT_ARTBOOK_ONLY_AFTER_PROMOTION=YES/);
+test('DEVELOPMENT_CONFIRMED delegates directly to the native dual-platform runtime instead of re-running legacy Web-first gates',()=>{
+  assert.match(source,/DEVELOPMENT_EXECUTION_MODE=DIRECT_NATIVE_DUAL_PLATFORM/);
+  assert.match(source,/DEVELOPMENT_RUNTIME_DELEGATED=YES/);
+  assert.match(source,/DEVELOPMENT_RUNTIME_OWNER=\.github\/workflows\/company-development-confirmed-runtime\.yml/);
+  assert.match(source,/DEVELOPMENT_QUEUE_AUTHORITY=company-runtime:development-queue\.json/);
+  assert.match(source,/DEVELOPMENT_LEGACY_WEB_FIRST_VALIDATION=DISABLED/);
+  assert.match(source,/DEVELOPMENT_ARTBOOK_PIPELINE_SOURCE_MUTATION=NO/);
+  assert.doesNotMatch(source,/await run\('tools\/company-development-validation-cycle\.mjs'\)/);
+  assert.doesNotMatch(source,/await run\('tools\/company-development-disposition-gate\.mjs'\)/);
 });
 
 
