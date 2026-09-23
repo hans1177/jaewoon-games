@@ -238,6 +238,18 @@ test('exact artifact regression binds upstream APK SHA and source revision',()=>
   assert.match(regressionSource,/exactArtifactRegression.*True/s);
 });
 
+test('Unity validation preserves an existing current-main project and only creates a technical request',()=>{
+  assert.match(workflowSource,/direct_request="\.build-requests\/unity\/\$\{GAME_ID\}\.json"/);
+  assert.match(workflowSource,/UNITY_EXISTING_SOURCE_BUILD_REQUEST_MISSING/);
+  assert.match(workflowSource,/buildMethod:String\(direct\.buildMethod\)\.trim\(\)/);
+  assert.match(workflowSource,/applicationId=String\(direct\.applicationId\|\|''\)\.trim\(\)/);
+  assert.match(workflowSource,/CHANGE_DETECTION=CURRENT_MAIN_SOURCE_REUSED/);
+  const preserve=workflowSource.indexOf('direct_request=".build-requests/unity/${GAME_ID}.json"');
+  const bootstrap=workflowSource.indexOf('node tools/company-development-unity-bootstrap.mjs');
+  assert.ok(preserve>0&&bootstrap>preserve,'existing current-main source must be considered before bootstrap');
+});
+
+
 test('Unity executor admits source-bind work through the shared platform router and existing bootstrap path',()=>{
   assert.match(routerSource,/TARGET_PLATFORM_SOURCE_BIND/);
   assert.match(routerSource,/TARGET_PLATFORM_TECHNICAL_VALIDATION/);
