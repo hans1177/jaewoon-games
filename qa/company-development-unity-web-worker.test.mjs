@@ -44,7 +44,8 @@ test('complete Unity Web child evidence produces public build and first-stage pa
     const output=path.join(dir,'out');
     fs.mkdirSync(web,{recursive:true});
     fs.writeFileSync(baseline,'{"version":1,"game":"worker-pass-game"}\n');
-    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');\n    writeBundle(web,gameId);
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    writeBundle(web,gameId);
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS',sourceCommit:'abc'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:true,
@@ -110,7 +111,8 @@ test('boolean-only Unity Web evidence cannot satisfy the final gate',()=>{
     const output=path.join(dir,'out');
     fs.mkdirSync(web,{recursive:true});
     fs.writeFileSync(baseline,'{"version":1}\n');
-    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');\n    writeBundle(web,gameId);
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    writeBundle(web,gameId);
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:true,
@@ -141,7 +143,8 @@ test('incomplete Unity Web gate fails closed and does not publish build',()=>{
     const output=path.join(dir,'out');
     fs.mkdirSync(web,{recursive:true});
     fs.writeFileSync(baseline,'{"version":1}\n');
-    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');\n    writeBundle(web,gameId);
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    writeBundle(web,gameId);
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:false,
