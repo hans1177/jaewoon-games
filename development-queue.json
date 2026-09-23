@@ -610,7 +610,7 @@
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-23T18:29:01.331Z",
+      "updatedAt": "2026-09-23T19:30:59.439Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -1375,8 +1375,25 @@
       "robloxParallelMultiplayerValidationPending": true,
       "robloxInternalMultiplayerSimplifiedPassed": true,
       "robloxPromotionBlockers": [
-        "roblox-full-multiplayer-evidence-pending-public-release-only"
-      ]
+        "roblox-two-client-one-sync-pending"
+      ],
+      "robloxPublicReleaseVersionNumber": 20,
+      "robloxPublicReleaseEvidence": {
+        "version": 1,
+        "sourceRevision": "8cc2dcd86c7aae408b9202ab590f06a464e05c1c",
+        "artifactIdentity": "sha256:c17c957f88e0dc2510a83c3f94ef4b9b11ac1498f8e2ef591560f029522c2c3d",
+        "universeId": "10767445769",
+        "placeId": "126302702438348",
+        "versionNumber": 20,
+        "sameAsInternalVersion": true,
+        "multiplayerVerificationMode": "TWO_CLIENT_ONE_SYNC",
+        "twoClientOneSyncPassed": false,
+        "publicReleaseReady": false,
+        "publicRelease": false,
+        "publicExposurePending": true,
+        "authority": "roblox-public-release-pending-shared-proof-migration",
+        "migratedAt": "2026-09-23T19:30:59.439Z"
+      }
     },
     {
       "gameId": "horror-escape-room",
@@ -4371,7 +4388,7 @@
       "robloxReleasePublishedAt": null
     }
   ],
-  "updatedAt": "2026-09-23T19:00:33.030Z",
+  "updatedAt": "2026-09-23T19:30:59.439Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
