@@ -1,5 +1,5 @@
 {
-  "version": 296,
+  "version": 297,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -15645,7 +15645,66 @@
           "gameSpecificLearningPreferredBeforeCrossGameGeneralization": true,
           "exactGameValuesMayNotBecomeGlobalRulesWithoutRepeatedVerification": true
         },
-        "documentCodeSynchronizationRequired": true
+        "documentCodeSynchronizationRequired": true,
+        "causalDefectOwnership": {
+          "enabled": true,
+          "objective": "CLASSIFY_SYMPTOM_CAUSE_BEFORE_REPAIR_SO_DESIGN_AND_IMPLEMENTATION_DO_NOT_DUPLICATE_OR_CONTRADICT_EACH_OTHER",
+          "classes": [
+            "IMPLEMENTATION_RUNTIME_DEFECT",
+            "DESIGN_DEFECT",
+            "MIXED_DEFECT",
+            "UNRESOLVED_CAUSE"
+          ],
+          "implementationExamples": [
+            "INPUT_EVENT_NOT_FIRING",
+            "CHARACTER_MOVEMENT_CODE_NOT_UPDATING",
+            "ANIMATION_OR_STATE_BINDING_BROKEN",
+            "SAVE_LOAD_RUNTIME_ERROR",
+            "NULL_OR_EXCEPTION_CRASH",
+            "NETWORK_DESYNC_IMPLEMENTATION",
+            "UI_BUTTON_HANDLER_BROKEN",
+            "COLLISION_OR_NAVIGATION_IMPLEMENTATION_BUG"
+          ],
+          "designExamples": [
+            "MOVEMENT_OR_TRAVERSAL_RULE_MISSING_WHEN_REQUIRED",
+            "IMPOSSIBLE_QUEST_PREREQUISITE",
+            "UNREACHABLE_PROGRESSION_STATE",
+            "CONTRADICTORY_WIN_FAIL_OR_UNLOCK_RULE",
+            "NO_RECOVERY_PATH_AFTER_EXPECTED_FAILURE",
+            "MAP_TOPOLOGY_MAKES_REQUIRED_OBJECTIVE_UNREACHABLE",
+            "ENEMY_OR_BOSS_HAS_NO_LEARNABLE_COUNTERPLAY",
+            "RESOURCE_ECONOMY_CREATES_MANDATORY_DEAD_END",
+            "NARRATIVE_KNOWLEDGE_OR_CAUSALITY_CONTRADICTION"
+          ],
+          "unresolvedCauseAction": "TRACE_RUNTIME_AND_DESIGN_CAUSALITY_BEFORE_MUTATION",
+          "runtimeDefectAction": "ROUTE_TO_EXISTING_DEVELOPMENT_QA_REPAIR_AND_PRESERVE_APPROVED_DESIGN",
+          "designDefectAction": "OPEN_TARGETED_DESIGN_REVISION_AND_THEN_REVALIDATE_IMPLEMENTATION",
+          "mixedDefectAction": "ORDER_STABILITY_REPAIR_FIRST_THEN_REVALIDATE_REMAINING_DESIGN_GAP",
+          "sameSymptomDualIndependentMutationForbidden": true,
+          "redesignFromRuntimeSymptomWithoutDesignCauseEvidenceForbidden": true,
+          "implementationPatchForVerifiedDesignContradictionWithoutDesignRevisionForbidden": true
+        },
+        "designIntegrityChecks": {
+          "required": true,
+          "checks": [
+            "PLAYER_MOVEMENT_AND_CONTROL_REACHABILITY_WHEN_REQUIRED",
+            "SPAWN_TO_FIRST_ACTION_REACHABILITY",
+            "PROGRESSION_GRAPH_REACHABILITY",
+            "QUEST_PREREQUISITE_SATISFIABILITY",
+            "WIN_FAIL_SESSION_END_REACHABILITY",
+            "FAILURE_RETRY_RECOVERY_PATH",
+            "MAP_ROUTE_AND_OBJECTIVE_REACHABILITY",
+            "RESOURCE_SOURCE_SINK_AND_REQUIRED_COST_FEASIBILITY",
+            "ENEMY_COUNTERPLAY_AND_TELEGRAPH_FEASIBILITY",
+            "BOSS_PHASE_TRANSITION_REACHABILITY",
+            "MULTIPLAYER_JOIN_LEAVE_AND_SYNC_DESIGN_WHEN_REQUIRED",
+            "SAVE_MEANING_AND_MIGRATION_COMPATIBILITY",
+            "NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY"
+          ],
+          "blockingContradictionRequiresRepairBeforeCreativeExpansion": true,
+          "runtimeEvidenceMayRefuteDesignAssumptions": true,
+          "designScoreMayNotOverrideConcreteUnplayableState": true
+        }
       }
     },
     "development": {
