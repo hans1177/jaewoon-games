@@ -6,6 +6,7 @@ import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
 import {repairDesignRequiredFields} from './company-design-prepromotion-repair.mjs';
 import {scoreDesignGateV2,DESIGN_GATE_PASS_MINIMUM} from './company-design-gate-scoring-v2.mjs';
 import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
+import {buildVibeDesignIntelligence} from './vibe2-design-intelligence.mjs';
 
 const ROLES=['planning','graphics','development','qa','audio'];
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -363,7 +364,7 @@ const CREATIVE_CHALLENGE={type:'object',required:['baselineRelationship','experi
 const SPEECH_PROFILE={type:'object',required:['character','vocabularyRange','formality','sentenceRhythm','emotionalLeakage','relationshipAddress','knowledgeBoundary','worldContext'],properties:{character:{type:'string',maxLength:160},vocabularyRange:{type:'string',maxLength:360},formality:{type:'string',maxLength:260},sentenceRhythm:{type:'string',maxLength:320},emotionalLeakage:{type:'string',maxLength:360},relationshipAddress:{type:'string',maxLength:360},knowledgeBoundary:{type:'string',maxLength:420},worldContext:{type:'string',maxLength:360}},additionalProperties:false};
 const SCENE_PLAN={type:'object',required:['scene','sceneObjective','characterObjectives','conflict','informationState','emotionalBeat','turnOrReversal','consequence','foreshadowing','payoffReference'],properties:{scene:{type:'string',maxLength:200},sceneObjective:{type:'string',maxLength:420},characterObjectives:{type:'array',maxItems:6,items:{type:'string',maxLength:300}},conflict:{type:'string',maxLength:420},informationState:{type:'string',maxLength:420},emotionalBeat:{type:'string',maxLength:360},turnOrReversal:{type:'string',maxLength:420},consequence:{type:'string',maxLength:420},foreshadowing:{type:'string',maxLength:420},payoffReference:{type:'string',maxLength:420}},additionalProperties:false};
 const INSPIRATION_REFERENCE={type:'object',required:['source','rightsStatus','technique','transformedUse'],properties:{source:{type:'string',maxLength:220},rightsStatus:{type:'string',enum:['PUBLIC_DOMAIN','LICENSED','USER_OWNED','ABSTRACT_ONLY']},technique:{type:'string',maxLength:420},transformedUse:{type:'string',maxLength:500}},additionalProperties:false};
-const NARRATIVE_DIRECTION={type:'object',required:['applicable','worldRules','characterSpeechProfiles','scenePlans','foreshadowingAndPayoff','dialoguePrinciples','inspirationReferences'],properties:{applicable:{type:'boolean'},worldRules:{type:'array',maxItems:8,items:{type:'string',maxLength:360}},characterSpeechProfiles:{type:'array',maxItems:10,items:SPEECH_PROFILE},scenePlans:{type:'array',maxItems:10,items:SCENE_PLAN},foreshadowingAndPayoff:{type:'array',maxItems:8,items:{type:'string',maxLength:500}},dialoguePrinciples:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},inspirationReferences:{type:'array',maxItems:6,items:INSPIRATION_REFERENCE}},additionalProperties:false};
+const NARRATIVE_DIRECTION={type:'object',required:['applicable','worldRules','characterGoals','plotBeats','questStates','foreshadowing','payoffs','dialogueRules','characterSpeechProfiles','scenePlans','grammarAndVoiceReviewed','inspirationReferences'],properties:{applicable:{type:'boolean'},worldRules:{type:'array',maxItems:8,items:{type:'string',maxLength:360}},characterGoals:{type:'array',maxItems:10,items:{type:'string',maxLength:420}},plotBeats:{type:'array',maxItems:12,items:{type:'string',maxLength:500}},questStates:{type:'array',maxItems:12,items:{type:'string',maxLength:420}},foreshadowing:{type:'array',maxItems:8,items:{type:'string',maxLength:500}},payoffs:{type:'array',maxItems:8,items:{type:'string',maxLength:500}},dialogueRules:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},characterSpeechProfiles:{type:'array',maxItems:10,items:SPEECH_PROFILE},scenePlans:{type:'array',maxItems:10,items:SCENE_PLAN},grammarAndVoiceReviewed:{type:'boolean'},inspirationReferences:{type:'array',maxItems:6,items:INSPIRATION_REFERENCE}},additionalProperties:false};
 const DESIGN={type:'object',required:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','conceptBlueprint','designAlternatives','contentDiversityPlan','creativeChallenge','narrativeDirection','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],properties:{identity:{type:'string',maxLength:1000},playerFantasy:{type:'string',maxLength:900},coreFun:{type:'string',maxLength:900},coreLoop:{type:'array',minItems:3,maxItems:8,items:{type:'string',maxLength:340}},signatureSystems:{type:'array',minItems:2,maxItems:6,items:{type:'object',required:['name','purpose','playerChoice'],properties:{name:{type:'string',maxLength:130},purpose:{type:'string',maxLength:440},playerChoice:{type:'string',maxLength:440}},additionalProperties:false}},conceptBlueprint:CONCEPT_BLUEPRINT,designAlternatives:{type:'array',minItems:2,maxItems:3,items:DESIGN_ALTERNATIVE},contentDiversityPlan:CONTENT_DIVERSITY_PLAN,creativeChallenge:CREATIVE_CHALLENGE,narrativeDirection:NARRATIVE_DIRECTION,systemInterconnections:{type:'array',minItems:3,maxItems:8,items:SYSTEM_INTERCONNECTION},progressionDirection:{type:'string',maxLength:900},progressionEconomyBalance:PROGRESSION_ECONOMY_BALANCE,contentExpansionPlan:{type:'array',minItems:3,maxItems:6,items:CONTENT_EXPANSION},failureRetryRisk:FAILURE_RETRY_RISK,platformFitPlan:PLATFORM_FIT_PLAN,platformProfiles:PLATFORM_PROFILES,visualDirection:{type:'string',maxLength:900},mobileUx:{type:'string',maxLength:900},uxAccessibilityPlan:UX_ACCESSIBILITY_PLAN,artAudioDirection:ART_AUDIO_DIRECTION,marketTargetDirection:{type:'string',maxLength:900},steamExpansionDecision:{type:'string',maxLength:500},multiplayerMode:{type:'string',enum:MULTIPLAYER_MODES},multiplayerExpansionDecision:{type:'string',maxLength:500},technicalAssumptions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},validationQuestions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},implementationTraceability:{type:'array',minItems:3,maxItems:8,items:IMPLEMENTATION_TRACE},openQuestions:{type:'array',maxItems:8,items:{type:'string',maxLength:340}},preservationContract:PRESERVATION_CONTRACT},additionalProperties:false};
 function enforceOwnerPreservationDesign(value){
   if(!ownerPreservationDesign)return value;
@@ -1031,6 +1032,46 @@ async function generateDesignerDraft(){
     return enforceOwnerPreservationDesign(mergeDesignerDesign(basePart,gatePart,'DRAFT'));
   }
 }
+function designIntelligenceForCurrentDesign(design){
+  const currentGenre=clean(game.genre||seed.GAME_CATEGORY);
+  const proposedGenre=design?.creativeChallenge?.genreShiftConsidered===true
+    ?clean((design.designAlternatives||[]).find(row=>clean(row?.id)==='PLAN_B')?.genreDirection)
+    :'';
+  const task={
+    id:designEvolutionSignal.ownerRequestEventId||`AUTO-DESIGN-${gameId}`,
+    gameId,
+    goal:clean(seed.ownerLiteralRequest||designEvolutionSignal.autoSignalReason||design?.identity||'design evolution'),
+    type:'design',
+    designChange:true,
+    designRationale:clean(design?.conceptBlueprint?.premise||design?.identity),
+    ownerDirective:Boolean(clean(seed.ownerLiteralRequest)),
+    ownerLiteralRequest:clean(seed.ownerLiteralRequest),
+    ownerRequestInstanceId:designEvolutionSignal.ownerRequestEventId,
+    ownerRepeatCount:Number(seed.ownerRepeatCount||0),
+    conceptBlueprint:design?.conceptBlueprint,
+    designAlternatives:design?.designAlternatives,
+    contentDiversityPlan:design?.contentDiversityPlan,
+    currentGenre,
+    proposedGenre,
+    genreShiftChallenger:design?.creativeChallenge?.genreShiftConsidered===true&&Boolean(clean(design?.creativeChallenge?.genreShiftChallenger)),
+    narrative:design?.narrativeDirection,
+    acceptanceCriteria:Array.isArray(design?.validationQuestions)?design.validationQuestions:[],
+    responsibleFiles:(design?.implementationTraceability||[]).map(row=>clean(row?.owner||row?.system||row?.implementationTarget)).filter(Boolean),
+    knownIssues:designEvolutionSignal.autoSignalReason?[{id:'auto-design-signal',text:designEvolutionSignal.autoSignalReason,verified:true,exposureCount:1}]:[]
+  };
+  return buildVibeDesignIntelligence({task,plan:{target:seed.INITIAL_TARGET_PLATFORM},experience:{records:[]}});
+}
+function assertDesignIntelligenceContract(result){
+  const blocking=[
+    ...(result?.evolution?.conceptBlueprint?.issues||[]),
+    ...(result?.evolution?.creativeChallenge?.issues||[]),
+    ...(result?.evolution?.contentDiversity?.issues||[]),
+    ...(result?.narrative?.issues||[])
+  ];
+  if(blocking.length)throw new Error(`DESIGN_INTELLIGENCE_CONTRACT_BLOCKED ${[...new Set(blocking)].join(',')}`);
+  return result;
+}
+
 function scoreCurrentDesign(label,design){
   const started=Date.now();
   const scored=deterministicPreGate(design);
@@ -1068,7 +1109,8 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
   writeJson(path.join(base,'design-pre-gate.json'),{version:3,gameId,date,attempt:repairAttempt,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate,history:preGateHistory.map(row=>({totalScore:row.totalScore,hardFailures:row.hardFailures,criticalAxisFailures:row.criticalAxisFailures}))});
   persistDesignCheckpoint();
 }
-writeJson(path.join(base,'design-draft.json'),{version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,singleAuthor:true,designEvolution:designEvolutionSignal,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+const draftDesignIntelligence=assertDesignIntelligenceContract(designIntelligenceForCurrentDesign(designDraft));
+writeJson(path.join(base,'design-draft.json'),{version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,singleAuthor:true,designEvolution:designEvolutionSignal,designIntelligence:{version:draftDesignIntelligence.version,evolution:draftDesignIntelligence.evolution,narrative:draftDesignIntelligence.narrative,advisory:draftDesignIntelligence.advisory},preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
 if(!preGatePass(preGate)){
   designCheckpoint.status='PRE_GATE_BLOCKED';
   designCheckpoint.lastError=`DESIGN_PRE_GATE_BLOCKED score=${preGate.totalScore} hard=${(preGate.hardFailures||[]).join(',')||'NONE'}`;
@@ -1129,11 +1171,13 @@ writeJson(path.join(base,'department-lead-reviews.json'),{
 
 writeProgress('DETERMINISTIC_REVALIDATION',{departmentEvidenceComplete:ROLES.length,aiReviewUsed:false});
 const revisedDesign=designDraft;
+const revisedDesignIntelligence=assertDesignIntelligenceContract(designIntelligenceForCurrentDesign(revisedDesign));
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
   version:7,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,
   designEvolution:designEvolutionSignal,
+  designIntelligence:{version:revisedDesignIntelligence.version,evolution:revisedDesignIntelligence.evolution,narrative:revisedDesignIntelligence.narrative,advisory:revisedDesignIntelligence.advisory},
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
@@ -1198,6 +1242,7 @@ writeJson(path.join(base,'cycle-status.json'),{
   version:7,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   status:'COMPLETE',policyDocument:'company-learning/platform-release-roadmap.json',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
   designEvolution:designEvolutionSignal,
+  designIntelligence:{version:revisedDesignIntelligence.version,evolution:revisedDesignIntelligence.evolution,narrative:revisedDesignIntelligence.narrative,advisory:revisedDesignIntelligence.advisory},
   gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},
   designer:{role:'GAME_DESIGNER_AI',model:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,sameModelRevised:false},
   departments:{
