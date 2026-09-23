@@ -355,7 +355,9 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const path=require('path');
+          const {execFileSync}=require('child_process');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const currentMainRevision=execFileSync('git',['rev-parse','origin/main'],{encoding:'utf8'}).trim();
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
           const expectedById=new Map(expected.map(target=>[target.gameId,target]));
           const reconciliation=JSON.parse(process.env.RECONCILIATION_RESULTS_JSON||'[]');
@@ -375,6 +377,11 @@ jobs:
           for(const result of reconciliation){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
+            const reconciliationRevision=String(result.sourceRevision||'').trim();
+            if(reconciliationRevision!==currentMainRevision){
+              console.log(`ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED=${result.gameId}:${reconciliationRevision||'MISSING'}:${currentMainRevision}`);
+              continue;
+            }
             if(result.pass===true){
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
@@ -835,6 +842,12 @@ jobs:
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during Roblox package persist: ${result.gameId}`);
             const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;
+            const boundSourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const resultSourceRevision=String(result.sourceRevision||'').trim();
+            if(boundSourceRevision!==resultSourceRevision){
+              console.log(`ROBLOX_PACKAGE_STALE_RESULT_IGNORED=${result.gameId}:${resultSourceRevision||'MISSING'}:${boundSourceRevision||'MISSING'}`);
+              continue;
+            }
             if(secondaryOwnerFocus){
               if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
                 Object.assign(item,{
