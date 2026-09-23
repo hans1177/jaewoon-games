@@ -148,15 +148,25 @@ async function bindAvailableUnityWebSurfaces(catalog){
     const id=gameIdOf(game),href=`/web-games/${id}/`;
     if(!id)return;
     try{
-      const response=await fetch(`${href}index.html?ts=${Date.now()}`,{cache:'no-store'});
-      if(response.ok)available.set(id,href);
+      const [indexResponse,manifestResponse]=await Promise.all([
+        fetch(`${href}index.html?ts=${Date.now()}`,{cache:'no-store'}),
+        fetch(`${href}unity-web-deploy-manifest.json?ts=${Date.now()}`,{cache:'no-store'})
+      ]);
+      if(!indexResponse.ok||!manifestResponse.ok)return;
+      const manifest=await manifestResponse.json();
+      const groups=manifest?.requiredGroups||{};
+      const complete=manifest?.engine==='UNITY_WEB'
+        &&manifest?.gameId===id
+        &&manifest?.bundleComplete===true
+        &&['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0);
+      if(complete)available.set(id,href);
     }catch{}
   }));
   return{
     ...catalog,
     games:catalog.games.map(game=>available.has(gameIdOf(game))
       ?{...game,unityWebTestUrl:available.get(gameIdOf(game)),unityWebAvailable:true}
-      :game)
+      :{...game,unityWebTestUrl:null,unityWebAvailable:false})
   };
 }
 function webPublishedRows(catalog){
