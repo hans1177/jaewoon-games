@@ -1,5 +1,5 @@
 {
-  "version": 131,
+  "version": 132,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -106,7 +106,8 @@
       "VFX_UI_AND_PRESENTATION_BINDING",
       "RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION",
       "PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN",
-      "GRAPHICS_PASS_OR_ASSET_REPAIR_REQUIRED"
+      "GRAPHICS_PASS_OR_ASSET_REPAIR_REQUIRED",
+      "COMPANY_GRAPHICS_LIBRARY_IDLE_PREPARATION_AND_VERIFIED_PROMOTION"
     ],
     "planningGrowthMarketing": [
       "EXISTING_PLANNING_ROLE",
@@ -2111,7 +2112,32 @@
     "authorityExpansion": false,
     "webNativeDirectAssetReuseForbidden": true,
     "sharedStyleIdentityAcrossPlatforms": true,
-    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D"
+    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D",
+    "companyGraphicsLibrary24h": {
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "topLevelPipelineCreated": false,
+      "productionRoot": "GRAPHICS_PRODUCTION",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "idleLane": "LEARNING_IDLE",
+      "productionPreemptsIdlePreparation": true,
+      "platformSeparation": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "sharedIdentityOnly": true,
+      "preparedArtifactIsNotVerifiedCompanyAsset": true,
+      "promotionRequiresRuntimeVerifiedConsumer": true,
+      "libraryFamilies": [
+        "CHARACTER_ARCHETYPE_LIBRARY",
+        "CREATURE_RIG_LIBRARY",
+        "ACTION_MOTION_LIBRARY",
+        "WEAPON_MOTION_LIBRARY",
+        "VFX_LIBRARY",
+        "ENVIRONMENT_KIT_LIBRARY",
+        "UI_PRESENTATION_LIBRARY"
+      ]
+    }
   },
   "platformPresentationSeparation": {
     "version": 1,
@@ -2390,7 +2416,11 @@
       "ownerRequestSemanticDeduplicationForbidden": true,
       "automaticSignalDeduplicationPreserved": true,
       "verifiedOutcomeReturnsToExistingLearningMotor": true,
-      "highImpactAlternativeReviewWithinSameGraphicsRoot": true
+      "highImpactAlternativeReviewWithinSameGraphicsRoot": true,
+      "companyGraphicsLibrary24h": true,
+      "unityRobloxNativeVariantsSeparated": true,
+      "actionReadyMotionVarietyRequired": true,
+      "idlePreparationPreemptibleByProduction": true
     }
   },
   "recordsGovernance": {
