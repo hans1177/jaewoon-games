@@ -1,5 +1,5 @@
 {
-  "version": 27,
+  "version": 28,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -421,28 +421,20 @@
   },
   "departmentRuntimeSecurity": {
     "version": 1,
-    "authority": "DERIVED_FROM_CENTRAL_POLICY",
-    "protections": {
-      "departmentLauncherMayDispatchCanonicalNativeRuntime": true,
-      "departmentLauncherMayNotCreateParallelDevelopmentAuthority": true,
-      "companyRuntimeDevelopmentQueueRemainsAuthority": true,
-      "sameGameOverlappingDepartmentExecutionSerialized": true,
-      "activeSameGameWorkMayNotBeCancelledByNewPush": true,
-      "distinctGameParallelismMayNotExpandWritableScope": true,
-      "designOnlyDeterministicEvidenceMayNotBecomeAiSelfAcceptance": true,
-      "paidApiAuthorityExpansion": false,
-      "directMainGameSourceWriteAuthorityExpansion": false
-    },
-    "implementationState": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_RUN",
-    "revisions": {
-      "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
-      "providerContract": "4bb509f3d79de183fc6c0594dfcbf2ca441ed523",
-      "sweep": "72d9498e944eca8833e2bc3abfbb8be2670e27bb",
-      "sweepTest": "6cc10c25178c0e80a97195a59ffdc369d9879097",
-      "nativeDelegate": "da19705e37720bfb78494a62aca7b1922c2ac298",
-      "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
-      "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
-    }
+    "canonicalDepartments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "audio"
+    ],
+    "strictDesignMayRunParallelWithDevelopment": true,
+    "designDepartmentDirectGameSourceWriteForbidden": true,
+    "gameSourceMutationOwner": "VIBE2_VIBE3",
+    "balanceSeparateDepartment": false,
+    "audioMayNotChangeGameplayBalanceSaveProgressionOrAuthority": true,
+    "ownerResetMaterializationMayNotChangeDevelopmentProductionClass": true,
+    "authorityExpansion": false
   },
   "unityWebValidationSecurity": {
     "version": 1,
