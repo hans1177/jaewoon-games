@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-23T15:49:50.778Z",
+  "updatedAt": "2026-09-23T16:56:19.542Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -22,8 +22,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T22:30:14.467Z",
-      "updatedAt": "2026-09-23T15:49:50.776Z",
-      "occurrenceCount": 535
+      "updatedAt": "2026-09-23T16:56:19.539Z",
+      "occurrenceCount": 536
     },
     {
       "id": "bug-7d114ff3812bf7516f00",
@@ -68,8 +68,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T15:49:50.776Z",
-      "occurrenceCount": 97
+      "updatedAt": "2026-09-23T16:56:19.539Z",
+      "occurrenceCount": 98
     },
     {
       "id": "bug-06912c56eec73d463251",
@@ -90,8 +90,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T15:49:50.776Z",
-      "occurrenceCount": 97
+      "updatedAt": "2026-09-23T16:56:19.539Z",
+      "occurrenceCount": 98
     },
     {
       "id": "bug-f1f45de215a280a3885b",
@@ -112,8 +112,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T15:49:50.776Z",
-      "occurrenceCount": 97
+      "updatedAt": "2026-09-23T16:56:19.539Z",
+      "occurrenceCount": 98
     },
     {
       "id": "bug-2cfb0882ff23baaef682",
@@ -157,6 +157,54 @@
       "createdAt": "2026-09-23T11:54:41.174Z",
       "updatedAt": "2026-09-23T12:05:48.523Z",
       "occurrenceCount": 22
+    },
+    {
+      "id": "bug-46e896c798b79a75427e",
+      "gameId": "cozy-island",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED",
+      "reproduction": "GRANT_REQUIRED_ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_SCOPE_TO_THE_EXISTING_API_KEY_AND_RERUN_FOUNDATION_QA",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"017415a22acb8f921db48a0a41e04dc2e09db32e\",\"artifactIdentity\":\"sha256:86cd892f9eb1a7d2e839b951c629808c73d856c794c61bfe8874834f8a56a13f\",\"artifactRunId\":35780441879,\"universeId\":\"10767445741\",\"placeId\":\"116850096561713\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":21,\"workflowRunId\":35780862969,\"publishedAt\":\"2026-09-22T20:33:19.923Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
+        "{\"version\":1,\"gameId\":\"cozy-island\",\"sourceRevision\":\"017415a22acb8f921db48a0a41e04dc2e09db32e\",\"artifactIdentity\":\"sha256:86cd892f9eb1a7d2e839b951c629808c73d856c794c61bfe8874834f8a56a13f\",\"universeId\":\"10767445741\",\"placeId\":\"116850096561713\",\"expectedVersionNumber\":21,\"requiredScope\":\"universe.place.luau-execution-session:10767445741:write\",\"httpStatus\":403,\"errorCode\":\"PERMISSION_DENIED\",\"failureStage\":\"CREATE\",\"observedAt\":\"2026-09-23T16:47:47.505Z\",\"authority\":\"roblox-open-cloud-engine-permission-evidence\"}",
+        "required-scope:universe.place.luau-execution-session:10767445741:write",
+        "http-status:403"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "route": "EXTERNAL_CREDENTIAL_REPAIR_REQUIRED",
+      "repairEligible": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T16:56:19.539Z",
+      "updatedAt": "2026-09-23T16:56:19.539Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-6c53a36a6d111e2d487b",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED",
+      "reproduction": "GRANT_REQUIRED_ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_SCOPE_TO_THE_EXISTING_API_KEY_AND_RERUN_FOUNDATION_QA",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"8cc2dcd86c7aae408b9202ab590f06a464e05c1c\",\"artifactIdentity\":\"sha256:c17c957f88e0dc2510a83c3f94ef4b9b11ac1498f8e2ef591560f029522c2c3d\",\"artifactRunId\":35884600293,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":20,\"workflowRunId\":35884809990,\"publishedAt\":\"2026-09-23T15:57:04.171Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"sourceRevision\":\"8cc2dcd86c7aae408b9202ab590f06a464e05c1c\",\"artifactIdentity\":\"sha256:c17c957f88e0dc2510a83c3f94ef4b9b11ac1498f8e2ef591560f029522c2c3d\",\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"expectedVersionNumber\":20,\"requiredScope\":\"universe.place.luau-execution-session:10767445769:write\",\"httpStatus\":403,\"errorCode\":\"PERMISSION_DENIED\",\"failureStage\":\"CREATE\",\"observedAt\":\"2026-09-23T16:38:08.373Z\",\"authority\":\"roblox-open-cloud-engine-permission-evidence\"}",
+        "required-scope:universe.place.luau-execution-session:10767445769:write",
+        "http-status:403"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "route": "EXTERNAL_CREDENTIAL_REPAIR_REQUIRED",
+      "repairEligible": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T16:56:19.539Z",
+      "updatedAt": "2026-09-23T16:56:19.539Z",
+      "occurrenceCount": 1
     }
   ]
 }
