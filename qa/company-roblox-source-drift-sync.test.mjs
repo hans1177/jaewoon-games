@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {activeRobloxDevelopmentItem,reconcileChangedRobloxItems} from '../tools/company-roblox-source-drift-sync.mjs';
 
 function item(){
@@ -105,4 +106,13 @@ test('unrelated changed game id does not mutate the target item',()=>{
   });
   assert.equal(JSON.stringify(x),before);
   assert.equal(result.results[0].skipped,true);
+});
+
+
+test('source drift workflow avoids full repository history checkout while fetching exact before sha on demand',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/fetch-depth:\s*1/);
+  assert.match(workflow,/fetch-tags:\s*false/);
+  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$BEFORE_SHA"/);
 });
