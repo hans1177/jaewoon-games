@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 48,
+  "revision": 49,
   "updatedAt": "2026-09-23T00:18:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -23,7 +23,7 @@
       ".github/agents/development.agent.md",
       ".github/agents/graphics.agent.md",
       ".github/agents/qa.agent.md",
-      ".github/agents/balance.agent.md",
+      ".github/agents/audio.agent.md",
       "tools/vibe2-auto-planner.mjs",
       "tools/company-selected-platform-router.mjs",
       "assets/homepage-enhancements.js",
@@ -193,7 +193,7 @@
       "graphics",
       "development",
       "qa",
-      "balance"
+      "audio"
     ],
     "scoreMin": 0,
     "scoreMax": 100,
@@ -515,11 +515,12 @@
       ],
       "implementationFeedsVibeLearning": true,
       "targetPlatforms": [
-        "WEB",
+        "UNITY_WEB",
         "UNITY",
         "ROBLOX"
       ],
-      "directGameplayBalanceMutationForbidden": true
+      "directGameplayBalanceMutationForbidden": true,
+      "unityWebRole": "VALIDATION_SURFACE_ONLY"
     },
     "leadDistinctnessPolicy": "NOT_REQUIRED_FOR_EXECUTION",
     "leadSelectionObjective": "VIBE_PLUS_ONE_AVAILABLE_SHARED_MODEL",
