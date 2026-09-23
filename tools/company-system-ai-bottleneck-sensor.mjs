@@ -108,7 +108,9 @@ export function analyzeSystemAiBottlenecks({
   if(commonFailureCohorts.length)actions.push('REPRESENTATIVE_CANARY_FOR_COMMON_FAILURE');
   if(recommendedBatch>0)actions.push('REFILL_FREE_SYSTEM_AI_CAPACITY');
   if(caretakerHotspots.length)actions.push('PRIORITIZE_PER_GAME_CARETAKER_BACKLOG');
-  if(pendingRuns>0||reservationWaitMs>=60000||fanInWaitMs>=60000)actions.push('REDUCE_SCHEDULER_OR_FAN_IN_WAIT');
+  if(pendingRuns>0)actions.push('REDUCE_SCHEDULER_PENDING_RUN_WAIT');
+  if(reservationWaitMs>=60000)actions.push('PRIORITIZE_LONG_WAIT_RUNNABLE_WORK');
+  if(fanInWaitMs>=60000)actions.push('REDUCE_FAN_IN_WAIT');
   if(!actions.length)actions.push('NO_CURRENT_BOTTLENECK_ACTION_REQUIRED');
 
   return{
