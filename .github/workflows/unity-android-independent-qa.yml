@@ -163,15 +163,19 @@ jobs:
           mkdir -p qa-artifacts/unity-independent-qa
           AAPT="$(command -v aapt 2>/dev/null || true)"
           [[ -n "$AAPT" && -x "$AAPT" ]] || { echo 'aapt unavailable for independent QA' >&2; exit 13; }
-          package="$($AAPT dump badging "$APK" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n1)"
+          badging="$($AAPT dump badging "$APK")"
+          package="$(sed -n "s/^package: name='\([^']*\)'.*/\1/p" <<<"$badging" | head -n1)"
+          activity="$(sed -n "s/^launchable-activity: name='\([^']*\)'.*/\1/p" <<<"$badging" | head -n1)"
           [[ -n "$package" ]] || { echo 'could not resolve package id' >&2; exit 13; }
+          [[ -n "$activity" ]] || { echo 'could not resolve launchable activity' >&2; exit 13; }
+          launch_component="$package/$activity"
           device_abis="$(adb shell getprop ro.product.cpu.abilist | tr -d '\r')"
           unzip -Z1 "$APK" | grep -q '^lib/arm64-v8a/' || { echo 'APK ARM64 payload missing' >&2; exit 13; }
           grep -q 'arm64-v8a' <<<"$device_abis" || { echo "independent runtime ABI mismatch: $device_abis" >&2; exit 13; }
 
           adb logcat -c
           adb install -r -t "$APK" >/tmp/independent-install.log
-          adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/tmp/independent-launch.log
+          adb shell am start -W -n "$launch_component" >/tmp/independent-launch.log
           sleep 5
           pid="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
           [[ -n "$pid" ]] || { echo 'process did not start' >&2; exit 14; }
@@ -180,7 +184,7 @@ jobs:
           adb shell input swipe 820 1500 240 1500 220
           adb shell input keyevent 3
           sleep 2
-          adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/tmp/independent-resume.log
+          adb shell am start -W -n "$launch_component" >/tmp/independent-resume.log
           sleep 4
           for xy in '540 1500' '540 1320' '540 1500' '540 1320'; do adb shell input tap $xy; sleep 0.15; done
 
