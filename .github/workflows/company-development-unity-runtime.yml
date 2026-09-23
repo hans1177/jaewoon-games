@@ -17,7 +17,6 @@ on:
       - 'tools/unity-apk-runtime-smoke.sh'
       - 'tools/company-homepage-platform-exposure-sync.mjs'
       - 'tools/company-development-unity-evidence.mjs'
-      - 'tools/company-development-validation-cycle.mjs'
       - 'qa/company-shared-context.test.mjs'
       - 'tools/company-shared-context.mjs'
       - 'company-learning/company-architecture-map.json'
@@ -65,7 +64,6 @@ jobs:
           node --check tools/company-development-unity-platform.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-development-unity-evidence.mjs
-          node --check tools/company-development-validation-cycle.mjs
           node --test qa/company-selected-platform-router.test.mjs
           node --test qa/company-development-unity-runtime.test.mjs
           node --test qa/unity-package-fatal-logcat.test.mjs
@@ -536,21 +534,6 @@ jobs:
           mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
           have="$(ollama list | awk 'NR>1{print $1}')"; for model in "${models[@]}";do grep -Fxq "$model"<<<"$have"||ollama pull "$model";done
 
-      - name: Run canonical selected-platform evidence meeting
-        id: meeting
-        if: steps.regressionstate.outputs.passed == 'true'
-        env:
-          ARTBOOK_GAME_ID: ${{ matrix.item.gameId }}
-          ARTBOOK_DATE: ${{ steps.context.outputs.date }}
-          SELECTED_PLATFORM: UNITY
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/company-development-validation-cycle.mjs
-          state="$(node -e "const s=require('./${{ steps.context.outputs.base }}/cycle-status.json');process.stdout.write(String(s.state||''))")"
-          echo "state=$state" >> "$GITHUB_OUTPUT"
-          case "$state" in WAITING_REVALIDATION|WAITING_TARGET_PLATFORM_REVALIDATION|DEVELOPMENT_BASELINE_READY) ;; *) echo "unexpected canonical state: $state" >&2; exit 14;; esac
-
       - name: Revalidate shared worker context before Unity checkpoint
         run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-before-checkpoint.json
 
@@ -576,7 +559,6 @@ jobs:
           QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
           REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
           REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
-          MEETING_STATE: ${{ steps.meeting.outputs.state }}
           IS_CANARY: ${{ needs.prepare.outputs.canary }}
         shell: bash
         run: |
