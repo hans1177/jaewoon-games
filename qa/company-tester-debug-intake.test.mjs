@@ -127,3 +127,28 @@ test('actual runtime executor unavailability routes to System AI infrastructure 
  assert.equal(recovery.recoveryOwner,'SYSTEM_AI');
  assert.equal(recovery.failureStage,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
 });
+
+test('Roblox Open Cloud Luau permission denial becomes an external credential blocker without code repair',()=>{
+ const dev={items:[{
+  gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',
+  robloxSourceCommit:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  robloxFoundationF0Passed:true,robloxRuntimeFoundationPassed:false,robloxRuntimePassed:false,
+  robloxRuntimeRetryCount:0,robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+  robloxFailureSignature:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED',
+  routingBlockers:['roblox-open-cloud-luau-execution-scope-missing'],
+  robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'10767445769',placeId:'126302702438348',versionNumber:20},
+  robloxRuntimeFoundationEvidence:{authority:'roblox-open-cloud-engine-permission-evidence',requiredScope:'universe.place.luau-execution-session:10767445769:write',httpStatus:403,errorCode:'PERMISSION_DENIED'}
+ }]};
+ const result=ingestTesterDebug({developmentQueue:dev,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
+ const ticket=result.tickets.tickets.find(x=>x.gameId==='daechung-rpg'&&x.signature==='ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED');
+ assert.ok(ticket);
+ assert.equal(ticket.severity,'HIGH');
+ assert.equal(ticket.category,'PLATFORM');
+ assert.equal(ticket.route,'EXTERNAL_CREDENTIAL_REPAIR_REQUIRED');
+ assert.equal(ticket.repairEligible,false);
+ assert.deepEqual(ticket.responsibleFiles,[]);
+ assert.ok(ticket.evidence.includes('required-scope:universe.place.luau-execution-session:10767445769:write'));
+ assert.ok(ticket.evidence.includes('http-status:403'));
+ assert.equal(result.recovery.tasks.length,0);
+});
+

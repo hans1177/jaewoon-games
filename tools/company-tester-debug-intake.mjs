@@ -13,7 +13,7 @@ function hash(parts){return crypto.createHash('sha256').update(parts.map(clean).
 function severity(sig=''){
   const s=upper(sig);
   if(/CRASH|START_FAILURE|SERVER_BOOT_FAILURE|WORLD_READY_FAILURE|SPAWN_FAILURE|CHARACTER_FOUNDATION_FAILURE|GROUND_CONTACT_FAILURE|SAVE_CORRUPTION|MULTIPLAYER_STATE_CORRUPTION|RELEASE_BLOCKING_PLATFORM_ERROR/.test(s))return'CRITICAL';
-  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|MOVEMENT_FAILURE|CAMERA_FOUNDATION_FAILURE|RUNTIME_FOUNDATION|FOUNDATION_UNVERIFIED|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA|F0_SOURCE|SOURCE_INTEGRITY|SOURCE_BIND|BUILD_PACKAGE|BUILD_PREFLIGHT|EXECUTOR_UNAVAILABLE/.test(s))return'HIGH';
+  if(/PROGRESSION_BLOCK|INPUT_UNUSABLE|MOVEMENT_FAILURE|CAMERA_FOUNDATION_FAILURE|RUNTIME_FOUNDATION|FOUNDATION_UNVERIFIED|FATAL_RUNTIME_BUG|REGRESSION|TARGET_PLATFORM_RUNTIME|INDEPENDENT_QA|F0_SOURCE|SOURCE_INTEGRITY|SOURCE_BIND|BUILD_PACKAGE|BUILD_PREFLIGHT|EXECUTOR_UNAVAILABLE|PERMISSION_DENIED|CREDENTIAL|SCOPE_MISSING/.test(s))return'HIGH';
   if(/UI|AUDIO|PRESENTATION|IMPLEMENTATION|MECHANIC|SYSTEM_COUNT|MUSIC_|MOBILE_|APPROVED_SCOPE_/.test(s))return'MEDIUM';
   return'LOW';
 }
@@ -91,7 +91,19 @@ function platformTickets(item={},stamp=''){
       });
     }
     if(candidate.published===true&&item.robloxRuntimeFoundationPassed!==true){
-      if(failureSignature==='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE'){
+      if(failureSignature==='ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED'){
+        add('TARGET_PLATFORM_RUNTIME_FOUNDATION',failureSignature,[
+          JSON.stringify(candidate),
+          JSON.stringify(foundation),
+          `required-scope:${clean(foundation.requiredScope)||'UNKNOWN'}`,
+          `http-status:${Math.max(0,Number(foundation.httpStatus||0))}`
+        ],{
+          reproduction:'GRANT_REQUIRED_ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_SCOPE_TO_THE_EXISTING_API_KEY_AND_RERUN_FOUNDATION_QA',
+          responsibleFiles:false,
+          route:'EXTERNAL_CREDENTIAL_REPAIR_REQUIRED',
+          repairEligible:false
+        });
+      }else if(failureSignature==='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE'){
         add('TARGET_PLATFORM_RUNTIME_FOUNDATION',failureSignature,[
           JSON.stringify(candidate),
           `runtime-observation-attempts:${Math.max(0,Number(item.robloxRuntimeRetryCount||0))}`

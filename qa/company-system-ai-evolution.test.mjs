@@ -18,6 +18,16 @@ test('failure classifier separates infrastructure, QA drift, security, and imple
   assert.equal(infra.learningPenalty,false);
   assert.equal(infra.workerHandoffRecommended,true);
 
+  const credential=classifySystemAiFailure({
+    task:{id:'a2',failureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',failureSignature:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED',evidence:['required-scope:universe.place.luau-execution-session:10767445769:write','http-status:403']},
+    result:{outcome:'FAIL'}
+  });
+  assert.equal(credential.failureClass,'EXTERNAL_SERVICE_OR_CREDENTIAL_FAILURE');
+  assert.equal(credential.route,'REQUEUE_WITHOUT_TASK_PENALTY_OR_WAIT_FOR_EXTERNAL_EVENT');
+  assert.equal(credential.retryBudgetConsumed,false);
+  assert.equal(credential.learningPenalty,false);
+  assert.equal(credential.workerHandoffRecommended,false);
+
   const unverifiedQa=classifySystemAiFailure({task:{id:'b',failureClass:'STALE_QA_CONTRACT'},result:{outcome:'FAIL'}});
   assert.equal(unverifiedQa.failureClass,'UNKNOWN_REQUIRES_CAUSAL_DIAGNOSIS');
   assert.equal(unverifiedQa.qaContractDriftVerified,false);
