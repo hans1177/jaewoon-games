@@ -250,6 +250,21 @@ test('bottleneck sensor reports free capacity, common failures, stale reservatio
   assert.ok(snapshot.actions.includes('REPRESENTATIVE_CANARY_FOR_COMMON_FAILURE'));
 });
 
+test('bottleneck sensor separates scheduler pending, runnable starvation, and fan-in wait',()=>{
+  const snapshot=analyzeSystemAiBottlenecks({
+    systemAiQueue:{tasks:[
+      {id:'ready',status:'queued',priority:'critical',responsibleFiles:['tools/ready.mjs'],createdAt:'2026-09-22T20:00:00Z'}
+    ]},
+    workflowMetrics:{pendingRuns:2,reservationWaitMs:120000,fanInWaitMs:180000},
+    maxBatch:2,
+    at:Date.parse('2026-09-23T00:00:00Z')
+  });
+  assert.ok(snapshot.actions.includes('REDUCE_SCHEDULER_PENDING_RUN_WAIT'));
+  assert.ok(snapshot.actions.includes('PRIORITIZE_LONG_WAIT_RUNNABLE_WORK'));
+  assert.ok(snapshot.actions.includes('REDUCE_FAN_IN_WAIT'));
+  assert.equal(snapshot.actions.includes('REDUCE_SCHEDULER_OR_FAN_IN_WAIT'),false);
+});
+
 test('QA evolution blocks coverage weakening and only allows independently verified stale-contract repair',()=>{
   const task={
     id:'qa-fix',taskType:'qa-contract-repair',failureClass:'STALE_QA_CONTRACT',
