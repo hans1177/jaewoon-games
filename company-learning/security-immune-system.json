@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -314,7 +314,9 @@
       "supersededRepairDependencyRewireMayNotExpandWritableScope": true,
       "supersededRepairDependencyRewireMustPreserveCheckpointIdentity": true,
       "historicalDependencyRepairMayOnlyFollowRecordedSupersededByEvidence": true,
-      "historicalDependencyRepairMayNotExpandWritableScope": true
+      "historicalDependencyRepairMayNotExpandWritableScope": true,
+      "targetedReserveReconciliationMayNotBroadenTargetAuthority": true,
+      "securityReserveReconciliationMayNotBroadenSecurityTaskAuthority": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -357,7 +359,13 @@
       "producerRepairReuseAuthorityExpansion": false,
       "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
       "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
-      "historicalSupersededDependencyRepairAuthorityExpansion": false
+      "historicalSupersededDependencyRepairAuthorityExpansion": false,
+      "allReservePathQueueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+      "allReservePathQueueReconciliationTests": [
+        "170dff04a67d5b6d302135296b480d303845ed89",
+        "7d50a0f64075d67467389f18a8ac30a386e7ce81"
+      ],
+      "allReservePathQueueReconciliationAuthorityExpansion": false
     },
     "producerSideRepairReuse": {
       "binding": "tools/company-recovery-dispatch.mjs",
