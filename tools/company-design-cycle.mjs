@@ -165,11 +165,20 @@ const strictDesignerFeedback={
   recordedAt:clean(latestDesignFeedbackEvent?.recordedAt)||null
 };
 const unityWebValidationSurfaceContract={role:'UNITY_WEB_VALIDATION_SURFACE_ONLY',separateGameTarget:false,canonicalSource:'SAME_UNITY_PROJECT',outputRoot:'web-games/<gameId>/',nativeGateAuthority:false,designRequirements:['UNITY_PROFILE_MUST_REMAIN_WEBGL_COMPATIBLE_WHEN_BUILDABLE','TOUCH_INPUT_AND_MOBILE_UI_MUST_WORK_IN_BROWSER_VALIDATION','BROWSER_PERFORMANCE_BUDGET_MUST_NOT_REQUIRE_SEPARATE_GAMEPLAY_RULES','WEB_VALIDATION_MAY_NOT_CHANGE_CORE_GAME_RULES_OR_BALANCE']};
-const evidence={game,gameSeed:seed,factPack,designLearningContext,unityWebValidationSurfaceContract,centralPolicy:'COMPANY_FLOW.md'};
-const DESIGN_CHECKPOINT_CONTRACT_VERSION=3;
+const designEvolutionSignal={
+  ownerRequestEventId:clean(seed.ownerRequestInstanceId||seed.ownerResetRevision||'')||null,
+  ownerRepeatedRequestCreatesNewRevision:seed.ownerRepeatedRequestCreatesNewDesignRevision===true,
+  autoSignalSource:clean(process.env.DESIGN_EVOLUTION_SIGNAL_SOURCE)||null,
+  autoSignalFingerprint:clean(process.env.DESIGN_EVOLUTION_SIGNAL_FINGERPRINT)||null,
+  autoSignalReason:clean(process.env.DESIGN_EVOLUTION_SIGNAL_REASON)||null,
+  passIsCheckpointNotTerminal:true,
+  unlimitedRevisions:true
+};
+const evidence={game,gameSeed:seed,factPack,designLearningContext,unityWebValidationSurfaceContract,designEvolutionSignal,centralPolicy:'company-learning/platform-release-roadmap.json'};
+const DESIGN_CHECKPOINT_CONTRACT_VERSION=4;
 const checkpointPath=path.join(base,'design-checkpoint.json');
 const progressPath=path.join(base,'design-progress.json');
-const policyDigest=createHash('sha256').update(fs.readFileSync('COMPANY_FLOW.md','utf8')).digest('hex');
+const policyDigest=createHash('sha256').update(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).digest('hex');
 const engineFiles=[
   'tools/company-design-cycle.mjs',
   'tools/company-design-gate-scoring-v2.mjs',
@@ -187,12 +196,18 @@ const checkpointFingerprint=createHash('sha256').update(JSON.stringify({
 let designCheckpoint=readJson(checkpointPath,null);
 const priorCheckpointStatus=clean(designCheckpoint?.status).toUpperCase();
 const checkpointReusable=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION&&designCheckpoint?.fingerprint===checkpointFingerprint;
+const continuousDesignDraftReady=draft=>Boolean(
+  draft&&typeof draft==='object'&&!Array.isArray(draft)
+  &&draft.conceptBlueprint&&Array.isArray(draft.designAlternatives)&&draft.designAlternatives.length>=2
+  &&draft.contentDiversityPlan&&draft.creativeChallenge&&draft.narrativeDirection
+);
 const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
   &&clean(designCheckpoint?.gameId)===gameId
   &&clean(designCheckpoint?.date)===date
   &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
   &&clean(designCheckpoint?.policyDigest)===policyDigest
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&continuousDesignDraftReady(designCheckpoint?.phases?.designer_draft)
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
 const checkpointCompatibleEngineDigests=new Set([
@@ -209,6 +224,7 @@ const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVe
   &&clean(designCheckpoint?.policyDigest)===policyDigest
   &&checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&continuousDesignDraftReady(designCheckpoint?.phases?.designer_draft)
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
 if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible)){
@@ -1050,7 +1066,7 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
   writeJson(path.join(base,'design-pre-gate.json'),{version:3,gameId,date,attempt:repairAttempt,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate,history:preGateHistory.map(row=>({totalScore:row.totalScore,hardFailures:row.hardFailures,criticalAxisFailures:row.criticalAxisFailures}))});
   persistDesignCheckpoint();
 }
-writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+writeJson(path.join(base,'design-draft.json'),{version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,singleAuthor:true,designEvolution:designEvolutionSignal,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
 if(!preGatePass(preGate)){
   designCheckpoint.status='PRE_GATE_BLOCKED';
   designCheckpoint.lastError=`DESIGN_PRE_GATE_BLOCKED score=${preGate.totalScore} hard=${(preGate.hardFailures||[]).join(',')||'NONE'}`;
@@ -1113,8 +1129,9 @@ writeProgress('DETERMINISTIC_REVALIDATION',{departmentEvidenceComplete:ROLES.len
 const revisedDesign=designDraft;
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
-  version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
+  version:7,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,
+  designEvolution:designEvolutionSignal,
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
@@ -1176,8 +1193,9 @@ const runtimeMetrics={
   departmentScopedContext:true
 };
 writeJson(path.join(base,'cycle-status.json'),{
-  version:6,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
-  status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
+  version:7,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
+  status:'COMPLETE',policyDocument:'company-learning/platform-release-roadmap.json',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
+  designEvolution:designEvolutionSignal,
   gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},
   designer:{role:'GAME_DESIGNER_AI',model:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,sameModelRevised:false},
   departments:{
@@ -1208,6 +1226,10 @@ persistDesignCheckpoint();
 writeProgress('COMPLETE',{preGateScore:preGate.totalScore,postRevisionPreGateScore:postRevisionPreGate.totalScore});
 console.log('DESIGN_CHECKPOINT_STATUS=COMPLETE');
 console.log('COMPANY_DESIGN_CYCLE=COMPLETE');
+console.log(`DESIGN_EVOLUTION_OWNER_EVENT=${designEvolutionSignal.ownerRequestEventId||'NONE'}`);
+console.log(`DESIGN_EVOLUTION_AUTO_SIGNAL=${designEvolutionSignal.autoSignalFingerprint||'NONE'}`);
+console.log('DESIGN_EVOLUTION_PASS_IS_CHECKPOINT=YES');
+console.log('DESIGN_EVOLUTION_UNLIMITED_REVISIONS=YES');
 console.log(`GAME_ID=${gameId}`);
 console.log(`GAME_SEED_ID=${seed.seedId}`);
 console.log('PRODUCTION_CLASS=DESIGN_ONLY');
