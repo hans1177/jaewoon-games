@@ -1,7 +1,7 @@
 {
   "version": 4,
   "status": "OWNER_DIRECT_LOCKED",
-  "recordedAt": "2026-09-12",
+  "recordedAt": "2026-09-23",
   "relationshipToVibe2": "INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE",
   "parallelPipeline": false,
   "pumpMode": {
@@ -142,7 +142,6 @@
   "platformRoadmap": {
     "enabled": true,
     "contract": "company-learning/platform-release-roadmap.json",
-    "humanReadableSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
     "priority": [
       "ROBLOX",
       "UNITY"
@@ -180,7 +179,9 @@
       "UNITY"
     ],
     "equalTierSelection": "SAME_GAME_AUTO_PAIR",
-    "robloxMustRunFirst": false
+    "robloxMustRunFirst": false,
+    "machinePolicyAuthority": "company-learning/platform-release-roadmap.json",
+    "humanReadableSpecRequired": false
   },
   "canonicalLearningChainUnchanged": true,
   "promotion": {
@@ -219,7 +220,6 @@
     "unityTargetSameProjectContinuation": true,
     "robloxAndUefnRemainNative": true,
     "policyAuthority": "company-learning/platform-release-roadmap.json",
-    "centralSyncDocument": "company-learning/UNITY_WEB_FIRST_STAGE.md",
     "cloudflareBuildOutputRequired": true,
     "mobileBrowserQaRequired": true,
     "failureState": "UNAVAILABLE_NON_BLOCKING",
@@ -253,12 +253,13 @@
     "nativeGateAuthority": false,
     "homepageTestSurface": true,
     "nativeDevelopmentMayRunWithoutWebBuild": true,
-    "nativeReleaseMayRunWithoutWebBuild": true
+    "nativeReleaseMayRunWithoutWebBuild": true,
+    "machinePolicyAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebValidationSurface",
+    "humanReadableSyncDocumentRequired": false
   },
   "directNativeDualPlatformDevelopment": {
     "enabled": true,
     "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
-    "centralSyncDocument": "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
     "requestEitherStartsBoth": true,
     "targets": [
       "ROBLOX",
@@ -283,7 +284,9 @@
     "onePlatformFailureDoesNotCancelOther": true,
     "internalReleaseFirst": true,
     "externalReleaseIndependent": true,
-    "globalGameCountCap": null
+    "globalGameCountCap": null,
+    "machinePolicyAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
+    "humanReadableSyncDocumentRequired": false
   },
   "robloxCoDevelopmentDesign": {
     "version": 1,
