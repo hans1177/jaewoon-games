@@ -99,7 +99,9 @@ jobs:
             if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
             if(item.platformDesignProfiles?.UNITY?.jsonPointer!=='/content/platformProfiles/UNITY')throw new Error(`Unity platform profile missing: ${seed.gameId}`);
             for(const key of ['webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired','webSourcePath','postWebArtbookRequired','webFirstGatePassed','webSecondGateRequired'])if(Object.hasOwn(item,key))throw new Error(`legacy Web admission key remains: ${seed.gameId}:${key}`);
-            if(String(item.currentStep||'')!=='TARGET_PLATFORM_SOURCE_BIND')throw new Error(`native source bind not active: ${seed.gameId}`);
+            const step=String(item.currentStep||'').trim();
+            if(!step)throw new Error(`native development step missing: ${seed.gameId}`);
+            if(/^(WEB_|WAITING_WEB|FULL_APPROVED_SCOPE_WEB|RETURN_TO_WEB)/.test(step))throw new Error(`legacy Web development step remains: ${seed.gameId}:${step}`);
             const project=(portfolio.projects||[]).find(row=>row.slug===seed.gameId);
             if(project?.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);
           }
