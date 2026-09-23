@@ -8,6 +8,7 @@ import {spawnSync} from 'node:child_process';
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
 const cloudBuildSource=fs.readFileSync(path.resolve('.github/workflows/unity-cloud-android-test.yml'),'utf8');
+const hybridWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unity-hybrid-android-build.yml'),'utf8');
 const runtimeWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-runtime-smoke.yml'),'utf8');
 const independentQaSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-independent-qa.yml'),'utf8');
 const regressionSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-regression.yml'),'utf8');
@@ -303,4 +304,11 @@ test('independent Unity QA dispatches exact artifact regression after PASS',()=>
   assert.match(independentQaSource,/gh workflow run unity-android-regression\.yml/);
   assert.match(independentQaSource,/-f run_id="\$\{\{ steps\.upstream\.outputs\.run_id \}\}"/);
   assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCHED=/);
+});
+
+
+test('Unity hybrid router avoids full repository history and fetches only the event before commit when needed',()=>{
+  assert.match(hybridWorkflowSource,/name: Checkout[\s\S]*fetch-depth:\s*1[\s\S]*fetch-tags:\s*false/);
+  assert.doesNotMatch(hybridWorkflowSource,/fetch-depth:\s*0/);
+  assert.match(hybridWorkflowSource,/git fetch --no-tags --depth=1 origin "\$before"/);
 });
