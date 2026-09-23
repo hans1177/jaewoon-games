@@ -9,6 +9,7 @@ import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
 import {buildVibeDesignIntelligence,buildDesignEvolutionBrief} from './vibe2-design-intelligence.mjs';
 
 const ROLES=['planning','graphics','development','qa','audio'];
+const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -174,11 +175,11 @@ const designEvolutionBrief=buildDesignEvolutionBrief({
 });
 evidence.designEvolutionBrief=designEvolutionBrief;
 const unityWebValidationSurfaceContract={role:'UNITY_WEB_VALIDATION_SURFACE_ONLY',separateGameTarget:false,canonicalSource:'SAME_UNITY_PROJECT',outputRoot:'web-games/<gameId>/',nativeGateAuthority:false,designRequirements:['UNITY_PROFILE_MUST_REMAIN_WEBGL_COMPATIBLE_WHEN_BUILDABLE','TOUCH_INPUT_AND_MOBILE_UI_MUST_WORK_IN_BROWSER_VALIDATION','BROWSER_PERFORMANCE_BUDGET_MUST_NOT_REQUIRE_SEPARATE_GAMEPLAY_RULES','WEB_VALIDATION_MAY_NOT_CHANGE_CORE_GAME_RULES_OR_BALANCE']};
-const evidence={game,gameSeed:seed,factPack,designLearningContext,unityWebValidationSurfaceContract,centralPolicy:'COMPANY_FLOW.md'};
-const DESIGN_CHECKPOINT_CONTRACT_VERSION=3;
+const evidence={game,gameSeed:seed,factPack,designLearningContext,unityWebValidationSurfaceContract,centralPolicy:CANONICAL_POLICY_PATH};
+const DESIGN_CHECKPOINT_CONTRACT_VERSION=4;
 const checkpointPath=path.join(base,'design-checkpoint.json');
 const progressPath=path.join(base,'design-progress.json');
-const policyDigest=createHash('sha256').update(fs.readFileSync('COMPANY_FLOW.md','utf8')).digest('hex');
+const policyDigest=createHash('sha256').update(fs.readFileSync(CANONICAL_POLICY_PATH,'utf8')).digest('hex');
 const engineFiles=[
   'tools/company-design-cycle.mjs',
   'tools/company-design-gate-scoring-v2.mjs',
@@ -433,7 +434,7 @@ function enforceOwnerPreservationDesign(value){
     }
   };
 }
-const DESIGN_GATE_FIELDS=['systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','uxAccessibilityPlan','artAudioDirection','implementationTraceability'];
+const DESIGN_GATE_FIELDS=['systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','uxAccessibilityPlan','artAudioDirection','designAlternatives','selectedDesignPlan','contentVarietyPlan','narrativeDialoguePlan','referenceHomagePlan','designIntegrityPlan','stabilityPriorityPlan','implementationTraceability'];
 const DESIGN_BASE_FIELDS=DESIGN.required.filter(key=>!DESIGN_GATE_FIELDS.includes(key));
 const designSliceSchema=fields=>({type:'object',required:[...fields],properties:Object.fromEntries(fields.map(key=>[key,DESIGN.properties[key]])),additionalProperties:false});
 const DESIGN_BASE=designSliceSchema(DESIGN_BASE_FIELDS);
@@ -1013,7 +1014,7 @@ async function generateDesignerDraft(){
   }catch(error){
     console.log(`DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
     const basePart=await callDesignerModel(system,`기본 설계 필드만 작성하라.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,8500)}`,DESIGN_BASE,{predict:1000,temperature:0.3,numCtx:8192,timeoutMs:90000,maxAttempts:2});
-    const gatePart=await callDesignerModel('너는 같은 Game Designer AI다. 기본 설계를 하드관문이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라.\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:1000,temperature:0.2,numCtx:8192,timeoutMs:90000,maxAttempts:2});
+    const gatePart=await callDesignerModel('너는 같은 Game Designer AI다. 기본 설계를 하드관문과 지능형 설계 계약이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라. Plan A/B, 다양성, 서사/대화, 오마주 권리기준, 설계 도달성, 안정성 원인분류를 구체적으로 포함한다.\nDESIGN_EVOLUTION_BRIEF=${clip(designEvolutionBrief,6500)}\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:3600,temperature:0.2,numCtx:12288,timeoutMs:120000,maxAttempts:2});
     return enforceOwnerPreservationDesign(mergeDesignerDesign(basePart,gatePart,'DRAFT'));
   }
 }
