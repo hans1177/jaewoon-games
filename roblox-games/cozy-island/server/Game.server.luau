@@ -231,7 +231,16 @@ local function attackBase(p)
  return true
 end
 
-local function spawnMob(kind,pos)
+locallocal r=part(folder,isRaider and"IslandRaider"or"WildBoar",isRaider and Vector3.new(3.2,5.4,2.5)or Vector3.new(5.4,3.2,6.5),pos,isRaider and Color3.fromRGB(137,75,66)or Color3.fromRGB(113,83,64),Enum.Material.SmoothPlastic)
+ r.CanCollide=true;r.Transparency=1
+ if isRaider then
+  local skin=Color3.fromRGB(211,174,141);local cloth=Color3.fromRGB(117,69,62);local dark=Color3.fromRGB(60,53,52)
+  attach(r,"RaiderTorso",Vector3.new(2.9,3.4,1.9),Vector3.new(0,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"RaiderHead",Vector3.new(2.3,2.35,2.2),Vector3.new(0,2.15,-.1),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"RaiderHood",Vector3.new(2.55,1.05,2.45),Vector3.new(0,2.95,.05),dark,Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"RaiderArmL",Vector3.new(2.8,.72,.72),Vector3.new(-1.75,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,82))
+  attach(r,"RaiderArmR",Vector3.new(2.8,.72,.72),Vector3.new(1.75,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,98))
+  attach(r,"RaiderLegL",Vector3.new(2 /no_think
  local folder=world:FindFirstChild("HomeMobs")or Instance.new("Folder");folder.Name="HomeMobs";folder.Parent=world
  local isRaider=kind=="RAIDER";local hp=isRaider and C.HomeIslandMobs.RaiderHP or C.HomeIslandMobs.BoarHP
  local damage=isRaider and C.HomeIslandMobs.RaiderDamage or C.HomeIslandMobs.BoarDamage
