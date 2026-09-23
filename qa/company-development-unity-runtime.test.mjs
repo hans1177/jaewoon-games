@@ -256,3 +256,9 @@ test('legacy Genymotion runtime gate cannot block canonical Redroid validation w
   assert.match(runtimeWorkflowSource,/runs-on: ubuntu-24\.04-arm/);
   assert.match(runtimeWorkflowSource,/redroid\/redroid:16\.0\.0_64only-latest/);
 });
+
+
+test('Unity cloud APK build keeps LFS but avoids full Git history',()=>{
+  assert.match(cloudBuildSource,/name: Checkout[\s\S]*fetch-depth:\s*1[\s\S]*fetch-tags:\s*false[\s\S]*lfs:\s*true/);
+  assert.doesNotMatch(cloudBuildSource,/fetch-depth:\s*0/);
+});
