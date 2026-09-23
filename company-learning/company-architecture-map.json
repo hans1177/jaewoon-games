@@ -1,5 +1,5 @@
 {
-  "version": 97,
+  "version": 98,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T09:47:00+09:00",
+  "updatedAt": "2026-09-23T10:06:19+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2728,7 +2728,10 @@
           "ROUTE",
           "EVIDENCE"
         ],
-        "binding": "tools/company-system-ai-failure-classifier.mjs"
+        "binding": "tools/company-system-ai-failure-classifier.mjs",
+        "staleQaClaimProofRequired": true,
+        "unverifiedStaleQaRoute": "UNKNOWN_REQUIRES_CAUSAL_DIAGNOSIS",
+        "implementationRevision": "6a7959814875d7471f8d5a288491d59679d840e2"
       },
       "workerHandoff": {
         "queue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
@@ -2757,7 +2760,13 @@
           ".github/workflows/company-system-ai-workers.yml"
         ],
         "binding": "tools/company-system-ai-bottleneck-sensor.mjs",
-        "activeRepresentativeCanaryDedup": true
+        "activeRepresentativeCanaryDedup": true,
+        "liveWorkflowMetrics": [
+          "PENDING_WORKFLOW_RUNS",
+          "RESERVATION_WAIT_MS",
+          "FAN_IN_WAIT_MS"
+        ],
+        "workflowMetricBindingRevision": "1c90f8242d7f78f257c39cba5dcfd3184f58e689"
       },
       "caretaker": {
         "feeder": "tools/vibe2-post-release-focus.mjs",
@@ -2770,7 +2779,8 @@
         "centralPolicyProjection": "tools/company-shared-context.mjs",
         "currentImplementationEvidenceRequired": true,
         "binding": "tools/company-system-ai-qa-contract-review.mjs",
-        "coverageWeakeningForbidden": true
+        "coverageWeakeningForbidden": true,
+        "staleQaFailClosedWithoutProof": true
       },
       "primaryAiVibeCollaboration": {
         "existingBinding": "company-learning/company-architecture-map.json#primaryAiInternalVibeCollaboration",
@@ -2818,6 +2828,11 @@
       "recommendedBatch": 19,
       "reservedDisjointWorkers": 2,
       "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
+    },
+    "latestImplementationSync": {
+      "revision": "f2c7dc0fca00a0046a50160680c92a895c80d3d8",
+      "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
+      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_WORKER_OBSERVATION"
     }
   }
 }
