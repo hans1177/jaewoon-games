@@ -1,5 +1,23 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1y86h5m",
+      "worker": "vibe2",
+      "taskId": "ant-simulator-presentation-asset-adaptation-v1",
+      "gameId": "ant-simulator",
+      "files": [
+        "web-games/ant-simulator/index.html"
+      ],
+      "baseSha": "174a4800af6103c45bacbe945695670ec27ff805",
+      "acquiredAt": "2026-09-23T04:22:40.970Z",
+      "expiresAt": "2026-09-23T05:07:40.970Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:ant-simulator-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
