@@ -307,6 +307,11 @@ test('independent Unity QA dispatches exact artifact regression after PASS',()=>
 });
 
 
+test('Unity hybrid Android builds are not globally serialized by internal policy',()=>{
+  assert.doesNotMatch(hybridWorkflowSource,/^concurrency:\s*\n\s*group:\s*unity-hybrid-android-build\s*$/m);
+});
+
+
 test('Unity hybrid router avoids full repository history and fetches only the event before commit when needed',()=>{
   assert.match(hybridWorkflowSource,/name: Checkout[\s\S]*fetch-depth:\s*1[\s\S]*fetch-tags:\s*false/);
   assert.doesNotMatch(hybridWorkflowSource,/fetch-depth:\s*0/);
