@@ -398,27 +398,23 @@ jobs:
                   authority:'existing-independent-qa-native-foundation-v3',
                   verifiedAt:stamp,
                 };
-                item.robloxInternalMultiplayerSimplifiedPassed=
-                  item.robloxFoundationF0Evidence?.multiplayerSyncContractPassed===true
-                  &&item.robloxServerClientBoundaryPassed===true
-                  &&item.robloxDatastoreRejoinPassed===true;
-                item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                item.canonicalState='ROBLOX_INTERNAL_RELEASE_REVIEW_MULTIPLAYER_SIMPLIFIED';
+                item.robloxInternalMultiplayerSimplifiedPassed=false;
+                item.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                item.canonicalState='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING';
                 item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
-                item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
-                item.routingBlockers=[];
-                item.robloxPromotionBlockers=['roblox-full-multiplayer-evidence-pending-public-release-only'];
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                item.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING';
+                item.routingBlockers=['roblox-two-client-one-sync-pending'];
+                item.robloxPromotionBlockers=['roblox-two-client-one-sync-pending'];
                 if(item.executionEvidence){
                   item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
                   item.executionEvidence.runtimePassed=false;
                   item.executionEvidence.independentQaPassed=true;
                   item.executionEvidence.regressionPassed=true;
-                  item.executionEvidence.failureStage=null;
-                  item.executionEvidence.failureSignature=null;
+                  item.executionEvidence.failureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                  item.executionEvidence.failureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING';
                 }
-                f9Ids.push(item.gameId);
-                console.log('ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW='+item.gameId);
+                console.log('ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING='+item.gameId);
                 pending++;
               }else{
                 item.robloxIndependentQaPassed=false;

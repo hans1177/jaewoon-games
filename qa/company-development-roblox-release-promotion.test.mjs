@@ -122,13 +122,15 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 internal release accepts full or simplified multiplayer evidence without republishing',()=>{
+test('F9 reuses one exact two-client sync proof for internal and public readiness without republishing',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
   assert.match(finalReview,/item\.robloxRuntimeFoundationPassed===true/);
-  assert.match(finalReview,/const fullRuntimeAcceptance=/);
-  assert.match(finalReview,/const simplifiedInternalMultiplayer=/);
-  assert.match(finalReview,/const internalRuntimeAcceptance=fullRuntimeAcceptance\|\|simplifiedInternalMultiplayer/);
+  assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
+  assert.match(finalReview,/runtime\.f7MultiplayerFoundationPassed===true/);
+  assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
+  assert.match(finalReview,/const publicRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
+  assert.doesNotMatch(finalReview,/const simplifiedInternalMultiplayer=/);
   assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
   assert.match(finalReview,/item\.robloxRegressionPassed===true/);
   assert.match(finalReview,/String\(runtime\.universeId\|\|''\)===String\(candidate\.universeId\|\|''\)/);
@@ -137,19 +139,18 @@ test('F9 internal release accepts full or simplified multiplayer evidence withou
   assert.match(finalReview,/runtime\.exactVersion===true/);
   assert.match(finalReview,/Number\(runtime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
   assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
-  assert.match(finalReview,/currentBlockingTickets/);
-  assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
   assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
-  assert.match(finalReview,/multiplayerVerificationMode:fullRuntimeAcceptance\?'FULL_PLATFORM_MULTIPLAYER_PASS':'SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS'/);
-  assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:!fullRuntimeAcceptance/);
-  assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
+  assert.match(finalReview,/multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC'/);
+  assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:false/);
+  assert.match(finalReview,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
+  assert.match(finalReview,/item\.robloxPublicReleaseVersionNumber=Number\(candidate\.versionNumber\)/);
+  assert.match(finalReview,/sameAsInternalVersion:true/);
+  assert.match(finalReview,/roblox-public-exposure-pending/);
   assert.match(finalReview,/promotedWithoutRepublish:true/);
-  assert.match(finalReview,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
   assert.match(finalReview,/publicRelease:false/);
   assert.doesNotMatch(finalReview,/publishRobloxPlace/);
   assert.doesNotMatch(finalReview,/versions\?versionType=Published/);
 });
-
 
 
 test('cozy island foundation ordering and successful core-loop proof stay fail-closed',()=>{
@@ -256,20 +257,22 @@ test('central native foundation policy locks spawn ordering candidate invalidati
 });
 
 
-test('private runtime candidate keeps ancestry while using partial clone',()=>{
-  assert.match(workflow,/Checkout current canonical implementation[\s\S]*fetch-depth:\s*0[\s\S]*fetch-tags:\s*false[\s\S]*filter:\s*blob:none/);
-  assert.match(workflow,/git merge-base --is-ancestor "\$SOURCE_REVISION" HEAD/);
+test('private runtime candidate uses the same shallow checkout contract while preserving ancestry proof',()=>{
+  assert.match(workflow,/Checkout current canonical implementation[\s\S]*fetch-depth:\s*1[\s\S]*fetch-tags:\s*false[\s\S]*filter:\s*blob:none/);
+  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$SOURCE_REVISION"/);
+  assert.match(workflow,/gh api "repos\/\$GITHUB_REPOSITORY\/compare\/\$SOURCE_REVISION\.\.\.\$\(git rev-parse HEAD\)"/);
   assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
 });
 
 
-test('public release evidence still requires full multiplayer QA after simplified internal release',()=>{
+test('public release rejects static-only multiplayer evidence and requires the same actual two-client sync proof',()=>{
   const item=canonicalItem();
   item.robloxMultiplayerQaPassed=false;
   item.robloxMultiplayerQaEvidence={...item.robloxMultiplayerQaEvidence,multiplayerQaPassed:false,peerVisibilityPassed:false};
   item.robloxInternalMultiplayerSimplifiedPassed=true;
   item.robloxInternalReleaseReady=true;
-  item.robloxInternalReleaseEvidence={multiplayerVerificationMode:'SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS',publicRelease:false};
+  item.robloxInternalReleaseEvidence={multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC',twoClientOneSyncPassed:false,publicRelease:false};
   const evidence=assembleRobloxDevelopmentReleaseEvidence(item);
   assert.equal(evidence.pass,false);
   assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));

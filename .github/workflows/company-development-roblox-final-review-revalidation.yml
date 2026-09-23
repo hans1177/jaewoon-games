@@ -96,19 +96,13 @@ jobs:
             const post=item.robloxPostRuntimeQaEvidence||{};
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
-            const fullRuntimeAcceptance=
+            const sharedReleaseRuntimeAcceptance=
               item.robloxRuntimePassed===true
               &&runtime.runtimeAcceptancePassed===true
+              &&runtime.f7MultiplayerFoundationPassed===true
               &&item.robloxMultiplayerQaPassed===true;
-            const simplifiedInternalMultiplayer=
-              runtime.developmentContinuationPassed===true
-              &&item.robloxParallelMultiplayerValidationPending===true
-              &&item.robloxInternalMultiplayerSimplifiedPassed===true
-              &&item.robloxFoundationF0Evidence?.multiplayerSyncContractPassed===true
-              &&item.robloxServerClientBoundaryPassed===true
-              &&item.robloxDatastoreRejoinPassed===true
-              &&post.multiplayerValidationMode==='PARALLEL_NON_BLOCKING_DEVELOPMENT_RELEASE_BLOCKING_ONLY';
-            const internalRuntimeAcceptance=fullRuntimeAcceptance||simplifiedInternalMultiplayer;
+            const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance;
+            const publicRuntimeAcceptance=sharedReleaseRuntimeAcceptance;
             const exact=
               item.robloxFoundationF0Passed===true
               &&item.robloxRuntimeFoundationPassed===true
@@ -180,12 +174,14 @@ jobs:
               versionNumber:Number(candidate.versionNumber),
               published:true,
               actualRuntimeFoundationPassed:true,
-              runtimeAcceptancePassed:fullRuntimeAcceptance,
+              runtimeAcceptancePassed:sharedReleaseRuntimeAcceptance,
               internalReleaseRuntimeAccepted:true,
-              multiplayerVerificationMode:fullRuntimeAcceptance?'FULL_PLATFORM_MULTIPLAYER_PASS':'SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS',
+              publicReleaseRuntimeAccepted:publicRuntimeAcceptance,
+              multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC',
+              twoClientOneSyncPassed:true,
               fullMultiplayerQaPassed:item.robloxMultiplayerQaPassed===true,
-              simplifiedInternalMultiplayerPassed:simplifiedInternalMultiplayer,
-              publicReleaseMultiplayerVerificationPending:!fullRuntimeAcceptance,
+              simplifiedInternalMultiplayerPassed:false,
+              publicReleaseMultiplayerVerificationPending:false,
               independentQaPassed:true,
               regressionPassed:true,
               finalReviewPassed:true,
@@ -198,9 +194,19 @@ jobs:
             };
             item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-internal-release-compatibility-after-f9'};
             item.robloxReleaseVersionNumber=Number(candidate.versionNumber);
-            item.robloxPublicReleaseReady=false;
+            item.robloxPublicReleaseReady=publicRuntimeAcceptance===true;
+            item.robloxPublicReleaseVersionNumber=Number(candidate.versionNumber);
+            item.robloxPublicReleaseEvidence={
+              ...item.robloxInternalReleaseEvidence,
+              releaseClaim:'PUBLIC_PLATFORM_RELEASE_READY_SAME_EXACT_CANDIDATE',
+              publicRelease:false,
+              publicReleaseReady:publicRuntimeAcceptance===true,
+              publicExposurePending:true,
+              sameAsInternalVersion:true,
+              authority:'roblox-public-release-ready-same-exact-candidate-after-f9',
+            };
             item.robloxPublicRelease=false;
-            item.robloxPromotionBlockers=fullRuntimeAcceptance?[]:['roblox-full-multiplayer-evidence-pending-public-release-only'];
+            item.robloxPromotionBlockers=publicRuntimeAcceptance?['roblox-public-exposure-pending'] : ['roblox-two-client-one-sync-pending'];
             item.robloxReleaseClaim=false;
             item.robloxReleasePublishedAt=null;
             item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';

@@ -72,3 +72,12 @@ test('exact Roblox foundation QA is isolated per game and cannot globally serial
   assert.doesNotMatch(workflow,/group: company-development-roblox-runtime-foundation-qa\s*\n/);
   assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
+
+test('two-client one-sync is the shared internal and public release gate',()=>{
+  assert.match(workflow,/ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
+  assert.match(workflow,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
+  assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
+  assert.match(workflow,/item\.routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
+  assert.match(workflow,/item\.robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
+  assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+});

@@ -1,5 +1,5 @@
 {
-  "version": 308,
+  "version": 309,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -4918,7 +4918,7 @@
           "successfulGameStateTransitionRequired": true
         },
         "multiplayerReleaseProof": {
-          "version": 1,
+          "version": 2,
           "mode": "TWO_CLIENT_ONE_SYNC",
           "minimumParticipants": 2,
           "sameServerRequired": true,
@@ -4933,7 +4933,16 @@
           "leaveRejoinLateJoinRequiredForRoutineReleaseGate": false,
           "exactCandidateBindingStillRequired": true,
           "serverAuthorityAndRemoteValidationStillRequired": true,
-          "multiplayerRepairFlowMayRequireExtendedLifecycle": true
+          "multiplayerRepairFlowMayRequireExtendedLifecycle": true,
+          "appliesTo": [
+            "INTERNAL_RELEASE",
+            "PUBLIC_RELEASE"
+          ],
+          "sameProofReusedForInternalAndPublic": true,
+          "duplicatePublicMultiplayerCheckRequired": false,
+          "internalAndPublicVersionMustMatch": true,
+          "republishForPublicPromotionForbidden": true,
+          "publicPromotionUsesSameExactCandidate": true
         }
       },
       "releaseGate": {
@@ -5009,8 +5018,20 @@
           "mainFetchDepth": 1,
           "runtimeFetchDepth": 1,
           "fullHistoryRequired": false,
+          "appliesTo": [
+            "INTERNAL_RELEASE",
+            "PUBLIC_RELEASE"
+          ],
           "exactCandidateBindingPreserved": true,
-          "centralPolicySharedContextValidationPreserved": true
+          "centralPolicySharedContextValidationPreserved": true,
+          "sameCheckoutContractForInternalAndPublic": true
+        },
+        "candidateDeploymentCheckout": {
+          "mainFetchDepth": 1,
+          "runtimeFetchDepth": 1,
+          "exactSourceRevisionFetchedOnDemand": true,
+          "ancestryVerifiedByGitHubCompare": true,
+          "fullHistoryRequired": false
         }
       },
       "failureRouting": {
@@ -6358,6 +6379,23 @@
         "EXTENDED_MULTIPLAYER_REPAIR_QA_WHEN_CAUSALLY_REQUIRED"
       ],
       "noLongCombatOrDungeonRunForRoutineMultiplayerReleaseCheck": true,
+      "centralPolicyAndImplementationSynchronized": true
+    },
+    "robloxUnifiedInternalPublicReleaseProof20260924": {
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "reason": "USE_ONE_ROBLOX_TWO_CLIENT_ONE_SYNC_PROOF_ONE_SHALLOW_CHECKOUT_CONTRACT_AND_ONE_EXACT_CANDIDATE_VERSION_FOR_INTERNAL_AND_PUBLIC_RELEASE",
+      "internalAndPublicMultiplayerProof": "TWO_CLIENT_ONE_SYNC",
+      "minimumParticipants": 2,
+      "sameServerRequired": true,
+      "duplicatePublicMultiplayerCheckRequired": false,
+      "internalAndPublicVersionMustMatch": true,
+      "publicPromotionRepublishForbidden": true,
+      "f9MainFetchDepth": 1,
+      "f9RuntimeFetchDepth": 1,
+      "candidateDeploymentMainFetchDepth": 1,
+      "exactCandidateBindingPreserved": true,
+      "explicitPublicExposureEvidenceStillRequired": true,
+      "extendedMultiplayerLifecycleStillRequiredForRepairOrSpecificFailure": true,
       "centralPolicyAndImplementationSynchronized": true
     }
   },
@@ -15830,9 +15868,12 @@
               "independentQaAndRegressionMayContinueWhenFoundationCoreServicesAndCoreLoopPass": true,
               "recurringAutomationMustContinueRecheckingUntilVerified": true,
               "userAssistanceRequired": false,
-              "internalReleaseSimplifiedVerificationAllowed": true,
-              "fullPlatformMultiplayerEvidenceRequiredBeforePublicRelease": true,
-              "fullMultiplayerVerificationContinuesDuringInternalPlaytest": true
+              "internalReleaseSimplifiedVerificationAllowed": false,
+              "fullPlatformMultiplayerEvidenceRequiredBeforePublicRelease": false,
+              "fullMultiplayerVerificationContinuesDuringInternalPlaytest": false,
+              "sameTwoClientOneSyncReleaseProofRequiredForInternalAndPublic": true,
+              "sharedProofMayBeReusedWithoutDuplicatePlaytest": true,
+              "extendedLifecycleVerificationReservedForRepairOrSpecificFailure": true
             }
           },
           "repairCompletion": {
@@ -15913,7 +15954,11 @@
       "secondReleaseGoal": true,
       "platformIndependent": true,
       "onePlatformMayPublishWithoutWaitingForOther": true,
-      "requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence": true
+      "requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence": true,
+      "sameExactCandidateAsInternalRequiredForRoblox": true,
+      "republishForRobloxPublicPromotionForbidden": true,
+      "sameTwoClientOneSyncProofAsInternalRequiredForRoblox": true,
+      "publicExposureIsVisibilityChangeAfterSharedReleaseProof": true
     },
     "uefn": {
       "automaticDevelopment": false,

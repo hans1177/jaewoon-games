@@ -36,7 +36,7 @@ jobs:
         with:
           ref: main
           path: main
-          fetch-depth: 0
+          fetch-depth: 1
           fetch-tags: false
           filter: blob:none
 
@@ -208,14 +208,17 @@ jobs:
         working-directory: main
         env:
           GAME_ID: ${{ steps.target.outputs.game_id }}
+          GH_TOKEN: ${{ github.token }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
           ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$SOURCE_REVISION"
           git cat-file -e "${SOURCE_REVISION}^{commit}"
-          git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
+          compare_status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$SOURCE_REVISION...$(git rev-parse HEAD)" --jq '.status')"
+          [[ "$compare_status" == ahead || "$compare_status" == identical ]]
           git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
