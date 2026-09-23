@@ -18,9 +18,24 @@ test('failure classifier separates infrastructure, QA drift, security, and imple
   assert.equal(infra.learningPenalty,false);
   assert.equal(infra.workerHandoffRecommended,true);
 
-  const qa=classifySystemAiFailure({task:{id:'b',failureClass:'STALE_QA_CONTRACT'},result:{outcome:'FAIL'}});
+  const unverifiedQa=classifySystemAiFailure({task:{id:'b',failureClass:'STALE_QA_CONTRACT'},result:{outcome:'FAIL'}});
+  assert.equal(unverifiedQa.failureClass,'UNKNOWN_REQUIRES_CAUSAL_DIAGNOSIS');
+  assert.equal(unverifiedQa.qaContractDriftVerified,false);
+  assert.ok(unverifiedQa.evidence.includes('qa-contract-drift:UNVERIFIED'));
+
+  const qa=classifySystemAiFailure({
+    task:{id:'b2',failureClass:'STALE_QA_CONTRACT',evidence:['qa-contract-drift:VERIFIED','current-policy-implementation-agreement:PASS']},
+    result:{outcome:'FAIL'}
+  });
   assert.equal(qa.failureClass,'STALE_QA_CONTRACT');
   assert.equal(qa.route,'QA_CONTRACT_REVIEW_AND_INDEPENDENT_REVALIDATION');
+  assert.equal(qa.qaContractDriftVerified,true);
+
+  const nestedQa=classifySystemAiFailure({
+    task:{id:'b3'},
+    result:{outcome:'FAIL',failureClass:'STALE_QA_CONTRACT',qaContractReview:{allowed:true,verifiedContractDrift:true,reason:'VERIFIED_QA_CONTRACT_DRIFT_REPAIR_WITHOUT_COVERAGE_REDUCTION'}}
+  });
+  assert.equal(nestedQa.failureClass,'STALE_QA_CONTRACT');
 
   const security=classifySystemAiFailure({task:{id:'c'},result:{outcome:'FAIL',security:{verdict:'QUARANTINE'}}});
   assert.equal(security.failureClass,'SECURITY_OR_AUTHORITY_BOUNDARY');
@@ -150,6 +165,12 @@ test('system AI learning context exposes exact verified reuse trace and failed-s
 test('system AI workflow wires sensing, exact reservation identity, missing-result handoff, and serialized control mutation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
   assert.match(workflow,/company-system-ai-bottleneck-sensor\.mjs/);
+  assert.match(workflow,/SYSTEM_AI_PENDING_RUNS=/);
+  assert.match(workflow,/SYSTEM_AI_RESERVATION_WAIT_MS=/);
+  assert.match(workflow,/SYSTEM_AI_FAN_IN_WAIT_MS=/);
+  assert.match(workflow,/--pending-runs="\$pending_runs"/);
+  assert.match(workflow,/--reservation-wait-ms="\$reservation_wait_ms"/);
+  assert.match(workflow,/--fan-in-wait-ms="\$fan_in_wait_ms"/);
   assert.match(workflow,/SYSTEM_AI_ADAPTIVE_RESERVE_MAX=/);
   assert.match(workflow,/for attempt in 1 2 3 4 5 6 7 8; do/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY=/);
