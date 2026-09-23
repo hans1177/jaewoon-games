@@ -9,7 +9,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 34,
+  "phase4GeneralizationDrills": 36,
   "drills": [
     {
       "id": "review-fail_1agpu1k",
@@ -786,6 +786,44 @@
       "mayPromoteGeneralization": false
     },
     {
+      "id": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289-control",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_694d98ebd713acfd3b0a9289",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289",
+      "phase4PairId": "phase4-pair-14k4xov",
+      "phase4Role": "CONTROL",
+      "holdoutGameId": "amusement-tycoon",
+      "targetEngine": "roblox",
+      "unseenProblemFingerprint": "phase4-unseen-8ya7wp",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289-challenger",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_694d98ebd713acfd3b0a9289",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289",
+      "phase4PairId": "phase4-pair-14k4xov",
+      "phase4Role": "CHALLENGER",
+      "holdoutGameId": "amusement-tycoon",
+      "targetEngine": "roblox",
+      "unseenProblemFingerprint": "phase4-unseen-8ya7wp",
+      "mayPromoteGeneralization": false
+    },
+    {
       "id": "phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-control",
       "kind": "CAPABILITY_GENERALIZATION_SCREEN",
       "priority": "low",
@@ -1044,7 +1082,7 @@
       ]
     },
     {
-      "id": "gap-character_arc-l2",
+      "id": "gap-character_arc-l3",
       "kind": "CHARACTER_ARC_DRILL",
       "priority": "low",
       "productionPreemptible": true,

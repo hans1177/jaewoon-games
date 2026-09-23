@@ -273,9 +273,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-character_arc-l2-g1",
+      "id": "mastery-character_arc-l3-g1",
       "track": "CHARACTER_ARC",
-      "level": 2,
+      "level": 3,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -943,6 +943,46 @@
       "authority": "practice-and-measurement-only"
     },
     {
+      "id": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_694d98ebd713acfd3b0a9289",
+      "sourceGameId": "cozy-island",
+      "targetEngine": "roblox",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-14k4xov",
+      "unseenProblemFingerprint": "phase4-unseen-8ya7wp",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
       "id": "phase4-generalization-capability_ctrace_e24add62615bf96a065576ab",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -983,6 +1023,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 17,
+  "phase4GeneralizationCases": 18,
   "authority": "practice-and-measurement-only"
 }
