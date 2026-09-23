@@ -109,12 +109,15 @@ test('unrelated changed game id does not mutate the target item',()=>{
 });
 
 
-test('source drift workflow avoids full repository history checkout while fetching exact before sha on demand',()=>{
+test('source drift workflow avoids full history and fetches exact event diff commits while binding current main',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
   assert.match(workflow,/fetch-depth:\s*1/);
   assert.match(workflow,/fetch-tags:\s*false/);
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
   assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$BEFORE_SHA"/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$CURRENT_SHA"/);
+  assert.match(workflow,/id: main[\s\S]*git rev-parse HEAD/);
+  assert.match(workflow,/SOURCE_REVISION: \$\{\{ steps\.main\.outputs\.sha \}\}/);
 });
 
 test('changed-source workflow binds homepage sync dependencies from main',()=>{
