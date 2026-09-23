@@ -36,7 +36,7 @@ assert.equal(roadmap.fortniteUefn.learningAllowed,true);
 assert.equal(roadmap.fortniteUefn.ownerStartRequired,true);
 assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.FORTNITE_UEFN.state,'OWNER_HOLD');
 assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.FORTNITE_UEFN.verifiedLearningCollectionContinues,true);
-assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
 assert.equal(lifecycle.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(lifecycle.humanDocumentRequired,false);
 assert.equal(lifecycle.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
