@@ -3,7 +3,6 @@ name: Company Central Policy Contract QA
 on:
   pull_request:
     paths:
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-log-map.json'
@@ -95,7 +94,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-log-map.json'
