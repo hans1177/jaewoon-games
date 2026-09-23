@@ -714,7 +714,7 @@ function presentationStagesForProject(project={}){
 const PRESENTATION_EVOLUTION_SIGNAL_PRIORITY=Object.freeze({OWNER_CHANGE_REQUEST:0,RUNTIME_CAPTURE_COMPARISON:1,VISUAL_DEBT:2,PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE:3,INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK:4});
 const PRESENTATION_EVOLUTION_PASSES=Object.freeze(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 function presentationRelevantText(value=''){
-  return /(?:graphics?|visual|presentation|asset|model|character|monster|enemy|boss|map|world|environment|background|terrain|material|lighting|animation|motion|move|idle|walk|run|turn|attack|hit|death|impact|vfx|effect|particle|trail|audio|music|bgm|sound|sfx|camera|frame|fps|performance|mobile|readability|placeholder|primitive|silhouette|style|cinematic|그래픽|비주얼|연출|에셋|모델|캐릭터|몬스터|몹|보스|맵|환경|배경|재질|조명|애니|움직임|모션|공격 ?모션|피격|사망|이펙트|효과|음악|브금|사운드|카메라|프레임|성능)/i.test(clean(value));
+  return /(?:graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|idle|walk|run|turn|impact|vfx|effect|particle|trail|audio|music|bgm|sound|sfx|camera|frame|fps|performance|mobile|readability|placeholder|primitive|silhouette|style|cinematic|art.?direction|design|detail|그래픽|비주얼|연출|에셋|모델|환경|배경|재질|조명|애니|움직임|모션|공격 ?모션|이펙트|효과|음악|브금|사운드|카메라|프레임|성능|가독성|플레이스홀더|실루엣|스타일|시네마틱|디자인|외형|묘사|디테일|컨셉)/i.test(clean(value));
 }
 function graphicsEvolutionAffectedPasses(text=''){
   const value=clean(text),passes=[];
