@@ -1,5 +1,5 @@
 {
-  "version": 295,
+  "version": 296,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -15421,7 +15421,232 @@
       },
       "strictDesignReviewRunsInParallel": true,
       "strictDesignReviewMayImproveActiveDevelopment": true,
-      "strictDesignReviewCannotRevokeAlreadyStartedPlatformDevelopmentWithoutConcreteHardFailure": true
+      "strictDesignReviewCannotRevokeAlreadyStartedPlatformDevelopmentWithoutConcreteHardFailure": true,
+      "continuousIntelligentDesignEvolution": {
+        "version": 1,
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "authority": "OWNER_DIRECTIVE_2026-09-23",
+        "objective": "CONTINUOUSLY_STABILIZE_UNDERSTAND_REDRAW_COMPARE_VALIDATE_LEARN_AND_EXPAND_GAME_DESIGN_WITHOUT_RANDOM_IDENTITY_DRIFT_OR_TERMINAL_DESIGN_COMPLETION",
+        "implementationBindings": [
+          "tools/vibe2-design-intelligence.mjs::buildVibeDesignIntelligence",
+          "tools/company-design-cycle.mjs",
+          "tools/vibe2-learning-motor.mjs"
+        ],
+        "loop": [
+          "STABILIZE",
+          "UNDERSTAND",
+          "OBSERVE",
+          "DIAGNOSE",
+          "PRIORITIZE",
+          "BLUEPRINT",
+          "PROPOSE",
+          "COMPARE",
+          "REVISE",
+          "VALIDATE",
+          "LEARN",
+          "REPLAN",
+          "EXPAND"
+        ],
+        "unlimitedRevisionGenerations": true,
+        "artificialRevisionCapForbidden": true,
+        "designPassIsCheckpointNotTerminal": true,
+        "runsDuringActiveDevelopment": true,
+        "runsAfterInternalRelease": true,
+        "runsAfterPublicRelease": true,
+        "releaseAuthority": false,
+        "stabilityFirst": {
+          "highestPriorityClasses": [
+            "PROGRESS_BLOCKER",
+            "SAVE_OR_LOAD_FAILURE",
+            "SOFTLOCK",
+            "CRASH_OR_RUNTIME_FAILURE",
+            "INPUT_OR_UI_BLOCKER",
+            "MULTIPLAYER_DESYNC",
+            "COMBAT_HIT_OR_STATE_CORRUPTION",
+            "SEVERE_PERFORMANCE_REGRESSION",
+            "REPEATED_PLAYER_VISIBLE_BUG"
+          ],
+          "minorBugAccumulationMustBeScoredByFrequencyAndPlayerExposure": true,
+          "creativeExpansionMayNotStarveConcreteStabilityRepair": true,
+          "noKnownStabilitySignalAction": "CONTINUE_DESIGN_OPPORTUNITY_EVALUATION"
+        },
+        "ownerIntentUnderstanding": {
+          "explicitOwnerIntentHighestAuthority": true,
+          "literalTextAndLikelyIntentBothTracked": true,
+          "currentGameStateAndPriorRevisionsMustBeRead": true,
+          "uncertaintyMustBeRecorded": true,
+          "highConfidenceMayProceedWithoutClarificationWhenExistingEvidenceResolvesIntent": true,
+          "semanticTextDeduplicationForbiddenForOwnerRequests": true,
+          "eachExplicitOwnerRequestOccurrenceIsNewDesignSignal": true,
+          "repeatedIdenticalOwnerTextCreatesNewRevision": true,
+          "unlimitedOwnerRepeatsAllowed": true,
+          "repeatedOwnerRequestMeaning": "PRIOR_DESIGN_ATTEMPT_STILL_INSUFFICIENT_FOR_OWNER_INTENT",
+          "repeatedOwnerRequestRequiresAlternativeReview": true,
+          "minimumAlternativesOnRepeatedOwnerRequest": 2
+        },
+        "identityAndCreativeFreedom": {
+          "baseConceptIsReferenceNotPrison": true,
+          "identityAnchors": [
+            "CORE_GAME_IDENTITY",
+            "PLAYER_FANTASY",
+            "CORE_LOOP_MEANING",
+            "WORLD_IDENTITY",
+            "PROGRESSION_MEANING",
+            "SAVE_MEANING",
+            "MULTIPLAYER_INTENT",
+            "OWNER_EXPLICIT_LOCKS"
+          ],
+          "preserveAnchorsByDefault": true,
+          "creativeDeviationAllowed": true,
+          "genreTransitionChallengeAllowed": true,
+          "coreIdentityReplacementRequiresApprovedRedesignEvidence": true,
+          "radicalChallengeMustRemainReversibleUntilValidated": true,
+          "experimentMayNotSilentlyOverwritePassingBaseline": true,
+          "successfulChallengeMayBecomeNewApprovedBaseline": true
+        },
+        "detailedBlueprint": {
+          "requiredForMaterialDesignChange": true,
+          "minimumPlans": 2,
+          "planLabels": [
+            "PLAN_A",
+            "PLAN_B"
+          ],
+          "planMayIncludeGenreChange": true,
+          "requiredAxes": [
+            "CONCEPT_AND_PLAYER_FANTASY",
+            "CORE_LOOP_AND_SESSION_RHYTHM",
+            "MAP_TOPOLOGY_AND_REGION_ROLES",
+            "LANDMARKS_AND_TRAVERSAL",
+            "ENEMY_ECOSYSTEM_AND_COUNTERPLAY",
+            "BOSS_AND_SIGNATURE_MOMENTS",
+            "PROGRESSION_AND_ECONOMY",
+            "QUEST_STORY_OR_EVENT_FLOW_WHEN_RELEVANT",
+            "FAILURE_RETRY_AND_RECOVERY",
+            "PLATFORM_ADAPTATION",
+            "IMPLEMENTATION_SCOPE",
+            "VALIDATION_PLAN"
+          ],
+          "highImpactChangeMinimumAlternatives": 2,
+          "winnerRule": "HIGHEST_EXPECTED_PLAYER_VALUE_AND_DISTINCTNESS_WITH_ACCEPTABLE_STABILITY_REGRESSION_AND_IMPLEMENTATION_RISK"
+        },
+        "antiMonotony": {
+          "enabled": true,
+          "colorOnlyOrStatOnlyContentDifferentiationInsufficient": true,
+          "mapRegionsMustDifferByGameplayRoleNotDecorationOnly": true,
+          "requiredRegionDifferentiators": [
+            "TRAVERSAL",
+            "RISK_REWARD",
+            "LANDMARK",
+            "ENCOUNTER_PATTERN",
+            "RESOURCE_OR_OBJECTIVE_PRESSURE",
+            "ATMOSPHERE_OR_STORY_CONTEXT"
+          ],
+          "enemiesMustDifferByAtLeastTwoOf": [
+            "BEHAVIOR",
+            "COUNTERPLAY",
+            "POSITIONING_PRESSURE",
+            "ATTACK_TIMING",
+            "MOBILITY",
+            "GROUP_ROLE",
+            "SILHOUETTE_OR_MOTION_IDENTITY",
+            "REWARD_MEANING"
+          ],
+          "repeatedMapMonsterQuestTemplateCloningMustCreateVarietyDebt": true,
+          "varietyDebtMayTriggerAutonomousDesignRevision": true
+        },
+        "narrativeAndDialogue": {
+          "appliesWhenStoryDialogueQuestCharacterOrCinematicNarrativeIsRelevant": true,
+          "characterVoiceProfileRequired": true,
+          "voiceProfileAxes": [
+            "GRAMMAR_AND_LANGUAGE_QUALITY",
+            "FORMALITY_AND_HONORIFIC_REGISTER",
+            "VOCABULARY_AND_SENTENCE_RHYTHM",
+            "CHARACTER_BACKGROUND_AND_EDUCATION_WHEN_RELEVANT",
+            "RELATIONSHIP_DEPENDENT_SPEECH_SHIFT",
+            "EMOTIONAL_STATE",
+            "SCENE_OBJECTIVE",
+            "KNOWN_INFORMATION_BOUNDARY",
+            "SUBTEXT",
+            "INTERRUPTION_SILENCE_AND_HESITATION_WHEN_NATURAL"
+          ],
+          "allCharactersSameVoiceForbidden": true,
+          "expositionDumpDialogueDiscouraged": true,
+          "characterMayNotKnowUnlearnedInformation": true,
+          "sceneContractRequired": [
+            "SCENE_PURPOSE",
+            "CHARACTER_GOALS",
+            "CONFLICT_OR_TENSION",
+            "INFORMATION_ASYMMETRY",
+            "TURN_OR_REVERSAL_WHEN_RELEVANT",
+            "FORESHADOWING",
+            "PAYOFF",
+            "STATE_CHANGE_AFTER_SCENE"
+          ],
+          "foreshadowingRequiresTrackedPayoffOrIntentionalUnresolvedState": true,
+          "twistMustBeSupportedByPriorEvidenceAndCharacterKnowledge": true,
+          "realismMeansCharacterConsistentSpeechNotGenericNaturalLanguageOnly": true
+        },
+        "referenceAndHomage": {
+          "publicDomainClassicsMayInformMotifStructureThemeAndArchetype": true,
+          "directUseRequiresPublicDomainOrClearRights": true,
+          "protectedModernWorksMayInformOnlyAbstractTechniquesAndHighLevelPatterns": true,
+          "protectedExpressionCharacterDialogueSceneSequenceAndDistinctiveTextCopyForbidden": true,
+          "multiReferenceGeneralizationPreferred": true,
+          "gameSpecificReinterpretationRequired": true,
+          "referenceMustNotReplaceOriginalGameIdentity": true
+        },
+        "autonomousSignals": [
+          "STRICT_DESIGN_REVISE_OR_HARD_FAILURE",
+          "PLAYTEST_PROGRESS_OR_CONFUSION_EVIDENCE",
+          "CORE_FUN_WEAKNESS",
+          "BUG_CLUSTER_OR_SOFTLOCK",
+          "RETENTION_OR_SESSION_PACING_GAP_WHEN_VERIFIED",
+          "CONTENT_VARIETY_DEBT",
+          "MAP_OR_ENEMY_MONOTONY",
+          "NARRATIVE_DIALOGUE_CONTINUITY_FAILURE",
+          "UNRESOLVED_FORESHADOWING_OR_PAYOFF_GAP",
+          "PLATFORM_FIT_PROBLEM",
+          "VERIFIED_CREATIVE_OPPORTUNITY"
+        ],
+        "automaticSignalFingerprintDeduplicationRequired": true,
+        "ownerRequestSemanticDeduplicationForbidden": true,
+        "prioritization": {
+          "order": [
+            "STABILITY_AND_PROGRESS",
+            "OWNER_EXPLICIT_REQUEST",
+            "CORE_FUN_AND_PLAYER_UNDERSTANDING",
+            "SESSION_PACING_AND_PROGRESSION",
+            "CONTENT_VARIETY_AND_WORLD_DEPTH",
+            "NARRATIVE_CHARACTER_AND_DIALOGUE",
+            "CREATIVE_CHALLENGER",
+            "SECONDARY_POLISH"
+          ],
+          "scoreDimensions": [
+            "SEVERITY",
+            "PLAYER_EXPOSURE_FREQUENCY",
+            "PROGRESS_BLOCKING",
+            "OWNER_PRIORITY",
+            "REPEATED_OWNER_REQUEST",
+            "CORE_LOOP_VISIBILITY",
+            "EXPECTED_FUN_OR_CLARITY_GAIN",
+            "DISTINCTNESS_GAIN",
+            "IMPLEMENTATION_COST",
+            "REGRESSION_RISK",
+            "REVERSIBILITY"
+          ]
+        },
+        "compareValidateLearn": {
+          "compareAgainstLastPassingDesignCheckpoint": true,
+          "beforeAfterDesignEvidenceRequiredForMaterialChange": true,
+          "actualPlayEvidencePreferredOverDocumentScoreAlone": true,
+          "strictDesignScoreAloneCannotProvePlayerValueImprovement": true,
+          "failedOrInsufficientRevisionMayTryDifferentApproach": true,
+          "positiveAndNegativeVerifiedOutcomesReturnToExistingLearningMotor": true,
+          "gameSpecificLearningPreferredBeforeCrossGameGeneralization": true,
+          "exactGameValuesMayNotBecomeGlobalRulesWithoutRepeatedVerification": true
+        },
+        "documentCodeSynchronizationRequired": true
+      }
     },
     "development": {
       "concurrentTargets": [
