@@ -1,5 +1,6 @@
 // 파일명: tools/design-only-promotion-sync.mjs
-// DESIGN_BASELINE_READY + strict design PASS(80+) 게임을 아트북 선행 없이 DEVELOPMENT_CONFIRMED로 승격하고 즉시 Web 검증으로 보낸다.
+// 중앙 direct-native 정책에서는 최소 공통 설계 + Roblox/Unity 프로필이 준비되면 즉시 DEVELOPMENT_CONFIRMED로 승격한다.
+// Strict Design 검토는 개발 입장 게이트가 아니라 병렬 품질 개선으로 계속한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -194,9 +195,16 @@ function reconcileConfirmedSeedQueue({queue,seed,design,stamp,forceFreshBaseline
 function directNativePolicy(root='.'){
   const roadmap=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{});
   const contract=roadmap?.directNativeDualPlatformDevelopment||{};
+  const webSurface=contract?.unityWebValidationSurface||{};
   return contract?.status==='OWNER_DIRECT_LOCKED'
     &&contract?.mode==='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'
-    &&contract?.unityWebEnabled===false
+    &&contract?.webDevelopmentStageRemoved===true
+    &&contract?.strictDesignScoreRequiredForDevelopmentAdmission===false
+    &&contract?.unityWebEnabled===true
+    &&contract?.unityWebRequired===false
+    &&contract?.unityWebGateRequired===false
+    &&contract?.unityWebMode==='VALIDATION_SURFACE_ONLY'
+    &&webSurface?.requiredForDevelopmentAdmission===false
     &&Array.isArray(contract?.supportedDevelopmentPlatforms)
     &&contract.supportedDevelopmentPlatforms.includes('ROBLOX')
     &&contract.supportedDevelopmentPlatforms.includes('UNITY');
