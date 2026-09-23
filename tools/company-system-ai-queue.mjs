@@ -389,8 +389,9 @@ export function reviewSecurityRecovery(queueInput,recoveryInput,{recoveryId='',d
   return{queue:{...queue,tasks},recovery:{...recovery,tasks:recoveryTasks},taskId,recoveryId:id,decision:review};
 }
 
-export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId=''}={}){
-  const queue=normalizeSystemAiQueue(queueInput);
+export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId='',at=Date.now()}={}){
+  const compacted=coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at});
+  const queue=compacted.queue;
   const taskId=clean(id);
   if(!taskId)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TARGET_ID_REQUIRED');
   const task=queue.tasks.find(x=>x.id===taskId);
@@ -402,10 +403,10 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId=''}=
   if(!dependencyReady(task,queue))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_DEPENDENCY_NOT_READY:'+taskId);
   const active=queue.tasks.filter(t=>t.status==='running'&&t.id!==taskId);
   if(active.some(other=>overlap(task,other)))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ACTIVE_FILE_CONFLICT:'+taskId);
-  const stamp=now();
-  const rid=clean(reservationId)||`system-ai-security-recovery:${Date.now()}`;
+  const stamp=new Date(at).toISOString();
+  const rid=clean(reservationId)||`system-ai-security-recovery:${at}`;
   const tasks=queue.tasks.map(t=>t.id===taskId?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired};
 }
 
 export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now()}={}){
@@ -439,11 +440,12 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
       evidence:unique([...(t.evidence||[]),`system-ai-impact-score:${impact.score}`,`system-ai-blocked-task-count:${impact.blockedTaskCount}`,`system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`,...(impact.commonBottleneck&&impact.signature?[`system-ai-representative-canary:${impact.signature}`]:[]),...(t.previousReservationId?[`system-ai-handoff-to-reservation:${rid}`]:[])])
     };
   });
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
 }
 export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now()}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
-  const queue=reclaimed.queue,active=queue.tasks.filter(t=>t.status==='running');
+  const compacted=coalesceQueuedSystemAiDuplicateRepairs(reclaimed.queue,{at});
+  const queue=compacted.queue,active=queue.tasks.filter(t=>t.status==='running');
   const wanted=unique(ids);
   if(!wanted.length)throw new Error('SYSTEM_AI_TARGET_IDS_REQUIRED');
   const byId=new Map(queue.tasks.map(t=>[t.id,t]));
@@ -459,7 +461,7 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',lease
   const chosenIds=new Set(chosen.map(x=>x.id)),stamp=now();
   const rid=clean(reservationId)||`system-ai-target:${Date.now()}`;
   const tasks=queue.tasks.map(t=>chosenIds.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired};
 }
 export function applySystemAiResults(queueInput,results=[]){
   let queue=normalizeSystemAiQueue(queueInput);const byResult=new Map((results||[]).map(r=>[clean(r.taskId),r]).filter(([id])=>id));
