@@ -1,5 +1,5 @@
 {
-  "version": 123,
+  "version": 124,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -89,7 +89,11 @@
       "VIBE_SOURCE_WORKER",
       "INCREMENTAL_QA",
       "PERFORMANCE_SANITY",
-      "FAN_IN_REGRESSION"
+      "FAN_IN_REGRESSION",
+      "CAUSAL_GAME_ERROR_REPAIR",
+      "SCENARIO_AND_INVARIANT_QA",
+      "SAVE_AND_MULTIPLAYER_COMPATIBILITY_QA",
+      "FULL_REGRESSION_FAN_IN"
     ],
     "assetProduction": [
       "GRAPHICS_PRODUCTION",
@@ -134,7 +138,22 @@
         "assets/vibe-visual-quality-gate.js"
       ],
       "siblingTopLevelVisualPipelinesForbidden": true
-    }
+    },
+    "gameErrorRepair": [
+      "CAPTURE_FAILURE_AND_EXACT_SIGNATURE",
+      "PREPATCH_SCENARIO_REPRODUCTION",
+      "DESIGN_IMPLEMENTATION_MIXED_CAUSE_CLASSIFICATION",
+      "RESPONSIBLE_SYSTEM_AND_FILE_BINDING",
+      "LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT_COMPARISON_WHEN_AVAILABLE",
+      "DIRECT_RESPONSIBLE_SYSTEM_REPAIR",
+      "ORIGINAL_SCENARIO_REPLAY",
+      "GAME_SPECIFIC_INVARIANT_VALIDATION",
+      "SAVE_LOAD_MIGRATION_VALIDATION_WHEN_APPLICABLE",
+      "TWO_PLUS_PLAYER_LIFECYCLE_VALIDATION_WHEN_APPLICABLE",
+      "IMPACT_SCOPED_QA",
+      "FULL_REGRESSION_FAN_IN",
+      "ACCEPT_OR_ROLLBACK_REQUEUE"
+    ]
   },
   "workerRoles": {
     "VIBE2_VIBE3": "GAME_SOURCE_IMPLEMENTATION_OWNER",
@@ -166,7 +185,10 @@
     "currentMainRebindRequiredAfterCentralPolicyChange": true,
     "vibeWorkerPreflightMustUseCurrentMainPolicySha": true,
     "afterCentralDocumentWrite": "RELOAD_ROADMAP_LOG_ARCHITECTURE_SECURITY_AND_VERIFY_SHARED_CONTEXT",
-    "shadowDocumentationSystemForbidden": true
+    "shadowDocumentationSystemForbidden": true,
+    "gameErrorRepairContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair",
+    "gameErrorRepairMustRebindCurrentMainPolicy": true,
+    "gameErrorRepairCannotCreateShadowQaOrRepairPipeline": true
   },
   "forbidden": [
     "WORK_WITHOUT_SHARED_CONTEXT",
