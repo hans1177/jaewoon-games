@@ -1,5 +1,5 @@
 {
-  "version": 101,
+  "version": 102,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T10:21:00+09:00",
+  "updatedAt": "2026-09-23T10:23:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2755,7 +2755,12 @@
         "canaryWaitState": "DEPENDENCY_GATED_NOT_FAILURE",
         "canaryWaitRecursiveRecoveryEscalation": false,
         "supersededDuplicateRecursiveRecoveryEscalation": false,
-        "canaryWaitRecoveryRecursionRevision": "1c2275c3cd6e725dcef00ecdfee80dd125f756ca"
+        "canaryWaitRecoveryRecursionRevision": "1c2275c3cd6e725dcef00ecdfee80dd125f756ca",
+        "repairWorkIdentity": "tools/company-system-ai-queue.mjs::systemAiRepairWorkIdentity",
+        "repairWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
+        "supersededRepairDependencyRewire": "TO_CANONICAL_REPAIR_TASK",
+        "supersededRepairBlockerRewire": "TO_CANONICAL_REPAIR_TASK",
+        "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e"
       },
       "bottleneckSensor": {
         "queueSources": [
@@ -2845,10 +2850,10 @@
       "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
     },
     "latestImplementationSync": {
-      "revision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
+      "revision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
       "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
-      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_METRIC_CONFIRMATION",
-      "testRevision": "eb55d7a130b819c6fd7863b947bb779bc91c2378"
+      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
+      "testRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9"
     }
   }
 }
