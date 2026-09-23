@@ -7,6 +7,8 @@ on:
     paths:
       - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/unity-android-regression.yml'
+      - '.build-requests/unity/**'
+      - 'unity-games/**'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-development-unity-platform.mjs'
