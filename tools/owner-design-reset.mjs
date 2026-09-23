@@ -25,15 +25,16 @@ export function ownerDesignResetRequestForGame(gameId,file=OWNER_DESIGN_RESET_FI
 
 function ownerDesignResetEventForGame(gameId,file=OWNER_DESIGN_RESET_FILE){
   const id=clean(gameId),queue=loadOwnerDesignResetQueue(file),rows=Array.isArray(queue.requests)?queue.requests:[];
-  let match=null,index=-1;
+  let match=null,index=-1,sequence=0,matchedSequence=0;
   for(let i=0;i<rows.length;i++){
     const request=rows[i];
     if(clean(request?.status).toUpperCase()!=='ACTIVE'||clean(request?.gameId)!==id||!request?.seed)continue;
-    match=request;index=i;
+    sequence+=1;
+    match=request;index=i;matchedSequence=sequence;
   }
   if(!match)return null;
-  const eventId=clean(match.requestInstanceId||match.requestId||match.requestedAt||match.updatedAt)||`${clean(match.revision)||'OWNER_RESET'}#${index+1}`;
-  return{request:match,index,eventId};
+  const eventId=clean(match.requestInstanceId||match.requestId||match.requestedAt||match.updatedAt)||`${clean(match.revision)||'OWNER_RESET'}#${matchedSequence}`;
+  return{request:match,index,eventId,sequence:matchedSequence};
 }
 
 export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE){
@@ -47,7 +48,7 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
   seed.generation='OWNER_REDESIGN_RESET';
   seed.ownerResetRevision=clean(request.revision||seed.ownerResetRevision||'OWNER_RESET');
   seed.ownerRequestInstanceId=event.eventId;
-  seed.ownerRequestSequence=event.index+1;
+  seed.ownerRequestSequence=event.sequence;
   seed.ownerRepeatedRequestCreatesNewDesignRevision=true;
   seed.productionClass='DESIGN_ONLY';
   seed.productionClassSource='OWNER_REDESIGN_RESET_2026-09-13';
