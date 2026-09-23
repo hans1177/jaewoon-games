@@ -75,6 +75,11 @@ test('PARALLELISM_CONTRACT_GATE keeps GAME_PRIMARY internally unbounded and bind
   assert.ok(core.includes('VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'));
   assert.ok(core.includes('vibe2-queue-control.mjs reserve-batch'));
   assert.ok(core.includes('fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"'));
+  assert.ok(core.includes('  model_cache:\n    needs: reserve'));
+  assert.ok(core.includes('  worker:\n    needs: reserve'));
+  assert.ok(!core.includes('needs: [reserve, model_cache]'));
+  assert.ok(core.includes('VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'));
+  assert.ok(core.includes('VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL'));
   assert.equal(wave.gamePrimaryFixedInternalCap,null);
   assert.equal(wave.telemetryDenominator,'CURRENT_ATOMIC_RESERVATION_CAP');
   assert.equal(wave.mode,'ATOMIC_NEURON_STREAM');
