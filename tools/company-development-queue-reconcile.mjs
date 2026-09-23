@@ -184,6 +184,11 @@ export function reconcileDevelopmentQueue({root='.'}={}){
 
   next.sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
   const before=JSON.stringify(queue.items);
+  const metadataChanged=clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE
+    ||queue.developmentGameWipMax!==null
+    ||clean(queue.nativeDevelopmentPolicy)!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT'
+    ||clean(queue.reconciliationPolicy)!=='DIRECT_NATIVE_MINIMUM_DESIGN_CATALOG_RECONCILE'
+    ||Object.hasOwn(queue,'webValidationPolicy');
   queue.items=next;
   queue.routerPolicy=MACHINE_POLICY_SOURCE;
   queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
@@ -191,9 +196,6 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   queue.reconciliationPolicy='DIRECT_NATIVE_MINIMUM_DESIGN_CATALOG_RECONCILE';
   delete queue.webValidationPolicy;
   const after=JSON.stringify(queue.items);
-  const metadataChanged=clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE
-    ||queue.developmentGameWipMax!==null
-    ||clean(queue.nativeDevelopmentPolicy)!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
   const changed=before!==after||duplicateRemoved>0||metadataChanged;
   if(changed){
     queue.updatedAt=stamp;
