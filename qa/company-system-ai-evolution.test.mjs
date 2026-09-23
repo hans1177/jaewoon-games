@@ -109,7 +109,7 @@ test('exact duplicate bottleneck repairs coalesce before reservation without los
     },
     {
       id:'dependent',status:'queued',priority:'normal',taskType:'ordinary',gameId:'demo',
-      goal:'wait for canonical repair',responsibleFiles:['tools/dependent.mjs'],
+      goal:'wait for canonical repair',responsibleFiles:['web-games/demo/index.html'],
       dependencies:['repair-b','repair-c'],blocker:'shared-signature-canary-pending:repair-c',
       createdAt:'2026-09-23T00:05:00Z'
     }
@@ -174,7 +174,7 @@ test('historical superseded repair dependency is rewired without new duplicate c
     },
     {
       id:'dependent',status:'queued',priority:'normal',taskType:'ordinary',gameId:'demo',
-      goal:'wait for repair',responsibleFiles:['tools/dependent.mjs'],
+      goal:'wait for repair',responsibleFiles:['web-games/demo/index.html'],
       dependencies:['repair-old'],blocker:'shared-signature-canary-pending:repair-old',createdAt:'2026-09-23T00:02:00Z'
     }
   ]};
@@ -191,7 +191,7 @@ test('targeted reserve repairs historical superseded dependency before selecting
   const queue={tasks:[
     {id:'repair-a',status:'done',taskType:'bottleneck-repair',goal:'repair',responsibleFiles:['tools/repair.mjs'],createdAt:'2026-09-23T00:00:00Z'},
     {id:'repair-old',status:'cancelled',taskType:'bottleneck-repair',goal:'repair',responsibleFiles:['tools/repair.mjs'],blocker:'system-ai-duplicate-repair-superseded',lastOutcome:'SUPERSEDED_DUPLICATE_WORK',evidence:['system-ai-duplicate-repair-superseded-by:repair-a'],createdAt:'2026-09-23T00:01:00Z'},
-    {id:'target',status:'queued',goal:'target',responsibleFiles:['tools/target.mjs'],dependencies:['repair-old'],blocker:'shared-signature-canary-pending:repair-old',createdAt:'2026-09-23T00:02:00Z'}
+    {id:'target',status:'queued',goal:'target',responsibleFiles:['tools/repair.mjs'],dependencies:['repair-old'],blocker:'shared-signature-canary-pending:repair-old',createdAt:'2026-09-23T00:02:00Z'}
   ]};
   const result=reserveSystemAiTargets(queue,{ids:['target'],reservationId:'targeted:1',at:Date.parse('2026-09-23T00:10:00Z')});
   assert.equal(result.rewired,1);
@@ -199,6 +199,31 @@ test('targeted reserve repairs historical superseded dependency before selecting
   const target=result.queue.tasks.find(x=>x.id==='target');
   assert.deepEqual(target.dependencies,['repair-a']);
   assert.equal(target.status,'running');
+});
+
+test('cross-scope canary dependency is removed while explicit shared infrastructure dependency is preserved',()=>{
+  const queue={tasks:[
+    {
+      id:'local-repair',status:'queued',priority:'critical',taskType:'bottleneck-repair',
+      goal:'repair local game source',responsibleFiles:['web-games/fantasy/index.html'],createdAt:'2026-09-23T00:00:00Z'
+    },
+    {
+      id:'shared-repair',status:'queued',priority:'critical',taskType:'bottleneck-repair',
+      goal:'repair shared worker infrastructure',responsibleFiles:['tools/company-system-ai-worker.mjs'],
+      evidence:['shared-system-ai-infrastructure-repair:YES'],createdAt:'2026-09-23T00:00:00Z'
+    },
+    {
+      id:'marketing',status:'queued',priority:'normal',taskType:'marketing',
+      goal:'prepare marketing',responsibleFiles:['company-learning/marketing/demo/latest.json'],
+      dependencies:['local-repair','shared-repair'],blocker:'shared-signature-canary-pending:local-repair',createdAt:'2026-09-23T00:01:00Z'
+    }
+  ]};
+  const result=coalesceQueuedSystemAiDuplicateRepairs(queue,{at:Date.parse('2026-09-23T00:10:00Z')});
+  assert.equal(result.scopeReconciled,1);
+  const marketing=result.queue.tasks.find(x=>x.id==='marketing');
+  assert.deepEqual(marketing.dependencies,['shared-repair']);
+  assert.equal(marketing.blocker,null);
+  assert.ok(marketing.evidence.includes('system-ai-cross-scope-canary-dependency-removed:YES'));
 });
 
 test('reserve chooses one representative canary for a shared failure signature while disjoint work stays parallel',()=>{
