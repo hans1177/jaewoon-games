@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function connectRoom(raw){",
+      "replace": "function connectRoom(raw){const room=String(raw||'').trim();if(!/^([1-9]|10)$/.test(room)){showNotice('방 번호는 1~10만 가능해');return false}if(!window.supabase?.createClient){showNotice('멀티 모듈을 불러오지 못했어');return false}await leaveRoom(false);multi.room=room;multi.joinedAt=Date.now();multi.client=window.supabase.createClient(MULTI_SUPABASE_URL,MULTI_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});multi.channel=multi.client.channel('ant-simulator:'+room,{config:{broadcast:{self:false,ack:false},presence:{key:multi.playerId}}});multi.channel.on('presence',{event:'sync'},syncPresence).on('broadcast',{event:'player-state'},({payload})=>remoteState(payload)).on('broadcast',{event:'world-state'},({payload})=>applyWorld(payload)).on('broadcast',{event:'player-attack'},({payload})=>applyPlayerAttack(payload)).on('broadcast',{event:'player-hit'},({payload})=>hitMe(payload)).on('broadcast',{event:'gather-request'},({payload})=>hostGatherRequest(payload)).on('broadcast',{event:'gather-result'},({payload})=>applyGatherResult(payload)).on('broadcast',{event:'deposit-request'},({payload})=>hostDepositRequest(payload)).on('broadcast',{event:'deposit-result'},({payload})=>applyDepositResult(payload)).subscribe(async status=>{if(status==='SUBSCRIBED'){multi.connected=true;await multi.channel.track({id:multi.playerId,joinedAt:multi.joinedAt,faction:state.faction,classId:state.classId})}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
