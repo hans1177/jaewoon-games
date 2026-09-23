@@ -24,7 +24,8 @@ test('legacy homepage policy mirror stays removed and machine roadmap remains au
   assert.equal(fs.existsSync(legacyHomepagePolicyMirror),false);
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
-  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
+  assert.equal(roadmap.centralDocumentation.legacyPolicyCleanup.status,'REMOVED_FROM_ACTIVE_REPOSITORY');
 });
 
 test('Director reviews and publishes the exact Homepage Manager candidate in one post-work stage',()=>{
