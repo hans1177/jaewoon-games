@@ -228,8 +228,22 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
   add("HealerHood",Vector3.new(2.8,1.25,2.75),Vector3.new(0,3.25,.1),Color3.fromRGB(183,209,226),Enum.Material.Fabric,Enum.PartType.Ball)
   add("HealerStaff",Vector3.new(.35,6,.35),Vector3.new(2.15,-.4,0),Color3.fromRGB(101,75,56),Enum.Material.Wood,Enum.PartType.Cylinder)
   add("HealerCrystal",Vector3.new(1,1.35,1),Vector3.new(2.15,2.65,0),Color3.fromRGB(100,218,237),Enum.Material.Neon,Enum.PartType.Ball)
+  add("HealerSatchel",Vector3.new(1.35,1.6,.65),Vector3.new(-1.35,-.55,.8),Color3.fromRGB(124,91,66),Enum.Material.Fabric)
+ elseif name=="AdvancementMaster"then
+  add("MasterMantle",Vector3.new(3.55,1,2.25),Vector3.new(0,1.25,.2),Color3.fromRGB(82,62,112),Enum.Material.Fabric,Enum.PartType.Ball)
+  add("MasterStaff",Vector3.new(.34,6.4,.34),Vector3.new(2.2,-.25,0),Color3.fromRGB(64,50,42),Enum.Material.Wood,Enum.PartType.Cylinder)
+  add("MasterRune",Vector3.new(1.1,1.1,.28),Vector3.new(2.2,3,0),Color3.fromRGB(190,136,255),Enum.Material.Neon,Enum.PartType.Ball)
+  add("MasterMask",Vector3.new(1.5,.85,.18),Vector3.new(0,2.95,-1.04),Color3.fromRGB(76,65,92),Enum.Material.Metal)
  elseif string.find(name,"Resident",1,true)or string.find(name,"AI_",1,true)then
   add("AdventurerMantle",Vector3.new(3.1,.85,2),Vector3.new(0,1.15,.2),accent,Enum.Material.Fabric,Enum.PartType.Ball)
+  local idx=tonumber(string.match(name,"%d+"))or 1
+  if idx%3==0 then
+   add("ResidentPack",Vector3.new(2,2.25,.8),Vector3.new(0,-.15,1.05),Color3.fromRGB(101,73,52),Enum.Material.Fabric)
+  elseif idx%3==1 then
+   add("ResidentCap",Vector3.new(2.25,.55,2.2),Vector3.new(0,3.75,.1),Color3.fromRGB(104,76,61),Enum.Material.Fabric,Enum.PartType.Ball)
+  else
+   add("ResidentBasket",Vector3.new(1.7,1.15,1.5),Vector3.new(2,-1,.1),Color3.fromRGB(133,96,55),Enum.Material.WoodPlanks)
+  end
  end
  return r
 end
@@ -273,20 +287,34 @@ local function decorateCharacterModel(model,classId,variant,advancementId)
   gearPart(gear,torso,"ClassShoulderR",Vector3.new(.78,.48,1.05),Vector3.new(1.25,.65,0),color,Enum.Material.Metal,Enum.PartType.Ball)
  end
  if classId=="BREAKER"then
-  local w=gearPart(gear,right,"ClassWeapon",Vector3.new(.28,5.2,.38),Vector3.new(0,-1.9,-.2),Color3.fromRGB(183,188,197),Enum.Material.Metal,nil,Vector3.new(0,0,-8));addWeaponTrail(w,color)
-  if torso then gearPart(gear,torso,"BreakerCape",Vector3.new(2.3,2.9,.16),Vector3.new(0,-.1,.72),color,Enum.Material.Fabric)end
+  local w=gearPart(gear,right,"ClassWeapon",Vector3.new(.42,5.8,.52),Vector3.new(0,-2.15,-.25),Color3.fromRGB(188,194,204),Enum.Material.Metal,nil,Vector3.new(0,0,-8));addWeaponTrail(w,color)
+  if w then gearPart(gear,w,"BreakerGuard",Vector3.new(1.65,.22,.55),Vector3.new(0,2.05,0),Color3.fromRGB(112,91,69),Enum.Material.Metal)end
+  if torso then
+   gearPart(gear,torso,"BreakerCape",Vector3.new(2.55,3.15,.16),Vector3.new(0,-.1,.78),color,Enum.Material.Fabric)
+   gearPart(gear,torso,"BreakerPauldron",Vector3.new(3.5,.8,1.8),Vector3.new(0,.95,.1),Color3.fromRGB(72,73,80),Enum.Material.Metal,Enum.PartType.Ball)
+  end
  elseif classId=="SHADOW"then
-  local w1=gearPart(gear,right,"ClassWeaponR",Vector3.new(.2,2.15,.26),Vector3.new(0,-.8,-.15),Color3.fromRGB(176,180,190),Enum.Material.Metal,nil,Vector3.new(0,0,-12));addWeaponTrail(w1,color)
-  local w2=gearPart(gear,left,"ClassWeaponL",Vector3.new(.2,2.15,.26),Vector3.new(0,-.8,-.15),Color3.fromRGB(176,180,190),Enum.Material.Metal,nil,Vector3.new(0,0,12));addWeaponTrail(w2,color)
-  if head then gearPart(gear,head,"ShadowHood",Vector3.new(2.25,1.05,2.2),Vector3.new(0,.42,.08),color,Enum.Material.Fabric,Enum.PartType.Ball)end
+  local w1=gearPart(gear,right,"ClassWeaponR",Vector3.new(.22,2.45,.3),Vector3.new(0,-.9,-.18),Color3.fromRGB(184,188,198),Enum.Material.Metal,nil,Vector3.new(0,0,-12));addWeaponTrail(w1,color)
+  local w2=gearPart(gear,left,"ClassWeaponL",Vector3.new(.22,2.45,.3),Vector3.new(0,-.9,-.18),Color3.fromRGB(184,188,198),Enum.Material.Metal,nil,Vector3.new(0,0,12));addWeaponTrail(w2,color)
+  if head then
+   gearPart(gear,head,"ShadowHood",Vector3.new(2.3,1.1,2.25),Vector3.new(0,.42,.08),color,Enum.Material.Fabric,Enum.PartType.Ball)
+   gearPart(gear,head,"ShadowEarL",Vector3.new(.42,.95,.42),Vector3.new(-.68,1.02,.1),color,Enum.Material.Fabric,nil,Vector3.new(0,0,-14))
+   gearPart(gear,head,"ShadowEarR",Vector3.new(.42,.95,.42),Vector3.new(.68,1.02,.1),color,Enum.Material.Fabric,nil,Vector3.new(0,0,14))
+  end
  elseif classId=="RUNE"then
-  local staff=gearPart(gear,right,"ClassWeapon",Vector3.new(.22,5,.22),Vector3.new(0,-1.8,0),Color3.fromRGB(92,70,55),Enum.Material.Wood,nil,Vector3.new(0,0,-5))
-  if staff then local orb=gearPart(gear,staff,"RuneOrb",Vector3.new(.8,.8,.8),Vector3.new(0,2.5,0),color,Enum.Material.Neon,Enum.PartType.Ball);if orb then orb.Name="RuneGlow"end end
-  if torso then gearPart(gear,torso,"RuneMantle",Vector3.new(2.45,.72,1.45),Vector3.new(0,.72,.08),color,Enum.Material.Fabric,Enum.PartType.Ball)end
+  local staff=gearPart(gear,right,"ClassWeapon",Vector3.new(.24,5.25,.24),Vector3.new(0,-1.9,0),Color3.fromRGB(92,70,55),Enum.Material.Wood,nil,Vector3.new(0,0,-5))
+  if staff then local orb=gearPart(gear,staff,"RuneOrb",Vector3.new(.9,.9,.9),Vector3.new(0,2.65,0),color,Enum.Material.Neon,Enum.PartType.Ball);if orb then orb.Name="RuneGlow"end end
+  if torso then
+   gearPart(gear,torso,"RuneMantle",Vector3.new(2.65,.78,1.6),Vector3.new(0,.78,.08),color,Enum.Material.Fabric,Enum.PartType.Ball)
+   for i=1,3 do local a=i/3*math.pi*2;gearPart(gear,torso,"RuneCrystal"..i,Vector3.new(.28,1.05,.28),Vector3.new(math.cos(a)*1.55,.2+math.sin(a)*.35,.8),color,Enum.Material.Neon,nil,Vector3.new(20,i*120,20))end
+  end
  elseif classId=="SOUL"then
-  local staff=gearPart(gear,right,"ClassWeapon",Vector3.new(.24,4.8,.24),Vector3.new(0,-1.7,0),Color3.fromRGB(70,62,61),Enum.Material.Wood,nil,Vector3.new(0,0,6))
-  if staff then local orb=gearPart(gear,staff,"SoulOrb",Vector3.new(.85,.85,.85),Vector3.new(0,2.45,0),color,Enum.Material.Neon,Enum.PartType.Ball);if orb then orb.Name="SoulGlow"end end
-  if torso then gearPart(gear,torso,"SoulCape",Vector3.new(2.4,3.1,.18),Vector3.new(0,-.1,.75),color,Enum.Material.Fabric)end
+  local staff=gearPart(gear,right,"ClassWeapon",Vector3.new(.26,5,.26),Vector3.new(0,-1.8,0),Color3.fromRGB(70,62,61),Enum.Material.Wood,nil,Vector3.new(0,0,6))
+  if staff then local orb=gearPart(gear,staff,"SoulOrb",Vector3.new(.95,.95,.95),Vector3.new(0,2.55,0),color,Enum.Material.Neon,Enum.PartType.Ball);if orb then orb.Name="SoulGlow"end end
+  if torso then
+   gearPart(gear,torso,"SoulCape",Vector3.new(2.6,3.35,.18),Vector3.new(0,-.1,.78),color,Enum.Material.Fabric)
+   gearPart(gear,torso,"SoulLantern",Vector3.new(.7,1,.55),Vector3.new(-1.35,-.55,.65),Color3.fromRGB(126,220,185),Enum.Material.Neon)
+  end
  end
  model:SetAttribute("ClassId",classId);model:SetAttribute("AdvancementId",advancementId or"")
 end
@@ -561,7 +589,7 @@ local function unlockCompanion(p,id)
  local current=tostring(p:GetAttribute("UnlockedCompanions")or"")
  p:SetAttribute("UnlockedCompanions",current==""and id or(current..","..id))
  p:SetAttribute("CompanionUnlockCount",n(p,"CompanionUnlockCount",0)+1)
- msg(p,"보스 동료 해금 · "..def.Name.." · 마을에서 두 번 터치해 파티 편성");feedback(p,"COMPANION_UNLOCK")
+ msg(p,"보스 동료 해금 · "..def.Name.." · 마을 동료석에서 바로 편성 가능");feedback(p,"COMPANION_UNLOCK")
  return true
 end
 local function unlockBossCompanion(killer,e)
@@ -653,7 +681,22 @@ local function makeVillage()
   ppart(f,"MarketAwning",Vector3.new(14,.6,9),stall.Position+Vector3.new(0,3.2,0),i%2==0 and Color3.fromRGB(164,74,67)or Color3.fromRGB(197,157,82),Enum.Material.Fabric)
  end
  decorateVillageAssets(f)
+ -- Break up the flat test-map silhouette with layered hills, flower beds and a readable plaza edge.
+ for i=1,18 do
+  local a=i/18*math.pi*2;local r=138+(i%3)*12
+  local hill=ppart(f,"VillageOuterHill",Vector3.new(34+(i%4)*7,10+(i%3)*3,26+(i%5)*5),Vector3.new(math.cos(a)*r,3+((i%3)*1.2),math.sin(a)*r),Color3.fromRGB(78+(i%2)*6,126+(i%3)*4,73),Enum.Material.Grass);hill.Shape=Enum.PartType.Ball;hill.CanCollide=false
+ end
+ for i=1,20 do
+  local a=i/20*math.pi*2;local r=48+(i%4)*8
+  local patch=ppart(f,"VillageFlowerPatch",Vector3.new(5+(i%3)*2,.25,4+(i%4)),Vector3.new(math.cos(a)*r,2.35,math.sin(a)*r),i%3==0 and Color3.fromRGB(193,157,90)or Color3.fromRGB(96,143,82),Enum.Material.Grass);patch.CanCollide=false
+ end
+ for _,road in ipairs({
+  {Size=Vector3.new(14,.35,80),Pos=Vector3.new(0,2.28,-70)},
+  {Size=Vector3.new(60,.35,10),Pos=Vector3.new(30,2.3,0)},
+  {Size=Vector3.new(60,.35,10),Pos=Vector3.new(-30,2.3,0)},
+ })do ppart(f,"VillagePathTrim",road.Size,road.Pos,Color3.fromRGB(118,104,86),Enum.Material.Cobblestone)end
  local fountain=ppart(f,"Fountain",Vector3.new(14,3,14),Vector3.new(0,3,0),Color3.fromRGB(90,112,124),Enum.Material.Slate);label(fountain,"마을 광장",Color3.fromRGB(255,232,168),28)
+ local water=ppart(f,"FountainWater",Vector3.new(10,.35,10),Vector3.new(0,4.65,0),Color3.fromRGB(91,177,205),Enum.Material.Glass);water.Transparency=.28;water.CanCollide=false
 
  local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
  prompt(chief,"마을 이장","퀘스트 받기").Triggered:Connect(function(p)
@@ -687,11 +730,13 @@ local function makeVillage()
  local portalAngles={-80,-40,0,40,80}
  for i,z in ipairs(C.Portals)do
   local x=(i-3)*46
-  local pad=ppart(f,"Portal"..i,Vector3.new(28,2,20),Vector3.new(x,2,-112),z.Color,Enum.Material.Neon)
+  local pad=ppart(f,"Portal"..i,Vector3.new(28,1.2,20),Vector3.new(x,2,-112),Color3.fromRGB(66,68,71),Enum.Material.Slate)
   wholeAsset(f,ASSETS.StonePortal,pad.Position+Vector3.new(0,0,-2),.28,"StonePortalAsset"..i)
-  ppart(f,"PortalArchL"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(-11,10,0),z.Color,Enum.Material.Slate)
-  ppart(f,"PortalArchR"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(11,10,0),z.Color,Enum.Material.Slate)
-  label(pad,i.." · "..z.Name,z.Color,48)
+  ppart(f,"PortalArchL"..i,Vector3.new(3.2,18,3.2),pad.Position+Vector3.new(-11,10,0),Color3.fromRGB(78,77,82),Enum.Material.Slate)
+  ppart(f,"PortalArchR"..i,Vector3.new(3.2,18,3.2),pad.Position+Vector3.new(11,10,0),Color3.fromRGB(78,77,82),Enum.Material.Slate)
+  local core=ppart(f,"PortalCore"..i,Vector3.new(22,.45,14),pad.Position+Vector3.new(0,.8,0),z.Color,Enum.Material.Neon);core.Transparency=.38;core.CanCollide=false
+  local light=Instance.new("PointLight");light.Color=z.Color;light.Brightness=.35;light.Range=15;light.Parent=core
+  label(pad,i.." · "..z.Name,Color3.fromRGB(245,245,238),48)
   prompt(pad,z.Name,"포탈 입장").Triggered:Connect(function(p)
    if z.Id==1 and meadowPlayersInside()==0 and generateMeadowRun then
     local seed=(os.time()%1000000)*100+n(p,"RoomCode",1)+meadowRunCounter*13;generateMeadowRun(seed)
@@ -723,6 +768,17 @@ local function makeZone(z)
  local groundColor=z.Theme=="MEADOW"and Color3.fromRGB(75,126,67)or z.Theme=="CANYON"and Color3.fromRGB(136,83,60)or z.Theme=="RUINS"and Color3.fromRGB(74,70,86)or z.Theme=="SNOW"and Color3.fromRGB(188,211,220)or Color3.fromRGB(49,43,62)
  local material=z.Theme=="MEADOW"and Enum.Material.Grass or z.Theme=="CANYON"and Enum.Material.Sand or z.Theme=="SNOW"and Enum.Material.Snow or Enum.Material.Slate
  ppart(f,"ZoneGround",Vector3.new(440,2,440),z.Center+Vector3.new(0,0,0),groundColor,material)
+ -- Layered edge ridges and ground patches remove the flat baseplate look while preserving navigation.
+ for i=1,20 do
+  local a=i/20*math.pi*2;local r=188+(i%3)*9
+  local ridgeColor=z.Theme=="CANYON"and Color3.fromRGB(122,72,54)or z.Theme=="SNOW"and Color3.fromRGB(205,222,229)or z.Theme=="RUINS"and Color3.fromRGB(67,64,78)or z.Theme=="ABYSS"and Color3.fromRGB(44,38,55)or Color3.fromRGB(67,112,63)
+  local ridge=ppart(f,"ZoneRidge",Vector3.new(38+(i%4)*8,12+(i%3)*4,28+(i%5)*6),z.Center+Vector3.new(math.cos(a)*r,4,math.sin(a)*r),ridgeColor,material);ridge.Shape=Enum.PartType.Ball;ridge.CanCollide=false
+ end
+ for i=1,18 do
+  local a=i/18*math.pi*2;local r=44+(i%6)*22
+  local patchColor=z.Theme=="MEADOW"and Color3.fromRGB(68+(i%2)*8,116+(i%3)*5,63)or groundColor
+  local patch=ppart(f,"GroundPatch",Vector3.new(10+(i%4)*4,.22,8+(i%5)*3),z.Center+Vector3.new(math.cos(a)*r,1.12,math.sin(a)*r),patchColor,material);patch.CanCollide=false
+ end
  if z.Theme~="MEADOW"then
   ppart(f,"ZoneInnerRoad",Vector3.new(22,1,330),z.Center+Vector3.new(0,1,0),Color3.fromRGB(105,100,94),Enum.Material.Cobblestone)
   for i=1,34 do themedProp(f,z,i)end
@@ -761,17 +817,28 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
  rootPart.CanCollide=true;rootPart.Transparency=1
  local function add(nm,size,off,col,mat,shape,rot)return attach(rootPart,nm,size,off,col,mat,shape,rot)end
  if bossVisual then
-  local body=Color3.fromRGB(92,67,108);local armor=Color3.fromRGB(58,52,72)
-  add("BossBody",Vector3.new(5.8,5.8,4.2),Vector3.new(0,-1.1,0),body,Enum.Material.Slate,Enum.PartType.Ball)
-  add("BossChest",Vector3.new(5.4,2.2,4),Vector3.new(0,.1,-.35),armor,Enum.Material.Metal,Enum.PartType.Ball)
-  add("BossHead",Vector3.new(3.7,3.5,3.4),Vector3.new(0,2.9,-.35),body,Enum.Material.Slate,Enum.PartType.Ball)
-  add("BossArmL",Vector3.new(4.2,1.25,1.25),Vector3.new(-3.1,-1.05,0),armor,Enum.Material.Slate,Enum.PartType.Cylinder,Vector3.new(0,0,78))
-  add("BossArmR",Vector3.new(4.2,1.25,1.25),Vector3.new(3.1,-1.05,0),armor,Enum.Material.Slate,Enum.PartType.Cylinder,Vector3.new(0,0,102))
-  add("BossLegL",Vector3.new(3.8,1.45,1.45),Vector3.new(-1.35,-4.1,.2),armor,Enum.Material.Slate,Enum.PartType.Cylinder,Vector3.new(0,0,90))
-  add("BossLegR",Vector3.new(3.8,1.45,1.45),Vector3.new(1.35,-4.1,.2),armor,Enum.Material.Slate,Enum.PartType.Cylinder,Vector3.new(0,0,90))
-  add("BossHornL",Vector3.new(.7,.7,3.2),Vector3.new(-1.25,4.85,-.2),z.Color,Enum.Material.Neon,nil,Vector3.new(-20,0,-18))
-  add("BossHornR",Vector3.new(.7,.7,3.2),Vector3.new(1.25,4.85,-.2),z.Color,Enum.Material.Neon,nil,Vector3.new(-20,0,18))
-  add("BossCore",Vector3.new(1.35,1.35,.42),Vector3.new(0,.3,-2.15),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
+  if z.Theme=="RUINS"then
+   local rock=Color3.fromRGB(72,70,82);local edge=Color3.fromRGB(105,99,116)
+   add("BossBody",Vector3.new(6.4,6.1,4.9),Vector3.new(0,-1.2,0),rock,Enum.Material.Rock,Enum.PartType.Ball)
+   add("BossChest",Vector3.new(5.7,2.4,4.4),Vector3.new(0,.25,-.5),edge,Enum.Material.Slate,Enum.PartType.Ball)
+   add("BossHead",Vector3.new(3.8,3.2,3.5),Vector3.new(0,3,-.5),edge,Enum.Material.Rock,Enum.PartType.Ball)
+   add("BossArmL",Vector3.new(4.8,1.7,1.7),Vector3.new(-3.7,-1.1,0),rock,Enum.Material.Rock,Enum.PartType.Cylinder,Vector3.new(0,0,78))
+   add("BossArmR",Vector3.new(4.8,1.7,1.7),Vector3.new(3.7,-1.1,0),rock,Enum.Material.Rock,Enum.PartType.Cylinder,Vector3.new(0,0,102))
+   add("BossCrown",Vector3.new(4.6,.7,4.2),Vector3.new(0,5,-.2),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
+   add("BossCore",Vector3.new(1.55,1.55,.48),Vector3.new(0,.2,-2.55),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
+  else
+   local armor=Color3.fromRGB(46,42,56);local edge=Color3.fromRGB(74,66,88)
+   add("BossBody",Vector3.new(5.8,6.2,4.4),Vector3.new(0,-1.1,0),armor,Enum.Material.Metal,Enum.PartType.Ball)
+   add("BossChest",Vector3.new(6,2.3,4.5),Vector3.new(0,.2,-.35),edge,Enum.Material.Metal,Enum.PartType.Ball)
+   add("BossHead",Vector3.new(3.5,3.4,3.3),Vector3.new(0,3,-.35),Color3.fromRGB(55,50,67),Enum.Material.Metal,Enum.PartType.Ball)
+   add("BossVisor",Vector3.new(2.8,.65,.38),Vector3.new(0,3,-2),z.Color,Enum.Material.Neon)
+   add("BossArmL",Vector3.new(4.5,1.25,1.25),Vector3.new(-3.3,-1.05,0),edge,Enum.Material.Metal,Enum.PartType.Cylinder,Vector3.new(0,0,78))
+   add("BossArmR",Vector3.new(4.5,1.25,1.25),Vector3.new(3.3,-1.05,0),edge,Enum.Material.Metal,Enum.PartType.Cylinder,Vector3.new(0,0,102))
+   add("BossCape",Vector3.new(4.2,5.4,.24),Vector3.new(0,-.4,2.3),Color3.fromRGB(31,27,42),Enum.Material.Fabric)
+   add("BossBlade",Vector3.new(6.5,.48,.58),Vector3.new(4,-1.1,-.2),z.Color,Enum.Material.Neon,Enum.PartType.Cylinder,Vector3.new(0,0,88))
+   add("BossHornL",Vector3.new(.55,.55,3),Vector3.new(-1.15,5,-.1),z.Color,Enum.Material.Neon,nil,Vector3.new(-25,0,-20))
+   add("BossHornR",Vector3.new(.55,.55,3),Vector3.new(1.15,5,-.1),z.Color,Enum.Material.Neon,nil,Vector3.new(-25,0,20))
+  end
  elseif z.Theme=="MEADOW"then
   local id=spec and spec.Id or"GRASS_WOLF";local scale=boss and 1.34 or 1
   local function S(v)return v*scale end
@@ -793,17 +860,32 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
    add("BoarBody",Vector3.new(5.4,3.5,6.2),Vector3.new(0,-1.4,.2),Color3.fromRGB(103,77,61),Enum.Material.Fabric,Enum.PartType.Ball)
    add("BoarHead",Vector3.new(3.8,3.1,3.5),Vector3.new(0,-.8,-3.5),Color3.fromRGB(122,89,66),Enum.Material.Fabric,Enum.PartType.Ball)
    add("BoarSnout",Vector3.new(2.4,1.4,1.7),Vector3.new(0,-1,-5),Color3.fromRGB(151,105,82),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("BoarEyeL",Vector3.new(.24,.25,.14),Vector3.new(-.82,-.35,-5.05),Color3.fromRGB(238,184,66),Enum.Material.Neon,Enum.PartType.Ball)
+   add("BoarEyeR",Vector3.new(.24,.25,.14),Vector3.new(.82,-.35,-5.05),Color3.fromRGB(238,184,66),Enum.Material.Neon,Enum.PartType.Ball)
+   add("BoarEarL",Vector3.new(.7,1,.45),Vector3.new(-1.4,.25,-3.7),Color3.fromRGB(82,61,52),Enum.Material.Fabric,nil,Vector3.new(0,0,-24))
+   add("BoarEarR",Vector3.new(.7,1,.45),Vector3.new(1.4,.25,-3.7),Color3.fromRGB(82,61,52),Enum.Material.Fabric,nil,Vector3.new(0,0,24))
+   for _,x in ipairs({-1.6,1.6})do for _,zz in ipairs({-1.4,1.6})do add("BoarLeg",Vector3.new(2.2,.72,.72),Vector3.new(x,-3.25,zz),Color3.fromRGB(74,58,49),Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))end end
    add("TuskL",Vector3.new(.35,.35,1.9),Vector3.new(-.9,-1.3,-5.5),Color3.fromRGB(234,224,196),Enum.Material.SmoothPlastic,nil,Vector3.new(18,0,-12))
    add("TuskR",Vector3.new(.35,.35,1.9),Vector3.new(.9,-1.3,-5.5),Color3.fromRGB(234,224,196),Enum.Material.SmoothPlastic,nil,Vector3.new(18,0,12))
   elseif id=="THORN_WASP"then
    add("WaspBody",Vector3.new(2.2,2.2,4.2),Vector3.new(0,-.4,0),Color3.fromRGB(222,181,58),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("WaspHead",Vector3.new(2.1,1.9,2),Vector3.new(0,-.25,-2.75),Color3.fromRGB(201,151,48),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("WaspEyeL",Vector3.new(.42,.55,.22),Vector3.new(-.55,-.15,-3.7),Color3.fromRGB(56,41,46),Enum.Material.Neon,Enum.PartType.Ball)
+   add("WaspEyeR",Vector3.new(.42,.55,.22),Vector3.new(.55,-.15,-3.7),Color3.fromRGB(56,41,46),Enum.Material.Neon,Enum.PartType.Ball)
    add("WaspStripe",Vector3.new(2.35,.6,2.2),Vector3.new(0,-.4,.8),Color3.fromRGB(47,44,41),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-   add("WingL",Vector3.new(.18,2.6,3.2),Vector3.new(-1.4,.6,.3),Color3.fromRGB(194,229,232),Enum.Material.Glass,nil,Vector3.new(0,0,-28))
-   add("WingR",Vector3.new(.18,2.6,3.2),Vector3.new(1.4,.6,.3),Color3.fromRGB(194,229,232),Enum.Material.Glass,nil,Vector3.new(0,0,28))
+   add("WaspStripe2",Vector3.new(2.1,.45,1.5),Vector3.new(0,-.4,1.8),Color3.fromRGB(47,44,41),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("WingL",Vector3.new(.18,2.8,3.5),Vector3.new(-1.4,.7,.3),Color3.fromRGB(194,229,232),Enum.Material.Glass,nil,Vector3.new(0,0,-28))
+   add("WingR",Vector3.new(.18,2.8,3.5),Vector3.new(1.4,.7,.3),Color3.fromRGB(194,229,232),Enum.Material.Glass,nil,Vector3.new(0,0,28))
+   add("AntennaL",Vector3.new(.16,.16,1.8),Vector3.new(-.5,.6,-3.25),Color3.fromRGB(55,48,43),Enum.Material.Metal,nil,Vector3.new(45,0,-12))
+   add("AntennaR",Vector3.new(.16,.16,1.8),Vector3.new(.5,.6,-3.25),Color3.fromRGB(55,48,43),Enum.Material.Metal,nil,Vector3.new(45,0,12))
    add("Stinger",Vector3.new(.35,.35,2.4),Vector3.new(0,-.4,3),Color3.fromRGB(79,58,52),Enum.Material.Metal,nil,Vector3.new(90,0,0))
   elseif id=="FOREST_LIZARD"then
    add("LizardBody",Vector3.new(4.6,2.1,6.4),Vector3.new(0,-1.5,.2),Color3.fromRGB(88,133,78),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
    add("LizardHead",Vector3.new(3,2.1,3.3),Vector3.new(0,-1,-3.7),Color3.fromRGB(105,151,90),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+   add("LizardEyeL",Vector3.new(.28,.3,.16),Vector3.new(-.72,-.7,-5.2),Color3.fromRGB(225,206,72),Enum.Material.Neon,Enum.PartType.Ball)
+   add("LizardEyeR",Vector3.new(.28,.3,.16),Vector3.new(.72,-.7,-5.2),Color3.fromRGB(225,206,72),Enum.Material.Neon,Enum.PartType.Ball)
+   for _,x in ipairs({-1.55,1.55})do for _,zz in ipairs({-1.5,1.65})do add("LizardLeg",Vector3.new(1.8,.55,.55),Vector3.new(x,-2.4,zz),Color3.fromRGB(68,112,66),Enum.Material.SmoothPlastic,Enum.PartType.Cylinder,Vector3.new(0,0,90))end end
+   for i=1,4 do add("LizardSpine",Vector3.new(.35,.8,.35),Vector3.new(0,-.15,-.6+i*1.25),Color3.fromRGB(59,103,61),Enum.Material.SmoothPlastic,nil,Vector3.new(15,0,0))end
    add("LizardTail",Vector3.new(.9,.9,6.2),Vector3.new(0,-1.4,5),Color3.fromRGB(72,116,70),Enum.Material.SmoothPlastic,Enum.PartType.Cylinder,Vector3.new(90,0,0))
   elseif id=="HORN_DEER"or id=="GOLDEN_ANTLER"then
    local big=id=="GOLDEN_ANTLER"and 1.45 or 1
@@ -812,8 +894,15 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
    local antler=id=="GOLDEN_ANTLER"and Color3.fromRGB(255,214,103)or Color3.fromRGB(100,78,54)
    add("DeerBody",Vector3.new(4,2.8,5.6)*big,Vector3.new(0,-1.4,.3)*big,body,Enum.Material.Fabric,Enum.PartType.Ball)
    add("DeerHead",Vector3.new(2.5,2.6,2.6)*big,Vector3.new(0,.15,-3.2)*big,head,Enum.Material.Fabric,Enum.PartType.Ball)
+   add("DeerEyeL",Vector3.new(.22,.24,.12)*big,Vector3.new(-.58,.35,-4.45)*big,Color3.fromRGB(50,42,36),Enum.Material.Neon,Enum.PartType.Ball)
+   add("DeerEyeR",Vector3.new(.22,.24,.12)*big,Vector3.new(.58,.35,-4.45)*big,Color3.fromRGB(50,42,36),Enum.Material.Neon,Enum.PartType.Ball)
+   add("DeerEarL",Vector3.new(.5,1.05,.42)*big,Vector3.new(-.95,1.1,-3.1)*big,head,Enum.Material.Fabric,nil,Vector3.new(0,0,-28))
+   add("DeerEarR",Vector3.new(.5,1.05,.42)*big,Vector3.new(.95,1.1,-3.1)*big,head,Enum.Material.Fabric,nil,Vector3.new(0,0,28))
+   for _,x in ipairs({-1.25,1.25})do for _,zz in ipairs({-1.35,1.45})do add("DeerLeg",Vector3.new(2.6,.5,.5)*big,Vector3.new(x,-3.15,zz)*big,Color3.fromRGB(92,70,50),Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))end end
    add("AntlerL",Vector3.new(.32,3.4,.32)*big,Vector3.new(-.75,2,-3.1)*big,antler,id=="GOLDEN_ANTLER"and Enum.Material.Neon or Enum.Material.Wood,nil,Vector3.new(0,0,-25))
    add("AntlerR",Vector3.new(.32,3.4,.32)*big,Vector3.new(.75,2,-3.1)*big,antler,id=="GOLDEN_ANTLER"and Enum.Material.Neon or Enum.Material.Wood,nil,Vector3.new(0,0,25))
+   add("AntlerBranchL",Vector3.new(.25,1.8,.25)*big,Vector3.new(-1.25,2.3,-3.1)*big,antler,id=="GOLDEN_ANTLER"and Enum.Material.Neon or Enum.Material.Wood,nil,Vector3.new(0,0,-52))
+   add("AntlerBranchR",Vector3.new(.25,1.8,.25)*big,Vector3.new(1.25,2.3,-3.1)*big,antler,id=="GOLDEN_ANTLER"and Enum.Material.Neon or Enum.Material.Wood,nil,Vector3.new(0,0,52))
    if id=="GOLDEN_ANTLER"then
     add("GoldenCrest",Vector3.new(2.2,.35,2.2),Vector3.new(0,2.3,-2.9)*big,Color3.fromRGB(255,230,132),Enum.Material.Neon,Enum.PartType.Ball)
    end
@@ -1241,13 +1330,13 @@ local function makeBossCompanionRoster()
   local z,spec=bossSpecForCompanion(def)
   if z and spec then
    local a=i/math.max(1,#C.BossCompanions)*math.pi*2;local pos=C.VillageCenter+Vector3.new(math.cos(a)*76,6,math.sin(a)*76)
+   local pedestal=ppart(roster,"CompanionPedestal",Vector3.new(10,1.1,10),pos+Vector3.new(0,-4.2,0),Color3.fromRGB(68,65,72),Enum.Material.Slate)
+   local ring=ppart(roster,"CompanionRing",Vector3.new(7,.24,7),pos+Vector3.new(0,-3.55,0),def.Color,Enum.Material.Neon);ring.Transparency=.35;ring.CanCollide=false
    local part=enemyModel(roster,z,pos,true,spec);part.Name="Roster_"..def.Id;part.CanCollide=false;part:SetAttribute("CompanionId",def.Id);part:SetAttribute("RosterPreview",true)
-   setCompanionLabel(part,"동료 · "..def.Name.." · 보스 격파 해금",def.Color)
-   local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=20;cd.Parent=part
-   cd.MouseClick:Connect(function(p)
-    if not companionUnlocked(p,def.Id)then msg(p,def.Name.." 보스를 먼저 격파해야 동료로 영입 가능")return end
-    clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][def.Id]or 0;clickTimes[p][def.Id]=now
-    if now-last>.55 then msg(p,def.Name.." · 한 번 더 눌러 파티 초대/제외")return end
+   setCompanionLabel(part,"동료 · "..def.Name,def.Color)
+   local pr=prompt(pedestal,def.Name,"파티 편성 / 제외");pr.Name="BossCompanionPrompt";pr.MaxActivationDistance=15
+   pr.Triggered:Connect(function(p)
+    if not companionUnlocked(p,def.Id)then msg(p,def.Name.." 보스를 먼저 격파하면 동료가 해금돼")return end
     parties[p]=parties[p]or{}
     if parties[p][def.Id]then
      parties[p][def.Id]=nil;despawnActiveCompanion(p,def.Id);msg(p,def.Name.." 파티에서 제외")
@@ -1262,17 +1351,27 @@ local function makeBossCompanionRoster()
  end
 end
 
+local function setupLighting()
+ Lighting.Brightness=2;Lighting.ClockTime=14.1;Lighting.FogStart=520;Lighting.FogEnd=1650
+ Lighting.Ambient=Color3.fromRGB(114,119,128);Lighting.OutdoorAmbient=Color3.fromRGB(137,143,151)
+ Lighting.EnvironmentDiffuseScale=.38;Lighting.EnvironmentSpecularScale=.42
+ for _,name in ipairs({"RPGAtmosphere","RPGColor","RPGBloom","RPGSunRays"})do local old=Lighting:FindFirstChild(name);if old then old:Destroy()end end
+ local atmosphere=Instance.new("Atmosphere");atmosphere.Name="RPGAtmosphere";atmosphere.Density=.22;atmosphere.Offset=.08;atmosphere.Color=Color3.fromRGB(214,225,236);atmosphere.Decay=Color3.fromRGB(122,139,157);atmosphere.Glare=.08;atmosphere.Haze=1.1;atmosphere.Parent=Lighting
+ local cc=Instance.new("ColorCorrectionEffect");cc.Name="RPGColor";cc.Brightness=.015;cc.Contrast=.08;cc.Saturation=.08;cc.TintColor=Color3.fromRGB(255,248,237);cc.Parent=Lighting
+ local bloom=Instance.new("BloomEffect");bloom.Name="RPGBloom";bloom.Intensity=.12;bloom.Size=20;bloom.Threshold=1.65;bloom.Parent=Lighting
+ local rays=Instance.new("SunRaysEffect");rays.Name="RPGSunRays";rays.Intensity=.035;rays.Spread=.72;rays.Parent=Lighting
+end
 local function buildWorld()
  local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end
  world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
- Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
+ setupLighting()
  makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeBossCompanionRoster()
  for _,z in ipairs(C.Portals)do
   if z.Id~=1 then for i=1,10 do spawnEnemy(z,false,i)end end
   if z.Boss then spawnEnemy(z,true,1)end
  end
  if generateMeadowRun then generateMeadowRun(100000+game.PlaceVersion*31)end
- workspace:SetAttribute("WorldArtPass","RPG_FANTASY_PORTAL_WORLD_V5");workspace:SetAttribute("CharacterArtDirection","RPG_STYLIZED_TOY_FANTASY_R15");workspace:SetAttribute("MedievalAssetBase",tostring(C.MedievalCharacterAssetId))
+ workspace:SetAttribute("WorldArtPass","RPG_FANTASY_PORTAL_WORLD_V6");workspace:SetAttribute("CharacterArtDirection","RPG_STYLIZED_TOY_FANTASY_R15_V2");workspace:SetAttribute("VisualPolishPass","MOBILE_UX_WORLD_CREATURE_NPC_V1");workspace:SetAttribute("MedievalAssetBase",tostring(C.MedievalCharacterAssetId))
  foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
@@ -1372,9 +1471,10 @@ local function bindPlayer(p)
  local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
  p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("WeaponTier"):Connect(refreshAppearance);p:GetAttributeChangedSignal("ArmorTier"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
+  local h=c:WaitForChild("Humanoid",8);if h then h.BreakJointsOnDeath=false end
   task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
  end)
- if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
+ if p.Character then task.defer(function()local h=p.Character:FindFirstChildOfClass("Humanoid");if h then h.BreakJointsOnDeath=false end;task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
