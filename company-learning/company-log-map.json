@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -375,5 +375,35 @@
     ],
     "canonicalSource": "unity-games/<gameId>/",
     "outputRoot": "web-games/<gameId>/"
+  },
+  "highEndVisualEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
+    "evidenceScope": "PER_GAME_PER_PLATFORM_CANDIDATE_REVISION",
+    "correlationKeys": [
+      "GAME_ID",
+      "CANDIDATE_SHA",
+      "SOURCE_REVISION",
+      "TARGET_PLATFORM",
+      "FAILURE_STAGE",
+      "FAILURE_SIGNATURE"
+    ],
+    "requiredEvidence": [
+      "ART_BIBLE_BINDING",
+      "VISUAL_TARGET_FRAME_BINDING",
+      "ASSET_PROVENANCE_AND_TRANSFORM_HISTORY",
+      "HERO_ASSET_RUNTIME_CAPTURE",
+      "WORLD_REGION_RUNTIME_CAPTURE",
+      "CORE_GAMEPLAY_RUNTIME_CAPTURE",
+      "MOBILE_HUD_RUNTIME_CAPTURE",
+      "KEY_LANDMARK_RUNTIME_CAPTURE",
+      "BOSS_OR_SIGNATURE_RUNTIME_CAPTURE",
+      "BEFORE_AFTER_VISUAL_REGRESSION",
+      "PLATFORM_PERFORMANCE_EVIDENCE"
+    ],
+    "markerOnlyEvidenceForbidden": true,
+    "rawBinaryDuplicationInLogsForbidden": true,
+    "artifactReferencesAndHashesPreferred": true,
+    "finalFailureState": "ASSET_REPAIR_REQUIRED"
   }
 }
