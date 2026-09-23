@@ -9,6 +9,9 @@ import {
 
 const directive = JSON.parse(fs.readFileSync('company-directive.json', 'utf8'));
 const policy = fs.readFileSync('COMPANY_FLOW.md', 'utf8');
+const roadmap = JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const architecture = JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+const logMap = JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
 
 const expectedDesignOnlyFlow = [
   'GAME_SEED',
@@ -104,4 +107,39 @@ test('numeric market claims require both source and observedAt', () => {
   assert.equal(result.pass, false);
   assert.ok(result.errors.some(error => error.includes('.source is required')));
   assert.ok(result.errors.some(error => error.includes('.observedAt is required')));
+});
+
+
+test('continuous intelligent design evolution reuses the existing design runtime',()=>{
+  const c=roadmap.directNativeDualPlatformDevelopment.design.continuousDesignEvolution;
+  assert.equal(c.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.deepEqual(c.loop,['STABILIZE','UNDERSTAND','OBSERVE','DIAGNOSE','SCORE','PROPOSE','COMPARE','REVISE','VALIDATE','LEARN','REPLAN','EXPAND']);
+  assert.equal(c.unlimitedRevisions,true);
+  assert.equal(c.artificialRevisionCapForbidden,true);
+  assert.equal(c.stabilityFirst.required,true);
+  assert.equal(c.ownerIntentUnderstanding.repeatedIdenticalOwnerTextIsNewRequestEvent,true);
+  assert.equal(c.ownerIntentUnderstanding.semanticTextDeduplicationForOwnerRequestsForbidden,true);
+  assert.equal(c.conceptBlueprint.planAPlanBRequiredForMaterialOrRepeatedChange,true);
+  assert.equal(c.identityAndCreativeChallenge.baselineConceptIsReferencePointNotCreativePrison,true);
+  assert.equal(c.identityAndCreativeChallenge.genreShiftMayBeProposed,true);
+  assert.equal(c.contentDiversity.numericOnlyVariationInsufficient,true);
+  assert.equal(c.literaryAndCulturalInspiration.publicDomainClassicsPreferred,true);
+  assert.equal(c.literaryAndCulturalInspiration.directPassagePlotSceneCharacterExpressionCopyForbidden,true);
+  assert.equal(c.learning.useExistingLearningMotor,true);
+  assert.equal(architecture.departmentTopology.designEvolution.noNewDesignDepartment,true);
+  assert.equal(architecture.departmentTopology.designEvolution.noShadowDesignPipeline,true);
+  assert.equal(architecture.departmentTopology.designEvolution.designGenerator,'tools/company-design-cycle.mjs');
+  assert.equal(logMap.designEvolutionEvidenceContract.repeatedIdenticalOwnerTextCreatesNewRevision,true);
+  assert.equal(logMap.designEvolutionEvidenceContract.markerOnlyImprovementClaimForbidden,true);
+});
+
+test('narrative contract requires character-specific realistic dialogue and causal scene turns',()=>{
+  const n=roadmap.narrativeStorytellingContract;
+  assert.equal(n.version>=2,true);
+  assert.equal(n.storyEngine.dialogueRealism.requiredWhenDialogueIsMaterial,true);
+  assert.equal(n.storyEngine.dialogueRealism.allCharactersSharingOneGenericVoiceForbidden,true);
+  assert.equal(n.storyEngine.sceneDramaturgy.requiredForMajorStoryScenes,true);
+  assert.equal(n.storyEngine.sceneDramaturgy.twistMustBePreparedByPriorEvidenceOrCharacterLogic,true);
+  assert.ok(n.qa.mustCheck.includes('CHARACTER_SPECIFIC_SPEECH_PROFILE'));
+  assert.ok(n.qa.mustCheck.includes('TWIST_SETUP_AND_PAYOFF'));
 });
