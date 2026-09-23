@@ -1293,3 +1293,80 @@ test('unrelated gameplay owner change does not create a graphics evolution cycle
   };
   assert.equal(findWebPresentationQualityTask(project,root,{tasks:[...foundation,ownerSignal]}),null);
 });
+
+
+test('repeated identical owner presentation request creates a new evolution generation',()=>{
+  const root=tempRepo();
+  const gameId='graphics-owner-repeat';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Graphics Owner Repeat',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const foundation=verifiedPresentationFoundation(project,root);
+  const owner1={
+    id:'owner-repeat-1',gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'곰 공격 모션을 더 무겁게 해',releaseState:'development-confirmed',status:'verified',ownerDirective:true,
+    evidence:['owner-request-instance:req-1','owner-presentation-change:곰 공격 모션을 더 무겁게 해']
+  };
+  const v2a=findWebPresentationQualityTask(project,root,{tasks:[...foundation,owner1]});
+  assert.equal(v2a.id,`${gameId}-presentation-living-motion-v2`);
+  const v2b=findWebPresentationQualityTask(project,root,{tasks:[...foundation,owner1,{...v2a,status:'verified'}]});
+  assert.equal(v2b.id,`${gameId}-presentation-animation-feel-v2`);
+  const owner2={...owner1,id:'owner-repeat-2',evidence:['owner-request-instance:req-2','owner-presentation-change:곰 공격 모션을 더 무겁게 해']};
+  const v3=findWebPresentationQualityTask(project,root,{tasks:[...foundation,owner1,{...v2a,status:'verified'},{...v2b,status:'verified'},owner2]});
+  assert.equal(v3.id,`${gameId}-presentation-living-motion-v3`);
+  assert.equal(v3.graphicsEvolutionTrigger.source,'OWNER_CHANGE_REQUEST');
+  assert.equal(v3.graphicsEvolutionTrigger.ownerRepeatCount,2);
+  assert.ok(v3.graphicsEvolutionTrigger.score>v2a.graphicsEvolutionTrigger.score);
+  assert.equal(v3.graphicsEvolutionDecision.alternativesRequired,true);
+  assert.ok(v3.evidence.includes('graphics-evolution-alternatives-required:YES'));
+  assert.ok(v3.evidence.includes('graphics-evolution-signal-event:req-2'));
+  assert.match(v3.goal,/최소 2개 접근/);
+});
+
+test('automatic quality opportunity is scored and can reopen graphics without owner request',()=>{
+  const root=tempRepo();
+  const gameId='graphics-quality-gap';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={
+    gameId,name:'Graphics Quality Gap',engine:'web',releaseState:'development-confirmed',
+    projectPath:`web-games/${gameId}`,
+    developmentValidation:{blockers:['GOLDEN_SCENE_STYLE_GAP_PLAYER_SILHOUETTE']}
+  };
+  const foundation=verifiedPresentationFoundation(project,root);
+  const next=findWebPresentationQualityTask(project,root,{tasks:foundation});
+  assert.equal(next.id,`${gameId}-presentation-asset-adaptation-v2`);
+  assert.equal(next.graphicsEvolutionTrigger.source,'GOLDEN_SCENE_OR_VISUAL_TARGET_GAP');
+  assert.ok(next.graphicsEvolutionTrigger.score>0);
+  assert.ok(next.evidence.some(x=>x.startsWith('graphics-evolution-priority-score:')));
+  assert.ok(next.evidence.includes('graphics-evolution-before-after-comparison-required'));
+  assert.ok(next.evidence.includes('graphics-evolution-verified-result-return-to-learning-required'));
+  assert.deepEqual(next.graphicsEvolutionDecision.loop,['OBSERVE','SCORE','CHOOSE','IMPROVE','COMPARE','LEARN','REPLAN']);
+});
+
+test('higher-value owner signal outranks automatic presentation issue',()=>{
+  const root=tempRepo();
+  const gameId='graphics-smart-priority';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={
+    gameId,name:'Graphics Smart Priority',engine:'web',releaseState:'development-confirmed',
+    projectPath:`web-games/${gameId}`,
+    developmentValidation:{blockers:['VFX_CLUTTER_RUNTIME_READABILITY_REGRESSION']}
+  };
+  const foundation=verifiedPresentationFoundation(project,root);
+  const owner={
+    id:'owner-smart-1',gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'플레이어 공격 모션을 더 강렬하고 부드럽게 해',releaseState:'development-confirmed',status:'verified',ownerDirective:true,
+    evidence:['owner-request-instance:smart-1']
+  };
+  const next=findWebPresentationQualityTask(project,root,{tasks:[...foundation,owner]});
+  assert.equal(next.graphicsEvolutionTrigger.source,'OWNER_CHANGE_REQUEST');
+  assert.ok(next.graphicsEvolutionTrigger.score>=100);
+  assert.equal(next.ownerDirective,true);
+});
