@@ -1,5 +1,5 @@
 {
-  "version": 124,
+  "version": 125,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -152,7 +152,10 @@
       "TWO_PLUS_PLAYER_LIFECYCLE_VALIDATION_WHEN_APPLICABLE",
       "IMPACT_SCOPED_QA",
       "FULL_REGRESSION_FAN_IN",
-      "ACCEPT_OR_ROLLBACK_REQUEUE"
+      "ACCEPT_OR_ROLLBACK_REQUEUE",
+      "MACHINE_ONLY_TWO_PLUS_CLIENT_MULTIPLAYER_REPRODUCTION",
+      "JOIN_LEAVE_REJOIN_LATE_JOIN_AUTHORITATIVE_SYNC_VALIDATION",
+      "USER_ASSISTANCE_NOT_REQUIRED_FOR_MULTIPLAYER_PASS"
     ]
   },
   "workerRoles": {
