@@ -23,7 +23,7 @@ test('central policy defines one selected-platform router and common evidence co
   assert.equal(contract.commonAdapterContractRequired,true);
   assert.equal(contract.commonEvidenceSchemaRequired,true);
   for(const field of ['PLATFORM','SOURCE_REVISION','BUILD_OR_PACKAGE_PASSED','ARTIFACT_IDENTITY','RUNTIME_PASSED','INDEPENDENT_QA_PASSED','REGRESSION_PASSED','EXACT_REVISION','LAST_SUCCESSFUL_STAGE','FAILURE_STAGE','FAILURE_SIGNATURE']){
-    assert.ok(contract.requiredEvidenceFields.includes(field),field);
+    assert.ok(contract.commonEvidenceFields.includes(field),field);
   }
   assert.equal(contract.adapters.ROBLOX,'tools/vibe3-roblox-platform.mjs');
   assert.equal(contract.adapters.UNITY,'tools/company-development-unity-platform.mjs');
