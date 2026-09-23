@@ -37,11 +37,10 @@ test('canonical policy admits Roblox and Unity directly from one minimum design 
 test('lifecycle has no active Web-first handoff and treats internal playtest as co-development',()=>{
   const life=roadmap.developmentLifecycleMachine;
   assert.deepEqual(life.stages,['MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE','POST_RELEASE_FOCUSED_DEVELOPMENT']);
-  assert.equal(life.webToPlatformHandoff.required,false);
-  assert.equal(life.webToPlatformHandoff.status,'LEGACY_DISABLED');
-  assert.equal(life.webFirstImplementation.enabled,false);
-  assert.equal(life.missingWebBaselinePlanning.enabled,false);
-  assert.equal(life.machineWorkInstruction.webWorker.enabled,false);
+  assert.equal(Object.hasOwn(life,'webToPlatformHandoff'),false);
+  assert.equal(Object.hasOwn(life,'webFirstImplementation'),false);
+  assert.equal(Object.hasOwn(life,'missingWebBaselinePlanning'),false);
+  assert.equal(Object.hasOwn(life.machineWorkInstruction||{},'webWorker'),false);
   assert.equal(life.machineWorkInstruction.internalPlaytestWorker.activeCoDevelopment,true);
   assert.equal(life.machineWorkInstruction.internalPlaytestWorker.ownerInterruptSupported,true);
   assert.equal(life.machineWorkInstruction.internalPlaytestWorker.publicPromotionBlockedUntilAcceptance,true);
@@ -53,8 +52,7 @@ test('lifecycle has no active Web-first handoff and treats internal playtest as 
 
 test('directive mirror cannot reactivate legacy Web-first development',()=>{
   assert.equal(directive.currentExecutionMode,'DIRECT_NATIVE_ROBLOX_UNITY');
-  assert.equal(directive.legacyWebFirstPolicy.status,'REMOVED');
-  assert.equal(directive.legacyWebFirstPolicy.compatibilitySurfaceOnly,'UNITY_WEB_VALIDATION_SURFACE');
+  assert.equal(Object.hasOwn(directive,'legacyWebFirstPolicy'),false);
   assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebEnabled,true);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebRequired,false);
