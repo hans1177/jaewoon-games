@@ -78,32 +78,11 @@ jobs:
           ] | length' <<<"$queue_json")"
           echo "active_game_work=$active_game_work" >> "$GITHUB_OUTPUT"
           echo 'preservation_only=false' >> "$GITHUB_OUTPUT"
+          echo 'defer=false' >> "$GITHUB_OUTPUT"
+          echo 'preservation_only=false' >> "$GITHUB_OUTPUT"
           if [ "$active_game_work" -gt 0 ]; then
-            runtime_api="repos/${GITHUB_REPOSITORY}/contents/game-seed-state.json?ref=${COMPANY_RUNTIME_BRANCH}"
-            runtime_json=''
-            if runtime_response="$(gh api "$runtime_api" 2>/dev/null)"; then
-              runtime_b64="$(jq -r '.content // empty' <<<"$runtime_response" | tr -d '\n')"
-              runtime_json="$(printf '%s' "$runtime_b64" | base64 -d 2>/dev/null || true)"
-            fi
-            preservation_pending=0
-            if [ -n "$runtime_json" ] && jq -e . >/dev/null 2>&1 <<<"$runtime_json"; then
-              preservation_pending="$(jq '[.seeds[]? | select(
-                (((.status // "") | ascii_upcase) == "ACTIVE")
-                and (((.productionClass // "DESIGN_ONLY") | ascii_upcase) == "DESIGN_ONLY")
-                and (.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION == true)
-                and (((.OWNER_REBUILD_MODE // "") | ascii_upcase) == "PRESERVATION_PRESENTATION_UPGRADE")
-              )] | length' <<<"$runtime_json")"
-            fi
-            if [ "$preservation_pending" -gt 0 ]; then
-              echo 'defer=false' >> "$GITHUB_OUTPUT"
-              echo 'preservation_only=true' >> "$GITHUB_OUTPUT"
-              echo "GAME_PRIMARY_GATE=RUN_OWNER_PRESERVATION_AUX|active_game_work=$active_game_work|pending=$preservation_pending"
-            else
-              echo 'defer=true' >> "$GITHUB_OUTPUT"
-              echo "GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK:$active_game_work"
-            fi
+            echo "GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN|active_game_work=$active_game_work"
           else
-            echo 'defer=false' >> "$GITHUB_OUTPUT"
             echo 'GAME_PRIMARY_GATE=RUN'
           fi
 
@@ -141,6 +120,22 @@ jobs:
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
+      - name: Synchronize active owner design reset seeds
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import {loadSeedState,saveSeedState} from './tools/game-seed-state.mjs';
+          import {activeOwnerDesignResetRequests,materializeOwnerDesignResetSeeds} from './tools/owner-design-reset.mjs';
+          const state=loadSeedState();
+          const active=activeOwnerDesignResetRequests();
+          const result=materializeOwnerDesignResetSeeds(state);
+          if(result.changed.length)saveSeedState(state);
+          console.log(`OWNER_ACTIVE_DESIGN_RESET_COUNT=${active.length}`);
+          console.log(`OWNER_ACTIVE_DESIGN_RESET_MATERIALIZED=${result.changed.length}`);
+          console.log(`OWNER_ACTIVE_DESIGN_RESET_IDS=${active.map(x=>x.gameId).join(',')}`);
+          NODE
+
       - name: Validate shared worker policy log and architecture context
         run: |
           node --check tools/company-shared-context.mjs
@@ -173,6 +168,11 @@ jobs:
           if(!unboundedByPolicy&&(!Number.isInteger(Number(configuredWip))||Number(configuredWip)<1))throw new Error('CENTRAL_GAME_WIP_MAX_INVALID');
           const designWipMax=unboundedByPolicy?externalBatchMax:Math.min(Number(configuredWip),externalBatchMax);
           const state=(()=>{try{return JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{return{seeds:[]};}})();
+          const ownerReset=(()=>{try{return JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));}catch{return{requests:[]};}})();
+          const activeResetIds=new Set((ownerReset.requests||[])
+            .filter(row=>String(row?.status||'').trim().toUpperCase()==='ACTIVE')
+            .map(row=>String(row?.gameId||'').trim())
+            .filter(Boolean));
           const active=(state.seeds||[]).filter(seed=>String(seed.status||'').toUpperCase()==='ACTIVE');
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
@@ -254,7 +254,11 @@ jobs:
           };
           const preservationOnly=String(process.env.PRESERVATION_ONLY||'').trim().toLowerCase()==='true';
           const preservationSeed=seed=>seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&String(seed?.OWNER_REBUILD_MODE||'').trim().toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE'&&String(seed?.productionClass||'DESIGN_ONLY').trim().toUpperCase()==='DESIGN_ONLY';
-          const eligible=preservationOnly?active.filter(preservationSeed):active;
+          const activeResetSeeds=active.filter(seed=>activeResetIds.has(String(seed?.gameId||'').trim()));
+          const activeResetPending=activeResetSeeds.filter(seed=>!strictPassFor(seed));
+          const eligible=preservationOnly
+            ? active.filter(preservationSeed)
+            : (activeResetPending.length?activeResetSeeds:active);
           const pending=eligible.filter(seed=>!strictPassFor(seed)).sort((a,b)=>
             platformPriority(a)-platformPriority(b)||
             deterministicCheckpointPriority(a)-deterministicCheckpointPriority(b)||
@@ -273,6 +277,8 @@ jobs:
           console.log(`canary_mode=${canaryVerified?'false':'true'}`);
           console.log(`engine_digest=${engineDigest}`);
           console.log(`pending_total=${pending.length}`);
+          console.error(`OWNER_ACTIVE_DESIGN_RESET_TARGETS=${activeResetSeeds.length}`);
+          console.error(`OWNER_ACTIVE_DESIGN_RESET_PENDING=${activeResetPending.length}`);
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
           console.error(`GAME_SEED_DESIGN_PENDING_TOTAL=${pending.length}`);
           console.error(`GAME_DESIGN_ENGINE_CANARY=${canaryVerified?'VERIFIED':'REQUIRED'}`);
@@ -324,6 +330,22 @@ jobs:
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=TARGET_ONLY'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
+      - name: Synchronize target owner design reset seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import {loadSeedState,saveSeedState} from './tools/game-seed-state.mjs';
+          import {ensureOwnerDesignResetSeed} from './tools/owner-design-reset.mjs';
+          const gameId=String(process.env.GAME_ID||'').trim();
+          const state=loadSeedState();
+          const result=ensureOwnerDesignResetSeed(state,gameId);
+          if(result.changed)saveSeedState(state);
+          console.log(`OWNER_TARGET_DESIGN_RESET_SEED=${result.seed?'READY':'NOT_REQUESTED'}`);
+          NODE
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+
       - name: Normalize target GAME_SEED contract
         env:
           GAME_ID: ${{ matrix.target.game_id }}
