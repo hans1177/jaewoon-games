@@ -108,6 +108,7 @@ jobs:
       - name: Reserve disjoint supervised assignments
         id: matrix
         env:
+          GH_TOKEN: ${{ github.token }}
           SECURITY_RECOVERY_TASK_ID: ${{ inputs.security_recovery_task_id || '' }}
           MARKETING_TASK_IDS: ${{ inputs.marketing_task_ids || '' }}
         shell: bash
@@ -144,10 +145,19 @@ jobs:
 
             adaptive_max="$SYSTEM_AI_MAX_BATCH"
             if [ -z "$SECURITY_RECOVERY_TASK_ID" ] && [ -z "$MARKETING_TASK_IDS" ]; then
+              pending_runs="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name=="Company System AI Workers" and (.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested"))] | length' 2>/dev/null || echo 0)"
+              reservation_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now();const xs=(q.tasks||[]).filter(x=>String(x.status||'').toLowerCase()==='queued').map(x=>Date.parse(x.createdAt||x.updatedAt||'')).filter(Number.isFinite);console.log(xs.length?Math.max(0,now-Math.min(...xs)):0)")"
+              fan_in_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now();const xs=(q.tasks||[]).filter(x=>String(x.status||'').toLowerCase()==='awaiting-supervisor').map(x=>Date.parse(x.updatedAt||x.reservedAt||x.createdAt||'')).filter(Number.isFinite);console.log(xs.length?Math.max(0,now-Math.min(...xs)):0)")"
+              echo "SYSTEM_AI_PENDING_RUNS=$pending_runs"
+              echo "SYSTEM_AI_RESERVATION_WAIT_MS=$reservation_wait_ms"
+              echo "SYSTEM_AI_FAN_IN_WAIT_MS=$fan_in_wait_ms"
               node tools/company-system-ai-bottleneck-sensor.mjs \
                 --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
                 --game-queue=/tmp/system-ai-control/.vibe2/queue.json \
                 --max="$SYSTEM_AI_MAX_BATCH" \
+                --pending-runs="$pending_runs" \
+                --reservation-wait-ms="$reservation_wait_ms" \
+                --fan-in-wait-ms="$fan_in_wait_ms" \
                 --output=/tmp/system-ai-bottleneck.json | tee /tmp/system-ai-bottleneck.log
               adaptive_max="$(node -p "require('/tmp/system-ai-bottleneck.json').recommendedBatch")"
               echo "SYSTEM_AI_ADAPTIVE_RESERVE_MAX=$adaptive_max"
