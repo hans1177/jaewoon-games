@@ -70,6 +70,73 @@ export async function fetchRobloxRuntimeFoundationEvidence({universeId='',apiKey
   let body;try{body=JSON.parse(text);}catch{throw new Error('ROBLOX_FOUNDATION_DATASTORE_INVALID_JSON');}
   return body&&typeof body.value==='object'&&body.value!==null?body.value:body;
 }
+
+export async function probeRobloxOpenCloudEngine({
+  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,
+}={}){
+  const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
+  if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
+  if(!/^[1-9][0-9]*$/.test(place))throw new Error('valid placeId required');
+  if(!Number.isInteger(version)||version<=0)throw new Error('valid versionNumber required');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const script=[
+    'local Players=game:GetService("Players")',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_PLACE="..tostring(game.PlaceId))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_VERSION="..tostring(game.PlaceVersion))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT="..tostring(workspace:GetAttribute("Foundation_SERVER_BOOT")==true))',
+  ].join(';');
+  const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
+  const decode=async(response,label)=>{
+    const text=await response.text();
+    let body={};try{body=text?JSON.parse(text):{};}catch{throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_${label}_INVALID_JSON`);}
+    return{body,text};
+  };
+  const created=await fetchImpl(`${base}/luau-execution-session-tasks`,{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':key},
+    body:JSON.stringify({script,timeout:'20s'}),
+  });
+  const createdDecoded=await decode(created,'CREATE');
+  if(created.status===401||created.status===403)return Object.freeze({available:false,permissionDenied:true,status:created.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION'});
+  if(!created.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_${created.status}:${createdDecoded.text.slice(0,300)}`);
+  const rawPath=clean(createdDecoded.body?.path).replace(/^\/+/, '').replace(/^cloud\/v2\//,'');
+  if(!rawPath)throw new Error('ROBLOX_OPEN_CLOUD_ENGINE_TASK_PATH_MISSING');
+  const taskUrl=`https://apis.roblox.com/cloud/v2/${rawPath}`;
+  let task=createdDecoded.body;
+  const polls=Math.max(1,Math.min(120,Number(maxPolls)||30));
+  const delay=Math.max(0,Number(pollIntervalMs)||0);
+  for(let i=0;i<polls&&!['COMPLETE','FAILED'].includes(clean(task?.state).toUpperCase());i++){
+    if(delay>0)await new Promise(resolve=>setTimeout(resolve,delay));
+    const response=await fetchImpl(taskUrl,{headers:{'x-api-key':key}});
+    const decoded=await decode(response,'TASK');
+    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION'});
+    if(!response.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_TASK_HTTP_${response.status}:${decoded.text.slice(0,300)}`);
+    task=decoded.body;
+  }
+  const state=clean(task?.state).toUpperCase()||'UNKNOWN';
+  if(state!=='COMPLETE')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
+  const logsResponse=await fetchImpl(`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}});
+  const logsDecoded=await decode(logsResponse,'LOGS');
+  if(!logsResponse.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_LOGS_HTTP_${logsResponse.status}:${logsDecoded.text.slice(0,300)}`);
+  const rows=Array.isArray(logsDecoded.body?.luauExecutionSessionTaskLogs)?logsDecoded.body.luauExecutionSessionTaskLogs:[];
+  const messages=[];
+  for(const row of rows){
+    for(const message of Array.isArray(row?.structuredMessages)?row.structuredMessages:[])if(clean(message?.message))messages.push(clean(message.message));
+    for(const message of Array.isArray(row?.messages)?row.messages:[])if(clean(message))messages.push(clean(message));
+  }
+  const joined=messages.join('\n');
+  const exactPlace=joined.includes(`JAEWOON_OPEN_CLOUD_ENGINE_PLACE=${place}`);
+  const exactVersion=joined.includes(`JAEWOON_OPEN_CLOUD_ENGINE_VERSION=${version}`);
+  const serverBootObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
+  return Object.freeze({
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,serverBootObserved,
+    playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
+    state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),
+  });
+}
+
 function args(argv){const out={};for(let i=0;i<argv.length;i++){const x=argv[i];if(!x.startsWith('--'))continue;const [k,v]=x.slice(2).split('=',2);out[k]=v??argv[++i];}return out;}
 async function main(){
   const a=args(process.argv.slice(2));
