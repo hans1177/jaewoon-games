@@ -1,5 +1,5 @@
 {
-  "version": 120,
+  "version": 121,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2399,7 +2399,25 @@
     "admissionAuthority": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
     "strictDesignScoreAdmissionAuthority": false,
     "webAdmissionAuthority": false,
-    "humanReadableSyncDocumentRequired": false
+    "humanReadableSyncDocumentRequired": false,
+    "designEvolution": {
+      "root": "EXISTING_DESIGN_RUNTIME",
+      "coordinator": "tools/company-design-cycle.mjs",
+      "intelligence": "tools/vibe2-design-intelligence.mjs",
+      "learning": "tools/vibe2-learning-motor.mjs",
+      "loop": "STABILIZE_UNDERSTAND_OBSERVE_DIAGNOSE_PRIORITIZE_BLUEPRINT_PROPOSE_COMPARE_REVISE_VALIDATE_LEARN_REPLAN_EXPAND",
+      "newDesignPipelineForbidden": true,
+      "unlimitedRevisions": true,
+      "repeatedOwnerRequestCreatesNewRevision": true,
+      "automaticSignalDeduplicationPreserved": true,
+      "baseConceptReferenceNotPrison": true,
+      "genreChallengeAllowed": true,
+      "stabilityRepairPreemptsCreativeExpansion": true,
+      "planABRequiredForMaterialChange": true,
+      "antiMonotonyRequired": true,
+      "narrativeDialogueVoiceContractRequiredWhenApplicable": true,
+      "verifiedLearningReturnsToExistingLearningMotor": true
+    }
   },
   "releaseExposureLifecycle": {
     "version": 2,
