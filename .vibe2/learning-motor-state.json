@@ -1686,7 +1686,8 @@
       "coding_scwdmt",
       "coding_1bttryx",
       "coding_1ngy8uu",
-      "coding_1gplbgc"
+      "coding_1gplbgc",
+      "coding_yl98tu"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -2829,9 +2830,9 @@
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 98,
+        "verifiedApplications": 99,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 221,
+        "totalGenerationAttempts": 224,
         "verifiedFailures": 413,
         "games": {
           "territory-war": 2,
@@ -2848,10 +2849,12 @@
           "village-dungeons": 3,
           "survival": 5,
           "line-defense": 54,
-          "seed-casual-realm-weaver": 1
+          "seed-casual-realm-weaver": 1,
+          "__vibe_system__": 1
         },
         "targets": {
-          "web": 98
+          "web": 98,
+          "system": 1
         },
         "contextModes": {
           "UNKNOWN": {
@@ -2895,14 +2898,14 @@
             "lastUpdatedAt": "2026-09-20T17:56:17.499Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 1,
+            "verifiedApplications": 2,
             "verifiedFailures": 24,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 1,
-            "totalContextBytes": 20210,
-            "lastEvidence": "coding_1lu2bkk",
+            "totalGenerationAttempts": 4,
+            "totalContextBytes": 68291,
+            "lastEvidence": "coding_yl98tu",
             "lastFailureEvidence": "coding_negative_xvp9db",
-            "lastUpdatedAt": "2026-09-23T00:00:15.009Z"
+            "lastUpdatedAt": "2026-09-23T00:06:24.370Z"
           }
         },
         "failureFingerprints": {
@@ -3661,9 +3664,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_11j041i",
+        "lastEvidence": "coding_yl98tu",
         "lastFailureEvidence": "coding_negative_xvp9db",
-        "lastUpdatedAt": "2026-09-23T00:00:15.009Z"
+        "lastUpdatedAt": "2026-09-23T00:06:24.370Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 122,
@@ -8649,7 +8652,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-23T00:04:36.054Z",
+    "lastBuiltAt": "2026-09-23T00:06:24.404Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -12741,5 +12744,5 @@
       "knowledge_1o08lh7"
     ]
   },
-  "updatedAt": "2026-09-23T00:04:36.054Z"
+  "updatedAt": "2026-09-23T00:06:24.404Z"
 }
