@@ -711,13 +711,13 @@ function presentationStagesForProject(project={}){
   const genreGuide=genreCommercialGuidance(project),commercialGuide=commercialReadinessGuidance();
   return stages.map(stage=>({...stage,goal:`${stage.goal}\n[GENRE_PRESENTATION_GUIDANCE] ${genreGuide}\n[COMMERCIAL_READINESS_GUIDANCE] ${commercialGuide}`}));
 }
-const PRESENTATION_EVOLUTION_SIGNAL_PRIORITY=Object.freeze({OWNER_CHANGE_REQUEST:0,RUNTIME_CAPTURE_COMPARISON:1,VISUAL_DEBT:2,PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE:3,INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK:4});
+const PRESENTATION_EVOLUTION_SIGNAL_PRIORITY=Object.freeze({OWNER_CHANGE_REQUEST:0,RUNTIME_CAPTURE_COMPARISON:1,GOLDEN_SCENE_OR_VISUAL_TARGET_GAP:2,VISUAL_DEBT:3,PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE:4,INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK:5});
 const PRESENTATION_EVOLUTION_PASSES=Object.freeze(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 function presentationRelevantText(value=''){
   return /(?:graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|idle|walk|run|turn|impact|vfx|effect|particle|trail|audio|music|bgm|sound|sfx|camera|frame|fps|performance|mobile|readability|placeholder|primitive|silhouette|style|cinematic|art.?direction|design|detail|그래픽|비주얼|연출|에셋|모델|환경|배경|재질|조명|애니|움직임|모션|공격 ?모션|이펙트|효과|음악|브금|사운드|카메라|프레임|성능|가독성|플레이스홀더|실루엣|스타일|시네마틱|디자인|외형|묘사|디테일|컨셉)/i.test(clean(value));
 }
 function graphicsEvolutionAffectedPasses(text=''){
-  const value=clean(text),passes=[];
+  const value=clean(text).replace(/[_:-]+/g,' '),passes=[];
   const add=pass=>{if(PRESENTATION_EVOLUTION_PASSES.includes(pass)&&!passes.includes(pass))passes.push(pass);};
   if(/(?:\b(?:asset|model|environment|background|terrain|material|lighting|placeholder|primitive|silhouette|style|landmark|art)\b|에셋|모델|환경|배경|재질|조명|실루엣|외형|디자인|디테일|컨셉)/i.test(value))add('ASSET_ADAPTATION');
   if(/(?:\b(?:motion|animation|move|movement|idle|walk|run|turn|smooth|blend|weight|locomotion|secondary|procedural)\b|애니|움직임|모션|걷|달리|회전|부드럽|체중|보조모션)/i.test(value))add('LIVING_MOTION');
@@ -729,8 +729,64 @@ function graphicsEvolutionAffectedPasses(text=''){
   if(!passes.length&&presentationRelevantText(value))add('POLISH_MOBILE');
   return passes;
 }
+function normalizedOwnerPresentationIntent(value=''){
+  return clean(value).toLowerCase().replace(/\s+/g,' ').replace(/[^a-z0-9가-힣 _-]+/g,'').trim();
+}
+function ownerPresentationEventIdentity(item={},evidence=[]){
+  const markers=(evidence||[]).map(clean);
+  return clean(markers.find(value=>value.startsWith('owner-request-instance:'))?.slice('owner-request-instance:'.length))
+    ||clean(item.ownerRequestInstanceId)
+    ||clean(item.ownerDirectiveRevision)
+    ||clean(item.id)
+    ||clean(markers.find(value=>value.startsWith('owner-directive-event:'))?.slice('owner-directive-event:'.length));
+}
 function graphicsEvolutionSignalFingerprint(signal={}){
+  if(clean(signal.source)==='OWNER_CHANGE_REQUEST'){
+    const eventId=clean(signal.eventId||signal.key);
+    return stableHash(['OWNER_REQUEST_EVENT_INSTANCE',eventId].join('|'));
+  }
   return stableHash([clean(signal.source),clean(signal.key),clean(signal.text).replace(/\s+/g,' ').toLowerCase()].join('|'));
+}
+function ownerPresentationRepeatCount(queue={},project={},intent=''){
+  const target=normalizedOwnerPresentationIntent(intent);
+  if(!target)return 0;
+  let count=0;
+  for(const item of Array.isArray(queue?.tasks)?queue.tasks:[]){
+    if(clean(item.gameId)!==clean(project.gameId)||isPresentationTaskRecord(item))continue;
+    if(item.ownerDirective!==true||clean(item.status).toLowerCase()!=='verified')continue;
+    const evidence=(item.evidence||[]).map(clean).filter(Boolean);
+    const marker=evidence.find(value=>value.startsWith('owner-presentation-change:'));
+    const value=marker?marker.slice('owner-presentation-change:'.length):clean(item.goal);
+    if(normalizedOwnerPresentationIntent(value)===target)count+=1;
+  }
+  return count;
+}
+function graphicsEvolutionHistory(queue={},project={},affectedPasses=[]){
+  let verified=0,failed=0;
+  const passes=new Set(affectedPasses);
+  for(const item of Array.isArray(queue?.tasks)?queue.tasks:[]){
+    if(clean(item.gameId)!==clean(project.gameId)||!(item.evidence||[]).some(value=>clean(value)==='graphics-evolution:evidence-driven'))continue;
+    const pass=(item.evidence||[]).map(clean).find(value=>value.startsWith('presentation-pass:'))?.slice('presentation-pass:'.length).toUpperCase();
+    if(pass&&!passes.has(pass))continue;
+    const status=clean(item.status).toLowerCase(),evidence=(item.evidence||[]).map(clean);
+    if(status==='verified')verified+=1;
+    if(status==='failed'||evidence.some(value=>/regression.*fail|failure-cause:fan-in-regression-failed/i.test(value)))failed+=1;
+  }
+  return{verified,failed};
+}
+function graphicsEvolutionOpportunityScore(signal={},history={}){
+  const base={OWNER_CHANGE_REQUEST:120,RUNTIME_CAPTURE_COMPARISON:92,GOLDEN_SCENE_OR_VISUAL_TARGET_GAP:88,VISUAL_DEBT:80,PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE:86,INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK:76}[clean(signal.source)]||60;
+  const text=clean(signal.text);
+  const coreVisibility=/(?:player|character|hero|boss|combat|core|hud|플레이어|캐릭터|주인공|보스|전투|핵심)/i.test(text)?12:0;
+  const severity=/(?:broken|regression|failure|failed|unreadable|clutter|placeholder|primitive|심각|깨짐|퇴보|실패|가독성|플레이스홀더)/i.test(text)?12:0;
+  const platformImpact=/(?:mobile|frame|fps|performance|touch|모바일|프레임|성능|터치)/i.test(text)?8:0;
+  const ownerRepeat=Math.max(0,Number(signal.ownerRepeatCount)||0);
+  const repeatBoost=clean(signal.source)==='OWNER_CHANGE_REQUEST'?Math.max(0,ownerRepeat-1)*18:0;
+  const expectedGain=Math.min(15,Math.max(0,(signal.affectedPasses||[]).length*4));
+  const changeCost=Math.max(0,((signal.affectedPasses||[]).length-1)*2);
+  const regressionRisk=Math.min(18,Math.max(0,Number(history.failed)||0)*6);
+  const score=Math.max(0,base+coreVisibility+severity+platformImpact+repeatBoost+expectedGain-changeCost-regressionRisk);
+  return{score,components:{base,coreVisibility,severity,platformImpact,repeatBoost,expectedGain,changeCost:-changeCost,regressionRisk:-regressionRisk}};
 }
 function presentationPrefix(project={}){
   return clean(project.engine).toLowerCase()==='web'?clean(project.gameId):`${clean(project.gameId)}-${clean(project.engine).toLowerCase()}`;
@@ -741,14 +797,19 @@ function isPresentationTaskRecord(item={}){
 }
 function collectGraphicsEvolutionSignals(project={},queue={tasks:[]}){
   const signals=[];
-  const push=(source,key,text)=>{
+  const push=(source,key,text,meta={})=>{
     const value=clean(text);
     if(!value||!presentationRelevantText(value))return;
     const affectedPasses=graphicsEvolutionAffectedPasses(value);
     if(!affectedPasses.length)return;
-    const signal={source,key:clean(key)||source,text:value,affectedPasses};
+    const signal={source,key:clean(key)||source,text:value,affectedPasses,eventId:clean(meta.eventId)||null,ownerRepeatCount:Number(meta.ownerRepeatCount)||0};
     signal.fingerprint=graphicsEvolutionSignalFingerprint(signal);
     signal.priority=PRESENTATION_EVOLUTION_SIGNAL_PRIORITY[source]??99;
+    const history=graphicsEvolutionHistory(queue,project,affectedPasses);
+    signal.history=history;
+    const scored=graphicsEvolutionOpportunityScore(signal,history);
+    signal.score=scored.score;
+    signal.scoreComponents=scored.components;
     if(!signals.some(row=>row.fingerprint===signal.fingerprint))signals.push(signal);
   };
   const runtimeEvidence=[
@@ -758,7 +819,8 @@ function collectGraphicsEvolutionSignals(project={},queue={tasks:[]}){
     ...(project.developmentValidation?.blockers||[])
   ].filter(Boolean);
   for(const value of runtimeEvidence){
-    if(/(?:frame|fps|performance|mobile.*(?:visual|effect|presentation)|presentation.*performance)/i.test(value))push('PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE','runtime-performance',value);
+    if(/(?:golden.?scene|visual.?target|presentation.?quality.?gap|quality.?gap|target.?frame)/i.test(value))push('GOLDEN_SCENE_OR_VISUAL_TARGET_GAP','runtime-quality-gap',value);
+    else if(/(?:frame|fps|performance|mobile.*(?:visual|effect|presentation)|presentation.*performance)/i.test(value))push('PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE','runtime-performance',value);
     else if(/(?:placeholder|primitive|asset|model|background|silhouette|style|visual.?debt)/i.test(value))push('VISUAL_DEBT','runtime-visual-debt',value);
     else push('RUNTIME_CAPTURE_COMPARISON','runtime-presentation',value);
   }
@@ -767,18 +829,25 @@ function collectGraphicsEvolutionSignals(project={},queue={tasks:[]}){
     const status=clean(item.status).toLowerCase();
     if(isPresentationTaskRecord(item))continue;
     const evidence=(item.evidence||[]).map(clean).filter(Boolean);
-    if(item.ownerDirective===true&&status==='verified'&&presentationRelevantText(item.goal))push('OWNER_CHANGE_REQUEST',clean(item.id),clean(item.goal));
+    if(item.ownerDirective===true&&status==='verified'&&presentationRelevantText(item.goal)){
+      const eventId=ownerPresentationEventIdentity(item,evidence);
+      const repeat=ownerPresentationRepeatCount(queue,project,item.goal);
+      push('OWNER_CHANGE_REQUEST',eventId,clean(item.goal),{eventId,ownerRepeatCount:repeat});
+    }
     if(status!=='verified')continue;
     for(const marker of evidence){
       if(!presentationRelevantText(marker))continue;
-      if(/^owner-presentation-change:/i.test(marker))push('OWNER_CHANGE_REQUEST',clean(item.id),marker.slice('owner-presentation-change:'.length));
+      if(/^owner-presentation-change:/i.test(marker)){
+        const intent=marker.slice('owner-presentation-change:'.length),eventId=ownerPresentationEventIdentity(item,evidence),repeat=ownerPresentationRepeatCount(queue,project,intent);
+        push('OWNER_CHANGE_REQUEST',eventId,intent,{eventId,ownerRepeatCount:repeat});
+      }else if(/(?:golden.?scene|visual.?target|presentation.?quality.?gap|quality.?gap|target.?frame)/i.test(marker))push('GOLDEN_SCENE_OR_VISUAL_TARGET_GAP',clean(item.id),marker);
       else if(/(?:visual.?debt|placeholder|primitive)/i.test(marker))push('VISUAL_DEBT',clean(item.id),marker);
       else if(/(?:frame|fps|performance)/i.test(marker))push('PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE',clean(item.id),marker);
       else if(/(?:playtest|feedback)/i.test(marker))push('INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK',clean(item.id),marker);
       else if(/(?:runtime|regression|failure|failed|issue|readability|clutter)/i.test(marker))push('RUNTIME_CAPTURE_COMPARISON',clean(item.id),marker);
     }
   }
-  return signals.sort((a,b)=>a.priority-b.priority||a.fingerprint.localeCompare(b.fingerprint));
+  return signals.sort((a,b)=>b.score-a.score||a.priority-b.priority||a.fingerprint.localeCompare(b.fingerprint));
 }
 function presentationEvolutionTasksForFingerprint(queue={},fingerprint=''){
   return (Array.isArray(queue?.tasks)?queue.tasks:[]).filter(item=>(item.evidence||[]).some(value=>clean(value)===`graphics-evolution-trigger:${fingerprint}`));
@@ -814,7 +883,11 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
       continue;
     }
     const signalText=clean(signal.text).slice(0,800);
-    const goal=`${stage.goal}\n[GRAPHICS_EVOLUTION_CYCLE] cycle=${cycle}; trigger=${signal.source}; fingerprint=${signal.fingerprint}; affected=${signal.affectedPasses.join(',')}\n새 근거: ${signalText}\n이 근거와 직접 관련된 기존 책임 시스템만 수정한다. 같은 신호로 완료된 범위를 반복 재작업하지 않고 영향 없는 게임플레이·저장·밸런스·판정은 보존한다.`;
+    const alternativesRequired=signal.score>=100||signal.ownerRepeatCount>=2||Number(signal.history?.failed||0)>0||signal.affectedPasses.length>=3;
+    const alternativeInstruction=alternativesRequired
+      ?'이 작업은 고영향 또는 반복 요청이므로 구현 전 최소 2개 접근을 비교하고, 기존 구조 보존·예상 표현 개선폭·회귀 위험을 기준으로 하나를 선택한다. 이전 접근을 이유 없이 그대로 반복하지 않는다.'
+      :'영향 범위를 최소화하고 기존 책임 시스템을 직접 수정한다.';
+    const goal=`${stage.goal}\n[INTELLIGENT_GRAPHICS_EVOLUTION] OBSERVE→SCORE→CHOOSE→IMPROVE→COMPARE→LEARN→REPLAN\n[GRAPHICS_EVOLUTION_CYCLE] cycle=${cycle}; trigger=${signal.source}; event=${signal.eventId||'AUTO'}; fingerprint=${signal.fingerprint}; score=${signal.score}; ownerRepeat=${signal.ownerRepeatCount}; affected=${signal.affectedPasses.join(',')}\n새 근거: ${signalText}\n${alternativeInstruction}\n수정 후 마지막 PASS checkpoint와 실제 전후 비교를 수행하고, 좋아진 결과와 실패/퇴보 결과 모두 기존 learning-motor로 반환한다. 영향 없는 게임플레이·저장·밸런스·판정은 보존한다.`;
     const out=task(id,project,goal,[relative],signal.source==='OWNER_CHANGE_REQUEST'?'owner-immediate':'normal','medium',[
       'asset-production-parallel:v1',
       'presentation-quality-pipeline:v1',
@@ -824,6 +897,14 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
       `graphics-evolution-trigger-source:${signal.source}`,
       `graphics-evolution-trigger:${signal.fingerprint}`,
       `graphics-evolution-affected-passes:${signal.affectedPasses.join(',')}`,
+      `graphics-evolution-signal-event:${signal.eventId||'AUTO'}`,
+      `graphics-evolution-priority-score:${signal.score}`,
+      `graphics-evolution-owner-repeat-count:${signal.ownerRepeatCount}`,
+      `graphics-evolution-score-components:${encodeURIComponent(JSON.stringify(signal.scoreComponents))}`,
+      `graphics-evolution-alternatives-required:${alternativesRequired?'YES':'NO'}`,
+      'graphics-evolution-before-after-comparison-required',
+      'graphics-evolution-verified-result-return-to-learning-required',
+      'graphics-evolution-replan-after-checkpoint',
       'graphics-evolution-unlimited-generations:yes',
       'graphics-evolution-pass-alone-does-not-requeue',
       'graphics-evolution-same-signal-duplicate-forbidden',
@@ -840,7 +921,9 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
     out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
     out.atomicCompletionRequired=true;
     out.graphicsEvolutionCycle=cycle;
-    out.graphicsEvolutionTrigger={source:signal.source,fingerprint:signal.fingerprint,affectedPasses:[...signal.affectedPasses]};
+    out.graphicsEvolutionTrigger={source:signal.source,eventId:signal.eventId||null,fingerprint:signal.fingerprint,score:signal.score,scoreComponents:{...signal.scoreComponents},ownerRepeatCount:signal.ownerRepeatCount,affectedPasses:[...signal.affectedPasses]};
+    out.graphicsEvolutionDecision={loop:['OBSERVE','SCORE','CHOOSE','IMPROVE','COMPARE','LEARN','REPLAN'],alternativesRequired,minimumAlternatives:alternativesRequired?2:1,history:{...signal.history},releaseAuthority:false};
+    if(signal.source==='OWNER_CHANGE_REQUEST')out.ownerDirective=true;
     out.evidence=[...new Set([...(out.evidence||[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required'])];
     return out;
   }

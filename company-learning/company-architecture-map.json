@@ -1,5 +1,5 @@
 {
-  "version": 119,
+  "version": 120,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2348,7 +2348,14 @@
       "unlimitedEvidenceDrivenEvolutionGenerations": true,
       "artificialEvolutionGenerationCapForbidden": true,
       "centralDocumentAndImplementationSynchronizationRequired": true,
-      "implementationBinding": "tools/vibe2-auto-planner.mjs::findPresentationQualityTask"
+      "implementationBinding": "tools/vibe2-auto-planner.mjs::findPresentationQualityTask",
+      "intelligentEvolutionLoop": "OBSERVE_SCORE_CHOOSE_IMPROVE_COMPARE_LEARN_REPLAN",
+      "qualityOpportunityDetectionAllowed": true,
+      "ownerRepeatedIdenticalRequestIsNewSignal": true,
+      "ownerRequestSemanticDeduplicationForbidden": true,
+      "automaticSignalDeduplicationPreserved": true,
+      "verifiedOutcomeReturnsToExistingLearningMotor": true,
+      "highImpactAlternativeReviewWithinSameGraphicsRoot": true
     }
   },
   "recordsGovernance": {

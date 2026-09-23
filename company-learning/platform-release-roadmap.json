@@ -1,5 +1,5 @@
 {
-  "version": 294,
+  "version": 295,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -11719,7 +11719,7 @@
       "genericPrimitiveAssemblyCannotBeDeclaredFinalHighQuality": true
     },
     "highEndVisualProductionContract": {
-      "version": 3,
+      "version": 4,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
@@ -12026,7 +12026,117 @@
           "centralDocumentAndImplementationMustStaySynchronized": true,
           "implementationBindingRequired": true,
           "implementationBinding": "tools/vibe2-auto-planner.mjs::findPresentationQualityTask",
-          "policyImplementationMismatchAction": "BLOCK_COMPLETION_AND_REPAIR_EXISTING_RESPONSIBLE_SYSTEM"
+          "policyImplementationMismatchAction": "BLOCK_COMPLETION_AND_REPAIR_EXISTING_RESPONSIBLE_SYSTEM",
+          "ownerExplicitRequestDedupePolicy": {
+            "semanticTextDeduplicationForbidden": true,
+            "eachExplicitOwnerRequestOccurrenceIsNewSignal": true,
+            "repeatedIdenticalOwnerTextCreatesNewGeneration": true,
+            "automaticSignalSemanticDeduplicationStillRequired": true,
+            "ownerSignalIdentity": "OWNER_REQUEST_EVENT_INSTANCE",
+            "fallbackEventIdentityOrder": [
+              "ownerRequestInstanceId",
+              "ownerDirectiveRevision",
+              "taskId",
+              "verifiedQueueEventIdentity"
+            ]
+          },
+          "ownerRepeatedRequestBehavior": {
+            "meaning": "PRIOR_PRESENTATION_ATTEMPT_STILL_INSUFFICIENT_FOR_OWNER_INTENT",
+            "priorityBoostRequired": true,
+            "previousApproachMayNotBeBlindlyRepeated": true,
+            "alternativeReviewRequired": true,
+            "minimumAlternatives": 2,
+            "unlimitedRepeatsAllowed": true
+          }
+        },
+        "intelligentEvolutionLoop": {
+          "enabled": true,
+          "loop": [
+            "OBSERVE",
+            "SCORE",
+            "CHOOSE",
+            "IMPROVE",
+            "COMPARE",
+            "LEARN",
+            "REPLAN"
+          ],
+          "objective": "AUTONOMOUSLY_FIND_AND_PRIORITIZE_THE_HIGHEST_VALUE_PRESENTATION_IMPROVEMENT_WITHOUT_CREATING_RANDOM_OR_UNBOUNDED_SELF_MUTATION",
+          "observe": {
+            "sources": [
+              "OWNER_CHANGE_REQUEST",
+              "GOLDEN_SCENE_OR_VISUAL_TARGET_GAP",
+              "VISUAL_DEBT",
+              "RUNTIME_CAPTURE_COMPARISON",
+              "INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK",
+              "PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE",
+              "VERIFIED_REGRESSION_OR_QUALITY_GAP"
+            ],
+            "problemOnlyNotRequired": true,
+            "verifiedQualityOpportunityMayTriggerWork": true,
+            "noEvidenceRandomPolishForbidden": true
+          },
+          "score": {
+            "required": true,
+            "dimensions": [
+              "OWNER_PRIORITY",
+              "CORE_GAMEPLAY_VISIBILITY",
+              "PLAYER_EXPOSURE_FREQUENCY",
+              "QUALITY_GAP_SEVERITY",
+              "REPEATED_OWNER_REQUEST",
+              "RUNTIME_OR_REGRESSION_SEVERITY",
+              "EXPECTED_PRESENTATION_GAIN",
+              "MOBILE_OR_PLATFORM_IMPACT",
+              "CHANGE_COST",
+              "REGRESSION_RISK"
+            ],
+            "higherValueWorkPreferred": true,
+            "priorityMayOrderWorkButMayNotDeleteLiveSignals": true,
+            "ownerExplicitRequestHighestAuthority": true
+          },
+          "choose": {
+            "affectedScopeOnlyPreferred": true,
+            "highImpactOrRepeatedRequestRequiresAlternatives": true,
+            "minimumAlternativesForHighImpact": 2,
+            "winnerRule": "HIGHEST_EXPECTED_PRESENTATION_GAIN_WITH_LOWEST_REGRESSION_RISK_AND_EXISTING_STRUCTURE_PRESERVATION",
+            "wrapperOrShadowAlternativeForbidden": true
+          },
+          "improve": {
+            "directResponsibleSystemModificationPreferred": true,
+            "preserveUnaffectedBehavior": true,
+            "preserveGameplayBalanceSaveProgressionEconomyAndHitSemantics": true
+          },
+          "compare": {
+            "compareAgainstLastPassingCheckpoint": true,
+            "beforeAfterEvidenceRequiredForMaterialPresentationChange": true,
+            "compareAxes": [
+              "READABILITY",
+              "MOTION_CONTINUITY",
+              "IMPACT_FEEL",
+              "VISUAL_IDENTITY",
+              "WORLD_COHESION",
+              "SCREEN_CLUTTER",
+              "FRAME_STABILITY",
+              "MOBILE_INPUT_VISIBILITY"
+            ],
+            "regressionMayNotBeAcceptedAsImprovement": true,
+            "insufficientImprovementMayTryDifferentVerifiedStrategy": true
+          },
+          "learn": {
+            "verifiedResultOnly": true,
+            "producer": "tools/vibe2-learning-motor.mjs",
+            "positiveAndNegativeOutcomeLearningRequired": true,
+            "sameGameAndSameScopePriority": true,
+            "repeatedOwnerRequestMarksPriorPresentationAttemptAsInsufficientForThatIntent": true,
+            "learningMayNotExpandAuthority": true,
+            "learningMayNotBypassQaOrRuntimeEvidence": true
+          },
+          "replan": {
+            "afterVerifiedCheckpoint": true,
+            "nextHighestValueSignalPreferred": true,
+            "noSignalAction": "KEEP_QUEUE_LIVE_AND_AWAIT_CAUSAL_SIGNAL",
+            "unlimitedEvidenceDrivenGenerations": true
+          },
+          "releaseAuthority": false
         }
       },
       "cinematicDirection": {
@@ -12131,7 +12241,7 @@
       "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract"
     },
     "graphicsProductionUnification": {
-      "version": 3,
+      "version": 4,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "externalWorkUnit": "GRAPHICS_PRODUCTION",
@@ -12179,7 +12289,13 @@
         "unlimitedEvidenceDrivenEvolutionGenerations": true,
         "artificialEvolutionGenerationCapForbidden": true,
         "perRunExecutionCapacityStillBounded": true,
-        "policyAndPlannerBindingMustMatch": true
+        "policyAndPlannerBindingMustMatch": true,
+        "intelligentObserveScoreChooseImproveCompareLearnReplan": true,
+        "ownerRepeatedIdenticalRequestCreatesNewEvolutionSignal": true,
+        "ownerRequestSemanticTextDeduplicationForbidden": true,
+        "automaticSignalDeduplicationPreserved": true,
+        "qualityOpportunityMayCreateEvolutionSignal": true,
+        "highImpactAlternativeComparisonRequired": true
       },
       "authorityBoundaries": {
         "graphicsDepartmentOwnsVisualProductionDirection": true,
