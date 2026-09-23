@@ -20,6 +20,14 @@ function fixture({score=80,hard=[],critical=[],repair=true}={}){
   const draft={
     identity:'distinct identity',playerFantasy:'fantasy',coreFun:'choice changes state',
     coreLoop:['act','observe','choose'],signatureSystems:[{name:'A',purpose:'p',playerChoice:'c'},{name:'B',purpose:'p',playerChoice:'c'}],
+    conceptBlueprint:{premise:'detailed premise',designPillars:['a','b','c'],sessionArc:['start','middle','end'],emotionalCurve:['curious','tense','relief'],worldRules:['rule one','rule two'],signatureMoments:['moment one','moment two']},
+    designAlternatives:[
+      {id:'PLAN_A',concept:'deepen current loop',genreDirection:'casual',coreLoopDifference:'more meaningful choices',playerValue:'clarity',risks:'complexity',reversibility:'high'},
+      {id:'PLAN_B',concept:'add a reversible hybrid event',genreDirection:'casual hybrid',coreLoopDifference:'temporary alternate pressure',playerValue:'variety',risks:'learning cost',reversibility:'event can be disabled'}
+    ],
+    contentDiversityPlan:{regionsOrSpaces:[{name:'A'},{name:'B'}],enemiesActorsOrObstacles:[{name:'E1'},{name:'E2'}],variationGuard:'not stats only'},
+    creativeChallenge:{baselineRelationship:'preserve identity',experiments:['hybrid event'],genreShiftConsidered:false,genreShiftChallenger:'none',selectedChallenge:'hybrid event',rollbackCondition:'disable event'},
+    narrativeDirection:{applicable:false,worldRules:[],characterSpeechProfiles:[],scenePlans:[],foreshadowingAndPayoff:[],dialoguePrinciples:[],inspirationReferences:[]},
     progressionDirection:'grow',visualDirection:'clear',mobileUx:'touch',marketTargetDirection:'market',
     steamExpansionDecision:'later',multiplayerMode:'SINGLE',multiplayerExpansionDecision:'validated later',
     technicalAssumptions:[],validationQuestions:[],openQuestions:[]
@@ -100,4 +108,19 @@ test('workflow checks deterministic recovery before Gemini quota and gate never 
   assert.match(workflow,/steps\.deterministic_recovery\.outputs\.materialized != 'true'/);
   assert.match(baseline,/deterministic-design-pre-gate-pass-required/);
   assert.match(baseline,/aiReviewIsGateAuthority:false/);
+});
+
+
+test('stale checkpoint without continuous design blueprint is not recovered',()=>{
+  const root=fixture();
+  try{
+    const checkpointPath=path.join(root,'design/g/2026-09-19/design-checkpoint.json');
+    const checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));
+    delete checkpoint.phases.designer_draft.conceptBlueprint;
+    fs.writeFileSync(checkpointPath,JSON.stringify(checkpoint,null,2)+'\n');
+    assert.throws(
+      ()=>materializeDeterministicCheckpointCandidate({gameId:'g',date:'2026-09-19',root}),
+      /CONTINUOUS_DESIGN_CONTRACT_STALE/
+    );
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
