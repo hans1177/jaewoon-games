@@ -1,5 +1,5 @@
 {
-  "version": 299,
+  "version": 300,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -15825,7 +15825,27 @@
               "AUTHORITATIVE_STATE_SYNC"
             ],
             "serverAuthorityAndRemoteValidationMustRemainIntact": true,
-            "singlePlayerEvidenceCannotProveMultiplayerRepair": true
+            "singlePlayerEvidenceCannotProveMultiplayerRepair": true,
+            "userAssistanceRequired": false,
+            "manualOwnerParticipationMayNotBeRequiredForPass": true,
+            "automation": {
+              "required": true,
+              "minimumSyntheticOrRealClients": 2,
+              "machineDrivenScenarios": [
+                "TWO_CLIENT_JOIN_AND_READY",
+                "SIMULTANEOUS_CORE_ACTION",
+                "SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE",
+                "ONE_CLIENT_LEAVE",
+                "ONE_CLIENT_REJOIN",
+                "LATE_JOIN_STATE_RECONCILIATION",
+                "AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC",
+                "DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK"
+              ],
+              "deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable": true,
+              "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": true,
+              "unavailableAutomationAction": "KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION",
+              "userReportedSuccessCannotReplaceMachineEvidence": true
+            }
           },
           "repairCompletion": {
             "requiredEvidence": [
