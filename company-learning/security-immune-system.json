@@ -1,5 +1,5 @@
 {
-  "version": 29,
+  "version": 30,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -465,5 +465,24 @@
     },
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
+  },
+  "updatedAt": "2026-09-23",
+  "graphicsProductionUnificationSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
+    "protections": {
+      "singleCoordinatorDoesNotExpandWriteAuthority": true,
+      "vibeRemainsGameSourceMutationOwner": true,
+      "internalModuleCannotSelfPromoteToTopLevelAuthority": true,
+      "internalModuleCannotSelfAcceptGraphicsPass": true,
+      "oneRootEvidenceCannotHideFailedPlatformChildEvidence": true,
+      "rootEvidenceMustReferenceExactCandidateRevision": true,
+      "assetRightsProvenanceAndTransformHistoryStillRequired": true,
+      "audioDepartmentAuthorityPreserved": true,
+      "gameplayBalanceSaveProgressionEconomyMutationForbiddenForGraphicsReasons": true,
+      "qaSecurityReleaseGateBypassForbidden": true
+    },
+    "failureAction": "QUARANTINE_AFFECTED_GRAPHICS_SCOPE_AND_ROUTE_SAME_GRAPHICS_PRODUCTION_ROOT_TO_ASSET_REPAIR_REQUIRED",
+    "newShadowGraphicsPipelineForbidden": true
   }
 }
