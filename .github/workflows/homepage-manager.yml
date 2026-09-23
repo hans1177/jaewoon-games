@@ -271,7 +271,7 @@ jobs:
             index.html company.html game-catalog.json company-status.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
             assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
-            COMPANY_FLOW.md company-directive.json _headers; do
+            company-directive.json company-learning/platform-release-roadmap.json _headers; do
             test -f "$file"
           done
           node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','company-learning/platform-release-roadmap.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
@@ -349,11 +349,20 @@ jobs:
           if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
           console.log(`HOMEPAGE_ARTBOOK_QA=PASS COUNT=${visible.length}`);
           NODE
-          grep -Fq 'homepageOperations:' COMPANY_FLOW.md
-          grep -Fq 'maxVisibleTestCandidates: 30' COMPANY_FLOW.md
-          grep -Fq 'webStrictScoreMinimum: 80' COMPANY_FLOW.md
-          grep -Fq 'SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR' COMPANY_FLOW.md
-          grep -Fq 'PWA_COMMAND_CHAT_WINDOW' COMPANY_FLOW.md
+          node <<'NODE'
+          const fs=require('fs');
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const homepage=roadmap.serverHomepageIntegration||{};
+          const manager=homepage.managerContract||{};
+          const testing=homepage.testingContract||{};
+          const sync=homepage.documentationSyncContract||{};
+          if(manager.mode!=='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR')throw new Error('HOMEPAGE_MANAGER_MODE_POLICY_MISMATCH');
+          if(testing.maxVisibleTestCandidates!==30)throw new Error('HOMEPAGE_TEST_LIMIT_POLICY_MISMATCH');
+          if(testing.minimumWebStrictScore!==80)throw new Error('HOMEPAGE_TEST_SCORE_POLICY_MISMATCH');
+          if(!Array.isArray(manager.fixedFunctionProtection?.protectedFunctions)||!manager.fixedFunctionProtection.protectedFunctions.includes('PWA_COMMAND_CHAT_WINDOW'))throw new Error('HOMEPAGE_PWA_CHAT_POLICY_MISSING');
+          if(sync.centralPolicyPath!=='company-learning/platform-release-roadmap.json'||sync.humanPolicyMirrorRequired!==false||sync.workDocumentsCannotOverrideCentralPolicy!==true)throw new Error('HOMEPAGE_DOCUMENTATION_SYNC_POLICY_MISMATCH');
+          console.log('HOMEPAGE_CENTRAL_POLICY_DIRECT_VALIDATION=PASS');
+          NODE
           grep -Fq '홈페이지 단일 사후 감독' .github/agents/director.agent.md
           grep -Fxq '/*.json' _headers
           grep -Fxq '/assets/*' _headers
