@@ -1434,7 +1434,24 @@ RunService.Heartbeat:Connect(function(dt)
  end
 
  -- 보스 동료: 해금한 보스 중 최대 3명을 편성하고, 전투력은 리더 레벨에 자동 동기화한다.
- for _,ai in ipairs(aiUsers)do
+  if e.dormant==true then
+   e.part.AssemblyLinearVelocity=Vector3.zero
+  else
+   local target,bd=nil,z.Aggro
+   for _,p in ipairs(Players:GetPlayers())do
+    if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
+   end
+   if target then
+    local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
+    local attackDef=e.def and e.def.Attack;local engage=(attackDef and attackDef.Range)or(e.def and e.def.Attacks and 18)or 5.5
+    if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end
+    if tr and(tr.Position-e.part.Position).Magnitude<=engage and now>=(e.nextAttackAt or 0)and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
+   else
+    local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
+    if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
+   end
+   if (e.part.Position-e.spawn).Magnitude>z.Leash then e.part.CFrame=CFrame.new(e.spawn)end
+   end
   local leader=ai.owner
   if leader and leader.Parent and partyHas(leader,ai.id)and ai.root and ai.root.Parent then
    local zone=n(leader,"CurrentZone",0);local lr=root(leader)
