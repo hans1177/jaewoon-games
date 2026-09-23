@@ -66,6 +66,24 @@ function findFiles(root){
   walk(root);
   return rows;
 }
+function deployableUnityWebBundle(files,gameId){
+  const marker=`/web-games/${gameId}/Build/`;
+  const rows=files.map(file=>({file,normalized:file.replaceAll('\\','/')})).filter(row=>row.normalized.includes(marker));
+  const groups={
+    loader:rows.filter(row=>/\.loader\.js$/.test(row.normalized)),
+    data:rows.filter(row=>/\.data(?:\.|$)/.test(row.normalized)),
+    framework:rows.filter(row=>/\.framework\.js(?:\.|$)/.test(row.normalized)),
+    wasm:rows.filter(row=>/\.wasm(?:\.|$)/.test(row.normalized)),
+  };
+  const missing=Object.entries(groups).filter(([,items])=>items.length===0).map(([name])=>name);
+  const oversized=rows.filter(row=>fs.statSync(row.file).size>25*1024*1024).map(row=>path.basename(row.file));
+  return{
+    pass:missing.length===0&&oversized.length===0,
+    missing,
+    oversized,
+    files:rows.map(row=>({path:row.normalized.slice(row.normalized.indexOf(marker)+1),bytes:fs.statSync(row.file).size}))
+  };
+}
 function failureResult({gameId,sourceRoot,baselineSha='',sourceTree='',buildRunId=null,reason}){
   const stamp=new Date().toISOString();
   return{
@@ -161,8 +179,12 @@ if(mode==='result'){
     const qaFile=files.find(file=>path.basename(file)==='unity-web-gameplay-validation.json');
     const indexSuffix=`/web-games/${gameId}/index.html`;
     const indexFile=files.find(file=>file.replaceAll('\\','/').endsWith(indexSuffix));
+    const deployBundle=deployableUnityWebBundle(files,gameId);
     if(!buildFile||!qaFile||!indexFile){
       result=failureResult({gameId,sourceRoot,baselineSha,sourceTree,buildRunId,reason:'UNITY_WEB_CHILD_EVIDENCE_INCOMPLETE'});
+    }else if(!deployBundle.pass){
+      const detail=[deployBundle.missing.length?`missing=${deployBundle.missing.join(',')}`:'',deployBundle.oversized.length?`oversized=${deployBundle.oversized.join(',')}`:''].filter(Boolean).join(';');
+      result=failureResult({gameId,sourceRoot,baselineSha,sourceTree,buildRunId,reason:`UNITY_WEB_DEPLOY_BUNDLE_INCOMPLETE:${detail}`});
     }else{
       const build=JSON.parse(fs.readFileSync(buildFile,'utf8'));
       const qa=JSON.parse(fs.readFileSync(qaFile,'utf8'));
@@ -216,6 +238,7 @@ if(mode==='result'){
           designBaselineSha256:baselineSha,
           buildRunId,
           buildEvidence:build,
+          deployBundle,
           gameplayEvidence:qa,
           validationSurfaceOnly:true,
           nativeGateAuthority:false,
