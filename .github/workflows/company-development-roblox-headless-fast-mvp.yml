@@ -1,7 +1,16 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/.company-runtime-trigger'
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty means all pending F0 candidates.
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -35,14 +44,23 @@ jobs:
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(!requested&&process.env.EVENT_NAME==='push'&&fs.existsSync('roblox-games/.company-runtime-trigger')){
+            requested=String(fs.readFileSync('roblox-games/.company-runtime-trigger','utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
+          }
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_F0_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=6)break;
+            if(requested&&item.gameId!==requested)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(item.robloxValidationMode!=='HEADLESS_FAST_MVP')continue;
@@ -52,6 +70,7 @@ jobs:
             if(item.robloxBuildSourceRevision!==revision||!/^[0-9a-f]{40}$/i.test(revision)||!/^sha256:[0-9a-f]{64}$/i.test(artifact))continue;
             rows.push({gameId:item.gameId,sourcePath:item.robloxProjectPath||item.targetSourcePath||('roblox-games/'+item.gameId),sourceRevision:revision,artifactIdentity:artifact,baseline:item.designBaselineSource});
           }
+          if(requested&&rows.length===0)throw new Error('ROBLOX_F0_REQUESTED_TARGET_NOT_ELIGIBLE:'+requested);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+rows.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include:rows})+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json='+JSON.stringify(rows)+'\n');
