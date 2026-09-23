@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const canonicalSequence=[
   'CHANGE_DETECTION',
@@ -18,35 +17,30 @@ const canonicalSequence=[
 ];
 
 test('central policy defines one selected-platform router and common evidence contract',()=>{
-  assert.match(flow,/commonExecutionContract:/);
-  assert.match(flow,/router: tools\/company-selected-platform-router\.mjs/);
-  assert.match(flow,/singleRoutingDecisionPoint: true/);
-  assert.match(flow,/commonAdapterContractRequired: true/);
-  assert.match(flow,/commonEvidenceSchemaRequired: true/);
+  const contract=roadmap.commonExecutionContract;
+  assert.equal(contract.router,'tools/company-selected-platform-router.mjs');
+  assert.equal(contract.singleRoutingDecisionPoint,true);
+  assert.equal(contract.commonAdapterContractRequired,true);
+  assert.equal(contract.commonEvidenceSchemaRequired,true);
   for(const field of ['PLATFORM','SOURCE_REVISION','BUILD_OR_PACKAGE_PASSED','ARTIFACT_IDENTITY','RUNTIME_PASSED','INDEPENDENT_QA_PASSED','REGRESSION_PASSED','EXACT_REVISION','LAST_SUCCESSFUL_STAGE','FAILURE_STAGE','FAILURE_SIGNATURE']){
-    assert.match(flow,new RegExp(`- ${field}`));
+    assert.ok(contract.requiredEvidenceFields.includes(field),field);
   }
-  assert.match(flow,/ROBLOX: tools\/vibe3-roblox-platform\.mjs/);
-  assert.match(flow,/UNITY: tools\/company-development-unity-platform\.mjs/);
-  assert.match(flow,/FORTNITE_UEFN: tools\/company-development-uefn-platform\.mjs/);
+  assert.equal(contract.adapters.ROBLOX,'tools/vibe3-roblox-platform.mjs');
+  assert.equal(contract.adapters.UNITY,'tools/company-development-unity-platform.mjs');
 });
 
 test('speed sequence changes execution only and cannot weaken quality gates',()=>{
-  assert.match(flow,/scope: EXECUTION_SPEED_ONLY/);
-  assert.match(flow,/qualityOrEvidenceGateWeakeningForbidden: true/);
-  let cursor=0;
-  for(const stage of canonicalSequence){
-    const next=flow.indexOf(`- ${stage}`,cursor);
-    assert.ok(next>=cursor,`missing or out-of-order speed stage: ${stage}`);
-    cursor=next+stage.length;
-  }
-  assert.match(flow,/buildOncePerSourceFingerprint: true/);
-  assert.match(flow,/sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression: true/);
-  assert.match(flow,/retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches: true/);
-  assert.match(flow,/successfulStepMustNotBeRepeatedWithoutInvalidatingChange: true/);
-  assert.match(flow,/nextCanonicalStageDispatchImmediatelyAfterSuccess: true/);
-  assert.match(flow,/cronRole: WATCHDOG_AND_RECOVERY_ONLY/);
-  assert.match(flow,/cronMustNotBePrimaryProgressionEngine: true/);
+  const speed=roadmap.developmentSpeedExecution;
+  assert.equal(speed.scope,'EXECUTION_SPEED_ONLY');
+  assert.equal(speed.qualityOrEvidenceGateWeakeningForbidden,true);
+  assert.deepEqual(speed.canonicalSequence,canonicalSequence);
+  assert.equal(speed.buildOncePerSourceFingerprint,true);
+  assert.equal(speed.sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression,true);
+  assert.equal(speed.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.equal(speed.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
+  assert.equal(speed.nextCanonicalStageDispatchImmediatelyAfterSuccess,true);
+  assert.equal(speed.cronRole,'WATCHDOG_AND_RECOVERY_ONLY');
+  assert.equal(speed.cronMustNotBePrimaryProgressionEngine,true);
 });
 
 test('Unity and Roblox are the active equal scheduling tier while UEFN remains owner-held',()=>{
@@ -71,7 +65,7 @@ test('canonical machine roadmap owns the execution contract',()=>{
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.humanDocumentRequired,false);
-  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
   assert.equal(roadmap.runtimeContractCannotCreatePolicy,true);
   assert.equal(roadmap.commonExecutionContract.router,'tools/company-selected-platform-router.mjs');
   assert.equal(roadmap.commonExecutionContract.singleRoutingDecisionPoint,true);
