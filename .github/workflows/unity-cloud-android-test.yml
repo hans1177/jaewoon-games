@@ -460,20 +460,40 @@ jobs:
     permissions:
       contents: read
       actions: read
+    outputs:
+      attempted: ${{ steps.legacy.outputs.enabled }}
+      verified: ${{ steps.verify.outputs.verified }}
     env:
       GENYMOTION_API_TOKEN: ${{ secrets.GENYMOTION_API_TOKEN }}
       GENYMOTION_RECIPE_UUID: ${{ secrets.GENYMOTION_RECIPE_UUID }}
     steps:
+      - name: Resolve legacy Genymotion gate availability
+        id: legacy
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$GENYMOTION_API_TOKEN" && -n "$GENYMOTION_RECIPE_UUID" ]]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+            echo 'LEGACY_GENYMOTION_GATE=ENABLED'
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo 'LEGACY_GENYMOTION_GATE=SKIPPED_CREDENTIALS_UNAVAILABLE'
+            echo 'CANONICAL_ANDROID_RUNTIME_GATE=UNITY_ANDROID_RUNTIME_SMOKE_REDROID'
+          fi
+
       - name: Checkout runtime QA tools
+        if: steps.legacy.outputs.enabled == 'true'
         uses: actions/checkout@v4
 
       - name: Download exact APK built above
+        if: steps.legacy.outputs.enabled == 'true'
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build.outputs.artifact_name }}
           path: gate-input
 
       - name: Locate exact APK
+        if: steps.legacy.outputs.enabled == 'true'
         id: apk
         shell: bash
         run: |
@@ -484,6 +504,7 @@ jobs:
           echo "path=$apk" >> "$GITHUB_OUTPUT"
 
       - name: Prepare matching ARM64 Android 16 cloud runtime
+        if: steps.legacy.outputs.enabled == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -535,6 +556,8 @@ jobs:
           echo "[PASS] Matching ARM64 Android runtime ready serial=$serial abi=$abi sdk=$sdk release=$release"
 
       - name: Install and launch exact APK on matching ARM64 runtime
+        if: steps.legacy.outputs.enabled == 'true'
+        id: verify
         shell: bash
         run: |
           set +e
@@ -545,10 +568,11 @@ jobs:
             echo "::error title=JAEWOON_BUILD_ERROR[APK_ANDROID16_INSTALL_OR_LAUNCH_FAILED]::The exact ARM64 APK failed Android 16 ARM64 runtime smoke; smoke exit=$status."
             exit 53
           fi
+          echo 'verified=true' >> "$GITHUB_OUTPUT"
           echo '[PASS] Exact ARM64 APK installed and launched on matching Android 16 ARM64 runtime.'
 
       - name: Upload install gate evidence
-        if: always()
+        if: always() && steps.legacy.outputs.enabled == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: android16-install-gate-${{ github.run_id }}-${{ github.run_attempt }}
@@ -559,7 +583,7 @@ jobs:
           retention-days: 14
 
       - name: Stop ARM64 cloud Android instance
-        if: always()
+        if: always() && steps.legacy.outputs.enabled == 'true'
         shell: bash
         run: |
           set +e
@@ -576,6 +600,7 @@ jobs:
 
   publish:
     needs: [build, android16-install-gate]
+    if: ${{ needs.build.result == 'success' && needs.android16-install-gate.result == 'success' && needs.android16-install-gate.outputs.verified == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
