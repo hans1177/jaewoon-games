@@ -4,7 +4,7 @@ local Config={
  GameId="daechung-rpg",GameName="Five Portal RPG",GameNameKorean="5포탈 RPG: 던전 파티",GameNameEnglish="Five Portal RPG: Dungeon Party",SaveEnabled=true,
  Genre = "RPG",PlayMode = "COOP",SoloPlayable=true,CoopRequired=true,CompetitiveRequired=false,
  MultiplayerRequired = true,MinimumParticipants=2,PartySlots=4,RemoteName="GameAction",RemoteMinInterval=.08,
- GuardMax=100,GuardRegenPerSecond=22,ParryWindow=.22,GuardBreakSeconds=1.15,
+ GuardMax=100,GuardRegenPerSecond=22,ParryWindow=.22,ParryRearmSeconds=.34,GuardBreakSeconds=1.15,
  VillageCenter=Vector3.new(0,2,0),VillageHealRadius=92,CombatLockSeconds=5,
  BaseMaxHP=100,BaseAttack=10,LevelHPGain=10,LevelAttackGain=10,
  QuestBaseGold=50,QuestBaseXP=50,PartyHuntTarget=15,
