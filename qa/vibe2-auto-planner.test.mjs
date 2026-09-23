@@ -1274,7 +1274,7 @@ test('runtime presentation problem evidence can reopen the matching graphics sco
   const next=findWebPresentationQualityTask(project,root,{tasks:foundation});
   assert.equal(next.id,`${gameId}-presentation-vfx-v2`);
   assert.equal(next.graphicsEvolutionTrigger.source,'RUNTIME_CAPTURE_COMPARISON');
-  assert.deepEqual(next.graphicsEvolutionTrigger.affectedPasses,['VFX']);
+  assert.deepEqual(next.graphicsEvolutionTrigger.affectedPasses,['VFX','POLISH_MOBILE']);
 });
 
 test('unrelated gameplay owner change does not create a graphics evolution cycle',()=>{
