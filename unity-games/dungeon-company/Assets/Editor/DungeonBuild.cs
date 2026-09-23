@@ -30,7 +30,7 @@ namespace JaewoonGames.DungeonCompany.Editor
                 scenes = new[] { ScenePath },
                 locationPathName = output,
                 target = BuildTarget.WebGL,
-                options = BuildOptions.Development
+                options = BuildOptions.None
             }, "WEBGL_BUILD_FAILED");
 
             var index = Path.Combine(output, "index.html");
