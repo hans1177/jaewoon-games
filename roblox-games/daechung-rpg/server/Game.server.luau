@@ -226,6 +226,122 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
  end
  return r
 end
+local function gearPart(folder,body,name,size,offset,color,material,shape,rotation)
+ if not body then return nil end
+ local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
+ x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true;x.Anchored=false;if shape then x.Shape=shape end
+ local rot=rotation or Vector3.zero
+ x.CFrame=body.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z));x.Parent=folder
+ local w=Instance.new("WeldConstraint");w.Part0=body;w.Part1=x;w.Parent=x
+ return x
+end
+local function wearMedievalChest(model,folder,variant)
+ local torso=model:FindFirstChild("UpperTorso");if not torso then return false end
+ local t=chooseMesh(ASSETS.MedievalArmor,{"armor","chest","torso","plate","knight"},variant or 1);if not t then return false end
+ local x=t:Clone();x.Name="MedievalAssetArmor";x.Anchored=false;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true
+ local maxAxis=math.max(x.Size.X,x.Size.Y,x.Size.Z);if maxAxis<=0 then x:Destroy();return false end
+ x.Size=x.Size*(3.65/maxAxis);x.CFrame=torso.CFrame*CFrame.Angles(0,math.rad(180),0);x.Parent=folder
+ local w=Instance.new("WeldConstraint");w.Part0=torso;w.Part1=x;w.Parent=x
+ return true
+end
+local function addWeaponTrail(part,color)
+ if not part then return end
+ local a0=Instance.new("Attachment");a0.Name="TrailA";a0.Position=Vector3.new(0,part.Size.Y*.42,0);a0.Parent=part
+ local a1=Instance.new("Attachment");a1.Name="TrailB";a1.Position=Vector3.new(0,-part.Size.Y*.42,0);a1.Parent=part
+ local tr=Instance.new("Trail");tr.Name="CombatTrail";tr.Attachment0=a0;tr.Attachment1=a1;tr.Lifetime=.12;tr.MinLength=.08;tr.Enabled=false
+ tr.Color=ColorSequence.new(color);tr.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.05),NumberSequenceKeypoint.new(1,1)});tr.Parent=part
+end
+local function decorateCharacterModel(model,classId,variant,advancementId)
+ if not model then return end
+ local old=model:FindFirstChild("DaechungClassGear");if old then old:Destroy()end
+ local cd=classDef(classId);if not cd then return end
+ local ad=advancementDef(classId,advancementId);local color=(ad and ad.Color)or cd.Color
+ local gear=Instance.new("Folder");gear.Name="DaechungClassGear";gear.Parent=model
+ local torso=model:FindFirstChild("UpperTorso");local head=model:FindFirstChild("Head")
+ local right=model:FindFirstChild("RightHand")or model:FindFirstChild("RightLowerArm");local left=model:FindFirstChild("LeftHand")or model:FindFirstChild("LeftLowerArm")
+ local usedAsset=wearMedievalChest(model,gear,variant)
+ if not usedAsset and torso then gearPart(gear,torso,"ClassChest",Vector3.new(2.25,2.2,1.25),Vector3.new(0,0,-.08),color,Enum.Material.Metal)end
+ if torso then
+  gearPart(gear,torso,"ClassShoulderL",Vector3.new(.78,.48,1.05),Vector3.new(-1.25,.65,0),color,Enum.Material.Metal,Enum.PartType.Ball)
+  gearPart(gear,torso,"ClassShoulderR",Vector3.new(.78,.48,1.05),Vector3.new(1.25,.65,0),color,Enum.Material.Metal,Enum.PartType.Ball)
+ end
+ if classId=="BREAKER"then
+  local w=gearPart(gear,right,"ClassWeapon",Vector3.new(.28,5.2,.38),Vector3.new(0,-1.9,-.2),Color3.fromRGB(183,188,197),Enum.Material.Metal,nil,Vector3.new(0,0,-8));addWeaponTrail(w,color)
+  if torso then gearPart(gear,torso,"BreakerCape",Vector3.new(2.3,2.9,.16),Vector3.new(0,-.1,.72),color,Enum.Material.Fabric)end
+ elseif classId=="SHADOW"then
+  local w1=gearPart(gear,right,"ClassWeaponR",Vector3.new(.2,2.15,.26),Vector3.new(0,-.8,-.15),Color3.fromRGB(176,180,190),Enum.Material.Metal,nil,Vector3.new(0,0,-12));addWeaponTrail(w1,color)
+  local w2=gearPart(gear,left,"ClassWeaponL",Vector3.new(.2,2.15,.26),Vector3.new(0,-.8,-.15),Color3.fromRGB(176,180,190),Enum.Material.Metal,nil,Vector3.new(0,0,12));addWeaponTrail(w2,color)
+  if head then gearPart(gear,head,"ShadowHood",Vector3.new(2.25,1.05,2.2),Vector3.new(0,.42,.08),color,Enum.Material.Fabric,Enum.PartType.Ball)end
+ elseif classId=="RUNE"then
+  local staff=gearPart(gear,right,"ClassWeapon",Vector3.new(.22,5,.22),Vector3.new(0,-1.8,0),Color3.fromRGB(92,70,55),Enum.Material.Wood,nil,Vector3.new(0,0,-5))
+  if staff then local orb=gearPart(gear,staff,"RuneOrb",Vector3.new(.8,.8,.8),Vector3.new(0,2.5,0),color,Enum.Material.Neon,Enum.PartType.Ball);if orb then orb.Name="RuneGlow"end end
+  if torso then gearPart(gear,torso,"RuneMantle",Vector3.new(2.45,.72,1.45),Vector3.new(0,.72,.08),color,Enum.Material.Fabric,Enum.PartType.Ball)end
+ elseif classId=="SOUL"then
+  local staff=gearPart(gear,right,"ClassWeapon",Vector3.new(.24,4.8,.24),Vector3.new(0,-1.7,0),Color3.fromRGB(70,62,61),Enum.Material.Wood,nil,Vector3.new(0,0,6))
+  if staff then local orb=gearPart(gear,staff,"SoulOrb",Vector3.new(.85,.85,.85),Vector3.new(0,2.45,0),color,Enum.Material.Neon,Enum.PartType.Ball);if orb then orb.Name="SoulGlow"end end
+  if torso then gearPart(gear,torso,"SoulCape",Vector3.new(2.4,3.1,.18),Vector3.new(0,-.1,.75),color,Enum.Material.Fabric)end
+ end
+ model:SetAttribute("ClassId",classId);model:SetAttribute("AdvancementId",advancementId or"")
+end
+local function pulseWeaponTrail(character)
+ if not character then return end
+ for _,d in ipairs(character:GetDescendants())do
+  if d:IsA("Trail")and d.Name=="CombatTrail"then d.Enabled=true;task.delay(.16,function()if d.Parent then d.Enabled=false end end)end
+ end
+end
+local function combatFlash(pos,color,size)
+ if not world or not world.Parent then return end
+ local x=Instance.new("Part");x.Name="CombatFlash";x.Shape=Enum.PartType.Ball;x.Anchored=true;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false
+ x.Material=Enum.Material.Neon;x.Color=color;x.Transparency=.2;x.Size=Vector3.new(size or 1.3,size or 1.3,size or 1.3);x.Position=pos;x.Parent=world
+ TweenService:Create(x,TweenInfo.new(.2,Enum.EasingStyle.Quad),{Size=x.Size*2.1,Transparency=1}):Play();task.delay(.24,function()if x.Parent then x:Destroy()end end)
+end
+local function applyPlayerAppearance(p)
+ local c=p.Character;if not c then return end
+ decorateCharacterModel(c,tostring(p:GetAttribute("ClassId")or"NONE"),(p.UserId%7)+1,tostring(p:GetAttribute("AdvancementId")or""))
+end
+local function loadR15Track(h,id,priority,looped)
+ local animator=h:FindFirstChildOfClass("Animator")or Instance.new("Animator",h)
+ local a=Instance.new("Animation");a.AnimationId="rbxassetid://"..tostring(id)
+ local ok,tr=pcall(function()return animator:LoadAnimation(a)end);a:Destroy()
+ if not ok or not tr then return nil end;tr.Priority=priority or Enum.AnimationPriority.Movement;tr.Looped=looped==true;return tr
+end
+local function createR15AI(parent,name,pos,classId,variant,advancementId)
+ local desc=Instance.new("HumanoidDescription");desc.HeightScale=.9;desc.WidthScale=.9;desc.DepthScale=.9;desc.HeadScale=.95
+ local ok,model=pcall(function()return Players:CreateHumanoidModelFromDescription(desc,Enum.HumanoidRigType.R15)end);desc:Destroy()
+ if not ok or not model then return nil end
+ model.Name=name;model.Parent=parent;model:PivotTo(CFrame.new(pos))
+ local h=model:FindFirstChildOfClass("Humanoid");local r=model:FindFirstChild("HumanoidRootPart");if not h or not r then model:Destroy();return nil end
+ h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None;h.WalkSpeed=13;h.AutoRotate=true
+ decorateCharacterModel(model,classId,variant,advancementId)
+ local idle=loadR15Track(h,507766388,Enum.AnimationPriority.Idle,true);local walk=loadR15Track(h,507777826,Enum.AnimationPriority.Movement,true);local run=loadR15Track(h,507767714,Enum.AnimationPriority.Movement,true)
+ if idle then idle:Play(.15)end
+ h.Running:Connect(function(speed)
+  if speed>.2 then
+   if idle and idle.IsPlaying then idle:Stop(.15)end
+   if speed>11 then if walk and walk.IsPlaying then walk:Stop(.12)end;if run and not run.IsPlaying then run:Play(.12)end
+   else if run and run.IsPlaying then run:Stop(.12)end;if walk and not walk.IsPlaying then walk:Play(.12)end end
+  else
+   if walk and walk.IsPlaying then walk:Stop(.15)end;if run and run.IsPlaying then run:Stop(.15)end;if idle and not idle.IsPlaying then idle:Play(.15)end
+  end
+ end)
+ return model,r,h
+end
+local function moveAITo(ai,destination)
+ if not ai.humanoid or ai.humanoid.Health<=0 or not ai.root or not ai.root.Parent then return end
+ local now=os.clock();if ai.pathBusy or now<(ai.nextPathAt or 0)then return end
+ ai.pathBusy=true;ai.nextPathAt=now+.7
+ task.spawn(function()
+  local ok,path=pcall(function()
+   local p=PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true,WaypointSpacing=5});p:ComputeAsync(ai.root.Position,destination);return p
+  end)
+  if ok and path and path.Status==Enum.PathStatus.Success then
+   local points=path:GetWaypoints();local wp=points[math.min(2,#points)]
+   if wp then if wp.Action==Enum.PathWaypointAction.Jump then ai.humanoid.Jump=true end;ai.humanoid:MoveTo(wp.Position)end
+  else ai.humanoid:MoveTo(destination)end
+  ai.pathBusy=false
+ end)
+end
+
 local function tree(parent,pos,scale)
  scale=scale or 1
  local trunk=ppart(parent,"TreeTrunk",Vector3.new(2.2,8,2.2)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(91,67,47),Enum.Material.Wood)
