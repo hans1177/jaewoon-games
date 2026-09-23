@@ -216,6 +216,11 @@ jobs:
               continue;
             }
 
+            const exactEngineProbe=
+              engineProbe?.engineExecuted===true
+              &&engineProbe?.exactPlace===true
+              &&engineProbe?.exactVersion===true;
+
             let sentinel;
             try{
               sentinel=await fetchRobloxRuntimeFoundationEvidence({
@@ -231,7 +236,12 @@ jobs:
                 item.robloxRuntimeFoundationPassed=false;
                 item.robloxRuntimePassed=false;
                 item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-                if(attempts>=3){
+                if(exactEngineProbe){
+                  item.robloxFailureSignature='ROBLOX_ACTUAL_PLAYER_RUNTIME_SESSION_UNAVAILABLE';
+                  item.routingBlockers=['roblox-actual-player-runtime-session-unavailable','roblox-runtime-foundation-awaiting-observation'];
+                  console.log(`ROBLOX_FOUNDATION_PLAYER_SESSION_UNAVAILABLE=${item.gameId}:attempt=${attempts}`);
+                  failed++;
+                }else if(attempts>=3){
                   item.robloxFailureSignature='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE';
                   item.routingBlockers=['roblox-actual-runtime-executor-unavailable','roblox-runtime-foundation-awaiting-observation'];
                   console.log(`ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=${item.gameId}:attempt=${attempts}`);
@@ -292,7 +302,12 @@ jobs:
                 observedAt:stamp,
                 authority:'stale-runtime-sentinel-observation',
               };
-              if(attempts>=3){
+              if(exactEngineProbe){
+                item.robloxFailureSignature='ROBLOX_ACTUAL_PLAYER_RUNTIME_SESSION_UNAVAILABLE';
+                item.routingBlockers=['roblox-actual-player-runtime-session-unavailable','roblox-runtime-foundation-stale-version'];
+                console.log(`ROBLOX_FOUNDATION_PLAYER_SESSION_UNAVAILABLE=${item.gameId}:attempt=${attempts}:staleVersion=${Number(sentinel.placeVersion||0)}:expectedVersion=${Number(candidate.versionNumber)}`);
+                failed++;
+              }else if(attempts>=3){
                 item.robloxFailureSignature='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE';
                 item.routingBlockers=['roblox-actual-runtime-executor-unavailable','roblox-runtime-foundation-stale-version'];
                 console.log(`ROBLOX_FOUNDATION_EXECUTOR_UNAVAILABLE=${item.gameId}:attempt=${attempts}:staleVersion=${Number(sentinel.placeVersion||0)}:expectedVersion=${Number(candidate.versionNumber)}`);
