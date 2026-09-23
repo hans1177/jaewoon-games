@@ -15,6 +15,8 @@ export const DESIGN_INTELLIGENCE_STAGES = freezeList([
   'DESIGN_BLUEPRINT',
   'DESIGN_INTEGRITY',
   'CONTENT_DIVERSITY',
+  'REFERENCE_HOMAGE',
+  'NARRATIVE_DIALOGUE',
   'CONSTRAINT_ENGINE',
   'CRITIC',
   'CAUSALITY_GRAPH',
@@ -196,6 +198,31 @@ function evaluateContentDiversity(task = {}) {
   });
 }
 
+
+function evaluateReferenceHomage(task = {}) {
+  const supplied = task.referenceHomage && typeof task.referenceHomage === 'object' ? task.referenceHomage : {};
+  const inspirations = Array.isArray(supplied.inspirations) ? supplied.inspirations.map((row) => freeze({
+    titleOrTradition:clean(row?.titleOrTradition),
+    rightsBasis:clean(row?.rightsBasis).toUpperCase(),
+    borrowedTechnique:clean(row?.borrowedTechnique),
+    transformation:clean(row?.transformation)
+  })).filter((row) => row.titleOrTradition || row.borrowedTechnique) : [];
+  const issues = [];
+  for (const row of inspirations) {
+    if (!['PUBLIC_DOMAIN','ABSTRACT_TECHNIQUE','ORIGINAL'].includes(row.rightsBasis)) issues.push(`REFERENCE_RIGHTS_BASIS_INVALID:${row.titleOrTradition||'UNKNOWN'}`);
+    if (!row.borrowedTechnique) issues.push(`REFERENCE_TECHNIQUE_MISSING:${row.titleOrTradition||'UNKNOWN'}`);
+    if (!row.transformation) issues.push(`REFERENCE_TRANSFORMATION_MISSING:${row.titleOrTradition||'UNKNOWN'}`);
+  }
+  return stage('REFERENCE_HOMAGE', issues.length ? 'ADVISORY' : 'CHECKED', {
+    inspirations:freezeList(inspirations),
+    originalityRule:clean(supplied.originalityRule) || null,
+    publicDomainMotifStructureThemeArchetypeAllowed:true,
+    protectedModernExpressionCopyForbidden:true,
+    abstractTechniqueReferenceAllowed:true,
+    issues:freezeList(unique(issues))
+  });
+}
+
 function evaluateConstraints(task = {}) {
   const constraints = normalizeConstraints(task);
   const blockers = [];
@@ -262,7 +289,7 @@ function evaluateNarrativeContract(task = {}) {
   const required = task.narrativeRequired === true || Object.keys(supplied).length > 0
     || /story|narrative|quest|dialogue|character|스토리|서사|퀘스트|대화|대사|캐릭터|세계관|복선|반전/.test(goal.toLowerCase());
   if (!required) return freeze({
-    required:false,status:'NOT_APPLICABLE',issues:freezeList([]),authorityExpanded:false
+    name:'NARRATIVE_DIALOGUE',required:false,status:'NOT_APPLICABLE',issues:freezeList([]),authorityExpanded:false
   });
   const worldRules = unique(supplied.worldRules || task.worldRules || []);
   const characterGoals = unique(supplied.characterGoals || task.characterGoals || []);
@@ -302,6 +329,7 @@ function evaluateNarrativeContract(task = {}) {
   if (dialogueRequired && voiceProfiles.some((row) => !row.grammarRegister || !row.vocabularyRhythm || !row.knowledgeBoundary)) issues.push('CHARACTER_VOICE_PROFILE_INCOMPLETE');
   if ((twists.length || foreshadowing.length) && !sceneBeats.length) issues.push('SCENE_BEAT_CONTRACT_REQUIRED_FOR_TWIST_OR_FORESHADOWING');
   return freeze({
+    name:'NARRATIVE_DIALOGUE',
     required:true,
     status:issues.length ? 'ADVISORY' : 'READY',
     worldRules:freezeList(worldRules),
@@ -455,6 +483,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const blueprint = evaluateBlueprint(task, designer);
   const integrity = evaluateDesignIntegrity(task);
   const diversity = evaluateContentDiversity(task);
+  const referenceHomage = evaluateReferenceHomage(task);
   const constraints = evaluateConstraints(task);
   const critic = evaluateCritic(task, designer);
   const narrative = evaluateNarrativeContract(task);
@@ -478,14 +507,15 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const telemetry = evidenceStage('TELEMETRY', evidence.telemetry, '실제 플레이 수치 또는 엔진 QA 런 증거');
   const designReview = evaluateDesignReview(task, autoPlayer, telemetry);
   const experienceMemory = evaluateExperienceMemory(task, designReview);
-  const stages = freezeList([stability,defectOwnership,designer,blueprint,integrity,diversity,constraints,critic,causality,playerModel,simulation,implementation,autoPlayer,telemetry,designReview,experienceMemory]);
+  const stages = freezeList([stability,defectOwnership,designer,blueprint,integrity,diversity,referenceHomage,narrative,constraints,critic,causality,playerModel,simulation,implementation,autoPlayer,telemetry,designReview,experienceMemory]);
 
   const advisory = unique([
     ...stages.flatMap((row) => row.issues || row.warnings || []).filter(Boolean),
     ...(narrative.issues || []),
     ...(blueprint.issues || []),
     ...(integrity.issues || []),
-    ...(diversity.issues || [])
+    ...(diversity.issues || []),
+    ...(referenceHomage.issues || [])
   ]);
   const constraintText = (constraints.constraints || []).map((row) => `${row.id}: ${row.rule}`).join(' | ');
   const guidance = [
@@ -512,6 +542,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     blueprint,
     integrity,
     diversity,
+    referenceHomage,
     narrative,
     implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers }),
     advisory:freezeList(advisory),
