@@ -249,7 +249,7 @@ function evaluateConstraints(task = {}) {
 function evaluateDesigner(task = {}) {
   const goal = clean(task.goal);
   const designChange = task.designChange === true || clean(task.type).toLowerCase() === 'design';
-  const alternatives = Array.isArray(task.designAlternatives) ? task.designAlternatives.map(clean).filter(Boolean) : [];
+  const alternatives = Array.isArray(task.designAlternatives) ? task.designAlternatives.map((row)=>typeof row==='string'?clean(row):clean(row?.concept||row?.summary||row?.idea||row?.label)).filter(Boolean) : [];
   const rationale = clean(task.designRationale);
   const issues = [];
   if (!goal) issues.push('GOAL_REQUIRED');
