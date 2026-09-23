@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": " if z.Theme==\"SNOW\"then",
+      "replace": "local c=ppart(f,\"RuneCrystal\",Vector3.new(2.5,7,2.5),p.Position+Vector3.new(0,8,0),z.Color,Enum.Material.Neon);c.Orientation=Vector3.new(0,i*17,20)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
