@@ -114,6 +114,6 @@
 ## 구현 동기화
 
 - source branch: `assistant/daechung-class-visual-ai`
-- source revision: `6ccd976eaec3e6143cfdb88eb576f56be5288f4f`
+- source revision: `9901e450837fe5a5b60e192632f2acc56972fa95`
 - launch-mvp version: **13**
 - PR: **#2741**
