@@ -1,5 +1,5 @@
 {
-  "version": 106,
+  "version": 107,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T10:36:00+09:00",
+  "updatedAt": "2026-09-23T10:40:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2782,7 +2782,12 @@
           "runId": 35806215679,
           "rewired": 16,
           "orphanDependenciesAfter": 0
-        }
+        },
+        "genericFailureCohortKey": "FAILURE_SIGNATURE_PLUS_RESPONSIBLE_FILES",
+        "sharedInfrastructureCohortKey": "SHARED_SYSTEM_AI_INFRASTRUCTURE",
+        "crossScopeCanaryDependencyPolicy": "REMOVE_UNLESS_EXPLICIT_SHARED_INFRASTRUCTURE_REPAIR",
+        "responsibilityScopedRecoveryCohortRevision": "599a575779e96093841aa2c81fbbac5cc1fbad03",
+        "crossScopeCanaryReconciliationRevision": "16a40328b8d05c4416cad1672606ad38cb489a18"
       },
       "bottleneckSensor": {
         "queueSources": [
@@ -2884,10 +2889,10 @@
       "sourceRevision": "a8162f3d6a26cfd9760844df2dd3b8c045d7cdcd"
     },
     "latestImplementationSync": {
-      "revision": "68550bced736074602c5df848af92ba5c8724e7c",
+      "revision": "16a40328b8d05c4416cad1672606ad38cb489a18",
       "securityRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
-      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_METRIC_CONFIRMATION",
-      "testRevision": "2095f85bb419149c14168a135d72aa456de7747c",
+      "state": "IMPLEMENTED_TEST_COVERED_PENDING_LIVE_QUEUE_CONFIRMATION",
+      "testRevision": "c556915ea3022ef8002dec8acba9b2bb95e78e7d",
       "producerSideRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
       "producerSideRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
       "producerSideRepairReuseState": "IMPLEMENTED_TEST_COVERED_PENDING_NEXT_RECOVERY_DISPATCH_AND_RESERVE_CYCLE"
