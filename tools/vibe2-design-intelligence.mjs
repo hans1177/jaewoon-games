@@ -493,6 +493,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const hardBlockers = unique([
     ...(designer.status === 'BLOCKED' ? designer.issues : []),
     ...(constraints.blockers || []),
+    ...(blueprint.materialDesignChange && blueprint.issues.length ? blueprint.issues : []),
     ...(task.defectDriven === true && defectOwnership.designRevisionAllowed === false ? [`DEFECT_OWNED_BY_${defectOwnership.owner}`] : []),
     ...(integrity.status === 'BLOCKING_CONTRADICTION' ? integrity.issues : [])
   ]);
