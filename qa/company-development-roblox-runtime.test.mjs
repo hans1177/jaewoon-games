@@ -414,3 +414,12 @@ test('owner-focused Roblox package completion dispatches the existing continuati
   assert.match(workflow,/company-development-roblox-runtime-continuation\.yml/);
   assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES/);
 });
+
+
+test('exact game_id runtime dispatch isolates source and package selection',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/workflow_dispatch:[\s\S]*game_id:/);
+  assert.ok((workflow.match(/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/g)||[]).length>=2);
+  assert.ok((workflow.match(/if\(requested&&item\.gameId!==requested\)continue;/g)||[]).length>=2);
+  assert.match(workflow,/ROBLOX_REQUESTED_TECHNICAL_GAME_ID=/);
+});
