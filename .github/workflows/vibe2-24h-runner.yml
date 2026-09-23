@@ -586,7 +586,7 @@ jobs:
           const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||20));
           const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||20));
           const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));
-          const effectiveMax=configuredMax;
+          const effectiveMax=Math.max(adaptiveMin,Math.min(configuredMax,controlTarget));
           const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
           const waveReady=activeGame===0?'YES':'NO';
           const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
