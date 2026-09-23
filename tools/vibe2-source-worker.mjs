@@ -581,6 +581,8 @@ function presentationWorkerGuidance(order = {}) {
     'ASSET_ADAPTATION에서 Unity는 C# 기반 저폴리 조립 모델·재질·조명·VFX·모션/UI를, Roblox는 Luau 기반 조립 모델·Material/Color·Particle/Beam/Trail·모션/UI를 실제 게임 화면에 구현할 수 있다.',
     '단일 primitive, 이름만 바꾼 기본 Part/GameObject, 검증용 임시 도형은 최종 그래픽 완료로 인정하지 않는다. 여러 의미 있는 파트와 Style Lock을 사용해 게임 정체성이 보이는 결과를 만든다.',
     '하이엔드 기본값은 플레이어/적/NPC/무기/아이템/건축/지형/배경/식생/소품/UI/VFX까지 목적 있는 에셋을 실제 게임에 적용하는 것이다.',
+    '그래픽 작업의 외부 단위는 GRAPHICS_PRODUCTION 하나다. 캐릭터/환경/애니메이션/VFX/조명/UI를 별도 최상위 그래픽 작업으로 분리하지 말고 내부 단계로 처리한 뒤 같은 루트로 fan-in 한다.',
+    'vibe-art-pipeline.js가 그래픽 생산 단일 코디네이터이며 asset planner/visual autopilot/presentation director/visual quality gate는 독립 승인 권한 없는 내부 모듈이다.',
     'Art Bible과 Visual Target Frame을 기준으로 Hero 대상(플레이어, 주 보스/적, 시그니처 장비, 핵심 랜드마크/시작지역)을 먼저 고품질 기준점으로 만든다.',
     '배경은 빈 장식면이 아니다. 전경/중경/배경, 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 같은 Style Lock으로 구성한다.',
     '권리가 확인된 기존 에셋은 원본을 보존하고 derived 변형으로 파츠 재조합, 비율/실루엣/재질, 지역형/정예형/보스형, LOD 최적화까지 확장할 수 있다.',
