@@ -147,7 +147,8 @@ test('successful APK build is retained even when the legacy child runtime gate f
   assert.match(workflowSource,/select\(\.name=="build"\)/);
   assert.match(workflowSource,/select\(\.name=="android16-install-gate"\)/);
   assert.match(workflowSource,/build_passed=/);
-  assert.match(workflowSource,/LEGACY_RUNTIME_GATE_CONCLUSION=/);
+  assert.match(workflowSource,/LEGACY_RUNTIME_JOB_CONCLUSION=/);
+  assert.match(workflowSource,/LEGACY_RUNTIME_VERIFY_CONCLUSION=/);
   assert.match(workflowSource,/gh run download "\$BUILD_RUN" -D \/tmp\/unity-build/);
   assert.doesNotMatch(workflowSource,/CLOUD_UNITY_BUILD_FAILED=/);
 });
