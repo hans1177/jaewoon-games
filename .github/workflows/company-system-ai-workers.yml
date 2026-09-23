@@ -146,11 +146,39 @@ jobs:
             adaptive_max="$SYSTEM_AI_MAX_BATCH"
             if [ -z "$SECURITY_RECOVERY_TASK_ID" ] && [ -z "$MARKETING_TASK_IDS" ]; then
               pending_runs="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name=="Company System AI Workers" and (.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested"))] | length' 2>/dev/null || echo 0)"
-              reservation_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now(),tasks=q.tasks||[],byId=new Map(tasks.map(x=>[String(x.id||''),x]));const terminal=s=>['done','completed','verified'].includes(String(s||'').toLowerCase());const xs=tasks.filter(x=>String(x.status||'').toLowerCase()==='queued'&&!/^shared-signature-canary-pending:/i.test(String(x.blocker||''))&&(x.dependencies||[]).every(id=>terminal(byId.get(String(id))?.status))).map(x=>Date.parse(x.createdAt||x.updatedAt||'')).filter(Number.isFinite);console.log(xs.length?Math.max(0,now-Math.min(...xs)):0)")"
-              fan_in_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now();const xs=(q.tasks||[]).filter(x=>String(x.status||'').toLowerCase()==='awaiting-supervisor').map(x=>Date.parse(x.updatedAt||x.reservedAt||x.createdAt||'')).filter(Number.isFinite);console.log(xs.length?Math.max(0,now-Math.min(...xs)):0)")"
+              reservation_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now(),tasks=q.tasks||[],byId=new Map(tasks.map(x=>[String(x.id||''),x]));const terminal=s=>['done','completed','verified'].includes(String(s||'').toLowerCase());const waits=[];for(const x of tasks){if(String(x.status||'').toLowerCase()!=='queued')continue;const deps=(x.dependencies||[]).map(id=>byId.get(String(id)));if(deps.some(d=>!d||!terminal(d.status)))continue;const m=String(x.blocker||'').match(/^shared-signature-canary-pending:(.+)$/i);if(m&&!terminal(byId.get(m[1])?.status))continue;const stamps=[x.updatedAt||x.createdAt,...deps.map(d=>d?.updatedAt||d?.createdAt)].map(Date.parse).filter(Number.isFinite);if(stamps.length)waits.push(Math.max(0,now-Math.max(...stamps)));}console.log(waits.length?Math.max(...waits):0)")"
+              fan_in_wait_ms="$(node - <<'NODE'
+              const cp=require('child_process');
+              const repo=process.env.GITHUB_REPOSITORY;
+              const now=Date.now();
+              const active=new Set(['queued','pending','waiting','requested','in_progress']);
+              const api=url=>JSON.parse(cp.execFileSync('gh',['api','-X','GET',url],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));
+              let maxWait=0;
+              try{
+                const runs=api(`repos/${repo}/actions/runs?per_page=100`).workflow_runs||[];
+                for(const run of runs){
+                  if(run.name!=='Company System AI Workers'||!active.has(String(run.status||'')))continue;
+                  const jobs=api(`repos/${repo}/actions/runs/${run.id}/jobs?per_page=100`).jobs||[];
+                  const fan=jobs.find(j=>String(j.name||'')==='fan_in');
+                  if(!fan||String(fan.status||'')==='completed')continue;
+                  const workers=jobs.filter(j=>String(j.name||'').startsWith('worker ('));
+                  if(!workers.length||workers.some(j=>String(j.status||'')!=='completed'))continue;
+                  const completed=workers.map(j=>Date.parse(j.completed_at||'')).filter(Number.isFinite);
+                  if(completed.length!==workers.length)continue;
+                  const readyAt=Math.max(...completed);
+                  const startedAt=Date.parse(fan.started_at||'');
+                  const endAt=Number.isFinite(startedAt)?startedAt:now;
+                  maxWait=Math.max(maxWait,Math.max(0,endAt-readyAt));
+                }
+              }catch{}
+              console.log(maxWait);
+              NODE
+              )"
+              supervisor_review_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now();const xs=(q.tasks||[]).filter(x=>String(x.status||'').toLowerCase()==='awaiting-supervisor').map(x=>Date.parse(x.updatedAt||x.reservedAt||x.createdAt||'')).filter(Number.isFinite);console.log(xs.length?Math.max(0,now-Math.min(...xs)):0)")"
               echo "SYSTEM_AI_PENDING_RUNS=$pending_runs"
               echo "SYSTEM_AI_RESERVATION_WAIT_MS=$reservation_wait_ms"
               echo "SYSTEM_AI_FAN_IN_WAIT_MS=$fan_in_wait_ms"
+              echo "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS=$supervisor_review_wait_ms"
               node tools/company-system-ai-bottleneck-sensor.mjs \
                 --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
                 --game-queue=/tmp/system-ai-control/.vibe2/queue.json \
@@ -158,6 +186,7 @@ jobs:
                 --pending-runs="$pending_runs" \
                 --reservation-wait-ms="$reservation_wait_ms" \
                 --fan-in-wait-ms="$fan_in_wait_ms" \
+                --supervisor-review-wait-ms="$supervisor_review_wait_ms" \
                 --output=/tmp/system-ai-bottleneck.json | tee /tmp/system-ai-bottleneck.log
               adaptive_max="$(node -p "require('/tmp/system-ai-bottleneck.json').recommendedBatch")"
               echo "SYSTEM_AI_ADAPTIVE_RESERVE_MAX=$adaptive_max"
