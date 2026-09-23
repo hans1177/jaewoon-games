@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -220,8 +220,31 @@
       "duplicateRepairCoalescingRevision": "9ab01df47287ae1ae836e71b9d7be843db8ff867",
       "duplicateRepairCheckpointRevision": "24d941a8e5bf75a37ea54b35cbd351b5daae5bad",
       "duplicateRepairTestRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8",
-      "duplicateRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
-    }
+      "duplicateRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+      "runnableReservationWaitMetricRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
+      "runnableReservationWaitMetricTestRevision": "eb55d7a130b819c6fd7863b947bb779bc91c2378",
+      "runnableReservationWaitMetricLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+      "stableRepairWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
+      "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
+      "supersededRepairDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
+      "supersededRepairDependencyRewireLiveVerification": "PENDING_NEXT_RESERVE_CYCLE"
+    },
+    "metricSemantics": {
+      "SYSTEM_AI_RESERVATION_WAIT_MS": {
+        "population": "RUNNABLE_QUEUED_ONLY",
+        "excludes": [
+          "SHARED_SIGNATURE_CANARY_PENDING",
+          "UNRESOLVED_DEPENDENCIES"
+        ],
+        "source": ".github/workflows/company-system-ai-workers.yml",
+        "implementationRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
+        "testRevision": "eb55d7a130b819c6fd7863b947bb779bc91c2378"
+      }
+    },
+    "durableQueueEvidenceMarkers": [
+      "system-ai-duplicate-dependency-rewired:YES",
+      "system-ai-duplicate-repair-superseded-by:<canonical-task-id>"
+    ]
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerContextLogContract": {
