@@ -10899,7 +10899,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-23T00:50:36.201Z"
+      "updatedAt": "2026-09-23T00:50:52.734Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16727,7 +16727,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-23T00:50:36.235Z"
+      "updatedAt": "2026-09-23T00:50:52.766Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -18955,7 +18955,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T11:33:07.849Z",
-      "updatedAt": "2026-09-23T00:50:36.187Z"
+      "updatedAt": "2026-09-23T00:50:52.722Z"
     },
     {
       "id": "recovery-2620c437645bba6eaa8c",
@@ -19017,7 +19017,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T11:33:07.853Z",
-      "updatedAt": "2026-09-23T00:50:36.223Z"
+      "updatedAt": "2026-09-23T00:50:52.756Z"
     },
     {
       "id": "recovery-804b2acf67074bfd8b28",
@@ -20751,7 +20751,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:29:19.797Z",
-      "updatedAt": "2026-09-23T00:50:36.244Z"
+      "updatedAt": "2026-09-23T00:50:52.775Z"
     },
     {
       "id": "recovery-a6b2859442eff3394367",
@@ -134320,7 +134320,7 @@
     },
     {
       "id": "recovery-c787673ff6ed68c4709f",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "game-fantasy-survival-web-second-gate-collab-v1",
@@ -135151,7 +135151,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T00:48:32.943Z",
-      "updatedAt": "2026-09-23T00:50:36.213Z"
+      "updatedAt": "2026-09-23T00:50:53.053Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-09-23T00:50:53.053Z"
+      ]
     }
   ]
 }
