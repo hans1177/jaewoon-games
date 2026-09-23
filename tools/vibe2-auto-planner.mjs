@@ -719,8 +719,8 @@ function presentationRelevantText(value=''){
 function graphicsEvolutionAffectedPasses(text=''){
   const value=clean(text),passes=[];
   const add=pass=>{if(PRESENTATION_EVOLUTION_PASSES.includes(pass)&&!passes.includes(pass))passes.push(pass);};
-  if(/(?:asset|model|character|monster|enemy|boss|map|world|environment|background|terrain|material|lighting|placeholder|primitive|silhouette|style|landmark|에셋|모델|캐릭터|몬스터|몹|보스|맵|환경|배경|재질|조명|실루엣)/i.test(value))add('ASSET_ADAPTATION');
-  if(/(?:motion|animation|move|movement|idle|walk|run|turn|smooth|blend|weight|locomotion|secondary|procedural|애니|움직임|모션|걷|달리|회전|부드럽|체중|보조모션)/i.test(value))add('LIVING_MOTION');
+  if(/(?:\b(?:asset|model|environment|background|terrain|material|lighting|placeholder|primitive|silhouette|style|landmark|art)\b|에셋|모델|환경|배경|재질|조명|실루엣|외형|디자인|디테일|컨셉)/i.test(value))add('ASSET_ADAPTATION');
+  if(/(?:\b(?:motion|animation|move|movement|idle|walk|run|turn|smooth|blend|weight|locomotion|secondary|procedural)\b|애니|움직임|모션|걷|달리|회전|부드럽|체중|보조모션)/i.test(value))add('LIVING_MOTION');
   if(/(?:attack|hit|death|impact|recoil|anticipat|recover|combat.?feel|attack.?motion|피격|사망|타격|공격모션|공격 모션|반동|후딜|전투연출)/i.test(value))add('ANIMATION_FEEL');
   if(/(?:vfx|effect|particle|trail|flash|telegraph|shockwave|spark|이펙트|효과|파티클|트레일|섬광)/i.test(value))add('VFX');
   if(/(?:audio|music|bgm|sound|sfx|ambient|음악|브금|사운드|효과음|환경음)/i.test(value))add('AUDIO_FEEL');
@@ -771,7 +771,7 @@ function collectGraphicsEvolutionSignals(project={},queue={tasks:[]}){
     if(status!=='verified')continue;
     for(const marker of evidence){
       if(!presentationRelevantText(marker))continue;
-      if(/owner.*(?:presentation|visual|graphics|animation|vfx|camera|audio|music)/i.test(marker))push('OWNER_CHANGE_REQUEST',clean(item.id),marker);
+      if(/^owner-presentation-change:/i.test(marker))push('OWNER_CHANGE_REQUEST',clean(item.id),marker.slice('owner-presentation-change:'.length));
       else if(/(?:visual.?debt|placeholder|primitive)/i.test(marker))push('VISUAL_DEBT',clean(item.id),marker);
       else if(/(?:frame|fps|performance)/i.test(marker))push('PLATFORM_PRESENTATION_PERFORMANCE_EVIDENCE',clean(item.id),marker);
       else if(/(?:playtest|feedback)/i.test(marker))push('INTERNAL_OR_POST_RELEASE_PLAYTEST_PRESENTATION_FEEDBACK',clean(item.id),marker);
