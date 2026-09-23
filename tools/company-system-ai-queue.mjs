@@ -123,6 +123,11 @@ export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()
   }
   if(!coalesced)return{queue,coalesced:0,groups:0};
   const stamp=new Date(at).toISOString();
+  const canonicalFor=id=>{
+    let current=clean(id),guard=0;
+    while(canonicalByDuplicate.has(current)&&guard++<queue.tasks.length)current=canonicalByDuplicate.get(current);
+    return current;
+  };
   const tasks=queue.tasks.map(task=>{
     const supersededBy=canonicalByDuplicate.get(task.id);
     if(supersededBy)return{
@@ -136,22 +141,30 @@ export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()
       evidence:unique([
         ...(task.evidence||[]),
         'system-ai-duplicate-repair-coalesced:YES',
-        'system-ai-duplicate-repair-superseded-by:'+supersededBy,
+        'system-ai-duplicate-repair-superseded-by:'+canonicalFor(supersededBy),
         'retry-budget-consumed:NO',
         'learning-penalty:NO'
       ])
     };
+    const remappedDependencies=unique((task.dependencies||[]).map(canonicalFor).filter(id=>id!==task.id));
+    const blockerMatch=clean(task.blocker).match(/^shared-signature-canary-pending:(.+)$/i);
+    const blockerCanonical=blockerMatch?canonicalFor(blockerMatch[1]):null;
+    const dependencyRewired=JSON.stringify(remappedDependencies)!==JSON.stringify(unique(task.dependencies||[]))
+      ||Boolean(blockerMatch&&blockerCanonical!==blockerMatch[1]);
     const meta=canonicalMeta.get(task.id);
-    if(!meta)return task;
     return{
       ...task,
-      recurrenceCount:meta.recurrenceCount,
-      relatedTaskIds:unique([...(task.relatedTaskIds||[]),...meta.duplicateIds]),
-      updatedAt:stamp,
+      dependencies:remappedDependencies,
+      blocker:blockerMatch&&blockerCanonical?('shared-signature-canary-pending:'+blockerCanonical):task.blocker,
+      ...(meta?{
+        recurrenceCount:meta.recurrenceCount,
+        relatedTaskIds:unique([...(task.relatedTaskIds||[]),...meta.duplicateIds])
+      }:{}),
+      updatedAt:(meta||dependencyRewired)?stamp:task.updatedAt,
       evidence:unique([
         ...(task.evidence||[]),
-        'system-ai-duplicate-repair-coalesced:YES',
-        'system-ai-coalesced-count:'+(meta.duplicateIds.length+1)
+        ...(meta?['system-ai-duplicate-repair-coalesced:YES','system-ai-coalesced-count:'+(meta.duplicateIds.length+1)]:[]),
+        ...(dependencyRewired?['system-ai-duplicate-dependency-rewired:YES']:[])
       ])
     };
   });
