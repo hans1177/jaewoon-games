@@ -938,6 +938,7 @@ jobs:
           git config user.name 'jaewoon-seed-design';git config user.email 'seed-design@users.noreply.github.com'
           game_path="design/${{ matrix.target.game_id }}";seed_changed=0
           cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json || seed_changed=1
+          if [ "$seed_changed" = 1 ]; then cp game-seed-state.json "/tmp/seed-design-candidate-${{ matrix.target.game_id }}.json"; fi
           git add -- "$game_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true
           git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; exit 0; }
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
@@ -953,7 +954,25 @@ jobs:
             git -C "$runtime_worktree" config user.name 'jaewoon-seed-design'
             git -C "$runtime_worktree" config user.email 'seed-design@users.noreply.github.com'
             git -C "$runtime_worktree" checkout "$generated_commit" -- "$game_path"
-            if [ "$seed_changed" = 1 ]; then git -C "$runtime_worktree" checkout "$generated_commit" -- game-seed-state.json; fi
+            if [ "$seed_changed" = 1 ]; then
+              TARGET_GAME_ID="${{ matrix.target.game_id }}" \
+              CANDIDATE_SEED_STATE="/tmp/seed-design-candidate-${{ matrix.target.game_id }}.json" \
+              RUNTIME_SEED_STATE="$runtime_worktree/game-seed-state.json" \
+              node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const gameId=String(process.env.TARGET_GAME_ID||'').trim();
+              const candidate=JSON.parse(fs.readFileSync(process.env.CANDIDATE_SEED_STATE,'utf8'));
+              const runtime=JSON.parse(fs.readFileSync(process.env.RUNTIME_SEED_STATE,'utf8'));
+              const seed=(candidate.seeds||[]).find(row=>String(row?.gameId||'').trim()===gameId);
+              if(!seed)throw new Error('TARGET_SEED_MERGE_SOURCE_MISSING:'+gameId);
+              runtime.seeds=Array.isArray(runtime.seeds)?runtime.seeds:[];
+              const index=runtime.seeds.findIndex(row=>String(row?.gameId||'').trim()===gameId);
+              if(index<0)runtime.seeds.push(seed);
+              else runtime.seeds[index]=seed;
+              fs.writeFileSync(process.env.RUNTIME_SEED_STATE,JSON.stringify(runtime,null,2)+'\n');
+              console.log('SEED_RUNTIME_TARGET_MERGE=YES|game='+gameId);
+              NODE
+            fi
             git -C "$runtime_worktree" add -- "$game_path"
             if [ "$seed_changed" = 1 ]; then git -C "$runtime_worktree" add -- game-seed-state.json; fi
             if git -C "$runtime_worktree" diff --cached --quiet; then pushed=1; break; fi
