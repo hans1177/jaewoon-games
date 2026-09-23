@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
   "gameNameEnglish": "Five Portal RPG: Dungeon Party",
@@ -8,7 +8,7 @@
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "authorRole": "OWNER_DIRECTIVE",
-  "updatedAt": "2026-09-22T19:50:00+09:00",
+  "updatedAt": "2026-09-24T05:35:00+09:00",
   "ownerDirectDevelopment": true,
   "content": {
     "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
@@ -102,7 +102,11 @@
       },
       {
         "name": "AI 유저 10명",
-        "purpose": "무직2·힐러2·전사3·궁수3 역할 분포."
+        "purpose": "플레이어와 같은 4개 시작 직업을 사용한다. 파쇄기사3·그림자추적자3·룬술사2·영혼소환사2이며 R15 Humanoid/Pathfinding으로 일반 유저처럼 이동·전투한다."
+      },
+      {
+        "name": "1차 전직",
+        "purpose": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다. 전직소에서 골드를 사용해 같은 시작 직업의 다른 분기로 재전직할 수 있다."
       },
       {
         "name": "파티 토글",
@@ -158,12 +162,17 @@
         "파티 토글",
         "15킬 파티사냥",
         "모바일 전투",
-        "저장"
+        "저장",
+        "4개 시작 직업",
+        "Lv.15 1차 전직 8분기",
+        "R15 AI 유저 이동/전투 애니메이션"
       ],
       "deferred": [
         "고급 크로스서버 매칭",
         "6번째 이후 포탈",
-        "대형 퀘스트 체인"
+        "대형 퀘스트 체인",
+        "2차 전직",
+        "고급 동료 성격/관계 AI"
       ],
       "forbidden": [
         "자동전투가 직접 전투 대체",
@@ -192,14 +201,14 @@
       "전투/보상 서버 authoritative",
       "DataStore 저장"
     ],
-    "visualDirection": "포근섬보다 성인형이고 어깨가 넓은 영웅 판타지 비율. 갑옷·망토·무기·지팡이로 역할을 읽고 지역별 몬스터는 체형부터 다르게 만든다.",
+    "visualDirection": "Roblox R15 감각을 유지한 장난감·피규어풍 스타일라이즈드 판타지 캐릭터. 현실적인 성인 기사 비율보다 친근한 형태와 과장된 무기·손·장비 실루엣을 우선하고, 마을은 밝고 아기자기하게 시작해 5개 포탈을 지날수록 배경이 어둡고 신비로워진다.",
     "artAudioDirection": {
-      "visualIdentity": "룬 광장·발광 수정·강한 무기 실루엣·동료 고유색·큰 보스 체형",
+      "visualIdentity": "밝은 중세 판타지 마을·무료 미디블 에셋 변형·직업별 장비 실루엣과, 포탈을 지날수록 어두워지는 초원/협곡/유적/설원/심연의 대비. 캐릭터는 R15 피규어풍이고 몬스터는 지역별 체형을 다르게 한다.",
       "audioIdentity": "도트/8비트가 아닌 경쾌한 판타지 어드벤처 BGM과 명확한 타격/회피/합동기 사운드"
     },
     "mobileUx": "이동·공격·스킬/회피는 큰 버튼, 파티/멀티는 별도 상단 UI로 제공한다.",
     "robloxBuildProfile": {
-      "version": 4,
+      "version": 5,
       "targetPlatform": "ROBLOX",
       "taxonomy": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
       "declaredGameCategory": "STORY_COMPLETE_RPG",
@@ -215,10 +224,11 @@
       "displayLabelKo": "RPG · 5포탈 · AI 파티",
       "validationMode": "HEADLESS_FAST_MVP",
       "studioRequired": false,
-      "visualQualityTarget": "RPG_HEROIC_PORTAL_FANTASY",
+      "visualQualityTarget": "RPG_STYLIZED_TOY_DARK_FANTASY",
       "visualPriority": [
-        "heroic-NPC-silhouette",
-        "role-equipment-readability",
+        "R15-player-like-NPC-motion",
+        "class-equipment-readability",
+        "sanitized-medieval-asset-remix",
         "zone-monster-identity",
         "boss-silhouette"
       ]
@@ -232,7 +242,7 @@
         "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
         "uiUx": "전투 HUD와 파티/장비 화면 분리",
         "saveAndNetwork": "동료·스토리·장비·관계·파티기억·히든조건 DataStore 저장",
-        "platformContentAdaptation": "Roblox 비율을 유지한 판타지 캐릭터와 읽기 쉬운 스킬 이펙트",
+        "platformContentAdaptation": "Roblox R15 비율을 유지한 장난감·피규어풍 판타지 캐릭터. 플레이어와 AI 유저는 같은 직업/전직 외형과 애니메이션을 공유하고, 읽기 쉬운 스킬 이펙트를 사용한다.",
         "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
         "validationEvidence": [
           "Exact source revision + Rojo artifact SHA256",
@@ -258,20 +268,24 @@
       }
     },
     "graphicsConcept": {
-      "id": "RPG_HEROIC_PORTAL_FANTASY",
-      "worldArtPass": "RPG_FANTASY_SILHOUETTE_WORLD_V4",
-      "characterArtDirection": "RPG_HEROIC_FANTASY_SILHOUETTE",
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "worldArtPass": "RPG_FANTASY_PORTAL_WORLD_V5",
+      "characterArtDirection": "RPG_STYLIZED_TOY_FANTASY_R15",
       "rules": [
-        "작은 머리의 성인 영웅 비율",
-        "넓은 어깨와 갑옷 가슴판",
-        "무기/후드/망토로 역할 구분",
-        "포탈 지역마다 다른 몬스터 체형",
+        "Roblox R15 감각을 유지한 장난감·피규어풍 스타일라이즈드 체형",
+        "현실적인 성인 기사보다 머리·손·무기를 약간 과장해 직업과 장비를 쉽게 읽게 한다",
+        "무료 미디블 에셋은 스크립트를 제거하고 색·재질·부품·배치를 변형해 재사용한다",
+        "플레이어와 AI 유저는 같은 4직업·1차전직 시각 언어와 R15 애니메이션을 공유한다",
+        "마을은 밝고 아기자기하게, 포탈 지역은 진행할수록 어둡고 신비롭게 대비한다",
+        "초원 늑대·협곡 도적·룬 골렘·설원 야수·심연 기사는 체형부터 다르게 만든다",
         "보스는 일반몹 단순 확대 금지"
       ],
       "forbidden": [
-        "포근섬 치비 볼/비율 재사용",
+        "현실형 중세 시뮬레이션 비율",
+        "색만 바꾼 동일 캐릭터/몬스터",
+        "무료 에셋 원본 그대로 복붙",
+        "포근섬 캐릭터를 그대로 재사용",
         "심야 공포 인간 골격 재사용",
-        "색만 바꾼 동일 몬스터",
         "도트/8비트 시각·음악 방향"
       ]
     },
@@ -285,12 +299,76 @@
         "client": "roblox-games/daechung-rpg/client/Game.client.luau",
         "launch": "roblox-games/daechung-rpg/launch-mvp.json"
       },
-      "launchMvpVersion": 8,
-      "graphicsConcept": "RPG_HEROIC_PORTAL_FANTASY",
-      "runtimeWorldArtPass": "RPG_FANTASY_SILHOUETTE_WORLD_V4",
-      "runtimeCharacterArtDirection": "RPG_HEROIC_FANTASY_SILHOUETTE",
+      "launchMvpVersion": 9,
+      "graphicsConcept": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "runtimeWorldArtPass": "RPG_FANTASY_PORTAL_WORLD_V5",
+      "runtimeCharacterArtDirection": "RPG_STYLIZED_TOY_FANTASY_R15",
       "qaContract": "qa/primary-three-design-code-sync.test.mjs",
-      "syncRule": "DESIGN_EQUALS_IMPLEMENTED_CODE"
-    }
+      "syncRule": "DESIGN_EQUALS_IMPLEMENTED_CODE",
+      "pendingSourceBranch": "assistant/daechung-class-visual-ai",
+      "pendingPullRequest": 2741
+    },
+    "firstAdvancements": [
+      {
+        "from": "BREAKER",
+        "branches": [
+          {
+            "id": "IRON_BREAKER",
+            "name": "철벽파쇄자",
+            "identity": "방어·반격"
+          },
+          {
+            "id": "RAGE_BREAKER",
+            "name": "광전파쇄자",
+            "identity": "분노·강공격"
+          }
+        ]
+      },
+      {
+        "from": "SHADOW",
+        "branches": [
+          {
+            "id": "ASSASSIN_TRACKER",
+            "name": "암살추적자",
+            "identity": "배후·치명타"
+          },
+          {
+            "id": "MIRAGE_TRACKER",
+            "name": "환영추적자",
+            "identity": "회피·교란"
+          }
+        ]
+      },
+      {
+        "from": "RUNE",
+        "branches": [
+          {
+            "id": "ELEMENTAL_RUNER",
+            "name": "원소룬술사",
+            "identity": "원소조합"
+          },
+          {
+            "id": "OVERLOAD_RUNER",
+            "name": "폭주룬술사",
+            "identity": "과부하·순간화력"
+          }
+        ]
+      },
+      {
+        "from": "SOUL",
+        "branches": [
+          {
+            "id": "GUARDIAN_MEDIUM",
+            "name": "수호영매사",
+            "identity": "보호·회복"
+          },
+          {
+            "id": "WRAITH_MASTER",
+            "name": "망령지배자",
+            "identity": "공격소환"
+          }
+        ]
+      }
+    ]
   }
 }
