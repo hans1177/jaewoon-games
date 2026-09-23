@@ -22,6 +22,10 @@ export const DESIGN_INTELLIGENCE_STAGES = freezeList([
   'EXPERIENCE_MEMORY'
 ]);
 
+export const DESIGN_EVOLUTION_LOOP = freezeList([
+  'STABILIZE','UNDERSTAND','OBSERVE','DIAGNOSE','SCORE','PROPOSE','COMPARE','REVISE','VALIDATE','LEARN','REPLAN'
+]);
+
 const PLAYER_ARCHETYPES = freezeList([
   freeze({ id:'novice', label:'초보', focus:'이해 가능성, 생존, 첫 성공까지의 마찰' }),
   freeze({ id:'optimizer', label:'최적화형', focus:'최강 선택 고착, 우회/악용 가능성, 지배전략' }),
@@ -75,29 +79,50 @@ function evaluateConstraints(task = {}) {
   });
 }
 
+function normalizeDesignAlternatives(task = {}) {
+  const rows = Array.isArray(task.designAlternatives) ? task.designAlternatives : Array.isArray(task.designPlans) ? task.designPlans : [];
+  return freezeList(rows.map((row,index)=>{
+    const defaultId=index===0?'PLAN_A':index===1?'PLAN_B':'PLAN_'+(index+1);
+    if(typeof row==='string')return freeze({id:defaultId,label:defaultId,summary:clean(row),genre:null,identityPreserving:index===0});
+    return freeze({
+      id:clean(row?.id)||defaultId,
+      label:clean(row?.label)||defaultId,
+      summary:clean(row?.summary||row?.description||row?.plan||row?.goal),
+      genre:clean(row?.genre)||null,
+      identityPreserving:row?.identityPreserving===true||(index===0&&row?.identityPreserving!==false),
+      novelty:clean(row?.novelty)||null,
+      implementationImpact:clean(row?.implementationImpact)||null,
+      regressionRisk:clean(row?.regressionRisk)||null,
+      validation:clean(row?.validation)||null
+    });
+  }).filter(row=>row.summary));
+}
+
 function evaluateDesigner(task = {}) {
   const goal = clean(task.goal);
   const designChange = task.designChange === true || clean(task.type).toLowerCase() === 'design';
-  const alternatives = Array.isArray(task.designAlternatives) ? task.designAlternatives.map(clean).filter(Boolean) : [];
+  const alternatives = normalizeDesignAlternatives(task);
   const rationale = clean(task.designRationale);
+  const ownerEventId=clean(task.ownerRequestInstanceId||task.ownerRequestEventId||task.ownerDirectiveRevision);
+  const ownerRepeatCount=Math.max(0,Number(task.ownerRepeatCount)||0);
   const issues = [];
   if (!goal) issues.push('GOAL_REQUIRED');
   if (designChange && !rationale) issues.push('DESIGN_RATIONALE_MISSING');
   if (designChange && alternatives.length < 2) issues.push('MULTIPLE_DESIGN_ALTERNATIVES_NOT_EVALUATED');
+  if (task.ownerDirective===true && !ownerEventId) issues.push('OWNER_REQUEST_EVENT_ID_MISSING');
+  if (ownerRepeatCount>=2 && alternatives.length<2) issues.push('REPEATED_OWNER_REQUEST_REQUIRES_NEW_ALTERNATIVE_REVIEW');
   return stage('DESIGNER', goal ? (issues.length ? 'ADVISORY' : 'PASS') : 'BLOCKED', {
-    goal,
-    designChange,
-    rationale: rationale || null,
-    alternatives: freezeList(alternatives),
-    issues: freezeList(issues)
+    goal,designChange,rationale:rationale||null,alternatives,ownerEventId:ownerEventId||null,ownerRepeatCount,
+    repeatedOwnerIntentInsufficient:ownerRepeatCount>=2,semanticOwnerRequestDeduplicationAllowed:false,
+    issues:freezeList(issues)
   });
 }
-
 function evaluateCritic(task = {}, designer = {}) {
   const issues = [];
   const goal = clean(task.goal).toLowerCase();
   if ((designer?.designChange || task.designChange === true) && !clean(task.designRationale)) issues.push('WHY_THIS_DESIGN_NOT_JUSTIFIED');
-  if ((designer?.designChange || task.designChange === true) && !(task.designAlternatives || []).length) issues.push('FIRST_IDEA_LOCK_IN_RISK');
+  if ((designer?.designChange || task.designChange === true) && !(designer?.alternatives || []).length) issues.push('FIRST_IDEA_LOCK_IN_RISK');
+  if ((designer?.ownerRepeatCount||0)>=2) issues.push('REPEATED_OWNER_INTENT_MEANS_PRIOR_APPROACH_WAS_INSUFFICIENT');
   if (!Array.isArray(task.acceptanceCriteria) || !task.acceptanceCriteria.length) issues.push('ACCEPTANCE_CRITERIA_MISSING');
   if (!Array.isArray(task.responsibleFiles) || !task.responsibleFiles.length) issues.push('CHANGE_SCOPE_NOT_EXPLICIT');
   if (/random|랜덤|확률/.test(goal) && !task.simulation) issues.push('RANDOMNESS_WITHOUT_SIMULATION_INPUT');
