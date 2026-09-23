@@ -1,5 +1,5 @@
 {
-  "version": 28,
+  "version": 30,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -445,5 +445,44 @@
     "canonicalSourceMustRemainUnityProject": true,
     "directLegacyWebGameAuthoringForbidden": true,
     "mayNotChangeGameplayBalanceToPassBrowserValidation": true
+  },
+  "highEndAssetTransformationSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
+    "purpose": "ALLOW_POWERFUL_ASSET_MUTATION_WITHOUT_WEAKENING_RIGHTS_PROVENANCE_OR_GAME_AUTHORITY",
+    "protections": {
+      "licenseAndDerivativeRightsVerifiedBeforeMutation": true,
+      "originalAssetImmutable": true,
+      "derivedAssetParentAndTransformHistoryRequired": true,
+      "attributionAndShareAlikeMustBePreservedWhenRequired": true,
+      "unverifiedExternalAssetUseForbidden": true,
+      "noDerivativesLicenseMustBlockMutation": true,
+      "binaryAssetTextForgeryForbidden": true,
+      "gameplayBalanceSaveProgressionEconomyMutationForbiddenForAssetReasons": true,
+      "externalAssetMayNotExpandCodeExecutionAuthority": true,
+      "untrustedEmbeddedScriptOrModuleMustBeQuarantined": true,
+      "existingSecurityScanAndQaRemainRequired": true
+    },
+    "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
+    "wholeCompanyStopDefault": false
+  },
+  "updatedAt": "2026-09-23",
+  "graphicsProductionUnificationSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
+    "protections": {
+      "singleCoordinatorDoesNotExpandWriteAuthority": true,
+      "vibeRemainsGameSourceMutationOwner": true,
+      "internalModuleCannotSelfPromoteToTopLevelAuthority": true,
+      "internalModuleCannotSelfAcceptGraphicsPass": true,
+      "oneRootEvidenceCannotHideFailedPlatformChildEvidence": true,
+      "rootEvidenceMustReferenceExactCandidateRevision": true,
+      "assetRightsProvenanceAndTransformHistoryStillRequired": true,
+      "audioDepartmentAuthorityPreserved": true,
+      "gameplayBalanceSaveProgressionEconomyMutationForbiddenForGraphicsReasons": true,
+      "qaSecurityReleaseGateBypassForbidden": true
+    },
+    "failureAction": "QUARANTINE_AFFECTED_GRAPHICS_SCOPE_AND_ROUTE_SAME_GRAPHICS_PRODUCTION_ROOT_TO_ASSET_REPAIR_REQUIRED",
+    "newShadowGraphicsPipelineForbidden": true
   }
 }

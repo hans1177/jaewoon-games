@@ -14,6 +14,7 @@ import {
   auditVibeRuntimeVisualEvidence,
   assertVibeRuntimeVisualQuality,
   GOLDEN_SCENE_ROLES,
+  HIGH_END_GOLDEN_SCENE_ROLES,
 } from '../assets/vibe-visual-quality-gate.js';
 
 function captures(revision='a'.repeat(40)){
@@ -92,4 +93,12 @@ test('final graphics cannot pass with unresolved high visual debt',()=>{
   });
   assert.equal(result.pass,false);
   assert.ok(result.reasons.includes('unresolved-critical-visual-debt'));
+});
+
+
+test('high-end target-frame role set extends the existing golden scene contract without replacing it',()=>{
+  assert.equal(HIGH_END_GOLDEN_SCENE_ROLES.length,7);
+  for(const role of GOLDEN_SCENE_ROLES)assert.ok(HIGH_END_GOLDEN_SCENE_ROLES.includes(role));
+  assert.ok(HIGH_END_GOLDEN_SCENE_ROLES.includes('KEY_LANDMARK_OR_HUB'));
+  assert.ok(HIGH_END_GOLDEN_SCENE_ROLES.includes('BOSS_OR_SIGNATURE_ENCOUNTER'));
 });

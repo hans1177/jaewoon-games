@@ -2,19 +2,43 @@
 // 역할: 자연어 요구를 게임 그래픽·애니메이션·VFX·사운드 제작 사양으로 변환
 // 규칙: 게임 판정과 표현을 분리하고 기존 규칙/세이브를 보존하며, V3에서는 권리 확인된 기존 에셋을 비파괴 후보 변형 후 경쟁 선택한다.
 
+import {planVibeStyleAwareGraphicsAutopilot,planVibeVisualAutopilot} from './vibe-visual-autopilot.js';
+import {planVibePresentationAutopilot} from './vibe-presentation-director.js';
+import {auditVibeRuntimeVisualEvidence} from './vibe-visual-quality-gate.js';
+
 const QUALITY_WORDS = Object.freeze({
   art: ['그래픽', '그림', '비주얼', '캐릭터', '곤충', '배경', '에셋', '퀄리티', '고퀄'],
   animation: ['애니', '애니메이션', '모션', '움직임', '동작', '걷기', '공격모션', '피격', '사망'],
   vfx: ['이펙트', '효과', 'vfx', '파티클', '폭발', '빛', '피격효과', '스킬연출'],
   audio: ['소리', '사운드', '음악', 'bgm', '효과음', '공격음', '피격음'],
 });
-const ASSET_TRANSFORMS = Object.freeze(['crop','scale','rotate','recolor','contrast','lighting','material','silhouette','part-separation','part-recomposition','layering','tile-repeat','shadow','outline','animation-rig','vfx-derivative','mobile-simplification']);
+const ASSET_TRANSFORMS = Object.freeze(['crop','scale','rotate','recolor','contrast','lighting','material','silhouette','part-separation','part-recomposition','layering','tile-repeat','shadow','outline','animation-rig','vfx-derivative','mobile-simplification','kitbash','proportion-variation','region-variant','elite-boss-derivative','lod-optimization','set-dressing']);
 const V3_VARIANT_PROFILES = Object.freeze([
   Object.freeze({id:'style-normalize',transforms:Object.freeze(['recolor','contrast','lighting','material','outline','shadow'])}),
   Object.freeze({id:'silhouette-remix',transforms:Object.freeze(['silhouette','part-separation','part-recomposition','layering','rotate','scale'])}),
   Object.freeze({id:'mobile-performance',transforms:Object.freeze(['crop','scale','outline','shadow','mobile-simplification'])}),
 ]);
 
+
+
+export const GRAPHICS_PRODUCTION_INTERNAL_MODULES=Object.freeze({
+  coordinator:'assets/vibe-art-pipeline.js',
+  inputPlanner:'tools/vibe2-asset-production-plan.mjs',
+  visualDirection:'assets/vibe-visual-autopilot.js',
+  presentation:'assets/vibe-presentation-director.js',
+  runtimeQuality:'assets/vibe-visual-quality-gate.js'
+});
+export const GRAPHICS_PRODUCTION_STAGES=Object.freeze([
+  'ART_DIRECTION_AND_VISUAL_TARGET_LOCK',
+  'ASSET_INVENTORY_ACQUISITION_AND_MUTATION',
+  'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS',
+  'ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING',
+  'MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING',
+  'ANIMATION_AND_MOTION_IDENTITY',
+  'VFX_UI_AND_PRESENTATION_BINDING',
+  'RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION',
+  'PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN'
+]);
 
 export const VIBE_ASSET_ACQUISITION_ORDER = Object.freeze([
   'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY',
@@ -30,6 +54,11 @@ export const VIBE_GOLDEN_SCENE_ROLES = Object.freeze([
   'CORE_GAMEPLAY_ACTION',
   'WORLD_OR_REGION_WIDE',
   'MOBILE_GAMEPLAY_HUD',
+]);
+export const VIBE_HIGH_END_TARGET_FRAME_ROLES = Object.freeze([
+  ...VIBE_GOLDEN_SCENE_ROLES,
+  'KEY_LANDMARK_OR_HUB',
+  'BOSS_OR_SIGNATURE_ENCOUNTER',
 ]);
 
 export function createVibeAssetAcquisitionPlan({ companyAssets = [], repositoryAssets = [], externalAssets = [], stage = 'INTERNAL_PLAYTEST' } = {}) {
@@ -205,7 +234,9 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   const layers = ['캐릭터 실루엣','본체/장비 파츠','그림자','방향 전환','애니메이션 상태','피격/공격 판정 연결','VFX 레이어','UI 피드백'];
   const steps = [];
   if (needsArt) steps.push('개발 에이전트가 현재 화면·에셋·Game DNA를 분석하고 부족한 표현을 능동적으로 식별');
-  if (needsArt) steps.push('현재 에셋과 스타일을 분석하고 목표 비주얼 프로필 확정');
+  if (needsArt) steps.push('현재 에셋과 스타일을 분석하고 Art Bible·Style Lock·Material/Environment/Animation/VFX/Lighting/UI 언어를 포함한 목표 비주얼 프로필 확정');
+  if (needsArt) steps.push('7개 Visual Target Frame 역할을 잠그고 실제 런타임 비교 기준으로 사용');
+  if (needsArt) steps.push('플레이어·주 보스/적·시그니처 무기·핵심 랜드마크·시작지역을 Hero Quality 기준점으로 우선 완성');
   if (needsArt) steps.push('원본 에셋 라이선스와 파생저작물 허용 여부를 변형 전에 검사');
   if (needsArt) steps.push('허용 에셋은 원본을 보존한 채 V3 변형 후보를 최소 3개 독립 생성하고 각각 별도 derived 경로에 저장');
   if (needsArt) steps.push('변형 후보를 스타일 일관성·실루엣 가독성·시각 품질·애니메이션 준비도·모바일 성능으로 실제 화면 비교 후 1개만 채택');
@@ -213,7 +244,8 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (artLevel) steps.push(`${artLevel >= 3 ? '고품질' : artLevel === 2 ? '상세' : '기본'} 캐릭터·적·보스·배경 에셋 구성`);
   if (artLevel >= 2) steps.push('허용 에셋을 분해하고 크롭/스케일/회전/색/명암/재질/실루엣을 재가공');
   if (artLevel >= 2) steps.push('분리 파츠를 재조합하고 지역종·변이종·보스 파생 디자인을 구성');
-  if (artLevel >= 2) steps.push('Art Bible 기준으로 서로 다른 원본의 색·형태·재질·조명을 통일');
+  if (artLevel >= 2) steps.push('Art Bible 기준으로 서로 다른 원본의 색·형태·재질·조명을 통일하고 raw asset-pack/kitbash 느낌을 제거');
+  if (artLevel >= 2) steps.push('배경을 전경/중경/후경으로 구성하고 지역 랜드마크·set dressing·환경 스토리텔링·이동/전투 가독성을 확보');
   if (animationLevel) steps.push(`분리 파츠 기반 ${states.join('/')} 애니메이션 구성`);
   if (animationLevel) steps.push('공격 시작/명중/종료 타이밍을 실제 판정과 동기화');
   if (vfxLevel) steps.push(`${vfxLevel >= 3 ? '고급' : vfxLevel === 2 ? '상세' : '기본'} 히트·폭발·스킬·사망 VFX 구성`);
@@ -225,13 +257,29 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   const web = target === 'web' || /웹|브라우저|html|javascript/i.test(prompt);
   const implementation = godot ? ['Sprite2D/AnimatedSprite2D','SpriteFrames','GPUParticles2D/CPUParticles2D','AnimationPlayer 또는 Tween','AudioStreamPlayer'] : web ? ['Canvas/Sprite 렌더러','스프라이트 시트/프레임 애니메이션','파티클 레이어','Web Audio API','CSS/Canvas UI 연출'] : ['플랫폼별 기본 2D 렌더러','프레임 애니메이션','파티클','오디오 이벤트'];
   return Object.freeze({
-    version: 4,
+    version: 5,
     generation:'V3',
     target: godot ? 'godot' : web ? 'web' : target,
     quality: Object.freeze({ art: artLevel, animation: animationLevel, vfx: vfxLevel, audio: audioLevel }),
     style: style || '프로젝트 기존 스타일 분석 후 일관된 스타일로 확정',
     assetAcquisition: Object.freeze({ order: VIBE_ASSET_ACQUISITION_ORDER, preferVerifiedCompanyAssets:true, rightsVerifiedRepositoryOrExternalBeforeUse:true, reconstructWhenRightsAllow:true, createWhenNoVerifiedCandidate:true, primitiveFallbackPrototypeOnly:true, fallbackCreatesVisualDebt:true }),
-    runtimeVisualAcceptance: Object.freeze({ required:needsArt, goldenSceneRoles:VIBE_GOLDEN_SCENE_ROLES, actualRuntimeCaptureRequired:needsArt, compareAgainstLastPassingPresentation:true, markerOnlyPassForbidden:true, primaryActorPrimitivePlaceholderForbiddenAfterPrototype:true }),
+    runtimeVisualAcceptance: Object.freeze({ required:needsArt, goldenSceneRoles:VIBE_GOLDEN_SCENE_ROLES, highEndTargetFrameRoles:VIBE_HIGH_END_TARGET_FRAME_ROLES, actualRuntimeCaptureRequired:needsArt, compareAgainstLastPassingPresentation:true, beforeAfterVisualRegressionRequired:true, markerOnlyPassForbidden:true, primaryActorPrimitivePlaceholderForbiddenAfterPrototype:true, environmentCoverageRequired:true, platformPerformanceEvidenceRequired:true }),
+    highEndVisual: Object.freeze({
+      required:needsArt,
+      target:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
+      artBibleRequired:true,
+      styleLockRequired:true,
+      targetFrames:VIBE_HIGH_END_TARGET_FRAME_ROLES,
+      heroQualityTargets:Object.freeze(['PLAYER_CHARACTER','PRIMARY_BOSS','PRIMARY_ENEMY','SIGNATURE_WEAPON_OR_TOOL','KEY_LANDMARK','STARTING_HUB_OR_FIRST_REGION']),
+      purposefulAssetDefault:true,
+      environmentAndBackgroundFirstClass:true,
+      worldLayers:Object.freeze(['FOREGROUND','MIDGROUND','BACKGROUND']),
+      landmarkPerMajorRegionRequired:true,
+      setDressingRequired:true,
+      antiKitbashGateRequired:true,
+      platformSpecificReauthoringExpected:true,
+      primitiveFallbackPrototypeOnly:true
+    }),
     art: Object.freeze({ required: needsArt, layers: Object.freeze(layers), replaceableAssets: true, silhouetteRequired: true, reconstructionSupported: true, transforms: ASSET_TRANSFORMS, derivativeGateRequired: true, artBibleNormalization: true, variantGeneration: true, selfTransformExistingAssets:true, nonDestructiveVariants:true, variantTournament:true, defaultVariantCount:3, originalOverwriteForbidden:true }),
     animation: Object.freeze({ required: animationLevel > 0 || needsArt, states: Object.freeze(states), partSeparated: animationLevel >= 2, motionSyncRequired: true }),
     vfx: Object.freeze({ required: vfxLevel > 0 || animationLevel >= 2, hit: true, skill: true, death: true, screenFeedback: true }),
@@ -239,10 +287,135 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
     agentRole: Object.freeze({ mode:'active-art-direction-v3', inspectWithoutPrompting:true, identifyMissingAssets:true, chooseReuseReconstructOrCreate:true, preferVerifiedCompanyAssetLibrary:true, followAssetAcquisitionOrder:true, createVisualDebtForFallback:true, requireGoldenSceneRuntimeEvidence:true, selfTransformExistingAssets:true, generateIndependentVariants:true, compareVariantsInActualPresentation:true, keepOriginalImmutable:true, prepareAnimationParts:true, connectAnimationAndVfx:true, compareActualPresentation:true, iteratePresentationDefects:true, gameplayAuthority:false, saveAuthority:false }),
     implementation: Object.freeze(implementation),
     steps: Object.freeze(unique(steps)),
-    qa: Object.freeze(['에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','Golden Scene 5종 런타임 캡처','주요 캐릭터/몹 primitive placeholder 제거','Visual Debt 해소','성능/메모리']),
-    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true, assetAcquisitionOrderEnforced:true, primitiveFallbackPrototypeOnly:true, visualDebtForFallbackRequired:true, goldenSceneRuntimeEvidenceRequired:true, markerOnlyPresentationPassForbidden:true }),
+    qa: Object.freeze(['Art Bible/Style Lock/Visual Target Frame 바인딩','Hero Quality 대상 완성도','안티-kitbash 스타일 통일','전경/중경/배경 환경 구성','랜드마크/set dressing/환경 스토리텔링','에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','Golden Scene 5종 런타임 캡처','주요 캐릭터/몹 primitive placeholder 제거','Visual Debt 해소','성능/메모리']),
+    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true, assetAcquisitionOrderEnforced:true, primitiveFallbackPrototypeOnly:true, visualDebtForFallbackRequired:true, goldenSceneRuntimeEvidenceRequired:true, markerOnlyPresentationPassForbidden:true, highEndVisualProduction:true, purposefulAssetDefault:true, environmentAndBackgroundFirstClass:true, antiKitbashGateRequired:true, beforeAfterVisualRegressionRequired:true, platformSpecificReauthoringExpected:true }),
+  });
+}
+
+
+function graphicsProductionPlatforms(target='dual-native'){
+  const value=clean(target).toLowerCase();
+  if(['dual-native','native','roblox+unity','unity+roblox','roblox_unity'].includes(value))return Object.freeze(['ROBLOX','UNITY']);
+  if(value==='roblox')return Object.freeze(['ROBLOX']);
+  if(value==='unity')return Object.freeze(['UNITY']);
+  if(value==='web')return Object.freeze(['WEB']);
+  return Object.freeze(['ROBLOX','UNITY']);
+}
+
+export function createVibeGraphicsProductionEvidenceRoot({
+  gameId='',
+  candidateRevision='',
+  sourceRevision='',
+  platformEvidenceRefs={},
+  assetProvenanceRefs=[],
+  artBibleRef='',
+  visualTargetFramesRef='',
+  runtimeAudit=null
+}={}){
+  const id='graphics-production-'+stableHash([gameId,candidateRevision,sourceRevision].join('|'));
+  const platformRefs=Object.freeze({
+    ROBLOX:clean(platformEvidenceRefs?.ROBLOX||platformEvidenceRefs?.roblox)||null,
+    UNITY:clean(platformEvidenceRefs?.UNITY||platformEvidenceRefs?.unity)||null
+  });
+  return Object.freeze({
+    version:1,
+    kind:'graphics-production-evidence',
+    graphicsProductionId:id,
+    gameId:clean(gameId)||null,
+    candidateRevision:clean(candidateRevision)||null,
+    sourceRevision:clean(sourceRevision)||null,
+    artBibleRef:clean(artBibleRef)||null,
+    visualTargetFramesRef:clean(visualTargetFramesRef)||null,
+    assetProvenanceRefs:Object.freeze(unique(assetProvenanceRefs.map(clean))),
+    platformEvidenceRefs:platformRefs,
+    runtimeAudit:runtimeAudit||null,
+    rawRuntimeCaptureDuplicationForbidden:true,
+    independentCharacterEnvironmentAnimationVfxEvidenceAuthority:false,
+    authority:'GRAPHICS_PRODUCTION_ROOT_EVIDENCE_ONLY'
+  });
+}
+
+export function createVibeGraphicsProduction({
+  gameId='',
+  request='',
+  target='dual-native',
+  quality=3,
+  style='',
+  game={},
+  world={},
+  characters=[],
+  files=[],
+  graph=null,
+  events=[],
+  assetProductionPlan=null,
+  runtimeEvidence=null,
+  candidateRevision='',
+  sourceRevision='',
+  platformEvidenceRefs={},
+  assetProvenanceRefs=[],
+  artBibleRef='',
+  visualTargetFramesRef=''
+}={}){
+  const platforms=graphicsProductionPlatforms(target);
+  const artSpec=createVibeArtPipeline({request,target:platforms.length===2?'native':String(platforms[0]||target).toLowerCase(),quality,style});
+  const visualDirection=planVibeStyleAwareGraphicsAutopilot({game,world,characters,platform:platforms.length===2?'mobile':String(platforms[0]||'mobile').toLowerCase()});
+  const visualWork=planVibeVisualAutopilot({files,graph,request});
+  const presentation=planVibePresentationAutopilot({files,events,request});
+  const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
+  const runtimeAudit=runtimeEvidence&&Object.keys(runtimeEvidence).length?auditVibeRuntimeVisualEvidence(runtimeEvidence):null;
+  const status=runtimeAudit?(runtimeAudit.pass?'GRAPHICS_PASS':'ASSET_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
+  const evidence=createVibeGraphicsProductionEvidenceRoot({
+    gameId,candidateRevision,sourceRevision,platformEvidenceRefs,assetProvenanceRefs,artBibleRef,visualTargetFramesRef,runtimeAudit
+  });
+  return Object.freeze({
+    version:1,
+    kind:'GRAPHICS_PRODUCTION',
+    status,
+    graphicsProductionId:evidence.graphicsProductionId,
+    gameId:clean(gameId)||null,
+    platforms,
+    externalTopLevelWorkUnit:true,
+    topLevelWorkUnitCount:1,
+    soleCoordinator:GRAPHICS_PRODUCTION_INTERNAL_MODULES.coordinator,
+    inputPlanner:GRAPHICS_PRODUCTION_INTERNAL_MODULES.inputPlanner,
+    internalModules:GRAPHICS_PRODUCTION_INTERNAL_MODULES,
+    stages:GRAPHICS_PRODUCTION_STAGES,
+    assetProductionPlanBound:assetPlanBound,
+    assetProductionPlan:assetPlanBound?assetProductionPlan:null,
+    artSpec,
+    visualDirection,
+    visualWork,
+    presentation,
+    runtimeAudit,
+    evidence,
+    queue:Object.freeze({
+      siblingTopLevelGraphicsTasksForbidden:true,
+      internalStagesMayFanOutOnDisjointFiles:true,
+      internalFanOutMustFanInToSameRoot:true,
+      failedInternalScopeReturnsToSameRoot:true
+    }),
+    authority:Object.freeze({
+      graphicsDepartmentOwnsVisualDirection:true,
+      vibeOwnsGameSourceMutation:true,
+      audioAuthoringOwner:'audio',
+      graphicsConsumesAudioEvidenceOnly:true,
+      gameplayMutationAllowed:false,
+      independentInternalModuleAcceptanceForbidden:true
+    }),
+    policy:Object.freeze({
+      highEndCommercialNativePresentation:true,
+      purposefulAssetsDefault:true,
+      backgroundAndEnvironmentFirstClass:true,
+      assetMutationAndExpansion:true,
+      antiKitbashCohesionGate:true,
+      platformSpecificReauthoring:true,
+      beforeAfterVisualRegression:true,
+      platformPerformanceEvidence:true,
+      oneRootEvidenceRecord:true,
+      shadowGraphicsPipelineForbidden:true
+    })
   });
 }
 
 export const planVibeArtPipeline = createVibeArtPipeline;
-if (typeof window !== 'undefined') Object.assign(window,{createJaewoonVibeArtPipeline:createVibeArtPipeline,createJaewoonVibeAssetReconstructionContract:createVibeAssetReconstructionContract,createJaewoonVibeAssetVariantPlan:createVibeAssetVariantPlan,selectJaewoonVibeAssetVariant:selectVibeAssetVariant});
+if (typeof window !== 'undefined') Object.assign(window,{createJaewoonVibeArtPipeline:createVibeArtPipeline,createJaewoonVibeGraphicsProduction:createVibeGraphicsProduction,createJaewoonVibeGraphicsProductionEvidenceRoot:createVibeGraphicsProductionEvidenceRoot,createJaewoonVibeAssetReconstructionContract:createVibeAssetReconstructionContract,createJaewoonVibeAssetVariantPlan:createVibeAssetVariantPlan,selectJaewoonVibeAssetVariant:selectVibeAssetVariant});

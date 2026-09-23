@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 49,
-  "updatedAt": "2026-09-23T00:18:00+09:00",
+  "revision": 51,
+  "updatedAt": "2026-09-23",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1063,7 +1063,7 @@
       "UNITY"
     ],
     "webDevelopmentStageRemoved": true,
-    "unityWebEnabled": false,
+    "unityWebEnabled": true,
     "minimumDesignRequired": true,
     "sameGameBothPlatformsRequired": true,
     "platformSpecificImplementationRequired": true,
@@ -1073,6 +1073,49 @@
     "internalReleaseFirst": true,
     "internalPlaytestStage": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
     "fortniteUefnState": "OWNER_HOLD",
-    "noArtificialGlobalGameCountCap": true
+    "noArtificialGlobalGameCountCap": true,
+    "unityWebRequired": false,
+    "unityWebGateRequired": false,
+    "unityWebMode": "VALIDATION_SURFACE_ONLY",
+    "unityWebValidationSurface": {
+      "enabled": true,
+      "optional": true,
+      "sameCanonicalUnityProjectRequired": true,
+      "requiredForDevelopmentAdmission": false,
+      "requiredForNativeRuntimePass": false,
+      "requiredForInternalRelease": false
+    }
+  },
+  "highEndVisualProduction": {
+    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
+    "status": "MIRROR_ONLY",
+    "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
+    "developmentAdmissionGate": false,
+    "runsInParallelWithNativeDevelopment": true,
+    "internalPlatformReleasePresentationGateRequired": true,
+    "defaultPurposefulAssets": true,
+    "primitiveFallbackPrototypeOnly": true,
+    "assetMutationAndExpansion": true,
+    "environmentAndBackgroundFirstClass": true,
+    "artBibleAndVisualTargetFramesRequired": true,
+    "antiKitbashCohesionGateRequired": true,
+    "actualRuntimeVisualEvidenceRequired": true,
+    "platformSpecificReauthoringExpected": true
+  },
+  "graphicsProduction": {
+    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
+    "status": "MIRROR_ONLY",
+    "externalWorkUnit": "GRAPHICS_PRODUCTION",
+    "soleCoordinator": "assets/vibe-art-pipeline.js",
+    "oneTopLevelWorkUnitPerGameCandidate": true,
+    "internalModulesOnly": [
+      "assets/vibe-visual-autopilot.js",
+      "assets/vibe-presentation-director.js",
+      "assets/vibe-visual-quality-gate.js"
+    ],
+    "siblingTopLevelGraphicsPipelinesForbidden": true,
+    "audioAuthoringOwner": "audio",
+    "vibeGameSourceMutationOwner": true,
+    "evidenceRoot": "graphics-production-evidence"
   }
 }
