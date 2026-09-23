@@ -156,7 +156,7 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const designScheduling=directive?.platformStrategy?.designStabilizationScheduling||{};
-          const engineFiles=['tools/company-design-cycle.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
+          const engineFiles=['tools/company-design-cycle.mjs','tools/vibe2-design-intelligence.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
           const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
           const canaryMarker=(()=>{try{return JSON.parse(fs.readFileSync('design-engine-canary.json','utf8'));}catch{return null;}})();
           const canaryVerified=canaryMarker?.engineDigest===engineDigest;
@@ -435,6 +435,8 @@ jobs:
           node --check tools/company-strict-production-review.mjs
           node --check tools/company-design-prepromotion-repair.mjs
           node --check tools/company-design-cycle.mjs
+          node --check tools/vibe2-design-intelligence.mjs
+          node --test qa/vibe2-design-intelligence.test.mjs
           node --check tools/company-design-checkpoint-recovery.mjs
           node --check tools/company-baseline-gate.mjs
           node --check tools/company-minimum-design-contract.mjs
