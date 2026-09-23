@@ -1,5 +1,5 @@
 {
-  "version": 31,
+  "version": 32,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -491,5 +491,22 @@
     "humanReadablePolicyDocumentRequiredForExecution": false,
     "legacyWebFirstFallbackForbidden": true,
     "strictScoreAdmissionReactivationForbidden": true
+  },
+  "gameErrorRepairSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair",
+    "purpose": "GAME_ERROR_REPAIR_MUST_NOT_WEAKEN_SERVER_AUTHORITY_SAVE_ECONOMY_REMOTE_VALIDATION_OR_EXISTING_SECURITY_GATES",
+    "protections": {
+      "repairMayNotMoveAuthoritativeDamageRewardSaveOrEconomyToClient": true,
+      "remoteValidationAndRateLimitWeakeningForbidden": true,
+      "saveMigrationMayNotSilentlyResetOrDuplicateProtectedProgress": true,
+      "multiplayerRepairRequiresAuthoritativeStateConsistency": true,
+      "testWeakeningToMakeRepairPassForbidden": true,
+      "securityRelevantRepairRequiresExistingSecurityRescan": true,
+      "wrapperShadowOverrideSecurityBypassForbidden": true,
+      "exactAffectedScopeIsolationRequired": true
+    },
+    "failureAction": "QUARANTINE_SECURITY_RELEVANT_REPAIR_AND_ROUTE_EXISTING_SECURITY_RECOVERY",
+    "authorityExpansion": false
   }
 }
