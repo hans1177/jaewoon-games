@@ -250,6 +250,51 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     clean(row?.kind).toUpperCase()==='SYSTEM'?'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED':''
   ]).filter(Boolean);
   const causalReplay=compileCausalReplayPlan({order,failures,testTargets,diagnosticReplayBaseline});
+  const repairShared=order?.workPackage?.sharedContext?.gameRepair&&typeof order.workPackage.sharedContext.gameRepair==='object'?order.workPackage.sharedContext.gameRepair:{};
+  const repairFailureStage=clean(order?.selectedTask?.failureStage||order?.failureStage||repairShared.failureStage)||null;
+  const repairFailureSignature=clean(order?.selectedTask?.failureSignature||order?.selectedTask?.blocker||order?.failureSignature||repairShared.failureSignature)||null;
+  const lastKnownGoodRevision=clean(repairShared.lastKnownGoodRevision||order?.selectedTask?.lastKnownGoodRevision)||null;
+  const firstBrokenRevision=clean(repairShared.firstBrokenRevision||order?.selectedTask?.firstBrokenRevision)||null;
+  const currentRevision=clean(repairShared.currentRevision||process.env.VIBE2_BASE_MAIN_SHA)||null;
+  const saveRequired=(sourceAnalysis.storageKeys||[]).length>0||/(?:localStorage|indexedDB|PlayerPrefs|DataStoreService|save|load|persist|저장|불러오기)/i.test(sourceText);
+  const multiplayerRequired=/(?:RemoteEvent|RemoteFunction|NetworkVariable|Netcode|Photon|Mirror|multiplayer|server.?authorit|client.?server|co-?op|pvp|멀티|협동|동기화)/i.test(sourceText+' '+requirementText);
+  const classifiedTargets=unique(testTargets||[]);
+  const gameRepair={
+    version:1,
+    required:failures.length>0,
+    failureStage:repairFailureStage,
+    failureSignature:repairFailureSignature,
+    prePatchReproduced:causalReplay.prePatchReproduced===true,
+    responsibleSystem:causalReplay.verifiedResponsibleSystem||primarySystems[0]||null,
+    responsibleFiles:responsibleFiles.slice(0,16),
+    revisions:{lastKnownGoodRevision,firstBrokenRevision,currentRevision,historyAvailable:Boolean(lastKnownGoodRevision||firstBrokenRevision)},
+    originalScenarioReplay:{
+      required:failures.length>0,
+      coveredByCausalReplay:causalReplay.executable===true,
+      identicalOrEquivalentInputStateRequired:true,
+      testTargets:causalReplay.nodeTestTargets||[]
+    },
+    invariants:{
+      required:failures.length>0,
+      ids:(codingArchitecture?.invariants||[]).map(row=>row.id).filter(Boolean),
+      testTargets:classifiedTargets.filter(value=>/(?:invariant|state|progress|quest|wave|combat|scenario|integration)/i.test(value)).slice(0,8)
+    },
+    saveMigration:{
+      required:saveRequired,
+      stableKeys:(sourceAnalysis.storageKeys||[]).slice(0,24),
+      testTargets:classifiedTargets.filter(value=>/(?:save|load|migration|persist|storage)/i.test(value)).slice(0,8)
+    },
+    multiplayerLifecycle:{
+      required:multiplayerRequired,
+      minimumPlayers:2,
+      testTargets:classifiedTargets.filter(value=>/(?:multi|network|sync|join|rejoin|server|client|remote)/i.test(value)).slice(0,8)
+    },
+    impactRegressionRequired:true,
+    fullRegressionFanInRequired:true,
+    unchangedSourceRevalidationForbidden:true,
+    directResponsibleSystemRepairRequired:true,
+    authorityExpanded:false
+  };
   const requiredFocusedChecks=unique([
     ...impactRows.flatMap(row=>row.requiredChecks||[]),
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
@@ -310,6 +355,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     },
     requiredFocusedChecks,
     causalReplay,
+    gameRepair,
     patchRecipe,
     codingArchitecture:{
       developmentMode:codingArchitecture?.developmentMode||null,
@@ -474,6 +520,7 @@ export function explorationGuidance(handoff={}){
       `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,
       ...(handoff.editContract.causalReplay?.required===true?[
         `[CAUSAL REPLAY CONTRACT] mode=${handoff.editContract.causalReplay.mode||'PLAN_ONLY'}; prepatch=${handoff.editContract.causalReplay.prePatchReproduced===true?'REPRODUCED':'NOT_REPRODUCED'}; executable=${handoff.editContract.causalReplay.executable===true?'YES':'NO'}`,
+`[GAME REPAIR CONTRACT] required=${handoff.editContract.gameRepair?.required===true?'YES':'NO'}; save=${handoff.editContract.gameRepair?.saveMigration?.required===true?'REQUIRED':'N/A'}; multiplayer=${handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?'REQUIRED':'N/A'}; full-regression=${handoff.editContract.gameRepair?.fullRegressionFanInRequired===true?'REQUIRED':'NO'}`,
         ...(handoff.editContract.causalReplay.mode==='DIAGNOSTIC_RESCAN'&&handoff.editContract.causalReplay.executable===true?[
           `CAUSAL DIAGNOSTIC TARGET=${handoff.editContract.causalReplay.diagnosticType||'UNKNOWN'}:${handoff.editContract.causalReplay.diagnosticFile||'UNKNOWN'}; line=${handoff.editContract.causalReplay.diagnosticLine??'UNKNOWN'}; needle=${handoff.editContract.causalReplay.diagnosticNeedle||'UNKNOWN'}; verified-system=${handoff.editContract.causalReplay.verifiedResponsibleSystem||'UNKNOWN'}`,
           handoff.editContract.causalReplay.diagnosticMicroTask?`CAUSAL DIAGNOSTIC REPAIR=${handoff.editContract.causalReplay.diagnosticMicroTask}`:'' ,
