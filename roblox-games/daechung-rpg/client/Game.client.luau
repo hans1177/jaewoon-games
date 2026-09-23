@@ -10,7 +10,7 @@ local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 
-local function sound(name,id,volume)
+local function sound(name,id,volume) local s = Instance.new("Sound") ; s.Name = name ; s.SoundId = id ; s.Volume = volume ; s.Parent = SoundService ; return s end
  local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s
 end
 local actionSfx=sound("RPGAction",C.Audio.Action,.22)
