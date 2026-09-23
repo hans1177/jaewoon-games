@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": "local function form(p)",
+      "replace": "local function load(p)\n\tp:SetAttribute(\"MonsterPreference\",\"ANY\");\n\tp:SetAttribute(\"SoloRole\",\"SURVIVOR\")\n\tp:SetAttribute(\"MonsterXP\",0);\n\tp:SetAttribute(\"Coins\",0);\n\tp:SetAttribute(\"RoundsSinceMonster\",0)\n\tp:SetAttribute(\"MonsterForm\",\"DRACULA\";\n\tp:SetAttribute(\"HumanForm\",\"BROADCAST\";\n\tp:SetAttribute(\"Role\",\"WAITING\";\n\tp:SetAttribute(\"Frozen\",false);\n\tp:SetAttribute(\"Infected\",false);\n\tp:SetAttribute(\"InfectionReadyAt\",0)\n\tp:SetAttribute(\"RoundState\",\"WAITING\";\n\tp:SetAttribute(\"TimeLeft\",0)\n\tp:SetAttribute(\"ObjectivesDone\",0);\n\tp:SetAttribute(\"ObjectivesTotal\",C.ObjectiveCount);\n\tp:SetAttribute(\"Escaped\",false)\n\tp:SetAttribute(\"CurrentMap\",workspace:GetAttribute(\"CurrentMapName\")or\"학교\")\n\tp:SetAttribute(\"CurrentMapEvent\",workspace:GetAttribute(\"CurrentMapEventName\")or\"맵 준비\")\n\tlocal ok,d=pcall(function()return store:GetAsync(\"p:\"..p.UserId)end)\n\tif ok and typeof(d) == \"table\" then\n\t\tfor _,k in ipairs({\"MonsterXP\",\"Coins\",\"RoundsSinceMonster\"}) do\n\t\t\tif typeof(d[k]) == \"number\" then\n\t\t\t\tp:SetAttribute(k,d[k /no_think"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
