@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,5 +492,42 @@
   "centralPolicyExecutionEvidence": {
     "humanReadablePolicyDocsRequired": false,
     "machinePolicyHashesRequired": true
+  },
+  "designEvolutionEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousDesignEvolution",
+    "recordScope": "PER_GAME_PER_DESIGN_REVISION",
+    "requiredEvidence": [
+      "DESIGN_REVISION",
+      "TRIGGER_SOURCE",
+      "OWNER_REQUEST_EVENT_ID_WHEN_OWNER_TRIGGERED",
+      "OWNER_REPEAT_COUNT",
+      "STABILITY_FINDINGS",
+      "OWNER_INTENT_INTERPRETATION",
+      "CONCEPT_BLUEPRINT",
+      "PLAN_A",
+      "PLAN_B",
+      "ALTERNATIVES_COMPARISON",
+      "SELECTED_APPROACH",
+      "CONTENT_DIVERSITY_CHECK",
+      "NARRATIVE_DIALOGUE_CHECK_WHEN_APPLICABLE",
+      "PREVIOUS_DESIGN_CHECKPOINT",
+      "STRICT_DESIGN_RESULT",
+      "PLAYTEST_OR_RUNTIME_EVIDENCE_WHEN_AVAILABLE",
+      "VERIFIED_OUTCOME",
+      "LEARNING_RETURN_REFERENCE",
+      "NEXT_REPLAN_DECISION"
+    ],
+    "ownerSemanticTextDeduplicationForbidden": true,
+    "repeatedIdenticalOwnerTextCreatesNewRevision": true,
+    "automaticSignalSemanticDeduplicationRequired": true,
+    "unlimitedRevisionEvidenceAllowed": true,
+    "passIsCheckpointNotTerminal": true,
+    "implementationBindings": [
+      "tools/company-design-cycle.mjs",
+      "tools/vibe2-design-intelligence.mjs",
+      "tools/vibe2-learning-motor.mjs"
+    ],
+    "markerOnlyImprovementClaimForbidden": true
   }
 }
