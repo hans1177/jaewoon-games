@@ -1,0 +1,716 @@
+{
+  "version": 1,
+  "kind": "company-game-design-library-registry",
+  "role": "NON_POLICY_STRUCTURAL_REGISTRY",
+  "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGameDesignSystem",
+  "updatedAt": "2026-09-24",
+  "status": "FOUNDATION_CATALOG",
+  "lifecycle": [
+    "DESIGN_BASE",
+    "IMPLEMENTED_CANDIDATE",
+    "RUNTIME_VERIFIED",
+    "DEPRECATED"
+  ],
+  "rule": "Entries describe reusable bases and compatibility surfaces. They are not policy and do not count as runtime-verified until evidenceRefs are populated.",
+  "entries": [
+    {
+      "id": "CHARACTER_HUMANOID_R15",
+      "family": "ASSET",
+      "subtype": "CHARACTER",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "mutationKeys": [
+        "PALETTE",
+        "MATERIAL",
+        "ARMOR_ATTACHMENTS",
+        "WEAPON_ATTACHMENTS",
+        "PROPORTION_WITHIN_R15"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "CHARACTER_HUMANOID_NATIVE",
+      "family": "ASSET",
+      "subtype": "CHARACTER",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "PALETTE",
+        "MATERIAL",
+        "OUTFIT",
+        "PROPORTION",
+        "LOD"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "CREATURE_QUADRUPED",
+      "family": "ASSET",
+      "subtype": "CREATURE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SCALE",
+        "PALETTE",
+        "FUR_MATERIAL",
+        "HORN_EAR_TAIL_VARIANTS",
+        "DETAIL_DENSITY"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "CREATURE_FLYING",
+      "family": "ASSET",
+      "subtype": "CREATURE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SCALE",
+        "PALETTE",
+        "WING_VARIANT",
+        "ANTENNA_OR_HORN",
+        "DETAIL_DENSITY"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "CREATURE_HEAVY",
+      "family": "ASSET",
+      "subtype": "CREATURE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SCALE",
+        "MATERIAL",
+        "CORE_GLOW",
+        "ARMOR_PLATES",
+        "SILHOUETTE_PARTS"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "BOSS_HUMANOID",
+      "family": "ASSET",
+      "subtype": "BOSS",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SCALE",
+        "MATERIAL",
+        "HELMET",
+        "WEAPON",
+        "CAPE",
+        "HORN",
+        "CORE",
+        "PALETTE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "NPC_QUEST_GIVER",
+      "family": "GAMEPLAY_ARCHETYPE",
+      "subtype": "NPC",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "OUTFIT",
+        "ROLE_PROP",
+        "IDLE_VARIANT",
+        "UI_ICON"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "NPC_MERCHANT",
+      "family": "GAMEPLAY_ARCHETYPE",
+      "subtype": "NPC",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "OUTFIT",
+        "SHOP_PROP",
+        "IDLE_VARIANT",
+        "SIGNAGE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "NPC_HEALER",
+      "family": "GAMEPLAY_ARCHETYPE",
+      "subtype": "NPC",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "OUTFIT",
+        "HEALING_PROP",
+        "VFX_VARIANT",
+        "IDLE_VARIANT"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "NPC_TRAINER",
+      "family": "GAMEPLAY_ARCHETYPE",
+      "subtype": "NPC",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "OUTFIT",
+        "WEAPON_OR_STAFF",
+        "STANCE",
+        "SIGNAGE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WEAPON_SWORD",
+      "family": "ASSET",
+      "subtype": "WEAPON",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "BLADE_SHAPE",
+        "HILT",
+        "MATERIAL",
+        "TRAIL",
+        "SCALE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WEAPON_GREATSWORD",
+      "family": "ASSET",
+      "subtype": "WEAPON",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "BLADE_SHAPE",
+        "GUARD",
+        "MATERIAL",
+        "TRAIL",
+        "SCALE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WEAPON_DAGGER_PAIR",
+      "family": "ASSET",
+      "subtype": "WEAPON",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "BLADE_SHAPE",
+        "HILT",
+        "MATERIAL",
+        "TRAIL"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WEAPON_SPEAR",
+      "family": "ASSET",
+      "subtype": "WEAPON",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "HEAD",
+        "SHAFT",
+        "MATERIAL",
+        "TRAIL",
+        "SCALE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WEAPON_STAFF",
+      "family": "ASSET",
+      "subtype": "WEAPON",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "HEAD_ORB",
+        "SHAFT",
+        "MATERIAL",
+        "MAGIC_COLOR"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "MOTION_HUMANOID_LOCOMOTION",
+      "family": "MOTION",
+      "subtype": "LOCOMOTION",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "TEMPO",
+        "WEIGHT",
+        "STANCE",
+        "TURN_RATE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "MOTION_MELEE_LIGHT",
+      "family": "MOTION",
+      "subtype": "MELEE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "TEMPO",
+        "RECOVERY",
+        "WEAPON_ARC_PRESENTATION"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "MOTION_MELEE_HEAVY",
+      "family": "MOTION",
+      "subtype": "MELEE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "ANTICIPATION",
+        "TEMPO",
+        "RECOVERY",
+        "WEIGHT"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "MOTION_CAST_STAFF",
+      "family": "MOTION",
+      "subtype": "CAST",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "TEMPO",
+        "HAND_PATH",
+        "STAFF_PATH",
+        "RECOVERY"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "MOTION_QUADRUPED",
+      "family": "MOTION",
+      "subtype": "CREATURE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "GAIT",
+        "BITE",
+        "POUNCE",
+        "HIT_REACTION",
+        "DEATH"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "MOTION_FLYING_CREATURE",
+      "family": "MOTION",
+      "subtype": "CREATURE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "WING_RATE",
+        "HOVER",
+        "DIVE",
+        "HIT_REACTION",
+        "DEATH"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "MOTION_HEAVY_CREATURE",
+      "family": "MOTION",
+      "subtype": "CREATURE",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "GAIT",
+        "SLAM",
+        "TURN_WEIGHT",
+        "STAGGER",
+        "DEATH"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "VFX_HIT_STACK",
+      "family": "VFX",
+      "subtype": "COMBAT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "COLOR",
+        "SIZE",
+        "DURATION",
+        "PARTICLE_DENSITY"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "VFX_PARRY_GUARD_BREAK",
+      "family": "VFX",
+      "subtype": "COMBAT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "COLOR",
+        "SIZE",
+        "DURATION",
+        "RING_SHAPE"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "VFX_ELEMENTAL_STACK",
+      "family": "VFX",
+      "subtype": "MAGIC",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "ELEMENT",
+        "COLOR",
+        "SIZE",
+        "DURATION",
+        "TRAIL"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "VFX_BOSS_TELEGRAPH",
+      "family": "VFX",
+      "subtype": "BOSS",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "COLOR",
+        "SHAPE",
+        "DURATION",
+        "INTENSITY"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WORLD_FANTASY_VILLAGE",
+      "family": "WORLD",
+      "subtype": "KIT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "PALETTE",
+        "BUILDING_VARIANTS",
+        "ROAD_LAYOUT",
+        "FOLIAGE_DENSITY",
+        "LANDMARK",
+        "LIGHTING"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WORLD_FOREST",
+      "family": "WORLD",
+      "subtype": "KIT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "TREE_VARIANTS",
+        "GROUND_MATERIAL",
+        "ROCKS",
+        "FOLIAGE_DENSITY",
+        "FOG",
+        "LANDMARK"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WORLD_RUINS",
+      "family": "WORLD",
+      "subtype": "KIT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "ARCHITECTURE_STYLE",
+        "MATERIAL",
+        "RUNE_COLOR",
+        "DAMAGE_LEVEL",
+        "FOG",
+        "LANDMARK"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WORLD_SNOW",
+      "family": "WORLD",
+      "subtype": "KIT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SNOW_COVERAGE",
+        "ICE",
+        "TREE_VARIANTS",
+        "FOG",
+        "LIGHTING",
+        "LANDMARK"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "WORLD_ABYSS",
+      "family": "WORLD",
+      "subtype": "KIT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "MATERIAL",
+        "GLOW_COLOR",
+        "FOG",
+        "OBELISKS",
+        "PARTICLES",
+        "LANDMARK"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "UI_MOBILE_STATUS_HUD",
+      "family": "UI",
+      "subtype": "HUD",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SKIN",
+        "SPACING",
+        "TYPOGRAPHY",
+        "BAR_STYLE",
+        "SAFE_AREA"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "UI_FOUR_ACTION_COMBAT",
+      "family": "UI",
+      "subtype": "COMBAT",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SKIN",
+        "BUTTON_SIZE",
+        "ICON",
+        "SAFE_AREA",
+        "HAND_REACH_LAYOUT"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "UI_TOAST",
+      "family": "UI",
+      "subtype": "FEEDBACK",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SKIN",
+        "DURATION",
+        "POSITION",
+        "TYPOGRAPHY"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "UI_BOSS_BAR",
+      "family": "UI",
+      "subtype": "BOSS",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "SKIN",
+        "SEGMENTS",
+        "STATUS_ICONS",
+        "POSITION"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "PRESENTATION_CAMERA_COMBAT",
+      "family": "CAMERA_LIGHTING",
+      "subtype": "CAMERA",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "FOV",
+        "FOLLOW_DAMPING",
+        "IMPACT_SHAKE",
+        "BOSS_FOCUS"
+      ],
+      "evidenceRefs": []
+    },
+    {
+      "id": "PRESENTATION_LIGHTING_OUTDOOR",
+      "family": "CAMERA_LIGHTING",
+      "subtype": "LIGHTING",
+      "status": "DESIGN_BASE",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "mutationKeys": [
+        "TIME",
+        "AMBIENT",
+        "FOG",
+        "BLOOM",
+        "COLOR_GRADE"
+      ],
+      "evidenceRefs": []
+    }
+  ],
+  "verifiedImplementations": [],
+  "candidateExtractionSources": [
+    {
+      "gameId": "daechung-rpg",
+      "source": "CURRENT_VISUAL_REPAIR_AFTER_RUNTIME_VERIFICATION",
+      "status": "NOT_PROMOTED_YET"
+    }
+  ]
+}
