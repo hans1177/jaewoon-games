@@ -1,5 +1,5 @@
 {
-  "version": 114,
+  "version": 115,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -91,17 +91,17 @@
       "FAN_IN_REGRESSION"
     ],
     "assetProduction": [
-      "ART_BIBLE_AND_GAME_STYLE_LOCK",
-      "VISUAL_TARGET_FRAME_LOCK",
-      "DEFAULT_PURPOSEFUL_ASSET_BASELINE",
-      "HERO_QUALITY_BASELINE",
-      "RIGHTS_VERIFIED_ASSET_MUTATION_AND_VARIANT_TOURNAMENT",
-      "ENVIRONMENT_SET_DRESSING_AND_LANDMARKS",
-      "ANIMATION_VFX_AUDIO_LIGHTING_CAMERA_COHESION",
-      "UNITY_ROBLOX_PLATFORM_SPECIFIC_REAUTHORING",
-      "HIGH_END_RUNTIME_VISUAL_QA",
-      "BEFORE_AFTER_VISUAL_REGRESSION_AND_PLATFORM_PERFORMANCE",
-      "ASSET_REPAIR_REVALIDATION"
+      "GRAPHICS_PRODUCTION",
+      "ART_DIRECTION_AND_VISUAL_TARGET_LOCK",
+      "ASSET_INVENTORY_ACQUISITION_AND_MUTATION",
+      "HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS",
+      "ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING",
+      "MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING",
+      "ANIMATION_AND_MOTION_IDENTITY",
+      "VFX_UI_AND_PRESENTATION_BINDING",
+      "RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION",
+      "PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN",
+      "GRAPHICS_PASS_OR_ASSET_REPAIR_REQUIRED"
     ],
     "planningGrowthMarketing": [
       "EXISTING_PLANNING_ROLE",
@@ -123,7 +123,17 @@
       "VIBE_OR_RELEASE_DECISION",
       "VERIFIED_RECORD_RETENTION_OR_SUPERSESSION",
       "SCHEDULED_HYGIENE_SCAN"
-    ]
+    ],
+    "graphicsProductionAuthority": {
+      "root": "assets/vibe-art-pipeline.js",
+      "inputPlanner": "tools/vibe2-asset-production-plan.mjs",
+      "internalOnly": [
+        "assets/vibe-visual-autopilot.js",
+        "assets/vibe-presentation-director.js",
+        "assets/vibe-visual-quality-gate.js"
+      ],
+      "siblingTopLevelVisualPipelinesForbidden": true
+    }
   },
   "workerRoles": {
     "VIBE2_VIBE3": "GAME_SOURCE_IMPLEMENTATION_OWNER",
@@ -2307,7 +2317,19 @@
       "usesExistingDepartment": true,
       "duplicateArtDepartmentForbidden": true,
       "gameSourceMutationOwner": "VIBE2_VIBE3",
-      "graphicsMayNotChangeGameplayAuthority": true
+      "graphicsMayNotChangeGameplayAuthority": true,
+      "externalWorkUnit": "GRAPHICS_PRODUCTION",
+      "soleProductionCoordinator": "assets/vibe-art-pipeline.js",
+      "inputPlanner": "tools/vibe2-asset-production-plan.mjs",
+      "internalModules": [
+        "assets/vibe-visual-autopilot.js",
+        "assets/vibe-presentation-director.js",
+        "assets/vibe-visual-quality-gate.js"
+      ],
+      "oneTopLevelGraphicsWorkUnitPerGameCandidate": true,
+      "internalRolesMayNotCreateSiblingTopLevelGraphicsPipelines": true,
+      "audioAuthoringOwner": "audio",
+      "graphicsConsumesAudioEvidenceWithoutOwningAudioDepartment": true
     }
   },
   "recordsGovernance": {
