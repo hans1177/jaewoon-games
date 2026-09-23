@@ -170,6 +170,18 @@ jobs:
               placeId:String(candidate.placeId),
               versionNumber:Number(candidate.versionNumber),
             });
+            console.log('ROBLOX_FOUNDATION_RESULT='+JSON.stringify({
+              gameId:item.gameId,
+              exactGame:result.exactGame,
+              exactPlace:result.exactPlace,
+              exactVersion:result.exactVersion,
+              requiredCheckpoints:result.requiredCheckpoints,
+              checkpointPass:result.checkpointPass,
+              checkpointOrderPassed:result.checkpointOrderPassed,
+              runtimeFoundationPassed:result.runtimeFoundationPassed,
+              runtimeAcceptancePassed:result.runtimeAcceptancePassed,
+              blockers:result.blockers,
+            }));
             const evidence={
               ...result,
               sourceRevision,
