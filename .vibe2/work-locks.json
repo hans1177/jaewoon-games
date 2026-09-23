@@ -1,5 +1,23 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1efiv0s",
+      "worker": "vibe2",
+      "taskId": "cozy-island-presentation-asset-adaptation-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/index.html"
+      ],
+      "baseSha": "effc2bd127ccd436eca5c8aa71a5d11912e9c167",
+      "acquiredAt": "2026-09-23T10:45:26.533Z",
+      "expiresAt": "2026-09-23T11:30:26.533Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
