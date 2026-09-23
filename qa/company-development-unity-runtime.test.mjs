@@ -242,3 +242,17 @@ test('Unity executor admits source-bind work so missing owner-focused native roo
   assert.match(workflowSource,/node tools\/company-development-unity-bootstrap\.mjs/);
   assert.match(workflowSource,/platformDevelopmentEligible\(item,'UNITY'\)/);
 });
+
+
+test('legacy Genymotion runtime gate cannot block canonical Redroid validation when credentials are absent',()=>{
+  assert.match(cloudBuildSource,/Resolve legacy Genymotion gate availability/);
+  assert.match(cloudBuildSource,/LEGACY_GENYMOTION_GATE=SKIPPED_CREDENTIALS_UNAVAILABLE/);
+  assert.match(cloudBuildSource,/CANONICAL_ANDROID_RUNTIME_GATE=UNITY_ANDROID_RUNTIME_SMOKE_REDROID/);
+  assert.match(cloudBuildSource,/outputs:[\s\S]*verified:\s*\$\{\{ steps\.verify\.outputs\.verified \}\}/);
+  assert.match(cloudBuildSource,/if:\s*steps\.legacy\.outputs\.enabled == 'true'[\s\S]*Prepare matching ARM64 Android 16 cloud runtime/);
+  assert.match(cloudBuildSource,/id:\s*verify[\s\S]*verified=true/);
+  assert.match(cloudBuildSource,/publish:[\s\S]*needs\.android16-install-gate\.outputs\.verified == 'true'/);
+  assert.match(runtimeWorkflowSource,/workflow_run:[\s\S]*workflows: \["Unity Hybrid Android Build"\]/);
+  assert.match(runtimeWorkflowSource,/runs-on: ubuntu-24\.04-arm/);
+  assert.match(runtimeWorkflowSource,/redroid\/redroid:16\.0\.0_64only-latest/);
+});
