@@ -203,6 +203,8 @@ test('unresolved symptom traces cause before mutating design',()=>{
 test('material design change requires plan A and B plus selected rationale',()=>{
   const missing=buildVibeDesignIntelligence({task:{goal:'장르를 확장한다',type:'design',designChange:true,designRationale:'새 플레이 가능성 검토'}});
   assert.ok(missing.blueprint.issues.includes('PLAN_A_B_REQUIRED_FOR_MATERIAL_DESIGN_CHANGE'));
+  assert.equal(missing.implementationGate.allowed,false);
+  assert.ok(missing.implementationGate.blockers.includes('PLAN_A_B_REQUIRED_FOR_MATERIAL_DESIGN_CHANGE'));
   const ready=buildVibeDesignIntelligence({task:{
     goal:'장르를 확장한다',type:'design',designChange:true,designRationale:'새 플레이 가능성 검토',
     designAlternatives:[
@@ -298,6 +300,8 @@ test('company design cycle consumes the design evolution brief and structured bl
   assert.match(source,/referenceHomagePlan/);
   assert.match(source,/designIntegrityPlan/);
   assert.match(source,/stabilityPriorityPlan/);
+  assert.match(source,/ownerDesignEventId/);
+  assert.match(source,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
   assert.match(source,/공공영역 고전/);
   assert.match(source,/현대 보호 작품은 추상적 기법만 참고/);
   assert.match(source,/같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다|중복 수정/);
