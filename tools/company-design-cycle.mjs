@@ -7,7 +7,7 @@ import {repairDesignRequiredFields} from './company-design-prepromotion-repair.m
 import {scoreDesignGateV2,DESIGN_GATE_PASS_MINIMUM} from './company-design-gate-scoring-v2.mjs';
 import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
 
-const ROLES=['planning','graphics','development','qa','balance'];
+const ROLES=['planning','graphics','development','qa','audio'];
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -441,14 +441,14 @@ const AXIS_FIELDS=Object.freeze({
 const AXIS_ROLES=Object.freeze({
   IDEA_AND_DISTINCTNESS:['planning'],
   CATEGORY_IDENTITY:['planning','qa'],
-  CORE_LOOP_DESIGN:['planning','balance'],
+  CORE_LOOP_DESIGN:['planning','qa'],
   SYSTEM_INTERCONNECTION_DESIGN:['development','qa'],
-  PROGRESSION_ECONOMY_BALANCE_DESIGN:['planning','balance'],
-  CONTENT_EXPANSION_PLAN:['planning','balance'],
-  FAILURE_RETRY_RISK_DESIGN:['qa','balance'],
+  PROGRESSION_ECONOMY_BALANCE_DESIGN:['planning','qa'],
+  CONTENT_EXPANSION_PLAN:['planning','qa'],
+  FAILURE_RETRY_RISK_DESIGN:['planning','qa'],
   PLATFORM_FIT_DESIGN:['development','qa'],
   UX_AND_ACCESSIBILITY_PLAN:['graphics','qa'],
-  ART_AUDIO_DIRECTION:['graphics'],
+  ART_AUDIO_DIRECTION:['graphics','audio'],
   IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY:['development','qa']
 });
 function genreProfileForDesign(design){
@@ -699,8 +699,8 @@ function departmentDesignContext(role,design){
     planning:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','contentExpansionPlan','failureRetryRisk','marketTargetDirection','multiplayerMode','multiplayerExpansionDecision','openQuestions'],
     graphics:['identity','playerFantasy','coreFun','signatureSystems','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','platformFitPlan'],
     development:['coreLoop','signatureSystems','systemInterconnections','platformFitPlan','technicalAssumptions','implementationTraceability','failureRetryRisk','multiplayerMode'],
-    qa:['coreLoop','systemInterconnections','failureRetryRisk','platformFitPlan','uxAccessibilityPlan','validationQuestions','implementationTraceability','multiplayerMode'],
-    balance:['coreLoop','signatureSystems','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','multiplayerMode']
+    qa:['coreLoop','systemInterconnections','progressionEconomyBalance','failureRetryRisk','platformFitPlan','uxAccessibilityPlan','validationQuestions','implementationTraceability','multiplayerMode'],
+    audio:['identity','playerFantasy','coreFun','signatureSystems','artAudioDirection','failureRetryRisk','platformFitPlan']
   }[role]||Object.keys(design||{});
   return Object.fromEntries(fields.filter(key=>Object.prototype.hasOwnProperty.call(design||{},key)).map(key=>[key,design[key]]));
 }
