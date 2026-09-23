@@ -65,7 +65,7 @@ permissions:
 env:
   SYSTEM_AI_MODEL: qwen3:1.7b
   VIBE2_LOCAL_MODEL: qwen3:1.7b
-  SYSTEM_AI_MAX_BATCH: '32'
+  SYSTEM_AI_MAX_BATCH: '256'
   OLLAMA_HOST: 127.0.0.1:11434
 
 concurrency:
