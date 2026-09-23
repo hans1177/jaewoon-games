@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -162,7 +162,8 @@
       "SYSTEM_AI_DUPLICATE_DEPENDENCY_REWIRED",
       "COMPANY_SYSTEM_AI_SUPERSEDED_DEPENDENCIES_REWIRED",
       "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS",
-      "COMPANY_SYSTEM_AI_CROSS_SCOPE_CANARY_DEPENDENCIES_REMOVED"
+      "COMPANY_SYSTEM_AI_CROSS_SCOPE_CANARY_DEPENDENCIES_REMOVED",
+      "COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES"
     ],
     "rawModelOutputStored": false,
     "rawModelOutputSha256Required": true,
@@ -267,7 +268,11 @@
         "2a7ab4957c5c670ca03ea689a384fa0aab471147",
         "c556915ea3022ef8002dec8acba9b2bb95e78e7d"
       ],
-      "crossScopeCanaryLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN"
+      "crossScopeCanaryLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+      "pushQaOnlyRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
+      "pushQaOnlyTestRevision": "7514d87deae8799f9891eaf67fe2a684dcccd55b",
+      "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c",
+      "pushQaReserveLockIsolationTestRevision": "eec5aa2219bc4523bb08f0c4d9d293772f0bbc2e"
     },
     "metricSemantics": {
       "SYSTEM_AI_RESERVATION_WAIT_MS": {
