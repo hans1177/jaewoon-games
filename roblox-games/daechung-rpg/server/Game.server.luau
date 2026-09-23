@@ -800,11 +800,18 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
    add("LizardBody",Vector3.new(4.6,2.1,6.4),Vector3.new(0,-1.5,.2),Color3.fromRGB(88,133,78),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
    add("LizardHead",Vector3.new(3,2.1,3.3),Vector3.new(0,-1,-3.7),Color3.fromRGB(105,151,90),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
    add("LizardTail",Vector3.new(.9,.9,6.2),Vector3.new(0,-1.4,5),Color3.fromRGB(72,116,70),Enum.Material.SmoothPlastic,Enum.PartType.Cylinder,Vector3.new(90,0,0))
-  elseif id=="HORN_DEER"then
-   add("DeerBody",Vector3.new(4,2.8,5.6),Vector3.new(0,-1.4,.3),Color3.fromRGB(145,107,68),Enum.Material.Fabric,Enum.PartType.Ball)
-   add("DeerHead",Vector3.new(2.5,2.6,2.6),Vector3.new(0,.15,-3.2),Color3.fromRGB(158,119,75),Enum.Material.Fabric,Enum.PartType.Ball)
-   add("AntlerL",Vector3.new(.32,3.4,.32),Vector3.new(-.75,2,-3.1),Color3.fromRGB(100,78,54),Enum.Material.Wood,nil,Vector3.new(0,0,-25))
-   add("AntlerR",Vector3.new(.32,3.4,.32),Vector3.new(.75,2,-3.1),Color3.fromRGB(100,78,54),Enum.Material.Wood,nil,Vector3.new(0,0,25))
+  elseif id=="HORN_DEER"or id=="GOLDEN_ANTLER"then
+   local big=id=="GOLDEN_ANTLER"and 1.45 or 1
+   local body=id=="GOLDEN_ANTLER"and Color3.fromRGB(183,137,71)or Color3.fromRGB(145,107,68)
+   local head=id=="GOLDEN_ANTLER"and Color3.fromRGB(205,160,82)or Color3.fromRGB(158,119,75)
+   local antler=id=="GOLDEN_ANTLER"and Color3.fromRGB(255,214,103)or Color3.fromRGB(100,78,54)
+   add("DeerBody",Vector3.new(4,2.8,5.6)*big,Vector3.new(0,-1.4,.3)*big,body,Enum.Material.Fabric,Enum.PartType.Ball)
+   add("DeerHead",Vector3.new(2.5,2.6,2.6)*big,Vector3.new(0,.15,-3.2)*big,head,Enum.Material.Fabric,Enum.PartType.Ball)
+   add("AntlerL",Vector3.new(.32,3.4,.32)*big,Vector3.new(-.75,2,-3.1)*big,antler,id=="GOLDEN_ANTLER"and Enum.Material.Neon or Enum.Material.Wood,nil,Vector3.new(0,0,-25))
+   add("AntlerR",Vector3.new(.32,3.4,.32)*big,Vector3.new(.75,2,-3.1)*big,antler,id=="GOLDEN_ANTLER"and Enum.Material.Neon or Enum.Material.Wood,nil,Vector3.new(0,0,25))
+   if id=="GOLDEN_ANTLER"then
+    add("GoldenCrest",Vector3.new(2.2,.35,2.2),Vector3.new(0,2.3,-2.9)*big,Color3.fromRGB(255,230,132),Enum.Material.Neon,Enum.PartType.Ball)
+   end
   elseif id=="VINE_CRAWLER"or id=="ANCIENT_HEART"then
    local big=id=="ANCIENT_HEART"and 1.4 or 1
    add("VineCore",Vector3.new(4.8,5.2,4.2)*big,Vector3.new(0,-1,0),Color3.fromRGB(75,104,61),Enum.Material.Wood,Enum.PartType.Ball)
@@ -886,7 +893,8 @@ local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)
  local gold=spec and spec.Gold or(boss and z.Boss and z.Boss.Gold or z.RewardGold)
  local xp=spec and spec.XP or(boss and z.Boss and z.Boss.XP or z.RewardXP)
  local stagger=spec and spec.Stagger or(boss and 120 or 40)
- local e={part=part,zone=z.Id,hp=hp,max=hp,damage=damage,gold=gold,xp=xp,spawn=spawn,boss=boss==true,hiddenBoss=hiddenBoss==true,def=spec,lastAttack=0,target=nil,attackPending=false,attackIndex=0,stagger=stagger,staggerMax=stagger,stunnedUntil=0,speed=spec and spec.Speed or(boss and 9 or 7),runSeed=z.Id==1 and meadowRunState.seed or 0}
+ local runBoss=spec and z.RunBoss and spec.Id==z.RunBoss.Id
+ local e={part=part,zone=z.Id,hp=hp,max=hp,damage=damage,gold=gold,xp=xp,spawn=spawn,boss=boss==true,hiddenBoss=hiddenBoss==true,runBoss=runBoss==true,def=spec,lastAttack=0,target=nil,attackPending=false,attackIndex=0,stagger=stagger,staggerMax=stagger,stunnedUntil=0,speed=spec and spec.Speed or(boss and 9 or 7),runSeed=z.Id==1 and meadowRunState.seed or 0}
  part:SetAttribute("HP",hp);part:SetAttribute("MaxHP",hp);part:SetAttribute("Zone",z.Id);part:SetAttribute("EnemyId",spec and spec.Id or"DEFAULT");part:SetAttribute("Stagger",stagger);part:SetAttribute("StaggerMax",stagger);part:SetAttribute("HiddenBoss",hiddenBoss==true)
  local status=Instance.new("BillboardGui");status.Name="EnemyStatus";status.Size=UDim2.fromOffset(boss and 110 or 84,12);status.StudsOffset=Vector3.new(0,boss and 7.4 or 5.7,0);status.AlwaysOnTop=false;status.MaxDistance=80;status.Parent=part
  local hpBack=Instance.new("Frame");hpBack.Name="HPBack";hpBack.Size=UDim2.new(1,0,.45,0);hpBack.BackgroundColor3=Color3.fromRGB(48,45,46);hpBack.BorderSizePixel=0;hpBack.Parent=status
@@ -955,7 +963,7 @@ generateMeadowRun=function(seed)
  local old=zone:FindFirstChild("ProceduralRun");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="ProceduralRun";f.Parent=zone
  meadowRunCounter+=1;seed=math.floor(tonumber(seed)or(100000+game.PlaceVersion*31+meadowRunCounter*97));local rng=Random.new(seed)
- meadowRunState={seed=seed,hiddenBossId="",generated=true};workspace:SetAttribute("MeadowRunSeed",seed);workspace:SetAttribute("MeadowHiddenBossDefeated",false);workspace:SetAttribute("MeadowHiddenBossId","")
+ meadowRunState={seed=seed,hiddenBossId="",generated=true};workspace:SetAttribute("MeadowRunSeed",seed);workspace:SetAttribute("MeadowHiddenBossDefeated",false);workspace:SetAttribute("MeadowHiddenBossId","");workspace:SetAttribute("MeadowRunBossDefeated",false)
  local roomKinds={"START","COMBAT","COMBAT","EVENT","ELITE","COMBAT","TREASURE","EXIT"}
  for i=2,#roomKinds-1 do local j=rng:NextInteger(2,#roomKinds-1);roomKinds[i],roomKinds[j]=roomKinds[j],roomKinds[i]end
  roomKinds[1]="START";roomKinds[#roomKinds]="EXIT"
@@ -986,6 +994,11 @@ generateMeadowRun=function(seed)
     end
    end
   end
+ end
+ local runBossDef=z.RunBoss
+ if runBossDef then
+  local bossPos=nodes[#nodes]+Vector3.new(0,6,-4)
+  spawnEnemy(z,true,777,runBossDef,bossPos,false)
  end
  local secretChance=z.Procedural and z.Procedural.SecretChance or .8
  if rng:NextNumber()<=secretChance then
@@ -1054,6 +1067,8 @@ local function killEnemy(p,e,contribution)
  p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2)
  if e.hiddenBoss then
   workspace:SetAttribute("MeadowHiddenBossDefeated",true);msg(p,"히든 보스 격파 · "..display);feedback(p,"HIDDEN_BOSS_KILL")
+ elseif e.runBoss then
+  workspace:SetAttribute("MeadowRunBossDefeated",true);msg(p,"초원 런 보스 격파 · "..display);feedback(p,"BOSS_KILL")
  else
   msg(p,(e.boss and"보스 격파 · "or"처치 · ")..display);feedback(p,e.boss and"BOSS_KILL"or"KILL")
   local killedRun=e.runSeed
