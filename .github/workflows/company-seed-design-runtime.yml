@@ -173,7 +173,12 @@ jobs:
             .filter(row=>String(row?.status||'').trim().toUpperCase()==='ACTIVE')
             .map(row=>String(row?.gameId||'').trim())
             .filter(Boolean));
-          const active=(state.seeds||[]).filter(seed=>String(seed.status||'').toUpperCase()==='ACTIVE');
+          const designReviewEligible=seed=>{
+            const status=String(seed?.status||'').trim().toUpperCase();
+            if(['DISCARDED','REMOVED'].includes(status))return false;
+            return status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true;
+          };
+          const active=(state.seeds||[]).filter(designReviewEligible);
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           const strictPassFor=(seed)=>{
@@ -365,7 +370,7 @@ jobs:
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';import path from 'node:path';
           const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
-          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&String(x.status).toUpperCase()==='ACTIVE');
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const designReviewEligible=x=>{const status=String(x?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||x?.promotion?.strictDesignReviewContinuesInParallel===true);};const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&designReviewEligible(x));
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           let strictPass=false;
@@ -1090,10 +1095,14 @@ jobs:
             .filter(Boolean));
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const designReviewEligible=seed=>{
+            const status=String(seed?.status||'').trim().toUpperCase();
+            return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);
+          };
           let bound=0,cleared=0;
           for(const seed of state.seeds||[]){
             const gameId=String(seed?.gameId||'').trim();
-            if(!canonical.has(gameId)||String(seed?.status||'').toUpperCase()!=='ACTIVE')continue;
+            if(!canonical.has(gameId)||!designReviewEligible(seed))continue;
             const root=path.join('design',gameId);
             const dates=fs.existsSync(root)?fs.readdirSync(root,{withFileTypes:true})
               .filter(entry=>entry.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(entry.name))
@@ -1173,8 +1182,9 @@ jobs:
           const state=JSON.parse(show('game-seed-state.json'));let count=0;
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const designReviewEligible=seed=>{const status=String(seed?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);};
           for(const seed of state.seeds||[]){
-            if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
+            if(!designReviewEligible(seed))continue;
             let passed=false;
             try{
               const tree=execFileSync('git',['ls-tree','-r','--name-only',`origin/${branch}`,`design/${seed.gameId}`],{encoding:'utf8',maxBuffer:32*1024*1024}).split(/\r?\n/).filter(Boolean);
@@ -1237,9 +1247,10 @@ jobs:
             if(!Number.isFinite(updated))return true;
             return Date.now()<updated+providerRetryMs(row);
           };
+          const designReviewEligible=seed=>{const status=clean(seed?.status).toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);};
           let blocked=0;
           for(const seed of state.seeds||[]){
-            if(clean(seed.status).toUpperCase()!=='ACTIVE')continue;
+            if(!designReviewEligible(seed))continue;
             const cpPath=`design/${seed.gameId}/${date}/design-checkpoint.json`;
             if(!exists(cpPath))continue;
             let cp={};try{cp=JSON.parse(show(cpPath));}catch{continue;}
