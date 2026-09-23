@@ -1,5 +1,5 @@
 {
-  "version": 302,
+  "version": 303,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -748,15 +748,6 @@
   },
   "phases": [
     {
-      "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
-      "priority": 2,
-      "entryGate": false,
-      "objective": "FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE",
-      "blocksUnityDevelopment": false,
-      "blocksFortniteDevelopment": false,
-      "status": "SUPERSEDED_BY_EQUAL_UNITY_ROBLOX_PRIORITY"
-    },
-    {
       "id": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
       "priority": 1,
       "entryGate": false,
@@ -956,12 +947,6 @@
       "PUBLIC_RELEASE",
       "POST_RELEASE_FOCUSED_DEVELOPMENT"
     ],
-    "webToPlatformHandoff": {
-      "required": false,
-      "status": "LEGACY_DISABLED",
-      "webRole": "NONE",
-      "replacement": "MINIMUM_DUAL_PLATFORM_DESIGN_HANDOFF"
-    },
     "targetPlatformDevelopment": {
       "allowedPlatforms": [
         "ROBLOX",
@@ -1534,50 +1519,12 @@
       "domainMasteryLevelLimit": null,
       "verifiedMasteryGrowthUnbounded": true
     },
-    "webFirstImplementation": {
-      "authority": "VIBE_IMPLEMENTATION_OWNER",
-      "existingSourceAssessmentRequired": true,
-      "assessmentOwner": "VIBE_EXPLORATION",
-      "assessmentStrategies": [
-        "KEEP_AND_CONTINUE",
-        "PARTIAL_REPAIR",
-        "MAJOR_REWORK",
-        "FULL_REBUILD"
-      ],
-      "fullRebuildRequires": "EXPLORATION_FULL_REBUILD_DECISION",
-      "prototypeMarkerAloneCannotForceRebuild": true,
-      "existingSourceMustBeReadBeforeDecision": true,
-      "approvedDesignComparisonRequired": true,
-      "approvedScopeCoverageRequired": true,
-      "gameplaySignalAssessmentRequired": true,
-      "preserveReusableSystems": true,
-      "preserveSaveMeaningWhenCompatible": true,
-      "preserveGameIdentity": true,
-      "missingSourceAction": "VIBE_NEW_WEB_BASE_IMPLEMENTATION",
-      "existingSourceAction": "ASSESS_THEN_IMPLEMENT",
-      "verifiedLearningReuseRequired": true,
-      "transformativeRecombinationRawCopyForbidden": true,
-      "companyBootstrapMayGenerateGameSource": false,
-      "companyBootstrapMayRepairGameSource": false,
-      "companyRuntimeRole": "ROUTE_VALIDATE_FAN_IN_ONLY",
-      "enabled": false,
-      "status": "LEGACY_DISABLED",
-      "developmentAdmissionAuthority": false,
-      "replacement": "DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT"
-    },
     "machineOnlyProjectContinuation": {
       "version": 2,
       "authority": "MACHINE_EXECUTION_CONTRACT",
       "humanDocumentRequired": false,
       "sourceOfTruth": "company-learning/platform-release-roadmap.json",
       "objective": "MINIMUM_SHARED_DESIGN_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION_THEN_INTERNAL_PLAYTEST_AND_POST_RELEASE_FOCUSED_DEVELOPMENT",
-      "webBaseImplementation": {
-        "enabled": false,
-        "status": "LEGACY_DISABLED",
-        "developmentAdmissionAuthority": false,
-        "replacement": "MINIMUM_DESIGN_CONTRACT_READY",
-        "disposablePrototype": false
-      },
       "nativePlatformContinuation": {
         "selectedPlatformSource": "design-revised.json#content.platformProfiles",
         "supported": [
@@ -1862,13 +1809,6 @@
         "company-learning/vibe3-task-playbooks.json",
         "company-learning/vibe2-code-pattern-library.json"
       ],
-      "webWorker": {
-        "enabled": false,
-        "status": "LEGACY_DISABLED",
-        "developmentAdmissionAuthority": false,
-        "replacement": "DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT",
-        "legacyWebMaintenanceMayContinueWhenExplicitlyTargeted": true
-      },
       "selectedPlatformWorker": {
         "owner": "VIBE2_VIBE3",
         "instruction": "IMPLEMENT_PLATFORM_NATIVE_BEHAVIOR_FROM_SHARED_MINIMUM_DESIGN_AND_PLATFORM_PROFILE_WITHOUT_SILENT_SCOPE_DROP",
@@ -3206,17 +3146,6 @@
         "automaticAdoptionViaPrAllowedAfterAllEvolutionGatesPass": true
       }
     },
-    "webIterationPolicy": {
-      "continuouslyEditable": true,
-      "ownerMayRequestFurtherRevisionAfterPass": true,
-      "passedEvidenceInvalidatedByRelevantSourceChangeOnly": true,
-      "revalidateAfterRelevantRevision": true,
-      "competitiveQualityParityWithTargetPlatform": true,
-      "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
-      "webPassDoesNotMeanReleaseReadyByItself": true,
-      "scope": "LEGACY_WEB_MAINTENANCE_ONLY",
-      "developmentAdmissionAuthority": false
-    },
     "releaseMaturityGate": {
       "prematureReleaseForbidden": true,
       "singleRuntimePassInsufficient": true,
@@ -3411,31 +3340,6 @@
         "saveVersioningContract",
         "saveRestoreEvidenceContract"
       ]
-    },
-    "missingWebBaselinePlanning": {
-      "authority": "MACHINE_EXECUTION_CONTRACT",
-      "source": "company-runtime/development-queue.json",
-      "activeDevelopmentConfirmedItemsMustEnterPlanner": true,
-      "existingWebArchiveRequiredForPlanning": false,
-      "missingWebSourceAction": "CREATE_WEB_BASE_IMPLEMENTATION_TASK",
-      "taskIdTemplate": "<gameId>-web-base-implementation-v1",
-      "sourceRootTemplate": "web-games/<gameId>",
-      "entryFile": "index.html",
-      "bootstrapAllowed": true,
-      "homepageExposureBeforeEntryExists": false,
-      "saveNormalizationContractMustRemainAttached": true,
-      "workerAuthorityField": "workerPolicy.sourceRootBootstrapAllowed",
-      "workerAuthorityEvidence": "source-root-bootstrap-required",
-      "workerAuthorityGoalMarker": "SOURCE_ROOT_BOOTSTRAP_ALLOWED",
-      "explorationMayUseSyntheticReadOnlyBootstrapContext": true,
-      "sourceWorkerMayCreateMissingRootOnlyOnIsolatedCandidateBranch": true,
-      "sourceWorkerBootstrapFileLimit": 1,
-      "sourceWorkerBootstrapEntryFile": "index.html",
-      "missingRootWithoutExplicitBootstrapAuthority": "BLOCK",
-      "enabled": false,
-      "status": "LEGACY_DISABLED",
-      "developmentAdmissionAuthority": false,
-      "replacement": "MINIMUM_DESIGN_CONTRACT_READY_AND_NATIVE_SOURCE_BIND"
     },
     "developmentToolAuthority": {
       "version": 1,
@@ -6296,8 +6200,7 @@
       "noNewPipeline": true,
       "noQualityGateWeakening": true,
       "platformSpecificEvidenceStillRequired": true,
-      "internalPlaytestIsActiveCoDevelopment": true,
-      "legacyWebMaintenanceNotDeleted": true
+      "internalPlaytestIsActiveCoDevelopment": true
     },
     "systemAiEvolution20260923": {
       "authority": "OWNER_DIRECTIVE_2026-09-23",
@@ -6383,6 +6286,19 @@
       "removedCompletedTemporaryMigrationArtifacts": true,
       "runtimeHistoryAndCompatibilityEvidencePreserved": true,
       "currentMachineContractsRemainSourceOfTruth": true
+    },
+    "legacyWebFirstCleanup20260923": {
+      "removedInactiveFields": [
+        "developmentLifecycleMachine.webToPlatformHandoff",
+        "developmentLifecycleMachine.webFirstImplementation",
+        "developmentLifecycleMachine.missingWebBaselinePlanning",
+        "developmentLifecycleMachine.webIterationPolicy",
+        "developmentLifecycleMachine.machineWorkInstruction.webWorker",
+        "developmentLifecycleMachine.machineOnlyProjectContinuation.webBaseImplementation",
+        "phases.ROBLOX_FAST_RELEASE_STABILIZATION"
+      ],
+      "activeUnityWebRole": "VALIDATION_SURFACE_ONLY",
+      "nativeDevelopmentAuthority": "directNativeDualPlatformDevelopment"
     }
   },
   "vibeExecutionLaneContract": {
