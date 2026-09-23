@@ -146,6 +146,12 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   return Object.freeze({
     version:1,
     pass:reasons.length===0,
+    graphicsCheckpoint:true,
+    graphicsPassMeaning:'VERIFIED_CHECKPOINT_NOT_TERMINAL_COMPLETION',
+    presentationCompletionIsTerminal:false,
+    continuesAfterPass:true,
+    releaseAuthority:false,
+    standaloneReleaseBlocker:false,
     stage,
     golden,
     primaryActorCount:primaryActors.length,
@@ -160,7 +166,10 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
       missingCohesion:Object.freeze(missingCohesion),
       missingPresentation:Object.freeze(missingPresentation),
       visualRegressionPassed:evidence.visualRegression?.pass===true,
-      performancePassed:evidence.performance?.pass===true
+      performancePassed:evidence.performance?.pass===true,
+      evolutionDebt:Object.freeze([...reasons]),
+      completionIsTerminal:false,
+      releaseAuthority:false
     }),
     reasons:Object.freeze(reasons),
     authority:'runtime-visual-quality-gate'
