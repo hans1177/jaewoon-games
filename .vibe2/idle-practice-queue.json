@@ -1184,16 +1184,6 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l15",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "WEB_RUNTIME"
-      ]
-    },
-    {
       "id": "gap-debugging-l16",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1211,6 +1201,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "STATE_MACHINE"
+      ]
+    },
+    {
+      "id": "gap-web_runtime-l16",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
       ]
     }
   ]
