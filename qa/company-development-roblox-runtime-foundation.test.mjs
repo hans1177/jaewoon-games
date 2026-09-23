@@ -140,3 +140,20 @@ test('post-runtime QA preserves independent and regression progress while multip
  assert.match(workflow,/routingBlockers=\[\]/);
  assert.doesNotMatch(workflow,/f9Ids\.push\(item\.gameId\)[\s\S]{0,800}ROBLOX_MULTIPLAYER_PARALLEL_NON_BLOCKING/);
 });
+
+
+test('simplified multiplayer evidence can promote internal release without claiming full multiplayer pass',()=>{
+ const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ assert.match(runtime,/robloxInternalMultiplayerSimplifiedPassed=/);
+ assert.match(runtime,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
+ assert.match(runtime,/f9Ids\.push\(item\.gameId\)/);
+ assert.match(runtime,/roblox-full-multiplayer-evidence-pending-public-release-only/);
+ assert.match(finalReview,/const simplifiedInternalMultiplayer=/);
+ assert.match(finalReview,/const internalRuntimeAcceptance=fullRuntimeAcceptance\|\|simplifiedInternalMultiplayer/);
+ assert.match(finalReview,/SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS/);
+ assert.match(finalReview,/fullMultiplayerQaPassed:item\.robloxMultiplayerQaPassed===true/);
+ assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:!fullRuntimeAcceptance/);
+ assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
+ assert.match(finalReview,/item\.robloxPublicRelease=false/);
+});
