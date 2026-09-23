@@ -60,6 +60,80 @@ function causalReplayPlan(data={}){
   const plan=data?.exploration?.editContract?.causalReplay;
   return plan&&typeof plan==='object'?plan:null;
 }
+function gameRepairContract(data={}){
+  const contract=data?.exploration?.editContract?.gameRepair;
+  return contract&&typeof contract==='object'?contract:null;
+}
+function runRepairNodeTargets({root,data={},targets=[],category='CHECK'}={}){
+  const resolved=resolveReplayTargets(root,data,{nodeTestTargets:targets});
+  const results=[];
+  for(const target of resolved){
+    try{
+      execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8'});
+      results.push({target:target.relative,outcome:'PASS'});
+    }catch(error){
+      const wrapped=new Error(`GAME_REPAIR_${category}_FAILED:${target.relative}`);
+      wrapped.cause=error;
+      throw wrapped;
+    }
+  }
+  return results;
+}
+function runGameRepairQa({root,data={},causalReplay={}}={}){
+  const contract=gameRepairContract(data);
+  if(!contract||contract.required!==true)return{
+    status:'NOT_REQUIRED',required:false,originalScenarioReplay:'NOT_APPLICABLE',
+    invariants:'NOT_APPLICABLE',saveMigration:'NOT_APPLICABLE',multiplayerLifecycle:'NOT_APPLICABLE',
+    revisionComparison:'NOT_APPLICABLE',readyForFanIn:true,fullRegressionStillRequired:true
+  };
+  const scenarioRequired=contract?.originalScenarioReplay?.required!==false;
+  const originalScenarioReplay=!scenarioRequired?'NOT_APPLICABLE'
+    :causalReplay?.status==='EXECUTED_PASS'&&causalReplay?.executed===true?'PASS':'PENDING_RUNTIME_EVIDENCE';
+  const invariantTargets=contract?.invariants?.testTargets||[];
+  const invariantResults=invariantTargets.length?runRepairNodeTargets({root,data,targets:invariantTargets,category:'INVARIANT'}):[];
+  const invariants=contract?.invariants?.required===false?'NOT_APPLICABLE':invariantResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE';
+  const saveRequired=contract?.saveMigration?.required===true;
+  const saveResults=saveRequired&&Array.isArray(contract?.saveMigration?.testTargets)&&contract.saveMigration.testTargets.length
+    ?runRepairNodeTargets({root,data,targets:contract.saveMigration.testTargets,category:'SAVE_MIGRATION'}):[];
+  const saveMigration=saveRequired?(saveResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE'):'NOT_APPLICABLE';
+  const multiplayerRequired=contract?.multiplayerLifecycle?.required===true;
+  const multiplayerResults=multiplayerRequired&&Array.isArray(contract?.multiplayerLifecycle?.testTargets)&&contract.multiplayerLifecycle.testTargets.length
+    ?runRepairNodeTargets({root,data,targets:contract.multiplayerLifecycle.testTargets,category:'MULTIPLAYER_LIFECYCLE'}):[];
+  const multiplayerLifecycle=multiplayerRequired?(multiplayerResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE'):'NOT_APPLICABLE';
+  const revisions=contract?.revisions||{};
+  const revisionComparison=revisions.lastKnownGoodRevision&&revisions.currentRevision?'READY'
+    :(revisions.lastKnownGoodRevision||revisions.firstBrokenRevision||revisions.currentRevision)?'PARTIAL':'NOT_AVAILABLE';
+  const readyForFanIn=originalScenarioReplay==='PASS'
+    &&invariants==='PASS'
+    &&['PASS','NOT_APPLICABLE'].includes(saveMigration)
+    &&['PASS','NOT_APPLICABLE'].includes(multiplayerLifecycle);
+  return{
+    status:readyForFanIn?'EVIDENCE_READY_FOR_FULL_REGRESSION':'WAITING_EVIDENCE',
+    required:true,
+    failureStage:clean(contract.failureStage)||null,
+    failureSignature:clean(contract.failureSignature)||null,
+    responsibleSystem:clean(contract.responsibleSystem)||null,
+    responsibleFiles:Array.isArray(contract.responsibleFiles)?contract.responsibleFiles.map(clean).filter(Boolean):[],
+    prePatchReproduced:contract.prePatchReproduced===true,
+    originalScenarioReplay,
+    invariants,
+    invariantResults,
+    saveMigration,
+    saveResults,
+    multiplayerLifecycle,
+    multiplayerResults,
+    revisions:{
+      lastKnownGoodRevision:clean(revisions.lastKnownGoodRevision)||null,
+      firstBrokenRevision:clean(revisions.firstBrokenRevision)||null,
+      currentRevision:clean(revisions.currentRevision)||null
+    },
+    revisionComparison,
+    readyForFanIn,
+    fullRegressionStillRequired:true,
+    unchangedSourceRevalidationForbidden:true,
+    authorityExpanded:false
+  };
+}
 function resolveReplayTargets(root,data={},plan={}){
   const sourceRoot=posix(data.sourceRoot);
   const rootResolved=path.resolve(root);
@@ -438,11 +512,12 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const data=manifestData(manifest);
   const changed = collectFiles({root, files, manifest});
   const replayPlan=causalReplayPlan(data);
+  const gameRepair=gameRepairContract(data);
   const replayTargets=replayPlan?.executable===true&&clean(replayPlan?.mode)==='NODE_TEST_TARGETS'?resolveReplayTargets(root,data,replayPlan):[];
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
   const presentation=presentationContract(data);
   const weatherPresentation=weatherPresentationContract(data);
-  const payload = ['vibe2-incremental-qa-v9', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null)];
+  const payload = ['vibe2-incremental-qa-v10', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -451,22 +526,23 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:7,entries:{}}) : {version:7,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:8,entries:{}}) : {version:8,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
   execFileSync('git',['diff','--check'],{cwd:root,stdio:'pipe'});
   const causalReplay=runCausalReplay({root,data});
+  const gameRepairQa=runGameRepairQa({root,data,causalReplay});
   const architectureDrift=runArchitectureDrift({root,data});
   const presentationQa=runPresentationStaticQa({root,data,changed});
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, architectureDrift, presentationQa, weatherPresentationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
-    cache.version=7; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, presentationQa, weatherPresentationQa, savedAt:new Date().toISOString() };
+    cache.version=8; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
@@ -485,7 +561,10 @@ export function incrementalQaFailureSignature(error){
     'WEATHER_PRESENTATION_STATIC_QA_FAILED',
     'WEATHER_PRESENTATION_QA_SOURCE_REQUIRED',
     'CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT',
-    'CAUSAL_REPLAY_TARGET_MISSING'
+    'CAUSAL_REPLAY_TARGET_MISSING',
+    'GAME_REPAIR_INVARIANT_FAILED',
+    'GAME_REPAIR_SAVE_MIGRATION_FAILED',
+    'GAME_REPAIR_MULTIPLAYER_LIFECYCLE_FAILED'
   ];
   for(const token of known)if(message.includes(token))return message.startsWith(token)?message.slice(0,240):token;
   if(/SyntaxError/i.test(message))return 'SYNTAX_ERROR';
@@ -513,6 +592,20 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_CAUSAL_REPLAY_EXECUTED=${result.causalReplay?.executed===true?'YES':'NO'}`);
     console.log(`VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=${result.causalReplay?.prePatchReproduced===true?'YES':'NO'}`);
     console.log(`VIBE2_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM=${result.causalReplay?.verifiedResponsibleSystem||'NONE'}`);
+    console.log(`GAME_REPAIR_FAILURE_STAGE=${result.gameRepairQa?.failureStage||'NONE'}`);
+    console.log(`GAME_REPAIR_FAILURE_SIGNATURE=${result.gameRepairQa?.failureSignature||'NONE'}`);
+    console.log(`GAME_REPAIR_PREPATCH_REPRODUCED=${result.gameRepairQa?.prePatchReproduced===true?'YES':'NO'}`);
+    console.log(`GAME_REPAIR_RESPONSIBLE_SYSTEM=${result.gameRepairQa?.responsibleSystem||'NONE'}`);
+    console.log(`GAME_REPAIR_RESPONSIBLE_FILES=${(result.gameRepairQa?.responsibleFiles||[]).join(',')||'NONE'}`);
+    console.log(`GAME_REPAIR_LAST_KNOWN_GOOD_REVISION=${result.gameRepairQa?.revisions?.lastKnownGoodRevision||'NONE'}`);
+    console.log(`GAME_REPAIR_FIRST_BROKEN_REVISION=${result.gameRepairQa?.revisions?.firstBrokenRevision||'NONE'}`);
+    console.log(`GAME_REPAIR_CURRENT_REVISION=${result.gameRepairQa?.revisions?.currentRevision||'NONE'}`);
+    console.log(`GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY=${result.gameRepairQa?.originalScenarioReplay||'NOT_APPLICABLE'}`);
+    console.log(`GAME_REPAIR_INVARIANTS=${result.gameRepairQa?.invariants||'NOT_APPLICABLE'}`);
+    console.log(`GAME_REPAIR_SAVE_MIGRATION=${result.gameRepairQa?.saveMigration||'NOT_APPLICABLE'}`);
+    console.log(`GAME_REPAIR_MULTIPLAYER_LIFECYCLE=${result.gameRepairQa?.multiplayerLifecycle||'NOT_APPLICABLE'}`);
+    console.log('GAME_REPAIR_IMPACT_REGRESSION=PASS');
+    console.log('GAME_REPAIR_FULL_REGRESSION_REQUIRED=YES');
     console.log(`VIBE2_ARCHITECTURE_DRIFT_STATUS=${result.architectureDrift?.status||'NOT_AVAILABLE'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_RISK=${result.architectureDrift?.riskLevel||'LOW'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_SCORE=${Number(result.architectureDrift?.score||0)}`);
