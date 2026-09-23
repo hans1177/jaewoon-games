@@ -122,11 +122,13 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 final review promotes the same tested candidate without republishing it',()=>{
+test('F9 internal release accepts full or simplified multiplayer evidence without republishing',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
   assert.match(finalReview,/item\.robloxRuntimeFoundationPassed===true/);
-  assert.match(finalReview,/item\.robloxRuntimePassed===true/);
+  assert.match(finalReview,/const fullRuntimeAcceptance=/);
+  assert.match(finalReview,/const simplifiedInternalMultiplayer=/);
+  assert.match(finalReview,/const internalRuntimeAcceptance=fullRuntimeAcceptance\|\|simplifiedInternalMultiplayer/);
   assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
   assert.match(finalReview,/item\.robloxRegressionPassed===true/);
   assert.match(finalReview,/String\(runtime\.universeId\|\|''\)===String\(candidate\.universeId\|\|''\)/);
@@ -138,6 +140,9 @@ test('F9 final review promotes the same tested candidate without republishing it
   assert.match(finalReview,/currentBlockingTickets/);
   assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
   assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
+  assert.match(finalReview,/multiplayerVerificationMode:fullRuntimeAcceptance\?'FULL_PLATFORM_MULTIPLAYER_PASS':'SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS'/);
+  assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:!fullRuntimeAcceptance/);
+  assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
   assert.match(finalReview,/promotedWithoutRepublish:true/);
   assert.match(finalReview,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
   assert.match(finalReview,/publicRelease:false/);
@@ -255,4 +260,17 @@ test('private runtime candidate keeps ancestry while using partial clone',()=>{
   assert.match(candidate,/Checkout current canonical implementation[\s\S]*fetch-depth:\s*0[\s\S]*fetch-tags:\s*false[\s\S]*filter:\s*blob:none/);
   assert.match(candidate,/git merge-base --is-ancestor "\$SOURCE_REVISION" HEAD/);
   assert.match(candidate,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
+});
+
+
+test('public release evidence still requires full multiplayer QA after simplified internal release',()=>{
+  const item=canonicalItem();
+  item.robloxMultiplayerQaPassed=false;
+  item.robloxMultiplayerQaEvidence={...item.robloxMultiplayerQaEvidence,multiplayerQaPassed:false,peerVisibilityPassed:false};
+  item.robloxInternalMultiplayerSimplifiedPassed=true;
+  item.robloxInternalReleaseReady=true;
+  item.robloxInternalReleaseEvidence={multiplayerVerificationMode:'SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS',publicRelease:false};
+  const evidence=assembleRobloxDevelopmentReleaseEvidence(item);
+  assert.equal(evidence.pass,false);
+  assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));
 });
