@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 53,
+  "revision": 54,
   "updatedAt": "2026-09-23",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -739,7 +739,6 @@
     "currentExperiencePhase": "ROBLOX_UNITY_DIRECT_NATIVE_INTERNAL_RELEASE_AND_PLAYTEST",
     "currentPrimaryExperiencePlatform": "UNITY_OR_ROBLOX_EQUAL_TIER",
     "roadmapContract": "company-learning/platform-release-roadmap.json",
-    "roadmapSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
     "parallelLearningPipelineAllowed": false,
     "webCompanionStrategy": {
       "status": "DEPRECATED_COMPATIBILITY_ALIAS",
@@ -943,12 +942,6 @@
   "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "humanDocumentRequired": false,
-  "legacyPolicyMirror": {
-    "path": "COMPANY_FLOW.md",
-    "authoritative": false,
-    "requiredForExecution": false,
-    "mayCreatePolicy": false
-  },
   "machineCompanions": {
     "otherAiExecutionDirective": {
       "path": "company-learning/other-ai-machine-directive.json",
@@ -988,11 +981,6 @@
   },
   "currentExecutionMode": "DIRECT_NATIVE_ROBLOX_UNITY",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
-  "legacyWebFirstPolicy": {
-    "status": "REMOVED",
-    "sourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
-    "compatibilitySurfaceOnly": "UNITY_WEB_VALIDATION_SURFACE"
-  },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
     "mode": "ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR",
@@ -1055,5 +1043,11 @@
     "audioAuthoringOwner": "audio",
     "vibeGameSourceMutationOwner": true,
     "evidenceRoot": "graphics-production-evidence"
+  },
+  "centralDocumentation": {
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
+    "humanPolicyMirrorRequired": false,
+    "duplicatePolicyDocumentAllowed": false,
+    "completedMigrationArtifactRetentionRequired": false
   }
 }
