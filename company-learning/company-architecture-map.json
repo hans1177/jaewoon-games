@@ -1,5 +1,5 @@
 {
-  "version": 113,
+  "version": 114,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -91,10 +91,16 @@
       "FAN_IN_REGRESSION"
     ],
     "assetProduction": [
-      "ASSET_SPEC_FROM_VALIDATED_GAMEPLAY_AND_APPROVED_DESIGN",
-      "EXISTING_WAVE_ASSIGNED_ASSET_PRODUCTION",
-      "UNITY_ROBLOX_PRESENTATION_BIND",
-      "ACTUAL_GAMEPLAY_VISUAL_RUNTIME_QA",
+      "ART_BIBLE_AND_GAME_STYLE_LOCK",
+      "VISUAL_TARGET_FRAME_LOCK",
+      "DEFAULT_PURPOSEFUL_ASSET_BASELINE",
+      "HERO_QUALITY_BASELINE",
+      "RIGHTS_VERIFIED_ASSET_MUTATION_AND_VARIANT_TOURNAMENT",
+      "ENVIRONMENT_SET_DRESSING_AND_LANDMARKS",
+      "ANIMATION_VFX_AUDIO_LIGHTING_CAMERA_COHESION",
+      "UNITY_ROBLOX_PLATFORM_SPECIFIC_REAUTHORING",
+      "HIGH_END_RUNTIME_VISUAL_QA",
+      "BEFORE_AFTER_VISUAL_REGRESSION_AND_PLATFORM_PERFORMANCE",
       "ASSET_REPAIR_REVALIDATION"
     ],
     "planningGrowthMarketing": [
@@ -2281,7 +2287,28 @@
     "ownerResetMaterialization": "tools/owner-design-reset.mjs::materializeOwnerDesignResetSeeds",
     "strictDesignParallelWithDevelopment": true,
     "globalDevelopmentQueueMayNotDeferStrictDesign": true,
-    "unityWebRole": "UNITY_WEB_VALIDATION_SURFACE_ONLY"
+    "unityWebRole": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
+    "graphics": {
+      "canonicalRoleKey": "graphics",
+      "displayName": "HIGH_END_VISUAL_ASSET_AND_PRESENTATION",
+      "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
+      "responsibilities": [
+        "ART_DIRECTION",
+        "ASSET_PRODUCTION_AND_ACQUISITION",
+        "ASSET_MUTATION_AND_EXPANSION",
+        "CHARACTER_AND_CREATURE_PRESENTATION",
+        "ENVIRONMENT_AND_SET_DRESSING",
+        "MATERIAL_LIGHTING",
+        "ANIMATION",
+        "VFX",
+        "UI_ART",
+        "VISUAL_RUNTIME_QA"
+      ],
+      "usesExistingDepartment": true,
+      "duplicateArtDepartmentForbidden": true,
+      "gameSourceMutationOwner": "VIBE2_VIBE3",
+      "graphicsMayNotChangeGameplayAuthority": true
+    }
   },
   "recordsGovernance": {
     "canonicalPolicy": "company-learning/platform-release-roadmap.json#recordsGovernance",
@@ -2661,7 +2688,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-23T11:38:00+09:00",
+  "updatedAt": "2026-09-23",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
