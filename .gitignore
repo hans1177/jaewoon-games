@@ -65,3 +65,8 @@ node_modules/
 # Root /builds is intentionally tracked for existing Godot/web deployment artifacts.
 !/builds/
 !/builds/**
+
+# Unity WebGL validation outputs under public web-games are deployable artifacts.
+# Keep Unity project-local Build folders ignored, but publish browser runtime bundles.
+!web-games/*/Build/
+!web-games/*/Build/**
