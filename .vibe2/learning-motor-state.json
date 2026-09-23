@@ -12,11 +12,11 @@
       "lastEvidence": "exp_system_ai_33ca28f6ca53ae6c28806b87"
     },
     "STATE_MACHINE": {
-      "xp": 2105,
+      "xp": 2110,
       "level": 16,
       "verifiedSuccesses": 127,
-      "verifiedFailureLessons": 125,
-      "lastEvidence": "capability_ctrace_d5e1b72460934fc0a27308e3"
+      "verifiedFailureLessons": 126,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "COMBAT": {
       "xp": 1453,
@@ -26,11 +26,11 @@
       "lastEvidence": "capability_ctrace_13fc3a0808e76064bc60d9d6"
     },
     "AI": {
-      "xp": 732,
+      "xp": 737,
       "level": 10,
       "verifiedSuccesses": 64,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_system_ai_33ca28f6ca53ae6c28806b87"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "PROGRESSION": {
       "xp": 1395,
@@ -61,18 +61,18 @@
       "lastEvidence": "exp_system_ai_0b0a34e7dbf177b41b7207d9"
     },
     "UI_STATE": {
-      "xp": 174,
+      "xp": 179,
       "level": 4,
       "verifiedSuccesses": 15,
-      "verifiedFailureLessons": 6,
-      "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
+      "verifiedFailureLessons": 7,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "DEBUGGING": {
-      "xp": 2117,
+      "xp": 2122,
       "level": 16,
       "verifiedSuccesses": 130,
-      "verifiedFailureLessons": 125,
-      "lastEvidence": "capability_ctrace_d5e1b72460934fc0a27308e3"
+      "verifiedFailureLessons": 126,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "RECOVERY": {
       "xp": 1388,
@@ -96,18 +96,18 @@
       "lastEvidence": "exp_i00mwv"
     },
     "ASSET_PRODUCTION": {
-      "xp": 180,
+      "xp": 185,
       "level": 5,
       "verifiedSuccesses": 15,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_system_ai_33ca28f6ca53ae6c28806b87"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "ASSET_ADAPTATION": {
-      "xp": 17,
+      "xp": 22,
       "level": 1,
       "verifiedSuccesses": 1,
-      "verifiedFailureLessons": 1,
-      "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
+      "verifiedFailureLessons": 2,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "LIVING_MOTION": {
       "xp": 5,
@@ -124,11 +124,11 @@
       "lastEvidence": "capability_ctrace_13fc3a0808e76064bc60d9d6"
     },
     "VFX": {
-      "xp": 0,
+      "xp": 5,
       "level": 1,
       "verifiedSuccesses": 0,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": null
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "AUDIO_FEEL": {
       "xp": 24,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 1949,
+      "xp": 1954,
       "level": 16,
       "verifiedSuccesses": 117,
-      "verifiedFailureLessons": 109,
-      "lastEvidence": "capability_ctrace_d5e1b72460934fc0a27308e3"
+      "verifiedFailureLessons": 110,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098"
     },
     "ROBLOX_STUDIO": {
       "xp": 24,
@@ -513,7 +513,8 @@
     "capability_ctrace_13fc3a0808e76064bc60d9d6",
     "capability_ctrace_23e320c1df2cfc7279392fef",
     "capability_ctrace_69b891e4cee898092d77550a",
-    "capability_ctrace_d5e1b72460934fc0a27308e3"
+    "capability_ctrace_d5e1b72460934fc0a27308e3",
+    "capability_ctrace_ef750165053b4842eed16098"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -690,8 +691,8 @@
       ]
     },
     "fail_1agpu1k": {
-      "count": 30,
-      "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
+      "count": 31,
+      "lastEvidence": "capability_ctrace_ef750165053b4842eed16098",
       "example": "SOURCE_CANDIDATE_GENERATION:NO_OP",
       "domains": [
         "STATE_MACHINE",
@@ -708,7 +709,10 @@
         "UI_STATE",
         "UNITY_RUNTIME",
         "ASSET_ADAPTATION",
-        "LIVING_MOTION"
+        "LIVING_MOTION",
+        "AI",
+        "ASSET_PRODUCTION",
+        "VFX"
       ]
     },
     "fail_11xbpu1": {
@@ -3297,14 +3301,19 @@
       "coding_negative_k29mxd",
       "coding_negative_7opqtn",
       "coding_negative_1ht9p27",
-      "coding_negative_13z9mhi"
+      "coding_negative_13z9mhi",
+      "coding_negative_ualpzv",
+      "coding_negative_1dfu7st",
+      "coding_negative_onscmg",
+      "coding_negative_14q6t21",
+      "coding_negative_ts1xsl"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 119,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 289,
-        "verifiedFailures": 535,
+        "verifiedFailures": 537,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -3373,13 +3382,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 22,
-            "verifiedFailures": 146,
+            "verifiedFailures": 148,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 69,
             "totalContextBytes": 945298,
             "lastEvidence": "coding_1kk2rdw",
-            "lastFailureEvidence": "coding_negative_1ht9p27",
-            "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+            "lastFailureEvidence": "coding_negative_14q6t21",
+            "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
           }
         },
         "failureFingerprints": {
@@ -3926,7 +3935,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 108,
+            "verifiedFailures": 109,
             "games": {
               "cozy-island": 2
             },
@@ -3935,18 +3944,18 @@
             },
             "failureGames": {
               "fantasy-survival": 51,
-              "ant-simulator": 57
+              "ant-simulator": 58
             },
             "failureTargets": {
-              "web": 108
+              "web": 109
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 51,
-              "INCREMENTAL_QA": 57
+              "INCREMENTAL_QA": 58
             },
             "lastEvidence": "coding_1n6axr4",
-            "lastFailureEvidence": "coding_negative_k29mxd",
-            "lastUpdatedAt": "2026-09-23T23:09:29.948Z"
+            "lastFailureEvidence": "coding_negative_ualpzv",
+            "lastUpdatedAt": "2026-09-23T23:23:37.545Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
             "verifiedApplications": 0,
@@ -4249,33 +4258,33 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 6,
+            "verifiedFailures": 7,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 6
+              "cozy-island": 7
             },
             "failureTargets": {
-              "web": 6
+              "web": 7
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 6
+              "INCREMENTAL_QA": 7
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1ht9p27",
-            "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+            "lastFailureEvidence": "coding_negative_14q6t21",
+            "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1kk2rdw",
-        "lastFailureEvidence": "coding_negative_1ht9p27",
-        "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+        "lastFailureEvidence": "coding_negative_14q6t21",
+        "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 191,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 412,
-        "verifiedFailures": 472,
+        "verifiedFailures": 473,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -4334,13 +4343,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 114,
-            "verifiedFailures": 144,
+            "verifiedFailures": 145,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 269,
             "totalContextBytes": 3432144,
             "lastEvidence": "coding_hhstpm",
-            "lastFailureEvidence": "coding_negative_13z9mhi",
-            "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+            "lastFailureEvidence": "coding_negative_onscmg",
+            "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -5445,7 +5454,7 @@
             "verifiedApplications": 4,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 12,
-            "verifiedFailures": 9,
+            "verifiedFailures": 10,
             "games": {
               "fantasy-survival": 4
             },
@@ -5454,18 +5463,18 @@
             },
             "failureGames": {
               "fantasy-survival": 2,
-              "cozy-island": 7
+              "cozy-island": 8
             },
             "failureTargets": {
-              "web": 9
+              "web": 10
             },
             "failureClasses": {
-              "NO_OP": 2,
+              "NO_OP": 3,
               "INCREMENTAL_QA": 7
             },
             "lastEvidence": "coding_1mwmd7i",
-            "lastFailureEvidence": "coding_negative_13z9mhi",
-            "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+            "lastFailureEvidence": "coding_negative_onscmg",
+            "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
           },
           "web|MOBILE_INPUT|SAVE_RESTORE|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|ECONOMY|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|STATE_MACHINE|UI_STATE|VFX|WEB_RUNTIME": {
             "verifiedApplications": 0,
@@ -5551,14 +5560,14 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_hhstpm",
-        "lastFailureEvidence": "coding_negative_13z9mhi",
-        "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+        "lastFailureEvidence": "coding_negative_onscmg",
+        "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 544,
         "firstCandidatePasses": 94,
         "totalGenerationAttempts": 1210,
-        "verifiedFailures": 460,
+        "verifiedFailures": 462,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 87,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -5618,13 +5627,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 48,
-            "verifiedFailures": 140,
+            "verifiedFailures": 142,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 128,
             "totalContextBytes": 1657376,
             "lastEvidence": "coding_18c1nzh",
-            "lastFailureEvidence": "coding_negative_7opqtn",
-            "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+            "lastFailureEvidence": "coding_negative_ts1xsl",
+            "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
           },
           "UNKNOWN": {
             "verifiedApplications": 1,
@@ -6079,7 +6088,7 @@
             "verifiedApplications": 5,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 10,
-            "verifiedFailures": 109,
+            "verifiedFailures": 110,
             "games": {
               "cozy-island": 5
             },
@@ -6088,18 +6097,18 @@
             },
             "failureGames": {
               "fantasy-survival": 53,
-              "ant-simulator": 56
+              "ant-simulator": 57
             },
             "failureTargets": {
-              "web": 109
+              "web": 110
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 53,
-              "INCREMENTAL_QA": 56
+              "INCREMENTAL_QA": 57
             },
             "lastEvidence": "coding_18c1nzh",
-            "lastFailureEvidence": "coding_negative_yhiizn",
-            "lastUpdatedAt": "2026-09-23T23:09:29.948Z"
+            "lastFailureEvidence": "coding_negative_1dfu7st",
+            "lastUpdatedAt": "2026-09-23T23:23:37.545Z"
           },
           "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
             "verifiedApplications": 26,
@@ -6476,27 +6485,27 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 7,
+            "verifiedFailures": 8,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 7
+              "cozy-island": 8
             },
             "failureTargets": {
-              "web": 7
+              "web": 8
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 7
+              "INCREMENTAL_QA": 8
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_7opqtn",
-            "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+            "lastFailureEvidence": "coding_negative_ts1xsl",
+            "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_18c1nzh",
-        "lastFailureEvidence": "coding_negative_7opqtn",
-        "lastUpdatedAt": "2026-09-23T23:09:29.949Z"
+        "lastFailureEvidence": "coding_negative_ts1xsl",
+        "lastUpdatedAt": "2026-09-23T23:23:37.547Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 133,
@@ -9498,7 +9507,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-23T23:12:28.528Z",
+    "lastBuiltAt": "2026-09-23T23:23:37.602Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -13944,5 +13953,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-23T23:12:28.528Z"
+  "updatedAt": "2026-09-23T23:23:37.602Z"
 }
