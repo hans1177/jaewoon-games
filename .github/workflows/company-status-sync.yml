@@ -27,6 +27,7 @@ on:
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/autonomous-24h-work-planner.test.mjs'
       - 'qa/company-homepage-runtime-propagation.test.mjs'
+      - 'qa/company-status-sync-direct-native.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-shared-context.test.mjs'
       - 'tools/company-shared-context.mjs'
@@ -131,6 +132,7 @@ jobs:
           node --test qa/production-diversity.test.mjs
           node --test qa/autonomous-24h-work-planner.test.mjs
           node --test qa/company-homepage-runtime-propagation.test.mjs
+          node --test qa/company-status-sync-direct-native.test.mjs
           node tools/company-status-sync.mjs
           node qa/game-catalog-normalization.test.mjs
 
@@ -145,14 +147,14 @@ jobs:
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
           if(company.runtimeAuthority!=='company-runtime')throw new Error('company runtime authority missing');
           if(catalog.runtimeAuthority!=='company-runtime'||catalog.runtimeInfoAuthority!=='company-runtime')throw new Error('homepage runtime authority missing');
-          if(!Array.isArray(catalog.runtimeSupportedPlatforms)||!['UNITY','ROBLOX','FORTNITE_UEFN'].every(value=>catalog.runtimeSupportedPlatforms.includes(value)))throw new Error('homepage runtime platform coverage missing');
+          if(JSON.stringify(catalog.runtimeSupportedPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('homepage runtime platform coverage must match direct-native platforms');
           if((catalog.games||[]).some(game=>game.homepageInfo?.authority!=='company-runtime'))throw new Error('homepage runtime info missing from catalog game');
           if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
           const classes=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED','DESIGN_ONLY'];
           const valid=new Set(classes);
-          const allowedPlatforms=new Set(['ROBLOX','UNITY','FORTNITE_UEFN']);
+          const allowedPlatforms=new Set(['ROBLOX','UNITY']);
           const activeLifecycleStates=new Set(['ACTIVE','REBUILD']);
-          const requiredWebPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
+          const requiredWebPurpose='UNITY_WEB_VALIDATION_SURFACE_ONLY';
           const normalize=value=>{
             const raw=String(value??'').trim().toUpperCase().replaceAll('-','_');
             if(raw==='ROBLOX')return 'ROBLOX';
@@ -182,34 +184,40 @@ jobs:
           }
           for(const project of development){
             const platform=normalize(project.selectedPlatform);
-            if(project.webPurpose!==requiredWebPurpose)throw new Error(`development Web purpose mismatch: ${project.id}`);
-            if(project.webCompanionRequired!==true)throw new Error(`development Web companion requirement missing: ${project.id}`);
+            if(platform&&!allowedPlatforms.has(platform))throw new Error(`development selected-platform mismatch: ${project.id}`);
+            if(project.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT'||project.targetEngine!=='roblox-unity-native')throw new Error(`development direct-native mode mismatch: ${project.id}`);
+            if(JSON.stringify(project.concurrentTargetPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error(`development concurrent targets missing: ${project.id}`);
+            if(project.webPurpose!==requiredWebPurpose||project.webCompanionRequired!==false||project.webValidationRequired!==false)throw new Error(`development Unity Web validation role mismatch: ${project.id}`);
             if(project.approvedDesignScopeMustBeFullyImplemented!==true)throw new Error(`development approved-scope requirement missing: ${project.id}`);
             if(project.webEvidenceMayReplaceNativePlatformEvidence!==false)throw new Error(`development native-evidence boundary missing: ${project.id}`);
-            if(project.webGameplayValidationRequired!==true||project.musicValidationRequired!==true)throw new Error(`development Web/music requirement missing: ${project.id}`);
-            if(platform){
-              if(!allowedPlatforms.has(platform)||project.targetEngine!==targetEngine(platform)||project.mode!=='FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT')throw new Error(`development selected-platform mismatch: ${project.id}`);
-            }else if(project.targetEngine!=='platform-selection-required'||project.mode!=='FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED'){
-              throw new Error(`development platform-selection state mismatch: ${project.id}`);
-            }
+            if(project.webGameplayValidationRequired!==false||project.musicValidationRequired!==false)throw new Error(`development Web/music admission authority revived: ${project.id}`);
+            if(project.strictDesignScoreRequiredForAdmission!==false||project.strictDesignReviewRunsInParallel!==true)throw new Error(`development strict-design admission contract mismatch: ${project.id}`);
+            if(!project.targetSourcePaths?.ROBLOX||!project.targetSourcePaths?.UNITY)throw new Error(`development native source roots missing: ${project.id}`);
           }
           if(design.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('design target mismatch');
           const releasePolicy=portfolio.productionClassPolicy?.classes?.RELEASE_CONFIRMED||{};
           const developmentPolicy=portfolio.productionClassPolicy?.classes?.DEVELOPMENT_CONFIRMED||{};
           if(releasePolicy.engine!=='PROJECT_SELECTED_PLATFORM')throw new Error('release engine policy must be selected-platform');
           if(
-            developmentPolicy.engine!=='PROJECT_SELECTED_PLATFORM'||
+            developmentPolicy.engine!=='ROBLOX_UNITY_DIRECT_NATIVE'||
+            developmentPolicy.scope!=='MINIMUM_DESIGN_THEN_ROBLOX_UNITY_CONCURRENT'||
+            developmentPolicy.admissionAuthority!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY'||
+            JSON.stringify(developmentPolicy.concurrentTargetPlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||
+            developmentPolicy.strictDesignScoreRequiredForAdmission!==false||
+            developmentPolicy.strictDesignReviewRunsInParallel!==true||
             developmentPolicy.webPurpose!==requiredWebPurpose||
-            developmentPolicy.webCompanionRequired!==true||
+            developmentPolicy.webCompanionRequired!==false||
             developmentPolicy.approvedDesignScopeMustBeFullyImplemented!==true||
             developmentPolicy.webEvidenceMayReplaceNativePlatformEvidence!==false||
-            developmentPolicy.webGameplayValidationRequired!==true||
-            developmentPolicy.musicValidationRequired!==true||
-            developmentPolicy.webBeforeTargetPlatformByDefault!==true||
-            developmentPolicy.targetPlatformMayRunImmediately!==false
-          )throw new Error('development full-Web selected-platform policy mismatch');
+            developmentPolicy.webGameplayValidationRequired!==false||
+            developmentPolicy.musicValidationRequired!==false||
+            developmentPolicy.webBeforeTargetPlatformByDefault!==false||
+            developmentPolicy.targetPlatformMayRunImmediately!==true||
+            developmentPolicy.onePlatformFailureDoesNotCancelOther!==true
+          )throw new Error('development direct-native policy mismatch');
           const focusPolicy=portfolio.developmentFocusPolicy||{};
-          if(focusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform!==true)throw new Error('full approved-scope Web companion focus policy missing');
+          if(focusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform!==false)throw new Error('legacy full-Web companion focus policy revived');
+          if(focusPolicy.nativeDevelopmentAdmission!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY')throw new Error('minimum-design admission focus policy missing');
           if(focusPolicy.nativePlatformEvidenceStillRequired!==true)throw new Error('native platform evidence focus policy missing');
           if(Object.hasOwn(focusPolicy,'requiredWebGameplayAndMusicValidationBeforeTargetPlatform'))throw new Error('legacy first-playable Web focus policy remains');
           if(Object.hasOwn(focusPolicy,'optionalWebGameplayTestbedAllowedAlongsideReleaseFocus'))throw new Error('legacy optional Web focus policy remains');
@@ -220,6 +228,7 @@ jobs:
             if(!valid.has(g.productionClass))throw new Error(`invalid catalog class: ${g.id}`);
             if(Object.hasOwn(g,'productionTier')||Object.hasOwn(g,'productionTierSource'))throw new Error(`legacy catalog production tier remains: ${g.id}`);
             if(g.homepageCategory!==categoryByClass[g.productionClass]&&!historicalDeploymentShelfAllowed(g))throw new Error(`catalog category mismatch: ${g.id}`);
+            if(g.productionClass==='DEVELOPMENT_CONFIRMED'&&(g.productionTarget!=='ROBLOX_UNITY'||g.homepageStage!=='개발확정 · Roblox + Unity 앱 동시개발'))throw new Error(`development homepage direct-native state mismatch: ${g.id}`);
             if(g.productionClass!=='DESIGN_ONLY'&&g.productionTarget==='web-first-playable')throw new Error(`legacy Web-first target remains: ${g.id}`);
           }
           const state=portfolio.productionClassState||{};
@@ -234,13 +243,13 @@ jobs:
           const maxFocusedGames=Math.max(expectedTargetSlots,Number(focusPolicy.maxFocusedGames??expectedTargetSlots)||0);
           if(!focus||focus.targetSlots!==expectedTargetSlots||focus.focusedGameIds?.length>maxFocusedGames)throw new Error('autonomous focus contract failed');
           if((focus.games||[]).some(game=>game.lane!=='selected-platform'||Object.hasOwn(game,'unityReady')))throw new Error('autonomous focus still uses Unity-only lane');
-          if(JSON.stringify(focus.platformPriority)!==JSON.stringify(['ROBLOX','UNITY','FORTNITE_UEFN'])||focus.priorityMeaning!=='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE')throw new Error('platform focus priority contract failed');
+          if(JSON.stringify(focus.platformPriority)!==JSON.stringify(['ROBLOX','UNITY'])||focus.priorityMeaning!=='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE')throw new Error('platform focus priority contract failed');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
           console.log(`PRODUCTION_CLASS_COUNTS_QA=${release.length}/${development.length}/${design.length}`);
           console.log(`LIFECYCLE_QUARANTINED_PROJECTS_QA=${inactiveProjects.length}`);
           console.log(`AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds?.length||0}/${expectedTargetSlots} MAX=${maxFocusedGames}`);
-          console.log('FULL_WEB_COMPANION_POLICY_SYNC_QA=PASS');
-          console.log('SELECTED_PLATFORM_RUNTIME_SYNC_QA=PASS');
+          console.log('DIRECT_NATIVE_POLICY_SYNC_QA=PASS');
+          console.log('ROBLOX_UNITY_RUNTIME_SYNC_QA=PASS');
           NODE
 
       - name: Revalidate shared worker context before runtime persistence
