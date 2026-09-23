@@ -349579,13 +349579,603 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_fcfaba8671831c7a6a3d7e7f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-post-release-focus-c65fd31b4b324380",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "eeeeba2e96422a190917c853b8689586569b5ec8",
+        "variant": "primary",
+        "goal": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\ncozy-island의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중앙 우선순위:"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 32882,
+        "failureFingerprint": "roblox|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NO_RESPONSIBLE_TEXT_SOURCE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/cozy-island-post-release-focus-c65fd31b4b324380-primary-35824890424-1",
+        "candidateSha": "b176ec53ba05db0a3d204f72c9226c00e842efe9"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 310439,
+        "candidateMs": 275173,
+        "qaMs": 78
+      },
+      "evidenceRefs": [
+        "actions-run:35824890424",
+        "reservation-id:35824890424:1",
+        "incremental-qa-hash:da267bff6857d92e70dcc2d7dae13bd72b653a1dc128075dab053d0a440c35f7"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_4d29ea9d1690dd21a4eea1ad",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-post-release-focus-c65fd31b4b324380",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "eeeeba2e96422a190917c853b8689586569b5ec8",
+        "variant": "speculative-1",
+        "goal": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\ncozy-island의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중앙 우선순위:"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 32882,
+        "failureFingerprint": "roblox|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NO_RESPONSIBLE_TEXT_SOURCE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/cozy-island-post-release-focus-c65fd31b4b324380-speculative-1-35824890424-1",
+        "candidateSha": "f3dfc6dd3e020de8c66398dc869b5fd42b9b8b3a"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 10,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 340398,
+        "candidateMs": 297036,
+        "qaMs": 77
+      },
+      "evidenceRefs": [
+        "actions-run:35824890424",
+        "reservation-id:35824890424:1",
+        "incremental-qa-hash:621b91caa9d5cf9e82964ec4b6eaa7fc3e810eb2010458d5e6a7a93546814213"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_495e641c8d3437e6b3392944",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-post-release-focus-c65fd31b4b324380",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "eeeeba2e96422a190917c853b8689586569b5ec8",
+        "variant": "speculative-2",
+        "goal": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\ncozy-island의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중앙 우선순위:"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 32882,
+        "failureFingerprint": "roblox|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NO_RESPONSIBLE_TEXT_SOURCE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/cozy-island-post-release-focus-c65fd31b4b324380-speculative-2-35824890424-1",
+        "candidateSha": "4d80fcb54ebed7623b8ecc9e633b590d20677dce"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 314785,
+        "candidateMs": 274765,
+        "qaMs": 78
+      },
+      "evidenceRefs": [
+        "actions-run:35824890424",
+        "reservation-id:35824890424:1",
+        "incremental-qa-hash:da267bff6857d92e70dcc2d7dae13bd72b653a1dc128075dab053d0a440c35f7"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_f60351880375559aaed2f950",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "horror-escape-room-post-release-focus-e56c97ce6a4391ff",
+        "workKey": null,
+        "gameId": "horror-escape-room",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "eeeeba2e96422a190917c853b8689586569b5ec8",
+        "variant": "primary",
+        "goal": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\nhorror-escape-room의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 30498,
+        "failureFingerprint": "roblox|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NO_RESPONSIBLE_TEXT_SOURCE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/horror-escape-room-post-release-focus-e56c97ce6a4391ff-primary-35824890424-1",
+        "candidateSha": "3b29c1647f94da07001122008be3952f3f998fe3"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 5,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 424192,
+        "candidateMs": 368607,
+        "qaMs": 57
+      },
+      "evidenceRefs": [
+        "actions-run:35824890424",
+        "reservation-id:35824890424:1",
+        "incremental-qa-hash:a15193484d7b1c7fa619c393ae9f6afb09943b80f44b9b5d4f39720a32f86e27"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_dda297235cf462704ac97610",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "horror-escape-room-post-release-focus-e56c97ce6a4391ff",
+        "workKey": null,
+        "gameId": "horror-escape-room",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "eeeeba2e96422a190917c853b8689586569b5ec8",
+        "variant": "speculative-1",
+        "goal": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\nhorror-escape-room의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 30498,
+        "failureFingerprint": "roblox|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NO_RESPONSIBLE_TEXT_SOURCE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/horror-escape-room-post-release-focus-e56c97ce6a4391ff-speculative-1-35824890424-1",
+        "candidateSha": "fbb88f8e5566fbbdc75da6d4cc84f4aacdd87aa0"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 5,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 301534,
+        "candidateMs": 263656,
+        "qaMs": 75
+      },
+      "evidenceRefs": [
+        "actions-run:35824890424",
+        "reservation-id:35824890424:1",
+        "incremental-qa-hash:a15193484d7b1c7fa619c393ae9f6afb09943b80f44b9b5d4f39720a32f86e27"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_64bd37b6fb2b89638c64332e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "horror-escape-room-post-release-focus-e56c97ce6a4391ff",
+        "workKey": null,
+        "gameId": "horror-escape-room",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "eeeeba2e96422a190917c853b8689586569b5ec8",
+        "variant": "speculative-2",
+        "goal": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\nhorror-escape-room의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 30498,
+        "failureFingerprint": "roblox|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NO_RESPONSIBLE_TEXT_SOURCE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/horror-escape-room-post-release-focus-e56c97ce6a4391ff-speculative-2-35824890424-1",
+        "candidateSha": "d21c151d263c49e459e6ec3951ee3542b696809a"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 5,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 302558,
+        "candidateMs": 265263,
+        "qaMs": 77
+      },
+      "evidenceRefs": [
+        "actions-run:35824890424",
+        "reservation-id:35824890424:1",
+        "incremental-qa-hash:a15193484d7b1c7fa619c393ae9f6afb09943b80f44b9b5d4f39720a32f86e27"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 22,
+    "added": 6,
     "refreshed": 0,
-    "total": 3048,
-    "verified": 541,
+    "total": 3054,
+    "verified": 543,
     "failures": 1738
   }
 }
