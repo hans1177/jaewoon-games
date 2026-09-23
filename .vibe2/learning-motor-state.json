@@ -2897,14 +2897,17 @@
       "coding_negative_cg0ngg",
       "coding_negative_se2law",
       "coding_negative_11eni46",
-      "coding_negative_p2ylet"
+      "coding_negative_p2ylet",
+      "coding_negative_bdevz4",
+      "coding_negative_2hx6yp",
+      "coding_negative_17gbx4u"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 108,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 247,
-        "verifiedFailures": 428,
+        "verifiedFailures": 429,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -2973,13 +2976,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 11,
-            "verifiedFailures": 39,
+            "verifiedFailures": 40,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 27,
             "totalContextBytes": 435410,
             "lastEvidence": "coding_iz6g6t",
-            "lastFailureEvidence": "coding_negative_11eni46",
-            "lastUpdatedAt": "2026-09-23T03:09:22.633Z"
+            "lastFailureEvidence": "coding_negative_bdevz4",
+            "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
           }
         },
         "failureFingerprints": {
@@ -3524,7 +3527,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 62,
+            "verifiedFailures": 63,
             "games": {
               "cozy-island": 2
             },
@@ -3533,18 +3536,18 @@
             },
             "failureGames": {
               "fantasy-survival": 51,
-              "ant-simulator": 11
+              "ant-simulator": 12
             },
             "failureTargets": {
-              "web": 62
+              "web": 63
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 51,
-              "INCREMENTAL_QA": 11
+              "INCREMENTAL_QA": 12
             },
             "lastEvidence": "coding_1n6axr4",
-            "lastFailureEvidence": "coding_negative_6vd92i",
-            "lastUpdatedAt": "2026-09-23T02:45:32.587Z"
+            "lastFailureEvidence": "coding_negative_bdevz4",
+            "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
             "verifiedApplications": 0,
@@ -3748,14 +3751,14 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_iz6g6t",
-        "lastFailureEvidence": "coding_negative_11eni46",
-        "lastUpdatedAt": "2026-09-23T03:09:22.633Z"
+        "lastFailureEvidence": "coding_negative_bdevz4",
+        "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 128,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 254,
-        "verifiedFailures": 374,
+        "verifiedFailures": 375,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -3814,13 +3817,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 51,
-            "verifiedFailures": 46,
+            "verifiedFailures": 47,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 111,
             "totalContextBytes": 1434482,
             "lastEvidence": "coding_14svn8l",
-            "lastFailureEvidence": "coding_negative_p2ylet",
-            "lastUpdatedAt": "2026-09-23T03:09:22.633Z"
+            "lastFailureEvidence": "coding_negative_2hx6yp",
+            "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -4615,23 +4618,23 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 48,
+            "verifiedFailures": 49,
             "games": {},
             "targets": {},
             "failureGames": {
               "fantasy-survival": 38,
-              "ant-simulator": 10
+              "ant-simulator": 11
             },
             "failureTargets": {
-              "web": 48
+              "web": 49
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 38,
-              "INCREMENTAL_QA": 10
+              "INCREMENTAL_QA": 11
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1lhkkcb",
-            "lastUpdatedAt": "2026-09-23T02:45:32.587Z"
+            "lastFailureEvidence": "coding_negative_2hx6yp",
+            "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
             "verifiedApplications": 0,
@@ -4946,14 +4949,14 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_14svn8l",
-        "lastFailureEvidence": "coding_negative_p2ylet",
-        "lastUpdatedAt": "2026-09-23T03:09:22.633Z"
+        "lastFailureEvidence": "coding_negative_2hx6yp",
+        "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 541,
         "firstCandidatePasses": 94,
         "totalGenerationAttempts": 1204,
-        "verifiedFailures": 352,
+        "verifiedFailures": 353,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 87,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -5013,13 +5016,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 45,
-            "verifiedFailures": 32,
+            "verifiedFailures": 33,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 122,
             "totalContextBytes": 1513202,
             "lastEvidence": "coding_5r2h0q",
-            "lastFailureEvidence": "coding_negative_se2law",
-            "lastUpdatedAt": "2026-09-23T03:09:22.633Z"
+            "lastFailureEvidence": "coding_negative_17gbx4u",
+            "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
           },
           "UNKNOWN": {
             "verifiedApplications": 1,
@@ -5474,7 +5477,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 62,
+            "verifiedFailures": 63,
             "games": {
               "cozy-island": 2
             },
@@ -5483,18 +5486,18 @@
             },
             "failureGames": {
               "fantasy-survival": 53,
-              "ant-simulator": 9
+              "ant-simulator": 10
             },
             "failureTargets": {
-              "web": 62
+              "web": 63
             },
             "failureClasses": {
               "PERFORMANCE_SANITY": 53,
-              "INCREMENTAL_QA": 9
+              "INCREMENTAL_QA": 10
             },
             "lastEvidence": "coding_5r2h0q",
-            "lastFailureEvidence": "coding_negative_cg0ngg",
-            "lastUpdatedAt": "2026-09-23T02:45:32.587Z"
+            "lastFailureEvidence": "coding_negative_17gbx4u",
+            "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
           },
           "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
             "verifiedApplications": 26,
@@ -5768,8 +5771,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_5r2h0q",
-        "lastFailureEvidence": "coding_negative_se2law",
-        "lastUpdatedAt": "2026-09-23T03:09:22.633Z"
+        "lastFailureEvidence": "coding_negative_17gbx4u",
+        "lastUpdatedAt": "2026-09-23T03:10:52.021Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 133,
@@ -8747,7 +8750,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-23T03:09:22.674Z",
+    "lastBuiltAt": "2026-09-23T03:10:52.060Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -13054,5 +13057,5 @@
       "knowledge_1tzfpx7"
     ]
   },
-  "updatedAt": "2026-09-23T03:09:22.674Z"
+  "updatedAt": "2026-09-23T03:10:52.060Z"
 }
