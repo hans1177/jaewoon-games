@@ -16,15 +16,20 @@ remote.Name=C.RemoteName;remote.Parent=RS
 local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
+local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")
+local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
+foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
 local qaCaptureLast={}
 
 local world
+local foundationSpawn
 local enemies={}
 local aiUsers={}
 local parties={}
 local clickTimes={}
 local lastRequest={}
 local lastCombat={}
+local movementProbeStart={}
 local assetCache={}
 local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293}
 
@@ -34,6 +39,26 @@ local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("H
 local function feedback(p,k)p:SetAttribute("FeedbackEvent",k..":"..tostring(math.floor(os.clock()*1000)))end
 local function msg(p,t)p:SetAttribute("LastAction",t)end
 local function portalDef(id)for _,z in ipairs(C.Portals)do if z.Id==id then return z end end end
+local function foundationCheckpoint(name,p,extra)
+ local payload={name=name,at=os.time(),userId=p and p.UserId or 0,gameId=C.GameId,placeId=game.PlaceId,placeVersion=game.PlaceVersion}
+ if typeof(extra)=="table"then for k,v in pairs(extra)do if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then payload[k]=v end end end
+ workspace:SetAttribute("Foundation_"..name,true)
+ pcall(function()
+  foundationStore:UpdateAsync("latest",function(old)
+   local data=typeof(old)=="table"and old or{}
+   if tonumber(data.placeVersion)~=game.PlaceVersion or tonumber(data.placeId)~=game.PlaceId or tostring(data.gameId or"")~=tostring(C.GameId)then data.checkpoints={};data.sequence=0 end
+   data.version=3;data.gameId=C.GameId;data.placeId=game.PlaceId;data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
+   data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
+   data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
+   data.sequence=math.max(0,math.floor(tonumber(data.sequence)or 0))+1
+   local row={};for k,v in pairs(payload)do row[k]=v end;row.sequence=data.sequence
+   data.checkpoints[name]=row
+   return data
+  end)
+ end)
+end
+foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
+foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
 
 local function ppart(parent,name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color
@@ -203,6 +228,17 @@ local function save(p)
  local d={};for _,k in ipairs(SAVE)do d[k]=p:GetAttribute(k)end
  pcall(function()store:SetAsync("p:"..p.UserId,d)end)
 end
+task.spawn(function()
+ if C.SaveEnabled~=true then return end
+ local probeKey="__foundation_probe__:"..tostring(game.PlaceVersion)
+ local token=C.GameId..":"..tostring(game.PlaceVersion)..":"..tostring(os.time())
+ local ok,readBack=pcall(function()
+  store:SetAsync(probeKey,{token=token,at=os.time()})
+  local value=store:GetAsync(probeKey)
+  return typeof(value)=="table"and value.token or nil
+ end)
+ if ok and readBack==token then foundationCheckpoint("SAVE_ROUNDTRIP",nil,{roundtrip=true})end
+end)
 local function updatePartyCount(p)
  local count=0;for _ in pairs(parties[p]or{})do count+=1 end;p:SetAttribute("PartyCount",count)
 end
@@ -225,10 +261,12 @@ local function broadcastMultiplayerSync(actor)
   ParticipantCount=#members,
   SharedObjective=sharedObjective,
  })
+ if #members>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#members,roomCode=n(actor,"RoomCode",1)})end
 end
 
 local function makeVillage()
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
+ foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Position=C.VillageCenter+Vector3.new(0,2,0);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
  ppart(f,"VillageGround",Vector3.new(300,2,300),Vector3.new(0,0,0),Color3.fromRGB(93,141,85),Enum.Material.Grass)
  ppart(f,"VillagePlaza",Vector3.new(96,2.3,96),Vector3.new(0,1.2,0),Color3.fromRGB(128,122,111),Enum.Material.Cobblestone)
  for _,z in ipairs({-112,-84,-56,56,84,112})do ppart(f,"MainRoad",Vector3.new(16,1,36),Vector3.new(0,1.15,z),Color3.fromRGB(119,105,88),Enum.Material.Cobblestone)end
@@ -515,6 +553,8 @@ local function buildWorld()
  makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
  for _,z in ipairs(C.Portals)do for i=1,10 do spawnEnemy(z,false,i)end;if z.Boss then spawnEnemy(z,true,1)end end
  workspace:SetAttribute("WorldArtPass","RPG_FANTASY_SILHOUETTE_WORLD_V4")
+ foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
+ if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
 
 remote.OnServerEvent:Connect(function(p,a)
@@ -529,19 +569,47 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.NEXT_ROOM_CODE then
   local code=n(p,"RoomCode",1)%10+1;p:SetAttribute("RoomCode",code);msg(p,"멀티 코드 "..code)
  end
+ foundationCheckpoint("CORE_LOOP_READY",p,{action=a})
  broadcastMultiplayerSync(p)
 end)
 
+local function validateCharacterFoundation(p,c)
+ local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
+ if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
+ if not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
+ h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=foundationSpawn
+ local pos=r.Position
+ if pos.X~=pos.X or pos.Y~=pos.Y or pos.Z~=pos.Z or math.abs(pos.X)==math.huge or math.abs(pos.Y)==math.huge or math.abs(pos.Z)==math.huge then p:SetAttribute("FoundationFailure","INVALID_ROOT_POSITION");return end
+ foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=pos.X,rootY=pos.Y,rootZ=pos.Z})
+ task.spawn(function()
+  local deadline=os.clock()+3
+  local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances={c}
+  repeat
+   if not c.Parent or not r.Parent then return end
+   local hit=workspace:Raycast(r.Position,Vector3.new(0,-14,0),params)
+   if hit and h.FloorMaterial~=Enum.Material.Air then foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y});return end
+   task.wait(.1)
+  until os.clock()>=deadline
+  p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
+ end)
+end
+
 Players.PlayerAdded:Connect(function(p)
  load(p)
- p.CharacterAdded:Connect(function()
-  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter)
+ p.CharacterAdded:Connect(function(c)
+  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter);validateCharacterFoundation(p,c)
  end)
- if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter)end)end
+ if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);validateCharacterFoundation(p,p.Character)end)end
 end)
 for _,p in ipairs(Players:GetPlayers())do load(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+
+foundationRemote.OnServerEvent:Connect(function(p,name)
+ if name~="CAMERA_READY"and name~="INPUT_READY"then return end
+ foundationCheckpoint("REMOTE_ROUNDTRIP",p,{clientReported=true})
+ foundationCheckpoint(name,p,{clientReported=true})
+end)
 
 qaCaptureRemote.OnServerEvent:Connect(function(p,labelName,value)
  if C.QACameraEnabled~=true then return end;if typeof(labelName)~="string"then return end
@@ -556,6 +624,14 @@ buildWorld()
 
 RunService.Heartbeat:Connect(function(dt)
  local now=os.clock()
+ for _,p in ipairs(Players:GetPlayers())do
+  local h=hum(p);local r=root(p)
+  if h and r and h.MoveDirection.Magnitude>.05 then
+   local start=movementProbeStart[p]
+   if not start then movementProbeStart[p]=r.Position
+   elseif (r.Position-start).Magnitude>=2 then foundationCheckpoint("MOVEMENT_CONFIRMED",p,{displacement=(r.Position-start).Magnitude});movementProbeStart[p]=nil end
+  elseif h and h.MoveDirection.Magnitude<=.05 then movementProbeStart[p]=nil end
+ end
  -- 몬스터: 같은 지역 플레이어만 추적, 일정 거리 밖이면 원위치로 돌아간다.
  for _,e in ipairs(enemies)do
   if e.hp>0 and e.part.Parent then
