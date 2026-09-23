@@ -1,12 +1,11 @@
 -- 파일명: roblox-games/daechung-rpg/server/Game.server.luau
--- 대충 RPG: 마을 허브 + 5포탈 + 대형 사냥터/던전 + AI 파티
+-- 대충 RPG: 마을 허브 + 포탈 전투 + 보스 수집형 AI 동료 파티
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
 local AssetService=game:GetService("AssetService")
-local PathfindingService=game:GetService("PathfindingService")
 local TweenService=game:GetService("TweenService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
@@ -27,6 +26,7 @@ local world
 local foundationSpawn
 local enemies={}
 local aiUsers={}
+local activeCompanions={}
 local parties={}
 local clickTimes={}
 local lastRequest={}
@@ -55,8 +55,10 @@ local function advancementDef(classId,advId)
  for _,a in pairs(c.Advancements or{})do if a.Id==advId then return a end end
  return nil
 end
-local function classDisplay(classId,advId)
- local a=advancementDef(classId,advId);if a then return a.Name end
+local function classDisplay(classId,advId,secondId)
+ local a=advancementDef(classId,advId)
+ if a and secondId~=""and a.SecondId==secondId then return a.SecondName or a.Name end
+ if a then return a.Name end
  local c=classDef(classId);return c and c.Name or"직업 미선택"
 end
 local function loadFoundationState()
@@ -450,49 +452,6 @@ local function applyPlayerAppearance(p)
   end
  end
 end
-local function loadR15Track(h,id,priority,looped)
- local animator=h:FindFirstChildOfClass("Animator")or Instance.new("Animator",h)
- local a=Instance.new("Animation");a.AnimationId="rbxassetid://"..tostring(id)
- local ok,tr=pcall(function()return animator:LoadAnimation(a)end);a:Destroy()
- if not ok or not tr then return nil end;tr.Priority=priority or Enum.AnimationPriority.Movement;tr.Looped=looped==true;return tr
-end
-local function createR15AI(parent,name,pos,classId,variant,advancementId)
- local desc=Instance.new("HumanoidDescription");desc.HeightScale=.9;desc.WidthScale=.9;desc.DepthScale=.9;desc.HeadScale=.95
- local ok,model=pcall(function()return Players:CreateHumanoidModelFromDescription(desc,Enum.HumanoidRigType.R15)end);desc:Destroy()
- if not ok or not model then return nil end
- model.Name=name;model.Parent=parent;model:PivotTo(CFrame.new(pos))
- local h=model:FindFirstChildOfClass("Humanoid");local r=model:FindFirstChild("HumanoidRootPart");if not h or not r then model:Destroy();return nil end
- h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None;h.WalkSpeed=13;h.AutoRotate=true
- decorateCharacterModel(model,classId,variant,advancementId)
- local idle=loadR15Track(h,507766388,Enum.AnimationPriority.Idle,true);local walk=loadR15Track(h,507777826,Enum.AnimationPriority.Movement,true);local run=loadR15Track(h,507767714,Enum.AnimationPriority.Movement,true)
- if idle then idle:Play(.15)end
- h.Running:Connect(function(speed)
-  if speed>.2 then
-   if idle and idle.IsPlaying then idle:Stop(.15)end
-   if speed>11 then if walk and walk.IsPlaying then walk:Stop(.12)end;if run and not run.IsPlaying then run:Play(.12)end
-   else if run and run.IsPlaying then run:Stop(.12)end;if walk and not walk.IsPlaying then walk:Play(.12)end end
-  else
-   if walk and walk.IsPlaying then walk:Stop(.15)end;if run and run.IsPlaying then run:Stop(.15)end;if idle and not idle.IsPlaying then idle:Play(.15)end
-  end
- end)
- return model,r,h
-end
-local function moveAITo(ai,destination)
- if not ai.humanoid or ai.humanoid.Health<=0 or not ai.root or not ai.root.Parent then return end
- local now=os.clock();if ai.pathBusy or now<(ai.nextPathAt or 0)then return end
- ai.pathBusy=true;ai.nextPathAt=now+.7
- task.spawn(function()
-  local ok,path=pcall(function()
-   local p=PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true,WaypointSpacing=5});p:ComputeAsync(ai.root.Position,destination);return p
-  end)
-  if ok and path and path.Status==Enum.PathStatus.Success then
-   local points=path:GetWaypoints();local wp=points[math.min(2,#points)]
-   if wp then if wp.Action==Enum.PathWaypointAction.Jump then ai.humanoid.Jump=true end;ai.humanoid:MoveTo(wp.Position)end
-  else ai.humanoid:MoveTo(destination)end
-  ai.pathBusy=false
- end)
-end
-
 local function tree(parent,pos,scale)
  scale=scale or 1
  local trunk=ppart(parent,"TreeTrunk",Vector3.new(2.2,8,2.2)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(91,67,47),Enum.Material.Wood)
@@ -507,31 +466,51 @@ local function teleportPlayer(p,pos)
  local r=root(p);if r then r.AssemblyLinearVelocity=Vector3.zero;r.CFrame=CFrame.new(pos+Vector3.new(0,4,0))end
 end
 local function setStats(p,heal)
- local level=n(p,"Level",1);local wt=n(p,"WeaponTier",1);local at=n(p,"ArmorTier",1)
+ local level=math.clamp(n(p,"Level",1),1,C.LevelCap or 60);p:SetAttribute("Level",level)
+ local wt=n(p,"WeaponTier",1);local at=n(p,"ArmorTier",1)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=classDef(classId)
+ local advId=tostring(p:GetAttribute("AdvancementId")or"");local ad=advancementDef(classId,advId)
+ local secondId=(level>=(C.SecondAdvancementLevel or 40)and ad and ad.SecondId)or""
+ p:SetAttribute("SecondAdvancementId",secondId)
  local hpMult=cd and cd.HPMult or 1;local attackMult=cd and cd.AttackMult or 1
  local maxHP=math.floor((C.BaseMaxHP+(level-1)*C.LevelHPGain+(C.ArmorBonus[at]or 0))*hpMult+.5)
  local attack=math.floor((C.BaseAttack+(level-1)*C.LevelAttackGain+(C.WeaponBonus[wt]or 0))*attackMult+.5)
- p:SetAttribute("MaxHP",maxHP);p:SetAttribute("AttackPower",attack);p:SetAttribute("ClassName",classDisplay(classId,tostring(p:GetAttribute("AdvancementId")or"")))
+ p:SetAttribute("MaxHP",maxHP);p:SetAttribute("AttackPower",attack);p:SetAttribute("ClassName",classDisplay(classId,advId,secondId))
  local h=hum(p);if h then h.MaxHealth=maxHP;if heal then h.Health=maxHP else h.Health=math.min(h.Health,maxHP)end end
 end
-local function grantXP(p,amount)
- local xp=n(p,"XP",0)+amount;local level=n(p,"Level",1);local leveled=false
- while xp>=level*100 do xp-=level*100;level+=1;leveled=true end
- p:SetAttribute("XP",xp);p:SetAttribute("Level",level)
- if leveled then setStats(p,true);msg(p,"레벨 "..level.." · 최대체력/공격력 +10");feedback(p,"LEVEL_UP")end
+local function addMasteryXP(p,amount)
+ local xp=n(p,"MasteryXP",0)+(amount or 0);local mastery=n(p,"MasteryLevel",0);local gained=false
+ while xp>=1000 do xp-=1000;mastery+=1;gained=true end
+ p:SetAttribute("MasteryXP",xp);p:SetAttribute("MasteryLevel",mastery)
+ if gained then msg(p,"직업 숙련 "..mastery.." · 전투력 증가 없이 숙련 보상 해금");feedback(p,"MASTERY_UP")end
 end
--- Save schema v2 adds class/advancement keys without renaming or deleting any v1 keys.
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId"}
+local function grantXP(p,amount)
+ local cap=C.LevelCap or 60;local level=math.clamp(n(p,"Level",1),1,cap);local xp=n(p,"XP",0)
+ if level>=cap then p:SetAttribute("XP",0);addMasteryXP(p,amount);return end
+ xp+=amount;local leveled=false;local before=level
+ while level<cap and xp>=level*100 do xp-=level*100;level+=1;leveled=true end
+ if level>=cap and xp>0 then addMasteryXP(p,xp);xp=0 end
+ p:SetAttribute("XP",xp);p:SetAttribute("Level",level)
+ if leveled then
+  setStats(p,true)
+  if before<(C.SecondAdvancementLevel or 40)and level>=(C.SecondAdvancementLevel or 40)and tostring(p:GetAttribute("SecondAdvancementId")or"")~=""then
+   msg(p,"Lv."..level.." · 2차 전직 완료 · "..tostring(p:GetAttribute("ClassName")or""));feedback(p,"ADVANCE_2")
+  elseif level>=cap then msg(p,"Lv."..cap.." MAX · 직업 숙련 개방");feedback(p,"LEVEL_UP")
+  else msg(p,"레벨 "..level.." · 최대체력/공격력 +10");feedback(p,"LEVEL_UP")end
+ end
+end
+-- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount"}
 local function init(p)
- p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1)
- p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("ClassName","직업 미선택")
+ p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
+ p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
+ p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0)
 p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
  p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
- msg(p,"직업을 고르고 마을 이장에게 퀘스트를 받아.")
+ msg(p,"직업을 고르고 보스를 격파해 AI 동료를 해금해.")
  parties[p]={};clickTimes[p]={};setStats(p,true)
 end
 local function load(p)
@@ -570,6 +549,29 @@ local function roomParticipants(p)
  end
  return members
 end
+local function companionDef(id)
+ for _,def in ipairs(C.BossCompanions or{})do if def.Id==id then return def end end
+end
+local function companionUnlocked(p,id)
+ local packed=","..tostring(p:GetAttribute("UnlockedCompanions")or"")..","
+ return packed:find(","..tostring(id)..",",1,true)~=nil
+end
+local function unlockCompanion(p,id)
+ local def=companionDef(id);if not def or companionUnlocked(p,id)then return false end
+ local current=tostring(p:GetAttribute("UnlockedCompanions")or"")
+ p:SetAttribute("UnlockedCompanions",current==""and id or(current..","..id))
+ p:SetAttribute("CompanionUnlockCount",n(p,"CompanionUnlockCount",0)+1)
+ msg(p,"보스 동료 해금 · "..def.Name.." · 마을에서 두 번 터치해 파티 편성");feedback(p,"COMPANION_UNLOCK")
+ return true
+end
+local function unlockBossCompanion(killer,e)
+ if not e or e.boss~=true then return end
+ local bossId=e.def and e.def.Id;if not bossId or not companionDef(bossId)then return end
+ for _,member in ipairs(roomParticipants(killer))do
+  if n(member,"CurrentZone",0)==e.zone then unlockCompanion(member,bossId)end
+ end
+end
+
 local function broadcastMultiplayerSync(actor)
  local members=roomParticipants(actor)
  local sharedObjective=0
@@ -1104,7 +1106,7 @@ local function killEnemy(p,e,contribution)
   p:SetAttribute("SoulCharge",math.min(5,n(p,"SoulCharge",0)+1))
   if p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end
  end
- p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2)
+ p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2);unlockBossCompanion(p,e)
  if e.hiddenBoss then
   workspace:SetAttribute("MeadowHiddenBossDefeated",true);msg(p,"히든 보스 격파 · "..display);feedback(p,"HIDDEN_BOSS_KILL")
  elseif e.runBoss then
@@ -1162,62 +1164,97 @@ local function playerAttack(p,skill)
  local stamp=lastCombat[p];task.delay(C.CombatLockSeconds,function()if p.Parent and lastCombat[p]==stamp then p:SetAttribute("InCombat",false)end end)
 end
 
-local function refreshAILabel(ai)
- if not ai.label then return end
- ai.label.Text=ai.def.Name.." · "..classDisplay(ai.classId,ai.advancementId)
+local function bossSpecForCompanion(def)
+ local z=portalDef(def.Zone);if not z then return nil,nil end
+ if z.RunBoss and z.RunBoss.Id==def.Id then return z,z.RunBoss end
+ for _,b in ipairs(z.HiddenBosses or{})do if b.Id==def.Id then return z,b end end
+ if z.Boss and z.Boss.Id==def.Id then return z,z.Boss end
+ return z,nil
 end
-local function aiGainXP(ai,amount)
- ai.xp=(ai.xp or 0)+(amount or 10)
- while ai.xp>=ai.level*45 do ai.xp-=ai.level*45;ai.level+=1 end
- if ai.level>=C.AdvancementLevel and ai.advancementId==""then
-  local cd=classDef(ai.classId);local choice=cd and cd.Advancements[ai.def.Advance or"A"]
-  if choice then ai.advancementId=choice.Id;decorateCharacterModel(ai.model,ai.classId,ai.id,ai.advancementId);refreshAILabel(ai)end
+local function setCompanionLabel(part,text,color)
+ local gui=part and part:FindFirstChildOfClass("BillboardGui");local t=gui and gui:FindFirstChildOfClass("TextLabel")
+ if t then t.Text=text;t.TextColor3=color or Color3.fromRGB(235,235,230)end
+end
+local function despawnActiveCompanion(p,id)
+ local owned=activeCompanions[p];local ai=owned and owned[id];if not ai then return end
+ if ai.root and ai.root.Parent then ai.root:Destroy()end
+ for i=#aiUsers,1,-1 do if aiUsers[i]==ai then table.remove(aiUsers,i)break end end
+ owned[id]=nil
+end
+local function clearPlayerCompanions(p)
+ local owned=activeCompanions[p];if not owned then return end
+ local ids={};for id in pairs(owned)do table.insert(ids,id)end
+ for _,id in ipairs(ids)do despawnActiveCompanion(p,id)end
+ activeCompanions[p]=nil
+end
+local function spawnActiveCompanion(p,def)
+ if not p or not p.Parent or not def then return end
+ activeCompanions[p]=activeCompanions[p]or{}
+ if activeCompanions[p][def.Id]then return end
+ local z,spec=bossSpecForCompanion(def);local folder=world and world:FindFirstChild("ActiveBossCompanions")
+ if not z or not spec or not folder then return end
+ local lr=root(p);local pos=lr and(lr.Position+Vector3.new(0,3,8))or(C.VillageCenter+Vector3.new(0,5,8))
+ local part=enemyModel(folder,z,pos,true,spec);part.Name="Companion_"..p.UserId.."_"..def.Id;part.CanCollide=false
+ part:SetAttribute("CompanionId",def.Id);part:SetAttribute("CompanionOwner",p.UserId);setCompanionLabel(part,def.Name.." · 동료",def.Color)
+ local slot=1;for _ in pairs(activeCompanions[p])do slot+=1 end
+ local ai={id=def.Id,def=def,root=part,part=part,model=part,owner=p,zone=0,slot=slot,lastAttack=0,nextSkillAt=os.clock()+2}
+ activeCompanions[p][def.Id]=ai;table.insert(aiUsers,ai)
+end
+local function moveBossCompanion(ai,destination,dt)
+ if not ai.root or not ai.root.Parent then return end
+ local current=ai.root.Position;local flat=Vector3.new(destination.X-current.X,0,destination.Z-current.Z)
+ if flat.Magnitude<=.08 then return end
+ local step=math.min(flat.Magnitude,(ai.def.Speed or 11)*dt);local nextPos=current+flat.Unit*step
+ ai.root.CFrame=CFrame.lookAt(nextPos,nextPos+flat.Unit)
+end
+local function companionFormation(ai,leaderRoot)
+ local slot=ai.slot or 1;local side=(slot-2)*6
+ return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(side,0,7+(slot%2)*2))
+end
+local function companionAttack(ai,leader,e,now)
+ if not e or e.hp<=0 or not e.part.Parent or not leader then return end
+ local def=ai.def;local dist=(e.part.Position-ai.root.Position).Magnitude
+ if dist>(def.Range or 12)then return end
+ if now-(ai.lastAttack or 0)<(def.AttackInterval or 1)then return end
+ ai.lastAttack=now
+ local skill=now>=(ai.nextSkillAt or 0);if skill then ai.nextSkillAt=now+(def.SkillCooldown or 7)end
+ local level=math.clamp(n(leader,"Level",1),1,C.LevelCap or 60)
+ local damage=(def.BaseDamage or 8)+level*(def.DamagePerLevel or .7)
+ if skill then damage*=def.SkillMult or 1.5 end
+ if def.Trait=="FINISHER"and e.hp/math.max(1,e.max)<=.35 then damage*=1.35 end
+ if def.Trait=="ABYSS_EXECUTE"and e.stagger<=e.staggerMax*.4 then damage*=1.25 end
+ e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));combatFlash(e.part.Position,def.Color or Color3.fromRGB(220,200,145),skill and 1.55 or 1)
+ if skill then
+  if def.Trait=="STAGGER_CHARGE"then staggerEnemy(e,30,now)
+  elseif def.Trait=="ROOT_GUARD"then
+   e.stunnedUntil=math.max(e.stunnedUntil or 0,now+.75);local h=hum(leader);if h then h.Health=math.min(h.MaxHealth,h.Health+h.MaxHealth*.05)end
+  elseif def.Trait=="RUNE_GUARD"then leader:SetAttribute("Guard",math.min(C.GuardMax,n(leader,"Guard",C.GuardMax)+18));staggerEnemy(e,16,now)
+  elseif def.Trait=="ABYSS_EXECUTE"then staggerEnemy(e,20,now)
+  end
  end
+ if e.hp<=0 then killEnemy(leader,e,1)end
 end
-local function aiFormation(ai,leaderRoot)
- local side=((ai.id%3)-1)*5
- if ai.classId=="BREAKER"then return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(side,0,-6))
- elseif ai.classId=="SHADOW"then return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(ai.id%2==0 and 7 or-7,0,-1))
- elseif ai.classId=="RUNE"then return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(side,0,7))
- else return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(side,0,9))end
-end
-local function aiAttack(ai,leader,e,now)
- if not e or e.hp<=0 or not e.part.Parent then return end
- local range=ai.classId=="BREAKER"and 11 or ai.classId=="SHADOW"and 10 or ai.classId=="RUNE"and 25 or 22
- local delay=ai.classId=="BREAKER"and .9 or ai.classId=="SHADOW"and .62 or ai.classId=="RUNE"and 1.05 or 1.15
- local dist=(e.part.Position-ai.root.Position).Magnitude
- if dist>range then moveAITo(ai,e.part.Position);return end
- if now-ai.lastAttack<delay then return end;ai.lastAttack=now
- if ai.attackTrack then ai.attackTrack:Play(.06,1,ai.classId=="SHADOW"and 1.5 or ai.classId=="BREAKER"and .82 or 1)end
- local dmg=10+ai.level*1.2+ai.weaponTier*3
- if ai.classId=="BREAKER"then dmg*=1.22 elseif ai.classId=="SHADOW"then dmg*=1.08 elseif ai.classId=="RUNE"then dmg*=1.12 else dmg*=.95 end
- if ai.advancementId=="RAGE_BREAKER"or ai.advancementId=="ASSASSIN_TRACKER"or ai.advancementId=="OVERLOAD_RUNER"or ai.advancementId=="WRAITH_MASTER"then dmg*=1.16 end
- e.hp-=dmg;e.part:SetAttribute("HP",math.max(0,e.hp));pulseWeaponTrail(ai.model);combatFlash(e.part.Position,classDef(ai.classId).Color,1.05)
- if ai.classId=="SOUL"and leader and ai.advancementId=="GUARDIAN_MEDIUM"then local h=hum(leader);if h and h.Health<h.MaxHealth then h.Health=math.min(h.MaxHealth,h.Health+8)end end
- if e.hp<=0 then
-  aiGainXP(ai,e.xp or 15)
-  if leader then killEnemy(leader,e,1)else local z=portalDef(e.zone);if e.part.Parent then e.part:Destroy()end;task.delay(8,function()if world and world.Parent then spawnEnemy(z,e.boss,math.random(1,80))end end)end
- end
-end
-local function makeAI()
- local f=Instance.new("Folder");f.Name="AIUsers";f.Parent=world
- for i,def in ipairs(C.AIUsers)do
-  local angle=i/#C.AIUsers*math.pi*2;local spawn=Vector3.new(math.cos(angle)*58,5,math.sin(angle)*58)
-  local model,part,h=createR15AI(f,"AI_"..def.Name,spawn,def.Class,i,"")
-  if model and part and h then
-   local gui=label(part,def.Name.." · "..classDisplay(def.Class,""),Color3.fromRGB(240,240,234),32);local textLabel=gui:FindFirstChildOfClass("TextLabel")
-   local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=18;cd.Parent=part
-   local ai={id=i,def=def,model=model,part=part,root=part,humanoid=h,label=textLabel,classId=def.Class,advancementId="",zone=0,gold=70,weaponTier=1,level=math.min(14,3+i),xp=0,lastAttack=0,nextWander=0,nextAdventure=os.clock()+20+i*2,pathBusy=false,nextPathAt=0,attackTrack=loadR15Track(h,522635514,Enum.AnimationPriority.Action,false)}
-   table.insert(aiUsers,ai);refreshAILabel(ai)
+local function makeBossCompanionRoster()
+ local roster=Instance.new("Folder");roster.Name="BossCompanionRoster";roster.Parent=world
+ local active=Instance.new("Folder");active.Name="ActiveBossCompanions";active.Parent=world
+ for i,def in ipairs(C.BossCompanions or{})do
+  local z,spec=bossSpecForCompanion(def)
+  if z and spec then
+   local a=i/math.max(1,#C.BossCompanions)*math.pi*2;local pos=C.VillageCenter+Vector3.new(math.cos(a)*76,6,math.sin(a)*76)
+   local part=enemyModel(roster,z,pos,true,spec);part.Name="Roster_"..def.Id;part.CanCollide=false;part:SetAttribute("CompanionId",def.Id);part:SetAttribute("RosterPreview",true)
+   setCompanionLabel(part,"동료 · "..def.Name.." · 보스 격파 해금",def.Color)
+   local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=20;cd.Parent=part
    cd.MouseClick:Connect(function(p)
-    clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][i]or 0;clickTimes[p][i]=now
+    if not companionUnlocked(p,def.Id)then msg(p,def.Name.." 보스를 먼저 격파해야 동료로 영입 가능")return end
+    clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][def.Id]or 0;clickTimes[p][def.Id]=now
     if now-last>.55 then msg(p,def.Name.." · 한 번 더 눌러 파티 초대/제외")return end
     parties[p]=parties[p]or{}
-    if parties[p][i]then parties[p][i]=nil;msg(p,def.Name.." 파티에서 제외")
+    if parties[p][def.Id]then
+     parties[p][def.Id]=nil;despawnActiveCompanion(p,def.Id);msg(p,def.Name.." 파티에서 제외")
     else
      local count=0;for _ in pairs(parties[p])do count+=1 end
-     if count>=C.PartySlots-1 then msg(p,"AI 파티 슬롯이 가득 찼어")return end
-     parties[p][i]=true;msg(p,def.Name.." · "..classDisplay(ai.classId,ai.advancementId).." 파티 참가")
+     if count>=C.PartySlots-1 then msg(p,"동료 슬롯 3칸이 가득 찼어")return end
+     parties[p][def.Id]=true;spawnActiveCompanion(p,def);msg(p,def.Name.." 파티 참가 · "..def.Role)
     end
     updatePartyCount(p)
    end)
@@ -1229,7 +1266,7 @@ local function buildWorld()
  local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end
  world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
  Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
- makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
+ makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeBossCompanionRoster()
  for _,z in ipairs(C.Portals)do
   if z.Id~=1 then for i=1,10 do spawnEnemy(z,false,i)end end
   if z.Boss then spawnEnemy(z,true,1)end
@@ -1341,7 +1378,7 @@ local function bindPlayer(p)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
@@ -1396,40 +1433,24 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 
- -- AI 유저 10명: 실제 R15 Humanoid로 걷고, 직업별 전투 위치와 공격 방식을 사용한다.
+ -- 보스 동료: 해금한 보스 중 최대 3명을 편성하고, 전투력은 리더 레벨에 자동 동기화한다.
  for _,ai in ipairs(aiUsers)do
-  if ai.model and ai.model.Parent and ai.root and ai.root.Parent and ai.humanoid and ai.humanoid.Health>0 then
-   local leader=nil
-   for _,p in ipairs(Players:GetPlayers())do if partyHas(p,ai.id)then leader=p;break end end
-   if leader then
-    local zone=n(leader,"CurrentZone",0);local lr=root(leader)
-    if lr then
-     if ai.zone~=zone then
-      ai.zone=zone;ai.model:PivotTo(lr.CFrame*CFrame.new((ai.id%3-1)*4,0,7));ai.humanoid:MoveTo(ai.root.Position)
-     end
-     local desired=aiFormation(ai,lr);if(ai.root.Position-desired).Magnitude>3.2 then moveAITo(ai,desired)end
-     if zone>0 then
-      local range=ai.classId=="RUNE"and 32 or ai.classId=="SOUL"and 30 or 24
-      local e=nearestEnemy(ai.root.Position,zone,range);if e then aiAttack(ai,leader,e,now)end
+  local leader=ai.owner
+  if leader and leader.Parent and partyHas(leader,ai.id)and ai.root and ai.root.Parent then
+   local zone=n(leader,"CurrentZone",0);local lr=root(leader)
+   if lr then
+    local desired=companionFormation(ai,lr)
+    if ai.zone~=zone or(ai.root.Position-lr.Position).Magnitude>90 then
+     ai.zone=zone;ai.root.CFrame=lr.CFrame*CFrame.new((ai.slot-2)*6,0,8)
+    elseif(ai.root.Position-desired).Magnitude>3 then moveBossCompanion(ai,desired,dt)end
+    if zone>0 then
+     local e=nearestEnemy(ai.root.Position,zone,math.max(24,(ai.def.Range or 12)+10))
+     if e then
+      local dist=(e.part.Position-ai.root.Position).Magnitude
+      if dist>(ai.def.Range or 12)*.82 then moveBossCompanion(ai,e.part.Position,dt)end
+      companionAttack(ai,leader,e,now)
      end
     end
-   else
-    if ai.zone==0 then
-     if now>(ai.nextWander or 0)then
-      ai.nextWander=now+4+(ai.id%4);local a=(ai.id*1.7+now*.07)%(math.pi*2);local radius=28+(ai.id%4)*7
-      moveAITo(ai,Vector3.new(math.cos(a)*radius,5,math.sin(a)*radius))
-     end
-     if now>(ai.nextAdventure or math.huge)then
-      ai.zone=(ai.id%5)+1;local z=portalDef(ai.zone);ai.model:PivotTo(CFrame.new(z.Center+Vector3.new((ai.id%4)*5-8,5,150)));ai.nextAdventure=now+38+(ai.id%5)*4
-     end
-    else
-     local e=nearestEnemy(ai.root.Position,ai.zone,34)
-     if e then aiAttack(ai,nil,e,now)else
-      local z=portalDef(ai.zone);if z then moveAITo(ai,z.Center+Vector3.new((ai.id%5-2)*18,5,(ai.id%3-1)*22))end
-     end
-     if now>(ai.nextAdventure or math.huge)then ai.zone=0;ai.model:PivotTo(CFrame.new((ai.id%5-2)*10,5,35+(ai.id%3)*8));ai.nextAdventure=now+24+(ai.id%4)*5 end
-    end
-    ai.gold+=dt*.3;if ai.weaponTier<5 and ai.gold>=C.WeaponPrices[ai.weaponTier+1]then ai.gold-=C.WeaponPrices[ai.weaponTier+1];ai.weaponTier+=1 end
    end
   end
  end

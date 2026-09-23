@@ -44,20 +44,20 @@ test('심야 설계계약은 4대4 240초 감염전 코드와 일치한다',()=>
  assert.match(server,/if monsters==0 then endRound\("SURVIVOR"\)/);
 });
 
-test('대충 RPG 설계계약은 5포탈 10AI 15킬 파티사냥 코드와 일치한다',()=>{
+test('대충 RPG 설계계약은 4직업·Lv60·보스동료 조합 코드와 일치한다',()=>{
  const launch=json('roblox-games/daechung-rpg/launch-mvp.json');
  const config=read('roblox-games/daechung-rpg/shared/GameConfig.luau');
- assert.equal((config.match(/Class="(?:BREAKER|SHADOW|RUNE|SOUL)"/g)||[]).length,10);
- assert.equal((config.match(/Class="BREAKER"/g)||[]).length,3);
- assert.equal((config.match(/Class="SHADOW"/g)||[]).length,3);
- assert.equal((config.match(/Class="RUNE"/g)||[]).length,2);
- assert.equal((config.match(/Class="SOUL"/g)||[]).length,2);
  assert.match(config,/AdvancementLevel=15/);
+ assert.match(config,/SecondAdvancementLevel=40/);
+ assert.match(config,/LevelCap=60/);
+ assert.match(config,/EquipmentSlots=\{"Weapon","Armor","Relic"\}/);
  assert.match(config,/IRON_BREAKER/);assert.match(config,/RAGE_BREAKER/);assert.match(config,/ASSASSIN_TRACKER/);assert.match(config,/MIRAGE_TRACKER/);
  assert.match(config,/ELEMENTAL_RUNER/);assert.match(config,/OVERLOAD_RUNER/);assert.match(config,/GUARDIAN_MEDIUM/);assert.match(config,/WRAITH_MASTER/);
+ assert.match(config,/BossCompanions=\{/);
+ for(const id of ['GOLDEN_ANTLER','WHITE_FANG','ANCIENT_HEART','RUIN_GUARDIAN','ABYSS_LORD'])assert.match(config,new RegExp('Id="'+id+'"'));
  assert.match(config,/PartyHuntTarget=15/);
- assert.ok(launch.launchCore.includes('five portal-separated hunting grounds/dungeons'));
- assert.ok(launch.launchCore.includes('ten R15 AI users sharing the same four-class progression: 3 breaker, 3 shadow, 2 rune, 2 soul'));
+ assert.ok(launch.launchCore.includes('boss-first-clear companion unlocks: recruitable bosses become AI companions'));
+ assert.ok(launch.launchCore.includes('party composition supports the player plus up to three unlocked boss companions'));
 });
 
 test('포근섬 설계계약은 직접채집 주민자동화 병영 5거점 코드와 일치한다',()=>{

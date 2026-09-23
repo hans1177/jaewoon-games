@@ -146,9 +146,9 @@ local function render()
  local xp=p:GetAttribute("XP")or 0
  local hp=0;local maxHP=p:GetAttribute("MaxHP")or 100
  local h=p.Character and p.Character:FindFirstChildOfClass("Humanoid");if h then hp=math.floor(h.Health)end
- statLine.Text=string.format("Lv.%d  HP %d/%d  공격 %d\n골드 %d · 무기 T%d · 방어구 T%d",level,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1)
- local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=C.Classes[classId];local adv=tostring(p:GetAttribute("AdvancementId")or"")
- local advName="";if cd and adv~=""then for _,a in pairs(cd.Advancements)do if a.Id==adv then advName=" → "..a.Name break end end end
+ local mastery=p:GetAttribute("MasteryLevel")or 0;local levelLabel=level>=(C.LevelCap or 60)and("Lv."..level.." MAX")or("Lv."..level)\n statLine.Text=string.format("%s  HP %d/%d  공격 %d\n골드 %d · 무기 T%d · 방어구 T%d · 유물 %s%s",levelLabel,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1,tostring(p:GetAttribute("RelicId")or"NONE"),mastery>0 and(" · 숙련 "..mastery)or"")
+ local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=C.Classes[classId];local adv=tostring(p:GetAttribute("AdvancementId")or"");local second=tostring(p:GetAttribute("SecondAdvancementId")or"")
+ local advName="";if cd and adv~=""then for _,a in pairs(cd.Advancements)do if a.Id==adv then advName=" → "..a.Name;if second~=""and a.SecondId==second then advName=advName.." → "..(a.SecondName or second)end;break end end end
  classBadge.Text=(cd and cd.Name or"직업 미선택")..advName
  local zone=p:GetAttribute("CurrentZone")or 0
  local qp=p:GetAttribute("QuestPortal")or 0
@@ -158,7 +158,7 @@ local function render()
  local pc=p:GetAttribute("PartyCount")or 0
  local pk=p:GetAttribute("PartyKills")or 0
  local contrib=p:GetAttribute("Contribution")or 0
- partyText.Text=(p:GetAttribute("PartyHuntActive")==true)and string.format("파티 %d/4\n사냥 %d/%d · 기여 %d",pc+1,pk,C.PartyHuntTarget,contrib)or string.format("파티 %d/4\nAI 두번 터치",pc+1)
+ partyText.Text=(p:GetAttribute("PartyHuntActive")==true)and string.format("파티 %d/4\n사냥 %d/%d · 기여 %d",pc+1,pk,C.PartyHuntTarget,contrib)or string.format("파티 %d/4\n동료 두번 터치",pc+1)
  local combatLocked=p:GetAttribute("InCombat")==true
  returnButton.Visible=zone>0
  returnButton.Text=combatLocked and"전투 중 귀환 불가"or"마을 귀환"
@@ -169,11 +169,11 @@ local function render()
  local guard=math.floor(p:GetAttribute("Guard")or C.GuardMax);local blocking=p:GetAttribute("Blocking")==true
  block.Text=(blocking and"막는중"or"막기").."\n"..guard
  block.BackgroundColor3=blocking and Color3.fromRGB(83,139,177)or Color3.fromRGB(74,102,151)
- if zone==1 then hint.Text="초원 RUN "..tostring(p:GetAttribute("CurrentRunSeed")or 0).." · 노랑=패링 / 빨강=회피"else hint.Text=zone==0 and"포탈 1~5 선택 · AI 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")end
+ if zone==1 then hint.Text="초원 RUN "..tostring(p:GetAttribute("CurrentRunSeed")or 0).." · 노랑=패링 / 빨강=회피"else hint.Text=zone==0 and"포탈 1~5 선택 · 보스 동료 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")end
  if classId=="BREAKER"then skill.Text="파쇄"elseif classId=="SHADOW"then skill.Text="그림자"elseif classId=="RUNE"then skill.Text="룬"elseif classId=="SOUL"then skill.Text="영혼"else skill.Text="스킬"end
  renderClassPanel()
 end
-for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
+for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
 local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
