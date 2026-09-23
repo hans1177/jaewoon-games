@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -292,5 +292,49 @@
       "centralPolicyQaRun": 2261,
       "integratedRegressionRun": 7913
     }
+  },
+  "systemAiEvolutionSecurity": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "centralContract": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution",
+    "purpose": "PRESERVE_SECURITY_AND_AUTHORITY_BOUNDARIES_DURING_SYSTEM_AI_FAILURE_CLASSIFICATION_HANDOFF_BOTTLENECK_SCALING_QA_EVOLUTION_AND_LEARNING_REUSE",
+    "invariants": {
+      "workerHandoffMayNotExpandWritableScope": true,
+      "reclaimedReservationMustRevalidateCurrentPolicyAndSecurityContext": true,
+      "duplicateWorkerExecutionOnSameResponsibleScopeForbidden": true,
+      "bottleneckScalingMayOnlyAddDisjointEligibleWork": true,
+      "qaEvolutionMayNotSuppressSecurityOrRuntimeFailures": true,
+      "staleQaRepairMayNotWeakenRequiredSecurityAssertions": true,
+      "verifiedLearningReuseMustExcludeQuarantinedOrUnverifiedKnowledge": true,
+      "primaryAiVibeCollaborationDoesNotGrantPolicyOrRuntimeAuthority": true,
+      "rawExternalOrHostileOutputMayNotEnterLearning": true,
+      "global24hContinuesWhileAffectedSecurityScopeFailsClosed": true
+    },
+    "failureClassesWithSecurityDisposition": {
+      "SECURITY_OR_AUTHORITY_BOUNDARY": "QUARANTINE_AFFECTED_SCOPE_AND_ROUTE_SECURITY_RECOVERY",
+      "EXTERNAL_SERVICE_OR_CREDENTIAL_FAILURE": "FAIL_AFFECTED_SCOPE_NO_CREDENTIAL_BYPASS",
+      "CENTRAL_POLICY_OR_SHARED_CONTEXT_MISMATCH": "FAIL_CLOSED_REBIND_CURRENT_MAIN",
+      "RUNNER_OR_INFRASTRUCTURE_FAILURE": "HANDOFF_ALLOWED_ONLY_AFTER_SECURITY_CONTEXT_REVALIDATION",
+      "STALE_QA_CONTRACT": "QA_REPAIR_ALLOWED_ONLY_WITH_CANONICAL_POLICY_AND_IMPLEMENTATION_PROOF"
+    },
+    "requiredEvidence": [
+      "CURRENT_CENTRAL_POLICY_FINGERPRINT",
+      "CURRENT_SECURITY_POLICY_FINGERPRINT",
+      "RESERVATION_IDENTITY",
+      "RESPONSIBLE_SCOPE",
+      "FAILURE_CLASS",
+      "HANDOFF_REASON_WHEN_USED",
+      "SECURITY_REVALIDATION_PASS"
+    ],
+    "enforcementBindings": [
+      "tools/company-security-steward.mjs",
+      "tools/company-shared-context.mjs",
+      "tools/company-system-ai-queue.mjs",
+      "tools/company-system-ai-worker.mjs",
+      ".github/workflows/company-security-immune.yml",
+      ".github/workflows/company-system-ai-workers.yml"
+    ],
+    "shadowSecurityPipelineForbidden": true,
+    "authorityExpansion": false
   }
 }
