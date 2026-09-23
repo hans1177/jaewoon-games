@@ -405,8 +405,13 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.equal(contract.narrativeAndDialogue.characterVoiceProfileRequired,true);
   assert.equal(contract.causalDefectOwnership.sameSymptomDualIndependentMutationForbidden,true);
   assert.equal(contract.designIntegrityChecks.required,true);
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.newDesignPipelineForbidden,true);
-  assert.equal(logMap.designEvolutionEvidenceContract.sameSymptomDualMutationForbidden,true);
+  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.role,'STRUCTURAL_BINDINGS_ONLY');
+  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.policyAuthority,false);
+  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.semanticMirrorForbidden,true);
+  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.centralContract,'company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution');
+  assert.equal(logMap.designEvolutionEvidenceContract.role,'EVIDENCE_AND_CORRELATION_ONLY');
+  assert.equal(logMap.designEvolutionEvidenceContract.policyAuthority,false);
+  assert.equal(logMap.designEvolutionEvidenceContract.policySemanticsDefinedInCentralOnly,true);
   const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
   assert.match(cycle,/CANONICAL_POLICY_PATH='company-learning\/platform-release-roadmap\.json'/);
   assert.doesNotMatch(cycle,/centralPolicy:'COMPANY_FLOW\.md'/);
