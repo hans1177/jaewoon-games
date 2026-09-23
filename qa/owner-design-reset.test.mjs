@@ -86,3 +86,23 @@ test('promoted owner-reset seeds remain eligible for parallel strict design revi
   assert.match(workflow,/status==='ACTIVE'\|\|x\?\.promotion\?\.strictDesignReviewContinuesInParallel===true/);
   assert.doesNotMatch(workflow,/find\(x=>String\(x\.gameId\)===gameId&&String\(x\.status\)\.toUpperCase\(\)==='ACTIVE'\)/);
 });
+
+
+test('latest repeated owner request event wins even when wording and game are the same',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-reset-repeat-'));
+  const queue=path.join(dir,'queue.json');
+  fs.writeFileSync(queue,JSON.stringify({requests:[
+    {revision:'R1',gameId:'x',gameName:'X',status:'ACTIVE',goal:'초반 전투가 재미없어',seed:{seedId:'S1',GAME_CATEGORY:'ACTION',INITIAL_TARGET_PLATFORM:'UNITY'}},
+    {revision:'R2',gameId:'x',gameName:'X',status:'ACTIVE',goal:'초반 전투가 재미없어',seed:{seedId:'S1',GAME_CATEGORY:'ACTION',INITIAL_TARGET_PLATFORM:'UNITY'}}
+  ]}));
+  const state={version:1,seeds:[]};
+  const first=ensureOwnerDesignResetSeed(state,'x',{file:queue});
+  assert.equal(first.changed,true);
+  assert.equal(first.seed.ownerResetRevision,'R2');
+  assert.equal(first.seed.ownerRequestInstanceId,'R2');
+  assert.equal(first.seed.ownerRepeatedRequestCreatesNewDesignRevision,true);
+  assert.equal(state.seeds.length,1);
+  const all=materializeOwnerDesignResetSeeds(state,{file:queue});
+  assert.deepEqual(all.changed,[]);
+  assert.equal(all.activeCount,2);
+});
