@@ -270,3 +270,12 @@ test('independent Unity QA launches exact APK activity without monkey',()=>{
   assert.match(independentQaSource,/adb shell am start -W -n "\$launch_component"/);
   assert.doesNotMatch(independentQaSource,/adb shell monkey/);
 });
+
+
+test('independent Unity QA ignores unrelated Redroid system crashes and scopes fatal scan to the tested app',()=>{
+  assert.match(independentQaSource,/awk -v pid="\$pid_after" '\$3==pid \{print\}'/);
+  assert.match(independentQaSource,/app-logcat\.txt/);
+  assert.match(independentQaSource,/grep -Eiq 'FATAL EXCEPTION\|Fatal signal' qa-artifacts\/unity-independent-qa\/app-logcat\.txt/);
+  assert.match(independentQaSource,/ANR in \$\{package\}\|Process \$\{package\} .* has died/);
+  assert.doesNotMatch(independentQaSource,/FATAL EXCEPTION\|ANR in \$\{package\}\|Fatal signal\|Process/);
+});
