@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function sound(name,id,volume) ",
+      "replace": "local function sound(name,id,volume) local s=Instance.new(\"Sound\");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
