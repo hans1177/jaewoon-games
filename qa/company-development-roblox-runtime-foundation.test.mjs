@@ -131,8 +131,9 @@ test('runtime QA preserves exact permission evidence instead of misclassifying s
  assert.match(workflow,/item\.robloxRuntimeRetryCount=0/);
  assert.match(workflow,/priorRetryCount===0/);
  const permissionIndex=workflow.indexOf("engineProbe?.permissionDenied===true");
+ const retryResetIndex=workflow.indexOf('item.robloxRuntimeRetryCount=0');
  const sentinelIndex=workflow.indexOf('let sentinel;');
- assert.ok(permissionIndex>0&&sentinelIndex>permissionIndex,'permission blocker must be classified before stale sentinel read');
+ assert.ok(permissionIndex>0&&retryResetIndex>permissionIndex&&sentinelIndex>retryResetIndex,'permission blocker must reset stale retry count before sentinel read');
 });
 
 
