@@ -56,6 +56,40 @@ test('repeated System-AI infrastructure failure creates one repair canary and ga
   }
 });
 
+test('recovery dispatch reuses exact existing System-AI repair but preserves a distinct checkpoint',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const systemAiQueueInput={tasks:[
+    {id:'sys-a',status:'failed',retries:2,blocker:'system-ai-infrastructure-contract-failed',responsibleFiles:['qa/a.test.mjs'],contextFiles:['game-catalog.json'],dependencies:[]},
+    {id:'sys-b',status:'failed',retries:2,blocker:'system-ai-infrastructure-contract-failed',responsibleFiles:['qa/b.test.mjs'],contextFiles:['game-catalog.json'],dependencies:[]}
+  ]};
+  const escalated=escalateRecoveryCandidates({systemAiQueueInput});
+  const firstRec=escalated.queue.tasks[0];
+  const first=dispatchRecovery({recoveryInput:escalated.queue,systemAiQueueInput});
+  const canonical=first.systemAi.tasks.find(x=>x.taskType==='bottleneck-repair');
+  assert.ok(canonical);
+
+  const secondRec={...firstRec,id:firstRec.id+'-second',status:'queued',createdAt:'2026-09-23T00:01:00Z',updatedAt:'2026-09-23T00:01:00Z'};
+  const second=dispatchRecovery({recoveryInput:{tasks:[secondRec]},systemAiQueueInput:first.systemAi});
+  const repairs=second.systemAi.tasks.filter(x=>x.taskType==='bottleneck-repair'&&x.status!=='cancelled');
+  assert.equal(repairs.length,1);
+  assert.equal(repairs[0].id,canonical.id);
+  assert.ok(repairs[0].evidence.includes('system-ai-producer-dedupe:REUSED_EXISTING_REPAIR'));
+  assert.ok(repairs[0].evidence.includes('recovery-queue:'+secondRec.id));
+  for(const id of ['sys-a','sys-b']){
+    const task=second.systemAi.tasks.find(x=>x.id===id);
+    assert.ok(task.dependencies.includes(canonical.id));
+    assert.equal(task.blocker,'shared-signature-canary-pending:'+canonical.id);
+    assert.equal(task.dependencies.includes('recovery-'+secondRec.id),false);
+  }
+  assert.equal(second.recovery.tasks[0].status,'dispatched');
+
+  const checkpointRec={...secondRec,id:firstRec.id+'-checkpoint',sourceMutationBaseline:'different-baseline',checkpoint:'different-baseline'};
+  const checkpoint=dispatchRecovery({recoveryInput:{tasks:[checkpointRec]},systemAiQueueInput:second.systemAi});
+  const checkpointRepairs=checkpoint.systemAi.tasks.filter(x=>x.taskType==='bottleneck-repair'&&x.status!=='cancelled');
+  assert.equal(checkpointRepairs.length,2);
+  assert.ok(checkpointRepairs.some(x=>x.id==='recovery-'+checkpointRec.id));
+});
+
 test('shared canary wait state never recursively creates another recovery',()=>{
   const result=escalateRecoveryCandidates({
     systemAiQueueInput:{tasks:[
