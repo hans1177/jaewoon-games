@@ -10926,7 +10926,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-23T11:03:31.956Z"
+      "updatedAt": "2026-09-23T11:04:32.398Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16756,7 +16756,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-23T11:03:31.976Z"
+      "updatedAt": "2026-09-23T11:04:32.424Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -18987,7 +18987,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T11:33:07.849Z",
-      "updatedAt": "2026-09-23T11:03:31.945Z"
+      "updatedAt": "2026-09-23T11:04:32.384Z"
     },
     {
       "id": "recovery-2620c437645bba6eaa8c",
@@ -19050,7 +19050,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T11:33:07.853Z",
-      "updatedAt": "2026-09-23T11:03:31.965Z"
+      "updatedAt": "2026-09-23T11:04:32.410Z"
     },
     {
       "id": "recovery-804b2acf67074bfd8b28",
@@ -19814,7 +19814,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-23T11:03:31.984Z"
+      "updatedAt": "2026-09-23T11:04:32.435Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118537,7 +118537,8 @@
         "tester-debug-occurrence-count:467",
         "tester-debug-occurrence-count:468",
         "tester-debug-occurrence-count:469",
-        "tester-debug-occurrence-count:470"
+        "tester-debug-occurrence-count:470",
+        "tester-debug-occurrence-count:471"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -118550,15 +118551,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 470,
+      "recurrenceCount": 471,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-23T11:03:32.229Z",
+      "updatedAt": "2026-09-23T11:04:32.740Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-23T11:03:32.229Z"
+        "recovery-dispatched-at:2026-09-23T11:04:32.740Z"
       ]
     },
     {
@@ -144011,6 +144012,53 @@
       "maxRetries": null,
       "createdAt": "2026-09-23T01:15:48.993Z",
       "updatedAt": "2026-09-23T01:16:10.058Z"
+    },
+    {
+      "id": "recovery-ticket-bug-2cfb0882ff23baaef682",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "tester-debug",
+      "sourceTaskId": "bug-2cfb0882ff23baaef682",
+      "gameId": "daechung-rpg",
+      "responsibleFiles": [],
+      "contextFiles": [],
+      "goal": null,
+      "relatedTaskIds": [],
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+      "blastRadius": "single-ticket",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "roblox-f0-source-preflight-failed",
+        "{\"sourceRevision\":\"1ea3c220a750c1ccb30807c1a7a23fb0c159d675\",\"buildSourceRevision\":\"1ea3c220a750c1ccb30807c1a7a23fb0c159d675\",\"artifactIdentity\":\"sha256:aecf65f26e9853eb74956169b1faa1820d5ae3260c40b3287c97eb28bb8c0f13\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}",
+        "tester-debug-ticket:bug-2cfb0882ff23baaef682",
+        "tester-debug-category:PLATFORM",
+        "tester-debug-severity:HIGH",
+        "tester-debug-occurrence-count:1"
+      ],
+      "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "VIBE2_VIBE3",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-09-23T11:04:31.999Z",
+      "updatedAt": "2026-09-23T11:04:32.740Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-09-23T11:04:32.740Z"
+      ]
     }
   ]
 }

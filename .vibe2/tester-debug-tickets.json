@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-23T11:03:31.591Z",
+  "updatedAt": "2026-09-23T11:04:31.933Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -22,8 +22,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T22:30:14.467Z",
-      "updatedAt": "2026-09-23T11:03:31.589Z",
-      "occurrenceCount": 472
+      "updatedAt": "2026-09-23T11:04:31.930Z",
+      "occurrenceCount": 473
     },
     {
       "id": "bug-7d114ff3812bf7516f00",
@@ -46,8 +46,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-22T23:20:59.209Z",
-      "updatedAt": "2026-09-23T11:03:31.589Z",
-      "occurrenceCount": 470
+      "updatedAt": "2026-09-23T11:04:31.930Z",
+      "occurrenceCount": 471
     },
     {
       "id": "bug-183929560b1819ca79e1",
@@ -68,8 +68,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T11:03:31.589Z",
-      "occurrenceCount": 34
+      "updatedAt": "2026-09-23T11:04:31.930Z",
+      "occurrenceCount": 35
     },
     {
       "id": "bug-06912c56eec73d463251",
@@ -90,8 +90,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T11:03:31.589Z",
-      "occurrenceCount": 34
+      "updatedAt": "2026-09-23T11:04:31.930Z",
+      "occurrenceCount": 35
     },
     {
       "id": "bug-f1f45de215a280a3885b",
@@ -112,8 +112,30 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-23T11:03:31.589Z",
-      "occurrenceCount": 34
+      "updatedAt": "2026-09-23T11:04:31.930Z",
+      "occurrenceCount": 35
+    },
+    {
+      "id": "bug-2cfb0882ff23baaef682",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-f0-source-preflight-failed",
+        "{\"sourceRevision\":\"1ea3c220a750c1ccb30807c1a7a23fb0c159d675\",\"buildSourceRevision\":\"1ea3c220a750c1ccb30807c1a7a23fb0c159d675\",\"artifactIdentity\":\"sha256:aecf65f26e9853eb74956169b1faa1820d5ae3260c40b3287c97eb28bb8c0f13\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "F0_SOURCE_INTEGRITY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "status": "OPEN",
+      "createdAt": "2026-09-23T11:04:31.930Z",
+      "updatedAt": "2026-09-23T11:04:31.930Z",
+      "occurrenceCount": 1
     }
   ]
 }
