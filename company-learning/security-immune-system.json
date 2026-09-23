@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -349,7 +349,24 @@
       "stableRepairWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
       "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
       "supersededRepairDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
-      "supersededRepairDependencyRewireAuthorityExpansion": false
+      "supersededRepairDependencyRewireAuthorityExpansion": false,
+      "producerRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
+      "producerRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
+      "producerRepairReuseAuthorityExpansion": false
+    },
+    "producerSideRepairReuse": {
+      "binding": "tools/company-recovery-dispatch.mjs",
+      "identity": "tools/company-system-ai-queue.mjs::systemAiRepairWorkIdentity",
+      "exactIdentityRequired": true,
+      "nonterminalOnly": true,
+      "sourceMutationBaselinePreserved": true,
+      "knownGoodRevisionPreserved": true,
+      "writableScopeExpansionForbidden": true,
+      "centralPolicyWriteForbidden": true,
+      "securityRecoveryTargetedPathUnaffected": true,
+      "authorityExpansion": false,
+      "revision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
+      "testRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f"
     }
   }
 }
