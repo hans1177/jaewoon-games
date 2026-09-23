@@ -410,6 +410,12 @@ function evaluateExperienceMemory(task = {}, designReview) {
 export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {} } = {}) {
   const designer = evaluateDesigner(task);
   const constraints = evaluateConstraints(task);
+  const stability = evaluateStabilization(task);
+  const health = evaluateDesignHealth(task,designer);
+  const blueprint = evaluateBlueprint(task,designer);
+  const creativeChallenge = evaluateCreativeChallenge(task,designer);
+  const diversity = evaluateContentDiversity(task,designer);
+  const inspiration = evaluateLiteraryInspiration(task);
   const critic = evaluateCritic(task, designer);
   const narrative = evaluateNarrativeContract(task);
   const causality = evaluateCausality(task);
@@ -417,7 +423,8 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const simulation = evaluateSimulation(task);
   const hardBlockers = unique([
     ...(designer.status === 'BLOCKED' ? designer.issues : []),
-    ...(constraints.blockers || [])
+    ...(constraints.blockers || []),
+    ...(task.speculativeDesignChange===true&&!stability.speculativeExpansionAllowed?['STABILITY_REPAIR_REQUIRED_BEFORE_SPECULATIVE_EXPANSION']:[])
   ]);
   const implementation = stage('IMPLEMENTATION', hardBlockers.length ? 'BLOCKED' : 'READY', {
     allowed:hardBlockers.length === 0,
@@ -434,35 +441,42 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
 
   const advisory = unique([
     ...stages.flatMap((row) => row.issues || row.warnings || []).filter(Boolean),
-    ...(narrative.issues || [])
+    ...(blueprint.issues||[]),...(creativeChallenge.issues||[]),...(diversity.issues||[]),...(inspiration.issues||[]),...(narrative.issues || [])
   ]);
-  const constraintText = (constraints.constraints || []).map((row) => `${row.id}: ${row.rule}`).join(' | ');
+  const constraintText = (constraints.constraints || []).map((row) => row.id+': '+row.rule).join(' | ');
   const guidance = [
     '[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]',
-    '설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.',
-    constraintText ? `보존 제약: ${constraintText}` : '명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.',
-    critic.issues.length ? `비평 경고: ${critic.issues.join(', ')}` : '비평 게이트: 명시적 구조 문제 없음.',
-    causality.status === 'UNVERIFIED' ? '인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.' : `인과 그래프 상태: ${causality.status}`,
-    narrative.required ? `서사 계약: ${narrative.status}. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.` : '서사 계약: 필요 없음.',
+    '설계 진화 루프: '+DESIGN_EVOLUTION_LOOP.join(' -> ')+'. PASS는 현재 checkpoint이며 총 revision 상한이 아니다.',
+    '구체적인 진행 막힘·세이브·입력·동기화·회귀·반복 노출 버그를 창작 확장보다 먼저 안정화한다. 단, 설계 자체가 원인이면 근본 redesign을 우선할 수 있다.',
+    designer.ownerRepeatCount>=2?'같은 owner 요청이 반복되었다. 이전 시도가 충분하지 않았다는 새 사건으로 취급하고 같은 해법을 기계적으로 반복하지 말며 최소 Plan A/Plan B를 다시 비교한다.':'owner 반복 지시가 없더라도 검증된 플레이/QA 설계 기회는 다음 revision 신호가 될 수 있다.',
+    '기본 컨셉과 player fantasy는 기준점이지 감옥이 아니다. 대담한 실험·장르 혼합·장르 전환은 허용하되 조용히 바꾸지 말고 정체성 보존안과 비교하고 증거로 검증한다.',
+    blueprint.required?'상세 밑그림: '+blueprint.status+'. 최소 Plan A/Plan B와 맵·콘텐츠·진행·구현·검증 섹션을 비교한다.':'상세 밑그림: 현재 작업에는 material redesign 의무 없음.',
+    diversity.issues.length?'콘텐츠 다양성 경고: '+diversity.issues.join(', '):'콘텐츠 다양성: 현재 제공 근거에서 단조 반복 신호 없음.',
+    inspiration.inspirations.length?'오마주/참조: '+inspiration.status+'. 공공영역 직접 모티프 또는 추상 구조·테마·원형만 재해석하고 보호 표현/현대 캐릭터/문장/작가 스타일은 복제하지 않는다.':'오마주/참조: 필요 시 고전·신화·공공영역 또는 추상적 구조를 독자적으로 재해석한다.',
+    '설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 또는 승인된 design revision 없이 바꾸지 않는다.',
+    constraintText ? '보존 제약: '+constraintText : '명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.',
+    critic.issues.length ? '비평 경고: '+critic.issues.join(', ') : '비평 게이트: 명시적 구조 문제 없음.',
+    causality.status === 'UNVERIFIED' ? '인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 사실인 것처럼 invent하지 않는다.' : '인과 그래프 상태: '+causality.status,
+    narrative.required ? '서사 계약: '+narrative.status+'. 인물별 말투·관계·감정·지식범위·숨은 의도·장면 목적·복선/회수·반전의 공정성을 검증한다.' : '서사 계약: 필요 없음.',
     simulation.status === 'UNVERIFIED' ? '수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.' : '수치 시뮬레이션: 제공된 입력만 계산했다.',
-    '구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.'
+    '구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 긍정 승격 금지.'
   ].join('\n');
 
   return freeze({
-    version:1,
-    required:true,
-    pipeline:DESIGN_INTELLIGENCE_STAGES,
-    stages,
-    narrative,
+    version:2,required:true,pipeline:DESIGN_INTELLIGENCE_STAGES,
+    evolution:freeze({
+      loop:DESIGN_EVOLUTION_LOOP,totalRevisionLimit:null,passIsCheckpointNotTerminal:true,
+      stability,health,blueprint,creativeChallenge,diversity,inspiration,
+      ownerRequest:freeze({eventId:designer.ownerEventId,repeatCount:designer.ownerRepeatCount,repeatedIntentInsufficient:designer.repeatedOwnerIntentInsufficient,semanticTextDeduplicationAllowed:false})
+    }),
+    stages,narrative,
     implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers }),
-    advisory:freezeList(advisory),
-    guidance,
+    advisory:freezeList(advisory),guidance,
     planTarget:clean(plan?.target || task?.target),
     priorExperienceCount:Array.isArray(experience?.records) ? experience.records.length : 0,
     authorityExpanded:false
   });
 }
-
 export function validateDesignAwareExperience(review = {}) {
   if (review.designIntelligenceRequired !== true) return freeze({ valid:true, issues:freezeList([]) });
   const issues = [];
