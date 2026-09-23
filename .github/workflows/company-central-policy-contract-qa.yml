@@ -39,6 +39,8 @@ on:
       - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/homepage-test-candidate-sync.mjs'
+      - 'tools/company-status-sync.mjs'
+      - 'qa/company-status-sync-direct-native.test.mjs'
       - 'qa/company-direct-native-policy-contract.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
@@ -127,6 +129,8 @@ on:
       - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/homepage-test-candidate-sync.mjs'
+      - 'tools/company-status-sync.mjs'
+      - 'qa/company-status-sync-direct-native.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - 'qa/vibe2-post-release-focus.test.mjs'
@@ -213,6 +217,8 @@ jobs:
           node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/vibe2-post-release-focus.mjs
           node --check tools/homepage-test-candidate-sync.mjs
+          node --check tools/company-status-sync.mjs
+          node --test qa/company-status-sync-direct-native.test.mjs
           node --check tools/vibe2-asset-production-plan.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check assets/vibe-art-pipeline.js
