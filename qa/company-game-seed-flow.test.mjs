@@ -256,7 +256,7 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(gate,/GAME_SEED_REQUIRED_FIELDS/);
   assert.doesNotMatch(gate,/directive\.gameSeed\?\.requiredFields/);
 
-  assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=3/);
+  assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
   assert.match(design,/DESIGN_CHECKPOINT_MIGRATED=\$\{previousContractVersion===2\?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'\}/);
   assert.match(design,/PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY/);
   assert.match(design,/engineDigest/);
