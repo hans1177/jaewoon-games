@@ -1,5 +1,5 @@
 {
-  "version": 307,
+  "version": 308,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -4784,12 +4784,12 @@
           "name": "MULTIPLAYER_FOUNDATION",
           "alwaysRequired": false,
           "checks": [
-            "MINIMUM_REQUIRED_PARTICIPANTS",
-            "JOIN_LEAVE",
-            "AUTHORITATIVE_STATE_REPLICATION",
-            "OBSERVED_MULTI_CLIENT_SYNC"
+            "MINIMUM_TWO_PARTICIPANTS_SAME_SERVER",
+            "ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST",
+            "CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT"
           ],
-          "evidenceAuthority": "ACTUAL_MULTI_CLIENT_PLATFORM_RUNTIME"
+          "evidenceAuthority": "ACTUAL_TWO_CLIENT_PLATFORM_RUNTIME_PLUS_STATIC_SERVER_CLIENT_SYNC_CONTRACT",
+          "releaseGateMode": "TWO_CLIENT_ONE_SYNC"
         },
         {
           "id": "F8",
@@ -4916,6 +4916,24 @@
           "validRemoteReceiptAloneIsInsufficient": true,
           "failedOrRejectedActionMayNotEmitCoreLoopReady": true,
           "successfulGameStateTransitionRequired": true
+        },
+        "multiplayerReleaseProof": {
+          "version": 1,
+          "mode": "TWO_CLIENT_ONE_SYNC",
+          "minimumParticipants": 2,
+          "sameServerRequired": true,
+          "actualRuntimeCheckpoint": "MULTIPLAYER_SYNC",
+          "participantCountField": "participantCount",
+          "minimumParticipantCount": 2,
+          "authoritativeBroadcastEvent": "MULTIPLAYER_SYNC",
+          "serverBroadcastContract": "FIRE_ALL_CLIENTS_ONE_SHARED_SNAPSHOT",
+          "clientReceiveContract": "ON_CLIENT_EVENT_MULTIPLAYER_SYNC_HANDLER",
+          "singleSyncObservationSufficient": true,
+          "longCombatOrDungeonRunRequired": false,
+          "leaveRejoinLateJoinRequiredForRoutineReleaseGate": false,
+          "exactCandidateBindingStillRequired": true,
+          "serverAuthorityAndRemoteValidationStillRequired": true,
+          "multiplayerRepairFlowMayRequireExtendedLifecycle": true
         }
       },
       "releaseGate": {
@@ -4986,6 +5004,13 @@
           "missingScopeAction": "METADATA_REPAIR_REQUIRED_WITHOUT_INVALIDATING_PUBLISHED_CANDIDATE_OR_RUNTIME_EVIDENCE",
           "candidateDeploymentJobMustNotFailAfterSuccessfulExactPublishForMetadataOnlyFailure": true,
           "metadataFailureMustRemainObservable": true
+        },
+        "f9Checkout": {
+          "mainFetchDepth": 1,
+          "runtimeFetchDepth": 1,
+          "fullHistoryRequired": false,
+          "exactCandidateBindingPreserved": true,
+          "centralPolicySharedContextValidationPreserved": true
         }
       },
       "failureRouting": {
@@ -6316,6 +6341,24 @@
       ],
       "activeUnityWebRole": "VALIDATION_SURFACE_ONLY",
       "nativeDevelopmentAuthority": "directNativeDualPlatformDevelopment"
+    },
+    "robloxSimpleMultiplayerAndShallowF920260924": {
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "reason": "SIMPLIFY_ROUTINE_ROBLOX_MULTIPLAYER_RELEASE_CHECK_TO_TWO_SAME_SERVER_CLIENTS_AND_ONE_AUTHORITATIVE_SHARED_SYNC_WHILE_REDUCING_F9_GIT_HISTORY_DOWNLOAD",
+      "implementation": [
+        "RUNTIME_MULTIPLAYER_CHECKPOINT_REQUIRES_PARTICIPANT_COUNT_GTE_2",
+        "SOURCE_PREFLIGHT_BINDS_MULTIPLAYER_SYNC_FIRE_ALL_CLIENTS_AND_CLIENT_HANDLER",
+        "F9_MAIN_AND_RUNTIME_CHECKOUT_FETCH_DEPTH_1"
+      ],
+      "preserved": [
+        "EXACT_SOURCE_ARTIFACT_UNIVERSE_PLACE_VERSION_BINDING",
+        "SERVER_AUTHORITY",
+        "REMOTE_VALIDATION",
+        "CENTRAL_SHARED_CONTEXT_VALIDATION",
+        "EXTENDED_MULTIPLAYER_REPAIR_QA_WHEN_CAUSALLY_REQUIRED"
+      ],
+      "noLongCombatOrDungeonRunForRoutineMultiplayerReleaseCheck": true,
+      "centralPolicyAndImplementationSynchronized": true
     }
   },
   "vibeExecutionLaneContract": {

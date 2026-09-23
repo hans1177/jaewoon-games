@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
-const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21});
+const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
 const good={gameId:'cozy-island',placeId:116850096561713,placeVersion:21,requirements:{saveEnabled:true,multiplayerRequired:true},checkpoints:Object.fromEntries(names.map((x,index)=>[x,checkpoint(x,index+1)]))};
 
@@ -55,6 +55,47 @@ test('runtime acceptance stays pending until actual multiplayer synchronization 
  const broken=structuredClone(good);delete broken.checkpoints.MULTIPLAYER_SYNC;
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:broken,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
  assert.equal(r.runtimeFoundationPassed,true);assert.equal(r.runtimeAcceptancePassed,false);assert.equal(r.f7MultiplayerFoundationPassed,false);
+});
+
+
+test('multiplayer foundation only needs one exact two-player shared sync observation',()=>{
+ const onePlayer=structuredClone(good);onePlayer.checkpoints.MULTIPLAYER_SYNC.participantCount=1;
+ const blocked=validateRobloxRuntimeFoundationEvidence({sentinel:onePlayer,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
+ assert.equal(blocked.f7MultiplayerFoundationPassed,false);
+ assert.equal(blocked.runtimeAcceptancePassed,false);
+ const twoPlayers=structuredClone(good);twoPlayers.checkpoints.MULTIPLAYER_SYNC.participantCount=2;
+ const passed=validateRobloxRuntimeFoundationEvidence({sentinel:twoPlayers,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
+ assert.equal(passed.f7MultiplayerFoundationPassed,true);
+ assert.equal(passed.runtimeAcceptancePassed,true);
+});
+
+test('multiplayer source preflight proves one authoritative shared snapshot broadcast contract',()=>{
+ const tool=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
+ assert.match(tool,/FireAllClients/);
+ assert.match(tool,/MULTIPLAYER_SYNC/);
+ assert.match(tool,/ParticipantCount/);
+ assert.match(tool,/OnClientEvent:Connect/);
+});
+
+test('F9 final review uses shallow checkout instead of full git history',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+ assert.match(workflow,/Checkout current canonical implementation[\s\S]*?fetch-depth:\s*1/);
+ assert.match(workflow,/Checkout canonical runtime state[\s\S]*?fetch-depth:\s*1/);
+});
+
+test('central policy matches two-client one-sync Roblox release proof',()=>{
+ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
+ const f7=stack.layers.find(layer=>layer.id==='F7');
+ assert.equal(f7.releaseGateMode,'TWO_CLIENT_ONE_SYNC');
+ assert.deepEqual(f7.checks,['MINIMUM_TWO_PARTICIPANTS_SAME_SERVER','ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST','CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT']);
+ const proof=stack.robloxContract.multiplayerReleaseProof;
+ assert.equal(proof.minimumParticipants,2);
+ assert.equal(proof.sameServerRequired,true);
+ assert.equal(proof.actualRuntimeCheckpoint,'MULTIPLAYER_SYNC');
+ assert.equal(proof.singleSyncObservationSufficient,true);
+ assert.equal(proof.longCombatOrDungeonRunRequired,false);
 });
 
 test('runtime acceptance stays pending until actual gameplay core-loop action occurs',()=>{

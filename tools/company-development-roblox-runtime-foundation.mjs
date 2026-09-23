@@ -18,13 +18,15 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   const exactVersion=Number(sentinel.placeVersion)===Number(versionNumber)&&Number(versionNumber)>0;
   const checkpointPass=Object.fromEntries(required.map(name=>{
     const row=checkpoints[name];
-    return[name,Boolean(
+    const exactRuntimeRow=Boolean(
       row
       &&Number(row.at)>0
       &&(!clean(gameId)||clean(row.gameId)===clean(gameId))
       &&clean(row.placeId)===clean(placeId)
       &&Number(row.placeVersion)===Number(versionNumber)
-    )];
+    );
+    const multiplayerObservation=name!=='MULTIPLAYER_SYNC'||Number(row?.participantCount)>=2;
+    return[name,exactRuntimeRow&&multiplayerObservation];
   }));
   const checkpointOrderPassed=foundationCausalOrder.every((name,index)=>{
     const sequence=Number(checkpoints[name]?.sequence);
