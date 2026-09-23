@@ -677,8 +677,12 @@ local function makeVillage()
   ppart(f,"PortalArchR"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(11,10,0),z.Color,Enum.Material.Slate)
   label(pad,i.." · "..z.Name,z.Color,48)
   prompt(pad,z.Name,"포탈 입장").Triggered:Connect(function(p)
-   p:SetAttribute("CurrentZone",z.Id);p:SetAttribute("InCombat",false);lastCombat[p]=0
-   teleportPlayer(p,z.Center+Vector3.new(0,0,170));msg(p,z.Name.." 입장")
+   if z.Id==1 and meadowPlayersInside()==0 and generateMeadowRun then
+    local seed=(os.time()%1000000)*100+n(p,"RoomCode",1)+meadowRunCounter*13;generateMeadowRun(seed)
+   end
+   p:SetAttribute("CurrentZone",z.Id);p:SetAttribute("InCombat",false);p:SetAttribute("Blocking",false);lastCombat[p]=0
+   if z.Id==1 then p:SetAttribute("CurrentRunSeed",meadowRunState.seed)else p:SetAttribute("CurrentRunSeed",0)end
+   teleportPlayer(p,z.Center+Vector3.new(0,0,170));msg(p,z.Name.." 입장"..(z.Id==1 and(" · RUN "..tostring(meadowRunState.seed))or""))
    if n(p,"PartyCount",0)>0 then p:SetAttribute("PartyHuntActive",true);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0)end
   end)
  end
@@ -1015,15 +1019,22 @@ local function partyKill(p,contribution)
 end
 local function killEnemy(p,e,contribution)
  if e.hp>0 then return end
- local z=portalDef(e.zone);if e.part.Parent then e.part:Destroy()end
+ local z=portalDef(e.zone);local display=e.def and e.def.Name or(e.boss and z.Boss and z.Boss.Name or z.Enemy)
+ if e.part.Parent then e.part:Destroy()end
  local classId=tostring(p:GetAttribute("ClassId")or"NONE")
  if classId=="SOUL"then
   p:SetAttribute("SoulCharge",math.min(5,n(p,"SoulCharge",0)+1))
   if p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end
  end
  p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2)
- msg(p,(e.boss and"보스 격파 · "or"처치 · ")..(e.boss and z.Boss.Name or z.Enemy));feedback(p,e.boss and"BOSS_KILL"or"KILL")
- task.delay(e.boss and 18 or 8,function()if world and world.Parent then spawnEnemy(z,e.boss,math.random(1,80))end end)
+ if e.hiddenBoss then
+  workspace:SetAttribute("MeadowHiddenBossDefeated",true);msg(p,"히든 보스 격파 · "..display);feedback(p,"HIDDEN_BOSS_KILL")
+ else
+  msg(p,(e.boss and"보스 격파 · "or"처치 · ")..display);feedback(p,e.boss and"BOSS_KILL"or"KILL")
+  task.delay(e.boss and 18 or 8,function()
+   if world and world.Parent then spawnEnemy(z,e.boss,math.random(1,80),e.def,nil,false)end
+  end)
+ end
 end
 local function playerAttack(p,skill)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=classDef(classId)
@@ -1063,7 +1074,7 @@ local function playerAttack(p,skill)
    end
   end
  end
- e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));lastCombat[p]=now;p:SetAttribute("InCombat",true)
+ e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));staggerEnemy(e,skill and 18 or 8,now);lastCombat[p]=now;p:SetAttribute("InCombat",true)
  pulseWeaponTrail(p.Character);combatFlash(e.part.Position,cd.Color,skill and 1.7 or 1.15);feedback(p,skill and"SKILL"or"ATTACK")
  if e.hp<=0 then killEnemy(p,e,skill and 3 or 2)end
  local stamp=lastCombat[p];task.delay(C.CombatLockSeconds,function()if p.Parent and lastCombat[p]==stamp then p:SetAttribute("InCombat",false)end end)
@@ -1137,7 +1148,11 @@ local function buildWorld()
  world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
  Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
  makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
- for _,z in ipairs(C.Portals)do for i=1,10 do spawnEnemy(z,false,i)end;if z.Boss then spawnEnemy(z,true,1)end end
+ for _,z in ipairs(C.Portals)do
+  if z.Id~=1 then for i=1,10 do spawnEnemy(z,false,i)end end
+  if z.Boss then spawnEnemy(z,true,1)end
+ end
+ if generateMeadowRun then generateMeadowRun(100000+game.PlaceVersion*31)end
  workspace:SetAttribute("WorldArtPass","RPG_FANTASY_PORTAL_WORLD_V5");workspace:SetAttribute("CharacterArtDirection","RPG_STYLIZED_TOY_FANTASY_R15");workspace:SetAttribute("MedievalAssetBase",tostring(C.MedievalCharacterAssetId))
  foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
@@ -1178,10 +1193,13 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.ADVANCE_A then accepted=chooseAdvancement(p,"A")
  elseif a==C.Actions.ADVANCE_B then accepted=chooseAdvancement(p,"B")
  elseif a==C.Actions.START_ADVANCEMENT_TRIAL then startAdvancementTrial(p);accepted=true
- elseif a==C.Actions.ATTACK then playerAttack(p,false);accepted=true
- elseif a==C.Actions.SKILL then playerAttack(p,true);accepted=true
+ elseif a==C.Actions.BLOCK_START then
+  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>0 then p:SetAttribute("Blocking",true);p:SetAttribute("BlockStartedAt",now);feedback(p,"BLOCK_READY");accepted=true end
+ elseif a==C.Actions.BLOCK_END then p:SetAttribute("Blocking",false);accepted=true
+ elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);playerAttack(p,false);accepted=true
+ elseif a==C.Actions.SKILL then p:SetAttribute("Blocking",false);playerAttack(p,true);accepted=true
  elseif a==C.Actions.DODGE then
-  local r=root(p);if r then
+  p:SetAttribute("Blocking",false);local r=root(p);if r then
    local classId=tostring(p:GetAttribute("ClassId")or"NONE");local adv=tostring(p:GetAttribute("AdvancementId")or"")
    local evade=adv=="MIRAGE_TRACKER"and .75 or .45;p:SetAttribute("EvasionUntil",now+evade)
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.2)end
@@ -1270,17 +1288,10 @@ RunService.Heartbeat:Connect(function(dt)
    end
    if target then
     local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
-    if d and d.Magnitude>4 then e.part.CFrame=e.part.CFrame+ d.Unit*math.min(d.Magnitude,(e.boss and 9 or 7)*dt)end
-    if tr and(tr.Position-e.part.Position).Magnitude<=5.5 and now-e.lastAttack>1.15 then
-     e.lastAttack=now;local h=hum(target)
-     if h then
-      local amount=e.damage
-      if n(target,"EvasionUntil",0)>now then amount=0;feedback(target,"DODGE")
-      elseif n(target,"GuardUntil",0)>now then amount*=.55;feedback(target,"GUARD")end
-      if amount>0 then h:TakeDamage(amount)end
-     end
-     lastCombat[target]=now;target:SetAttribute("InCombat",true)
-    end
+    local attackDef=e.def and e.def.Attack;local engage=(attackDef and attackDef.Range)or(e.def and e.def.Attacks and 18)or 5.5
+    local cooldown=(attackDef and attackDef.Cooldown)or(e.boss and 1.55 or 1.15)
+    if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end
+    if tr and(tr.Position-e.part.Position).Magnitude<=engage and now-e.lastAttack>cooldown and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
    else
     local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
     if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
@@ -1330,6 +1341,9 @@ RunService.Heartbeat:Connect(function(dt)
  for _,p in ipairs(Players:GetPlayers())do
   local zone=n(p,"CurrentZone",0)
   if zone==0 then local h=hum(p);if h and h.Health<h.MaxHealth then h.Health=math.min(h.MaxHealth,h.Health+25*dt)end end
+  if p:GetAttribute("Blocking")~=true and now>=n(p,"GuardBrokenUntil",0)then
+   local guard=n(p,"Guard",C.GuardMax);if guard<C.GuardMax then p:SetAttribute("Guard",math.min(C.GuardMax,guard+C.GuardRegenPerSecond*dt))end
+  end
   if p:GetAttribute("InCombat")==true and now-(lastCombat[p]or 0)>=C.CombatLockSeconds then p:SetAttribute("InCombat",false)end
  end
  for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end
