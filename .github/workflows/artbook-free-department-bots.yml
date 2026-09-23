@@ -40,6 +40,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 env:
   OLLAMA_HOST: 127.0.0.1:11434
@@ -50,6 +51,8 @@ jobs:
     outputs:
       run: ${{ steps.targets.outputs.run }}
       targets: ${{ steps.targets.outputs.targets }}
+      native_development_required: ${{ steps.targets.outputs.native_development_required }}
+      native_development_ids: ${{ steps.targets.outputs.native_development_ids }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -165,12 +168,41 @@ jobs:
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
           const get=t=>parts.find(x=>x.type===t)?.value||'';
           const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=selected.map(row=>({game_id:row.game.id,game_name:row.game.name,production_class:row.productionClass,source:row.source,date}));
+          const nativeDevelopment=selected.filter(row=>row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED);
+          const productionSelected=selected.filter(row=>row.productionClass!==PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED);
+          const targets=productionSelected.map(row=>({game_id:row.game.id,game_name:row.game.name,production_class:row.productionClass,source:row.source,date}));
           console.log(`run=${targets.length>0?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
+          console.log(`native_development_required=${nativeDevelopment.length>0?'true':'false'}`);
+          console.log(`native_development_ids=${nativeDevelopment.map(row=>row.game.id).join(',')}`);
           console.error(`PRODUCTION_TARGET_COUNT=${targets.length}`);
-          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.production_class}:${x.source}`).join(',')}`);
+          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.production_class}:${x.source}`).join(',')||'NONE'}`);
+          console.error(`NATIVE_DEVELOPMENT_TARGETS=${nativeDevelopment.map(row=>row.game.id).join(',')||'NONE'}`);
           NODE
+
+  dispatch-native-development:
+    needs: resolve-production-targets
+    if: needs.resolve-production-targets.outputs.native_development_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch canonical direct-native development once
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NATIVE_DEVELOPMENT_IDS: ${{ needs.resolve-production-targets.outputs.native_development_ids }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          echo "DEPARTMENT_NATIVE_DEVELOPMENT_IDS=$NATIVE_DEVELOPMENT_IDS"
+          echo "DEPARTMENT_NATIVE_ACTIVE_RUNS=$active"
+          if [ "$active" = '0' ]; then
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DEPARTMENT_NATIVE_DEVELOPMENT_DISPATCH=YES'
+          else
+            echo 'DEPARTMENT_NATIVE_DEVELOPMENT_DISPATCH=SKIP_ACTIVE_RUNTIME'
+          fi
+          echo 'DEPARTMENT_NATIVE_DEVELOPMENT_OWNER=company-development-confirmed-runtime.yml'
 
   production-cycle:
     needs: resolve-production-targets
