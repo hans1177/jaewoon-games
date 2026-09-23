@@ -173,6 +173,9 @@ jobs:
             .filter(row=>String(row?.status||'').trim().toUpperCase()==='ACTIVE')
             .map(row=>String(row?.gameId||'').trim())
             .filter(Boolean));
+          const activeOwnerRequestFor=seed=>(ownerReset.requests||[]).find(row=>
+            String(row?.status||'').trim().toUpperCase()==='ACTIVE'&&String(row?.gameId||'').trim()===String(seed?.gameId||'').trim()
+          )||null;
           const designReviewEligible=seed=>{
             const status=String(seed?.status||'').trim().toUpperCase();
             if(['DISCARDED','REMOVED'].includes(status))return false;
@@ -199,7 +202,12 @@ jobs:
                   if(!evidenceAt&&date<=resetDate)continue;
                 }
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
-                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0)return{date,evidenceAt,review,status};
+                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
+                  let ownerDesignEventId=null;
+                  const revisedPath=path.join(base,'design-revised.json');
+                  if(fs.existsSync(revisedPath)){try{ownerDesignEventId=String(JSON.parse(fs.readFileSync(revisedPath,'utf8'))?.ownerDesignEventId||'').trim()||null;}catch{}}
+                  return{date,evidenceAt,review,status,ownerDesignEventId};
+                }
               }
             }catch{}
             return null;
@@ -212,7 +220,11 @@ jobs:
             const pass=latestStrictPassFor(seed);
             if(!pass)return{due:true,reason:'STRICT_PASS_MISSING',baselineReviewAt:0};
             const baselineReviewAt=Number(pass.evidenceAt||0);
+            const ownerRequest=activeOwnerRequestFor(seed);
+            const currentOwnerEventId=String(ownerRequest?.revision||seed?.ownerRequestInstanceId||seed?.ownerDirectiveRevision||seed?.ownerResetRevision||'').trim();
+            if(currentOwnerEventId&&currentOwnerEventId!==String(pass.ownerDesignEventId||''))return{due:true,reason:'NEW_OWNER_EVENT',baselineReviewAt};
             const explicitSignalTimes=[
+              Date.parse(String(ownerRequest?.updatedAt||ownerRequest?.requestedAt||ownerReset?.requestedAt||''))||0,
               Date.parse(String(seed?.ownerRequestAt||''))||0,
               Date.parse(String(seed?.ownerDirectiveAt||''))||0,
               Date.parse(String(seed?.ownerDesignRevisionAt||''))||0,
