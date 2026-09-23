@@ -1056,6 +1056,15 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
   writeJson(path.join(base,'design-pre-gate.json'),{version:3,gameId,date,attempt:repairAttempt,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate,history:preGateHistory.map(row=>({totalScore:row.totalScore,hardFailures:row.hardFailures,criticalAxisFailures:row.criticalAxisFailures}))});
   persistDesignCheckpoint();
 }
+const designSemanticText=JSON.stringify({
+  identity:designDraft.identity,playerFantasy:designDraft.playerFantasy,coreFun:designDraft.coreFun,
+  coreLoop:designDraft.coreLoop,signatureSystems:designDraft.signatureSystems,contentExpansionPlan:designDraft.contentExpansionPlan
+}).toLowerCase();
+const mapVarietyRequired=/(explor|map|world|region|travel|travers|dungeon|forest|island|village|탐험|맵|월드|지역|이동|던전|숲|섬|마을)/i.test(designSemanticText);
+const enemyVarietyRequired=/(combat|enemy|monster|boss|fight|wave|defense|전투|적|몬스터|보스|웨이브|디펜스)/i.test(designSemanticText);
+const objectiveVarietyRequired=/(quest|objective|mission|progress|unlock|퀘스트|목표|미션|진행|해금)/i.test(designSemanticText);
+const narrativeSemanticRequired=/(story|narrative|quest|dialogue|character|npc|world.?building|스토리|서사|퀘스트|대화|대사|캐릭터|npc|세계관|복선|반전)/i.test(designSemanticText);
+const dialogueSemanticRequired=/(dialogue|character|npc|conversation|대화|대사|캐릭터|npc)/i.test(designSemanticText);
 const intelligenceTask={
   id:`design-cycle:${gameId}:${date}`,
   gameId,type:'design',goal:clean(designDraft.identity),designChange:true,materialDesignChange:true,
@@ -1075,11 +1084,12 @@ const intelligenceTask={
     enemies:Array.isArray(designDraft.contentVarietyPlan?.enemiesOrChallenges)?designDraft.contentVarietyPlan.enemiesOrChallenges:[],
     objectives:Array.isArray(designDraft.contentVarietyPlan?.objectives)?designDraft.contentVarietyPlan.objectives:[]
   },
+  mapVarietyRequired,enemyVarietyRequired,objectiveVarietyRequired,
   referenceHomage:designDraft.referenceHomagePlan||{},
   designIntegrity:designDraft.designIntegrityPlan||{},
-  narrative:designDraft.narrativeDialoguePlan?.applicable===true?designDraft.narrativeDialoguePlan:undefined,
-  narrativeRequired:designDraft.narrativeDialoguePlan?.applicable===true,
-  dialogueRequired:designDraft.narrativeDialoguePlan?.applicable===true&&(designDraft.narrativeDialoguePlan?.characterVoiceProfiles||[]).length>0,
+  narrative:(designDraft.narrativeDialoguePlan?.applicable===true||narrativeSemanticRequired)?designDraft.narrativeDialoguePlan:undefined,
+  narrativeRequired:designDraft.narrativeDialoguePlan?.applicable===true||narrativeSemanticRequired,
+  dialogueRequired:dialogueSemanticRequired,
   acceptanceCriteria:Array.isArray(designDraft.validationQuestions)?designDraft.validationQuestions:[],
   responsibleFiles:Array.isArray(designDraft.implementationTraceability)?designDraft.implementationTraceability.map(row=>clean(row?.responsibleSystem)).filter(Boolean):[],
   authorityExpanded:false
