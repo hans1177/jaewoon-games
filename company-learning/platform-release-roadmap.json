@@ -1,5 +1,5 @@
 {
-  "version": 306,
+  "version": 307,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -4158,7 +4158,24 @@
         },
         "foundationValidationRequired": true,
         "headlessOnlyEvidenceForbidden": true,
-        "actualRuntimeFoundationF1ThroughF4Required": true
+        "actualRuntimeFoundationF1ThroughF4Required": true,
+        "multiplayerVerification": {
+          "mode": "SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS_ALLOWED",
+          "appliesWhenGameDesignRequiresMultiplayer": true,
+          "minimumInternalEvidence": [
+            "F0_MULTIPLAYER_STATE_SYNC_CONTRACT_PASS",
+            "ACTUAL_RUNTIME_FOUNDATION_F1_THROUGH_F6_AND_F8_PASS",
+            "SERVER_CLIENT_BOUNDARY_PASS",
+            "SAVE_REJOIN_PASS_WHEN_SAVE_EXISTS",
+            "NO_CURRENT_CRITICAL_OR_HIGH_MULTIPLAYER_FAILURE"
+          ],
+          "actualTwoPlusClientPlatformObservationRequiredForInternalRelease": false,
+          "simplifiedPassMayClaimFullMultiplayerQa": false,
+          "simplifiedPassMayClaimPublicReleaseReady": false,
+          "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": true,
+          "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": true,
+          "multiplayerVerificationMayNotDelayOtherDevelopmentOrInternalPlaytest": true
+        }
       },
       "secondGate": {
         "role": "PUBLIC_EXPOSURE_HARD_GATE_ONLY",
@@ -15769,7 +15786,10 @@
               "missingOrFailedMultiplayerEvidenceBlocksPromotionAndReleaseWhenMultiplayerIsRequired": true,
               "independentQaAndRegressionMayContinueWhenFoundationCoreServicesAndCoreLoopPass": true,
               "recurringAutomationMustContinueRecheckingUntilVerified": true,
-              "userAssistanceRequired": false
+              "userAssistanceRequired": false,
+              "internalReleaseSimplifiedVerificationAllowed": true,
+              "fullPlatformMultiplayerEvidenceRequiredBeforePublicRelease": true,
+              "fullMultiplayerVerificationContinuesDuringInternalPlaytest": true
             }
           },
           "repairCompletion": {
