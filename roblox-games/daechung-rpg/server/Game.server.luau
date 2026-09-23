@@ -856,21 +856,134 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
  label(rootPart,boss and("BOSS · "..displayName)or displayName,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
  return rootPart
 end
-local function spawnEnemy(z,boss,index)
+local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)
  local parent=world:FindFirstChild("Zone"..z.Id);if not parent then return end
+ local spec=enemyDef or(boss and z.Boss or nil)
  local a=(index or math.random(1,100))/10*math.pi*2
  local radius=boss and 86 or 55+((index or math.random(1,8))%5)*24
- local spawn=z.Center+Vector3.new(math.cos(a)*radius,boss and 6 or 4,math.sin(a)*radius)
- if boss then spawn=z.Center+Vector3.new(0,6,-86)end
- local part=enemyModel(parent,z,spawn,boss)
- local hp=boss and z.Boss.HP or z.EnemyHP
- local e={part=part,zone=z.Id,hp=hp,max=hp,damage=boss and z.Boss.Damage or z.EnemyDamage,gold=boss and z.Boss.Gold or z.RewardGold,xp=boss and z.Boss.XP or z.RewardXP,spawn=spawn,boss=boss,lastAttack=0,target=nil}
- part:SetAttribute("HP",hp);part:SetAttribute("MaxHP",hp);part:SetAttribute("Zone",z.Id);table.insert(enemies,e);return e
+ local spawn=spawnOverride or(z.Center+Vector3.new(math.cos(a)*radius,boss and 6 or 4,math.sin(a)*radius))
+ if boss and not spawnOverride then spawn=z.Center+Vector3.new(0,6,-86)end
+ local part=enemyModel(parent,z,spawn,boss,spec)
+ local hp=spec and spec.HP or(boss and z.Boss and z.Boss.HP or z.EnemyHP)
+ local damage=spec and spec.Damage or(boss and z.Boss and z.Boss.Damage or z.EnemyDamage)
+ local gold=spec and spec.Gold or(boss and z.Boss and z.Boss.Gold or z.RewardGold)
+ local xp=spec and spec.XP or(boss and z.Boss and z.Boss.XP or z.RewardXP)
+ local stagger=spec and spec.Stagger or(boss and 120 or 40)
+ local e={part=part,zone=z.Id,hp=hp,max=hp,damage=damage,gold=gold,xp=xp,spawn=spawn,boss=boss==true,hiddenBoss=hiddenBoss==true,def=spec,lastAttack=0,target=nil,attackPending=false,attackIndex=0,stagger=stagger,staggerMax=stagger,stunnedUntil=0,speed=spec and spec.Speed or(boss and 9 or 7)}
+ part:SetAttribute("HP",hp);part:SetAttribute("MaxHP",hp);part:SetAttribute("Zone",z.Id);part:SetAttribute("EnemyId",spec and spec.Id or"DEFAULT");part:SetAttribute("Stagger",stagger);part:SetAttribute("StaggerMax",stagger);part:SetAttribute("HiddenBoss",hiddenBoss==true)
+ table.insert(enemies,e);return e
 end
 local function nearestEnemy(pos,zone,range)
  local best,bd=nil,range
  for _,e in ipairs(enemies)do if e.hp>0 and e.zone==zone and e.part.Parent then local d=(e.part.Position-pos).Magnitude;if d<bd then best=e;bd=d end end end
  return best
+end
+
+local function clearMeadowRunEnemies()
+ for i=#enemies,1,-1 do
+  local e=enemies[i]
+  if e.zone==1 then if e.part and e.part.Parent then e.part:Destroy()end;table.remove(enemies,i)end
+ end
+end
+local function meadowPlayersInside()
+ local count=0
+ for _,p in ipairs(Players:GetPlayers())do if n(p,"CurrentZone",0)==1 then count+=1 end end
+ return count
+end
+local function meadowPath(parent,a,b,index)
+ local delta=b-a;local distance=delta.Magnitude;if distance<1 then return end
+ local path=ppart(parent,"RunPath"..index,Vector3.new(13,1,distance),a:Lerp(b,.5)+Vector3.new(0,.55,0),Color3.fromRGB(112,104,82),Enum.Material.Ground)
+ path.CFrame=CFrame.lookAt(path.Position,b+Vector3.new(0,.55,0))
+end
+local function meadowRoom(parent,pos,kind,index,rng)
+ local color=kind=="ELITE"and Color3.fromRGB(115,104,83)or kind=="EVENT"and Color3.fromRGB(91,128,86)or kind=="TREASURE"and Color3.fromRGB(130,119,72)or Color3.fromRGB(77,126,69)
+ local pad=ppart(parent,"RunRoom_"..kind.."_"..index,Vector3.new(52,1.2,52),pos+Vector3.new(0,.7,0),color,kind=="TREASURE"and Enum.Material.Cobblestone or Enum.Material.Grass)
+ pad.CanCollide=true
+ for j=1,8 do
+  local a=j/8*math.pi*2+rng:NextNumber(-.2,.2);local rr=27+rng:NextNumber(2,9)
+  if j%3==0 then rock(parent,pos+Vector3.new(math.cos(a)*rr,1,math.sin(a)*rr),.75+rng:NextNumber(0,.45),Color3.fromRGB(104,102,88))
+  else tree(parent,pos+Vector3.new(math.cos(a)*rr,1,math.sin(a)*rr),.72+rng:NextNumber(0,.32))end
+ end
+ if kind=="EVENT"then
+  local altar=ppart(parent,"MemoryAltar",Vector3.new(5,2,5),pos+Vector3.new(0,2,0),Color3.fromRGB(111,170,122),Enum.Material.Slate);label(altar,"기억 제단",Color3.fromRGB(199,255,204),28)
+  prompt(altar,"기억 제단","조사").Triggered:Connect(function(p)
+   if n(p,"CurrentZone",0)~=1 then return end
+   local key="MeadowAltar_"..tostring(meadowRunState.seed);if p:GetAttribute(key)==true then msg(p,"이미 조사한 제단")return end
+   p:SetAttribute(key,true);p:SetAttribute("Gold",n(p,"Gold",0)+25);msg(p,"기억 파편 발견 · 골드 +25");feedback(p,"SECRET_FOUND")
+  end)
+ elseif kind=="TREASURE"then
+  local chest=ppart(parent,"HiddenChest",Vector3.new(5,3,4),pos+Vector3.new(0,2.2,0),Color3.fromRGB(143,101,55),Enum.Material.WoodPlanks);label(chest,"낡은 보물상자",Color3.fromRGB(255,224,143),24)
+  prompt(chest,"보물상자","열기").Triggered:Connect(function(p)
+   if n(p,"CurrentZone",0)~=1 then return end
+   local key="MeadowChest_"..tostring(meadowRunState.seed);if p:GetAttribute(key)==true then msg(p,"빈 상자")return end
+   p:SetAttribute(key,true);p:SetAttribute("Gold",n(p,"Gold",0)+40);msg(p,"숨은 보상 · 골드 +40");feedback(p,"SECRET_FOUND")
+  end)
+ end
+ return pad
+end
+generateMeadowRun=function(seed)
+ local z=portalDef(1);local zone=world and world:FindFirstChild("Zone1");if not z or not zone then return end
+ clearMeadowRunEnemies()
+ local old=zone:FindFirstChild("ProceduralRun");if old then old:Destroy()end
+ local f=Instance.new("Folder");f.Name="ProceduralRun";f.Parent=zone
+ meadowRunCounter+=1;seed=math.floor(tonumber(seed)or(100000+game.PlaceVersion*31+meadowRunCounter*97));local rng=Random.new(seed)
+ meadowRunState={seed=seed,hiddenBossId="",generated=true};workspace:SetAttribute("MeadowRunSeed",seed);workspace:SetAttribute("MeadowHiddenBossDefeated",false)
+ local roomKinds={"START","COMBAT","COMBAT","EVENT","ELITE","COMBAT","TREASURE","EXIT"}
+ for i=2,#roomKinds-1 do local j=rng:NextInteger(2,#roomKinds-1);roomKinds[i],roomKinds[j]=roomKinds[j],roomKinds[i]end
+ roomKinds[1]="START";roomKinds[#roomKinds]="EXIT"
+ local nodes={}
+ for i=1,#roomKinds do
+  local zOffset=155-(i-1)*(310/(#roomKinds-1))
+  local xOffset=(i==1 or i==#roomKinds)and 0 or rng:NextInteger(-115,115)
+  if i>1 and nodes[i-1]then xOffset=math.clamp(xOffset,nodes[i-1].X-z.Center.X-80,nodes[i-1].X-z.Center.X+80)end
+  nodes[i]=z.Center+Vector3.new(xOffset,1,zOffset)
+ end
+ for i=1,#nodes do
+  meadowRoom(f,nodes[i],roomKinds[i],i,rng)
+  if i>1 then meadowPath(f,nodes[i-1],nodes[i],i)end
+ end
+ local roster=z.EnemyRoster or{}
+ for i=2,#nodes-1 do
+  local kind=roomKinds[i]
+  if kind=="COMBAT"or kind=="ELITE"then
+   local count=kind=="ELITE"and 2 or rng:NextInteger(2,3)
+   for j=1,count do
+    local minIndex=kind=="ELITE"and math.max(1,#roster-3)or 1
+    local def=roster[rng:NextInteger(minIndex,#roster)]
+    local spawn=nodes[i]+Vector3.new(rng:NextInteger(-15,15),4,rng:NextInteger(-15,15))
+    local e=spawnEnemy(z,false,i*10+j,def,spawn,false)
+    if e and kind=="ELITE"then
+     e.hp=math.floor(e.hp*1.45);e.max=e.hp;e.damage*=1.2;e.staggerMax=math.floor(e.staggerMax*1.25);e.stagger=e.staggerMax
+     e.part:SetAttribute("HP",e.hp);e.part:SetAttribute("MaxHP",e.max);e.part:SetAttribute("Stagger",e.stagger);e.part:SetAttribute("Elite",true)
+    end
+   end
+  end
+ end
+ local secretChance=z.Procedural and z.Procedural.SecretChance or .8
+ if rng:NextNumber()<=secretChance then
+  local side=rng:NextNumber()<.5 and-1 or 1;local secretPos=z.Center+Vector3.new(side*rng:NextInteger(145,178),1,rng:NextInteger(-110,110))
+  local grove=ppart(f,"SecretGrove",Vector3.new(34,1,34),secretPos+Vector3.new(0,.65,0),Color3.fromRGB(59,103,63),Enum.Material.Grass);grove.Transparency=.08
+  for j=1,10 do local a=j/10*math.pi*2;tree(f,secretPos+Vector3.new(math.cos(a)*22,1,math.sin(a)*22),.9)end
+  local stone=ppart(f,"SecretRuneStone",Vector3.new(3,6,3),secretPos+Vector3.new(0,3.5,0),Color3.fromRGB(75,91,72),Enum.Material.Slate)
+  local hiddenBossChance=z.Procedural and z.Procedural.HiddenBossChance or .35
+  local hiddenBoss=rng:NextNumber()<=hiddenBossChance
+  local bossDef=hiddenBoss and z.HiddenBosses[rng:NextInteger(1,#z.HiddenBosses)]or nil
+  meadowRunState.hiddenBossId=bossDef and bossDef.Id or""
+  local pr=prompt(stone,"수상한 룬석","조사")
+  pr.Triggered:Connect(function(p)
+   if n(p,"CurrentZone",0)~=1 or stone:GetAttribute("Revealed")==true then return end
+   stone:SetAttribute("Revealed",true);pr.Enabled=false
+   if bossDef then
+    msg(p,"히든 보스 출현 · "..bossDef.Name);feedback(p,"HIDDEN_BOSS_APPEAR")
+    spawnEnemy(z,true,99,bossDef,secretPos+Vector3.new(0,6,-10),true)
+   else
+    p:SetAttribute("Gold",n(p,"Gold",0)+65);msg(p,"비밀 숲 발견 · 골드 +65");feedback(p,"SECRET_FOUND")
+    local reward=ppart(f,"SecretMemoryCrystal",Vector3.new(2.5,5,2.5),secretPos+Vector3.new(0,3,-8),Color3.fromRGB(131,225,165),Enum.Material.Neon);reward.CanCollide=false
+   end
+  end)
+ end
+ for _,p in ipairs(Players:GetPlayers())do if n(p,"CurrentZone",0)==1 then p:SetAttribute("CurrentRunSeed",seed)end end
+ workspace:SetAttribute("MeadowRunRooms",#nodes);workspace:SetAttribute("MeadowRosterCount",#roster)
 end
 
 local function completeQuestIfNeeded(p,zone)
