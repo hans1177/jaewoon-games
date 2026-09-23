@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -309,7 +309,8 @@
       "rawExternalModelOutputStored": false,
       "rawSecurityPayloadStored": false,
       "learningPromotionRequiresVerifiedSanitizedEvidence": true,
-      "liveBottleneckTelemetryMayNotExpandAuthority": true
+      "liveBottleneckTelemetryMayNotExpandAuthority": true,
+      "dependencyWaitStateMayNotCreateRecursiveRecoveryAuthority": true
     },
     "failureClassificationSecurityRules": {
       "securityOrAuthorityBoundaryAlwaysRoutesToSecurityImmuneSystem": true,
@@ -339,7 +340,10 @@
       "queueRepairCoalescingRevision": "24d941a8e5bf75a37ea54b35cbd351b5daae5bad",
       "queueRepairCheckpointIdentityPreserved": true,
       "queueRepairCoalescingAuthorityExpansion": false,
-      "queueRepairCoalescingReviewRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8"
+      "queueRepairCoalescingReviewRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8",
+      "canaryWaitRecoveryRecursionRevision": "1c2275c3cd6e725dcef00ecdfee80dd125f756ca",
+      "canaryWaitRecoveryRecursionTestRevision": "17fef35122561283b3c16d29b8cf07a37dc3e82d",
+      "canaryWaitRecoveryAuthorityExpansion": false
     }
   }
 }
