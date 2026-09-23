@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -355,5 +355,19 @@
       "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
       "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
     }
+  },
+  "unityWebGameDevelopmentEvidence": {
+    "version": 1,
+    "role": "NON_BLOCKING_VALIDATION_SURFACE",
+    "markers": [
+      "UNITY_WEB_VALIDATION_READY_IDS",
+      "UNITY_WEB_RUNTIME_DISPATCH_COUNT",
+      "UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE",
+      "UNITY_WEB_VALIDATION=NON_BLOCKING_SEPARATE_WORKFLOW",
+      "UNITY_WEB_VALIDATION_OWNER=unity-web-first-stage-build.yml",
+      "UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT"
+    ],
+    "canonicalSource": "unity-games/<gameId>/",
+    "outputRoot": "web-games/<gameId>/"
   }
 }
