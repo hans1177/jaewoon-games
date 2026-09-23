@@ -182,6 +182,7 @@ const progressPath=path.join(base,'design-progress.json');
 const policyDigest=createHash('sha256').update(fs.readFileSync(CANONICAL_POLICY_PATH,'utf8')).digest('hex');
 const engineFiles=[
   'tools/company-design-cycle.mjs',
+  'tools/vibe2-design-intelligence.mjs',
   'tools/company-design-gate-scoring-v2.mjs',
   'tools/company-strict-production-review.mjs',
   'tools/company-design-prepromotion-repair.mjs',
