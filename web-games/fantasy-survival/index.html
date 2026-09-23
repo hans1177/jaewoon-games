@@ -3553,7 +3553,7 @@ function loadGame(){
   if(s.explored&&typeof s.explored==='object'){
    state.explored={};
    for(const key of Object.keys(s.explored)){
-     const [gx,gy]=key.split(',').map(Number);
+  for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
      let wx,wy;
      if(version<8){wx=(gx*300+150)*2;wy=(gy*300+150)*2}else{wx=gx*MAP_CELL+MAP_CELL/2;wy=gy*MAP_CELL+MAP_CELL/2}
   if(version<13){wx+=3000;wy+=2000}
