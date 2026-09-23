@@ -69,4 +69,9 @@ test('Unity Web validation publication uses PR instead of direct main write',()=
   assert.match(workflow,/gh pr create/);
   assert.match(workflow,/UNITY_WEB_DIRECT_MAIN_WRITE=NO/);
   assert.equal(workflow.includes(['git','push','origin','HEAD:main'].join(' ')),false);
+  assert.match(workflow,/unity-web-deploy-manifest\.json/);
+  assert.match(workflow,/git add -f "web-games\/\$GAME_ID\/Build"/);
+  assert.match(workflow,/25\*1024\*1024/);
+  const ignore=fs.readFileSync(path.join(repo,'.gitignore'),'utf8');
+  assert.match(ignore,/!web-games\/\*\/Build\/\*\*/);
 });
