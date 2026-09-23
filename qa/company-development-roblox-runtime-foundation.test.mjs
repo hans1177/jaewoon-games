@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
+import {probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
@@ -77,4 +77,43 @@ test('foundation sentinel rejects checkpoints carried over from an older publish
  assert.equal(r.runtimeFoundationPassed,false);
  assert.equal(r.runtimeAcceptancePassed,false);
  assert.ok(r.blockers.includes('checkpoint:SERVER_BOOT'));
+});
+
+
+test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
+ const calls=[];
+ const responses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=0'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'},
+  ]}]}}
+ ];
+ const fetchImpl=async(url,init={})=>{
+  calls.push({url,init});
+  const row=responses.shift();
+  return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};
+ };
+ const r=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2});
+ assert.equal(r.engineExecuted,true);
+ assert.equal(r.exactPlace,true);
+ assert.equal(r.exactVersion,true);
+ assert.equal(r.playerCount,0);
+ assert.equal(r.serverBootObserved,false);
+ assert.match(calls[0].url,/versions\/20\/luau-execution-session-tasks$/);
+ const body=JSON.parse(calls[0].init.body);
+ assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_VERSION/);
+ assert.doesNotMatch(body.script,/MULTIPLAYER_SYNC.*true|runtimeAcceptancePassed|robloxRuntimePassed/);
+});
+
+test('Open Cloud engine probe reports missing scope without fabricating evidence',async()=>{
+ const fetchImpl=async()=>({ok:false,status:403,text:async()=>JSON.stringify({message:'forbidden'})});
+ const r=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:1});
+ assert.equal(r.available,false);
+ assert.equal(r.permissionDenied,true);
+ assert.equal(r.engineExecuted,false);
+ assert.equal(r.exactVersion,false);
 });
