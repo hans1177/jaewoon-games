@@ -375,7 +375,7 @@ local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","QuestPortal","QuestKil
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1)
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("ClassName","직업 미선택")
- p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false)
+p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
@@ -719,39 +719,118 @@ end
 local function killEnemy(p,e,contribution)
  if e.hp>0 then return end
  local z=portalDef(e.zone);if e.part.Parent then e.part:Destroy()end
+ local classId=tostring(p:GetAttribute("ClassId")or"NONE")
+ if classId=="SOUL"then
+  p:SetAttribute("SoulCharge",math.min(5,n(p,"SoulCharge",0)+1))
+  if p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end
+ end
  p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2)
  msg(p,(e.boss and"보스 격파 · "or"처치 · ")..(e.boss and z.Boss.Name or z.Enemy));feedback(p,e.boss and"BOSS_KILL"or"KILL")
  task.delay(e.boss and 18 or 8,function()if world and world.Parent then spawnEnemy(z,e.boss,math.random(1,80))end end)
 end
 local function playerAttack(p,skill)
+ local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=classDef(classId)
+ if not cd then msg(p,"먼저 시작 직업을 선택해.")return end
  local zone=n(p,"CurrentZone",0);if zone==0 then msg(p,"포탈을 타고 사냥터로 이동해")return end
- local r=root(p);if not r then return end;local range=skill and 25 or 15;local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어")return end
- local damage=n(p,"AttackPower",10)*(skill and 2.15 or 1);e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));lastCombat[p]=os.clock();p:SetAttribute("InCombat",true);feedback(p,skill and"SKILL"or"ATTACK")
+ local r=root(p);if not r then return end;local range=skill and(classId=="RUNE"and 28 or classId=="SOUL"and 26 or 20)or 15
+ local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어")return end
+ local now=os.clock();local adv=tostring(p:GetAttribute("AdvancementId")or"");local damage=n(p,"AttackPower",10)*(skill and cd.SkillMult or 1)
+ local backstab=classId=="SHADOW"and n(p,"BackstabUntil",0)>now
+ if classId=="BREAKER"then
+  if adv=="RAGE_BREAKER"then local h=hum(p);if h and h.Health/h.MaxHealth<=.5 then damage*=1.28 end end
+  if adv=="IRON_BREAKER"and skill then p:SetAttribute("GuardUntil",now+1.5)end
+  if skill and p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end
+ elseif classId=="SHADOW"then
+  if backstab then damage*=adv=="ASSASSIN_TRACKER"and 1.75 or 1.38;p:SetAttribute("BackstabUntil",0);if p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end end
+ elseif classId=="RUNE"and skill then
+  local element=n(p,"RuneElement",1);p:SetAttribute("RuneElement",element%3+1)
+  if adv=="OVERLOAD_RUNER"then
+   local count=n(p,"OverloadCount",0)+1
+   if count>=3 then damage*=1.55;count=0;feedback(p,"RUNE_OVERLOAD")end
+   p:SetAttribute("OverloadCount",count)
+  elseif adv=="ELEMENTAL_RUNER"then
+   for _,other in ipairs(enemies)do
+    if other~=e and other.hp>0 and other.zone==zone and other.part.Parent and(other.part.Position-e.part.Position).Magnitude<=8 then
+     other.hp-=damage*.35;other.part:SetAttribute("HP",math.max(0,other.hp))
+    end
+   end
+  end
+  if p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end
+ elseif classId=="SOUL"and skill then
+  local charge=n(p,"SoulCharge",0)
+  if charge>0 then p:SetAttribute("SoulCharge",charge-1);damage*=adv=="WRAITH_MASTER"and 1.48 or 1.22 end
+  if adv=="GUARDIAN_MEDIUM"then
+   local h=hum(p);if h then h.Health=math.min(h.MaxHealth,h.Health+h.MaxHealth*.14)end
+   for _,member in ipairs(roomParticipants(p))do
+    if member~=p and n(member,"CurrentZone",0)==zone then local mh=hum(member);local mr=root(member);if mh and mr and(mr.Position-r.Position).Magnitude<=30 then mh.Health=math.min(mh.MaxHealth,mh.Health+mh.MaxHealth*.08)end end
+   end
+  end
+ end
+ e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));lastCombat[p]=now;p:SetAttribute("InCombat",true)
+ pulseWeaponTrail(p.Character);combatFlash(e.part.Position,cd.Color,skill and 1.7 or 1.15);feedback(p,skill and"SKILL"or"ATTACK")
  if e.hp<=0 then killEnemy(p,e,skill and 3 or 2)end
  local stamp=lastCombat[p];task.delay(C.CombatLockSeconds,function()if p.Parent and lastCombat[p]==stamp then p:SetAttribute("InCombat",false)end end)
 end
 
+local function refreshAILabel(ai)
+ if not ai.label then return end
+ ai.label.Text=ai.def.Name.." · "..classDisplay(ai.classId,ai.advancementId)
+end
+local function aiGainXP(ai,amount)
+ ai.xp=(ai.xp or 0)+(amount or 10)
+ while ai.xp>=ai.level*45 do ai.xp-=ai.level*45;ai.level+=1 end
+ if ai.level>=C.AdvancementLevel and ai.advancementId==""then
+  local cd=classDef(ai.classId);local choice=cd and cd.Advancements[ai.def.Advance or"A"]
+  if choice then ai.advancementId=choice.Id;decorateCharacterModel(ai.model,ai.classId,ai.id,ai.advancementId);refreshAILabel(ai)end
+ end
+end
+local function aiFormation(ai,leaderRoot)
+ local side=((ai.id%3)-1)*5
+ if ai.classId=="BREAKER"then return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(side,0,-6))
+ elseif ai.classId=="SHADOW"then return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(ai.id%2==0 and 7 or-7,0,-1))
+ elseif ai.classId=="RUNE"then return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(side,0,7))
+ else return leaderRoot.CFrame:PointToWorldSpace(Vector3.new(side,0,9))end
+end
+local function aiAttack(ai,leader,e,now)
+ if not e or e.hp<=0 or not e.part.Parent then return end
+ local range=ai.classId=="BREAKER"and 11 or ai.classId=="SHADOW"and 10 or ai.classId=="RUNE"and 25 or 22
+ local delay=ai.classId=="BREAKER"and .9 or ai.classId=="SHADOW"and .62 or ai.classId=="RUNE"and 1.05 or 1.15
+ local dist=(e.part.Position-ai.root.Position).Magnitude
+ if dist>range then moveAITo(ai,e.part.Position);return end
+ if now-ai.lastAttack<delay then return end;ai.lastAttack=now
+ local dmg=10+ai.level*1.2+ai.weaponTier*3
+ if ai.classId=="BREAKER"then dmg*=1.22 elseif ai.classId=="SHADOW"then dmg*=1.08 elseif ai.classId=="RUNE"then dmg*=1.12 else dmg*=.95 end
+ if ai.advancementId=="RAGE_BREAKER"or ai.advancementId=="ASSASSIN_TRACKER"or ai.advancementId=="OVERLOAD_RUNER"or ai.advancementId=="WRAITH_MASTER"then dmg*=1.16 end
+ e.hp-=dmg;e.part:SetAttribute("HP",math.max(0,e.hp));pulseWeaponTrail(ai.model);combatFlash(e.part.Position,classDef(ai.classId).Color,1.05)
+ if ai.classId=="SOUL"and leader and ai.advancementId=="GUARDIAN_MEDIUM"then local h=hum(leader);if h and h.Health<h.MaxHealth then h.Health=math.min(h.MaxHealth,h.Health+8)end end
+ if e.hp<=0 then
+  aiGainXP(ai,e.xp or 15)
+  if leader then killEnemy(leader,e,1)else local z=portalDef(e.zone);if e.part.Parent then e.part:Destroy()end;task.delay(8,function()if world and world.Parent then spawnEnemy(z,e.boss,math.random(1,80))end end)end
+ end
+end
 local function makeAI()
  local f=Instance.new("Folder");f.Name="AIUsers";f.Parent=world
- local colors={NONE=Color3.fromRGB(128,128,133),HEALER=Color3.fromRGB(191,222,234),WARRIOR=Color3.fromRGB(164,91,67),ARCHER=Color3.fromRGB(80,145,88)}
  for i,def in ipairs(C.AIUsers)do
-  local angle=i/#C.AIUsers*math.pi*2;local part=humanoidFigure(f,"AI_"..def.Name,Vector3.new(math.cos(angle)*58,6,math.sin(angle)*58),colors[def.Class],Color3.fromRGB(62,58,55),.82)
-  label(part,def.Name.." · "..(def.Class=="NONE"and"무직"or def.Class=="HEALER"and"힐러"or def.Class=="WARRIOR"and"전사"or"궁수"),Color3.fromRGB(240,240,234),26)
-  local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=18;cd.Parent=part
-  local ai={id=i,def=def,part=part,zone=0,gold=70,weaponTier=1,hp=100,lastAttack=0}
-  table.insert(aiUsers,ai)
-  cd.MouseClick:Connect(function(p)
-   clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][i]or 0;clickTimes[p][i]=now
-   if now-last>.55 then msg(p,def.Name.." · 한 번 더 눌러 파티 초대/제외")return end
-   parties[p]=parties[p]or{}
-   if parties[p][i]then parties[p][i]=nil;msg(p,def.Name.." 파티에서 제외")
-   else
-    local count=0;for _ in pairs(parties[p])do count+=1 end
-    if count>=C.PartySlots-1 then msg(p,"AI 파티 슬롯이 가득 찼어")return end
-    parties[p][i]=true;msg(p,def.Name.." 파티 참가")
-   end
-   updatePartyCount(p)
-  end)
+  local angle=i/#C.AIUsers*math.pi*2;local spawn=Vector3.new(math.cos(angle)*58,5,math.sin(angle)*58)
+  local model,part,h=createR15AI(f,"AI_"..def.Name,spawn,def.Class,i,"")
+  if model and part and h then
+   local gui=label(part,def.Name.." · "..classDisplay(def.Class,""),Color3.fromRGB(240,240,234),32);local textLabel=gui:FindFirstChildOfClass("TextLabel")
+   local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=18;cd.Parent=part
+   local ai={id=i,def=def,model=model,part=part,root=part,humanoid=h,label=textLabel,classId=def.Class,advancementId="",zone=0,gold=70,weaponTier=1,level=math.min(14,3+i),xp=0,lastAttack=0,nextWander=0,nextAdventure=os.clock()+20+i*2,pathBusy=false,nextPathAt=0}
+   table.insert(aiUsers,ai);refreshAILabel(ai)
+   cd.MouseClick:Connect(function(p)
+    clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][i]or 0;clickTimes[p][i]=now
+    if now-last>.55 then msg(p,def.Name.." · 한 번 더 눌러 파티 초대/제외")return end
+    parties[p]=parties[p]or{}
+    if parties[p][i]then parties[p][i]=nil;msg(p,def.Name.." 파티에서 제외")
+    else
+     local count=0;for _ in pairs(parties[p])do count+=1 end
+     if count>=C.PartySlots-1 then msg(p,"AI 파티 슬롯이 가득 찼어")return end
+     parties[p][i]=true;msg(p,def.Name.." · "..classDisplay(ai.classId,ai.advancementId).." 파티 참가")
+    end
+    updatePartyCount(p)
+   end)
+  end
  end
 end
 
