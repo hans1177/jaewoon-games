@@ -16,6 +16,9 @@ const architecture=readJson('company-learning/company-architecture-map.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
+const nativeDevelopmentWorkflow=readText('.github/workflows/company-development-confirmed-runtime.yml');
+const unityRuntimeWorkflow=readText('.github/workflows/company-development-unity-runtime.yml');
+const unityWebWorkflow=readText('.github/workflows/unity-web-first-stage-build.yml');
 const nativeDatasetGate=readText('tools/vibe2-real-platform-dataset-gate.mjs');
 const directorSupervisor=readText('.github/workflows/director-supervisor.yml');
 
@@ -102,7 +105,7 @@ test('DESIGN_ONLY stops at strict design baseline; promoted work follows direct-
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
   assert.equal(development.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
-  assert.equal(development.webPurpose,'LEGACY_OPTIONAL_COMPANION_ONLY');
+  assert.equal(development.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
   assert.equal(development.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
   assert.equal(development.webBeforeTargetPlatformByDefault,false);
   assert.equal(development.targetPlatformMayRunImmediately,true);
@@ -128,6 +131,34 @@ test('DESIGN_ONLY stops at strict design baseline; promoted work follows direct-
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
   assert.doesNotMatch(pipeline,/await run\('tools\/company-design-artbook\.mjs'\)/);
   assert.match(pipeline,/DESIGN_ONLY_VIBE2_USED=NO/);
+});
+
+test('Unity Web is the browser validation surface of the same canonical Unity project',()=>{
+  const development=directive.classes.DEVELOPMENT_CONFIRMED;
+  assert.equal(development.unityWebValidationSurface?.enabled,true);
+  assert.equal(development.unityWebValidationSurface?.optional,true);
+  assert.equal(development.unityWebValidationSurface?.canonicalSourceRoot,'unity-games/<gameId>/');
+  assert.equal(development.unityWebValidationSurface?.outputRoot,'web-games/<gameId>/');
+  assert.equal(development.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
+  assert.equal(development.unityWebValidationSurface?.nativeGateAuthority,false);
+  assert.equal(directive.production.webCompanion?.legacyDirectWebAuthoring,false);
+  assert.equal(directive.production.webCompanion?.canonicalSource,'UNITY_PROJECT_WHEN_UNITY_WEB_AVAILABLE');
+  assert.ok(directive.gameSeed.derivedProductionRequirements.includes('UNITY_WEB_VALIDATION_SURFACE_WHEN_BUILDABLE'));
+  assert.ok(!directive.gameSeed.derivedProductionRequirements.includes('MANDATORY_WEB_GAME_COMPANION'));
+  assert.equal(roadmap.unityWebFirstStage?.enabled,true);
+  assert.equal(roadmap.unityWebFirstStage?.validationSurfaceOnly,true);
+  assert.equal(roadmap.unityWebFirstStage?.developmentAdmissionAuthority,false);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWeb,'VALIDATION_SURFACE_ONLY');
+  assert.equal(architecture.homepagePipeline?.unityWebDisabled,false);
+  assert.equal(architecture.homepagePipeline?.webPlaySurfaceDisabled,false);
+  assert.match(designCycle,/unityWebValidationSurfaceContract/);
+  assert.match(designCycle,/same canonical Unity 프로젝트/);
+  assert.match(nativeDevelopmentWorkflow,/gh workflow run unity-web-first-stage-build\.yml/);
+  assert.match(nativeDevelopmentWorkflow,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.match(unityRuntimeWorkflow,/UNITY_WEB_VALIDATION=NON_BLOCKING_SEPARATE_WORKFLOW/);
+  assert.doesNotMatch(unityRuntimeWorkflow,/UNITY_WEB_VALIDATION=DISABLED/);
+  assert.match(unityWebWorkflow,/Unity WebGL Validation Surface Build/);
+  assert.match(unityWebWorkflow,/canonicalGameSourceRoot!=='unity-games\/<gameId>\/'/);
 });
 
 test('discard policy requires redesign or real implementation evidence instead of one failure',()=>{
@@ -229,14 +260,14 @@ test('direct-native development keeps Web optional while preserving approved sco
   const release=directive.classes.RELEASE_CONFIRMED;
   assert.equal(directive.production.webCompanion.requiredForEveryGame,false);
   assert.equal(directive.production.webCompanion.appliesToAllTargetPlatforms,false);
-  assert.equal(directive.production.webCompanion.role,'LEGACY_OPTIONAL_COMPANION');
+  assert.equal(directive.production.webCompanion.role,'UNITY_WEB_VALIDATION_SURFACE');
   assert.equal(directive.production.webCompanion.developmentAdmissionAuthority,false);
   assert.equal(directive.production.webCompanion.silentFeatureOmissionForbidden,true);
   assert.equal(directive.production.webCompanion.nativePlatformReleaseStillRequiresNativeEvidence,true);
   assert.equal(directive.production.approvedScopeCompletion.approvedDesignBaselineMustBeFullyImplemented,true);
   assert.equal(directive.production.approvedScopeCompletion.prototypeCannotSatisfyCompletionOrReleaseCandidateGate,true);
   assert.equal(development.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
-  assert.equal(development.webPurpose,'LEGACY_OPTIONAL_COMPANION_ONLY');
+  assert.equal(development.webPurpose,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
   assert.equal(development.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
   assert.equal(development.webBeforeTargetPlatformByDefault,false);
   assert.equal(development.targetPlatformMayRunImmediately,true);
