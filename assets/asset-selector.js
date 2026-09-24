@@ -28,7 +28,7 @@ function hasAny(source, words) { const value = text(source).toLowerCase(); retur
 function declaredTypes(asset) { return Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : []; }
 function frozenList(values) { return Object.freeze([...(Array.isArray(values) ? values : [])]); }
 
-function actorHasFrameAnimation(asset) {
+function animationResourceReady(asset) {
   const animations = Array.isArray(asset?.animations) ? asset.animations.map((value) => text(value).toLowerCase()) : [];
   const states = Array.isArray(asset?.states) ? asset.states.map((value) => text(value).toLowerCase()) : [];
   const evidence = Array.isArray(asset?.animationEvidence) ? asset.animationEvidence.filter(Boolean) : [];
@@ -39,6 +39,19 @@ function actorHasFrameAnimation(asset) {
   return verified && hasAnimationResource && hasLocomotion;
 }
 
+function linkedMotionSources(asset, allAssets = []) {
+  const ids = Array.isArray(asset?.compatibleMotionSourceIds) ? asset.compatibleMotionSourceIds.map(text).filter(Boolean) : [];
+  if (!ids.length) return [];
+  const byId = new Map((allAssets || []).map((row) => [text(row?.id), row]));
+  return ids.map((id) => byId.get(id)).filter(Boolean);
+}
+
+function actorHasFrameAnimation(asset, allAssets = []) {
+  if (animationResourceReady(asset)) return true;
+  const retargetableRig = asset?.rigged === true || asset?.retargetable === true;
+  return retargetableRig && linkedMotionSources(asset, allAssets).some((source) => animationResourceReady(source));
+}
+
 function actorHasMotionEngineEvidence(asset) {
   const evidence = Array.isArray(asset?.motionEvidence) ? asset.motionEvidence.map(text).filter(Boolean) : [];
   const required = ['motion-engine-profile', 'runtime-motion-evidence', 'mobile-performance-pass'];
@@ -47,8 +60,9 @@ function actorHasMotionEngineEvidence(asset) {
     && required.every((item) => evidence.includes(item));
 }
 
-function actorMotionMode(asset) {
-  if (actorHasFrameAnimation(asset)) return 'frame-animation';
+function actorMotionMode(asset, allAssets = []) {
+  if (animationResourceReady(asset)) return 'frame-animation';
+  if ((asset?.rigged === true || asset?.retargetable === true) && linkedMotionSources(asset, allAssets).some((source) => animationResourceReady(source))) return 'retargetable-rig+linked-motion';
   if (actorHasMotionEngineEvidence(asset)) return 'motion-engine';
   return null;
 }
@@ -63,7 +77,7 @@ function findCandidates(type, candidates) {
     if (ACTOR_TYPES.includes(type)) {
       if (asset?.blockedForActorUse === true) return false;
       if (hasAny(descriptor, BLOCKED_ACTOR_VISUAL_WORDS)) return false;
-      if (!actorMotionMode(asset)) return false;
+      if (!actorMotionMode(asset, candidates)) return false;
     }
 
     return true;
@@ -74,8 +88,16 @@ function findCandidates(type, candidates) {
     license:text(asset.license),
     source:text(asset.source),
     downloaded:asset?.downloaded !== false,
-    animated:ACTOR_TYPES.includes(type) ? Boolean(actorMotionMode(asset)) : Boolean(asset?.verifiedAnimation),
-    motionMode:ACTOR_TYPES.includes(type) ? actorMotionMode(asset) : null,
+    animated:ACTOR_TYPES.includes(type) ? Boolean(actorMotionMode(asset, candidates)) : Boolean(asset?.verifiedAnimation),
+    motionMode:ACTOR_TYPES.includes(type) ? actorMotionMode(asset, candidates) : null,
+    sourceUrl:text(asset.sourceUrl),
+    platforms:frozenList(asset.platforms),
+    platformResearchTargets:frozenList(asset.platformResearchTargets),
+    rigged:asset?.rigged===true,
+    retargetable:asset?.retargetable===true,
+    compatibleMotionSourceIds:frozenList(asset.compatibleMotionSourceIds),
+    studioMotionCandidate:asset?.studioMotionCandidate===true,
+    creatureFamily:text(asset.creatureFamily),
   }));
 }
 
@@ -161,7 +183,8 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const production = buildProductionPlan(request, prototypePreset);
   const preferredIds = presetPreferredIds(prototypePreset);
   const matched = types.flatMap((type) => findCandidates(type, candidates))
-    .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id)));
+    .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
+      || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
   const binding = types.map((type) => Object.freeze({
     type,
@@ -172,7 +195,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     replaceable:true,
   }));
   return Object.freeze({
-    version:8,
+    version:9,
     request,
     rebuild:Boolean(rebuild),
     prototypePreset,
@@ -204,6 +227,8 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       requireLicenseRecord:true,
       requireRealAssets:true,
       requireVerifiedAnimationOrMotionEngine:true,
+      allowRetargetableRigWithLinkedVerifiedMotion:true,
+      studioMotionCandidatePreferred:true,
       requireAnimatedCharacter:true,
       requireAnimatedEnemy:true,
       requireAnimatedBoss:true,
@@ -226,7 +251,8 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       '무거운 3D 생존/RPG/액션RPG/FPS/호러는 Unity Android 본개발을 기본 추천',
       '외부 무료 제작툴은 후보만 제시하고 라이선스/버전 승인 전 자동 설치 금지',
       '기존 저장소 에셋 확인 후 KEEP/ENHANCE/COMBINE/REPLACE 분류',
-      '캐릭터/적/보스는 실제 프레임 애니메이션 또는 Motion Engine 실행 증거 확인',
+      '캐릭터/적/보스는 실제 프레임 애니메이션, 검증 모션 소스가 연결된 리타겟 가능 리그, 또는 Motion Engine 실행 증거를 확인',
+      '휴머노이드 리그와 외부/회사 모션을 조합할 때는 리타겟·발접지·루트/골반·손/무기 접촉·전환 클린업을 거쳐 플랫폼 네이티브 런타임으로 검증',
       '정지 원본은 Motion Engine 프로필·런타임 증거·모바일 성능 통과 없이는 배우 후보에서 제외',
       '프리셋의 검증 배우 에셋을 우선 적용하고 미다운로드 에셋은 최초 사용 시 확보·캐시',
       '캐릭터/적/NPC/배경/지형/사물/자원/건물/UI/VFX 목록 작성',
