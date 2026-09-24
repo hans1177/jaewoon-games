@@ -1,5 +1,5 @@
 {
-  "version": 336,
+  "version": 337,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16362,6 +16362,30 @@
           "heroBossLandmarkMayRequireNewUniqueAuthoring": true,
           "generalProductionTarget": "70_TO_80_PERCENT_LIBRARY_COMPOSITION_WHEN_COMPATIBLE",
           "uniqueHeroContentTarget": "20_TO_30_PERCENT_GAME_SPECIFIC_AUTHORING_WHEN_NEEDED"
+        },
+        "rotation": {
+          "version": 1,
+          "enabled": true,
+          "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+          "usesExistingGapFill": true,
+          "retirementMode": "ACTIVE_POOL_RETIREMENT_WITH_LINEAGE_PRESERVATION",
+          "hardDeleteForbidden": true,
+          "triggers": [
+            "DUPLICATE_IDENTITY",
+            "VERIFIED_RUNTIME_FAILURE",
+            "COMPATIBILITY_FAILURE_REPEAT_2",
+            "STALE_UNUSED_30_CYCLES"
+          ],
+          "protections": [
+            "MANUAL_LOCK",
+            "GAME_LOCK",
+            "ACTIVE_GAME_REQUIRED",
+            "FAMILY_MINIMUM_FLOOR"
+          ],
+          "minimumAtomsPerFamily": 20,
+          "maxRetirePerFamilyPerCycle": 2,
+          "refillSameCycle": true,
+          "verifiedAssetsRequireNativeRuntimeReverificationBeforeReactivation": true
         }
       }
     }
