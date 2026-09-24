@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="2">
+<html lang="ko" data-asset-library-version="3">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -55,6 +55,7 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
   </div>
 </section>
 <section class="section"><div class="sectionHead"><div><h2>액션 커버리지 목표</h2><p>회사 공용 모션팩 최소 기준</p></div></div><div class="coverage" id="coverage"></div></section>
+<section class="section"><div class="sectionHead"><div><h2>맨손 대전 액션 연구</h2><p>무술 스타일·보법·타격·킥·카운터·잡기·던지기·낙법·무협 공중연계까지 계속 확장</p></div></div><div class="coverage" id="unarmedCoverage"></div><div class="grid" id="unarmedStyles"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>플랫폼 분리</h2><p>디자인 규격은 공유, 실제 구현은 네이티브 분리</p></div></div><div class="platforms">
   <article class="platform"><h3>Unity</h3><p>Humanoid / Generic Rig · Animator · Blend Tree · Avatar Mask · IK 또는 Animation Rigging · Secondary Motion · LOD · 모바일 성능 스케일링.</p></article>
   <article class="platform"><h3>Roblox</h3><p>R15 호환 또는 전용 Custom Rig · Motor6D · Attachment · Animator / AnimationTrack · 모바일 예산에 맞춘 Secondary Motion.</p></article>
@@ -83,6 +84,21 @@ function render(){
   document.getElementById('researchGrid').innerHTML=research.length?research.map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">연구중</span><span class="tag">'+esc(x.platform)+'</span><span class="tag">'+esc(x.category)+'</span></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.note)+'</p></div></article>').join(''):'<div class="empty">이 분류의 연구 항목이 아직 없어.</div>';
   const c=data.motionCoverage;const rows=[['Idle',c.idleVariants+'+'],['이동 방향',c.locomotionDirections],['회전',c.turnVariants+'+'],['회피',c.dodgeVariants+'+'],['약공격 콤보',c.lightComboAttacks+'타+'],['강공격',c.heavyAttacks+'+'],['공중 공격',c.aerialAttacks+'+'],['돌진 공격',c.dashOrGapCloserAttacks+'+'],['방향 피격',c.directionalHitReactions],['피격 강도',c.hitStrengthLevels],['사망',c.deathVariants+'+'],['스킬/시전',c.skillOrCastVariants+'+']];
   document.getElementById('coverage').innerHTML=rows.map(([a,b])=>'<div><b>'+esc(b)+'</b><span>'+esc(a)+'</span></div>').join('');
+  const u=data.unarmedCombat||{};const mf=u.motionFamilies||{};
+  const urows=[
+    ['스타일군',(u.styleFamilies||[]).length],
+    ['가드/자세',(mf.stanceAndGuard||[]).length],
+    ['보법',(mf.footwork||[]).length],
+    ['손/근거리 타격',(mf.handStrikes||[]).length+(mf.closeRange||[]).length],
+    ['킥',(mf.kicks||[]).length],
+    ['방어/카운터',(mf.defenseCounter||[]).length],
+    ['잡기/던지기',(mf.grappleThrow||[]).length],
+    ['회복/낙법',(mf.recovery||[]).length],
+    ['무협',(mf.wuxia||[]).length],
+    ['대전 액션 슬롯',(mf.versusAction||[]).length]
+  ];
+  document.getElementById('unarmedCoverage').innerHTML=urows.map(([a,b])=>'<div><b>'+esc(b)+'</b><span>'+esc(a)+'</span></div>').join('');
+  document.getElementById('unarmedStyles').innerHTML=(u.styleFamilies||[]).map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">모션 연구</span></div><h3>'+esc(x.replaceAll('_',' '))+'</h3><p>Unity/Roblox 네이티브 리타겟·클린업·런타임 검증 대상</p></div></article>').join('');
 }
 load().catch(()=>{document.getElementById('assetGrid').innerHTML='<div class="empty">라이브러리 데이터를 불러오지 못했어.</div>'});
 </script>
