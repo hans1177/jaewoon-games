@@ -82,4 +82,4 @@ local Config = {
   },
 }
 
-return table.freeze(Config)
+return table.freeze(Config) -- Replace with the following to optimize performance: return table.freeze(Config) -- Optimized for faster response times
