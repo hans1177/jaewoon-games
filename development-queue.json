@@ -66,7 +66,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-24T07:04:19.092Z",
+      "updatedAt": "2026-09-24T07:04:37.187Z",
       "robloxSourceCommit": "cbc373278b4fef64b5b3170b59b2648be4e7ffab",
       "robloxSourceBootstrapPassedAt": "2026-09-24T06:55:05.661Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -74,7 +74,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-runtime-foundation-stale-version"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -150,7 +150,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -455,7 +455,38 @@
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "sourceRevision": "cbc373278b4fef64b5b3170b59b2648be4e7ffab",
+        "artifactIdentity": "sha256:7bf90247615cd16c1fe3f13d61e13090ab2566a1dc704216fd29af886f0ef793",
+        "universeId": "10767445741",
+        "placeId": "116850096561713",
+        "expectedVersionNumber": 22,
+        "observedVersionNumber": 21,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": false,
+        "blockers": [
+          "exactVersion",
+          "checkpointOrder",
+          "checkpoint:SERVER_BOOT",
+          "checkpoint:MODULE_GRAPH_READY",
+          "checkpoint:WORLD_READY",
+          "checkpoint:SPAWN_READY",
+          "checkpoint:CHARACTER_READY",
+          "checkpoint:GROUND_CONTACT",
+          "checkpoint:CAMERA_READY",
+          "checkpoint:INPUT_READY",
+          "checkpoint:MOVEMENT_CONFIRMED",
+          "checkpoint:REMOTE_ROUNDTRIP",
+          "checkpoint:CORE_LOOP_READY",
+          "checkpoint:SAVE_ROUNDTRIP",
+          "checkpoint:MULTIPLAYER_SYNC"
+        ],
+        "observedAt": "2026-09-24T07:04:37.187Z",
+        "authority": "stale-runtime-sentinel-observation"
+      },
       "robloxF9ReleaseRegressionPassed": false,
       "robloxF9ReleaseRegressionEvidence": null,
       "robloxParallelMultiplayerValidationPending": false,
@@ -524,7 +555,8 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-24T07:04:37.187Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -5089,7 +5121,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-24T07:04:19.092Z",
+  "updatedAt": "2026-09-24T07:04:37.187Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
