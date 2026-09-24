@@ -23,7 +23,14 @@ gui.Name = "ApprovedScopeHud"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 local root = Instance.new("Frame")
-if hasStudioAssetAtom("FRAME_PANEL") then
+local list = Instance.new("ScrollingFrame")
+list.Name = "ApprovedActions"
+list.Size = UDim2.new(1, -24, 0, 360)
+list.AnchorPoint = Vector2.new(0.5, 1)
+list.Position = UDim2.fromScale(0.5, 0.98)
+list.BackgroundTransparency = 0.15
+list.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
+list.Parent = gui
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
   studioAssetStroke.Thickness = 1
