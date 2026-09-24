@@ -73,7 +73,7 @@ local function load(p)
  p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR")
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
- p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0)
+ p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"맵 준비")
@@ -775,7 +775,7 @@ local function startRound()
  local si,mi=1,1
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
+  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
@@ -787,6 +787,7 @@ local function endRound(winner)local function endRound(winner)
   local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
   local reward=(role=="MONSTER"or role=="SURVIVOR")and(winner=="DRAW"and 12 or win and 30 or 12)or 0
   p:SetAttribute("Coins",(p:GetAttribute("Coins")or 0)+reward)
+  p:SetAttribute("RoundScore",win and 1 or 0)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
   p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);speed(p,16)
@@ -863,7 +864,7 @@ local function validRemoteAction(p,a)
 end
 local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers();local hc,mc=teamCounts()
- remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft))})
+ remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft)),RoundScore=actor and(actor:GetAttribute("RoundScore")or 0)or 0})
 end
 remote.OnServerEvent:Connect(function(p,a)remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
