@@ -392354,13 +392354,1405 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_099fda91b9408ebc4a67223b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "primary",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rules-v7.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. townhall-upgrade.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. village-defense.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. world-upgrade-v3.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "buildTower",
+          "activeFieldTarget",
+          "drawWithRulesV7",
+          "drawObjectsWithVillage",
+          "patchBountyPanel"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT",
+          "PRESENTATION",
+          "CORE_STATE",
+          "AI",
+          "SAVE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 318671,
+        "candidateMs": 286319,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_9632d64412706d7b6d692a34",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-1",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rules-v7.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. townhall-upgrade.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. village-defense.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. world-upgrade-v3.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "buildTower",
+          "activeFieldTarget",
+          "drawWithRulesV7",
+          "drawObjectsWithVillage",
+          "patchBountyPanel"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT",
+          "PRESENTATION",
+          "CORE_STATE",
+          "AI",
+          "SAVE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 316290,
+        "candidateMs": 254168,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_687a3e54a9ef09e22a2b5874",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-2",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rules-v7.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. townhall-upgrade.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. village-defense.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. world-upgrade-v3.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "buildTower",
+          "activeFieldTarget",
+          "drawWithRulesV7",
+          "drawObjectsWithVillage",
+          "patchBountyPanel"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT",
+          "PRESENTATION",
+          "CORE_STATE",
+          "AI",
+          "SAVE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 262447,
+        "candidateMs": 222262,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_ae4f45df1be60d51955cc94f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "primary",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. farming-rules.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. fishing-limit-v9.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. iron-lv3-spearman-v14.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. iron-worker-v15.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actualWorkers",
+          "buildIronMine",
+          "recruitCavalry50",
+          "ironProduction"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "AI",
+          "ECONOMY",
+          "PROGRESSION",
+          "CORE_STATE",
+          "COMBAT",
+          "GOAL_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "CORE_STATE",
+          "PLAYER"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 334709,
+        "candidateMs": 289357,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_a60954cc82a1f01038e1d1fd",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-1",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. farming-rules.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. fishing-limit-v9.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. iron-lv3-spearman-v14.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. iron-worker-v15.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actualWorkers",
+          "buildIronMine",
+          "recruitCavalry50",
+          "ironProduction"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "AI",
+          "ECONOMY",
+          "PROGRESSION",
+          "CORE_STATE",
+          "COMBAT",
+          "GOAL_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "CORE_STATE",
+          "PLAYER"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 223783,
+        "candidateMs": 174868,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_114c329a49eb50972cbbdb95",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-P-RISK-iron-lv3-spearman-v14-js-INTERVAL-CLEANUP-RISK-iron-worker-v15-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-2",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. farming-rules.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. fishing-limit-v9.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. iron-lv3-spearman-v14.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. iron-worker-v15.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actualWorkers",
+          "buildIronMine",
+          "recruitCavalry50",
+          "ironProduction"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "AI",
+          "ECONOMY",
+          "PROGRESSION",
+          "CORE_STATE",
+          "COMBAT",
+          "GOAL_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "CORE_STATE",
+          "PLAYER"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 309702,
+        "candidateMs": 265641,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_50928d9d329aec48e1aaf5cb",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "primary",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. class-upgrades-pirate-v12.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. cozy-balance-v5.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. economy-west-v2.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. farm-smithy.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "adjustExplorerRewards",
+          "applyUpgradeToUnit",
+          "installFishingCooldown",
+          "breakProduction",
+          "autoFarm",
+          "drawObjectsWithWest"
+        ],
+        "primarySystems": [
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "SAVE",
+          "INTERACTION",
+          "GOAL_STATE",
+          "PLACEMENT",
+          "ECONOMY",
+          "PRESENTATION",
+          "WORLD"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 344704,
+        "candidateMs": 303433,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_686733920b7f592c973c5a11",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-1",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. class-upgrades-pirate-v12.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. cozy-balance-v5.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. economy-west-v2.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. farm-smithy.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "adjustExplorerRewards",
+          "applyUpgradeToUnit",
+          "installFishingCooldown",
+          "breakProduction",
+          "autoFarm",
+          "drawObjectsWithWest"
+        ],
+        "primarySystems": [
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "SAVE",
+          "INTERACTION",
+          "GOAL_STATE",
+          "PLACEMENT",
+          "ECONOMY",
+          "PRESENTATION",
+          "WORLD"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 186877,
+        "candidateMs": 135568,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_c804fff68fb63f0de431028a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
+        "workKey": null,
+        "gameId": "cozy-island",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-2",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. class-upgrades-pirate-v12.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. cozy-balance-v5.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. economy-west-v2.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. farm-smithy.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "adjustExplorerRewards",
+          "applyUpgradeToUnit",
+          "installFishingCooldown",
+          "breakProduction",
+          "autoFarm",
+          "drawObjectsWithWest"
+        ],
+        "primarySystems": [
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "SAVE",
+          "INTERACTION",
+          "GOAL_STATE",
+          "PLACEMENT",
+          "ECONOMY",
+          "PRESENTATION",
+          "WORLD"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "DIAGNOSTIC_POSTCONDITION",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 307194,
+        "candidateMs": 266490,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1",
+        "source-generation-failure:DIAGNOSTIC_POSTCONDITION"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_ce2140cf4852f213d8a6e39a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "horror-escape-room-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "horror-escape-room",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 공포는 최소 UI와 위협 가독성을 유지하면서 탐색→발견→추적 상태, 조명·시야·음향 변화를 실제 상태와 동기"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 30498,
+        "failureFingerprint": "roblox|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_STUDIO|SAVE|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/horror-escape-room-roblox-presentation-asset-adaptation-v1-primary-35945596163-1",
+        "candidateSha": "34d4dd3f5e5a036525ee7089c9a77f59fcfaceec"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 310661,
+        "candidateMs": 265588,
+        "qaMs": 85
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_14da9917d637e2ead945f21d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "horror-escape-room-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "horror-escape-room",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-1",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 공포는 최소 UI와 위협 가독성을 유지하면서 탐색→발견→추적 상태, 조명·시야·음향 변화를 실제 상태와 동기"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 30498,
+        "failureFingerprint": "roblox|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_STUDIO|SAVE|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/horror-escape-room-roblox-presentation-asset-adaptation-v1-speculative-1-35945596163-1",
+        "candidateSha": "8044599a825225f288bcd3803d8f3ad9773f4447"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 5,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 274358,
+        "candidateMs": 219435,
+        "qaMs": 71
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_a5cce32d6296ed6996fef319",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "horror-escape-room-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "horror-escape-room",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "ac6b726013e56520fcff91e2ec20c0e7f9f8ce4d",
+        "variant": "speculative-2",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 공포는 최소 UI와 위협 가독성을 유지하면서 탐색→발견→추적 상태, 조명·시야·음향 변화를 실제 상태와 동기"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 30498,
+        "failureFingerprint": "roblox|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_STUDIO|SAVE|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/horror-escape-room-roblox-presentation-asset-adaptation-v1-speculative-2-35945596163-1",
+        "candidateSha": "d61a5f23e983c25bf3b0c4dcd8f0ec0aeb3808ff"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 313888,
+        "candidateMs": 266690,
+        "qaMs": 97
+      },
+      "evidenceRefs": [
+        "actions-run:35945596163",
+        "reservation-id:35945596163:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 18,
+    "added": 12,
     "refreshed": 0,
-    "total": 3430,
+    "total": 3442,
     "verified": 555,
-    "failures": 2065
+    "failures": 2077
   }
 }
