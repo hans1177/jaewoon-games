@@ -156,6 +156,72 @@ test('Open Cloud engine probe binds exact place version without granting runtime
  assert.doesNotMatch(body.script,/MULTIPLAYER_SYNC.*true|runtimeAcceptancePassed|robloxRuntimePassed/);
 });
 
+test('Open Cloud engine probe matches the exact selected Studio material atoms in the deployed target version',async()=>{
+ const calls=[];
+ const responses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=0'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=1'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=BAR_HEALTH,BUTTON_PRIMARY,FRAME_PANEL'},
+  ]}]}}
+ ];
+ const fetchImpl=async(url,init={})=>{
+  calls.push({url,init});
+  const row=responses.shift();
+  return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};
+ };
+ const expected={applied:true,families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']}};
+ const r=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2,
+  expectedStudioAssetBinding:expected,
+ });
+ assert.equal(r.engineExecuted,true);
+ assert.equal(r.studioAssetBindingRequired,true);
+ assert.equal(r.studioAssetApplied,true);
+ assert.equal(r.studioAssetBindingVersion,1);
+ assert.deepEqual(r.expectedStudioAssetAtoms,['BAR_HEALTH','BUTTON_PRIMARY','FRAME_PANEL']);
+ assert.deepEqual(r.observedStudioAssetAtoms,['BAR_HEALTH','BUTTON_PRIMARY','FRAME_PANEL']);
+ assert.equal(r.studioAssetSelectionMatched,true);
+ const body=JSON.parse(calls[0].init.body);
+ assert.match(body.script,/STUDIO_ASSET_APPLIED/);
+ assert.match(body.script,/StudioAssets/);
+});
+
+test('Open Cloud engine probe rejects a deployed Studio material selection mismatch',async()=>{
+ const responses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=1'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=FRAME_PANEL'},
+  ]}]}}
+ ];
+ const fetchImpl=async()=>{const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
+ const r=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2,
+  expectedStudioAssetBinding:{applied:true,families:{UI:['FRAME_PANEL','BUTTON_PRIMARY']}},
+ });
+ assert.equal(r.studioAssetSelectionMatched,false);
+});
+
+test('post-runtime QA requires target-engine Studio material selection match before binding PASS',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/expectedStudioAssetBinding:item\.robloxStudioAssetBindingApplied===true\?item\.robloxStudioAssetBinding:null/);
+ assert.match(workflow,/engineProbe\?\.studioAssetSelectionMatched===true/);
+ assert.match(workflow,/targetEngineSelectionMatched:engineProbe\?\.studioAssetSelectionMatched===true/);
+ assert.match(workflow,/expectedStudioAssetAtoms:engineProbe\?\.expectedStudioAssetAtoms\|\|\[\]/);
+ assert.match(workflow,/observedStudioAssetAtoms:engineProbe\?\.observedStudioAssetAtoms\|\|\[\]/);
+});
+
 test('Open Cloud engine probe reports missing scope without fabricating evidence',async()=>{
  const fetchImpl=async()=>({ok:false,status:403,text:async()=>JSON.stringify({code:'PERMISSION_DENIED',message:'The required scope <universe.place.luau-execution-session:1:write> is missing.'})});
  const r=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:1});
