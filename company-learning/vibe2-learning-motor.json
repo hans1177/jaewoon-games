@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -943,6 +943,17 @@
       "LEVEL_DESIGN_DRILL",
       "ROUTE_DESIGN_DRILL",
       "STREAMING_OPTIMIZATION_DRILL"
-    ]
+    ],
+    "existingGamePatternDistillation": {
+      "enabled": true,
+      "input": "VERIFIED_INTERNAL_GAME_RUNTIME_OUTCOMES_ONLY",
+      "implementation": "assets/vibe-environment-director.js",
+      "minimumIndependentVerifiedGamesForCrossGameReuse": 2,
+      "sameGamePatternRemainsGameScoped": true,
+      "exactMapSpecificValuesReusable": false,
+      "distilledTechniqueOnly": true,
+      "directMasteryCredit": false,
+      "existingLearningMotorOnly": true
+    }
   }
 }
