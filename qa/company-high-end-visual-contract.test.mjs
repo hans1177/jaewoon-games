@@ -471,10 +471,29 @@ test('graphics production is one top-level work unit with existing visual module
   assert.equal(architecture.executionTopology.assetProduction[0],'GRAPHICS_PRODUCTION');
   assert.equal(logMap.graphicsProductionEvidenceContract.recordKind,'graphics-production-evidence');
   assert.equal(logMap.graphicsProductionEvidenceContract.separateCharacterEnvironmentAnimationVfxTopLevelEvidenceRecordsForbidden,true);
+  assert.equal(logMap.referenceImageWorldObservationEvidenceContract.rawReferenceImageBytesInLearningLogsForbidden,true);
+  assert.equal(logMap.referenceImageWorldObservationEvidenceContract.directMapLayoutOrDistinctiveLandmarkCopyForbidden,true);
+  assert.equal(logMap.narrativeRuntimeEvidenceContract.existingCanonicalLearningMotorOnly,true);
   assert.equal(security.graphicsProductionUnificationSecurity.protections.internalModuleCannotSelfPromoteToTopLevelAuthority,true);
 
   const assetPlan=buildVibeAssetProductionPlan({
-    task:{gameId:'demo',goal:'캐릭터 배경 보스 UI VFX 그래픽 개선'},target:'unity',
+    task:{
+      gameId:'demo',
+      goal:'캐릭터 배경 보스 UI VFX 그래픽 개선',
+      referenceImages:[{
+        sourceId:'owned-world-ref',
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef:'references/world.png',
+        rights:{owned:true},
+        verifiedAgainstSource:true,
+        observation:{
+          RIDGE_AND_VALLEY_FLOW:'ridge-valley',
+          ROAD_AND_PATH_GRAPH:'branch-return',
+          OPEN_SPACE_DENSITY:'mixed',
+          LANDMARK_HIERARCHY:'temple-over-village'
+        }
+      }]
+    },target:'unity',
     repoRoot:process.cwd(),manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
   });
   assert.equal(assetPlan.graphicsProductionRoot,'GRAPHICS_PRODUCTION');
