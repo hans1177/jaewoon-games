@@ -562,6 +562,13 @@ test('high-risk opt-in task creates three speculative worker variants', () => {
   assert.equal(reserved.matrix[0].speculativeVariants,3);
 });
 
+test('high-risk Roblox task stays single-candidate so native repair reaches QA without speculative fan-in delay', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  queue=add(queue,'roblox-risk','roblox-risk','roblox',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  assert.equal(reserved.matrix[0].speculativeVariants,1);
+});
+
 test('primary task coverage consumes the worker budget before speculative variants', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   for(let i=0;i<4;i++) queue=add(queue,`primary-first-${i}`,`primary-first-${i}`,'web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
