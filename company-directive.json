@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 70,
+  "revision": 71,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1298,6 +1298,9 @@
     ],
     "positiveMasteryRequiresVerifiedProjectOutcome": true,
     "rawReferenceOrGeneratedContentDirectMastery": false,
-    "authorityExpansion": false
+    "authorityExpansion": false,
+    "verifiedExistingGameWorldPatternDistillation": true,
+    "minimumIndependentVerifiedGamesForCrossGameReuse": 2,
+    "exactMapTemplateReuse": false
   }
 }
