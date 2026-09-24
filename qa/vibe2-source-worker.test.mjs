@@ -147,6 +147,46 @@ test('Roblox presentation recovery prioritizes a client visual owner across mult
   assert.match(retry,/observable native visual delta/i);
 });
 
+test('Roblox presentation recovery ranks a real visual anchor above a nonvisual primary target after timeout',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'roblox-games/demo');
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'function updateScore() {',
+    '  return score + 1',
+    '}',
+    'camera.FieldOfView = 70',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  ].join('\n')+'\n';
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve visible Roblox presentation without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    source.trimEnd()
+  ].join('\n');
+  const anchors=exactRetryAnchorSuggestions(prompt,{
+    max:3,sourceRoot,responsibleFiles:[relative],preferredTargets:['updateScore']
+  });
+  assert.ok(anchors.length>=2);
+  assert.equal(anchors[0],'camera.FieldOfView = 70');
+  assert.notEqual(anchors[0],'function updateScore() {');
+
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:[relative],sourceRoot,preferredTargets:['updateScore']
+  });
+  assert.ok(focused);
+  assert.equal(focused.spec.path,relative);
+  assert.equal(focused.spec.find,'camera.FieldOfView = 70');
+  assert.match(focused.prompt,/PRESENTATION TASK HARD RULE/i);
+  assert.match(focused.prompt,/ROBLOX VISUAL ANCHOR RULE/i);
+  assert.match(focused.prompt,/even when the previous failure was timeout/i);
+});
+
 test('studio build-up rejects micro patches and requires the configured connected source delta count',()=>{
   const contract={
     phase:'BUILD_UP',
