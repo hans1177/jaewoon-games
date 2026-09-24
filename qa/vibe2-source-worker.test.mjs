@@ -248,7 +248,7 @@ test('speculative DOM null diagnostic uses deterministic repair before model ret
 test('speculative candidates use a shorter retry budget without lowering primary gates',()=>{
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'primary'}),4);
-  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),3);
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'speculative-1'}),3);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'speculative-4'}),3);
 });
@@ -1705,7 +1705,7 @@ test('focused first-edit stream contract is persisted to immutable worker teleme
 });
 
 test('focused no-op retry keeps speculative base budget but grants only targeted credit in worker loop',()=>{
-  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),3);
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/VIBE2_FOCUSED_REPLACE_NOOP_CREDIT/);
   assert.match(workerSource,/focusedReplaceAnchorCursor\+=1/);
