@@ -471,6 +471,15 @@ test('Roblox runtime persist writers serialize with the shared company runtime w
 });
 
 
+test('Roblox runtime state writer collisions redispatch the same exact or batch work instead of stopping application',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok((workflow.match(/ROBLOX_RUNTIME_STATE_WRITE_COLLISION_REDISPATCH=/g)||[]).length>=2);
+  assert.ok((workflow.match(/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/g)||[]).length>=4);
+  assert.ok((workflow.match(/gh workflow run company-development-roblox-runtime\.yml "\$\{args\[@\]\}"/g)||[]).length>=2);
+  assert.match(workflow,/ROBLOX_RUNTIME_STATE_WRITE_COLLISION_REDISPATCH=SOURCE_BIND:/);
+  assert.match(workflow,/ROBLOX_RUNTIME_STATE_WRITE_COLLISION_REDISPATCH=PACKAGE:/);
+});
+
 test('Roblox game source pushes route through exact changed-source sync instead of broad runtime batch',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const sync=fs.readFileSync(new URL('../.github/workflows/company-roblox-source-drift-sync.yml',import.meta.url),'utf8');
