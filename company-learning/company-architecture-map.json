@@ -1,5 +1,5 @@
 {
-  "version": 154,
+  "version": 155,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2653,7 +2653,9 @@
           "VERIFIED_EVIDENCE_MARKER_CLASSIFICATION",
           "ONE_POSITIVE_AND_OR_ONE_NEGATIVE_SYNTHETIC_EXPERIENCE",
           "EXISTING_EXPERIENCE_DEDUPE",
-          "MASTERY_AND_FAILURE_SIGNATURE_UPDATE"
+          "MASTERY_AND_FAILURE_SIGNATURE_UPDATE",
+          "NATIVE_TARGET_QA_RECHECK_WHEN_NATIVE",
+          "UEFN_POSITIVE_BLOCK_UNTIL_AUTHORITATIVE_EXECUTOR_CONTRACT"
         ],
         "separateTrainer": false,
         "rawTelemetryDirectTraining": false,
@@ -2686,7 +2688,10 @@
         "positiveProvenanceTokens": [
           "specialized-final-verification:PASS",
           "specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION"
-        ]
+        ],
+        "nativeTargetQaRecheckAtCanonicalIngress": true,
+        "nativeProofTraceRequired": true,
+        "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
       }
     }
   },
