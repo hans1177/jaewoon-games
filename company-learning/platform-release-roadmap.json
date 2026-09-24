@@ -1,5 +1,5 @@
 {
-  "version": 348,
+  "version": 349,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -10059,7 +10059,7 @@
     "status": "PHASE2_SHADOW_WORK_GRAPH_PRODUCTION_VERIFIED_READINESS_QUALITY_NEXT",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
-    "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
+    "currentExecutionMode": "ATOMIC_NEURON_DAG_WITH_GATED_NEURAL_CONTROL_AND_SHADOW_FALLBACK",
     "targetExecutionMode": "ASYNC_EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "waveEndState": "SPECIAL_SYNCHRONIZATION_AND_BATCH_PATTERN_ONLY_NOT_PRIMARY_SCHEDULER",
     "brainLayers": {
@@ -10543,7 +10543,7 @@
       }
     },
     "phase2": {
-      "mode": "SHADOW_EVENT_ROUTER_ONLY",
+      "mode": "GATED_EVENT_ROUTER_WITH_SHADOW_FALLBACK",
       "module": "tools/vibe2-neural-event-router.mjs",
       "fanInBinding": "tools/vibe2-fan-in-review.mjs",
       "qa": [
@@ -10639,6 +10639,16 @@
           ],
           "implementationFailurePrecedesDerivedQaFailure": true,
           "authority": "OBSERVE_ONLY"
+        },
+        "runtimeResult": {
+          "source": "tools/vibe2-auto-planner.mjs::compileRuntimeNeuralEvent",
+          "eventType": "RUNTIME_RESULT",
+          "authority": "GATED_ONLY_WITH_VERIFIED_ROOT_CAUSE; PASS_OBSERVE_ONLY"
+        },
+        "supervisorResult": {
+          "source": "tools/vibe2-fan-in-review.mjs",
+          "eventType": "SUPERVISOR_RESULT",
+          "authority": "GATED_REQUEUE_ON_VERIFIED_REVISE_ONLY"
         }
       },
       "eventEvidence": {
@@ -10881,24 +10891,38 @@
         "shadowEvent": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH|EVENT_TYPE",
         "shadowEventVersion": 2,
         "legacyShadowEventCompatibility": "V1_SAMPLE_ONLY_EVENT_ID_NORMALIZED_WITH_EVENT_TYPE_FOR_READINESS"
+      },
+      "shadowAuthorityScope": "OBSERVE_COMPARE_AUDIT_ONLY",
+      "currentGatedAuthority": {
+        "mode": "GATED_EXISTING_SCHEDULER_ONLY",
+        "fireAllowedForVerifiedGatedActions": true,
+        "workerCreation": "EXISTING_QUEUED_TASK_DISPATCH_ONLY",
+        "queueMutation": "REQUEUE_REPRIORITIZE_REFILL_ONLY",
+        "waveReorder": "CONFLICT_FREE_EXISTING_TASKS_ONLY",
+        "lockAcquisitionAllowed": false,
+        "policyMutationAllowed": false,
+        "automaticLearningAllowed": false,
+        "automaticPromotionAllowed": false,
+        "successfulResultMutationAllowed": false,
+        "unverifiedRootCauseMutationAllowed": false
       }
     },
     "activation": {
-      "mode": "MERGED_MAIN_SHADOW_OBSERVATION",
-      "mainCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
+      "mode": "MERGED_MAIN_GATED_EXECUTION_WITH_SHADOW_FALLBACK",
+      "mainCommit": "92e2628e5b1ace38587121126663064783d5ade2",
       "activated": true,
-      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-      "neuralExecutionAuthority": false,
-      "neuralWorkerCreationAuthority": false,
-      "neuralQueueMutationAuthority": false,
-      "neuralWaveReorderAuthority": false,
+      "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_GATED_NEURAL_CONTROL",
+      "neuralExecutionAuthority": true,
+      "neuralWorkerCreationAuthority": "EXISTING_QUEUED_TASK_DISPATCH_ONLY",
+      "neuralQueueMutationAuthority": "REQUEUE_REPRIORITIZE_REFILL_ONLY",
+      "neuralWaveReorderAuthority": "CONFLICT_FREE_EXISTING_TASKS_ONLY",
       "neuralLearningAuthority": false,
       "neuralAutomaticPromotionAuthority": false,
-      "readinessMeaning": "REVIEW_ELIGIBILITY_ONLY",
-      "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY",
+      "readinessMeaning": "HISTORICAL_SHADOW_READINESS_AUDIT_ONLY",
+      "nextGate": "CAPTURE_LIVE_GATED_EVENT_EVIDENCE_AND_OPTIMIZE_VERIFIED_THROUGHPUT",
       "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
       "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
-      "syncedMainHead": "4875f7d9e41632d2239caf9db1ab4ab6410e1bbe"
+      "syncedMainHead": "92e2628e5b1ace38587121126663064783d5ade2"
     },
     "currentWaveExecution": {
       "mode": "ATOMIC_NEURON_STREAM",
@@ -10909,7 +10933,7 @@
       "queueReserveBatchIsCapacityAuthority": true,
       "learningIdleStillRequiresIdleGameWave": true,
       "gameStudyStillRequiresIdleGameWave": true,
-      "phase2NeuralExecutionAuthority": false,
+      "phase2NeuralExecutionAuthority": true,
       "externalProviderAndPlanningBound": 256,
       "refillFormula": "MAX(0, CURRENT_ADAPTIVE_GAME_PRIMARY_TARGET - ACTIVE_GAME_WORKERS)",
       "observedExample": "TARGET_20_ACTIVE_12=>REFILL_8; TARGET_64_ACTIVE_40=>REFILL_24",
@@ -10928,13 +10952,16 @@
       "gamePrimaryFixedInternalCap": null,
       "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
       "ownerUnlimitedConcurrencyDirective": "2026-09-20",
-      "authorityChange": "NONE",
+      "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING",
       "adaptiveBackpressureMayRaiseGamePrimaryAbove20": true,
       "fixedWaveBarrier": false,
       "completionEvent": "vibe2-neuron-complete",
       "taskMicroFanIn": true,
       "speculativeJoinScope": "PER_TASK",
-      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY"
+      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
+      "neuralAuthorityScope": "GATED_EXISTING_SCHEDULER_ONLY",
+      "runtimeResultIngress": true,
+      "shadowFallbackPreserved": true
     },
     "liveShadowObservation": {
       "observedAt": "2026-09-20",
