@@ -1,5 +1,5 @@
 {
-  "version": 27,
+  "version": 28,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 27,
+      "runtime": 28,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -469,6 +469,15 @@
       "blockedStateForbidden": true,
       "failureLearningForbidden": true,
       "reserveCycleRecovery": true
+    },
+    "sourceCandidateGeneration": {
+      "missingEditPathRecovery": "UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES",
+      "deterministicRecoveryBeforeModelRetry": true,
+      "invalidRelativePathFailureClass": "INVALID_PATH",
+      "invalidPathBoundedRetry": true,
+      "ambiguousMissingPathFailClosed": true,
+      "writableScopeExpansionAllowed": false,
+      "missingPathRecoveryTelemetry": "codingMethod.missingPathRecoveries"
     }
   },
   "adaptiveBackpressure": {
