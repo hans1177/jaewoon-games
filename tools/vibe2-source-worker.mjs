@@ -18,10 +18,10 @@ const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)||'task';
-const MAX_CONTEXT_FILES=12;
-const MAX_CONTEXT_BYTES=48000;
-const MAX_CHANGED_FILES=4;
-const MAX_NEW_FILES=2;
+const MAX_CONTEXT_FILES=20;
+const MAX_CONTEXT_BYTES=96000;
+const MAX_CHANGED_FILES=8;
+const MAX_NEW_FILES=4;
 const MAX_FILE_BYTES=260000;
 const MIN_FULL_REWRITE_BYTES=1800;
 const FULL_WEB_GENERATION_TARGET_MIN_BYTES=12000;
@@ -47,7 +47,7 @@ function assertGameDevelopmentAuthority(){
   };
 }
 const DEFAULT_TIMEOUT_MS=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
-const DEFAULT_MAX_PREDICT=Math.max(256,Math.min(2048,Number(process.env.VIBE2_MODEL_MAX_PREDICT||1536)));
+const DEFAULT_MAX_PREDICT=Math.max(512,Math.min(4096,Number(process.env.VIBE2_MODEL_MAX_PREDICT||3072)));
 const FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES=4200;
 const FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES=6500;
 const FULL_WEB_TIMEOUT_MS=360000;
@@ -64,7 +64,7 @@ const FULL_WEB_MAX_ADDITIVE_ATTEMPTS=6;
 const SPECULATIVE_FULL_WEB_MAX_ADDITIVE_ATTEMPTS=4;
 const FULL_WEB_PROGRESSIVE_ADDITIVE_ATTEMPT_CAP=8;
 const JSON_RETRY_TIMEOUT_MS=240000;
-const JSON_RETRY_MAX_PREDICT=1536;
+const JSON_RETRY_MAX_PREDICT=3072;
 const FOCUSED_WEB_REPAIR_MAX_PREDICT=1024;
 const FOCUSED_WEB_REPAIR_CONTEXT_FILES=2;
 const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;
@@ -77,9 +77,9 @@ const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
 const FULL_WEB_CONTEXT_WINDOW=32768;
-const MAX_GENERATION_ATTEMPTS=3;
+const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
-const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
+const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=3;
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
 const FULL_FILE_CONTENT_MARKER='---VIBE2_FILE_CONTENT---';
 const FULL_FILE_END_MARKER='---VIBE2_FILE_END---';
@@ -565,7 +565,7 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
     content
   ].join('\n');
 }
-function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const touched=[...edits.map(x=>x.path),...newFiles.map(x=>x.path),...replaceFiles.map(x=>x.path)];const touchedCount=new Set(touched).size;if(!touched.length)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);if(touchedCount!==touched.length)throw new Error('같은 파일에 edit/new/replace 중복 작업 금지');return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,8)};}
+function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12)};}
 function presentationWorkerGuidance(order = {}) {
   const contract=order?.presentationQuality||{};
   if(contract?.required!==true)return'';
@@ -592,6 +592,30 @@ function presentationWorkerGuidance(order = {}) {
     'Web 오디오는 첫 사용자 입력 이후 활성화하고 mute/volume과 resume 중복재생 방지를 유지한다.',
     '모션·VFX·카메라는 모바일 터치와 위험 가독성을 방해하지 않는다.'
   ].join('\n');
+}
+
+function studioQualityWorkerGuidance(order = {}) {
+  const contract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
+  if(!contract||typeof contract!=='object')return'';
+  const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
+  const focus=clean(contract.focusPillar).toUpperCase()||'STABILITY';
+  const connected=contract.requiredConnectedImprovements||{min:3,max:6};
+  return [
+    '[STUDIO QUALITY EVOLUTION]',
+    `cycle=${Number(contract.cycle||0)||1}; phase=${phase}; focus=${focus}; baseline=${clean(contract.baselineId)||'CURRENT_VERIFIED_BASELINE'}`,
+    '설계는 게임 의미와 금지선을 정하는 기준이지 구현 분량의 상한이 아니다.',
+    phase==='BUILD_UP'
+      ?`현재 책임 범위 안에서 서로 연결된 실질 개선을 최소 ${Number(connected.min||3)}개 이상 묶어 구현한다. 기능 완성도, 시스템 연결, 피드백, 연출, 오류 복구, 모바일 UX 중 관련된 축을 함께 끝낸다.`
+      :phase==='OPTIMIZE'
+        ?'새 규칙을 억지로 늘리지 말고 실제 병목, 중복 처리, 렌더/업데이트 비용, 입력 지연, 상태 불일치, UI 가독성, 코드 책임 혼선을 직접 줄인다.'
+        :'재현된 오류와 실패 근거부터 원인 시스템에서 직접 수리하고 동일 실패를 다시 확인한 뒤 남는 범위에서 품질을 올린다.',
+    focus==='PRESENTATION'
+      ?'그래픽은 실제 화면 변화가 있어야 한다. 캐릭터/적 실루엣, 환경 깊이·랜드마크, 애니메이션 상태, 공격·피격·사망 반응, VFX, 조명, UI 계층, 카메라·오디오 타이밍 중 약한 요소를 최소 2개 이상 실제 렌더 책임 코드에서 함께 개선한다. 마커/상수/주석만 추가하는 작업은 실패다.'
+      :'',
+    '한 파일에 여러 독립적인 정확한 edit가 필요하면 여러 edits[] 항목을 사용할 수 있다. 관련 책임 파일 여러 개를 함께 수정해도 된다.',
+    '새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.',
+    '작업 결과는 이전 verified baseline보다 최소 하나의 실제 품질 gap을 닫거나 체감 가능한 품질 축을 개선해야 한다. 단순 PASS나 코드 이동만으로 evolution 완료를 주장하지 않는다.'
+  ].filter(Boolean).join('\n');
 }
 
 function weatherWorkerGuidance(order = {}) {
@@ -628,6 +652,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 `Department: ${order.department||'development'}`,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
+studioQualityWorkerGuidance(order),
 weatherWorkerGuidance(order),
 clean(order.target).toLowerCase()==='system'?systemArchitectureGuidance(order.selectedTask||{}):'',
 `Allowed edit paths: ${allowed}`,
@@ -635,7 +660,7 @@ context.exactSourceWindows?'CONTEXT MODE: exact responsibility windows. Each FIL
 allowFullRewrite?(sourceRootBootstrap?'OWNER AUTHORIZATION: create the first complete playable Web baseline at the exact responsible index.html path. This is an approved missing-source bootstrap. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, save compatibility scaffolding where required, and no external network dependency.':'OWNER AUTHORIZATION: this existing Web prototype must be rebuilt into a real playable game. Replace the responsible existing file completely. Do not return a validation dashboard, fake state buttons, or a thin prototype. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout. Preserve approved existing external gameplay integrations such as realtime multiplayer when they are already part of the game; do not add a new external dependency required for the solo core loop.'):'Preserve gameplay values, save meaning, approved multiplayer transport and existing behavior unless the work order explicitly authorizes a protected change.',
 allowFullRewrite?'The PATH line MUST be one exact path from Allowed edit paths. Everything between the content and end markers is written verbatim as the replacement file. The end marker is mandatory; never omit it.':'Every edits[].path and replaceFiles[].path MUST be one exact path from Allowed edit paths.',
 allowFullRewrite?`INITIAL SEED STRATEGY: on this first response, prioritize a COMPLETE CLOSED playable seed of about ${FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES}-${FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES} UTF-8 bytes and finish </html> plus VIBE2_FILE_END early. Do not chase the final size in one pass; the worker will automatically expand a valid seed. The seed must already contain real input, mutable state, an update/state-transition loop, basic progression, reachable result state, restart/reset, responsive mobile controls, and persistent-capable state.`:'',
-allowFullRewrite?`Full Web generation target after automatic expansion: ${fullWebTarget.minBytes}-${fullWebTarget.maxBytes} UTF-8 bytes. The parser hard safety gate remains ${MIN_FULL_REWRITE_BYTES}-${MAX_FILE_BYTES} bytes, but final acceptance still requires at least ${fullWebTarget.minBytes} bytes. Use substantial executable JavaScript and do not pad with filler text. Do not return a tiny shell, placeholder dashboard, validation buttons, or static mock UI.`:'Do not expand unrelated code.',
+allowFullRewrite?`Full Web generation target after automatic expansion: ${fullWebTarget.minBytes}-${fullWebTarget.maxBytes} UTF-8 bytes. The parser hard safety gate remains ${MIN_FULL_REWRITE_BYTES}-${MAX_FILE_BYTES} bytes, but final acceptance still requires at least ${fullWebTarget.minBytes} bytes. Use substantial executable JavaScript and do not pad with filler text. Do not return a tiny shell, placeholder dashboard, validation buttons, or static mock UI.`:(order?.selectedTask?.studioQualityEvolution?'Expand only the related responsible systems, but do not artificially shrink the implementation into one micro-patch. Complete the connected studio-quality package within the allowed paths.':'Do not expand unrelated code.'),
 allowFullRewrite?'Required output format:\nVIBE2_FULL_FILE\nPATH:index.html\nSUMMARY:short summary\nEXPECTED_EFFECT:short expected effect\nTEST:mobile gameplay\nTEST:restart\nTEST:runtime\n---VIBE2_FILE_CONTENT---\n<!doctype html>\n...complete playable HTML...\n</html>\n---VIBE2_FILE_END---':'Every edits[].find MUST be copied character-for-character from the matching FILE block and occur exactly once.',
 'Do not output binary assets. Do not use wrapper/monkey patches.',
 clean(order.target).toLowerCase()==='system'?'For system target, edit only exact allowed paths. Company policy files may be edited only when they are explicitly listed. Never alter authority or weaken gates. When Allowed edit paths contain both a non-QA system source file and a qa/*.test.js|mjs|cjs regression file, the candidate MUST change both in one atomic candidate: repair the responsible source and add or strengthen the exact causal regression test that fails on the base and passes after the repair.':'Do not change homepage/company files.',
@@ -1036,6 +1061,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false}={}){
   const rawPrompt=String(prompt??'');
+  const studioExpansion=/\[STUDIO_QUALITY_EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
     ? allowedLine.slice(allowedLine.indexOf(':')+1).split(',').map(clean).filter(Boolean)
@@ -1159,14 +1185,14 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     : [
         zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${safeReason}`,
-        ((attempt>=3||(attempt>=2&&timeoutFailure))&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired)?'Return exactly one minimal JSON object whose only top-level key is "edits", containing exactly one edit. Copy edits[0].path exactly from Allowed edit paths and edits[0].find exactly from one provided editable source anchor. Write the actual replacement source in edits[0].replace. Never emit template tokens or placeholder path/find/replace values. Do not include summary, expectedEffect, tests, newFiles, replaceFiles, markdown, comments, or extra keys.':(systemCausalTestRequired||systemSyntaxInvalid||systemAtomicPairRequired)?'Return one strict JSON object with an "edits" array containing at least two exact edits: one for the responsible non-QA system source and one for the responsible qa/*.test.js|mjs|cjs regression file. Both paths and find strings must be copied exactly from editable FILE blocks. The test edit must encode the causal regression so the base fails and the repaired candidate passes.':'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
+        ((attempt>=3||(attempt>=2&&timeoutFailure))&&!studioExpansion&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired)?'Return exactly one minimal JSON object whose only top-level key is "edits", containing exactly one edit. Copy edits[0].path exactly from Allowed edit paths and edits[0].find exactly from one provided editable source anchor. Write the actual replacement source in edits[0].replace. Never emit template tokens or placeholder path/find/replace values. Do not include summary, expectedEffect, tests, newFiles, replaceFiles, markdown, comments, or extra keys.':(systemCausalTestRequired||systemSyntaxInvalid||systemAtomicPairRequired)?'Return one strict JSON object with an "edits" array containing at least two exact edits: one for the responsible non-QA system source and one for the responsible qa/*.test.js|mjs|cjs regression file. Both paths and find strings must be copied exactly from editable FILE blocks. The test edit must encode the causal regression so the base fails and the repaired candidate passes.':'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
         retryAnchorInstruction,
         zeroChange?'You MUST produce at least one edits[] entry. Use one EXACT FIND ANCHOR OPTION above when available, then make replace materially different. Do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use one EXACT FIND ANCHOR OPTION above when available, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one EXACT FIND ANCHOR OPTION above when available. Copy the entire anchor value character-for-character, including whitespace and punctuation. Do not paraphrase, normalize, reconstruct, or guess source text.':semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
         zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||systemCausalTestRequired||systemSyntaxInvalid||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':'',
-        timeoutFailure&&!systemAtomicPairRequired?'Start immediately with the JSON object. Use only the "edits" top-level key and exactly one edit. Keep find to the shortest unique exact source text and keep replace to the smallest coherent implementation that fixes the requested behavior.':systemSyntaxInvalid?'Repair the syntax error while preserving the required source-plus-regression-test atomic candidate. Both changed JavaScript files must pass node --check before incremental QA.':''
+        timeoutFailure&&!systemAtomicPairRequired&&!studioExpansion?'Start immediately with the JSON object. Use only the "edits" top-level key and exactly one edit. Keep find to the shortest unique exact source text and keep replace to the smallest coherent implementation that fixes the requested behavior.':systemSyntaxInvalid?'Repair the syntax error while preserving the required source-plus-regression-test atomic candidate. Both changed JavaScript files must pass node --check before incremental QA.':''
       ].filter(Boolean).join('\n');
-  const focusedFinal=!allowFullRewrite&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired&&(attempt>=3||(attempt>=2&&timeoutFailure));
+  const focusedFinal=!allowFullRewrite&&!studioExpansion&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired&&(attempt>=3||(attempt>=2&&timeoutFailure));
   const fullWebFinal=attempt>=3&&allowFullRewrite;
   const finalInstruction=focusedFinal
     ?'FINAL FOCUSED RETRY: output one JSON object with only the "edits" key and exactly one edit. Copy path exactly from Allowed edit paths. When EXACT FIND ANCHOR OPTIONS are present, use one entire anchor value verbatim as find. Put actual source code in replace; never output template tokens or placeholders. Keep replace minimal but behaviorally complete. No other keys or prose.'
@@ -1238,6 +1264,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let systemAtomicPairCreditUsed=false;
   let diagnosticPostconditionCreditUsed=false;
   let fullWebProgressCreditCount=0;
+  const studioExpansion=/\[STUDIO_QUALITY_EVOLUTION\]/i.test(String(prompt??''));
   const baseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   let maxAttempts=baseMaxAttempts;
   let additiveAttemptCreditUsed=false;
@@ -1264,7 +1291,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
-    const focusedFinal=!allowFullRewrite&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||(speculativeVariant&&attempt>=2));
+    const focusedFinal=!allowFullRewrite&&!studioExpansion&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
