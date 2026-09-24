@@ -401,6 +401,29 @@ test('full studio asset universe plan exposes coverage heatmap and 24h gap fill'
   assert.ok(plan.gapFill.actions.length>0);
 });
 
+test('natural language concept inference covers full preset families and concept axes',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'concept-language-test',
+      goal:'치비 동화풍 몽환 다크 밀리터리 SF 디젤펑크 수묵 무협 분위기 신비롭고 웅장하게 패링과 보스 결투 중심 시네마틱'
+    },
+    target:'unity',
+    repoRoot:path.resolve(here,'..')
+  });
+  const concept=plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested;
+  const styles=concept.weightedStyles.map(row=>row.family);
+  for(const style of ['CHIBI','FAIRYTALE','DREAMLIKE','DARK_FANTASY','MILITARY_SCI_FI','DIESELPUNK','INK_WASH','WUXIA'])assert.ok(styles.includes(style),style);
+  for(const tone of ['MYSTERIOUS','DARK','EPIC'])assert.ok(concept.axes.ART_TONE.includes(tone),tone);
+  assert.ok(concept.axes.WORLD_ERA.includes('WUXIA'));
+  assert.ok(concept.axes.WORLD_ERA.includes('FUTURE'));
+  assert.ok(concept.axes.COMBAT_FEEL.includes('PARRY'));
+  assert.ok(concept.axes.COMBAT_FEEL.includes('BOSS_DUEL'));
+  assert.ok(concept.axes.PRESENTATION.includes('CINEMATIC'));
+  assert.ok(concept.axes.PRESENTATION.includes('HAND_PAINTED'));
+});
+
 test('asset production planner consumes the studio universe contract',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
