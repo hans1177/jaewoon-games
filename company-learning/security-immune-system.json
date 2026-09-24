@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -633,5 +633,25 @@
       "rawGeneratedStoryOrDialogueDirectMasteryForbidden": true
     },
     "failureAction": "QUARANTINE_AFFECTED_NARRATIVE_STATE_SCOPE_AND_ROUTE_DIRECT_GAMEPLAY_REPAIR_REQUIRED"
+  },
+  "specializedVerifiedExperienceSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
+    "implementation": "tools/vibe2-learning-motor.mjs",
+    "protections": {
+      "terminalVerifiedEvidenceRequired": true,
+      "infrastructureFailureNegativeLearningForbidden": true,
+      "rawQueueTelemetryPersistentLearningForbidden": true,
+      "rawBlockerStackPersistentLearningForbidden": true,
+      "exactMapCoordinatesAndLayoutPersistentLearningForbidden": true,
+      "onlySanitizedEvidenceReferencesPersist": true,
+      "specializedOutcomeIdRequired": true,
+      "repeatedSameOutcomeIdPersistenceForbidden": true,
+      "canonicalExperienceNormalizerRequired": true,
+      "verifiedMarkerTraceRequired": true,
+      "positiveMasteryWithoutVerifiedMarkerForbidden": true,
+      "experienceMemoryCannotExpandGameplayOrCodeExecutionAuthority": true
+    },
+    "failureAction": "DROP_UNSAFE_SYNTHETIC_EXPERIENCE_AND_ROUTE_LEARNING_REPAIR_REQUIRED"
   }
 }
