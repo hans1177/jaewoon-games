@@ -1,5 +1,5 @@
 {
-  "version": 33,
+  "version": 34,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-23",
+  "updatedAt": "2026-09-24",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -506,5 +506,28 @@
     ],
     "failureRoute": "EXISTING_SECURITY_RECOVERY",
     "authorityExpansion": false
+  },
+  "motionDirectorSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
+    "purpose": "ALLOW_HIGH_END_MOTION_COMPOSITION_WITHOUT_MOVING_GAMEPLAY_AUTHORITY_OR_BYPASSING_ASSET_PROVENANCE_AND_RUNTIME_QA",
+    "protections": {
+      "internalModuleOnly": true,
+      "siblingTopLevelMotionPipelineForbidden": true,
+      "motionDirectorMayNotOwnDamageHitboxCooldownComboCancelWindowMovementSaveEconomyProgressionOrMultiplayerIntent": true,
+      "incompatibleBodyPlanRigWeaponStanceOrPlatformCombinationMustReject": true,
+      "unresolvedRequiredLibraryGraphEdgeBlocksVerifiedPromotion": true,
+      "layerDoubleAuthorityConflictMustReject": true,
+      "pairMotionMayNotTeleportOutsideGameplayApprovedEnvelope": true,
+      "motionMutationMayNotChangeGameplaySemantics": true,
+      "styleVariantMustPreserveRootMovementEnvelopeAndContactMarkers": true,
+      "externalMotionStillRequiresExistingLicenseAndProvenanceGate": true,
+      "platformNativeReauthoringAndRuntimeVerificationRequired": true,
+      "rawPreparedMotionCannotSelfPromote": true,
+      "deterministicContextSelectionEvidenceRequired": true,
+      "runtimeCaptureAndMobileQaRequired": true
+    },
+    "failureAction": "QUARANTINE_AFFECTED_MOTION_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
+    "wholeCompanyStopDefault": false
   }
 }
