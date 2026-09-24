@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: company-development-roblox-f9-final-review-${{ inputs.game_id || (github.event_name == 'schedule' && 'scheduled-scan') || (github.event_name == 'workflow_dispatch' && 'manual-scan') || github.run_id }}
@@ -21,7 +22,42 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
+  fanout:
+    name: fan out pending Roblox F9 reviews
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.game_id == '')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+      - name: Dispatch each F9 candidate independently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/roblox-f9-fanout-ids
+          const q=require('./development-queue.json');
+          for(const item of q.items||[]){
+            if(item.currentStep!=='ROBLOX_FINAL_REVIEW_REVALIDATION')continue;
+            if(item.robloxFailureSignature!=='ROBLOX_FINAL_REVIEW_PENDING')continue;
+            console.log(item.gameId);
+          }
+          NODE
+          pids=()
+          while read -r id; do
+            [ -n "$id" ] || continue
+            (gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id") &
+            pids+=("$!")
+            echo "ROBLOX_F9_PARALLEL_DISPATCH=$id"
+          done < /tmp/roblox-f9-fanout-ids
+          for pid in "${pids[@]}"; do wait "$pid"; done
+          echo "ROBLOX_F9_PARALLEL_FANOUT_COUNT=$(wc -l < /tmp/roblox-f9-fanout-ids | tr -d ' ')"
+
   final-review:
+    if: github.event_name == 'workflow_dispatch' && inputs.game_id != ''
     name: deterministic F9 review and exact-candidate internal release promotion
     runs-on: ubuntu-latest
     timeout-minutes: 30
