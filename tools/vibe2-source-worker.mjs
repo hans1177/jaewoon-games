@@ -1399,7 +1399,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const initialStudioPrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
     :prompt;
-  const baseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
+  const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
+  const baseMaxAttempts=studioExpansion&&!allowFullRewrite
+    ?Math.min(3,configuredBaseMaxAttempts)
+    :configuredBaseMaxAttempts;
   let maxAttempts=baseMaxAttempts;
   let additiveAttemptCreditUsed=false;
   let additiveAttemptCreditLogged=false;
