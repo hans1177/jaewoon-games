@@ -1388,6 +1388,28 @@ test('focused-QA trace tokens and unproven exact markers cannot self-promote int
 });
 
 
+test('Roblox asset mastery requires asset-binding runtime PASS in addition to generic runtime QA',()=>{
+  const missing=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'rbx-asset-generic-runtime-only',gameId:'g-rbx',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
+    goal:'asset adaptation material style',reusablePatterns:['asset adaptation material'],
+    evidence:['roblox runtime qa pass']
+  }]});
+  assert.equal(missing.state.domains.ASSET_ADAPTATION.xp,0);
+
+  const passed=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'rbx-asset-runtime-bound',gameId:'g-rbx',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
+    goal:'asset adaptation material style',reusablePatterns:['asset adaptation material'],
+    evidence:['roblox runtime qa pass','ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS']
+  }]});
+  assert.ok(passed.state.domains.ASSET_ADAPTATION.xp>0);
+
+  const web=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'web-asset-pass',gameId:'g-web',engine:'web',verified:true,reusable:true,outcome:'PASS',
+    goal:'asset adaptation material style',reusablePatterns:['asset adaptation material']
+  }]});
+  assert.ok(web.state.domains.ASSET_ADAPTATION.xp>0);
+});
+
 test('native specialized positive ingress requires matching authoritative target-engine QA proof',()=>{
   const baseEvidence=[
     'VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',
