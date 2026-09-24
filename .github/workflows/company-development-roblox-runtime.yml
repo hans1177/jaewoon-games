@@ -845,9 +845,6 @@ jobs:
     name: persist Roblox package checkpoints
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -874,6 +871,8 @@ jobs:
         run: |
           set -euo pipefail
           git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
+          git show origin/main:tools/company-runtime-optimistic-merge.mjs > /tmp/company-runtime-optimistic-merge.mjs
+          cp development-queue.json /tmp/roblox-technical-runtime-base.json
           node <<'NODE'
           const fs=require('fs');
           const path=require('path');
@@ -975,14 +974,33 @@ jobs:
           console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
           console.log('ROBLOX_RELEASE_CLAIM=NO');
           NODE
+          cp development-queue.json /tmp/roblox-technical-runtime-updated.json
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_TECHNICAL_PERSIST=NO_CHANGE'
+              break
+            fi
             git commit -m 'runtime: persist Roblox package checkpoint [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_TECHNICAL_PERSIST=PASS:attempt=$attempt"
+              break
+            fi
+            echo "ROBLOX_TECHNICAL_PERSIST_OPTIMISTIC_RETRY=$attempt"
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node /tmp/company-runtime-optimistic-merge.mjs \
+              --base=/tmp/roblox-technical-runtime-base.json \
+              --updated=/tmp/roblox-technical-runtime-updated.json \
+              --current=development-queue.json \
+              --output=development-queue.json
+            sleep "$((attempt<5?attempt:5))"
+          done
       - name: Record isolated package failures without blocking other games
         if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result != 'success'
         run: |
