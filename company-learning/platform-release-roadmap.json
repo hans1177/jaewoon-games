@@ -1,5 +1,5 @@
 {
-  "version": 333,
+  "version": 334,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16633,7 +16633,10 @@
           "authorityExpansion": false,
           "finalMarkerMustBeExactEvidenceToken": true,
           "focusedQaTraceCannotSatisfyFinalMarker": true,
-          "fanInProvenanceRequiredForPositiveIngress": true
+          "fanInProvenanceRequiredForPositiveIngress": true,
+          "ingressDefenseInDepthNativeQaRecheckRequired": true,
+          "nativeTargetProofMustSurviveFanInToCanonicalIngress": true,
+          "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
         },
         "finalMarkerMustBeExactEvidenceToken": true,
         "prefixedOrSuffixedFocusedQaTokenCannotMatchFinalMarker": true,
@@ -16642,7 +16645,12 @@
           "specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION"
         ],
         "positiveWithoutFanInProvenanceMustBeIgnored": true,
-        "focusedQaTraceTokenIsNeverCanonicalVerifiedMarker": true
+        "focusedQaTraceTokenIsNeverCanonicalVerifiedMarker": true,
+        "nativePositiveRequiresAuthoritativeTargetEngineQa": true,
+        "nativeTargetProofMustBeRecheckedAtCanonicalIngress": true,
+        "nativeTargetProofMustBeTraceableInSyntheticExperience": true,
+        "webPositiveDoesNotRequireNativeEngineQa": true,
+        "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
       }
     },
     "worldAndConceptLearning": {
