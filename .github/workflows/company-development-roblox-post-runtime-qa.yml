@@ -102,6 +102,7 @@ jobs:
             const result=await probeRobloxOpenCloudEngine({
               universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
               apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
+              expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
             });
             const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result};
             probes.push(probe);
@@ -316,7 +317,11 @@ jobs:
             const studioAssetRuntimeBindingPassed=studioAssetBindingRequired
               &&result.runtimeAcceptancePassed===true
               &&result.f5InputCameraUiPassed===true
-              &&result.f8GameplaySystemsPassed===true;
+              &&result.f8GameplaySystemsPassed===true
+              &&engineProbe?.engineExecuted===true
+              &&engineProbe?.exactPlace===true
+              &&engineProbe?.exactVersion===true
+              &&engineProbe?.studioAssetSelectionMatched===true;
             item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
             item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
               version:1,
@@ -328,6 +333,14 @@ jobs:
               coreLoopRuntimePassed:result.f8GameplaySystemsPassed===true,
               runtimeAcceptancePassed:result.runtimeAcceptancePassed===true,
               exactRevision:true,
+              targetEngineExecuted:engineProbe?.engineExecuted===true,
+              targetEngineExactPlace:engineProbe?.exactPlace===true,
+              targetEngineExactVersion:engineProbe?.exactVersion===true,
+              targetEngineStudioAssetApplied:engineProbe?.studioAssetApplied===true,
+              targetEngineStudioAssetBindingVersion:Number(engineProbe?.studioAssetBindingVersion||0),
+              targetEngineSelectionMatched:engineProbe?.studioAssetSelectionMatched===true,
+              expectedStudioAssetAtoms:engineProbe?.expectedStudioAssetAtoms||[],
+              observedStudioAssetAtoms:engineProbe?.observedStudioAssetAtoms||[],
               actualPlatformRuntime:true,
               marker:studioAssetRuntimeBindingPassed?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING',
               authority:'roblox-exact-runtime-studio-asset-binding-v1',
