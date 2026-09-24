@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": "   if b.role==\"MONSTER\"then",
+      "replace": "   if b.role==\"MONSTER\"then\n    local best,bd=nil,math.huge\n    for _,a in ipairs(active())do\n     local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)\n     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end\n    end\n    if best then local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)end\n   end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
