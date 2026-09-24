@@ -1,5 +1,5 @@
 {
-  "version": 342,
+  "version": 343,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -18888,6 +18888,9 @@
       "priority": "FIRST_PASS_VERIFIED_FUNCTIONAL_CHANGE",
       "sameFailedStrategyRepeatForbidden": true,
       "failureClassMustChangeRecoveryStrategy": true,
+      "strategyMutationRequiresVerifiedRootCause": true,
+      "successfulResultMutationForbidden": true,
+      "verifiedSupervisorReviseRequeuesExistingTask": true,
       "reuseVerifiedPatternsBeforeBlindRegeneration": true,
       "responsibilityAndExactSourceContextFirst": true,
       "firstCandidatePassRateMeasured": true
