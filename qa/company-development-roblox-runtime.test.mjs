@@ -512,3 +512,16 @@ test('Roblox package build wave is bounded only by GitHub matrix capacity',()=>{
   assert.match(workflow,/if\(rows\.length>=EXECUTION_BATCH_MAX\)break;/);
   assert.match(workflow,/ROBLOX_RUNNER_PARALLEL_CAPACITY=256/);
 });
+
+test('central Roblox policy keeps build-through-final-promotion parallel and exact-evidence reusable',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=roadmap.directNativeDualPlatformDevelopment?.robloxEndToEndParallelExecution;
+  assert.equal(policy?.mode,'PARALLEL_FROM_BUILD_THROUGH_FINAL_PROMOTION');
+  assert.equal(policy?.maxParallelGames,256);
+  assert.equal(policy?.crossGameStageBarrierForbidden,true);
+  assert.equal(policy?.statePersistenceSerializationOnly,true);
+  assert.equal(policy?.exactEvidenceReuse?.serverBootEvidenceMayBeReusedWithoutReboot,true);
+  assert.equal(policy?.exactEvidenceReuse?.exactRuntimeHarnessRequired,true);
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/ROBLOX_RUNTIME_HARNESS_VERSION: '9'/);
+});
