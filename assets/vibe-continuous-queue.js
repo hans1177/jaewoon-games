@@ -94,6 +94,30 @@ function inferSourceRoot(input = {}) {
   if (target === 'godot') return `godot-games/${gameId}`;
   return `${target}:${gameId}`;
 }
+function normalizeStudioQualityEvolution(input=null){
+  if(!input||typeof input!=='object')return null;
+  const connected=input.requiredConnectedImprovements&&typeof input.requiredConnectedImprovements==='object'
+    ?freeze({
+      min:clampInt(input.requiredConnectedImprovements.min||0,0,20),
+      max:clampInt(input.requiredConnectedImprovements.max||0,0,20)
+    })
+    :freeze({min:0,max:0});
+  return freeze({
+    version:clampInt(input.version||1,1,1000),
+    cycle:clampInt(input.cycle||1,1,1000000),
+    phase:clean(input.phase).toUpperCase()||'BUILD_UP',
+    focusPillar:clean(input.focusPillar).toUpperCase()||'STABILITY',
+    baselineId:clean(input.baselineId)||null,
+    baselineSource:clean(input.baselineSource).toUpperCase()||null,
+    explicitGap:clean(input.explicitGap)||null,
+    designIsImplementationCeiling:input.designIsImplementationCeiling===true,
+    requiredConnectedImprovements:connected,
+    realSourceDeltaRequired:input.realSourceDeltaRequired!==false,
+    visibleRenderDeltaRequired:input.visibleRenderDeltaRequired===true,
+    protectedRegressionForbidden:input.protectedRegressionForbidden!==false,
+    nextCycleRequired:input.nextCycleRequired!==false
+  });
+}
 function normalizePackageContext(input = {}) {
   const source=input&&typeof input==='object'?input:{};
   if(!clean(source.explorationMode)&&!clean(source.sourceRoot)&&!(source.responsibleFiles||[]).length)return null;
@@ -104,7 +128,8 @@ function normalizePackageContext(input = {}) {
     sourceRoot:posix(source.sourceRoot)||null,
     responsibleFiles:freezeList(source.responsibleFiles||[]),
     diagnosticEvidence:freezeList(source.diagnosticEvidence||[]),
-    roles:freeze({...((source.roles&&typeof source.roles==='object')?source.roles:{})})
+    roles:freeze({...((source.roles&&typeof source.roles==='object')?source.roles:{})}),
+    studioQualityEvolution:normalizeStudioQualityEvolution(source.studioQualityEvolution)
   });
 }
 function normalizeCompanyContext(input = {}) {
@@ -251,6 +276,7 @@ function normalizeTask(input = {}, index = 0) {
     systemSteward: input.systemSteward === true,
     ownerFocusedCaretaker: input.ownerFocusedCaretaker === true,
     packageContext: normalizePackageContext(input.packageContext),
+    studioQualityEvolution:normalizeStudioQualityEvolution(input.studioQualityEvolution||input.packageContext?.studioQualityEvolution),
     completionCriteria: freezeList(input.completionCriteria || [])
   };
   task.shard = inferShard(task);
