@@ -20,7 +20,9 @@ const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h
 export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
   'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE',
-  'STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
+  'STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','CHARACTER_PERSONA','RELATIONSHIP_MEMORY','WORLD_NARRATIVE',
+  'VISUAL_IDENTITY','CONCEPT_DIRECTION','ENVIRONMENT_COMPOSITION','WORLD_GENERATION','LEVEL_DESIGN','NAVIGATION','STREAMING',
+  'WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
   'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER',
   'UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE',
   'UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'
@@ -52,6 +54,16 @@ const DOMAIN_PATTERNS=freeze({
   QUEST_DESIGN:/quest|퀘스트|objective.?chain|mission.?chain|prerequisite|의뢰|선행.?조건|완료.?조건|선택지|choice.?consequence/i,
   CHARACTER_ARC:/character.?arc|character.?growth|want.?need|motivation|캐릭터.?아크|인물.?변화|욕망|동기|갈등|관계.?변화/i,
   DIALOGUE:/dialogue|conversation|대화|대사|subtext|말투|화법|scene.?objective/i,
+  CHARACTER_PERSONA:/persona|personality|temperament|character.?voice|성격|말투|행동.?성향|욕망|두려움|비밀|금기/i,
+  RELATIONSHIP_MEMORY:/relationship|memory|trust|affinity|respect|betrayal|promise|관계|기억|신뢰|배신|약속|호감/i,
+  WORLD_NARRATIVE:/world.?narrative|environmental.?story|landmark.?story|lore|세계.?서사|환경.?스토리|지역.?서사|랜드마크.?서사/i,
+  VISUAL_IDENTITY:/visual.?identity|style.?bible|silhouette|shape.?language|palette|비주얼.?정체성|스타일.?바이블|실루엣|형태.?언어/i,
+  CONCEPT_DIRECTION:/concept.?director|concept.?blend|style.?blend|art.?tone|world.?era|컨셉|스타일.?혼합|아트.?톤|세계관.?톤/i,
+  ENVIRONMENT_COMPOSITION:/environment.?composition|biome.?dna|prop.?density|landmark.?hierarchy|환경.?구성|바이옴.?DNA|소품.?밀도|랜드마크.?위계/i,
+  WORLD_GENERATION:/world.?generation|procedural.?world|map.?dna|terrain.?generation|월드.?생성|맵.?DNA|지형.?생성/i,
+  LEVEL_DESIGN:/level.?design|route.?grammar|encounter.?space|choke|shortcut|레벨.?디자인|동선|전투.?공간|병목|지름길/i,
+  NAVIGATION:/navigation|navmesh|pathfind|route.?graph|reachability|길찾기|경로.?그래프|도달.?가능|내비/i,
+  STREAMING:/streaming|chunk|cell.?stream|lod|prewarm|object.?pool|스트리밍|청크|프리워밍|오브젝트.?풀/i,
   WEB_RUNTIME:/\bweb\b|browser|html|canvas|dom|css|javascript/i,
   ROBLOX_STUDIO:/roblox|studio|luau|rbxl|rbxlx/i,
   ROBLOX_DATASTORE:/datastore|ordered.?data.?store/i,
@@ -66,7 +78,7 @@ const DOMAIN_PATTERNS=freeze({
   UEFN_REPLICATION:/uefn.*(?:replication|authority|multiplayer.?sync)|fortnite.*(?:replication|authority|multiplayer.?sync)|verse.*(?:replication|authority|multiplayer)|replicated.?state.*(?:uefn|fortnite)/i
 });
 
-const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE']);
+const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','CHARACTER_PERSONA','RELATIONSHIP_MEMORY','WORLD_NARRATIVE','VISUAL_IDENTITY','CONCEPT_DIRECTION','ENVIRONMENT_COMPOSITION','WORLD_GENERATION','LEVEL_DESIGN','NAVIGATION','STREAMING']);
 const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER']);
 const UNITY_NATIVE_ONLY=new Set(['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE']);
 const UEFN_NATIVE_ONLY=new Set(['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION']);
