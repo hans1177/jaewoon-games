@@ -153,6 +153,9 @@ test('Roblox visual planning selects concrete base material atoms and requires n
     assert.ok(plan.baseMaterialLoadout.selectedAtomCount>=20);
     assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.selectionRequired,true);
     assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,true);
+    assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.plannerSourceMutationForbidden,true);
+    assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.downstreamApplicationOwner,'VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION');
+    assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.postApplicationVerificationRequired,true);
     assert.ok(plan.baseMaterialLoadout.families.UI.includes('FRAME_PANEL'));
     assert.equal(plan.baseMaterialLoadout.runtimeVerificationRequired,true);
     const guidance=assetProductionGuidance(plan);
