@@ -27,6 +27,38 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
   };
 }
 
+function robloxFullGraphicsMotionPatch(accent='70,95,130') {
+  return [
+    'local RunService = game:GetService("RunService")',
+    'local character = Instance.new("Model")',
+    'character.Name = "PlayerCharacterVisual"',
+    'local enemyBody = Instance.new("MeshPart")',
+    'enemyBody.Name = "EnemyBody"',
+    'enemyBody.Material = Enum.Material.SmoothPlastic',
+    'enemyBody.Color = Color3.fromRGB(' + accent + ')',
+    'enemyBody.Parent = character',
+    'local weapon = Instance.new("MeshPart")',
+    'weapon.Name = "SwordEquipment"',
+    'weapon.Material = Enum.Material.Metal',
+    'weapon.Parent = character',
+    'local terrainRock = Instance.new("MeshPart")',
+    'terrainRock.Name = "TerrainRockEnvironment"',
+    'terrainRock.Material = Enum.Material.Slate',
+    'terrainRock.Color = Color3.fromRGB(58,70,82)',
+    'terrainRock.Parent = workspace',
+    'local hud = Instance.new("ScreenGui")',
+    'hud.Name = "PresentationHud"',
+    'local impactVfx = Instance.new("ParticleEmitter")',
+    'impactVfx.Name = "ImpactVfx"',
+    'impactVfx.Parent = terrainRock',
+    'RunService.RenderStepped:Connect(function(dt)',
+    '  enemyBody.CFrame = enemyBody.CFrame * CFrame.Angles(0, dt * 0.4, 0)',
+    '  weapon.Orientation = weapon.Orientation + Vector3.new(0, dt * 8, 0)',
+    'end)',
+    'panel.BackgroundColor3 = Color3.fromRGB(' + accent + ')'
+  ].join('\n');
+}
+
 test('presentation candidate delta rejects marker-only edits and accepts actual visual source changes',()=>{
   const contract={required:true,pass:'ASSET_ADAPTATION'};
   const markerOnly=evaluatePresentationCandidateDelta({
@@ -77,7 +109,7 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   const bad1=path.join(cwd,'presentation-bad-1.json');
   const good=path.join(cwd,'presentation-good-focused.json');
   write(bad1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(good,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'}));
+  write(good,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,good]});
   assert.equal(result.generation.attempts,2);
@@ -87,7 +119,7 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   assert.equal(result.presentationCandidateDelta.presentationPass,'ASSET_ADAPTATION');
   assert.deepEqual(result.changedFiles,[relative]);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
-  assert.match(candidate,/Color3\.fromRGB\(70,95,130\)/);
+  assert.match(candidate,/Color3\.fromRGB\(70,95,130\)/);\n  assert.match(candidate,/RenderStepped/);\n  assert.match(candidate,/enemyBody\.CFrame\s*=/);
   assert.match(candidate,/local score = 0/);
 });
 
@@ -113,7 +145,7 @@ test('presentation delta uses the configured fourth recovery attempt instead of 
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
   write(r2,JSON.stringify({replace:'local score = 2'}));
   write(r3,JSON.stringify({replace:'local score = 3'}));
-  write(r4,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'}));
+  write(r4,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
   assert.equal(result.generation.attempts,4);
@@ -144,7 +176,7 @@ test('repeated presentation delta rotates to the next visual anchor before the n
   const r3=path.join(cwd,'presentation-rotate-r3.json');
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
   write(r2,JSON.stringify({replace:'local presentationMarker = 2'}));
-  write(r3,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'}));
+  write(r3,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3]});
   assert.equal(result.generation.attempts,3);
@@ -177,13 +209,13 @@ test('presentation recovery keeps the fourth slot after malformed focused output
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
   write(r2,JSON.stringify({replace:'local score = 2'}));
   write(r3,'{"replace":');
-  write(r4,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(82,110,148)'}));
+  write(r4,JSON.stringify({replace:robloxFullGraphicsMotionPatch('82,110,148')}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
   assert.equal(result.generation.attempts,4);
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.presentationCandidateDelta.pass,true);
-  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8'),/82,110,148/);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');\n  assert.match(candidate,/82,110,148/);\n  assert.match(candidate,/weapon\.Orientation\s*=/);
 });
 
 test('presentation focused recovery prioritizes visual anchors and forbids marker-only repair',()=>{
