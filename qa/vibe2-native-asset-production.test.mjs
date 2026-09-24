@@ -8,6 +8,7 @@ import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRob
 import {findPresentationQualityTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
 function writePolicy(root,{pilot='fantasy-survival'}={}){
   fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
@@ -209,6 +210,161 @@ test('new Roblox bootstrap consumes Studio base materials in real HUD source wit
   assert.match(built.result.clientCode,/Config\.StudioAssets/);
   assert.match(built.result.clientCode,/StudioHealthTrack/);
   assert.match(built.result.clientCode,/Instance\.new\("Frame"\)/);
+});
+
+
+test('Roblox visual plan selects stable base material atoms and requires source auto apply',()=>{
+  const root=tempRoot();
+  try{
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:15,
+      baseMaterialLibrary:{
+        status:'PREPARED_SEMANTIC_ATOM_LIBRARY',
+        productionVerified:false,
+        families:{
+          CHARACTER:['TORSO_CLOTH','SHOULDER_LIGHT','BACK_CAPE'],
+          CREATURE:['HEAD_CANINE','JAW_LONG','CLAW'],
+          BUILDING:['FOUNDATION_RECT','WALL_SOLID','DOOR_SINGLE','ROOF_GABLE'],
+          ENVIRONMENT:['TREE_TRUNK_THICK','TREE_CROWN_ROUND','ROCK_MEDIUM','ROAD_DIRT'],
+          WEAPON:['BLADE_LONG','GUARD_CROSS','GRIP_LONG'],
+          SKILL:['CAST_HAND','PROJECTILE_ORB','IMPACT_SMALL'],
+          MATERIAL:['WOOD','STONE','METAL','CLOTH'],
+          AUDIO:['HIT_FLESH','ATTACK_SWING_LIGHT','ENV_FOREST'],
+          VFX:['IMPACT_FLASH','TRAIL_SHORT','SHAPE_BURST'],
+          UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'],
+          MOTION:['IDLE_RELAXED','WALK','ATTACK_LIGHT_1'],
+          PROP:['CHEST','CRATE','LAMP','WORKBENCH']
+        },
+        mutationAxes:['MATERIAL','PROPORTION','FACTION'],
+        combinationRules:{colorOnlyVariantDoesNotCount:true,actualRuntimeQaRequiredBeforeVerifiedPromotion:true}
+      },
+      variantRecipeTemplates:[{id:'NORMAL_VARIANT',mutationStrength:'LIGHT',minimumDistinctAxes:2}]
+    },null,2));
+    const task={gameId:'demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] Roblox 캐릭터 몬스터 환경 UI 그래픽 개선'};
+    const first=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    const second=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    assert.ok(first.baseMaterialLoadout.selectedAtomCount>=9);
+    assert.equal(first.baseMaterialLoadout.robloxAutoApply.consultRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxAutoApply.sourceMutationRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxAutoApply.markerOnlyBindingForbidden,true);
+    assert.deepEqual(first.baseMaterialLoadout.families,second.baseMaterialLoadout.families);
+    const guidance=assetProductionGuidance(first);
+    assert.match(guidance,/ROBLOX STUDIO ASSET AUTO APPLY/);
+    assert.match(guidance,/STUDIO_ASSET_BINDING_VERSION/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('new Roblox bootstrap binds Studio material atoms into generated Luau without claiming runtime verification',()=>{
+  const assetLibrary={
+    version:15,
+    baseMaterialLibrary:{
+      status:'PREPARED_SEMANTIC_ATOM_LIBRARY',
+      families:{
+        UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'],
+        ENVIRONMENT:['TREE_TRUNK_THICK','TREE_CROWN_ROUND','ROCK_MEDIUM','ROAD_DIRT'],
+        BUILDING:['FOUNDATION_RECT','WALL_SOLID','DOOR_SINGLE','ROOF_GABLE'],
+        PROP:['CHEST','CRATE','LAMP','WORKBENCH'],
+        MATERIAL:['WOOD','STONE','METAL','CLOTH'],
+        VFX:['IMPACT_FLASH','TRAIL_SHORT','SHAPE_BURST'],
+        WEAPON:['BLADE_LONG','GUARD_CROSS','GRIP_LONG'],
+        CHARACTER:['TORSO_CLOTH','SHOULDER_LIGHT','BACK_CAPE'],
+        CREATURE:['HEAD_CANINE','JAW_LONG','CLAW']
+      }
+    }
+  };
+  const baseline={
+    content:{
+      identity:'Action',
+      multiplayerMode:'SINGLE',
+      robloxBuildProfile:{
+        version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',
+        genre:'Action',subgenre:null,playMode:'SINGLE',
+        multiplayerRequired:false,coopImplementationRequired:false,competitiveImplementationRequired:false,
+        networkingRequired:false,multiplayerQaRequired:false,minimumParticipantsForRequiredQa:1,displayLabelKo:'Action'
+      },
+      platformProfiles:{
+        ROBLOX:{
+          platform:'ROBLOX',
+          inputModel:'mobile touch plus keyboard controller input',
+          sessionModel:'single player authoritative session runtime',
+          multiplayerRuntime:'server authority retained even when single',
+          performanceBudget:'mobile first stable frame performance budget',
+          uiUx:'touch first readable mobile user interface',
+          saveAndNetwork:'safe save and network ownership separation',
+          platformContentAdaptation:'native Roblox visual and input adaptation',
+          internalReleaseTarget:'private Roblox internal release candidate',
+          validationEvidence:'source then Studio runtime validation evidence'
+        }
+      }
+    }
+  };
+  const playbooks={taskTypes:{
+    roblox:{authority:'VERIFIED_PLAYBOOK',checklist:['server authority','mobile input'],reuse:[]},
+    coding:{checklist:['bounded source change'],reuse:[]}
+  }};
+  const recombination={recipes:[{
+    id:'action-recipe',sourceProjects:['source-a','source-b'],
+    transformationOperator:'TRANSFORMATIVE_RECOMBINATION',
+    internalCreationRequirement:'ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT',
+    featureBlend:['combat','attack','touch']
+  }]};
+  const plan=buildRobloxStudioAssetBootstrapPlan({gameId:'demo',profile:baseline.content.robloxBuildProfile,assetLibrary});
+  assert.equal(plan.applied,true);
+  assert.ok(plan.selectedAtomCount>=12);
+  const compiled=compileRobloxSource({
+    gameId:'demo',gameName:'Demo',baseline,artbook:{},playbooks,recombination,roadmap:{},assetLibrary
+  });
+  assert.equal(compiled.validation.pass,true);
+  assert.equal(compiled.studioAssets.applied,true);
+  assert.equal(compiled.studioAssets.productionVerified,false);
+  assert.equal(compiled.studioAssets.runtimeVerificationRequired,true);
+  assert.match(compiled.result.sharedConfig,/StudioAssets\s*=/);
+  assert.match(compiled.result.sharedConfig,/FRAME_PANEL/);
+  assert.match(compiled.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
+  assert.match(compiled.result.clientCode,/Config\.StudioAssets/);
+  assert.match(compiled.result.clientCode,/StudioAssetAtoms/);
+  assert.doesNotMatch(compiled.result.sharedConfig,/ProductionVerified\s*=\s*true/);
+});
+
+test('existing Roblox visual candidate must bind selected Studio atoms to real native source',()=>{
+  const root=tempRoot();
+  try{
+    const relative='roblox-games/demo/client/Game.client.luau';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    const manifestPath=path.join(root,'manifest-roblox-studio-binding.json');
+    const manifest={
+      target:'roblox',
+      changedFiles:[relative],
+      assetProduction:{
+        baseMaterialLoadout:{
+          families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
+          robloxAutoApply:{sourceMutationRequired:true}
+        }
+      }
+    };
+    fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2));
+    fs.writeFileSync(file,[
+      'local STUDIO_ASSET_BINDING_VERSION = 1',
+      'local selectedAtom = "FRAME_PANEL"',
+      'local root = Instance.new("Frame")',
+      'root.BackgroundColor3 = Color3.fromRGB(22, 34, 58)',
+      'root:SetAttribute("StudioAssetAtom", selectedAtom)'
+    ].join('\n'));
+    const result=runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-binding',force:true});
+    assert.equal(result.outcome,'PASS');
+    assert.equal(result.robloxStudioAssetBindingQa.status,'STATIC_PASS');
+    assert.equal(result.robloxStudioAssetBindingQa.runtimeStillRequired,true);
+    assert.equal(result.robloxStudioAssetBindingQa.companyAssetPromotionBlockedUntilRuntime,true);
+
+    fs.writeFileSync(file,[
+      'local STUDIO_ASSET_BINDING_VERSION = 1',
+      'local selectedAtom = "FRAME_PANEL"'
+    ].join('\n'));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-marker-only',force:true
+    }),/ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:.*ROBLOX_NATIVE_VISUAL_BINDING/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('native asset plan prefers verified company library then repository then external gap fill',()=>{
