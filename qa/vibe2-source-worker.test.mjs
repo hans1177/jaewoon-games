@@ -123,6 +123,38 @@ test('presentation delta uses the configured fourth recovery attempt instead of 
   assert.deepEqual(result.changedFiles,[relative]);
 });
 
+test('repeated presentation delta rotates to the next visual anchor before the next focused retry',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'camera.FieldOfView = 70',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-presentation-anchor-rotation'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve real visible Roblox presentation without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const r1=path.join(cwd,'presentation-rotate-r1.json');
+  const r2=path.join(cwd,'presentation-rotate-r2.json');
+  const r3=path.join(cwd,'presentation-rotate-r3.json');
+  write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
+  write(r2,JSON.stringify({replace:'local presentationMarker = 2'}));
+  write(r3,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.ok(result.generation.focusedReplaceAnchorRotations>=1);
+  assert.equal(result.presentationCandidateDelta.pass,true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/70,95,130/);
+});
+
 test('presentation recovery keeps the fourth slot after malformed focused output',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
