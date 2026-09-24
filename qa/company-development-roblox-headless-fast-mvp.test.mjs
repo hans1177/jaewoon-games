@@ -122,3 +122,13 @@ test('daechung-rpg runtime foundation survives late player binding and transient
  assert.match(client,/local foundationRoundtrip=false/);
  assert.match(client,/for _=1,20 do[\s\S]*foundationRemote:FireServer\("REMOTE_PING"\)[\s\S]*task\.wait\(\.5\)/);
 });
+
+test('Roblox F0 uses provider-managed parallelism and optimistic runtime persistence',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+ assert.doesNotMatch(workflow,/max-parallel:\s*6/);
+ assert.doesNotMatch(workflow,/rows\.length>=6/);
+ assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+ assert.match(workflow,/company-runtime-optimistic-merge\.mjs/);
+ assert.match(workflow,/ROBLOX_F0_RUNTIME_OPTIMISTIC_RETRY/);
+});
+
