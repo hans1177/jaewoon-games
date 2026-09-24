@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
+import {buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets} from '../tools/vibe2-asset-production-plan.mjs';
 import {findPresentationQualityTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 
@@ -65,6 +65,43 @@ test('web-only assets are never reused directly by Unity or Roblox',()=>{
   assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
 });
 
+
+test('Roblox planner reuses source-bound same-game assets before cross-game library candidates',()=>{
+  const root=tempRoot();
+  try{
+    const server=path.join(root,'roblox-games','demo','server');
+    const shared=path.join(root,'roblox-games','demo','shared');
+    fs.mkdirSync(server,{recursive:true});
+    fs.mkdirSync(shared,{recursive:true});
+    fs.writeFileSync(path.join(server,'Game.server.luau'),[
+      'local ASSETS={Nature=6933438443,City=6933556508,Dungeon=6934021345,StonePortal=12931228293}',
+      'local function loadAsset(id) return AssetService:LoadAssetAsync(id) end'
+    ].join('\\n'));
+    fs.writeFileSync(path.join(shared,'GameConfig.luau'),'return { Audio={Battle="rbxassetid://1837821768"} }\\n');
+    const discovered=discoverExistingRobloxGameAssets({repoRoot:root,gameId:'demo'});
+    assert.ok(discovered.some(row=>row.robloxAssetId==='6933438443'&&row.sameGameExistingRoblox===true));
+    assert.ok(discovered.some(row=>row.robloxAssetId==='1837821768'&&row.types.includes('audio')));
+    assert.equal(discovered.every(row=>row.verifiedCompanyReusable===false),true);
+
+    const plan=buildVibeAssetProductionPlan({
+      task:{gameId:'demo',goal:'자연 환경 배경과 전투 오디오 개선'},target:'roblox',repoRoot:root,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    });
+    assert.ok(plan.summary.discoveredSameGameRobloxAssets>=4);
+    assert.ok(plan.summary.sameGameRobloxCandidateTypes>0);
+    assert.ok(plan.decisions.some(row=>row.sameGameCandidates.some(asset=>asset.robloxAssetId==='6933438443')));
+    assert.ok(plan.decisions.some(row=>row.decisionOrder[0]==='REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'));
+    assert.equal(plan.policy.sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified,true);
+
+    const other=buildVibeAssetProductionPlan({
+      task:{gameId:'other-game',goal:'자연 환경 배경 개선'},target:'roblox',repoRoot:root,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    });
+    assert.equal(other.summary.discoveredSameGameRobloxAssets,0);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
 
 test('native asset plan prefers verified company library then repository then external gap fill',()=>{
   const root=tempRoot();
