@@ -1137,6 +1137,21 @@ RunService.Heartbeat:Connect(function(dt)
     r.AssemblyLinearVelocity=Vector3.zero
     r.CFrame=CFrame.new(previous)
    end
+  end
+   local pos=r.Position
+   local horizontal=Vector3.new(r.AssemblyLinearVelocity.X,0,r.AssemblyLinearVelocity.Z).Magnitude
+   local previous=lastValidPosition[p]
+   local inBounds=math.abs(pos.X)<=C.ArenaLimit and math.abs(pos.Z)<=C.ArenaLimit and pos.Y>=-8 and pos.Y<=42
+   local grace=now<(movementGraceUntil[p]or 0)
+   local stepOkay=not previous or(pos-previous).Magnitude<=C.MaxTeleportStep
+   local velocityOkay=horizontal<=C.MaxHorizontalVelocity
+   if grace or(inBounds and stepOkay and velocityOkay)then
+    lastValidPosition[p]=pos
+   elseif previous then
+    movementGraceUntil[p]=now+.35
+    r.AssemblyLinearVelocity=Vector3.zero
+    r.CFrame=CFrame.new(previous)
+   end
   elseif r then
    lastValidPosition[p]=r.Position
   end
