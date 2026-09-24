@@ -11,6 +11,8 @@ import {
   applyVerifiedCodingCalibration,
   applyVerifiedArchitectureDriftOutcomes,
   applyVerifiedKnowledgeOutcomes,
+  collectVerifiedSpecializedQueueExperience,
+  applyVerifiedSpecializedQueueOutcomes,
   applyVerifiedGraphicsEvolutionOutcomes,
   architectureDriftRiskForTask,
   architectureDriftGuidance,
@@ -1198,4 +1200,76 @@ test('narrative learning policy knows faction relationship and story transition 
   assert.ok(policy.narrativeLearning.verifiedSignals.includes('FACTION_RELATIONSHIP_CAUSALITY'));
   assert.deepEqual(policy.narrativeLearning.domainRouting.storyTransitionCausality,['NARRATIVE_STRUCTURE','MAIN_STORY_GENERATION']);
   assert.ok(policy.narrativeLearning.domainRouting.factionRelationshipCausality.includes('WORLD_NARRATIVE_BINDING'));
+});
+
+
+test('verified specialized queue evidence enters canonical mastery once and ignores infrastructure failures',()=>{
+  const queue={tasks:[
+    {
+      id:'world-pass',gameId:'world-g1',target:'web',status:'verified',
+      goal:'월드 길과 스트리밍 검증',
+      evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','VERIFIED_STREAMING_MOBILE_BUDGET_PASS','actions-run:7001']
+    },
+    {
+      id:'narrative-pass',gameId:'story-g1',target:'web',status:'done',
+      goal:'스토리와 퀘스트 검증',
+      evidence:['VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS','VERIFIED_QUEST_GRAPH_PASS','VERIFIED_WORLD_NARRATIVE_STATE_PASS','actions-run:7002']
+    },
+    {
+      id:'world-fail',gameId:'world-g2',target:'web',status:'failed',
+      goal:'월드 도달성과 스트리밍 실패',
+      evidence:['VERIFIED_NAVIGATION_REACHABILITY_FAILURE','VERIFIED_STREAMING_HITCH','actions-run:7003']
+    },
+    {
+      id:'infra-fail',gameId:'world-g3',target:'web',status:'failed',
+      goal:'러너 장애',
+      evidence:['VERIFIED_STREAMING_HITCH','infrastructure-failure:YES','actions-run:7004']
+    },
+    {
+      id:'not-terminal',gameId:'story-g2',target:'web',status:'queued',
+      goal:'아직 실행 전',
+      evidence:['VERIFIED_QUEST_GRAPH_PASS','actions-run:7005']
+    }
+  ]};
+  const extracted=collectVerifiedSpecializedQueueExperience(queue);
+  assert.equal(extracted.records.length,3);
+  assert.equal(extracted.positive,2);
+  assert.equal(extracted.negative,1);
+  const worldRecord=extracted.records.find(row=>row.sourceTaskId==='world-pass');
+  assert.equal(worldRecord.outcome,'PASS');
+  assert.equal(worldRecord.verifiedEvidenceMarkers.length,2);
+  assert.ok(worldRecord.evidence.includes('source-run:actions-run:7001'));
+  assert.equal(extracted.records.some(row=>row.sourceTaskId==='infra-fail'),false);
+  assert.equal(extracted.records.some(row=>row.sourceTaskId==='not-terminal'),false);
+
+  const learned=applyVerifiedSpecializedQueueOutcomes({},queue);
+  assert.equal(learned.added,3);
+  assert.equal(learned.positive,2);
+  assert.equal(learned.negative,1);
+  assert.ok(learned.state.domains.WORLD_GENERATION.xp>0);
+  assert.ok(learned.state.domains.ROUTE_DESIGN.xp>0);
+  assert.ok(learned.state.domains.STREAMING_OPTIMIZATION.xp>0);
+  assert.ok(learned.state.domains.NARRATIVE_STRUCTURE.xp>0);
+  assert.ok(learned.state.domains.QUEST_GRAPH.xp>0);
+  assert.ok(learned.state.domains.WORLD_NARRATIVE_BINDING.xp>0);
+  assert.ok(Object.keys(learned.state.failureSignatures).length>=1);
+
+  const deduped=applyVerifiedSpecializedQueueOutcomes(learned.state,queue);
+  assert.equal(deduped.added,0);
+  assert.equal(deduped.positive,0);
+  assert.equal(deduped.negative,0);
+});
+
+test('specialized queue ingress policy accepts only verified markers and reuses existing learning motor',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  const ingress=policy.verifiedSpecializedQueueEvidenceIngress;
+  assert.equal(ingress.enabled,true);
+  assert.deepEqual(ingress.positiveStatuses,['VERIFIED','DONE']);
+  assert.ok(ingress.positiveMarkers.includes('VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'));
+  assert.ok(ingress.positiveMarkers.includes('VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS'));
+  assert.ok(ingress.negativeMarkers.includes('VERIFIED_FACTION_RELATIONSHIP_INCONSISTENCY'));
+  assert.equal(ingress.onePositiveAndOneNegativeMaxPerTask,true);
+  assert.equal(ingress.infrastructureFailureNegativeLearningForbidden,true);
+  assert.equal(ingress.existingSeenExperienceDedupeRequired,true);
+  assert.equal(ingress.rawTelemetryDirectTraining,false);
 });
