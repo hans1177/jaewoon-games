@@ -27,9 +27,48 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  ROBLOX_RUNTIME_HARNESS_VERSION: '9'
 
 jobs:
+  fanout:
+    name: fan out pending Roblox runtime candidates
+    if: github.event_name != 'workflow_dispatch' || inputs.game_id == ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+      - name: Dispatch each pending game independently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/roblox-runtime-fanout-ids
+          const q=require('./development-queue.json');
+          for(const item of q.items||[]){
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            if(candidate.published!==true)continue;
+            if(item.robloxFoundationF0Passed!==true)continue;
+            if(item.robloxInternalReleaseReady===true||item.robloxPublicRelease===true)continue;
+            if(!['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||'')))continue;
+            console.log(item.gameId);
+          }
+          NODE
+          pids=()
+          while read -r id; do
+            [ -n "$id" ] || continue
+            (gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id") &
+            pids+=("$!")
+            echo "ROBLOX_FOUNDATION_PARALLEL_DISPATCH=$id"
+          done < /tmp/roblox-runtime-fanout-ids
+          for pid in "${pids[@]}"; do wait "$pid"; done
+          echo "ROBLOX_FOUNDATION_PARALLEL_FANOUT_COUNT=$(wc -l < /tmp/roblox-runtime-fanout-ids | tr -d ' ')"
+
   runtime-foundation-qa:
+    if: github.event_name == 'workflow_dispatch' && inputs.game_id != ''
     name: existing game tester and QA validate exact Roblox runtime candidate
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -78,6 +117,7 @@ jobs:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_RUNTIME_HARNESS_VERSION: ${{ env.ROBLOX_RUNTIME_HARNESS_VERSION }}
         shell: bash
         run: |
           set -euo pipefail
@@ -220,6 +260,54 @@ jobs:
               continue;
             }
 
+            const priorFoundation=item.robloxRuntimeFoundationEvidence||{};
+            const priorPost=item.robloxPostRuntimeQaEvidence||{};
+            const reusableExactRuntime=
+              priorFoundation.runtimeAcceptancePassed===true
+              &&priorFoundation.sourceRevision===sourceRevision
+              &&priorFoundation.artifactIdentity===artifactIdentity
+              &&String(priorFoundation.universeId||'')===String(candidate.universeId||'')
+              &&String(priorFoundation.placeId||'')===String(candidate.placeId||'')
+              &&Number(priorFoundation.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&Number(priorFoundation.runtimeHarnessVersion||0)===Number(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||0)
+              &&priorPost.sourceRevision===sourceRevision
+              &&priorPost.artifactIdentity===artifactIdentity
+              &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&priorPost.actualRuntimeEvidence===true
+              &&priorPost.independentQaPassed===true
+              &&priorPost.regressionPassed===true;
+            if(reusableExactRuntime){
+              item.robloxRuntimeFoundationPassed=true;
+              item.robloxRuntimePassed=true;
+              item.robloxServerClientBoundaryPassed=priorFoundation.f6CoreServicesPassed===true;
+              item.robloxDatastoreRejoinPassed=priorFoundation.f6CoreServicesPassed===true;
+              item.robloxMobileControlUiPassed=priorFoundation.f5InputCameraUiPassed===true;
+              item.robloxMultiplayerQaPassed=priorFoundation.f7MultiplayerFoundationPassed===true;
+              item.robloxIndependentQaPassed=true;
+              item.robloxRegressionPassed=true;
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
+              item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              item.robloxRuntimeEvidenceReuse={
+                reused:true,
+                sourceRevision,
+                artifactIdentity,
+                universeId:String(candidate.universeId),
+                placeId:String(candidate.placeId),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                runtimeHarnessVersion:Number(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||0),
+                sourceAuthority:priorFoundation.authority||null,
+                reusedAt:stamp,
+                reason:'EXACT_CANDIDATE_RUNTIME_ALREADY_VERIFIED'
+              };
+              item.updatedAt=stamp;changed=true;passed++;f9Ids.push(item.gameId);
+              console.log('ROBLOX_RUNTIME_EXACT_EVIDENCE_REUSED='+item.gameId);
+              continue;
+            }
+
             let sentinel;
             try{
               sentinel=await fetchRobloxRuntimeFoundationEvidence({
@@ -304,6 +392,7 @@ jobs:
               artifactRunId:Number(candidate.artifactRunId||0),
               universeId:String(candidate.universeId),
               candidateVersionNumber:Number(candidate.versionNumber),
+              runtimeHarnessVersion:Number(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||0),
               observedAt:stamp,
               workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
               authority:'existing-game-tester-roblox-runtime-foundation-v1',
