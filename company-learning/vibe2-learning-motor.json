@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -281,7 +281,7 @@
   },
   "idleTraining": {
     "enabled": true,
-    "productionWorkAlwaysPreemptsPractice": true,
+    "productionWorkAlwaysPreemptsPractice": false,
     "usesOnlyFreeCapacity": false,
     "drills": [
       "VERIFIED_FAILURE_REPLAY",
@@ -366,7 +366,11 @@
       "rawPracticeArtifactIsNotCompanyAsset": true,
       "verifiedProjectOutcomeRequiredForPromotion": true,
       "productionPreemptible": true
-    }
+    },
+    "productionPresenceDoesNotSuppressLearningExecution": true,
+    "minimumConcurrentLearningLaneRequired": true,
+    "learningQueuePersistsAcrossCapacityPressure": true,
+    "autoResumeWithoutManualAction": true
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",
@@ -632,5 +636,22 @@
     "rawExternalAiOutputDirectUse": false,
     "authorityExpanded": false
   },
-  "updatedAt": "2026-09-24"
+  "updatedAt": "2026-09-24",
+  "continuous24h": {
+    "enabled": true,
+    "authority": "company-learning/platform-release-roadmap.json#continuousLearning24hContract",
+    "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+    "allLearningDomainsAlwaysActive": true,
+    "signalGenerationNeverStops": true,
+    "queueAccumulationNeverStops": true,
+    "executionLaneRunsDuringProduction": true,
+    "minimumConcurrentLearningLaneRequired": true,
+    "normalCycleCompletionAutomaticallyChainsNextCycle": true,
+    "hourlySafetyNetEnabled": true,
+    "noManualResumeRequired": true,
+    "noGenerationCap": true,
+    "productionHasHigherPriorityButCannotSuppressLearning": true,
+    "capacityPressureAction": "REDUCE_LEARNING_PARALLELISM_OR_QUEUE_WORK_NOT_PAUSE_LEARNING_STATE_MACHINE",
+    "failureAction": "RETRY_AND_PRESERVE_QUEUED_LEARNING"
+  }
 }
