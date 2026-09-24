@@ -50,7 +50,7 @@ test('presentation candidate delta rejects marker-only edits and accepts actual 
 
 test('presentation delta failure is retryable source generation work',()=>{
   const error=new Error('PRESENTATION_PATCH_DELTA_REQUIRED:ASSET_ADAPTATION');
-  assert.equal(generationFailureClass(error),'PRESENTATION_DELTA');
+  assert.equal(generationFailureClass(error),'PRESENTATION_PATCH_DELTA');
   assert.equal(shouldRetryGenerationError(error),true);
 });
 
@@ -75,14 +75,12 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
 
   const bad1=path.join(cwd,'presentation-bad-1.json');
-  const bad2=path.join(cwd,'presentation-bad-2.json');
   const good=path.join(cwd,'presentation-good-focused.json');
   write(bad1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(bad2,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 2'}]}));
   write(good,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'}));
 
-  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
-  assert.equal(result.generation.attempts,3);
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,good]});
+  assert.equal(result.generation.attempts,2);
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.presentationCandidateDelta.pass,true);
@@ -114,6 +112,39 @@ test('presentation focused recovery prioritizes visual anchors and forbids marke
   assert.equal(focused.spec.find,'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)');
   assert.match(focused.prompt,/real visible render\/material\/color\/lighting\/motion\/camera\/VFX\/UI source behavior/i);
   assert.match(focused.prompt,/marker-only constants, comments, metadata, or gameplay-only changes are invalid/i);
+});
+
+test('Roblox presentation recovery prioritizes a client visual owner across multiple writable files',()=>{
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve visible Roblox presentation without gameplay changes',
+    'Allowed edit paths: server/Game.server.luau, client/Game.client.luau, shared/VisualStyle.luau',
+    '=== FILE server/Game.server.luau [EDITABLE] ===',
+    'local reward = 30',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'camera.FieldOfView = 70',
+    '=== FILE shared/VisualStyle.luau [EDITABLE] ===',
+    'local accent = Color3.fromRGB(20,30,40)'
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('PRESENTATION_PATCH_DELTA_REQUIRED:ASSET_ADAPTATION'),
+    responsibleFiles:['server/Game.server.luau','client/Game.client.luau','shared/VisualStyle.luau']
+  });
+  assert.ok(focused);
+  assert.equal(focused.spec.path,'client/Game.client.luau');
+  assert.equal(focused.spec.find,'camera.FieldOfView = 70');
+  assert.match(focused.prompt,/ROBLOX PRESENTATION DELTA RECOVERY/i);
+
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('PRESENTATION_PATCH_DELTA_REQUIRED:ASSET_ADAPTATION'),
+    responsibleFiles:['server/Game.server.luau','client/Game.client.luau','shared/VisualStyle.luau'],
+    attempt:2
+  });
+  assert.match(retry,/ROBLOX PRESENTATION PATCH DELTA RECOVERY/i);
+  assert.match(retry,/client\/visual\/render\/UI\/camera\/VFX owner path/i);
+  assert.match(retry,/observable native visual delta/i);
 });
 
 test('studio build-up rejects micro patches and requires the configured connected source delta count',()=>{
