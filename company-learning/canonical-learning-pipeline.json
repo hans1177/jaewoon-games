@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -341,10 +341,37 @@
       "VERIFIED_QUEST_REPETITION",
       "VERIFIED_RELATIONSHIP_INCONSISTENCY",
       "VERIFIED_WORLD_STATE_CONTRADICTION",
-      "VERIFIED_STORY_SOFTLOCK"
+      "VERIFIED_STORY_SOFTLOCK",
+      "VERIFIED_FACTION_RELATIONSHIP_INCONSISTENCY",
+      "VERIFIED_STORY_TRANSITION_CAUSALITY_FAILURE"
     ],
     "rawGeneratedStoryOrDialogueDirectTraining": false,
     "verifiedProjectOutcomeRequiredForPositiveLearning": true,
     "existingThresholdsHoldoutCanaryUnchanged": true
+  },
+  "updatedAt": "2026-09-24",
+  "verifiedSpecializedQueueEvidenceIngress": {
+    "enabled": true,
+    "authority": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
+    "implementation": "tools/vibe2-learning-motor.mjs",
+    "usesExistingQueueEvidenceOnly": true,
+    "createsSeparateTrainer": false,
+    "positiveTerminalStatuses": [
+      "VERIFIED",
+      "DONE"
+    ],
+    "negativeTerminalStatuses": [
+      "FAILED",
+      "VERIFIED",
+      "DONE"
+    ],
+    "infrastructureFailureNegativeLearningForbidden": true,
+    "dedupeByExistingSeenExperienceIds": true,
+    "maxSyntheticRecordsPerTask": {
+      "positive": 1,
+      "negative": 1
+    },
+    "rawTelemetryDirectTraining": false,
+    "preparedSemanticDirectTraining": false
   }
 }
