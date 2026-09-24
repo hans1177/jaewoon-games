@@ -503,7 +503,7 @@
     "qualityOrEvidenceGateWeakeningForbidden": true,
     "globalSelectedPlatformDevelopmentWipMax": null,
     "webValidationParallelismControlledSeparately": false,
-    "runtimeRunnerCapacityMaySerializeRuntimeQa": true,
+    "runtimeRunnerCapacityMaySerializeRuntimeQa": false,
     "canonicalSequence": [
       "CHANGE_DETECTION",
       "CHEAP_PRECHECK",
@@ -554,6 +554,7 @@
       "promotionParallel": true,
       "internalGameConcurrencyCapsForbidden": true,
       "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true,
+      "runtimeQaMayQueueOnlyWhenExternalProviderCapacityIsExhausted": true,
       "matrixBatchMax": 256,
       "sharedStateWriteCriticalSectionOnly": "COMPANY_RUNTIME_SHARED_JSON_COMMIT_MAY_SERIALIZE_BRIEFLY_FOR_INTEGRITY",
       "sharedStateWriteSerializationMayNotSerializeHeavyCheckoutBuildRuntimeOrQa": true,
