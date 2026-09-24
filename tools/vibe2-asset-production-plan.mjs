@@ -355,13 +355,17 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
     gameSpecificStableSelection:true,
     colorOnlyVariantForbidden:companyRegistry?.baseMaterialLibrary?.combinationRules?.colorOnlyVariantDoesNotCount===true,
     runtimeVerificationRequired:companyRegistry?.baseMaterialLibrary?.combinationRules?.actualRuntimeQaRequiredBeforeVerifiedPromotion===true,
-    robloxAutoApply:freeze({
-      consultRequired:clean(target).toLowerCase()==='roblox',
-      sourceMutationRequired:clean(target).toLowerCase()==='roblox'&&visualScope&&selectedAtomCount>0,
+    robloxSelectionHandoff:freeze({
+      selectionRequired:clean(target).toLowerCase()==='roblox',
+      handoffRequired:clean(target).toLowerCase()==='roblox'&&visualScope&&selectedAtomCount>0,
+      plannerSourceMutationForbidden:true,
+      downstreamApplicationOwner:'VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION',
+      downstreamApplicationRequired:clean(target).toLowerCase()==='roblox'&&visualScope&&selectedAtomCount>0,
       bindingVersion:1,
       requiredSourceMarker:'STUDIO_ASSET_BINDING_VERSION',
+      postApplicationVerificationRequired:true,
       actualNativeBindingRequired:true,
-      markerOnlyBindingForbidden:true,
+      markerOnlyApplicationForbidden:true,
       preserveGameplayAuthority:true
     })
   });
@@ -820,7 +824,7 @@ export function buildVibeAssetProductionPlan({
       sameGameRobloxCandidateTypes:sameGameCount,
       discoveredSameGameRobloxAssets:sameGameRobloxAssets.length,
       baseMaterialSelectedAtoms:baseMaterialLoadout.selectedAtomCount,
-      robloxAutoApplySourceMutationRequired:baseMaterialLoadout.robloxAutoApply.sourceMutationRequired,
+      robloxSelectionHandoffRequired:baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,
       companyCandidateTypes:companyCount,
       repositoryCandidateTypes:repositoryCount,
       externalCandidateTypes:externalCount,
@@ -999,7 +1003,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialLibrary?.atomCount?`Composable Base Materials=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.atomCount}; families=${Object.keys(plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.families||{}).join('|')}; mutationAxes=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.mutationAxes.join('|')}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.variantRecipeTemplates?.length?`Variant Recipes=${plan.companyGraphicsLibrary.studioAssetUniverse.variantRecipeTemplates.map(row=>row.id+':'+row.mutationStrength).join('|')}; 일반/지역/세력/정예/보스/히어로 변형은 색상 변경만으로 구분하지 말고 identity budget을 충족한다.`:'',
     plan.baseMaterialLoadout?.selectedAtomCount?`Game Base Material Loadout recipe=${plan.baseMaterialLoadout.recipe?.id||'NORMAL_VARIANT'}; atoms=${Object.entries(plan.baseMaterialLoadout.families||{}).map(([family,atoms])=>family+':'+atoms.join(',')).join('|')}`:'',
-    plan.target==='roblox'&&plan.baseMaterialLoadout?.robloxAutoApply?.sourceMutationRequired?'[ROBLOX STUDIO ASSET AUTO APPLY] 이번 작업은 실제 시각/에셋 범위다. 위 Game Base Material Loadout과 검증 재사용 후보를 기존 책임 Luau 소스의 실제 Instance/Material/Color3/MeshPart/Attachment/Particle/Trail/UI 표현에 연결한다. local STUDIO_ASSET_BINDING_VERSION = 1 마커를 실제 바인딩 구현과 함께 두고, 마커/주석/상수만 추가하는 no-op은 금지한다. 게임 규칙·데미지·쿨다운·저장·진행·네트워크 권한은 바꾸지 않는다.':'',
+    plan.target==='roblox'&&plan.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired?'[ROBLOX STUDIO ASSET SELECTION HANDOFF] 플래너는 소스를 수정하지 않는다. 위 Game Base Material Loadout과 검증 재사용 후보를 작업지시로 Vibe2/Vibe3에 전달한다. Vibe2/Vibe3가 기존 책임 Luau 소스의 실제 Instance/Material/Color3/MeshPart/Attachment/Particle/Trail/UI 표현에 적용하고 local STUDIO_ASSET_BINDING_VERSION = 1을 실제 바인딩과 함께 남긴다. 그 뒤 incremental QA와 Roblox 네이티브 런타임 QA가 적용 결과를 검증한다. 마커/주석/상수만 추가하는 no-op은 금지하며 게임 규칙·데미지·쿨다운·저장·진행·네트워크 권한은 바꾸지 않는다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialRotation?.policy?.status==='ACTIVE_AUTOMATIC_ROTATION'?`Base Material Rotation=AUTO; retire=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.retireCount||0}; graduate=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.graduateCount||0}; refill=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.refillCount||0}; 중복/검증실패/반복 호환실패/장기 미사용 재료는 제작 활성 풀에서 제외하고, 마스터 재료는 제작 재사용은 유지한 채 학습·확장 풀에서 졸업시켜 기존 24H Gap Fill이 새 다양성 슬롯을 같은 사이클에 채운다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
