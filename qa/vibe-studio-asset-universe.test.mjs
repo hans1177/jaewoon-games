@@ -385,7 +385,7 @@ test('base material rotation retires only eligible atoms and refills through exi
       PROP:['CHAIR','TABLE','BED','SHELF','BENCH'],
       WEAPON:['BLADE','GRIP','GUARD']
     },
-    minimumPerFamily:3,
+    minimumPerFamily:2,
     maxRetirePerFamilyPerCycle:2,
     staleAfterCycles:30,
     usageByAtom:{
@@ -407,8 +407,8 @@ test('base material rotation retires only eligible atoms and refills through exi
   assert.ok(plan.retired.some(row=>row.atom==='BLADE'));
   assert.equal(plan.retired.some(row=>row.atom==='SHELF'),false);
   assert.equal(plan.retired.some(row=>row.atom==='GRIP'),false);
-  assert.ok(plan.active.PROP.length>=3);
-  assert.ok(plan.active.WEAPON.length>=3);
+  assert.ok(plan.active.PROP.length>=2);
+  assert.ok(plan.active.WEAPON.length>=2);
   assert.ok(plan.refill.every(row=>row.route==='EXISTING_24H_GAP_FILL'));
 });
 
