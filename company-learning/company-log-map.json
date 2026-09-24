@@ -1,5 +1,5 @@
 {
-  "version": 42,
+  "version": 43,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -773,7 +773,7 @@
     "gameplayAuthority": false
   },
   "narrativeRuntimeEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract.runtimeLearning",
     "evidenceScope": "PER_GAME_CANDIDATE_AND_STORY_STATE_VERSION",
     "correlationKeys": [
@@ -783,7 +783,10 @@
       "QUEST_ID",
       "CHARACTER_ID",
       "THREAD_ID",
-      "FAILURE_SIGNATURE"
+      "FAILURE_SIGNATURE",
+      "FACTION_ID",
+      "FACTION_RELATIONSHIP_KEY",
+      "SOURCE_EVENT_ID"
     ],
     "requiredEvidence": [
       "MAIN_STORY_CAUSALITY_RESULT",
@@ -794,13 +797,20 @@
       "RELATIONSHIP_MEMORY_SOURCE_EVENT_RESULT",
       "COMPANION_NPC_MONSTER_BEHAVIOR_INTENT_RESULT",
       "WORLD_NARRATIVE_STATE_CONSISTENCY_RESULT",
-      "SAVE_LOAD_STORY_RELATIONSHIP_MEMORY_RESULT_WHEN_PERSISTENT"
+      "SAVE_LOAD_STORY_RELATIONSHIP_MEMORY_RESULT_WHEN_PERSISTENT",
+      "STORY_TRANSITION_SOURCE_EVENT_AND_PREREQUISITE_RESULT",
+      "FACTION_RELATIONSHIP_SOURCE_EVENT_RESULT",
+      "FACTION_RELATIONSHIP_IDEMPOTENCY_RESULT",
+      "SAVE_LOAD_FACTION_RELATIONSHIP_RESULT_WHEN_PERSISTENT"
     ],
     "positiveLearningRequiresVerifiedRuntimeOrIndependentQaOutcome": true,
     "rawGeneratedStoryOrDialogueDirectMasteryForbidden": true,
     "duplicateRewardOrCompletionMustBeLoggedAsFailure": true,
     "worldStateContradictionMustBeLoggedAsFailure": true,
     "gameplayAuthorityWriteFromNarrativeMustBeLoggedAsHardFailure": true,
-    "existingCanonicalLearningMotorOnly": true
+    "existingCanonicalLearningMotorOnly": true,
+    "factionRelationshipMutationWithoutSourceEventMustBeLoggedAsFailure": true,
+    "duplicateFactionRelationshipSourceEventMustNotApplyDeltaTwice": true,
+    "outOfRangeFactionRelationshipStateMustBeLoggedAsFailure": true
   }
 }
