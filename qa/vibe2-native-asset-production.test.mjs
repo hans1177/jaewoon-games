@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets} from '../tools/vibe2-asset-production-plan.mjs';
 import {findPresentationQualityTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 
@@ -84,7 +84,7 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     assert.equal(discovered.every(row=>row.verifiedCompanyReusable===false),true);
 
     const plan=buildVibeAssetProductionPlan({
-      task:{gameId:'demo',goal:'자연 환경 배경과 전투 오디오 개선'},target:'roblox',repoRoot:root,
+      task:{gameId:'demo',goal:'Nature background Battle audio improvement'},target:'roblox',repoRoot:root,
       manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
     });
     assert.ok(plan.summary.discoveredSameGameRobloxAssets>=4);
@@ -92,6 +92,9 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     assert.ok(plan.decisions.some(row=>row.sameGameCandidates.some(asset=>asset.robloxAssetId==='6933438443')));
     assert.ok(plan.decisions.some(row=>row.decisionOrder[0]==='REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'));
     assert.equal(plan.policy.sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified,true);
+    const guidance=assetProductionGuidance(plan);
+    assert.match(guidance,/REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET/);
+    assert.match(guidance,/6933438443/);
 
     const other=buildVibeAssetProductionPlan({
       task:{gameId:'other-game',goal:'자연 환경 배경 개선'},target:'roblox',repoRoot:root,
