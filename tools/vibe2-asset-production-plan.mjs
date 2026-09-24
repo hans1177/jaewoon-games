@@ -909,7 +909,8 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.worldGenerationStudio?.enabled?`World Generation Studio는 허용된 이미지/내부 게임/다중 레퍼런스에서 지형·길·밀도·시야·랜드마크 위계 같은 추상 구조만 학습한다. 특정 보호 작품의 맵/랜드마크/장면을 그대로 복제하지 않는다. Map DNA→macro terrain→route graph→zone→micro props→initial prewarm→chunk/LOD streaming→reachability/mobile QA 순으로 연결한다. referenceImages=${plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.referenceImageStudies?.length||0}, verifiedObservations=${plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.verifiedObservationCount||0}.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
-    '선택 순서: 같은 게임/검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
+    plan.target==='roblox'&&Number(plan.summary?.discoveredSameGameRobloxAssets||0)>0?`현재 Roblox 게임 소스에서 기존 Asset ID ${plan.summary.discoveredSameGameRobloxAssets}개를 발견했다. REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET 후보는 새 자산으로 교체하지 말고 현재 게임의 기존 런타임 바인딩을 우선 보존·재사용한다. 단, SOURCE_BOUND_UNVERIFIED는 회사 공용 VERIFIED 자산으로 승격하지 않는다.`:'',
+    '선택 순서: 같은 게임 기존 Roblox 바인딩 → 검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
     'PNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.',
@@ -917,7 +918,7 @@ export function assetProductionGuidance(plan={}){
     `preset=${clean(plan.presetId)||'none'}; reuseCandidateTypes=${plan.summary?.reuseCandidateTypes||0}; directAuthorableTypes=${plan.summary?.directAuthorableTypes||0}; missingTypes=${(plan.missingTypes||[]).join(',')||'none'}`
   ];
   for(const row of (plan.decisions||[]).slice(0,12)){
-    const reuse=(row.reuseCandidates||[]).slice(0,4).map(x=>x.id).join('|')||'none';
+    const reuse=(row.reuseCandidates||[]).slice(0,4).map(x=>x.robloxAssetId?`${x.id}@roblox-asset-id:${x.robloxAssetId}`:x.path?`${x.id}@${x.path}`:x.id).join('|')||'none';
     const external=(row.externalCandidates||[]).slice(0,4).map(x=>x.id).join('|')||'none';
     const direct=(row.directAuthoring||[]).join('|')||'none';
     lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
