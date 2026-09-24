@@ -62,7 +62,8 @@ function presentationRuntimeFanInContract(task={}){
   const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
   const required=studio.finalFanInComparisonRequired===true
     ||studio.runtimeBeforeAfterComparisonRequired===true
-    ||evidence.includes('graphics-evolution-before-after-comparison-required');
+    ||evidence.includes('graphics-evolution-before-after-comparison-required')
+    ||evidence.includes('presentation-runtime-qa-required');
   return{
     required,
     target:clean(task.target).toLowerCase(),
