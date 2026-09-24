@@ -868,7 +868,7 @@ export function createGroupMotionPlan({
   const staggered=normalizedActors.map((actor,index)=>Object.freeze({
     actorId:actor.id,
     phaseOffset:index%Math.max(1,Math.min(4,normalizedActors.length)),
-    attackSuppressed:recent[recent.length-1]===actor.id
+    attackSuppressed:recent[recent.length-1]===upper(actor.id)
   }));
   return Object.freeze({
     pattern:patternName,
@@ -937,7 +937,7 @@ export function createEmotionIntentLayer({
 
 export function selectMotionLod({
   cameraDistance=0,
-  screenSize=1,
+  screenSize=0,
   deviceClass='MOBILE',
   actorImportance='STANDARD',
   combatRelevant=true
