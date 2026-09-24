@@ -1,5 +1,5 @@
 {
-  "version": 324,
+  "version": 325,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -9065,7 +9065,7 @@
     }
   },
   "narrativeStorytellingContract": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-24",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "objective": "BUILD_VERIFIED_MAIN_STORY_QUEST_FORESHADOWING_CHARACTER_VOICE_RELATIONSHIP_MEMORY_COMPANION_NPC_MONSTER_BEHAVIOR_AND_WORLD_NARRATIVE_SKILL_WITHOUT_RAW_COPYING_OR_SEPARATE_SHADOW_TRAINING",
@@ -9092,7 +9092,8 @@
       "COMPANION_BEHAVIOR",
       "NPC_BEHAVIOR",
       "MONSTER_BEHAVIOR_PERSONALITY",
-      "WORLD_NARRATIVE_BINDING"
+      "WORLD_NARRATIVE_BINDING",
+      "CHARACTER_BEHAVIOR"
     ],
     "storyEngine": {
       "requiredWhenNarrativeIsMaterial": true,
@@ -9331,7 +9332,21 @@
         "RELATIONSHIP_INCONSISTENCY",
         "WORLD_STATE_CONTRADICTION"
       ],
-      "rawGeneratedStoryOrDialogueCannotDirectlyBecomeCanonicalMastery": true
+      "rawGeneratedStoryOrDialogueCannotDirectlyBecomeCanonicalMastery": true,
+      "specializedDomainsMustMapToCanonicalLearningMotor": true,
+      "learnableVerifiedSignals": [
+        "QUEST_PREREQUISITE_CORRECTNESS",
+        "QUEST_CONSEQUENCE",
+        "FORESHADOW_PAYOFF",
+        "TWIST_PRIOR_EVIDENCE",
+        "VOICE_DISTINCTNESS",
+        "KNOWLEDGE_BOUNDARY",
+        "RELATIONSHIP_MEMORY_CAUSALITY",
+        "COMPANION_DECISION_CONSISTENCY",
+        "NPC_INITIATIVE_CONSISTENCY",
+        "MONSTER_PERSONALITY_BEHAVIOR",
+        "WORLD_STORY_STATE_CONSISTENCY"
+      ]
     }
   },
   "presentationPipelineImplementation": {
@@ -14738,7 +14753,7 @@
         }
       },
       "studioAssetUniverse": {
-        "version": 2,
+        "version": 3,
         "authority": "OWNER_DIRECTIVE_2026-09-24",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "target": "HIGH_END_STUDIO_ASSET_UNIVERSE",
@@ -15713,7 +15728,18 @@
             "UI",
             "NARRATIVE_PRESENTATION"
           ],
-          "conceptConflictQaRequired": true
+          "conceptConflictQaRequired": true,
+          "learning": {
+            "existingCanonicalLearningMotorOnly": true,
+            "masteryDomain": "CONCEPT_DIRECTION",
+            "verifiedSignals": [
+              "CONCEPT_COHESION",
+              "CONCEPT_CONFLICT",
+              "STYLE_LOCK_CONSISTENCY",
+              "CROSS_ASSET_STYLE_COMPATIBILITY"
+            ],
+            "rawReferenceOrPreparedSemanticMayNotIncreasePositiveMastery": true
+          }
         },
         "worldGenerationStudio": {
           "enabled": true,
@@ -15814,7 +15840,15 @@
               "RESOURCE_DISTRIBUTION_DEFECT"
             ],
             "mapSpecificValuesDoNotBecomeUniversalRulesWithoutRepeatedVerification": true,
-            "rawReferenceImageOrCopiedLayoutCannotBecomeReusableTemplate": true
+            "rawReferenceImageOrCopiedLayoutCannotBecomeReusableTemplate": true,
+            "masteryDomains": [
+              "WORLD_GENERATION",
+              "LEVEL_DESIGN",
+              "ROUTE_DESIGN",
+              "STREAMING_OPTIMIZATION"
+            ],
+            "positiveMasteryRequiresVerifiedProjectOutcome": true,
+            "verifiedFailureMayTeachAvoidPattern": true
           }
         }
       }
@@ -15929,7 +15963,7 @@
     "externalAiAdvisoryRoute": "SEPARATE_VERIFIED_DISTILLATION_OR_SYSTEM_AI_LANE"
   },
   "learningClosedLoopContract": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "objective": "CLOSE_THE_LOOP_FROM_VERIFIED_KNOWLEDGE_RETRIEVAL_TO_FRESH_PROJECT_OUTCOME_AND_BACK_TO_CONFIDENCE",
@@ -16065,6 +16099,62 @@
       "strongerThanHumanBaselineMayBeRecordedOnlyWhenMatchedBenchmarkEvidenceExists": true,
       "unverifiedSuperhumanClaimForbidden": true,
       "capabilityGrowthDoesNotExpandAuthority": true
+    },
+    "specializedGameDevelopmentMastery": {
+      "enabled": true,
+      "purpose": "KEEP_WORLD_CONCEPT_NARRATIVE_CHARACTER_AND_STREAMING_SKILL_DISTINCT_ENOUGH_FOR_VERIFIED_RETRIEVAL_PRACTICE_AND_FAILURE_LEARNING_WITHOUT_CREATING_A_SHADOW_TRAINER",
+      "domains": [
+        "CONCEPT_DIRECTION",
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN",
+        "STREAMING_OPTIMIZATION",
+        "MAIN_STORY_GENERATION",
+        "QUEST_GRAPH",
+        "FORESHADOWING_PAYOFF",
+        "TWIST_EVIDENCE_CHAIN",
+        "CHARACTER_VOICE",
+        "CHARACTER_RELATIONSHIP_MEMORY",
+        "COMPANION_BEHAVIOR",
+        "NPC_BEHAVIOR",
+        "MONSTER_BEHAVIOR_PERSONALITY",
+        "WORLD_NARRATIVE_BINDING"
+      ],
+      "existingCanonicalLearningMotorOnly": true,
+      "positiveMasteryRequiresVerifiedProjectOutcome": true,
+      "verifiedFailureMayTeachAvoidPattern": true,
+      "rawReferenceOrRawGeneratedContentMayNotDirectlyIncreaseMastery": true,
+      "crossPlatformTransferOnlyForAbstractTechnique": true,
+      "nativeRuntimeEvidenceStillRequiredForPlatformSpecificClaims": true
+    },
+    "worldAndConceptLearning": {
+      "enabled": true,
+      "verifiedSignals": [
+        "CONCEPT_COHESION",
+        "CONCEPT_CONFLICT",
+        "PLAYER_ROUTE_USAGE",
+        "NAVIGATION_FAILURE",
+        "OBJECTIVE_REACHABILITY",
+        "CHOKE_OPEN_SPACE_RHYTHM",
+        "LANDMARK_REVEAL",
+        "ENCOUNTER_SPACE_OUTCOME",
+        "INITIAL_ZONE_PREWARM",
+        "CHUNK_STREAMING_STALL",
+        "LOD_POPPING",
+        "MOBILE_WORLD_PERFORMANCE",
+        "WORLD_STATE_PERSISTENCE_ACROSS_UNLOAD"
+      ],
+      "failureAvoidPatterns": [
+        "REPETITIVE_MAP_GRAMMAR",
+        "UNREACHABLE_OBJECTIVE",
+        "ROUTE_DEAD_END_SOFTLOCK",
+        "STYLE_CONFLICT",
+        "REFERENCE_LAYOUT_COPY",
+        "STREAMING_STATE_LOSS",
+        "UNBOUNDED_CHUNK_OR_PROP_COST"
+      ],
+      "mapSpecificValuesDoNotGeneralizeWithoutRepeatedVerification": true,
+      "rawReferenceImageOrProtectedLayoutCannotBecomeReusableTemplate": true
     }
   },
   "genrePresentationQualityContract": {
