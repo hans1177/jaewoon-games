@@ -705,3 +705,45 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(arch.protectedAuthority.qaBypass,false);
   assert.equal(arch.protectedAuthority.releaseSelfApproval,false);
 });
+
+
+test('minimum necessary procedure policy keeps development throughput ahead of unrelated process overhead',()=>{
+  const p=roadmap.minimumNecessaryProcedurePolicy;
+  assert.equal(p.status,'ACTIVE');
+  assert.equal(p.priority,'DEVELOPMENT_THROUGHPUT_FIRST_WITH_MINIMUM_NECESSARY_PROCEDURE');
+  assert.equal(p.defaultMode,'MINIMUM_NECESSARY_VALIDATION_AND_NONBLOCKING_AUDIT');
+  assert.equal(p.principles.procedureIsMeansNotGoal,true);
+  assert.equal(p.principles.unrelatedProcedureMayNotDelayDevelopment,true);
+  assert.equal(p.principles.alreadyPassingEvidenceMustBeReusedWhenStillValid,true);
+  assert.equal(p.principles.duplicateValidationWithoutEvidenceInvalidationForbidden,true);
+  assert.equal(p.principles.duplicateReviewWithoutRelevantChangeForbidden,true);
+  assert.equal(p.principles.wholeRepositoryRegressionIsNotDefault,true);
+  assert.equal(p.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
+  assert.equal(p.principles.asyncOrPosthocAuditPreferredWhenAcceptanceNeedNotBlock,true);
+  assert.equal(p.security.manualOrPrimaryAiReviewOnlyForRelevantSecurityOrProtectedAuthorityDelta,true);
+  assert.equal(p.security.repeatExactHeadReviewWithoutSecurityRelevantDeltaForbidden,true);
+  assert.equal(p.security.unrelatedSecurityReviewMayNotHoldDevelopmentSlots,true);
+  assert.equal(p.security.verifiedSecurityEvidenceReusableUntilRelevantDelta,true);
+  assert.equal(p.regression.defaultScope,'CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCIES_ONLY');
+  assert.equal(p.regression.impactScopedFirst,true);
+  assert.equal(p.regression.expandScopeOnlyOnEvidence,true);
+  assert.equal(p.regression.unaffectedPassingEvidenceReusable,true);
+  assert.equal(p.regression.rerunSuccessfulUnaffectedStagesForbidden,true);
+  assert.equal(p.qaAndReview.portfolioWideBarrierForbidden,true);
+  assert.equal(p.qaAndReview.reviewMayNotBecomeRoutineSerializationPoint,true);
+  assert.equal(p.execution.nonblockingChecksUseSpareOrSeparateCapacity,true);
+  assert.equal(p.execution.taskMicroFanInImmediateRefillPreserved,true);
+  assert.equal(p.execution.cohortFanInLimitedToRelevantIntegrationRegressionAndRelease,true);
+  assert.ok(p.hardGateOnlyWhen.includes('PUBLIC_RELEASE_OR_EXTERNAL_PROMOTION'));
+  assert.ok(p.forbiddenInterpretations.includes('SKIP_RELEVANT_SECURITY_FINDING'));
+  assert.ok(p.forbiddenInterpretations.includes('REUSE_INVALIDATED_EVIDENCE'));
+
+  const projection=architecture.minimumNecessaryProcedurePolicyProjection;
+  assert.equal(projection.defaultValidationScope,'CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCIES_ONLY');
+  assert.equal(projection.duplicateValidationForbidden,true);
+  assert.equal(projection.duplicateReviewForbiddenWithoutRelevantDelta,true);
+  assert.equal(projection.wholeRepositoryRegressionDefaultForbidden,true);
+  assert.equal(projection.administrativeChecksConsumeGamePrimarySlots,false);
+  assert.equal(projection.atomicRefillContinuesDuringUnrelatedChecks,true);
+  assert.equal(projection.releaseAndConfirmedSecurityFindingsRemainFailClosed,true);
+});
