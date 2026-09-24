@@ -1995,7 +1995,8 @@
       "coding_1pmtp6w",
       "coding_eavepq",
       "coding_r9nlyx",
-      "coding_ojwuxz"
+      "coding_ojwuxz",
+      "coding_1v72mpm"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -3635,14 +3636,17 @@
       "coding_negative_1rzt3rq",
       "coding_negative_1xt6go1",
       "coding_negative_1vgpu70",
-      "coding_negative_15em5sp"
+      "coding_negative_15em5sp",
+      "coding_negative_l0q7eh",
+      "coding_negative_1c162pq",
+      "coding_negative_1s07ja5"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 121,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 297,
-        "verifiedFailures": 570,
+        "verifiedFailures": 571,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -3711,13 +3715,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 24,
-            "verifiedFailures": 177,
+            "verifiedFailures": 178,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 77,
             "totalContextBytes": 1041460,
             "lastEvidence": "coding_r9nlyx",
-            "lastFailureEvidence": "coding_negative_1rzt3rq",
-            "lastUpdatedAt": "2026-09-24T08:31:18.773Z"
+            "lastFailureEvidence": "coding_negative_1s07ja5",
+            "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
           }
         },
         "failureFingerprints": {
@@ -4809,18 +4813,38 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1rzt3rq",
             "lastUpdatedAt": "2026-09-24T08:13:43.970Z"
+          },
+          "roblox|NO_OP|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|CAMERA_LANGUAGE|CHARACTER_ARC|COMBAT|CORE_LOOP|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|VISUAL_IDENTITY|WEB_RUNTIME": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "monster-adventure": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "INCREMENTAL_QA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1s07ja5",
+            "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_r9nlyx",
-        "lastFailureEvidence": "coding_negative_1xt6go1",
-        "lastUpdatedAt": "2026-09-24T08:31:18.773Z"
+        "lastFailureEvidence": "coding_negative_1s07ja5",
+        "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 200,
+        "verifiedApplications": 201,
         "firstCandidatePasses": 24,
-        "totalGenerationAttempts": 437,
-        "verifiedFailures": 506,
+        "totalGenerationAttempts": 439,
+        "verifiedFailures": 507,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -4838,13 +4862,13 @@
           "fantasy-survival": 27,
           "__vibe_system__": 1,
           "cozy-island": 41,
-          "horror-escape-room": 34
+          "horror-escape-room": 35
         },
         "targets": {
           "web": 105,
           "unity": 18,
           "system": 1,
-          "roblox": 76
+          "roblox": 77
         },
         "contextModes": {
           "UNKNOWN": {
@@ -4878,14 +4902,14 @@
             "lastUpdatedAt": "2026-09-21T05:01:21.057Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 123,
-            "verifiedFailures": 174,
+            "verifiedApplications": 124,
+            "verifiedFailures": 175,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 294,
-            "totalContextBytes": 3732512,
-            "lastEvidence": "coding_ojwuxz",
-            "lastFailureEvidence": "coding_negative_1mrsmm9",
-            "lastUpdatedAt": "2026-09-24T08:31:18.774Z"
+            "totalGenerationAttempts": 296,
+            "totalContextBytes": 3765281,
+            "lastEvidence": "coding_1v72mpm",
+            "lastFailureEvidence": "coding_negative_1c162pq",
+            "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -5959,16 +5983,16 @@
             "lastUpdatedAt": "2026-09-21T09:51:46.150Z"
           },
           "roblox|OTHER": {
-            "verifiedApplications": 75,
+            "verifiedApplications": 76,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 191,
+            "totalGenerationAttempts": 193,
             "verifiedFailures": 35,
             "games": {
               "cozy-island": 41,
-              "horror-escape-room": 34
+              "horror-escape-room": 35
             },
             "targets": {
-              "roblox": 75
+              "roblox": 76
             },
             "failureGames": {
               "fantasy-survival": 1,
@@ -5982,9 +6006,9 @@
             "failureClasses": {
               "INCREMENTAL_QA": 35
             },
-            "lastEvidence": "coding_ojwuxz",
+            "lastEvidence": "coding_1v72mpm",
             "lastFailureEvidence": "coding_negative_8v7ooz",
-            "lastUpdatedAt": "2026-09-24T08:31:18.774Z"
+            "lastUpdatedAt": "2026-09-24T08:42:59.417Z"
           },
           "web|NO_OP|OTHER": {
             "verifiedApplications": 4,
@@ -6319,18 +6343,38 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1mrsmm9",
             "lastUpdatedAt": "2026-09-24T08:13:43.970Z"
+          },
+          "roblox|NO_OP|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|CAMERA_LANGUAGE|CHARACTER_ARC|COMBAT|CORE_LOOP|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|VISUAL_IDENTITY|WEB_RUNTIME": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "monster-adventure": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "INCREMENTAL_QA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1c162pq",
+            "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_ojwuxz",
-        "lastFailureEvidence": "coding_negative_1vgpu70",
-        "lastUpdatedAt": "2026-09-24T08:31:18.774Z"
+        "lastEvidence": "coding_1v72mpm",
+        "lastFailureEvidence": "coding_negative_1c162pq",
+        "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 544,
         "firstCandidatePasses": 94,
         "totalGenerationAttempts": 1210,
-        "verifiedFailures": 508,
+        "verifiedFailures": 509,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 87,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -6390,13 +6434,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 48,
-            "verifiedFailures": 184,
+            "verifiedFailures": 185,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 128,
             "totalContextBytes": 1657376,
             "lastEvidence": "coding_18c1nzh",
-            "lastFailureEvidence": "coding_negative_18dj01m",
-            "lastUpdatedAt": "2026-09-24T08:13:43.970Z"
+            "lastFailureEvidence": "coding_negative_l0q7eh",
+            "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
           },
           "UNKNOWN": {
             "verifiedApplications": 1,
@@ -7560,12 +7604,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_18dj01m",
             "lastUpdatedAt": "2026-09-24T08:13:43.970Z"
+          },
+          "roblox|NO_OP|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|CAMERA_LANGUAGE|CHARACTER_ARC|COMBAT|CORE_LOOP|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|VISUAL_IDENTITY|WEB_RUNTIME": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "monster-adventure": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "INCREMENTAL_QA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_l0q7eh",
+            "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_18c1nzh",
-        "lastFailureEvidence": "coding_negative_15em5sp",
-        "lastUpdatedAt": "2026-09-24T08:31:18.770Z"
+        "lastFailureEvidence": "coding_negative_l0q7eh",
+        "lastUpdatedAt": "2026-09-24T08:42:59.421Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 137,
@@ -10716,7 +10780,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-24T08:31:18.857Z",
+    "lastBuiltAt": "2026-09-24T08:42:59.480Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10752,7 +10816,7 @@
         "lastUpdatedAt": "2026-09-21T10:40:31.866Z"
       },
       "STATE_MACHINE": {
-        "verifiedApplications": 191,
+        "verifiedApplications": 192,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -10775,12 +10839,12 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 16,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.840Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "COMBAT": {
         "verifiedApplications": 137,
@@ -10834,7 +10898,7 @@
         "lastUpdatedAt": "2026-09-21T10:40:31.866Z"
       },
       "PROGRESSION": {
-        "verifiedApplications": 164,
+        "verifiedApplications": 165,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -10855,15 +10919,15 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 16,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.840Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "ECONOMY": {
-        "verifiedApplications": 26,
+        "verifiedApplications": 27,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -10872,16 +10936,16 @@
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 16,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.840Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "SAVE": {
-        "verifiedApplications": 37,
+        "verifiedApplications": 38,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -10891,16 +10955,16 @@
         "games": {
           "bug-defense": 11,
           "cozy-island": 16,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.840Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "MOBILE_INPUT": {
-        "verifiedApplications": 154,
+        "verifiedApplications": 155,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -10920,15 +10984,15 @@
           "survival": 3,
           "seed-idle-growth-rpg-crystal-bloom": 1,
           "cozy-island": 16,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.840Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "UI_STATE": {
-        "verifiedApplications": 59,
+        "verifiedApplications": 60,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -10942,15 +11006,15 @@
           "bug-defense": 1,
           "village-dungeons": 1,
           "cozy-island": 18,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.840Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "DEBUGGING": {
-        "verifiedApplications": 210,
+        "verifiedApplications": 211,
         "verifiedFailures": 13,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -10974,12 +11038,12 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.841Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "RECOVERY": {
         "verifiedApplications": 0,
@@ -10996,7 +11060,7 @@
         "lastUpdatedAt": null
       },
       "SECURITY": {
-        "verifiedApplications": 40,
+        "verifiedApplications": 41,
         "verifiedFailures": 9,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -11006,16 +11070,16 @@
         "games": {
           "village-dungeons": 11,
           "cozy-island": 20,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.841Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "PERFORMANCE": {
-        "verifiedApplications": 26,
+        "verifiedApplications": 27,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -11024,13 +11088,13 @@
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 16,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.841Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.468Z"
       },
       "ASSET_PRODUCTION": {
         "verifiedApplications": 3,
@@ -11215,7 +11279,7 @@
         "lastUpdatedAt": "2026-09-23T01:12:25.510Z"
       },
       "CHARACTER_ARC": {
-        "verifiedApplications": 26,
+        "verifiedApplications": 27,
         "verifiedFailures": 8,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -11224,13 +11288,13 @@
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 16,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.841Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.469Z"
       },
       "DIALOGUE": {
         "verifiedApplications": 0,
@@ -11600,7 +11664,7 @@
         "lastUpdatedAt": "2026-09-24T07:34:34.143Z"
       },
       "ROBLOX_STUDIO": {
-        "verifiedApplications": 29,
+        "verifiedApplications": 30,
         "verifiedFailures": 9,
         "firstPasses": 0,
         "failureSignatureClears": 0,
@@ -11609,13 +11673,13 @@
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 20,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastUpdatedAt": "2026-09-24T08:31:18.844Z"
+        "lastEvidence": "knowledge_knzgs9",
+        "lastUpdatedAt": "2026-09-24T08:42:59.471Z"
       },
       "ROBLOX_DATASTORE": {
         "verifiedApplications": 0,
@@ -11772,10 +11836,10 @@
     "entries": {
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 240,
+        "verifiedApplications": 241,
         "verifiedFailures": 13,
         "firstPasses": 7,
-        "failureSignatureClears": 67,
+        "failureSignatureClears": 68,
         "regressionFailures": 13,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -11796,24 +11860,24 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 205,
           "unity": 14,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.831Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.460Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 240,
+        "verifiedApplications": 241,
         "verifiedFailures": 13,
         "firstPasses": 7,
-        "failureSignatureClears": 67,
+        "failureSignatureClears": 68,
         "regressionFailures": 13,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -11834,24 +11898,24 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 205,
           "unity": 14,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.831Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.461Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 240,
+        "verifiedApplications": 241,
         "verifiedFailures": 13,
         "firstPasses": 7,
-        "failureSignatureClears": 67,
+        "failureSignatureClears": 68,
         "regressionFailures": 13,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -11872,24 +11936,24 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 205,
           "unity": 14,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.832Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.461Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 240,
+        "verifiedApplications": 241,
         "verifiedFailures": 13,
         "firstPasses": 7,
-        "failureSignatureClears": 67,
+        "failureSignatureClears": 68,
         "regressionFailures": 13,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -11910,24 +11974,24 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 205,
           "unity": 14,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.832Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.461Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 240,
+        "verifiedApplications": 241,
         "verifiedFailures": 13,
         "firstPasses": 7,
-        "failureSignatureClears": 67,
+        "failureSignatureClears": 68,
         "regressionFailures": 13,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -11948,24 +12012,24 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 205,
           "unity": 14,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.832Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.461Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 240,
+        "verifiedApplications": 241,
         "verifiedFailures": 13,
         "firstPasses": 7,
-        "failureSignatureClears": 67,
+        "failureSignatureClears": 68,
         "regressionFailures": 13,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -11986,17 +12050,17 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 205,
           "unity": 14,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.831Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.460Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
@@ -12037,10 +12101,10 @@
       },
       "EXPERIENCE:exp_security_28453669955c43a85d166c5c": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 210,
+        "verifiedApplications": 211,
         "verifiedFailures": 7,
         "firstPasses": 7,
-        "failureSignatureClears": 52,
+        "failureSignatureClears": 53,
         "regressionFailures": 7,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -12061,17 +12125,17 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 14,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 192,
           "unity": 2,
-          "roblox": 23
+          "roblox": 24
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_yhxjlx",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_1t9932g",
-        "lastUpdatedAt": "2026-09-24T07:12:44.784Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.461Z"
       },
       "CODE_PATTERN:pat_130jf9c": {
         "source": "CODE_PATTERN",
@@ -12261,10 +12325,10 @@
       },
       "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 154,
+        "verifiedApplications": 155,
         "verifiedFailures": 8,
         "firstPasses": 7,
-        "failureSignatureClears": 45,
+        "failureSignatureClears": 46,
         "regressionFailures": 8,
         "primaryDomainMatches": 10,
         "primaryDomainMismatches": 0,
@@ -12281,23 +12345,23 @@
           "survival": 3,
           "seed-idle-growth-rpg-crystal-bloom": 1,
           "cozy-island": 16,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 128,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.834Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.463Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 164,
+        "verifiedApplications": 165,
         "verifiedFailures": 8,
         "firstPasses": 7,
-        "failureSignatureClears": 45,
+        "failureSignatureClears": 46,
         "regressionFailures": 8,
         "primaryDomainMatches": 10,
         "primaryDomainMismatches": 0,
@@ -12315,16 +12379,16 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 16,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 138,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.835Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.463Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30": {
         "source": "VERIFIED_CAPABILITY",
@@ -13541,10 +13605,10 @@
       },
       "PRACTICE_DISTILLED:practice-distilled:9b7b3c1df9b291d1f576": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 59,
+        "verifiedApplications": 60,
         "verifiedFailures": 8,
         "firstPasses": 0,
-        "failureSignatureClears": 37,
+        "failureSignatureClears": 38,
         "regressionFailures": 8,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
@@ -13555,17 +13619,17 @@
           "bug-defense": 1,
           "village-dungeons": 1,
           "cozy-island": 18,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "unity": 14,
           "web": 25,
-          "roblox": 28
+          "roblox": 29
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_9z9g4p",
-        "lastUpdatedAt": "2026-09-24T08:31:18.835Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.463Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_4e729cec4540b040a1e80cd6": {
         "source": "VERIFIED_CAPABILITY",
@@ -14616,10 +14680,10 @@
       },
       "CODE_PATTERN:pat_14v79w7": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 66,
+        "verifiedApplications": 67,
         "verifiedFailures": 11,
         "firstPasses": 6,
-        "failureSignatureClears": 66,
+        "failureSignatureClears": 67,
         "regressionFailures": 11,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -14634,24 +14698,24 @@
           "ant-simulator": 2,
           "fantasy-survival": 10,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 38,
           "unity": 5,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.833Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.462Z"
       },
       "CODE_PATTERN:pat_15k9k0m": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 66,
+        "verifiedApplications": 67,
         "verifiedFailures": 11,
         "firstPasses": 6,
-        "failureSignatureClears": 66,
+        "failureSignatureClears": 67,
         "regressionFailures": 11,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -14666,24 +14730,24 @@
           "ant-simulator": 2,
           "fantasy-survival": 10,
           "cozy-island": 22,
-          "horror-escape-room": 12
+          "horror-escape-room": 13
         },
         "targets": {
           "web": 38,
           "unity": 5,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.833Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.462Z"
       },
       "CODE_PATTERN:pat_1dj8rdx": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 61,
+        "verifiedApplications": 62,
         "verifiedFailures": 11,
         "firstPasses": 6,
-        "failureSignatureClears": 61,
+        "failureSignatureClears": 62,
         "regressionFailures": 11,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -14697,24 +14761,24 @@
           "ant-simulator": 2,
           "fantasy-survival": 10,
           "cozy-island": 22,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "targets": {
           "web": 38,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.834Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.462Z"
       },
       "CODE_PATTERN:pat_1e917b8": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 61,
+        "verifiedApplications": 62,
         "verifiedFailures": 11,
         "firstPasses": 6,
-        "failureSignatureClears": 61,
+        "failureSignatureClears": 62,
         "regressionFailures": 11,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
@@ -14728,20 +14792,51 @@
           "ant-simulator": 2,
           "fantasy-survival": 10,
           "cozy-island": 22,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 6
         },
         "targets": {
           "web": 38,
-          "roblox": 34
+          "roblox": 35
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.834Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.462Z"
       },
       "CODE_PATTERN:pat_1gglxo2": {
         "source": "CODE_PATTERN",
+        "verifiedApplications": 62,
+        "verifiedFailures": 11,
+        "firstPasses": 6,
+        "failureSignatureClears": 62,
+        "regressionFailures": 11,
+        "primaryDomainMatches": 11,
+        "primaryDomainMismatches": 0,
+        "games": {
+          "line-defense": 1,
+          "seed-single-defense-strat-celestial-bastion": 3,
+          "monster-adventure": 6,
+          "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
+          "seed-puzzle-chromatic-cascade": 2,
+          "amusement-tycoon": 6,
+          "ant-simulator": 2,
+          "fantasy-survival": 10,
+          "cozy-island": 22,
+          "horror-escape-room": 13,
+          "daechung-rpg": 6
+        },
+        "targets": {
+          "web": 38,
+          "roblox": 35
+        },
+        "state": "PREFERRED",
+        "lastEvidence": "knowledge_knzgs9",
+        "lastFailureEvidence": "knowledge_176yl2h",
+        "lastUpdatedAt": "2026-09-24T08:42:59.462Z"
+      },
+      "CODE_PATTERN:pat_1lx9uhh": {
+        "source": "CODE_PATTERN",
         "verifiedApplications": 61,
         "verifiedFailures": 11,
         "firstPasses": 6,
@@ -14759,48 +14854,17 @@
           "ant-simulator": 2,
           "fantasy-survival": 10,
           "cozy-island": 22,
-          "horror-escape-room": 12,
-          "daechung-rpg": 6
-        },
-        "targets": {
-          "web": 38,
-          "roblox": 34
-        },
-        "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
-        "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.834Z"
-      },
-      "CODE_PATTERN:pat_1lx9uhh": {
-        "source": "CODE_PATTERN",
-        "verifiedApplications": 60,
-        "verifiedFailures": 11,
-        "firstPasses": 6,
-        "failureSignatureClears": 60,
-        "regressionFailures": 11,
-        "primaryDomainMatches": 11,
-        "primaryDomainMismatches": 0,
-        "games": {
-          "line-defense": 1,
-          "seed-single-defense-strat-celestial-bastion": 3,
-          "monster-adventure": 6,
-          "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
-          "seed-puzzle-chromatic-cascade": 2,
-          "amusement-tycoon": 6,
-          "ant-simulator": 2,
-          "fantasy-survival": 10,
-          "cozy-island": 22,
-          "horror-escape-room": 12,
+          "horror-escape-room": 13,
           "daechung-rpg": 5
         },
         "targets": {
           "web": 38,
-          "roblox": 33
+          "roblox": 34
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.833Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.462Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_adb845324f03973dc74788df": {
         "source": "VERIFIED_CAPABILITY",
@@ -14911,28 +14975,28 @@
       },
       "EXPERIENCE:exp_system_ai_0b0a34e7dbf177b41b7207d9": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 33,
+        "verifiedApplications": 34,
         "verifiedFailures": 8,
         "firstPasses": 0,
-        "failureSignatureClears": 33,
+        "failureSignatureClears": 34,
         "regressionFailures": 8,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 20,
-          "horror-escape-room": 11,
+          "horror-escape-room": 12,
           "daechung-rpg": 8,
           "fantasy-survival": 2
         },
         "targets": {
-          "roblox": 32,
+          "roblox": 33,
           "web": 7,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.832Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.461Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_694d98ebd713acfd3b0a9289": {
         "source": "VERIFIED_CAPABILITY",
@@ -14978,23 +15042,23 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_53cddc351499f0a7464c2af4": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 9,
+        "verifiedApplications": 10,
         "verifiedFailures": 0,
         "firstPasses": 0,
-        "failureSignatureClears": 9,
+        "failureSignatureClears": 10,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "horror-escape-room": 9
+          "horror-escape-room": 10
         },
         "targets": {
-          "roblox": 9
+          "roblox": 10
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_yhxjlx",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-24T07:12:44.787Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.464Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_d88b3fb6a7ce0fd1b13cc918": {
         "source": "VERIFIED_CAPABILITY",
@@ -15079,24 +15143,24 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_a048f1c00bb3e0eb48913bf0": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 15,
+        "verifiedApplications": 16,
         "verifiedFailures": 0,
         "firstPasses": 0,
-        "failureSignatureClears": 15,
+        "failureSignatureClears": 16,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "horror-escape-room": 8,
+          "horror-escape-room": 9,
           "cozy-island": 7
         },
         "targets": {
-          "roblox": 15
+          "roblox": 16
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-24T08:31:18.836Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.464Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_67cbe292d92c17ee1773a10c": {
         "source": "VERIFIED_CAPABILITY",
@@ -15140,6 +15204,26 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_89bdf8efa5ad3402d34d018b": {
         "source": "VERIFIED_CAPABILITY",
+        "verifiedApplications": 7,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 7,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {
+          "horror-escape-room": 7
+        },
+        "targets": {
+          "roblox": 7
+        },
+        "state": "VERIFIED",
+        "lastEvidence": "knowledge_knzgs9",
+        "lastFailureEvidence": null,
+        "lastUpdatedAt": "2026-09-24T08:42:59.464Z"
+      },
+      "VERIFIED_CAPABILITY:capability_ctrace_257da6a3fae15f846f251574": {
+        "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 6,
         "verifiedFailures": 0,
         "firstPasses": 0,
@@ -15154,29 +15238,9 @@
           "roblox": 6
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_yhxjlx",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-24T07:12:44.787Z"
-      },
-      "VERIFIED_CAPABILITY:capability_ctrace_257da6a3fae15f846f251574": {
-        "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 5,
-        "verifiedFailures": 0,
-        "firstPasses": 0,
-        "failureSignatureClears": 5,
-        "regressionFailures": 0,
-        "primaryDomainMatches": 0,
-        "primaryDomainMismatches": 0,
-        "games": {
-          "horror-escape-room": 5
-        },
-        "targets": {
-          "roblox": 5
-        },
-        "state": "VERIFIED",
-        "lastEvidence": "knowledge_yhxjlx",
-        "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-24T07:12:44.787Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.464Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_8e48a7db9ae2c9be9596da00": {
         "source": "VERIFIED_CAPABILITY",
@@ -15200,23 +15264,23 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_ac5d070ad35928f24b3a07e9": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 2,
+        "verifiedApplications": 3,
         "verifiedFailures": 0,
         "firstPasses": 0,
-        "failureSignatureClears": 2,
+        "failureSignatureClears": 3,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "horror-escape-room": 2
+          "horror-escape-room": 3
         },
         "targets": {
-          "roblox": 2
+          "roblox": 3
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_yhxjlx",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-24T07:12:44.788Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.464Z"
       },
       "EXPERIENCE:exp_system_ai_a4960e93b58a431d14b77f9c": {
         "source": "EXPERIENCE",
@@ -15240,70 +15304,70 @@
       },
       "PRACTICE_DISTILLED:practice-distilled:a3b815ee564209510cae": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 5,
+        "verifiedApplications": 6,
         "verifiedFailures": 4,
         "firstPasses": 0,
-        "failureSignatureClears": 5,
+        "failureSignatureClears": 6,
         "regressionFailures": 4,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 6,
           "daechung-rpg": 2,
-          "horror-escape-room": 1
+          "horror-escape-room": 2
         },
         "targets": {
-          "roblox": 7,
+          "roblox": 8,
           "web": 2
         },
-        "state": "DEMOTED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "state": "VERIFIED",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.834Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.463Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:361061b79d4bcd2d2050": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 5,
+        "verifiedApplications": 6,
         "verifiedFailures": 2,
         "firstPasses": 0,
-        "failureSignatureClears": 5,
+        "failureSignatureClears": 6,
         "regressionFailures": 2,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 4,
           "daechung-rpg": 2,
-          "horror-escape-room": 1
+          "horror-escape-room": 2
         },
         "targets": {
-          "roblox": 7
+          "roblox": 8
         },
-        "state": "VERIFIED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "state": "PREFERRED",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.835Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.463Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:f472b70e86846f6460f2": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 5,
+        "verifiedApplications": 6,
         "verifiedFailures": 2,
         "firstPasses": 0,
-        "failureSignatureClears": 5,
+        "failureSignatureClears": 6,
         "regressionFailures": 2,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 4,
           "daechung-rpg": 2,
-          "horror-escape-room": 1
+          "horror-escape-room": 2
         },
         "targets": {
-          "roblox": 7
+          "roblox": 8
         },
-        "state": "VERIFIED",
-        "lastEvidence": "knowledge_16rwl2i",
+        "state": "PREFERRED",
+        "lastEvidence": "knowledge_knzgs9",
         "lastFailureEvidence": "knowledge_176yl2h",
-        "lastUpdatedAt": "2026-09-24T08:31:18.835Z"
+        "lastUpdatedAt": "2026-09-24T08:42:59.463Z"
       },
       "EXPERIENCE:exp_system_ai_fbdb1b74ac3437b5e19cbdfc": {
         "source": "EXPERIENCE",
@@ -15600,7 +15664,8 @@
       "knowledge_1bfys56",
       "knowledge_17hfy1a",
       "knowledge_176yl2h",
-      "knowledge_16rwl2i"
+      "knowledge_16rwl2i",
+      "knowledge_knzgs9"
     ]
   },
   "graphicsEvolutionMemory": {
@@ -15608,5 +15673,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-24T08:31:18.857Z"
+  "updatedAt": "2026-09-24T08:42:59.480Z"
 }
