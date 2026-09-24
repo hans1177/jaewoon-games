@@ -932,6 +932,19 @@ test('preservation presentation task is restored instead of superseded by generi
   assert.ok(restored.evidence.includes('owner-preservation-presentation-preempts-generic-web-repair'));
 });
 
+test('web presentation planner discovers a real non-index game entry file',()=>{
+  const root=tempRepo();
+  const gameId='legacy-entry-web';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'legacy_entry_web-28.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Legacy Entry Web',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const task=findWebPresentationQualityTask(project,root,{tasks:[]});
+  assert.ok(task);
+  assert.equal(task.id,`${gameId}-presentation-asset-adaptation-v1`);
+  assert.ok(task.responsibleFiles.includes(`web-games/${gameId}/legacy_entry_web-28.html`));
+});
+
 test('presentation quality passes are queued in canonical order',()=>{
   const root=tempRepo();
   const gameId='presentation-web';
