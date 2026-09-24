@@ -1585,7 +1585,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: vibe2-unreal-core
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Checkout pinned main contract
         uses: actions/checkout@v4
