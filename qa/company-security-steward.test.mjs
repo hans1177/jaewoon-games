@@ -10,6 +10,18 @@ const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immun
 const vibeCoreWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const vibe24hWorkflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 
+test('security scan fetches only range endpoints while incident recovery keeps deep history',()=>{
+  const scanStart=securityWorkflow.indexOf('\n  scan:');
+  const incidentStart=securityWorkflow.indexOf('\n  record_incident:');
+  assert.ok(scanStart>=0&&incidentStart>scanStart);
+  const scanBlock=securityWorkflow.slice(scanStart,incidentStart);
+  const incidentBlock=securityWorkflow.slice(incidentStart);
+  assert.match(scanBlock,/fetch-depth: 1/);
+  assert.doesNotMatch(scanBlock,/fetch-depth: 0/);
+  assert.match(scanBlock,/git fetch --depth=1 --no-tags origin "\$base_sha" --quiet/);
+  assert.match(incidentBlock,/fetch-depth: 0/);
+});
+
 test('literal secret is quarantined and report stores only redacted evidence',()=>{
   const patch='diff --git a/x.txt b/x.txt\n+++ b/x.txt\n@@ -0,0 +1 @@\n+token=ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\n';
   const report=scanSecurityPatch({patch,changedFiles:['x.txt']});
