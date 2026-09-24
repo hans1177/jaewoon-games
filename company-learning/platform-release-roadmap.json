@@ -1,8 +1,8 @@
 {
-  "version": 313,
+  "version": 314,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-23",
+  "recordedAt": "2026-09-24",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -11613,7 +11613,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 8,
+    "version": 9,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -11762,8 +11762,8 @@
       "webDoesNotNeedToImitateHighEndNative3D": true
     },
     "assetAcquisitionAndReuse": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-22",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
       "implementationState": "ACTIVE_EXECUTABLE_CONTRACT",
       "order": [
         "VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY",
@@ -11777,7 +11777,36 @@
       "reusableAssetAndRigCapabilityPreferred": true,
       "successfulVerifiedAssetsMayPromoteToCompanyCapability": true,
       "finalAssetSelectionUsesExistingArtVariantTournament": true,
-      "assetLicenseAndProvenanceMustRemainVerified": true
+      "assetLicenseAndProvenanceMustRemainVerified": true,
+      "mandatoryConsumers": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "companyLibraryLookupRequiredBeforeAssetChoice": true,
+      "repositoryInventoryRequiredBeforeExternalAcquisition": true,
+      "externalGapFillBeforeNewAuthoring": true,
+      "externalSourceCatalogAuthority": "company-asset-library.json#externalSources",
+      "externalGapFillCategories": [
+        "CHARACTER",
+        "RIG",
+        "ANIMATION",
+        "MOTION",
+        "CREATURE",
+        "WEAPON",
+        "ENVIRONMENT",
+        "VFX",
+        "UI"
+      ],
+      "externalSourceRequirements": {
+        "commercialUseMustBeClear": true,
+        "modificationRightsMustBeClear": true,
+        "licenseAndSourceSnapshotRequired": true,
+        "transformAndParentProvenanceRequired": true,
+        "redistributionRestrictionsMustBeTracked": true,
+        "unknownOrNonCommercialForbidden": true
+      },
+      "externalCandidateStatusBeforeRuntimeVerification": "RESEARCH_OR_PREPARED_ONLY",
+      "rawThirdPartyAssetMayNotBePromotedAsVerifiedCompanyAssetWithoutRuntimeConsumer": true
     },
     "graphicsDepartmentOperatingModel": {
       "version": 1,
@@ -12417,7 +12446,7 @@
       }
     },
     "companyGraphicsLibrary24h": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-24",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
@@ -12520,7 +12549,7 @@
         }
       },
       "actionMotionLibrary": {
-        "target": "ACTION_GAME_READY_VARIETY",
+        "target": "STUDIO_GRADE_ACTION_GAME_READY_VARIETY",
         "minimumCoverage": {
           "idleVariants": 4,
           "locomotionDirections": 8,
@@ -12574,7 +12603,10 @@
           "NON_MECHANICAL_IDLE_VARIATION",
           "IMPACT_EVENT_SYNC"
         ],
-        "variationRule": "DO_NOT_SATISFY_VARIETY_BY_SPEED_SCALE_OR_COLOR_ONLY"
+        "variationRule": "DO_NOT_SATISFY_VARIETY_BY_SPEED_SCALE_OR_COLOR_ONLY",
+        "studioBaselineRequired": true,
+        "studioProgramAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioMotionProgram",
+        "creatureFamilyStudyRequired": true
       },
       "reusableLibraries": [
         "CHARACTER_ARCHETYPE_LIBRARY",
@@ -12625,6 +12657,163 @@
         "preparedResearchMustRemainClearlyLabeled": true,
         "publicInspectionSurfaceDoesNotGrantProductionPass": true,
         "verifiedPromotionMayAppendRegistry": true
+      },
+      "consumption": {
+        "appliesTo": [
+          "UNITY",
+          "ROBLOX"
+        ],
+        "requiredForEveryNativeGameDevelopment": true,
+        "lookupBeforeAssetChoice": true,
+        "compatibleVerifiedCompanyAssetPreferred": true,
+        "sameGameVerifiedAssetMayRemainFirstWhenMoreSpecific": true,
+        "externalAndNewAuthoringRequireLibraryGap": true,
+        "styleLockAndGameIdentityOverrideGenericLibraryLook": true,
+        "directCrossPlatformBinaryReuseForbidden": true,
+        "platformNativeVariantRequired": true
+      },
+      "gapFill": {
+        "enabled": true,
+        "purpose": "FILL_COMPANY_LIBRARY_GAPS_FAST_WITH_EXISTING_AND_LICENSE_VERIFIED_EXTERNAL_ASSETS_BEFORE_NEW_AUTHORING",
+        "order": [
+          "INVENTORY_EXISTING_REPOSITORY_ASSETS",
+          "REUSE_OR_DERIVE_RIGHTS_VERIFIED_REPOSITORY_ASSET",
+          "ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET_OR_MOTION",
+          "RETARGET_CLEANUP_AND_PLATFORM_REAUTHOR",
+          "AUTHOR_NEW_ONLY_WHEN_GAP_REMAINS"
+        ],
+        "externalSourceCatalog": "company-asset-library.json#externalSources",
+        "preparedExternalAssetIsNotVerifiedCompanyAsset": true,
+        "runtimeConsumerVerificationRequiredBeforePromotion": true,
+        "productionWorkPreemptsIdleGapFill": true
+      },
+      "studioMotionProgram": {
+        "version": 1,
+        "target": "STUDIO_GRADE_GAME_MOTION",
+        "objective": "FAST_BOOTSTRAP_HUMAN_AND_CREATURE_MOTION_FROM_VERIFIED_EXISTING_OR_EXTERNAL_MOTION_THEN_RETARGET_CLEANUP_AND_RUNTIME_VERIFY_FOR_UNITY_AND_ROBLOX",
+        "priorityBootstrap": [
+          "HUMANOID_STUDIO_LOCOMOTION",
+          "HUMANOID_COMBAT_BASE",
+          "QUADRUPED_STUDIO_MOTION",
+          "CREATURE_FAMILY_MOTION",
+          "BOSS_ACTING_MOTION"
+        ],
+        "sourceOrder": [
+          "VERIFIED_COMPANY_MOTION",
+          "LICENSE_VERIFIED_REPOSITORY_MOTION",
+          "LICENSE_VERIFIED_EXTERNAL_MOCAP_OR_ANIMATION",
+          "RETARGET_AND_CLEANUP",
+          "AUTHOR_NEW_MOTION_WHEN_REQUIRED"
+        ],
+        "humanoidFoundation": {
+          "locomotion": [
+            "IDLE",
+            "WALK",
+            "JOG",
+            "RUN",
+            "SPRINT",
+            "START",
+            "STOP",
+            "STRAFE_LEFT",
+            "STRAFE_RIGHT",
+            "BACKWARD",
+            "TURN_45",
+            "TURN_90",
+            "TURN_180",
+            "JUMP_START",
+            "JUMP_AIR",
+            "LAND",
+            "CROUCH"
+          ],
+          "combat": [
+            "LIGHT_ATTACK",
+            "HEAVY_ATTACK",
+            "GUARD",
+            "DODGE",
+            "DIRECTIONAL_HIT",
+            "KNOCKBACK",
+            "STUN",
+            "KNOCKDOWN",
+            "GET_UP",
+            "DEATH"
+          ],
+          "acting": [
+            "BREATHING",
+            "GAZE_FOCUS",
+            "ALERT",
+            "FATIGUE_WHEN_RELEVANT",
+            "WEAPON_READY",
+            "RECOVERY"
+          ]
+        },
+        "creatureFamilies": [
+          "HUMANOID",
+          "QUADRUPED",
+          "INSECT",
+          "REPTILE_OR_SERPENT",
+          "FLYING",
+          "HEAVY_GOLEM_OR_BOSS"
+        ],
+        "creatureRules": {
+          "speciesReferenceStudyRequired": true,
+          "locomotionAndAttackMustReflectBodyPlanAndWeight": true,
+          "blindHumanoidMotionReuseForNonHumanoidForbidden": true,
+          "familySpecificIdleLocomotionTurnAttackHitDeathRequired": true,
+          "bossMayNotBeNormalEnemyMotionScaledUpOnly": true
+        },
+        "retargetCleanupRequirements": [
+          "FOOT_PLANT_AND_FOOT_SLIDE_CONTROL",
+          "ROOT_AND_PELVIS_TRAJECTORY_CLEANUP",
+          "WEIGHT_TRANSFER",
+          "ARM_LEG_COUNTERSWING_WHEN_HUMANOID",
+          "START_STOP_ACCELERATION_DECELERATION",
+          "TURN_FOOT_PLANT_AND_BODY_FOLLOW",
+          "HAND_WEAPON_CONTACT",
+          "GROUND_AND_SLOPE_CONTACT_WHEN_SUPPORTED",
+          "LOOP_CONTINUITY",
+          "JOINT_LIMIT_AND_MESH_INTERSECTION_SANITY",
+          "IMPACT_EVENT_SYNC",
+          "UPPER_LOWER_BODY_LAYERING_WHEN_SUPPORTED",
+          "SECONDARY_MOTION_AND_PROCEDURAL_RESPONSE"
+        ],
+        "qaRequirements": [
+          "NO_VISIBLE_FOOT_SLIDING",
+          "NO_HARD_STATE_POP_WHEN_BLEND_IS_PRACTICAL",
+          "NATURAL_START_STOP_AND_TURN",
+          "WEIGHT_AND_BODY_PLAN_READABILITY",
+          "WEAPON_GRIP_AND_CONTACT_READABILITY",
+          "ATTACK_HIT_EVENT_ALIGNMENT",
+          "DIRECTIONAL_HIT_RESPONSE",
+          "SPECIES_SPECIFIC_DEATH",
+          "MOBILE_FRAME_STABILITY",
+          "MOBILE_INPUT_READABILITY",
+          "ACTUAL_RUNTIME_CAPTURE",
+          "BEFORE_AFTER_COMPARISON"
+        ],
+        "platformAdaptation": {
+          "sharedMotionIntentAndReferenceAllowed": true,
+          "unity": [
+            "HUMANOID_OR_GENERIC_RIG",
+            "ANIMATOR_BLEND_TREE",
+            "IK_OR_ANIMATION_RIGGING",
+            "ROOT_OR_IN_PLACE_PER_GAME_NEED"
+          ],
+          "roblox": [
+            "R15_OR_CUSTOM_RIG",
+            "ANIMATOR_ANIMATION_TRACK",
+            "MOTOR6D_OR_BONE_BINDING",
+            "MOBILE_BUDGETED_SECONDARY_MOTION"
+          ],
+          "platformNativeRetargetAndRuntimeEvidenceRequired": true,
+          "directCrossPlatformBinaryReuseForbidden": true
+        },
+        "externalMotionUse": {
+          "allowedWhenLicenseVerified": true,
+          "rawExternalMotionIsInputMaterialNotAutomaticCompanyAsset": true,
+          "retargetAndCleanupRequired": true,
+          "sourceLicenseCreatorAndTransformHistoryRequired": true,
+          "externalMotionMayPromoteOnlyAfterNativeRuntimeConsumerPass": true
+        }
       }
     }
   },
