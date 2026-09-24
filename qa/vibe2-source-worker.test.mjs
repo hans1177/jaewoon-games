@@ -532,6 +532,7 @@ test('missing edit path is recovered from the unique responsible source match wi
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.equal(result.generation.attempts,1);
   assert.equal(result.generation.missingPathRecoveries,1);
+  assert.equal(result.codingMethod.missingPathRecoveries,1);
   assert.deepEqual(result.changedFiles,[client]);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',client),'utf8'),/visualState = 2/);
   assert.match(fs.readFileSync(path.join(cwd,root,client),'utf8'),/visualState = 1/);
