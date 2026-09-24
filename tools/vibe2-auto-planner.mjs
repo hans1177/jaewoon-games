@@ -721,16 +721,19 @@ function findWebDiagnosticTask(project,repoRoot,queue){
   out.workUnits=Math.max(3,Math.min(6,rows.length+1));
   return out;
 }
-function presentationSourceForProject(project,repoRoot){
+function presentationSourcesForProject(project,repoRoot){
   const root=posix(project.projectPath),engine=clean(project.engine).toLowerCase();
   const candidates=engine==='web'
-    ?[`${root}/index.html`]
+    ?[`${root}/index.html`,`${root}/style.css`,`${root}/game.js`]
     :engine==='unity'
-      ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`]
+      ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`]
       :engine==='roblox'
-        ?[`${root}/client/Game.client.luau`,`${root}/shared/GameConfig.luau`]
+        ?[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`]
         :[];
-  return candidates.find(relative=>fs.existsSync(sourceFile(repoRoot,relative)))||null;
+  return candidates.filter(relative=>fs.existsSync(sourceFile(repoRoot,relative))).slice(0,6);
+}
+function presentationSourceForProject(project,repoRoot){
+  return presentationSourcesForProject(project,repoRoot)[0]||null;
 }
 function genreCommercialGuidance(project={}){
   const text=clean([project.genre,project.category,project.gameCategory,project.name,project.gameId].filter(Boolean).join(' ')).toLowerCase();
@@ -926,7 +929,7 @@ function presentationEvolutionCycleNumber(queue={},prefix=''){
   }
   return max+1;
 }
-function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
+function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
   const signals=collectGraphicsEvolutionSignals(project,queue);
   if(!signals.length)return null;
   const prefix=presentationPrefix(project);
@@ -952,7 +955,7 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
       ?'이 작업은 고영향 또는 반복 요청이므로 구현 전 최소 2개 접근을 비교하고, 기존 구조 보존·예상 표현 개선폭·회귀 위험을 기준으로 하나를 선택한다. 이전 접근을 이유 없이 그대로 반복하지 않는다.'
       :'영향 범위를 최소화하고 기존 책임 시스템을 직접 수정한다.';
     const goal=`${stage.goal}\n[INTELLIGENT_GRAPHICS_EVOLUTION] OBSERVE→SCORE→CHOOSE→IMPROVE→COMPARE→LEARN→REPLAN\n[GRAPHICS_EVOLUTION_CYCLE] cycle=${cycle}; trigger=${signal.source}; event=${signal.eventId||'AUTO'}; fingerprint=${signal.fingerprint}; score=${signal.score}; ownerRepeat=${signal.ownerRepeatCount}; affected=${signal.affectedPasses.join(',')}\n새 근거: ${signalText}\n${alternativeInstruction}\n수정 후 마지막 PASS checkpoint와 실제 전후 비교를 수행하고, 좋아진 결과와 실패/퇴보 결과 모두 기존 learning-motor로 반환한다. 영향 없는 게임플레이·저장·밸런스·판정은 보존한다.`;
-    const out=task(id,project,goal,[relative],signal.source==='OWNER_CHANGE_REQUEST'?'owner-immediate':'normal','medium',[
+    const out=task(id,project,goal,(Array.isArray(relatives)?relatives:[relatives]).filter(Boolean),signal.source==='OWNER_CHANGE_REQUEST'?'owner-immediate':'normal','medium',[
       'asset-production-parallel:v1',
       'presentation-quality-pipeline:v1',
       `presentation-pass:${stage.pass}`,
@@ -978,7 +981,7 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
       'mobile-performance-qa-required',
       'presentation-marker-only-pass:forbidden'
     ]);
-    out.workUnits=4;
+    out.workUnits=7;
     out.assetProductionLane=true;
     out.estimatedRisk='high';
     out.speculativeEligible=true;
@@ -1055,7 +1058,8 @@ export function findPresentationQualityTask(project,repoRoot,queue){
   if(!['web','unity','roblox'].includes(engine))return null;
   if(!['development-confirmed','release-confirmed'].includes(clean(project.releaseState).toLowerCase()))return null;
   if(engine!=='web'&&!assetProductionEnabled(repoRoot))return null;
-  const relative=presentationSourceForProject(project,repoRoot);
+  const relatives=presentationSourcesForProject(project,repoRoot);
+  const relative=relatives[0]||null;
   if(!relative)return null;
   const stages=presentationStagesForProject(project);
   let previousId=null;
@@ -1068,7 +1072,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
       continue;
     }
     if(previousId&&!taskVerified(queue,previousId))return null;
-    const out=task(id,project,stage.goal,[relative],project.gameId==='fantasy-survival'?'owner-immediate':'normal','medium',[
+    const out=task(id,project,stage.goal,relatives,project.gameId==='fantasy-survival'?'owner-immediate':'normal','medium',[
       'asset-production-parallel:v1',
       'presentation-quality-pipeline:v1',
       `presentation-pass:${stage.pass}`,
@@ -1085,7 +1089,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
       'presentation-marker-only-pass:forbidden',
       'presentation-placeholder-primitives:forbidden'
     ]);
-    out.workUnits=4;
+    out.workUnits=7;
     out.assetProductionLane=true;
     out.estimatedRisk='high';
     out.speculativeEligible=true;
@@ -1099,7 +1103,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
     ])];
     return out;
   }
-  return nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages);
+  return nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages);
 }
 export function findWebPresentationQualityTask(project,repoRoot,queue){
   if(clean(project?.engine).toLowerCase()!=='web')return null;
@@ -1284,8 +1288,9 @@ function findStudioContinuousImprovementTask(project,repoRoot,queue){
   const verified=history.filter(item=>clean(item.status).toLowerCase()==='verified');
   const previous=verified.at(-1)||null;
   const previousPhase=clean(previous?.studioQualityEvolution?.phase).toUpperCase();
-  const phase=previousPhase==='BUILD_UP'?'OPTIMIZE':'BUILD_UP';
+  const latestFailed=[...history].reverse().find(item=>['failed','blocked'].includes(clean(item.status).toLowerCase()))||null;
   const cycle=verified.length+1;
+  const phase=latestFailed?'REPAIR':previousPhase==='BUILD_UP'?'OPTIMIZE':'BUILD_UP';
 
   const knownSignals=[
     ...(project?.developmentValidation?.blockers||[]),
@@ -1299,7 +1304,7 @@ function findStudioContinuousImprovementTask(project,repoRoot,queue){
   else if(/mobile|touch|input|readability|navigation|tutorial|accessib|hud|ui/.test(signalText))focusPillar='USABILITY';
   else if(/progress|reward|unlock|quest|goal|economy|content depth/.test(signalText))focusPillar='PROGRESSION';
   else if(/combat|core.?loop|feedback|interaction|fun|feel|gameplay/.test(signalText))focusPillar='CORE_FUN';
-  else if(!knownSignals.length)focusPillar=['CORE_FUN','PRESENTATION','USABILITY','STABILITY'][Math.max(0,cycle-1)%4];
+  else if(!knownSignals.length)focusPillar=['PRESENTATION','CORE_FUN','USABILITY','STABILITY','PROGRESSION'][Math.max(0,cycle-1)%5];
 
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
@@ -1338,7 +1343,9 @@ function findStudioContinuousImprovementTask(project,repoRoot,queue){
   const explicitGap=knownSignals[0]||`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`;
   const phaseInstruction=phase==='BUILD_UP'
     ?'기존 설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현 3~6개를 한 패키지로 끝내고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다.'
-    :'새 기능을 억지로 늘리지 말고 현재 구현의 병목을 최적화한다. 중복/불필요한 처리, 모바일 입력 지연, 렌더/업데이트 비용, 상태 불일치, UI 가독성, 코드 책임 혼선을 기존 구조 안에서 직접 줄이고 실제 플레이 품질을 한 단계 올린다.';
+    :phase==='REPAIR'
+      ?'최근 실패/차단 근거를 먼저 재현하고 원인 책임 시스템을 직접 수리한다. 같은 증상을 다른 wrapper나 임시 override로 덮지 말고 원인을 제거한 뒤 동일 시나리오를 다시 검증한다. 수리 범위 안에서 작은 품질 개선도 함께 남긴다.'
+      :'새 기능을 억지로 늘리지 말고 현재 구현의 병목을 최적화한다. 중복/불필요한 처리, 모바일 입력 지연, 렌더/업데이트 비용, 상태 불일치, UI 가독성, 코드 책임 혼선을 기존 구조 안에서 직접 줄이고 실제 플레이 품질을 한 단계 올린다.';
   const visualInstruction=focusPillar==='PRESENTATION'
     ?' 그래픽은 마커/상수/파티클 존재만으로 완료하지 않는다. 캐릭터·적 실루엣, 환경 깊이와 랜드마크, 애니메이션 상태, 공격/피격/사망 반응, VFX, 조명, UI 계층, 카메라/오디오 타이밍 중 현재 약한 부분을 실제 렌더 소스에서 여러 요소 함께 개선하고 전후 차이가 눈에 보여야 한다.'
     :'';
