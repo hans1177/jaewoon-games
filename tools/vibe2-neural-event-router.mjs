@@ -133,15 +133,17 @@ export function simulateNeuralEventRoute({
     gatedExecutionEnabled
   });
   const nonAuthorityInhibitors=inhibitors.filter(value=>value!=='PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED');
+  const eventMutationEligible=eventAllowsGatedMutation(normalizedEvent);
   const wouldFireWithoutPhase2Authority=
     normalizedEvent.type!=='UNKNOWN'
     &&proposedAction.kind!=='OBSERVE_ONLY'
+    &&eventMutationEligible
     &&nonAuthorityInhibitors.length===0;
   const gatedActionAllowed=
     gatedExecutionEnabled===true
     &&GATED_ACTIONS.has(proposedAction.kind)
     &&normalizedEvent.type!=='UNKNOWN'
-    &&eventAllowsGatedMutation(normalizedEvent)
+    &&eventMutationEligible
     &&nonAuthorityInhibitors.length===0;
   const workerCreationAllowed=gatedActionAllowed&&['PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR','PREPARE_DIAGNOSTIC_REVALIDATION'].includes(proposedAction.kind);
   const queueMutationAllowed=gatedActionAllowed;
