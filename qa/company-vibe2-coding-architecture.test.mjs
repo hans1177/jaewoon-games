@@ -72,10 +72,14 @@ test('coding architecture enforces state ownership APIs events invariants and mi
   assert.ok(ownerSystems.has('WORLD'));
   assert.ok(ownerSystems.has('COMBAT'));
   assert.ok(ownerSystems.has('ECONOMY'));
+  assert.ok(ownerSystems.has('NARRATIVE'));
   assert.ok(architecture.apiContracts.some(x=>x.api.startsWith('resolveCombatAction')));
+  assert.ok(architecture.apiContracts.some(x=>x.api.startsWith('advanceNarrative')));
   assert.ok(architecture.eventContracts.every(x=>x.idempotency.includes('DUPLICATE_CAUSAL_EVENT')));
   assert.ok(architecture.invariants.some(x=>x.id==='ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE'));
   assert.ok(architecture.invariants.some(x=>x.id==='NO_DUPLICATE_CAUSAL_REWARD'));
+  assert.ok(architecture.invariants.some(x=>x.id==='NARRATIVE_KNOWLEDGE_CAUSAL'));
+  assert.ok(architecture.invariants.some(x=>x.id==='NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY'));
   assert.ok(architecture.microRuntimeTests.every(x=>x.cannotSubstituteFor==='FULL_CANONICAL_PROMOTION_VALIDATION'));
   assert.ok(architecture.impactPrediction.some(x=>x.system==='COMBAT'&&x.likelyAffected.includes('PROGRESSION')));
 });
@@ -117,4 +121,25 @@ test('greenfield and recompose modes are visible to the existing patch planner w
   assert.equal(recomposed.codingArchitecture.developmentMode,'RECOMPOSE');
   assert.equal(recomposed.patchPlan.mode,'RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE');
   assert.ok(recomposed.patchPlan.tasks.some(x=>x.id==='RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE'));
+});
+
+
+test('development planner binds adaptive world and narrative work into existing architecture without shadow systems',()=>{
+  const baseline={content:{coreLoop:['explore','quest','fight','reward'],quests:['main quest']}};
+  const inventory=[
+    {id:'map',path:'world.map',label:'explore region map route landmark'},
+    {id:'npc',path:'world.npc',label:'npc companion dialogue relationship memory story'},
+    {id:'quest',path:'progress.quest',label:'quest narrative foreshadow story objective'}
+  ];
+  const context=buildVibeDevelopmentContext({gameId:'story-world',genre:'STORY_COMPLETE_RPG',baseline,inventory,existingHtml:'',runtimeEvidence:null});
+  assert.equal(context.gameplaySketch.worldModel.mapDnaRequired,true);
+  assert.equal(context.gameplaySketch.worldModel.streamingPlanRequired,true);
+  assert.equal(context.gameplaySketch.narrativeModel.required,true);
+  assert.ok(context.patchPlan.tasks.some(x=>x.id==='IMPLEMENT_ADAPTIVE_WORLD_GENERATION_PLAN'));
+  assert.ok(context.patchPlan.tasks.some(x=>x.id==='VERIFY_MAP_ROUTE_AND_STREAMING_STATE'));
+  assert.ok(context.patchPlan.tasks.some(x=>x.id==='IMPLEMENT_NARRATIVE_STATE_AND_QUEST_GRAPH'));
+  assert.ok(context.patchPlan.tasks.some(x=>x.id==='IMPLEMENT_CHARACTER_PERSONA_VOICE_AND_MEMORY'));
+  assert.ok(context.patchPlan.tasks.some(x=>x.id==='BIND_WORLD_STORY_STATE'));
+  assert.ok(context.patchPlan.tasks.some(x=>x.id==='VERIFY_NARRATIVE_CAUSALITY_AND_SAVE'));
+  assert.ok(context.patchPlan.forbidden.includes('UNAUTHORIZED_EXTERNAL_SOURCE_ASSET_OR_TEXT_COPY'));
 });
