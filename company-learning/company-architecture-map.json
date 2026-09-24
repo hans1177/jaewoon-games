@@ -1,5 +1,5 @@
 {
-  "version": 141,
+  "version": 142,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2288,7 +2288,26 @@
           "UI_PRESENTATION_LIBRARY"
         ],
         "gameplayAuthorityExpansionForbidden": true,
-        "platformNativeRuntimeVerificationRequired": true
+        "platformNativeRuntimeVerificationRequired": true,
+        "advancedSystems": [
+          "TRANSITION_DIRECTOR",
+          "AUTOMATIC_CONTACT_QA",
+          "GAMEPLAY_EVENT_MOTION_BINDING",
+          "PROCEDURAL_MOTION_LAYER",
+          "GROUP_MOTION_DIRECTOR",
+          "MULTI_ACTOR_MOTION",
+          "EMOTION_INTENT_LAYER",
+          "MOTION_LOD",
+          "MOTION_LINEAGE",
+          "RUNTIME_MOTION_LEARNING"
+        ],
+        "runtimeLearning": {
+          "existingLearningMotorOnly": true,
+          "separateTrainerForbidden": true,
+          "positiveLearningRequiresVerifiedRuntimePass": true,
+          "verifiedFailureMayTeachAvoidPattern": true,
+          "platformEvidenceIndependent": true
+        }
       },
       "autoMotionCoverageGapFill": {
         "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.autoMotionCoverageGapFill",
