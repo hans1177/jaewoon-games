@@ -530,8 +530,8 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
 
 function robloxStudioAssetBindingContract(data={}){
   const loadout=data?.assetProduction?.baseMaterialLoadout;
-  const auto=loadout?.robloxAutoApply;
-  if(clean(data?.target).toLowerCase()!=='roblox'||auto?.sourceMutationRequired!==true)return null;
+  const handoff=loadout?.robloxSelectionHandoff;
+  if(clean(data?.target).toLowerCase()!=='roblox'||handoff?.handoffRequired!==true||handoff?.downstreamApplicationRequired!==true)return null;
   return loadout;
 }
 function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
@@ -558,6 +558,7 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     status:'STATIC_PASS',checks,selectedAtomCount:atoms.length,runtimeStillRequired:true,
     requiredRuntimeEvidence:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
     companyAssetPromotionBlockedUntilRuntime:true,masteryPromotionBlockedUntilRuntime:true,
+    selectionHandoffVerified:true,plannerSourceMutationForbidden:loadout?.robloxSelectionHandoff?.plannerSourceMutationForbidden===true,
     markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
   };
 }
