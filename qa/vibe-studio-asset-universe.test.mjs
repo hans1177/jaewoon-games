@@ -368,6 +368,11 @@ test('company registry exposes semantic template space without claiming producti
   assert.equal(registry.studioAssetUniverse.semanticTemplateSpace.productionVerified,false);
   assert.equal(registry.studioAssetUniverse.semanticTemplateSpace.clothing.themeLayerCombinations,225);
   assert.equal(registry.studioAssetUniverse.semanticTemplateSpace.biome.biomeChannelSlots,270);
+  assert.ok(registry.studioAssetUniverse.conceptCatalog.presetFamilies.includes('INK_WASH'));
+  assert.ok(registry.studioAssetUniverse.conceptCatalog.presetFamilies.includes('SPACE_OPERA'));
+  assert.equal(registry.studioAssetUniverse.worldGenerationCatalog.referenceImageObservation.supported,true);
+  assert.equal(registry.studioAssetUniverse.worldGenerationCatalog.referenceImageObservation.sourceBound,true);
+  assert.equal(registry.studioAssetUniverse.worldGenerationCatalog.referenceImageObservation.rawProtectedReferencePersistentLearningForbidden,true);
   assert.equal(registry.universalCoverage.preparedSemanticDoesNotCountAsVerified,true);
 });
 
