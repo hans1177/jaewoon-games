@@ -5,6 +5,7 @@
 import {planVibeStyleAwareGraphicsAutopilot,planVibeVisualAutopilot} from './vibe-visual-autopilot.js';
 import {planVibePresentationAutopilot} from './vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence} from './vibe-visual-quality-gate.js';
+import {createMotionDirectorPlan,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES,MOTION_GRAMMARS} from './vibe-motion-director.js';
 
 const QUALITY_WORDS = Object.freeze({
   art: ['그래픽', '그림', '비주얼', '캐릭터', '곤충', '배경', '에셋', '퀄리티', '고퀄'],
@@ -26,7 +27,8 @@ export const GRAPHICS_PRODUCTION_INTERNAL_MODULES=Object.freeze({
   inputPlanner:'tools/vibe2-asset-production-plan.mjs',
   visualDirection:'assets/vibe-visual-autopilot.js',
   presentation:'assets/vibe-presentation-director.js',
-  runtimeQuality:'assets/vibe-visual-quality-gate.js'
+  runtimeQuality:'assets/vibe-visual-quality-gate.js',
+  motionDirector:'assets/vibe-motion-director.js'
 });
 export const GRAPHICS_PRODUCTION_STAGES=Object.freeze([
   'ART_DIRECTION_AND_VISUAL_TARGET_LOCK',
@@ -87,7 +89,11 @@ export const VIBE_UNARMED_VERSUS_ACTION=Object.freeze(['NEUTRAL','STARTUP','ACTI
 export const VIBE_UNARMED_COMBO_ROLES=Object.freeze(['OPENER','LINKER','PRESSURE','COUNTER','LAUNCHER','AIR_FOLLOWUP','ENDER','THROW','REVERSAL','FINISHER']);
 export const VIBE_UNARMED_MOTION_METADATA=Object.freeze(['STANCE','LEAD_SIDE','STARTUP_CLASS','CONTACT_PHASE','RECOVERY_CLASS','TRAVEL_VECTOR','HEIGHT_CLASS','DIRECTION','COMBO_ROLE','COUNTER_ROLE','LAUNCH_ROLE','AIR_ROLE','KNOCKDOWN_ROLE','CONTACT_LIMB','ROOT_MOTION_MODE','MIRROR_SAFE','LOOPABLE']);
 
-export const VIBE_STUDIO_CREATURE_FAMILIES=Object.freeze(['HUMANOID','QUADRUPED','INSECT','REPTILE_OR_SERPENT','FLYING','HEAVY_GOLEM_OR_BOSS']);
+export const VIBE_BIPED_CREATURE_FAMILIES=Object.freeze(['SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER','HEAVY_BIPED','DIGITIGRADE_BIPED','HUNCHED_BIPED','APE_LIKE_BIPED','SKELETAL_BIPED','BOSS_BIPED']);
+export const VIBE_STUDIO_CREATURE_FAMILIES=Object.freeze(['HUMANOID',...VIBE_BIPED_CREATURE_FAMILIES,'QUADRUPED','INSECT','ARACHNID','REPTILE_OR_SERPENT','FLYING','HEAVY_GOLEM_OR_BOSS','AMORPHOUS_OR_TENTACLE']);
+export const VIBE_CREATURE_STYLE_VARIANTS=Object.freeze(['CARTOON','ANIME_OR_CEL_SHADED','STYLIZED_FANTASY','DARK_FANTASY','LOW_POLY','REALISTIC','CHIBI','HORROR','WUXIA_FANTASY']);
+export const VIBE_CARTOON_MOTION_TRANSFORMS=Object.freeze(['BODY_PROPORTION','SILHOUETTE','HEAD_HAND_FOOT_SCALE','LIMB_LENGTH','POSE_EXAGGERATION','ANTICIPATION_EXAGGERATION','OVERSHOOT_AND_SETTLE','SQUASH_STRETCH_PRESENTATION','BOUNCE_AND_SECONDARY_MOTION','FACIAL_AND_HEAD_ACTING','MATERIAL_PALETTE_OUTLINE','VFX_SHAPE_LANGUAGE','CAMERA_DISTANCE_READABILITY','TIMING_CURVE_PRESENTATION']);
+export const VIBE_CREATURE_LIBRARY_GRAPH=Object.freeze(['CHARACTER_ARCHETYPE_LIBRARY','CREATURE_RIG_LIBRARY','ACTION_MOTION_LIBRARY','WEAPON_MOTION_LIBRARY','VFX_LIBRARY','ENVIRONMENT_KIT_LIBRARY','UI_PRESENTATION_LIBRARY']);
 export const VIBE_STUDIO_MOTION_SOURCE_ORDER=Object.freeze(['VERIFIED_COMPANY_MOTION','LICENSE_VERIFIED_REPOSITORY_MOTION','LICENSE_VERIFIED_EXTERNAL_MOCAP_OR_ANIMATION','RETARGET_AND_CLEANUP','AUTHOR_NEW_MOTION_WHEN_REQUIRED']);
 export const VIBE_STUDIO_RETARGET_CLEANUP=Object.freeze(['FOOT_PLANT_AND_FOOT_SLIDE_CONTROL','ROOT_AND_PELVIS_TRAJECTORY_CLEANUP','WEIGHT_TRANSFER','ARM_LEG_COUNTERSWING_WHEN_HUMANOID','START_STOP_ACCELERATION_DECELERATION','TURN_FOOT_PLANT_AND_BODY_FOLLOW','HAND_WEAPON_CONTACT','GROUND_AND_SLOPE_CONTACT_WHEN_SUPPORTED','LOOP_CONTINUITY','JOINT_LIMIT_AND_MESH_INTERSECTION_SANITY','IMPACT_EVENT_SYNC','UPPER_LOWER_BODY_LAYERING_WHEN_SUPPORTED','SECONDARY_MOTION_AND_PROCEDURAL_RESPONSE']);
 export const VIBE_OWNER_CHANGE_REQUEST_SEQUENCE=Object.freeze([
@@ -321,6 +327,10 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (animationLevel || needsArt) steps.push('무협 맨손은 장법·지법·조법·보법·회전회피·공중장법·대시타격·런처·공중추격을 판타지 표현층으로 연구하되 실제 게임 판정 의미는 바꾸지 않는다');
   if (animationLevel || needsArt) steps.push('모션 원본이 외부 모캡/애니메이션이면 발접지·발미끄러짐·루트/골반 궤적·체중 이동·회전 발디딤·손/무기 접촉·루프·관절/메시·타격 이벤트를 클린업한 뒤 사용');
   if (animationLevel || needsArt) steps.push('네발·곤충·뱀/파충·비행·골렘/거대 보스는 실제 신체구조와 종별 움직임을 연구해 별도 이동/회전/공격/피격/사망 언어를 만들며 비휴머노이드에 사람 모션을 단순 재사용하지 않는다');
+  if (animationLevel || needsArt) steps.push('고블린·오크·미노타우로스·오우거·트롤·늑대인간·구울·골격형 등 두발 몬스터는 리그 공유 가능 여부와 별개로 SMALL/STANDARD/HEAVY/DIGITIGRADE/HUNCHED/APE_LIKE/SKELETAL/BOSS 체형군을 분리하고 체중·보폭·회전·공격·피격·사망 모션 정체성을 따로 연구한다');
+  if (animationLevel || needsArt) steps.push('카툰/셀셰이딩/다크판타지/로우폴리/리얼리스틱/치비 등 게임 Style Lock에 맞춰 같은 검증 리그·모션 의미를 비율·실루엣·키포즈·anticipation·overshoot·squash/stretch·반동·표정·VFX 언어로 파생 변형할 수 있다');
+  if (animationLevel || needsArt) steps.push('스타일 변형은 이동속도·히트박스·데미지·쿨다운·멀티플레이 의미를 바꾸지 않고 authoritative root movement envelope와 contact marker 동기화를 보존한다');
+  if (animationLevel || needsArt) steps.push('Creature Archetype→Rig→Locomotion→Combat→Hit/Death→VFX→Environment→Style Variant→Unity/Roblox 네이티브 변형을 라이브러리 ID 참조로 연동한다');
   if (vfxLevel) steps.push(`${vfxLevel >= 3 ? '고급' : vfxLevel === 2 ? '상세' : '기본'} 히트·폭발·스킬·사망 VFX 구성`);
   if (vfxLevel) steps.push('게임 고유 VFX 언어를 유지하고 ambient/normal/heavy/critical-signature/boss-ultimate 강도 계층을 분리');
   if (audioLevel) steps.push('BGM과 전투/UI 효과음의 이벤트 연결');
@@ -333,7 +343,7 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   const web = target === 'web' || /웹|브라우저|html|javascript/i.test(prompt);
   const implementation = godot ? ['Node3D/CharacterBody3D','MeshInstance3D 또는 적절한 2.5D Billboard/Quad','AnimationTree/AnimationPlayer','GPUParticles3D','AudioStreamPlayer3D'] : web ? ['WebGL/Three/Babylon 또는 Canvas 2.5D 등각·원근 렌더러','깊이 정렬 캐릭터/월드 레이어','전경·중경·후경 parallax','접지 그림자·높이·깊이 대응 VFX','Web Audio API','2D UI 오버레이'] : ['플랫폼 네이티브 3D/2.5D 월드 렌더러','리그/애니메이터','깊이 대응 VFX·조명·카메라','2D UI 오버레이','오디오 이벤트'];
   return Object.freeze({
-    version: 9,
+    version: 11,
     generation:'V3',
     target: godot ? 'godot' : web ? 'web' : target,
     quality: Object.freeze({ art: artLevel, animation: animationLevel, vfx: vfxLevel, audio: audioLevel }),
@@ -392,6 +402,48 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
         animationTimingMarkersMayNotOwnGameplayRules:true
       }),
       creatureFamilies:VIBE_STUDIO_CREATURE_FAMILIES,
+      bipedCreature:Object.freeze({
+        target:'BODY_PLAN_SPECIFIC_BIPED_CREATURE_MOTION',
+        families:VIBE_BIPED_CREATURE_FAMILIES,
+        sharedRigDoesNotImplySharedMotionIdentity:true,
+        speedScaleOnlyVariationForbidden:true,
+        humanWalkWithOnlyScaleChangeForbidden:true,
+        goblin:Object.freeze({family:'SMALL_HUMANOID_BIPED',traits:Object.freeze(['LOW_CENTER_OF_MASS','SHORT_STRIDE','FAST_PIVOT','QUICK_RECOVERY']),signatureMotionCandidates:Object.freeze(['SCAMPER_RUN','QUICK_SLASH','CLUB_SWING','SIDESTEP_EVADE','PANIC_BACKSTEP','FAST_FALL_DEATH'])}),
+        minotaur:Object.freeze({family:'HEAVY_BIPED',traits:Object.freeze(['HEAD_AND_HORN_MASS','CHARGE_LEAN','BRAKING_INERTIA','HORN_ATTACK_NECK_SPINE_PELVIS_CHAIN','HEAVY_COLLAPSE_DEATH']),signatureMotionCandidates:Object.freeze(['HORN_CHARGE','HORN_GORE','SHOULDER_RAM','HEAVY_STOMP','RAGE_SNORT','WALL_IMPACT_RECOVERY'])})
+      }),
+      styleVariants:Object.freeze({
+        target:'STYLE_LOCK_AWARE_ASSET_AND_MOTION_DERIVATION',
+        styles:VIBE_CREATURE_STYLE_VARIANTS,
+        cartoonTransforms:VIBE_CARTOON_MOTION_TRANSFORMS,
+        libraryGraph:VIBE_CREATURE_LIBRARY_GRAPH,
+        styleLockAlwaysWins:true,
+        sameSourceMayHaveMultipleStyleVariants:true,
+        originalImmutableAndDerivedProvenanceRequired:true,
+        gameplayAuthorityImmutable:true,
+        rootMotionMustRespectAuthoritativeMovementEnvelope:true,
+        contactMarkersMustRemainSynchronized:true,
+        runtimeVerificationRequiredPerGameAndPlatform:true
+      }),
+      motionDirector:createMotionDirectorPlan({
+        platform:target==='roblox'?'ROBLOX':target==='unity'?'UNITY':'UNITY',
+        bodyPlan:'HUMANOID',
+        rigProfile:'HUMANOID',
+        styleFamily:style||'STYLIZED_FANTASY',
+        motionCandidates:[],
+        context:{styleFamily:style||'STYLIZED_FANTASY'},
+        layers:{},
+        skill:{}
+      }),
+      motionDirectorContract:Object.freeze({
+        target:'HIGH_END_COMPOSABLE_MOTION_DIRECTOR',
+        compositionChannels:MOTION_COMPOSITION_CHANNELS,
+        motionDNAFields:MOTION_DNA_FIELDS,
+        grammars:MOTION_GRAMMARS,
+        libraryGraphNodes:MOTION_LIBRARY_GRAPH_NODES,
+        continuousExpansion:true,
+        noArtificialCombinationCap:true,
+        gameplayAuthority:false
+      }),
       retargetCleanup:VIBE_STUDIO_RETARGET_CLEANUP,
       characterAndCreatureActing:true,
       speciesReferenceStudyRequired:true,
@@ -406,11 +458,11 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
     }),
     vfx: Object.freeze({ required: vfxLevel > 0 || animationLevel >= 2, hit: true, skill: true, death: true, screenFeedback: true, gameSpecificLanguage:true, intensityHierarchy:Object.freeze(['AMBIENT','NORMAL','HEAVY','CRITICAL_OR_SIGNATURE','BOSS_OR_ULTIMATE']), gameplayReadabilityFirst:true, mobileDensityScaling:true }),
     audio: Object.freeze({ required: audioLevel > 0, bgm: audioLevel >= 2, sfx: true, eventDriven: true, mobileSafe: true, authoringOwner:'audio', conceptFit:true, stateAdaptive:true, states:Object.freeze(['EXPLORATION','DISCOVERY_OR_TENSION','COMBAT','DANGER','BOSS','VICTORY','REST_OR_HUB','SPECIAL_EVENT']) }),
-    agentRole: Object.freeze({ mode:'active-art-direction-v3', inspectWithoutPrompting:true, identifyMissingAssets:true, chooseReuseReconstructOrCreate:true, preferVerifiedCompanyAssetLibrary:true, requireCompanyLibraryLookupForNative:true, fillLibraryGapsFromLicenseVerifiedExternalSources:true, externalGapFillBeforeNewAuthoring:true, followAssetAcquisitionOrder:true, createVisualDebtForFallback:true, requireGoldenSceneRuntimeEvidence:true, selfTransformExistingAssets:true, generateIndependentVariants:true, compareVariantsInActualPresentation:true, keepOriginalImmutable:true, prepareAnimationParts:true, studioMotionRetargetCleanup:true, unarmedVersusActionResearch:true, unarmedMartialArtsStyleResearch:true, wuxiaUnarmedMotionResearch:true, pairedGrappleThrowResearch:true, speciesMotionResearch:true, connectAnimationAndVfx:true, compareActualPresentation:true, iteratePresentationDefects:true, resolveLatestOwnerIntentBeforeMutation:true, affectedScopeOnly:true, replaceConflictingSameScopeBehavior:true, preserveUnaffectedBehavior:true, gameplayAuthority:false, saveAuthority:false }),
+    agentRole: Object.freeze({ mode:'active-art-direction-v3', inspectWithoutPrompting:true, identifyMissingAssets:true, chooseReuseReconstructOrCreate:true, preferVerifiedCompanyAssetLibrary:true, requireCompanyLibraryLookupForNative:true, fillLibraryGapsFromLicenseVerifiedExternalSources:true, externalGapFillBeforeNewAuthoring:true, followAssetAcquisitionOrder:true, createVisualDebtForFallback:true, requireGoldenSceneRuntimeEvidence:true, selfTransformExistingAssets:true, generateIndependentVariants:true, compareVariantsInActualPresentation:true, keepOriginalImmutable:true, prepareAnimationParts:true, studioMotionRetargetCleanup:true, unarmedVersusActionResearch:true, unarmedMartialArtsStyleResearch:true, wuxiaUnarmedMotionResearch:true, pairedGrappleThrowResearch:true, speciesMotionResearch:true, bipedCreatureMotionResearch:true, styleVariantDerivation:true, creatureLibraryGraphInterlink:true, motionDirectorComposition:true, contextMotionSelection:true, reactionMotionMatching:true, pairMotionAlignment:true, motionMutationAndVariationMemory:true, connectAnimationAndVfx:true, compareActualPresentation:true, iteratePresentationDefects:true, resolveLatestOwnerIntentBeforeMutation:true, affectedScopeOnly:true, replaceConflictingSameScopeBehavior:true, preserveUnaffectedBehavior:true, gameplayAuthority:false, saveAuthority:false }),
     implementation: Object.freeze(implementation),
     steps: Object.freeze(unique(steps)),
-    qa: Object.freeze(['최종 게임플레이 최소 2.5D 공간 표현/실제 깊이 단서','회사 라이브러리 우선 조회/기존 저장소→외부 검증→신규 제작 순서','사람형 Studio Locomotion 기본 세트','맨손 대전 액션: 가드/보법/타격/킥/카운터/잡기/던지기/낙법/기상/공중연계','무협 맨손 장법/지법/조법/보법/공중연계','2인 잡기/던지기 리그 정렬','종별 몹 모션 연구','발접지/발미끄러짐/루트·골반/체중이동','출발/정지/회전 발디딤','손/무기 접촉과 타격 이벤트 동기화','비휴머노이드 사람 모션 단순 재사용 금지','Art Bible/Style Lock/Visual Target Frame 바인딩','Hero Quality 대상 완성도','안티-kitbash 스타일 통일','전경/중경/배경 환경 구성','랜드마크/set dressing/환경 스토리텔링','에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','Golden Scene 5종 런타임 캡처','주요 캐릭터/몹 primitive placeholder 제거','Visual Debt 해소','성능/메모리']),
-    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, companyLibraryRequiredForUnityRoblox:true, companyLibraryLookupBeforeAssetChoice:true, existingRepositoryBeforeExternalGapFill:true, externalGapFillBeforeNewAuthoring:true, externalMotionRequiresRetargetCleanup:true, studioGradeMotionRequired:true, unarmedVersusActionMotionRequired:true, unarmedStyleResearchNoArtificialCap:true, wuxiaUnarmedMotionResearch:true, animationTimingMarkersCannotOwnGameplayRules:true, speciesMotionStudyRequired:true, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true, assetAcquisitionOrderEnforced:true, primitiveFallbackPrototypeOnly:true, visualDebtForFallbackRequired:true, goldenSceneRuntimeEvidenceRequired:true, markerOnlyPresentationPassForbidden:true, minimumFinalGameplayDimension:'2.5D', flat2DFinalGameplayForbidden:true, ui2DOverlayAllowed:true, highEndVisualProduction:true, purposefulAssetDefault:true, environmentAndBackgroundFirstClass:true, antiKitbashGateRequired:true, beforeAfterVisualRegressionRequired:true, platformSpecificReauthoringExpected:true, continuousPresentationEvolution:true, graphicsPassIsCheckpointNotTerminal:true, highEndPresentationCompletionIsReleaseGate:false, ownerChangeRequestStabilityRequired:true, wrapperOrShadowPresentationAccumulationForbidden:true }),
+    qa: Object.freeze(['최종 게임플레이 최소 2.5D 공간 표현/실제 깊이 단서','회사 라이브러리 우선 조회/기존 저장소→외부 검증→신규 제작 순서','사람형 Studio Locomotion 기본 세트','맨손 대전 액션: 가드/보법/타격/킥/카운터/잡기/던지기/낙법/기상/공중연계','무협 맨손 장법/지법/조법/보법/공중연계','2인 잡기/던지기 리그 정렬','종별 몹 모션 연구','두발 몹 체형별 모션: 고블린/미노타우로스 등 리그 공유와 모션 정체성 분리','카툰/셀셰이딩/다크판타지/로우폴리/리얼리스틱 Style Variant','Creature→Rig→Motion→VFX→Environment→Style→Platform 라이브러리 연동','Motion DNA/Compatibility Graph/Body Layer Composer','Context Selector/Reaction Matcher/Pair Motion/Variation Memory','Skill Grammar/모션 Mutation/Species Signature','발접지/발미끄러짐/루트·골반/체중이동','출발/정지/회전 발디딤','손/무기 접촉과 타격 이벤트 동기화','비휴머노이드 사람 모션 단순 재사용 금지','Art Bible/Style Lock/Visual Target Frame 바인딩','Hero Quality 대상 완성도','안티-kitbash 스타일 통일','전경/중경/배경 환경 구성','랜드마크/set dressing/환경 스토리텔링','에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','Golden Scene 5종 런타임 캡처','주요 캐릭터/몹 primitive placeholder 제거','Visual Debt 해소','성능/메모리']),
+    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, companyLibraryRequiredForUnityRoblox:true, companyLibraryLookupBeforeAssetChoice:true, existingRepositoryBeforeExternalGapFill:true, externalGapFillBeforeNewAuthoring:true, externalMotionRequiresRetargetCleanup:true, studioGradeMotionRequired:true, unarmedVersusActionMotionRequired:true, unarmedStyleResearchNoArtificialCap:true, wuxiaUnarmedMotionResearch:true, animationTimingMarkersCannotOwnGameplayRules:true, speciesMotionStudyRequired:true, bipedCreatureBodyPlanMotionRequired:true, sharedRigDoesNotImplySharedMotionIdentity:true, cartoonStyleVariantAllowed:true, styleVariantPreservesGameplayAuthority:true, creatureLibraryGraphInterlinkRequired:true, composableMotionDirectorRequired:true, motionDirectorContinuousExpansion:true, motionDirectorNoArtificialCombinationCap:true, motionDirectorGameplayAuthority:false, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true, assetAcquisitionOrderEnforced:true, primitiveFallbackPrototypeOnly:true, visualDebtForFallbackRequired:true, goldenSceneRuntimeEvidenceRequired:true, markerOnlyPresentationPassForbidden:true, minimumFinalGameplayDimension:'2.5D', flat2DFinalGameplayForbidden:true, ui2DOverlayAllowed:true, highEndVisualProduction:true, purposefulAssetDefault:true, environmentAndBackgroundFirstClass:true, antiKitbashGateRequired:true, beforeAfterVisualRegressionRequired:true, platformSpecificReauthoringExpected:true, continuousPresentationEvolution:true, graphicsPassIsCheckpointNotTerminal:true, highEndPresentationCompletionIsReleaseGate:false, ownerChangeRequestStabilityRequired:true, wrapperOrShadowPresentationAccumulationForbidden:true }),
   });
 }
 

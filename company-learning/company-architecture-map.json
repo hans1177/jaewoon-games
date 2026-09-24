@@ -1,5 +1,5 @@
 {
-  "version": 137,
+  "version": 140,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2145,7 +2145,10 @@
         "WEAPON_MOTION_LIBRARY",
         "VFX_LIBRARY",
         "ENVIRONMENT_KIT_LIBRARY",
-        "UI_PRESENTATION_LIBRARY"
+        "UI_PRESENTATION_LIBRARY",
+        "SKILL_MOTION_LIBRARY",
+        "REACTION_MOTION_LIBRARY",
+        "PAIR_MOTION_LIBRARY"
       ],
       "ownerVisualInspectionRoute": "/asset-library.html",
       "registry": "company-asset-library.json",
@@ -2191,6 +2194,98 @@
           "GROUND_RECOVERY_AND_MOBILITY",
           "WUXIA_FANTASY",
           "VERSUS_ACTION_SLOTS"
+        ],
+        "gameplayAuthorityExpansionForbidden": true,
+        "platformNativeRuntimeVerificationRequired": true
+      },
+      "bipedCreatureMotionStudio": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.bipedCreatureMotionStudio",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "BODY_PLAN_SPECIFIC_BIPED_CREATURE_MOTION",
+        "taxonomy": [
+          "SMALL_HUMANOID_BIPED",
+          "STANDARD_HUMANOID_MONSTER",
+          "HEAVY_BIPED",
+          "DIGITIGRADE_BIPED",
+          "HUNCHED_BIPED",
+          "APE_LIKE_BIPED",
+          "SKELETAL_BIPED",
+          "BOSS_BIPED"
+        ],
+        "sharedRigDoesNotImplySharedMotionIdentity": true,
+        "speedScaleOnlyVariationForbidden": true,
+        "platformNativeRuntimeVerificationRequired": true
+      },
+      "styleVariantTransformation": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.styleVariantTransformation",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "supportedStyleFamilies": [
+          "CARTOON",
+          "ANIME_OR_CEL_SHADED",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "LOW_POLY",
+          "REALISTIC",
+          "CHIBI",
+          "HORROR",
+          "WUXIA_FANTASY"
+        ],
+        "styleLockAlwaysWins": true,
+        "originalImmutableAndDerivedProvenanceRequired": true,
+        "gameplayAuthorityImmutable": true,
+        "libraryGraphInterlinkRequired": true
+      },
+      "motionDirectorSystem": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "HIGH_END_COMPOSABLE_MOTION_DIRECTOR",
+        "implementation": "assets/vibe-motion-director.js",
+        "internalModuleOnly": true,
+        "createsNewTopLevelPipeline": false,
+        "continuousExpansion": true,
+        "noArtificialCombinationCap": true,
+        "compositionChannels": [
+          "ROOT",
+          "LOCOMOTION",
+          "LOWER_BODY",
+          "PELVIS_SPINE",
+          "UPPER_BODY",
+          "LEFT_ARM",
+          "RIGHT_ARM",
+          "HEAD_GAZE",
+          "TAIL",
+          "WINGS",
+          "EXTRA_LIMBS",
+          "SECONDARY_MOTION",
+          "PROCEDURAL_CORRECTION",
+          "VFX_PRESENTATION",
+          "AUDIO_PRESENTATION",
+          "CAMERA_PRESENTATION"
+        ],
+        "subsystems": [
+          "MOTION_DNA",
+          "COMPATIBILITY_GRAPH",
+          "BODY_LAYER_COMPOSER",
+          "CONTEXT_SELECTOR",
+          "MOTION_GRAMMAR",
+          "REACTION_MATCHER",
+          "PAIR_MOTION",
+          "SPECIES_SIGNATURE",
+          "STYLE_MODIFIER",
+          "MOTION_MUTATION",
+          "VARIATION_MEMORY"
+        ],
+        "libraryGraphNodes": [
+          "CHARACTER_ARCHETYPE_LIBRARY",
+          "CREATURE_RIG_LIBRARY",
+          "ACTION_MOTION_LIBRARY",
+          "WEAPON_MOTION_LIBRARY",
+          "SKILL_MOTION_LIBRARY",
+          "REACTION_MOTION_LIBRARY",
+          "PAIR_MOTION_LIBRARY",
+          "VFX_LIBRARY",
+          "ENVIRONMENT_KIT_LIBRARY",
+          "UI_PRESENTATION_LIBRARY"
         ],
         "gameplayAuthorityExpansionForbidden": true,
         "platformNativeRuntimeVerificationRequired": true
@@ -2436,7 +2531,8 @@
         "CINEMATIC_DIRECTION",
         "CHARACTER_AND_CREATURE_ACTING",
         "ENVIRONMENTAL_STORYTELLING",
-        "CONTINUOUS_PRESENTATION_EVOLUTION"
+        "CONTINUOUS_PRESENTATION_EVOLUTION",
+        "COMPOSABLE_MOTION_DIRECTION"
       ],
       "usesExistingDepartment": true,
       "duplicateArtDepartmentForbidden": true,
@@ -2448,7 +2544,8 @@
       "internalModules": [
         "assets/vibe-visual-autopilot.js",
         "assets/vibe-presentation-director.js",
-        "assets/vibe-visual-quality-gate.js"
+        "assets/vibe-visual-quality-gate.js",
+        "assets/vibe-motion-director.js"
       ],
       "oneTopLevelGraphicsWorkUnitPerGameCandidate": true,
       "internalRolesMayNotCreateSiblingTopLevelGraphicsPipelines": true,

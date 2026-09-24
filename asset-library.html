@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="3">
+<html lang="ko" data-asset-library-version="4">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -56,6 +56,7 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
 </section>
 <section class="section"><div class="sectionHead"><div><h2>액션 커버리지 목표</h2><p>회사 공용 모션팩 최소 기준</p></div></div><div class="coverage" id="coverage"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>맨손 대전 액션 연구</h2><p>무술 스타일·보법·타격·킥·카운터·잡기·던지기·낙법·무협 공중연계까지 계속 확장</p></div></div><div class="coverage" id="unarmedCoverage"></div><div class="grid" id="unarmedStyles"></div></section>
+<section class="section"><div class="sectionHead"><div><h2>Motion Director</h2><p>모션을 파일 단위가 아니라 Motion DNA + 호환성 + 레이어 + 상황 선택으로 조합</p></div></div><div class="coverage" id="motionDirectorCoverage"></div><div class="grid" id="motionDirectorSystems"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>플랫폼 분리</h2><p>디자인 규격은 공유, 실제 구현은 네이티브 분리</p></div></div><div class="platforms">
   <article class="platform"><h3>Unity</h3><p>Humanoid / Generic Rig · Animator · Blend Tree · Avatar Mask · IK 또는 Animation Rigging · Secondary Motion · LOD · 모바일 성능 스케일링.</p></article>
   <article class="platform"><h3>Roblox</h3><p>R15 호환 또는 전용 Custom Rig · Motor6D · Attachment · Animator / AnimationTrack · 모바일 예산에 맞춘 Secondary Motion.</p></article>
@@ -99,6 +100,23 @@ function render(){
   ];
   document.getElementById('unarmedCoverage').innerHTML=urows.map(([a,b])=>'<div><b>'+esc(b)+'</b><span>'+esc(a)+'</span></div>').join('');
   document.getElementById('unarmedStyles').innerHTML=(u.styleFamilies||[]).map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">모션 연구</span></div><h3>'+esc(x.replaceAll('_',' '))+'</h3><p>Unity/Roblox 네이티브 리타겟·클린업·런타임 검증 대상</p></div></article>').join('');
+  const md=data.motionDirector||{};const cats=md.categories||{};
+  const mdrows=[
+    ['조합 채널',(md.channels||[]).length],
+    ['연결 라이브러리',(data.libraryGraph?.nodes||[]).length],
+    ['이동',(cats.locomotion||[]).length],
+    ['트래버설',(cats.traversal||[]).length],
+    ['공격',(cats.attack||[]).length+(cats.ranged||[]).length],
+    ['스킬',(cats.skill||[]).length],
+    ['방어',(cats.defense||[]).length],
+    ['잡기',(cats.grapple||[]).length],
+    ['피격/회복',(cats.reaction||[]).length],
+    ['상호작용',(cats.interaction||[]).length],
+    ['연기/보스',(cats.acting||[]).length+(cats.boss||[]).length],
+    ['사망',(cats.death||[]).length]
+  ];
+  document.getElementById('motionDirectorCoverage').innerHTML=mdrows.map(([a,b])=>'<div><b>'+esc(b)+'</b><span>'+esc(a)+'</span></div>').join('');
+  document.getElementById('motionDirectorSystems').innerHTML=(md.systems||[]).map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">DIRECTOR</span></div><h3>'+esc(x.replaceAll('_',' '))+'</h3><p>GRAPHICS_PRODUCTION 내부 모듈 · 게임 판정 권한 없음 · 계속 확장 가능</p></div></article>').join('');
 }
 load().catch(()=>{document.getElementById('assetGrid').innerHTML='<div class="empty">라이브러리 데이터를 불러오지 못했어.</div>'});
 </script>

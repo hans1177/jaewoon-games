@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 59,
+  "revision": 62,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -31,7 +31,8 @@
       "tools/vibe2-asset-production-plan.mjs",
       "assets/asset-selector.js",
       "assets/asset-manifest.json",
-      "company-asset-library.json"
+      "company-asset-library.json",
+      "assets/vibe-motion-director.js"
     ]
   },
   "homepageOperations": {
@@ -1054,7 +1055,21 @@
     "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
     "versusActionReadyUnarmedCombatMotion": true,
     "unarmedStyleResearchHasNoArtificialCap": true,
-    "wuxiaUnarmedFantasyMotionResearch": true
+    "wuxiaUnarmedFantasyMotionResearch": true,
+    "bodyPlanSpecificBipedCreatureMotion": true,
+    "sharedRigDoesNotImplySharedMotionIdentity": true,
+    "cartoonAndConceptStyleVariantsAllowed": true,
+    "styleVariantMustPreserveGameplayAuthority": true,
+    "composableMotionDirectorRequired": true,
+    "motionDirectorContinuousExpansion": true,
+    "motionDirectorNoArtificialCombinationCap": true,
+    "motionDNARequired": true,
+    "motionCompatibilityGraphRequired": true,
+    "contextMotionSelectorRequired": true,
+    "reactionMatcherRequired": true,
+    "pairMotionRequired": true,
+    "variationMemoryRequired": true,
+    "motionDirectorRegisteredInsideGraphicsProduction": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1094,8 +1109,32 @@
         "WUXIA_FANTASY",
         "VERSUS_ACTION_REACTIONS"
       ],
-      "animationMarkersMayNotOwnGameplayRules": true
-    }
+      "animationMarkersMayNotOwnGameplayRules": true,
+      "bipedCreatureTaxonomy": [
+        "SMALL_HUMANOID_BIPED",
+        "STANDARD_HUMANOID_MONSTER",
+        "HEAVY_BIPED",
+        "DIGITIGRADE_BIPED",
+        "HUNCHED_BIPED",
+        "APE_LIKE_BIPED",
+        "SKELETAL_BIPED",
+        "BOSS_BIPED"
+      ],
+      "styleVariantTarget": "STYLE_LOCK_AWARE_ASSET_AND_MOTION_DERIVATION",
+      "styleVariantLibraryGraphInterlink": true,
+      "originalImmutableDerivedVariants": true,
+      "motionDirectorTarget": "HIGH_END_COMPOSABLE_MOTION_DIRECTOR",
+      "motionDirectorInternalOnly": true,
+      "motionDirectorGameplayAuthority": false,
+      "extendedMotionLibraries": [
+        "SKILL_MOTION_LIBRARY",
+        "REACTION_MOTION_LIBRARY",
+        "PAIR_MOTION_LIBRARY"
+      ]
+    },
+    "internalModules": [
+      "assets/vibe-motion-director.js"
+    ]
   },
   "centralDocumentation": {
     "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",

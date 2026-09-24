@@ -1,5 +1,5 @@
 {
-  "version": 315,
+  "version": 318,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -12352,7 +12352,7 @@
       "existing2DGamesRequireSpatialPresentationRebuild": true
     },
     "graphicsProductionUnification": {
-      "version": 4,
+      "version": 5,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "externalWorkUnit": "GRAPHICS_PRODUCTION",
@@ -12365,7 +12365,8 @@
       "internalModules": {
         "visualDirection": "assets/vibe-visual-autopilot.js",
         "presentation": "assets/vibe-presentation-director.js",
-        "runtimeQuality": "assets/vibe-visual-quality-gate.js"
+        "runtimeQuality": "assets/vibe-visual-quality-gate.js",
+        "motionDirector": "assets/vibe-motion-director.js"
       },
       "internalStages": [
         "ART_DIRECTION_AND_VISUAL_TARGET_LOCK",
@@ -12446,7 +12447,7 @@
       }
     },
     "companyGraphicsLibrary24h": {
-      "version": 4,
+      "version": 6,
       "authority": "OWNER_DIRECTIVE_2026-09-24",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
@@ -12617,7 +12618,10 @@
         "WEAPON_MOTION_LIBRARY",
         "VFX_LIBRARY",
         "ENVIRONMENT_KIT_LIBRARY",
-        "UI_PRESENTATION_LIBRARY"
+        "UI_PRESENTATION_LIBRARY",
+        "SKILL_MOTION_LIBRARY",
+        "REACTION_MOTION_LIBRARY",
+        "PAIR_MOTION_LIBRARY"
       ],
       "diversityPolicy": {
         "fillCoverageGapsBeforeNearDuplicateVariants": true,
@@ -12690,7 +12694,7 @@
         "productionWorkPreemptsIdleGapFill": true
       },
       "studioMotionProgram": {
-        "version": 2,
+        "version": 3,
         "target": "STUDIO_GRADE_GAME_MOTION",
         "objective": "FAST_BOOTSTRAP_HUMAN_AND_CREATURE_MOTION_FROM_VERIFIED_EXISTING_OR_EXTERNAL_MOTION_THEN_RETARGET_CLEANUP_AND_RUNTIME_VERIFY_FOR_UNITY_AND_ROBLOX",
         "priorityBootstrap": [
@@ -12751,11 +12755,21 @@
         },
         "creatureFamilies": [
           "HUMANOID",
+          "SMALL_HUMANOID_BIPED",
+          "STANDARD_HUMANOID_MONSTER",
+          "HEAVY_BIPED",
+          "DIGITIGRADE_BIPED",
+          "HUNCHED_BIPED",
+          "APE_LIKE_BIPED",
+          "SKELETAL_BIPED",
+          "BOSS_BIPED",
           "QUADRUPED",
           "INSECT",
+          "ARACHNID",
           "REPTILE_OR_SERPENT",
           "FLYING",
-          "HEAVY_GOLEM_OR_BOSS"
+          "HEAVY_GOLEM_OR_BOSS",
+          "AMORPHOUS_OR_TENTACLE"
         ],
         "creatureRules": {
           "speciesReferenceStudyRequired": true,
@@ -13122,6 +13136,920 @@
           "roblox": "R15_OR_CUSTOM_RIG_RETARGET_PLUS_ANIMATOR_ANIMATIONTRACK_MOTOR6D_OR_BONES",
           "pairedTwoActorThrowAlignmentMustBeReauthoredAndRuntimeVerifiedPerPlatform": true,
           "directCrossPlatformBinaryReuseForbidden": true
+        }
+      },
+      "bipedCreatureMotionStudio": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-24",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "BODY_PLAN_SPECIFIC_BIPED_CREATURE_MOTION",
+        "purpose": "SHARE_RIG_CAPABILITY_WHEN_COMPATIBLE_BUT_REQUIRE_BODY_PLAN_WEIGHT_AND_CHARACTER_SPECIFIC_MOTION_IDENTITY_FOR_BIPED_CREATURES",
+        "platformTargets": [
+          "UNITY",
+          "ROBLOX"
+        ],
+        "taxonomy": {
+          "SMALL_HUMANOID_BIPED": {
+            "examples": [
+              "GOBLIN",
+              "KOBOLD",
+              "SMALL_IMP"
+            ],
+            "rigReuse": "HUMANOID_COMPATIBLE_WHEN_PROPORTIONS_ALLOW",
+            "motionIdentity": [
+              "LOW_CENTER_OF_MASS",
+              "SHORT_STRIDE",
+              "FAST_DIRECTION_CHANGE",
+              "QUICK_RECOVERY",
+              "EXAGGERATED_RECOIL_IF_STYLIZED"
+            ]
+          },
+          "STANDARD_HUMANOID_MONSTER": {
+            "examples": [
+              "ORC",
+              "UNDEAD_WARRIOR",
+              "CULTIST_MONSTER"
+            ],
+            "rigReuse": "HUMANOID_COMPATIBLE",
+            "motionIdentity": [
+              "HUMANOID_BASE_ALLOWED",
+              "SPECIES_PERSONALITY_VARIATION_REQUIRED"
+            ]
+          },
+          "HEAVY_BIPED": {
+            "examples": [
+              "MINOTAUR",
+              "OGRE",
+              "TROLL"
+            ],
+            "rigReuse": "HUMANOID_OR_GENERIC_DEPENDING_PROPORTION",
+            "motionIdentity": [
+              "HEAVY_UPPER_BODY_INERTIA",
+              "LONGER_BRAKING",
+              "POWERFUL_WEIGHT_SHIFT",
+              "LARGE_RECOVERY",
+              "HEAVY_COLLAPSE_DEATH"
+            ]
+          },
+          "DIGITIGRADE_BIPED": {
+            "examples": [
+              "WEREWOLF",
+              "DEMON",
+              "BEASTMAN"
+            ],
+            "rigReuse": "CUSTOM_OR_EXTENDED_HUMANOID",
+            "motionIdentity": [
+              "DIGITIGRADE_LEG_CHAIN",
+              "FORWARD_LEAN",
+              "SPRINGY_PUSH_OFF",
+              "PREDATORY_TURN_AND_RECOVERY"
+            ]
+          },
+          "HUNCHED_BIPED": {
+            "examples": [
+              "GHOUL",
+              "FERAL_MUTANT"
+            ],
+            "rigReuse": "HUMANOID_WITH_SPINE_AND_SHOULDER_VARIATION_OR_CUSTOM",
+            "motionIdentity": [
+              "FORWARD_HUNCH",
+              "ASYMMETRIC_GAIT_ALLOWED",
+              "HEAD_LEAD_OR_SHOULDER_LEAD",
+              "FERAL_RECOVERY"
+            ]
+          },
+          "APE_LIKE_BIPED": {
+            "examples": [
+              "GORILLA_BEAST",
+              "APE_MONSTER"
+            ],
+            "rigReuse": "CUSTOM_OR_GENERIC",
+            "motionIdentity": [
+              "LONG_ARM_SUPPORT",
+              "CHEST_AND_SHOULDER_DOMINANCE",
+              "KNUCKLE_OR_SEMI_QUADRUPED_TRANSITION_WHEN_RELEVANT",
+              "HEAVY_VERTICAL_FORCE"
+            ]
+          },
+          "SKELETAL_BIPED": {
+            "examples": [
+              "SKELETON",
+              "BONE_KNIGHT"
+            ],
+            "rigReuse": "HUMANOID_COMPATIBLE",
+            "motionIdentity": [
+              "LOW_SOFT_TISSUE_INERTIA",
+              "JOINT_ACCENT",
+              "RIGID_OR_RATTLING_STYLE_WHEN_ART_DIRECTION_ALLOWS",
+              "BONE_SPECIFIC_DEATH_VARIANTS"
+            ]
+          },
+          "BOSS_BIPED": {
+            "examples": [
+              "GIANT_MINOTAUR",
+              "DEMON_LORD",
+              "OGRE_BOSS"
+            ],
+            "rigReuse": "BASE_FAMILY_RIG_CAPABILITY_MAY_BE_REUSED",
+            "motionIdentity": [
+              "INTRO_ACTING",
+              "THREAT_DISPLAY",
+              "PHASE_CHANGE",
+              "ENRAGE",
+              "FAILED_ATTACK_RECOVERY",
+              "BOSS_DEATH_SEQUENCE"
+            ],
+            "normalEnemyMotionScaledOnlyForbidden": true
+          }
+        },
+        "sharedRigDoesNotImplySharedMotionIdentity": true,
+        "speedScaleOnlyVariationForbidden": true,
+        "humanWalkWithOnlyScaleChangeForbiddenForDistinctCreatureBodyPlans": true,
+        "mandatoryMotionFamilies": [
+          "IDLE_ACTING",
+          "START_STOP",
+          "WALK_RUN_OR_BODY_PLAN_EQUIVALENT",
+          "TURN_AND_PIVOT",
+          "ATTACK_ANTICIPATION_CONTACT_RECOVERY",
+          "DIRECTIONAL_HIT",
+          "STAGGER_OR_KNOCKDOWN_WHEN_SUPPORTED",
+          "DEATH_IDENTITY"
+        ],
+        "specialBodyPartBindings": [
+          "HORNS",
+          "TAIL",
+          "DIGITIGRADE_LEGS",
+          "LONG_ARMS",
+          "HUNCHED_SPINE",
+          "WINGS_WHEN_BIPEDAL",
+          "EXTRA_CREST_OR_HEAD_MASS"
+        ],
+        "minotaurProfile": {
+          "family": "HEAVY_BIPED",
+          "requiredTraits": [
+            "HEAD_AND_HORN_MASS",
+            "CHARGE_LEAN",
+            "BRAKING_INERTIA",
+            "HORN_ATTACK_NECK_SPINE_PELVIS_CHAIN",
+            "HEAVY_WEAPON_COMPATIBILITY",
+            "HEAVY_COLLAPSE_DEATH"
+          ],
+          "signatureMotionCandidates": [
+            "HORN_CHARGE",
+            "HORN_GORE",
+            "SHOULDER_RAM",
+            "HEAVY_STOMP",
+            "RAGE_SNORT",
+            "WALL_IMPACT_RECOVERY"
+          ]
+        },
+        "goblinProfile": {
+          "family": "SMALL_HUMANOID_BIPED",
+          "requiredTraits": [
+            "LOW_CENTER_OF_MASS",
+            "SHORT_QUICK_STEPS",
+            "FAST_PIVOT",
+            "MOBILE_WEAPON_ATTACK",
+            "COWARDLY_OR_AGGRESSIVE_ACTING_VARIANT"
+          ],
+          "signatureMotionCandidates": [
+            "SCAMPER_RUN",
+            "QUICK_SLASH",
+            "CLUB_SWING",
+            "SIDESTEP_EVADE",
+            "PANIC_BACKSTEP",
+            "FAST_FALL_DEATH"
+          ]
+        },
+        "runtimeQa": [
+          "BODY_PLAN_READS_FROM_SILHOUETTE",
+          "WEIGHT_CLASS_READS_FROM_ACCELERATION_AND_RECOVERY",
+          "NO_HUMAN_DEFAULT_WALK_FOR_DISTINCT_BODY_PLAN",
+          "FOOT_PLANT_AND_TURN_CONTACT",
+          "SPECIAL_BODY_PART_MOTION_ALIGNMENT",
+          "ATTACK_CONTACT_EVENT_ALIGNMENT",
+          "SPECIES_SPECIFIC_HIT_AND_DEATH",
+          "MOBILE_READABILITY",
+          "UNITY_NATIVE_RUNTIME_CAPTURE",
+          "ROBLOX_NATIVE_RUNTIME_CAPTURE_WHEN_PLATFORM_TARGETED"
+        ]
+      },
+      "styleVariantTransformation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-24",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "STYLE_LOCK_AWARE_ASSET_AND_MOTION_DERIVATION",
+        "purpose": "ALLOW_THE_SAME_VERIFIED_RIG_AND_MOTION_CAPABILITY_TO_BE_REAUTHORED_FOR_CARTOON_STYLIZED_DARK_FANTASY_LOW_POLY_REALISTIC_OR_OTHER_GAME_CONCEPTS_WITHOUT_CHANGING_GAMEPLAY_AUTHORITY",
+        "supportedStyleFamilies": [
+          "CARTOON",
+          "ANIME_OR_CEL_SHADED",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "LOW_POLY",
+          "REALISTIC",
+          "CHIBI",
+          "HORROR",
+          "WUXIA_FANTASY"
+        ],
+        "styleLockAlwaysWins": true,
+        "reusableSemanticCore": [
+          "RIG_SEMANTICS",
+          "MOTION_ROLE",
+          "CONTACT_PHASE",
+          "BODY_PLAN",
+          "WEIGHT_CLASS",
+          "WEAPON_ATTACHMENT_SEMANTICS",
+          "HIT_AND_DEATH_ROLE"
+        ],
+        "transformAxes": [
+          "BODY_PROPORTION",
+          "SILHOUETTE",
+          "HEAD_HAND_FOOT_SCALE",
+          "LIMB_LENGTH",
+          "POSE_EXAGGERATION",
+          "ANTICIPATION_EXAGGERATION",
+          "OVERSHOOT_AND_SETTLE",
+          "SQUASH_STRETCH_PRESENTATION",
+          "BOUNCE_AND_SECONDARY_MOTION",
+          "FACIAL_AND_HEAD_ACTING",
+          "MATERIAL_PALETTE_OUTLINE",
+          "VFX_SHAPE_LANGUAGE",
+          "CAMERA_DISTANCE_READABILITY",
+          "TIMING_CURVE_PRESENTATION"
+        ],
+        "cartoonProfile": {
+          "allowed": [
+            "LARGER_HEAD_OR_HANDS",
+            "CLEARER_SILHOUETTE",
+            "STRONGER_KEY_POSES",
+            "LARGER_ANTICIPATION",
+            "CONTROLLED_SQUASH_STRETCH",
+            "SNAPPIER_PRESENTATION_CURVES",
+            "EXAGGERATED_RECOIL",
+            "BOUNCY_IDLE_AND_RECOVERY",
+            "SIMPLIFIED_DETAIL_FOR_MOBILE_READABILITY"
+          ],
+          "forbidden": [
+            "GAMEPLAY_SPEED_CHANGE_BY_PRESENTATION_ONLY",
+            "HITBOX_CHANGE_WITHOUT_GAMEPLAY_AUTHORITY",
+            "DAMAGE_OR_COOLDOWN_CHANGE",
+            "ROOT_DISPLACEMENT_THAT_BREAKS_AUTHORITATIVE_MOVEMENT",
+            "CONTACT_EVENT_DESYNC",
+            "RIG_BREAKAGE"
+          ]
+        },
+        "preservationRules": {
+          "gameplayBalanceSaveProgressionEconomyHitCooldownMultiplayerIntentImmutable": true,
+          "authoritativeMovementAndHitSemanticsRemainGameplayOwned": true,
+          "animationTimingMayBeRetimedOnlyInsideApprovedPresentationToleranceOrWithGameplayOwnedRebind": true,
+          "rootMotionMustRespectAuthoritativeMovementEnvelope": true,
+          "contactMarkersMustRemainSynchronized": true,
+          "sameSourceCanProduceMultipleStyleVariants": true,
+          "originalImmutableAndDerivedProvenanceRequired": true,
+          "styleVariantPromotionRequiresTargetGameRuntimeVerification": true
+        },
+        "interLibraryBindings": [
+          "CHARACTER_ARCHETYPE_LIBRARY",
+          "CREATURE_RIG_LIBRARY",
+          "ACTION_MOTION_LIBRARY",
+          "WEAPON_MOTION_LIBRARY",
+          "VFX_LIBRARY",
+          "ENVIRONMENT_KIT_LIBRARY",
+          "UI_PRESENTATION_LIBRARY"
+        ],
+        "graphRule": "ARCHETYPE_OR_CREATURE_PROFILE_REFERENCES_RIG_MOTION_VFX_AUDIO_ENVIRONMENT_AND_STYLE_VARIANTS_BY_ID_WITH_PLATFORM_NATIVE_VARIANTS",
+        "directCrossPlatformBinaryReuseForbidden": true
+      },
+      "motionDirectorSystem": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-24",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "HIGH_END_COMPOSABLE_MOTION_DIRECTOR",
+        "implementation": "assets/vibe-motion-director.js",
+        "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
+        "internalModuleOnly": true,
+        "createsNewTopLevelPipeline": false,
+        "purpose": "COMPOSE_SELECT_MUTATE_AND_VALIDATE_REUSABLE_MOTION_PARTS_ACROSS_CHARACTERS_CREATURES_WEAPONS_SKILLS_REACTIONS_ENVIRONMENTS_AND_STYLE_VARIANTS_FOR_UNITY_AND_ROBLOX_WITHOUT_OWNING_GAMEPLAY_RULES",
+        "continuousExpansion": {
+          "enabled": true,
+          "noArtificialMotionCategoryCap": true,
+          "noArtificialCombinationCap": true,
+          "backwardCompatibleRegistryExtensionPreferred": true,
+          "newBodyPlansStylesWeaponsSkillsAndMotionRolesMayAppendWithout_REPLACING_EXISTING_VERIFIED_IDS": true,
+          "productionWorkPreemptsIdleExpansion": true
+        },
+        "compositionChannels": [
+          "ROOT",
+          "LOCOMOTION",
+          "LOWER_BODY",
+          "PELVIS_SPINE",
+          "UPPER_BODY",
+          "LEFT_ARM",
+          "RIGHT_ARM",
+          "HEAD_GAZE",
+          "TAIL",
+          "WINGS",
+          "EXTRA_LIMBS",
+          "SECONDARY_MOTION",
+          "PROCEDURAL_CORRECTION",
+          "VFX_PRESENTATION",
+          "AUDIO_PRESENTATION",
+          "CAMERA_PRESENTATION"
+        ],
+        "motionDNAFields": [
+          "MOTION_ID",
+          "BODY_PLAN",
+          "RIG_PROFILE",
+          "SPECIES_OR_ARCHETYPE",
+          "STANCE",
+          "STYLE_FAMILY",
+          "WEAPON_FAMILY",
+          "LEAD_SIDE",
+          "HAND_USAGE",
+          "DIRECTION",
+          "SPEED_CLASS",
+          "WEIGHT_CLASS",
+          "AIRBORNE_STATE",
+          "HEIGHT_CLASS",
+          "COMBAT_ROLE",
+          "SKILL_ROLE",
+          "DEFENSE_ROLE",
+          "REACTION_ROLE",
+          "INTERACTION_ROLE",
+          "TRAVERSAL_ROLE",
+          "CONTACT_LIMB",
+          "CONTACT_PHASE",
+          "STARTUP_CLASS",
+          "RECOVERY_CLASS",
+          "TRAVEL_VECTOR",
+          "ROOT_MOTION_MODE",
+          "MIRROR_SAFE",
+          "LOOPABLE",
+          "PAIR_ROLE",
+          "ENVIRONMENT_TAGS",
+          "COMPATIBILITY_TAGS",
+          "EXCLUSION_TAGS",
+          "PLATFORM_VARIANT",
+          "SOURCE_PROVENANCE",
+          "STYLE_VARIANT_PARENT",
+          "RUNTIME_VERIFICATION_STATE"
+        ],
+        "motionFamilies": {
+          "locomotion": [
+            "IDLE",
+            "WALK",
+            "JOG",
+            "RUN",
+            "SPRINT",
+            "START",
+            "ACCELERATE",
+            "DECELERATE",
+            "STOP",
+            "TURN",
+            "PIVOT",
+            "STRAFE",
+            "BACKSTEP",
+            "DASH",
+            "BURST_STEP",
+            "CROUCH_MOVE",
+            "CRAWL",
+            "LIMP",
+            "PANIC_RUN",
+            "SNEAK"
+          ],
+          "traversal": [
+            "JUMP",
+            "FALL",
+            "LAND",
+            "ROLL",
+            "VAULT",
+            "MANTLE",
+            "CLIMB",
+            "LEDGE_HANG",
+            "LEDGE_CLIMB",
+            "LADDER",
+            "WALL_RUN",
+            "WALL_JUMP",
+            "SLIDE",
+            "ZIPLINE",
+            "SWING",
+            "ROPE_CLIMB",
+            "SWIM",
+            "DIVE",
+            "SURFACE",
+            "TAKEOFF",
+            "FLY",
+            "GLIDE",
+            "BANK",
+            "HOVER",
+            "LAND_FROM_FLIGHT"
+          ],
+          "meleeAttack": [
+            "PUNCH",
+            "KICK",
+            "ELBOW",
+            "KNEE",
+            "HEADBUTT",
+            "BITE",
+            "CLAW",
+            "HORN",
+            "TAIL_STRIKE",
+            "SLAM",
+            "STOMP",
+            "CHARGE",
+            "ONE_HAND_SLASH",
+            "ONE_HAND_THRUST",
+            "TWO_HAND_SLASH",
+            "SPEAR_THRUST",
+            "AXE_CHOP",
+            "HAMMER_SMASH",
+            "SHIELD_BASH",
+            "STAFF_STRIKE",
+            "DUAL_WIELD",
+            "AERIAL_ATTACK",
+            "DASH_ATTACK",
+            "GAP_CLOSER",
+            "COMBO_LINK",
+            "COMBO_ENDER",
+            "FINISHER"
+          ],
+          "rangedAttack": [
+            "BOW_DRAW",
+            "BOW_AIM",
+            "BOW_RELEASE",
+            "CROSSBOW",
+            "THROWN_WEAPON",
+            "FIREARM_AIM",
+            "FIREARM_FIRE",
+            "FIREARM_RELOAD",
+            "CREATURE_PROJECTILE",
+            "BREATH_ATTACK",
+            "SPIT_ATTACK",
+            "BEAM_ATTACK"
+          ],
+          "skill": [
+            "PREPARE",
+            "CHARGE",
+            "AIM",
+            "CHANNEL",
+            "HOLD",
+            "CAST",
+            "RELEASE",
+            "PROJECTILE_RELEASE",
+            "BEAM_RELEASE",
+            "AOE_RELEASE",
+            "SUMMON",
+            "BUFF",
+            "DEBUFF",
+            "HEAL",
+            "TELEPORT_START",
+            "TELEPORT_END",
+            "TRANSFORM",
+            "STANCE_SKILL",
+            "ULTIMATE",
+            "IMPACT_RESPONSE",
+            "RECOVERY",
+            "CANCEL"
+          ],
+          "defense": [
+            "GUARD",
+            "HIGH_BLOCK",
+            "LOW_BLOCK",
+            "DIRECTIONAL_BLOCK",
+            "PARRY",
+            "DEFLECT",
+            "DODGE",
+            "SIDESTEP_EVADE",
+            "ROLL_EVADE",
+            "DUCK",
+            "WEAVE",
+            "SWAY",
+            "LEG_CHECK",
+            "CATCH_ATTACK",
+            "COUNTER",
+            "REVERSAL",
+            "GUARD_BREAK_REACTION",
+            "THROW_BREAK"
+          ],
+          "grapple": [
+            "GRAB",
+            "CLINCH",
+            "BODY_LOCK",
+            "TAKEDOWN",
+            "TRIP",
+            "FOOT_SWEEP",
+            "HIP_THROW",
+            "SHOULDER_THROW",
+            "REAP_THROW",
+            "SUPLEX_STYLE_GAME_THROW",
+            "PUSH_THROW",
+            "SLAM_THROW",
+            "AIR_THROW",
+            "GRAB_ESCAPE",
+            "THROW_BREAK",
+            "PAIR_FINISHER"
+          ],
+          "reaction": [
+            "LIGHT_HIT",
+            "HEAVY_HIT",
+            "DIRECTIONAL_HIT",
+            "COUNTER_HIT",
+            "STAGGER",
+            "KNOCKBACK",
+            "LAUNCH",
+            "AIR_HIT",
+            "WALL_HIT",
+            "WALL_BOUNCE",
+            "GROUND_BOUNCE",
+            "KNOCKDOWN",
+            "DOWNED_HIT",
+            "BREAKFALL",
+            "TECH_RECOVERY",
+            "GET_UP",
+            "KIP_UP"
+          ],
+          "status": [
+            "STUN",
+            "FEAR",
+            "RAGE",
+            "POISON",
+            "BURN",
+            "FREEZE",
+            "SHOCK",
+            "EXHAUSTED",
+            "INJURED",
+            "ROOTED",
+            "SLOWED",
+            "CONFUSED",
+            "SLEEP"
+          ],
+          "interaction": [
+            "PICK_UP",
+            "DROP",
+            "PUSH",
+            "PULL",
+            "CARRY",
+            "DRAG",
+            "OPEN",
+            "CLOSE",
+            "USE_SWITCH",
+            "CRAFT",
+            "GATHER",
+            "MINE",
+            "CHOP",
+            "DIG",
+            "EAT",
+            "DRINK",
+            "SIT",
+            "LIE_DOWN",
+            "SLEEP",
+            "REVIVE",
+            "HEAL_OTHER",
+            "PET",
+            "MOUNT",
+            "DISMOUNT"
+          ],
+          "acting": [
+            "BREATH",
+            "LOOK_AROUND",
+            "ALERT",
+            "RELAX",
+            "TAUNT",
+            "ROAR",
+            "LAUGH",
+            "ANGER",
+            "FEAR",
+            "CONFIDENT",
+            "TIRED",
+            "INJURED",
+            "CELEBRATE",
+            "THREATEN",
+            "NOTICE_PLAYER",
+            "SEARCH",
+            "CONFUSED_LOOK",
+            "SOCIAL_GESTURE"
+          ],
+          "boss": [
+            "INTRO",
+            "PLAYER_DETECT",
+            "THREAT_DISPLAY",
+            "PHASE_CHANGE",
+            "ENRAGE",
+            "STAGGER",
+            "FAILED_ATTACK_RECOVERY",
+            "SIGNATURE_PREPARE",
+            "SIGNATURE_RELEASE",
+            "FINISHER",
+            "DEATH_SEQUENCE"
+          ],
+          "death": [
+            "DEATH_FRONT",
+            "DEATH_BACK",
+            "DEATH_LEFT",
+            "DEATH_RIGHT",
+            "HEAVY_DEATH",
+            "AIR_DEATH",
+            "BURN_DEATH",
+            "FREEZE_DEATH",
+            "SPECIES_SIGNATURE_DEATH",
+            "BOSS_DEATH_SEQUENCE"
+          ]
+        },
+        "bodyLayerComposition": {
+          "enabled": true,
+          "upperLowerBodySeparationWhenRigSupports": true,
+          "limbSpecificLayeringWhenRigSupports": true,
+          "specialBodyPartLayersWhenRigSupports": [
+            "TAIL",
+            "WINGS",
+            "EXTRA_LIMBS",
+            "HORNS_OR_HEAD_MASS"
+          ],
+          "simultaneousExamples": [
+            "RUN_PLUS_BOW_AIM",
+            "STRAFE_PLUS_SWORD_ATTACK",
+            "BACKSTEP_PLUS_GUARD",
+            "FLY_PLUS_BREATH_ATTACK",
+            "WALK_PLUS_SPELL_CHANNEL",
+            "CROUCH_MOVE_PLUS_FIREARM_AIM"
+          ],
+          "conflictingLayerMaskMustBeRejected": true
+        },
+        "motionGrammar": {
+          "attack": [
+            "NEUTRAL",
+            "ANTICIPATION",
+            "STARTUP",
+            "ACTIVE_CONTACT",
+            "RECOIL",
+            "RECOVERY"
+          ],
+          "defense": [
+            "NEUTRAL",
+            "READ",
+            "BLOCK_OR_EVADE",
+            "CONTACT_OR_CLEAR",
+            "COUNTER_OPTION",
+            "RECOVERY"
+          ],
+          "skill": [
+            "PREPARE",
+            "CHARGE_OR_CHANNEL",
+            "AIM_OR_TARGET",
+            "RELEASE",
+            "IMPACT_RESPONSE",
+            "RECOVERY"
+          ],
+          "traversal": [
+            "PREPARE",
+            "TAKEOFF_OR_ENTRY",
+            "TRAVEL",
+            "CONTACT_OR_EXIT",
+            "RECOVERY"
+          ],
+          "pair": [
+            "ALIGN",
+            "LOCK",
+            "EXECUTE",
+            "IMPACT",
+            "SEPARATE",
+            "RECOVERY"
+          ],
+          "optionalPhases": [
+            "HOLD",
+            "LOOP",
+            "CANCEL",
+            "BRANCH",
+            "CHAIN"
+          ],
+          "grammarMayExposePresentationMarkersButGameplayOwnsHitDamageCooldownComboAndStateAuthority": true
+        },
+        "compatibilityGraph": {
+          "required": true,
+          "dimensions": [
+            "BODY_PLAN",
+            "RIG_PROFILE",
+            "LIMB_TOPOLOGY",
+            "WEAPON_FAMILY",
+            "STANCE",
+            "ROOT_MOTION_MODE",
+            "AIRBORNE_STATE",
+            "STYLE_FAMILY",
+            "PLATFORM"
+          ],
+          "incompatibleCombinationMustBeRejected": true,
+          "compatibleRigDoesNotGuaranteeMotionIdentity": true,
+          "retargetableCandidateMayRequireCleanupBeforeUse": true,
+          "platformNativeVariantRequired": true
+        },
+        "contextSelector": {
+          "enabled": true,
+          "inputs": [
+            "DISTANCE_TO_TARGET",
+            "TARGET_DIRECTION",
+            "RELATIVE_HEIGHT",
+            "CURRENT_SPEED",
+            "ACCELERATION",
+            "STANCE",
+            "WEAPON",
+            "BODY_PLAN",
+            "WEIGHT_CLASS",
+            "AIRBORNE_STATE",
+            "GROUND_SLOPE",
+            "SURFACE_TYPE",
+            "WALL_PROXIMITY",
+            "AVAILABLE_SPACE",
+            "PREVIOUS_MOTION",
+            "RECENT_MOTION_HISTORY",
+            "COMBAT_ROLE",
+            "SKILL_ROLE",
+            "STYLE_LOCK",
+            "PLATFORM_BUDGET"
+          ],
+          "deterministicScoringRequired": true,
+          "recentRepeatPenaltyRequired": true,
+          "invalidCompatibilityHardReject": true,
+          "gameplayDecisionInputOnly": true,
+          "selectorMayChoosePresentationButMayNotCreateNewCombatRule": true
+        },
+        "reactionMatcher": {
+          "enabled": true,
+          "inputs": [
+            "IMPACT_DIRECTION",
+            "IMPACT_HEIGHT",
+            "IMPACT_STRENGTH",
+            "ATTACK_TYPE",
+            "CONTACT_LIMB",
+            "CURRENT_STANCE",
+            "WEIGHT_CLASS",
+            "AIRBORNE_STATE",
+            "WALL_PROXIMITY",
+            "GROUND_STATE"
+          ],
+          "outputs": [
+            "LOCAL_RECOIL",
+            "FULL_BODY_HIT",
+            "STAGGER",
+            "KNOCKBACK",
+            "LAUNCH",
+            "WALL_HIT",
+            "KNOCKDOWN",
+            "BREAKFALL",
+            "RECOVERY"
+          ],
+          "attackerAndReceiverContactAlignmentRequiredWhenPaired": true,
+          "gameplayHitResultRemainsAuthoritative": true
+        },
+        "pairMotion": {
+          "enabled": true,
+          "roles": [
+            "ATTACKER",
+            "RECEIVER"
+          ],
+          "families": [
+            "GRAB",
+            "THROW",
+            "TAKEDOWN",
+            "PAIR_FINISHER",
+            "REVIVE",
+            "CARRY",
+            "MOUNT"
+          ],
+          "alignmentFields": [
+            "ROOT_OFFSET",
+            "FACING",
+            "CONTACT_POINTS",
+            "HEIGHT_OFFSET",
+            "TIMING_MARKERS",
+            "BREAK_OR_ESCAPE_EXIT"
+          ],
+          "pairedAnimationMustNotTeleportOutsideGameplayApprovedEnvelope": true,
+          "perPlatformReauthoringAndRuntimeVerificationRequired": true
+        },
+        "speciesSignature": {
+          "requiredForHeroBossAndKeyCreature": true,
+          "slots": [
+            "IDLE_SIGNATURE",
+            "LOCOMOTION_SIGNATURE",
+            "ATTACK_SIGNATURE",
+            "DEFENSE_SIGNATURE",
+            "HIT_SIGNATURE",
+            "DEATH_SIGNATURE",
+            "SPECIAL_BODY_PART_SIGNATURE"
+          ],
+          "genericMotionOnlyForImportantCreatureForbidden": true
+        },
+        "styleModifier": {
+          "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.styleVariantTransformation",
+          "mayDeriveMultipleStylesFromSameSemanticMotion": true,
+          "gameStyleLockAlwaysWins": true,
+          "gameplayAuthorityImmutable": true
+        },
+        "motionMutation": {
+          "enabled": true,
+          "allowed": [
+            "MIRROR",
+            "STANCE_SWAP",
+            "LEAD_SIDE_SWAP",
+            "POSE_EXAGGERATION",
+            "ANTICIPATION_SCALE",
+            "RECOVERY_CURVE",
+            "OVERSHOOT_SETTLE",
+            "STRIDE_PRESENTATION",
+            "ATTACK_ARC_PRESENTATION",
+            "WEIGHT_PRESENTATION",
+            "STYLE_MODIFIER"
+          ],
+          "forbidden": [
+            "DAMAGE_CHANGE",
+            "HITBOX_CHANGE",
+            "COOLDOWN_CHANGE",
+            "UNAPPROVED_MOVEMENT_SPEED_CHANGE",
+            "CONTACT_MARKER_DESYNC",
+            "RIG_BREAKAGE"
+          ],
+          "mutationMustPreserveParentProvenance": true,
+          "mutatedVariantRequiresCompatibilityAndRuntimeQa": true
+        },
+        "variationMemory": {
+          "enabled": true,
+          "recentHistorySize": 8,
+          "exactImmediateRepeatPenalty": 100,
+          "sameFamilyRepeatPenalty": 20,
+          "contextFitMayOverrideVarietyPreference": true,
+          "deterministicSeedSupported": true,
+          "gameplayRandomnessAuthority": false
+        },
+        "libraryInterlink": {
+          "required": true,
+          "nodes": [
+            "CHARACTER_ARCHETYPE_LIBRARY",
+            "CREATURE_RIG_LIBRARY",
+            "ACTION_MOTION_LIBRARY",
+            "WEAPON_MOTION_LIBRARY",
+            "SKILL_MOTION_LIBRARY",
+            "REACTION_MOTION_LIBRARY",
+            "PAIR_MOTION_LIBRARY",
+            "VFX_LIBRARY",
+            "ENVIRONMENT_KIT_LIBRARY",
+            "UI_PRESENTATION_LIBRARY"
+          ],
+          "edgeTypes": [
+            "USES_RIG",
+            "COMPATIBLE_WITH",
+            "DERIVED_FROM",
+            "USES_MOTION",
+            "USES_WEAPON",
+            "USES_SKILL_MOTION",
+            "USES_REACTION",
+            "USES_PAIR_MOTION",
+            "USES_VFX",
+            "USES_ENVIRONMENT_PROFILE",
+            "USES_STYLE_VARIANT",
+            "HAS_PLATFORM_VARIANT"
+          ],
+          "unresolvedRequiredEdgeBlocksVerifiedPromotion": true
+        },
+        "platformAdapters": {
+          "unity": [
+            "ANIMATOR_LAYER",
+            "AVATAR_MASK",
+            "BLEND_TREE",
+            "ANIMATION_RIGGING_OR_IK",
+            "ROOT_MOTION_OR_IN_PLACE_PER_GAME",
+            "RUNTIME_LAYER_WEIGHTING"
+          ],
+          "roblox": [
+            "ANIMATOR",
+            "ANIMATION_TRACK_PRIORITY",
+            "R15_OR_CUSTOM_RIG",
+            "MOTOR6D_OR_BONES",
+            "LAYERED_TRACKS_WHEN_COMPATIBLE",
+            "MOBILE_BUDGETED_PROCEDURAL_CORRECTION"
+          ],
+          "directCrossPlatformBinaryReuseForbidden": true
+        },
+        "runtimeQa": [
+          "MOTION_DNA_COMPLETE",
+          "COMPATIBILITY_GRAPH_PASS",
+          "NO_LAYER_CONFLICT",
+          "NO_VISIBLE_FOOT_SLIDE",
+          "CONTACT_ALIGNMENT",
+          "ROOT_MOVEMENT_ENVELOPE",
+          "REACTION_MATCH",
+          "PAIR_ALIGNMENT_WHEN_USED",
+          "STYLE_LOCK_COHESION",
+          "VARIATION_WITHOUT_RANDOM_NOISE",
+          "VFX_AUDIO_CAMERA_EVENT_SYNC",
+          "MOBILE_READABILITY",
+          "MOBILE_FRAME_STABILITY",
+          "ACTUAL_TARGET_GAME_RUNTIME_CAPTURE",
+          "BEFORE_AFTER_COMPARISON"
+        ],
+        "authorityGuard": {
+          "motionDirectorOwnsPresentationSelectionAndCompositionOnly": true,
+          "gameplayOwnsDamageHitboxCooldownComboCancelWindowMovementAuthoritySaveEconomyProgressionAndMultiplayerIntent": true,
+          "visualOrMotionWorkMayNotSilentlyChangeGameplaySemantics": true
         }
       }
     }
