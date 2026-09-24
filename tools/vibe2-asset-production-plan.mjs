@@ -296,6 +296,77 @@ function matchedForType(selector={},type='',manifest={},target=''){
     }));
 }
 
+const BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE=Object.freeze({
+  character:['CHARACTER'],
+  enemy:['CREATURE'],
+  boss:['CREATURE'],
+  background:['ENVIRONMENT','BUILDING'],
+  item:['WEAPON','PROP'],
+  prop:['PROP','ENVIRONMENT','BUILDING'],
+  effect:['VFX','SKILL'],
+  ui:['UI'],
+  audio:['AUDIO'],
+  animation:['MOTION']
+});
+function stableMaterialSeed(value=''){
+  let hash=2166136261;
+  for(const ch of clean(value)){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
+  return hash>>>0;
+}
+function stableMaterialAtoms(values=[],key='',count=3){
+  const rows=unique(values);
+  if(!rows.length)return freezeList([]);
+  const start=stableMaterialSeed(key)%rows.length,out=[];
+  for(let i=0;i<Math.min(Math.max(1,count),rows.length);i++)out.push(rows[(start+i)%rows.length]);
+  return freezeList(out);
+}
+function baseMaterialRecipeForRequest(request='',templates=[]){
+  const text=clean(request);
+  const id=/BOSS|보스/i.test(text)?'BOSS_VARIANT'
+    :/ELITE|정예/i.test(text)?'ELITE_VARIANT'
+    :/FACTION|세력/i.test(text)?'FACTION_VARIANT'
+    :/REGION|지역|BIOME|바이옴/i.test(text)?'REGION_VARIANT'
+    :/DAMAGE|파손|부서|손상/i.test(text)?'DAMAGED_VARIANT'
+    :/FIRE|ICE|ELECTRIC|POISON|ELEMENT|화염|불|얼음|번개|독|속성/i.test(text)?'ELEMENTAL_VARIANT'
+    :/ANCIENT|고대|유적/i.test(text)?'ANCIENT_VARIANT'
+    :'NORMAL_VARIANT';
+  return freeze((templates||[]).find(row=>clean(row?.id)===id)||{id,mutationStrength:'LIGHT',minimumDistinctAxes:2});
+}
+function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePlan=null,decisions=[],gameId='',target='',request=''}={}){
+  const configured=companyRegistry?.baseMaterialLibrary?.families||{};
+  const productionActive=studioUniversePlan?.baseMaterialRotation?.productionActive||configured;
+  const familySet=new Set();
+  for(const row of decisions||[])for(const family of BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE[clean(row?.type).toLowerCase()]||[])familySet.add(family);
+  const families={};
+  for(const family of familySet){
+    const values=Array.isArray(productionActive?.[family])&&productionActive[family].length?productionActive[family]:configured?.[family]||[];
+    families[family]=stableMaterialAtoms(values,`${gameId}|${target}|${family}`,3);
+  }
+  const recipe=baseMaterialRecipeForRequest(request,companyRegistry?.variantRecipeTemplates||[]);
+  const visualScope=/(?:PRESENTATION_PASS|GRAPHICS_PRODUCTION|ASSET_ADAPTATION|graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|vfx|effect|particle|ui|hud|그래픽|비주얼|연출|에셋|모델|환경|배경|지형|재질|조명|애니|모션|이펙트|효과|파티클|외형|실루엣|스타일)/i.test(clean(request));
+  const selectedAtomCount=Object.values(families).reduce((n,rows)=>n+rows.length,0);
+  return freeze({
+    status:selectedAtomCount?'READY':'NO_COMPATIBLE_ATOMS',
+    source:'company-asset-library.json#baseMaterialLibrary',
+    atomState:clean(companyRegistry?.baseMaterialLibrary?.status)||null,
+    selectedAtomCount,
+    families:freeze(Object.fromEntries(Object.entries(families).map(([family,rows])=>[family,freezeList(rows)]))),
+    recipe,
+    gameSpecificStableSelection:true,
+    colorOnlyVariantForbidden:companyRegistry?.baseMaterialLibrary?.combinationRules?.colorOnlyVariantDoesNotCount===true,
+    runtimeVerificationRequired:companyRegistry?.baseMaterialLibrary?.combinationRules?.actualRuntimeQaRequiredBeforeVerifiedPromotion===true,
+    robloxAutoApply:freeze({
+      consultRequired:clean(target).toLowerCase()==='roblox',
+      sourceMutationRequired:clean(target).toLowerCase()==='roblox'&&visualScope&&selectedAtomCount>0,
+      bindingVersion:1,
+      requiredSourceMarker:'STUDIO_ASSET_BINDING_VERSION',
+      actualNativeBindingRequired:true,
+      markerOnlyBindingForbidden:true,
+      preserveGameplayAuthority:true
+    })
+  });
+}
+
 function directAuthoringFor(target='',type=''){
   const resolvedTarget=clean(target).toLowerCase();
   const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
@@ -465,6 +536,9 @@ export function buildVibeAssetProductionPlan({
     baseMaterialFamilies:companyRegistry?.baseMaterialLibrary?.families||{},
     baseMaterialUsageByAtom:task.baseMaterialUsageByAtom||{}
   }):null;
+  const baseMaterialLoadout=buildComposableBaseMaterialLoadout({
+    companyRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request
+  });
   const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
     const usage={
       activeGameConsumer:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
@@ -512,6 +586,7 @@ export function buildVibeAssetProductionPlan({
     requestedTypes:freezeList(selector.requestedTypes||[]),
     missingTypes:freezeList(selector.missingTypes||[]),
     decisions,
+    baseMaterialLoadout,
     qualityProfile:highEndActive?'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION':'STANDARD_PRESENTATION',
     companyGraphicsLibrary:freeze({
       enabled:companyLibraryActive,
@@ -744,6 +819,8 @@ export function buildVibeAssetProductionPlan({
       reuseCandidateTypes:reuseCount,
       sameGameRobloxCandidateTypes:sameGameCount,
       discoveredSameGameRobloxAssets:sameGameRobloxAssets.length,
+      baseMaterialSelectedAtoms:baseMaterialLoadout.selectedAtomCount,
+      robloxAutoApplySourceMutationRequired:baseMaterialLoadout.robloxAutoApply.sourceMutationRequired,
       companyCandidateTypes:companyCount,
       repositoryCandidateTypes:repositoryCount,
       externalCandidateTypes:externalCount,
@@ -921,6 +998,8 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Studio Asset Universe=${plan.companyGraphicsLibrary.studioAssetUniverse.target}; families=${plan.companyGraphicsLibrary.studioAssetUniverse.families.join('|')}; creatureBodyPlans=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureBodyPlans.length}; species=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureSpecies.length}; biomes=${plan.companyGraphicsLibrary.studioAssetUniverse.biomes.length}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialLibrary?.atomCount?`Composable Base Materials=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.atomCount}; families=${Object.keys(plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.families||{}).join('|')}; mutationAxes=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.mutationAxes.join('|')}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.variantRecipeTemplates?.length?`Variant Recipes=${plan.companyGraphicsLibrary.studioAssetUniverse.variantRecipeTemplates.map(row=>row.id+':'+row.mutationStrength).join('|')}; 일반/지역/세력/정예/보스/히어로 변형은 색상 변경만으로 구분하지 말고 identity budget을 충족한다.`:'',
+    plan.baseMaterialLoadout?.selectedAtomCount?`Game Base Material Loadout recipe=${plan.baseMaterialLoadout.recipe?.id||'NORMAL_VARIANT'}; atoms=${Object.entries(plan.baseMaterialLoadout.families||{}).map(([family,atoms])=>family+':'+atoms.join(',')).join('|')}`:'',
+    plan.target==='roblox'&&plan.baseMaterialLoadout?.robloxAutoApply?.sourceMutationRequired?'[ROBLOX STUDIO ASSET AUTO APPLY] 이번 작업은 실제 시각/에셋 범위다. 위 Game Base Material Loadout과 검증 재사용 후보를 기존 책임 Luau 소스의 실제 Instance/Material/Color3/MeshPart/Attachment/Particle/Trail/UI 표현에 연결한다. local STUDIO_ASSET_BINDING_VERSION = 1 마커를 실제 바인딩 구현과 함께 두고, 마커/주석/상수만 추가하는 no-op은 금지한다. 게임 규칙·데미지·쿨다운·저장·진행·네트워크 권한은 바꾸지 않는다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialRotation?.policy?.status==='ACTIVE_AUTOMATIC_ROTATION'?`Base Material Rotation=AUTO; retire=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.retireCount||0}; graduate=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.graduateCount||0}; refill=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.refillCount||0}; 중복/검증실패/반복 호환실패/장기 미사용 재료는 제작 활성 풀에서 제외하고, 마스터 재료는 제작 재사용은 유지한 채 학습·확장 풀에서 졸업시켜 기존 24H Gap Fill이 새 다양성 슬롯을 같은 사이클에 채운다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
