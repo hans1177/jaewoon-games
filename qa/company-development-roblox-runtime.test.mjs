@@ -225,6 +225,15 @@ test('Rojo project maps shared server and client source roots',()=>{
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
 });
 
+test('Roblox source workflow persists Studio selection handoff for downstream runtime verification',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/studioAssetBindingApplied:bootstrapEvidence\.studioAssetBindingApplied===true/);
+  assert.match(workflow,/studioAssetBinding:bootstrapEvidence\.studioAssetBinding\|\|null/);
+  assert.match(workflow,/robloxStudioAssetBindingApplied:result\.studioAssetBindingApplied===true/);
+  assert.match(workflow,/robloxStudioAssetRuntimeBindingPassed:false/);
+  assert.match(workflow,/robloxStudioAssetRuntimeBindingEvidence:null/);
+});
+
 test('Roblox source workflow keeps compiled candidates pending when Actions cannot create PRs',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/Attempt validated Roblox source promotion through PR[\s\S]*continue-on-error: true/);
