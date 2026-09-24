@@ -1,5 +1,5 @@
 {
-  "version": 328,
+  "version": 329,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -9065,7 +9065,7 @@
     }
   },
   "narrativeStorytellingContract": {
-    "version": 3,
+    "version": 4,
     "authority": "OWNER_DIRECTIVE_2026-09-24",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "objective": "BUILD_VERIFIED_MAIN_STORY_QUEST_FORESHADOWING_CHARACTER_VOICE_RELATIONSHIP_MEMORY_COMPANION_NPC_MONSTER_BEHAVIOR_AND_WORLD_NARRATIVE_SKILL_WITHOUT_RAW_COPYING_OR_SEPARATE_SHADOW_TRAINING",
@@ -9326,14 +9326,17 @@
       ],
       "worldStateContradictionForbidden": true,
       "deadRemovedOrUnavailableCharacterCannotAppearWithoutExplicitNarrativeRule": true,
-      "destroyedLockedOrChangedLocationMustRespectCurrentWorldState": true
+      "destroyedLockedOrChangedLocationMustRespectCurrentWorldState": true,
+      "factionRelationshipStateMustRespectCurrentWorldState": true,
+      "factionControlledRegionStateMustRemainConsistent": true
     },
     "stateAndSave": {
       "reuseExistingQuestDialogueStateBeforeAddingDuplicateSystem": true,
       "lazyBackwardCompatibleStateExpansionRequired": true,
       "stableExistingSaveMeaningPreserved": true,
       "schemaMigrationRequiredWhenPersistedShapeChanges": true,
-      "storyQuestRelationshipMemoryStateMustRoundTripWhenPersisted": true
+      "storyQuestRelationshipMemoryStateMustRoundTripWhenPersisted": true,
+      "factionAndFactionRelationshipStateMustRoundTripWhenPersisted": true
     },
     "runtimeLearning": {
       "existingCanonicalLearningMotorOnly": true,
@@ -9345,7 +9348,9 @@
         "VOICE_COLLAPSE",
         "QUEST_REPETITION",
         "RELATIONSHIP_INCONSISTENCY",
-        "WORLD_STATE_CONTRADICTION"
+        "WORLD_STATE_CONTRADICTION",
+        "FACTION_RELATIONSHIP_INCONSISTENCY",
+        "STORY_TRANSITION_CAUSALITY_FAILURE"
       ],
       "rawGeneratedStoryOrDialogueCannotDirectlyBecomeCanonicalMastery": true,
       "specializedDomainsMustMapToCanonicalLearningMotor": true,
@@ -9360,7 +9365,10 @@
         "COMPANION_DECISION_CONSISTENCY",
         "NPC_INITIATIVE_CONSISTENCY",
         "MONSTER_PERSONALITY_BEHAVIOR",
-        "WORLD_STORY_STATE_CONSISTENCY"
+        "WORLD_STORY_STATE_CONSISTENCY",
+        "STORY_TRANSITION_CAUSALITY",
+        "FACTION_RELATIONSHIP_CAUSALITY",
+        "FACTION_WORLD_STATE_CONSISTENCY"
       ],
       "learningDomains": [
         "STORYTELLING",
@@ -9447,6 +9455,32 @@
       "relationshipChangeRequiresCauseEvent": true,
       "persistentWhenGameUsesFactionState": true,
       "factionStateCannotDirectlyGrantUndeclaredRewardDamageOrProgress": true
+    },
+    "factionRelationshipState": {
+      "enabled": true,
+      "implementation": "assets/quest-dialogue.js",
+      "tracks": [
+        "ALLY",
+        "RIVAL",
+        "HOSTILE",
+        "NEUTRAL",
+        "DEBT",
+        "TRUST",
+        "FEAR",
+        "CONTROL"
+      ],
+      "sourceEventRequiredForEveryMutation": true,
+      "duplicateSourceEventMustBeIdempotent": true,
+      "boundedRange": {
+        "min": -100,
+        "max": 100
+      },
+      "factionMembershipMayInformCharacterContext": true,
+      "factionRelationshipMayInformNarrativeAndBehaviorIntent": true,
+      "gameplayAuthority": false,
+      "undeclaredDamageRewardEconomyProgressMutationForbidden": true,
+      "persistentWhenGameOwnsSave": true,
+      "backwardCompatibleLazyStateExpansionRequired": true
     }
   },
   "presentationPipelineImplementation": {
