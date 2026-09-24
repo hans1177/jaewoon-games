@@ -19,7 +19,7 @@ local Config = {
   EconomyCost = 8,
   InitialState = {
     Resources = 20, Troops = 12, Territories = 1,
-    EconomyLevel = 1, EnemyPressure = 8, CampaignTurn = 1, Progress = 0, RoundScore = 0,
+    EconomyLevel = 1, EnemyPressure = 8, CampaignTurn = 1, Progress = 0,
   },
   Actions = {
     SCOUT = "SCOUT",
