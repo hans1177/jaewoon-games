@@ -14,7 +14,12 @@ function readJson(file, fallback = null) {
     if (fallback !== null) return fallback;
     throw new Error(`missing json: ${file}`);
   }
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
+  const raw=fs.readFileSync(file,'utf8');
+  if (!clean(raw)) {
+    if (fallback !== null) return fallback;
+    throw new Error(`empty json: ${file}`);
+  }
+  return JSON.parse(raw);
 }
 
 function parseArgs(argv = process.argv.slice(2)) {

@@ -13,7 +13,8 @@ import {
   beginVibeQueueBatch,
   finishVibeQueueTask,
   summarizeVibeContinuousQueue,
-  DEFAULT_MAX_CONCURRENT_TASKS
+  DEFAULT_MAX_CONCURRENT_TASKS,
+  EXTERNAL_MATRIX_BATCH_MAX
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, DEFAULT_ADAPTIVE_TARGET } from './vibe2-adaptive-backpressure.mjs';
@@ -29,7 +30,12 @@ const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-gen
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
 const TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE = 'recovery:transient-work-lock-requeue-v1';
 const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
-function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
+function readJson(file, fallback = {}) {
+  if (!file || !fs.existsSync(file)) return fallback;
+  const raw=fs.readFileSync(file,'utf8');
+  if (!clean(raw)) return fallback;
+  return JSON.parse(raw);
+}
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) {
   const [command = 'summary', ...rest] = argv;
@@ -768,6 +774,8 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
 
 export function runQueueCommand(args = {}) {
   const file = queueFileFrom(args);
+  const queueFileMissing=!fs.existsSync(file);
+  const queueFileBlank=!queueFileMissing&&!clean(fs.readFileSync(file,'utf8'));
   const rawQueue = readJson(file, { tasks: [] });
   const rawTasks = Array.isArray(rawQueue) ? rawQueue : Array.isArray(rawQueue?.tasks) ? rawQueue.tasks : [];
   const atomicSchemaMigrationNeeded = rawQueue?.scheduling?.atomicNeuronCompletion !== true
@@ -786,7 +794,9 @@ export function runQueueCommand(args = {}) {
           || !evidence.includes('graphics-atomic-candidate-isolation-required')
         ));
     });
-  let queue = createVibeContinuousQueue(rawQueue);
+  const queueStateRecovered=queueFileMissing||queueFileBlank;
+  let queue = createVibeContinuousQueue(queueStateRecovered?{...rawQueue,maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX}:rawQueue);
+  if(queueStateRecovered)writeJson(file,queue);
   const command = clean(args.command).toLowerCase();
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
@@ -958,12 +968,13 @@ export function runQueueCommand(args = {}) {
       result = { command, queue, summary: summarizeVibeContinuousQueue(queue), selection: selectVibeQueueBatch(queue) };
     }
   } else throw new Error(`unknown queue command: ${command}`);
-  return result;
+  return {...result,queueStateRecovered};
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const result = runQueueCommand(parseArgs());
   console.log(`VIBE2_QUEUE_COMMAND=${result.command}`);
+  console.log(`VIBE2_QUEUE_STATE_RECOVERED=${result.queueStateRecovered===true?'YES':'NO'}`);
   if(result.executionLane)console.log(`VIBE2_EXECUTION_LANE=${result.executionLane}`);
   if(result.command==='verify-worker-sync'){
     console.log(`VIBE2_WORKER_SYNC=${result.pass===true?'PASS':'FAIL'}`);

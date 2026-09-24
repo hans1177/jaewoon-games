@@ -100,9 +100,13 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
-  assert.equal(runtime.version>=23,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,23);
+  assert.equal(runtime.version>=24,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,24);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
+  assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
+  assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
+  assert.equal(runtime.workManagement.controlStateRecovery.parallelismContractVersion,4);
+  assert.equal(runtime.workManagement.controlStateRecovery.nonEmptyMalformedJsonFailClosed,true);
   assert.equal(runtime.adaptiveBackpressure.mode,'GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY');
   assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
   assert.equal(runtime.continuous.atomicNeuronStream.retryStrategyMutationRequiresVerifiedRootCause,true);

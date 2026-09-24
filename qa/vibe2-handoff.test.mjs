@@ -219,3 +219,35 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   assert.equal(after.workState.blockedCount, 30);
   assert.ok(after.workState.queuedPreview.some(task=>task.id==='e2e-01'));
 });
+
+
+test('generated handoff treats blank queue as recoverable fallback instead of JSON parse crash',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-handoff-blank-'));
+  const runtimeFile=path.join(dir,'vibe2-runtime.json');
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'parallelism.json');
+  const experienceFile=path.join(dir,'experience.json');
+  const lifecycleFile=path.join(dir,'lifecycle.json');
+  const runtime={
+    version:22,
+    documentation:{
+      machineStateVersions:{runtime:22,queue:5,parallelism:4,experience:3,handoff:2},
+      runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',projectLifecycle:'lifecycle.json'},
+      humanDocuments:[],humanDocumentLimit:0,manualHandoffDocumentsAllowed:false,legacyHumanDocumentsRemoved:[]
+    },
+    workManagement:{humanMaintainedHandoff:false,handoffMode:'generated-from-machine-state',machineContextRequired:true,handoffConsumers:['planner','reserve','worker','fan-in']},
+    sources:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',projectLifecycleState:'lifecycle.json'},
+    adaptiveBackpressure:{stateFile:'parallelism.json',steps:[4,8,16,20,32,64,128,256]},
+    parallelismTelemetry:{backpressureSteps:[4,8,16,20,32,64,128,256]},
+    continuous:{maxConcurrentGameTasks:256,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'},
+    projectLifecycle:{requiredFields:[]}
+  };
+  fs.writeFileSync(runtimeFile,JSON.stringify(runtime),'utf8');
+  fs.writeFileSync(queueFile,'','utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20}),'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}),'utf8');
+  fs.writeFileSync(lifecycleFile,JSON.stringify({version:1,projectStateVersion:0,projects:[]}),'utf8');
+  const snapshot=generateVibe2Handoff({runtimeFile,queueFile,controlFile,experienceFile,projectLifecycleFile:lifecycleFile});
+  assert.equal(snapshot.consistency.ok,false);
+  assert.ok(snapshot.consistency.errors.includes('QUEUE_VERSION_MISMATCH'));
+});
