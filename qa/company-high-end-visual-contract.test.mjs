@@ -54,6 +54,15 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.cohesion.antiKitbashGateRequired,true);
   assert.equal(c.visualTargetFrames.roles.length,7);
   assert.equal(c.runtimeQa.beforeAfterVisualRegressionRequired,true);
+  const spatial=roadmap.livingMotionVisualQualityContract.minimumSpatialPresentation;
+  assert.equal(spatial.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(spatial.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(spatial.flat2DFinalGameplayForbidden,true);
+  assert.equal(spatial.uiOverlayMayRemain2D,true);
+  assert.equal(spatial.runtimeEvidenceRequired,true);
+  assert.equal(c.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(c.flat2DFinalPresentationForbidden,true);
+  assert.equal(architecture.departmentTopology.graphics.minimumFinalGameplayDimension,'2.5D');
   assert.ok(architecture.executionTopology.assetProduction.includes('RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION'));
   assert.equal(architecture.departmentTopology.graphics.usesExistingDepartment,true);
   assert.equal(architecture.departmentTopology.graphics.unlimitedEvidenceDrivenEvolutionGenerations,true);
@@ -117,10 +126,15 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(plan.policy.actionReadyMotionVarietyRequired,true);
 
   const art=createVibeArtPipeline({request:'하이엔드 캐릭터 배경 보스 애니메이션 VFX',target:'roblox',quality:3});
-  assert.equal(art.version,6);
+  assert.equal(art.version,7);
   assert.deepEqual([...art.highEndVisual.targetFrames],[...VIBE_HIGH_END_TARGET_FRAME_ROLES]);
   assert.ok(art.art.transforms.includes('kitbash'));
   assert.equal(art.policy.highEndVisualProduction,true);
+  assert.equal(art.minimumSpatialPresentation.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(art.minimumSpatialPresentation.flat2DFinalGameplayForbidden,true);
+  assert.equal(art.minimumSpatialPresentation.ui2DOverlayAllowed,true);
+  assert.equal(art.policy.minimumFinalGameplayDimension,'2.5D');
+  assert.ok(art.implementation.some(value=>/3D|2\.5D/.test(value)));
   assert.deepEqual([...art.animation.motionLayers],['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
   assert.equal(art.animation.characterAndCreatureActing,true);
   assert.equal(art.vfx.gameSpecificLanguage,true);
