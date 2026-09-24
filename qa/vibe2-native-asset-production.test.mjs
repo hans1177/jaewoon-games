@@ -151,7 +151,7 @@ test('Roblox visual planning selects concrete base material atoms and requires n
       target:'roblox',repoRoot:root,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
     });
     assert.ok(plan.baseMaterialLoadout.selectedAtomCount>=20);
-    assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.consultRequired,true);
+    assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.selectionRequired,true);
     assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,true);
     assert.ok(plan.baseMaterialLoadout.families.UI.includes('FRAME_PANEL'));
     assert.equal(plan.baseMaterialLoadout.runtimeVerificationRequired,true);
@@ -342,7 +342,7 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
       assetProduction:{
         baseMaterialLoadout:{
           families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
-          robloxSelectionHandoff:{handoffRequired:true}
+          robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,plannerSourceMutationForbidden:true}
         }
       }
     };
@@ -503,7 +503,7 @@ panel.Parent = gui
       assetProduction:{
         baseMaterialLoadout:{
           families:{UI:['FRAME_PANEL']},
-          robloxSelectionHandoff:{handoffRequired:true}
+          robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,plannerSourceMutationForbidden:true}
         }
       }
     },null,2));
