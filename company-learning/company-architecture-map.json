@@ -1,5 +1,5 @@
 {
-  "version": 150,
+  "version": 151,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2643,7 +2643,23 @@
       ],
       "verifiedProjectOutcomeRequired": true,
       "shadowTrainerForbidden": true,
-      "rawReferenceOrGeneratedContentDirectMastery": false
+      "rawReferenceOrGeneratedContentDirectMastery": false,
+      "verifiedQueueEvidenceIngress": {
+        "policy": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
+        "canonicalPipeline": "company-learning/canonical-learning-pipeline.json#verifiedSpecializedQueueEvidenceIngress",
+        "implementation": "tools/vibe2-learning-motor.mjs",
+        "flow": [
+          "TERMINAL_QUEUE_TASK",
+          "VERIFIED_EVIDENCE_MARKER_CLASSIFICATION",
+          "ONE_POSITIVE_AND_OR_ONE_NEGATIVE_SYNTHETIC_EXPERIENCE",
+          "EXISTING_EXPERIENCE_DEDUPE",
+          "MASTERY_AND_FAILURE_SIGNATURE_UPDATE"
+        ],
+        "separateTrainer": false,
+        "rawTelemetryDirectTraining": false,
+        "infrastructureFailureNegativeLearningForbidden": true,
+        "authorityExpansion": false
+      }
     }
   },
   "ownerRule2Topology": {
