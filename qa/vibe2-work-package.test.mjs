@@ -8,6 +8,7 @@ import {
   computeWorkloadTelemetry,
   resolveWorkPackagePolicy
 } from '../tools/vibe2-work-package.mjs';
+import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 
 const baseTask=(id,extra={})=>({id,gameId:'demo',target:'web',sourceRoot:'web-games/demo',goal:`goal ${id}`,responsibleFiles:[`${id}.js`],status:'queued',estimatedRisk:'low',...extra});
 
@@ -111,4 +112,35 @@ test('workload telemetry measures completed features change volume rework qa dup
   assert.ok(t.historicalQaDuplicateRatePct>0);
   assert.equal(t.averagePackageCycleTimeMs,1000);
   assert.equal(t.duplicateFullRegressionExpected,false);
+});
+
+
+test('studio quality package cannot collapse below the long-work threshold and survives queue normalization',()=>{
+  const policy={...resolveWorkPackagePolicy({}, {tasks:[]}),minWorkUnitsPerPackage:6,substantialSingleTaskWorkUnits:6,longWorkUnits:5};
+  const studio=baseTask('studio',{
+    workUnits:8,
+    packageClass:'STUDIO_QUALITY_PACKAGE',
+    studioQualityPackage:true,
+    evidence:['studio-quality-loop:v1','studio-quality-package:STUDIO_QUALITY_PACKAGE','work-package-scope:implementation-completeness','work-package-scope:quality-delta','work-package-scope:optimization'],
+    studioQualityEvolution:{
+      version:1,cycle:1,phase:'BUILD_UP',focusPillar:'PRESENTATION',baselineId:'source:web-games/demo',
+      baselineSource:'CURRENT_SOURCE',explicitGap:'presentation gap',designIsImplementationCeiling:false,
+      requiredConnectedImprovements:{min:3,max:6},realSourceDeltaRequired:true,visibleRenderDeltaRequired:true,
+      runtimeBeforeAfterComparisonRequired:true,finalFanInComparisonRequired:true,protectedRegressionForbidden:true,nextCycleRequired:true
+    }
+  });
+  const pkg=buildWorkPackage({tasks:[studio],project:{gameId:'demo',projectPath:'web-games/demo'},policy});
+  assert.equal(pkg.accepted,true);
+  assert.equal(pkg.packageClass,'STUDIO_QUALITY_PACKAGE');
+  assert.equal(pkg.quantityGoal,'STUDIO_QUALITY_PACKAGE');
+  assert.ok(pkg.packageWorkUnits>=pkg.studioMinimumWorkUnits);
+  assert.equal(pkg.tasks[0].packageLongWorkProtected,true);
+  assert.ok(pkg.completionCriteria.includes('runtime-before-after-comparison-fan-in-pass'));
+
+  const queue=createVibeContinuousQueue({tasks:pkg.tasks,maxConcurrentTasks:20});
+  const normalized=queue.tasks[0];
+  assert.equal(normalized.packageClass,'STUDIO_QUALITY_PACKAGE');
+  assert.equal(normalized.studioQualityPackage,true);
+  assert.equal(normalized.studioQualityEvolution.runtimeBeforeAfterComparisonRequired,true);
+  assert.equal(normalized.studioQualityEvolution.finalFanInComparisonRequired,true);
 });
