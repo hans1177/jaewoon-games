@@ -3,7 +3,48 @@ name: Vibe QA
 on:
   push:
     branches: [main]
+    paths:
+      - 'assets/**'
+      - 'game-catalog.json'
+      - 'roblox-games/**'
+      - 'web-games/horror-escape-room/**'
+      - 'tools/vibe2-artbook-story-*.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'tools/company-roblox-source-drift-sync.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'qa/vibe-regression.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/vibe2-artbook-story-core.test.mjs'
+      - 'qa/horror-escape-room-release.test.mjs'
+      - 'qa/company-roblox-source-drift-sync.test.mjs'
+      - 'qa/company-development-roblox-source-reconcile.test.mjs'
+      - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
+      - 'qa/game-catalog-normalization.test.mjs'
+      - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
+      - '.github/workflows/vibe-qa.yml'
   pull_request:
+    branches: [main]
+    paths:
+      - 'assets/**'
+      - 'game-catalog.json'
+      - 'roblox-games/**'
+      - 'web-games/horror-escape-room/**'
+      - 'tools/vibe2-artbook-story-*.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'tools/company-roblox-source-drift-sync.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'qa/vibe-regression.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/vibe2-artbook-story-core.test.mjs'
+      - 'qa/horror-escape-room-release.test.mjs'
+      - 'qa/company-roblox-source-drift-sync.test.mjs'
+      - 'qa/company-development-roblox-source-reconcile.test.mjs'
+      - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
+      - 'qa/game-catalog-normalization.test.mjs'
+      - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
+      - '.github/workflows/vibe-qa.yml'
 
 concurrency:
   group: vibe-qa-${{ github.ref }}
