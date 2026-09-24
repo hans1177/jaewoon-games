@@ -1,5 +1,5 @@
 {
-  "version": 329,
+  "version": 330,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16062,7 +16062,29 @@
               "REVISIT_USE",
               "STREAMING_HITCH",
               "MOBILE_FRAME_COST"
-            ]
+            ],
+            "existingGamePatternDistillation": {
+              "enabled": true,
+              "input": "VERIFIED_INTERNAL_GAME_RUNTIME_OUTCOMES_ONLY",
+              "implementation": "assets/vibe-environment-director.js",
+              "reusableTechniqueFields": [
+                "GENRE_FAMILY",
+                "ROUTE_GRAMMAR",
+                "ENCOUNTER_RHYTHM",
+                "LANDMARK_REVEAL",
+                "SAFE_DANGER_RELATION",
+                "REVISIT_PATTERN",
+                "STREAMING_STRATEGY",
+                "CHOKE_OPEN_SPACE_RHYTHM"
+              ],
+              "rawCoordinatesTerrainMeshOrExactLayoutStored": false,
+              "exactMapSpecificValuesReusable": false,
+              "minimumIndependentVerifiedGamesForCrossGameReuse": 2,
+              "singleGamePatternRemainsGameScoped": true,
+              "verifiedFailureMayProduceAvoidCandidate": true,
+              "canonicalMasteryPromotionStillUsesExistingLearningMotor": true,
+              "directProductionPassAuthority": false
+            }
           },
           "genreWorldGrammar": {
             "enabled": true,
@@ -16098,7 +16120,7 @@
             "genreGrammarGuidesGenerationButLockedGameRulesWin": true,
             "sameMacroPatternAcrossAllGenresForbidden": true
           },
-          "version": 2,
+          "version": 3,
           "implementationBindings": {
             "environmentDirector": "assets/vibe-environment-director.js",
             "assetProductionPlanner": "tools/vibe2-asset-production-plan.mjs",
@@ -16561,7 +16583,17 @@
         "UNBOUNDED_CHUNK_OR_PROP_COST"
       ],
       "mapSpecificValuesDoNotGeneralizeWithoutRepeatedVerification": true,
-      "rawReferenceImageOrProtectedLayoutCannotBecomeReusableTemplate": true
+      "rawReferenceImageOrProtectedLayoutCannotBecomeReusableTemplate": true,
+      "existingGamePatternDistillation": {
+        "enabled": true,
+        "minimumIndependentVerifiedGames": 2,
+        "sameGameEvidenceMayStrengthenGameScopedMemory": true,
+        "crossGameReuseRequiresIndependentVerification": true,
+        "rawCoordinatesOrExactLayoutForbidden": true,
+        "distilledTechniqueOnly": true,
+        "directMasteryCredit": false,
+        "existingCanonicalLearningMotorOnly": true
+      }
     }
   },
   "genrePresentationQualityContract": {
