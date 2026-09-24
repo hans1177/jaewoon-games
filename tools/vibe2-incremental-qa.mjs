@@ -335,6 +335,69 @@ function presentationSourceText(root, changed = []) {
 function patternHits(text='',patterns=[]){
   return patterns.reduce((count,re)=>count+(re.test(text)?1:0),0);
 }
+function specializedVerificationRequest(data={}){
+  const request=data?.specializedVerificationRequest;
+  return request&&request.required===true?request:null;
+}
+const SPECIALIZED_FOCUSED_QA_RULES=Object.freeze({
+  VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS:[
+    /(?:concept|style.?bible|style.?lock|visual.?dna|art.?direction|컨셉|스타일.?바이블|스타일.?락|비주얼.?DNA|아트.?디렉션)/i,
+    /(?:render|draw|material|texture|sprite|mesh|palette|lighting|visual|렌더|재질|텍스처|스프라이트|메시|팔레트|조명)/i
+  ],
+  VERIFIED_WORLD_ROUTE_NAVIGATION_PASS:[
+    /(?:route|path|navigation|navmesh|pathfind|map.?dna|road|길|경로|동선|내비|맵.?DNA)/i,
+    /(?:objective|spawn|landmark|shortcut|reachab|region|목표|스폰|랜드마크|지름길|도달|지역)/i
+  ],
+  VERIFIED_STREAMING_MOBILE_BUDGET_PASS:[
+    /(?:stream|chunk|cell|lod|prewarm|pool|스트리밍|청크|셀|프리워밍|풀링)/i,
+    /(?:budget|mobile|performance|distance|relevance|memory|frame|예산|모바일|성능|거리|메모리|프레임)/i
+  ],
+  VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS:[
+    /(?:story|narrative|plot|phase|chapter|스토리|서사|플롯|단계|챕터)/i,
+    /(?:transition|cause|event|prerequisite|consequence|state|전이|원인|이벤트|선행|결과|상태)/i
+  ],
+  VERIFIED_QUEST_GRAPH_PASS:[
+    /(?:quest|mission|objective|퀘스트|미션|목표)/i,
+    /(?:graph|dependency|prerequisite|complete|unlock|consequence|그래프|의존|선행|완료|해금|결과)/i
+  ],
+  VERIFIED_CHARACTER_PERSONA_VOICE_MEMORY_PASS:[
+    /(?:persona|voice|personality|temperament|speech|페르소나|말투|성격|기질|화법)/i,
+    /(?:memory|relationship|trust|fear|behavior|knowledge|기억|관계|신뢰|두려움|행동|지식)/i
+  ],
+  VERIFIED_WORLD_NARRATIVE_STATE_PASS:[
+    /(?:world.?state|faction|region|landmark|environmental.?story|월드.?상태|세력|지역|랜드마크|환경.?스토리)/i,
+    /(?:story|narrative|quest|dialogue|save|state|스토리|서사|퀘스트|대사|저장|상태)/i
+  ]
+});
+function runSpecializedFocusedQa({root,data={},changed=[]}={}){
+  const request=specializedVerificationRequest(data);
+  if(!request)return{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false};
+  const requested=[...new Set((request.requestedMarkers||[]).map(clean).filter(Boolean))];
+  const text=presentationSourceText(root,changed);
+  if(!text.trim())throw new Error('SPECIALIZED_FOCUSED_QA_SOURCE_REQUIRED');
+  const results={};
+  const failed=[];
+  for(const marker of requested){
+    const rules=SPECIALIZED_FOCUSED_QA_RULES[marker]||[];
+    const checks=rules.map((re,index)=>({name:`STRUCTURAL_SIGNAL_${index+1}`,pass:re.test(text)}));
+    const pass=rules.length>=2&&checks.every(row=>row.pass);
+    results[marker]={pass,checks,staticOnly:true};
+    if(!pass)failed.push(marker);
+  }
+  if(failed.length)throw new Error(`SPECIALIZED_FOCUSED_QA_FAILED:${failed.join('|')}`);
+  return{
+    status:'FOCUSED_STATIC_PASS',
+    requestedMarkers:requested,
+    results,
+    finalMarkerAuthority:'FAN_IN_ONLY',
+    finalVerifiedMarkers:[],
+    fullRegressionStillRequired:true,
+    nativeRuntimeStillRequired:request.nativeRuntimeRequired===true,
+    runtimeStillRequired:true,
+    markerOnlyPassForbidden:true,
+    authorityExpanded:false
+  };
+}
 function runPresentationStaticQa({root,data={},changed=[]}={}){
   const contract=presentationContract(data);
   if(!contract)return{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false};
@@ -538,7 +601,8 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
   const presentation=presentationContract(data);
   const weatherPresentation=weatherPresentationContract(data);
-  const payload = ['vibe2-incremental-qa-v10', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null)];
+  const specializedRequest=specializedVerificationRequest(data);
+  const payload = ['vibe2-incremental-qa-v11', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -547,10 +611,10 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:8,entries:{}}) : {version:8,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:9,entries:{}}) : {version:9,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
@@ -560,10 +624,11 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const architectureDrift=runArchitectureDrift({root,data});
   const presentationQa=runPresentationStaticQa({root,data,changed});
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const specializedVerificationQa=runSpecializedFocusedQa({root,data,changed});
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
-    cache.version=8; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, savedAt:new Date().toISOString() };
+    cache.version=9; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, specializedVerificationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
