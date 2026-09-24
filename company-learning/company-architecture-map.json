@@ -1,5 +1,5 @@
 {
-  "version": 145,
+  "version": 146,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2402,6 +2402,19 @@
         "mobileBudget": true,
         "directMapOrLandmarkCopyForbidden": true,
         "gameplayAndSaveAuthorityExpansion": false
+      },
+      "conceptAndWorldLearning": {
+        "source": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.worldAndConceptLearning",
+        "domains": [
+          "CONCEPT_DIRECTION",
+          "WORLD_GENERATION",
+          "LEVEL_DESIGN",
+          "ROUTE_DESIGN",
+          "STREAMING_OPTIMIZATION"
+        ],
+        "verifiedSignalsRequired": true,
+        "mapSpecificValuesDoNotGeneralizeWithoutRepeatedVerification": true,
+        "protectedReferenceLayoutCannotBecomeReusableTemplate": true
       }
     }
   },
@@ -2538,7 +2551,32 @@
     "externalAiRawOutputAuthority": "NONE",
     "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-    "authorityExpansion": false
+    "authorityExpansion": false,
+    "specializedGameDevelopmentMastery": {
+      "source": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery",
+      "existingCanonicalLearningMotorOnly": true,
+      "domains": [
+        "CONCEPT_DIRECTION",
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN",
+        "STREAMING_OPTIMIZATION",
+        "MAIN_STORY_GENERATION",
+        "QUEST_GRAPH",
+        "FORESHADOWING_PAYOFF",
+        "TWIST_EVIDENCE_CHAIN",
+        "CHARACTER_VOICE",
+        "CHARACTER_RELATIONSHIP_MEMORY",
+        "CHARACTER_BEHAVIOR",
+        "COMPANION_BEHAVIOR",
+        "NPC_BEHAVIOR",
+        "MONSTER_BEHAVIOR_PERSONALITY",
+        "WORLD_NARRATIVE_BINDING"
+      ],
+      "verifiedProjectOutcomeRequired": true,
+      "shadowTrainerForbidden": true,
+      "rawReferenceOrGeneratedContentDirectMastery": false
+    }
   },
   "ownerRule2Topology": {
     "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule2",
@@ -3519,6 +3557,23 @@
       "backwardCompatibleStateExpansion": true,
       "saveMigrationWhenShapeChanges": true,
       "storyQuestRelationshipMemoryRoundTripRequired": true
+    },
+    "learning": {
+      "existingCanonicalLearningMotorOnly": true,
+      "domains": [
+        "MAIN_STORY_GENERATION",
+        "QUEST_GRAPH",
+        "FORESHADOWING_PAYOFF",
+        "TWIST_EVIDENCE_CHAIN",
+        "CHARACTER_VOICE",
+        "CHARACTER_RELATIONSHIP_MEMORY",
+        "CHARACTER_BEHAVIOR",
+        "COMPANION_BEHAVIOR",
+        "NPC_BEHAVIOR",
+        "MONSTER_BEHAVIOR_PERSONALITY",
+        "WORLD_NARRATIVE_BINDING"
+      ],
+      "positiveMasteryRequiresVerifiedProjectOutcome": true
     }
   }
 }
