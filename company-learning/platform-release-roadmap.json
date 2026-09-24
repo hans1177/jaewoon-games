@@ -1,5 +1,5 @@
 {
-  "version": 321,
+  "version": 322,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -12447,7 +12447,7 @@
       }
     },
     "companyGraphicsLibrary24h": {
-      "version": 8,
+      "version": 9,
       "authority": "OWNER_DIRECTIVE_2026-09-24",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
@@ -12626,7 +12626,17 @@
         "UI_PRESENTATION_LIBRARY",
         "SKILL_MOTION_LIBRARY",
         "REACTION_MOTION_LIBRARY",
-        "PAIR_MOTION_LIBRARY"
+        "PAIR_MOTION_LIBRARY",
+        "CLOTHING_LIBRARY",
+        "ARMOR_LIBRARY",
+        "BUILDING_MODULAR_LIBRARY",
+        "INTERIOR_KIT_LIBRARY",
+        "PROP_LIBRARY",
+        "MATERIAL_LIBRARY",
+        "AUDIO_LIBRARY",
+        "SKILL_PRESENTATION_LIBRARY",
+        "DAMAGE_PRESENTATION_LIBRARY",
+        "DESTRUCTION_LIBRARY"
       ],
       "diversityPolicy": {
         "fillCoverageGapsBeforeNearDuplicateVariants": true,
@@ -14551,6 +14561,876 @@
           "compatibilityQaRequired": true,
           "mobileQaRequired": true,
           "unresolvedRequiredLibraryEdgeBlocksPromotion": true
+        }
+      },
+      "studioAssetUniverse": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-24",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "HIGH_END_STUDIO_ASSET_UNIVERSE",
+        "implementation": "assets/vibe-studio-asset-universe.js",
+        "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
+        "internalModuleOnly": true,
+        "createsNewTopLevelPipeline": false,
+        "purpose": "UNIFY_CHARACTER_CREATURE_CLOTHING_BUILDING_ENVIRONMENT_WEAPON_SKILL_MATERIAL_AUDIO_VFX_UI_MOTION_AND_PROP_ASSETS_INTO_ONE_STYLE_LOCKED_COMPATIBILITY_AND_COVERAGE_GRAPH_FOR_CONTINUOUS_24H_LIBRARY_POPULATION",
+        "phases": {
+          "foundation": {
+            "name": "STUDIO_ASSET_UNIVERSE_FOUNDATION",
+            "required": true,
+            "systems": [
+              "ASSET_DNA",
+              "UNIVERSAL_COVERAGE_SCANNER",
+              "CROSS_ASSET_COMPATIBILITY_GRAPH",
+              "ASSET_IDENTITY_QA",
+              "STYLE_BIBLE",
+              "LINEAGE_PROVENANCE",
+              "LICENSE_GATE",
+              "PLATFORM_VARIANT_GATE"
+            ]
+          },
+          "autonomousPopulation": {
+            "name": "AUTONOMOUS_LIBRARY_POPULATION_24H",
+            "required": true,
+            "systems": [
+              "GAP_PRIORITY",
+              "VERIFIED_REUSE",
+              "REPOSITORY_REUSE",
+              "SAFE_DERIVATION",
+              "LICENSE_VERIFIED_EXTERNAL_ACQUISITION",
+              "PREPARED_SEMANTIC_SEED",
+              "NATIVE_AUTHORING",
+              "UNITY_ROBLOX_RUNTIME_VERIFICATION",
+              "VERIFIED_PROMOTION",
+              "LIBRARY_HEATMAP"
+            ]
+          }
+        },
+        "families": {
+          "CHARACTER": {
+            "subfamilies": [
+              "BODY",
+              "FACE",
+              "HAIR",
+              "CLOTHING",
+              "ARMOR",
+              "ACCESSORY"
+            ],
+            "requiredCompatibility": [
+              "BODY_PLAN",
+              "RIG_PROFILE",
+              "GENDER_OR_BODY_VARIANT_WHEN_RELEVANT",
+              "STYLE_FAMILY",
+              "LAYER_SLOT",
+              "PLATFORM"
+            ]
+          },
+          "CREATURE": {
+            "subfamilies": [
+              "BODY_PLAN",
+              "SPECIES",
+              "RIG",
+              "MUTATION",
+              "MOTION",
+              "SIGNATURE"
+            ],
+            "requiredCompatibility": [
+              "BODY_PLAN",
+              "RIG_PROFILE",
+              "LIMB_TOPOLOGY",
+              "SPECIAL_BODY_PARTS",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          },
+          "BUILDING": {
+            "subfamilies": [
+              "MODULAR_EXTERIOR",
+              "INTERIOR",
+              "STRUCTURAL",
+              "NAVIGATION",
+              "PROP_SOCKET"
+            ],
+            "requiredCompatibility": [
+              "BUILDING_THEME",
+              "MODULE_GRID",
+              "FLOOR_HEIGHT",
+              "SOCKET_TYPE",
+              "NAVIGATION_CLEARANCE",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          },
+          "ENVIRONMENT": {
+            "subfamilies": [
+              "BIOME",
+              "TERRAIN",
+              "VEGETATION",
+              "ROCK",
+              "LANDMARK",
+              "WEATHER",
+              "PROP_DENSITY"
+            ],
+            "requiredCompatibility": [
+              "BIOME_FAMILY",
+              "CLIMATE",
+              "TERRAIN_TYPE",
+              "DENSITY_CLASS",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          },
+          "WEAPON": {
+            "subfamilies": [
+              "MELEE",
+              "RANGED",
+              "MAGIC_FOCUS",
+              "SHIELD",
+              "THROWN"
+            ],
+            "requiredCompatibility": [
+              "WEAPON_FAMILY",
+              "GRIP",
+              "HAND_USAGE",
+              "MOTION_PACK",
+              "BODY_PLAN",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          },
+          "SKILL": {
+            "subfamilies": [
+              "CAST_MOTION",
+              "VFX",
+              "PROJECTILE",
+              "IMPACT",
+              "AUDIO",
+              "CAMERA",
+              "REACTION"
+            ],
+            "requiredCompatibility": [
+              "SKILL_FAMILY",
+              "CAST_ROLE",
+              "IMPACT_ROLE",
+              "DAMAGE_PRESENTATION_FAMILY",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          },
+          "MATERIAL": {
+            "subfamilies": [
+              "WOOD",
+              "STONE",
+              "METAL",
+              "CLOTH",
+              "LEATHER",
+              "SKIN",
+              "FUR",
+              "SCALE",
+              "ICE",
+              "LAVA",
+              "CRYSTAL",
+              "SLIME",
+              "BONE"
+            ],
+            "requiredCompatibility": [
+              "SURFACE_TYPE",
+              "STYLE_FAMILY",
+              "WEATHER_RESPONSE",
+              "DAMAGE_RESPONSE",
+              "PLATFORM_BUDGET"
+            ]
+          },
+          "AUDIO": {
+            "subfamilies": [
+              "FOOTSTEP",
+              "CREATURE_VOCAL",
+              "ATTACK",
+              "HIT",
+              "WEAPON",
+              "ENVIRONMENT",
+              "UI",
+              "MAGIC",
+              "BOSS",
+              "BUILDING",
+              "WEATHER"
+            ],
+            "requiredCompatibility": [
+              "EVENT_ROLE",
+              "SURFACE_OR_SOURCE",
+              "INTENSITY",
+              "VARIANT_GROUP",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          },
+          "VFX": {
+            "subfamilies": [
+              "CAST",
+              "TRAIL",
+              "IMPACT",
+              "STATUS",
+              "ENVIRONMENT",
+              "WEATHER",
+              "DESTRUCTION",
+              "BOSS"
+            ],
+            "requiredCompatibility": [
+              "EVENT_ROLE",
+              "SCALE",
+              "STYLE_FAMILY",
+              "PLATFORM_BUDGET"
+            ]
+          },
+          "UI": {
+            "subfamilies": [
+              "ICON",
+              "FRAME",
+              "BUTTON",
+              "HUD",
+              "INVENTORY",
+              "MAP",
+              "STATUS",
+              "BOSS"
+            ],
+            "requiredCompatibility": [
+              "UI_ROLE",
+              "STYLE_FAMILY",
+              "READABILITY_CLASS",
+              "PLATFORM"
+            ]
+          },
+          "MOTION": {
+            "subfamilies": [
+              "LOCOMOTION",
+              "COMBAT",
+              "SKILL",
+              "DEFENSE",
+              "REACTION",
+              "PAIR",
+              "ACTING",
+              "DEATH"
+            ],
+            "requiredCompatibility": [
+              "BODY_PLAN",
+              "RIG_PROFILE",
+              "ROLE",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          },
+          "PROP": {
+            "subfamilies": [
+              "FURNITURE",
+              "CONTAINER",
+              "CRAFTING",
+              "DECORATION",
+              "RESOURCE",
+              "INTERACTIVE",
+              "DESTRUCTION"
+            ],
+            "requiredCompatibility": [
+              "PROP_ROLE",
+              "BIOME_OR_ROOM_THEME",
+              "INTERACTION_ROLE",
+              "STYLE_FAMILY",
+              "PLATFORM"
+            ]
+          }
+        },
+        "creatureUniverse": {
+          "bodyPlanTargetMinimum": 30,
+          "speciesTargetMinimum": 50,
+          "colorOnlyVariantDoesNotCountAsDistinctSpecies": true,
+          "bodyPlans": [
+            "SMALL_HUMANOID_BIPED",
+            "STANDARD_HUMANOID_MONSTER",
+            "HEAVY_BIPED",
+            "DIGITIGRADE_BIPED",
+            "HUNCHED_BIPED",
+            "APE_LIKE_BIPED",
+            "SKELETAL_BIPED",
+            "BOSS_BIPED",
+            "QUADRUPED_CANINE",
+            "QUADRUPED_FELINE",
+            "QUADRUPED_HEAVY",
+            "QUADRUPED_HOOFED",
+            "QUADRUPED_REPTILE",
+            "ARACHNID",
+            "INSECT_6LEG",
+            "INSECT_FLYING",
+            "SCORPION",
+            "CENTIPEDE",
+            "SERPENT",
+            "LIZARD",
+            "CROCODILIAN",
+            "FLYING_BIRD",
+            "FLYING_BAT",
+            "FLYING_WYVERN",
+            "FLYING_DEMON",
+            "FISH",
+            "SHARK",
+            "EEL",
+            "JELLYFISH",
+            "CEPHALOPOD",
+            "CRABLIKE",
+            "SLIME_OR_AMORPHOUS",
+            "TENTACLE",
+            "PLANT_MONSTER",
+            "MUSHROOM_MONSTER",
+            "MIMIC",
+            "GOLEM_HEAVY",
+            "ROBOT_MECH",
+            "GIANT_BIPED",
+            "COLOSSUS"
+          ],
+          "species": [
+            "GOBLIN",
+            "KOBOLD",
+            "ORC",
+            "TROLL",
+            "OGRE",
+            "MINOTAUR",
+            "SKELETON",
+            "ZOMBIE",
+            "GHOUL",
+            "WEREWOLF",
+            "DEMON",
+            "LIZARDMAN",
+            "BEASTMAN",
+            "MONSTER_KNIGHT",
+            "MONSTER_MAGE",
+            "WOLF",
+            "FOX",
+            "LION",
+            "TIGER",
+            "BEAR",
+            "BOAR",
+            "DEER",
+            "HORSE_BEAST",
+            "HELLHOUND",
+            "QUADRUPED_DRAGON",
+            "ANT",
+            "SOLDIER_ANT",
+            "BEETLE",
+            "SPIDER",
+            "SCORPION",
+            "MANTIS",
+            "WASP",
+            "BEE",
+            "CENTIPEDE",
+            "GIANT_CRAB",
+            "SNAKE",
+            "COBRA",
+            "GIANT_SERPENT",
+            "CROCODILE",
+            "BASILISK",
+            "BIRD",
+            "BAT",
+            "FLYING_INSECT",
+            "WYVERN",
+            "DRAGON",
+            "HARPY",
+            "FLYING_DEMON",
+            "FISH",
+            "SHARK",
+            "EEL",
+            "JELLYFISH",
+            "OCTOPUS",
+            "SQUID",
+            "SEA_SERPENT",
+            "SLIME",
+            "BLOB",
+            "TENTACLE_BEAST",
+            "MIMIC",
+            "MUSHROOM_MONSTER",
+            "PLANT_MONSTER",
+            "ROOT_MONSTER",
+            "STONE_GOLEM",
+            "IRON_GOLEM",
+            "CRYSTAL_GOLEM",
+            "ROBOT",
+            "MECH",
+            "GIANT",
+            "COLOSSUS"
+          ],
+          "mutationAxes": [
+            "SIZE",
+            "BODY_PROPORTION",
+            "LIMB_LENGTH",
+            "HORN",
+            "TAIL",
+            "WING",
+            "CREST",
+            "CARAPACE",
+            "FUR",
+            "SCALE",
+            "SKIN_MATERIAL",
+            "GLOW_REGION",
+            "SCAR",
+            "ARMOR",
+            "WEAPON",
+            "ELITE_OR_BOSS_ORNAMENT",
+            "ELEMENTAL_SURFACE"
+          ],
+          "identityRequirements": [
+            "SILHOUETTE_DIFFERENCE",
+            "LOCOMOTION_DIFFERENCE",
+            "ATTACK_LANGUAGE_DIFFERENCE",
+            "SIGNATURE_SKILL_DIFFERENCE",
+            "AUDIO_IDENTITY_DIFFERENCE",
+            "HIT_OR_DEATH_DIFFERENCE"
+          ],
+          "speciesSignatureRequired": true
+        },
+        "clothingAndArmor": {
+          "layerSlots": [
+            "HEAD",
+            "HAIR",
+            "FACE",
+            "NECK",
+            "TORSO_INNER",
+            "TORSO_OUTER",
+            "SHOULDER",
+            "ARM",
+            "GLOVE",
+            "BELT",
+            "LEG",
+            "BOOT",
+            "BACK",
+            "CAPE",
+            "ACCESSORY"
+          ],
+          "themes": [
+            "MEDIEVAL",
+            "FANTASY",
+            "MODERN",
+            "MILITARY",
+            "SCI_FI",
+            "POST_APOCALYPSE",
+            "CYBERPUNK",
+            "WUXIA",
+            "EAST_ASIAN",
+            "STEAMPUNK",
+            "HORROR",
+            "CARTOON",
+            "CASUAL",
+            "ROYAL",
+            "PEASANT"
+          ],
+          "layerCompatibilityRequired": true,
+          "clippingQaRequired": true,
+          "themeGrammarRequired": true,
+          "incompatibleLayerMayUseAlternateVariantOrBlockCombination": true
+        },
+        "buildingGrammar": {
+          "stages": [
+            "FOUNDATION",
+            "GROUND_WALL",
+            "DOOR_OR_WINDOW",
+            "UPPER_FLOOR",
+            "ROOF",
+            "DECORATION",
+            "INTERIOR",
+            "NAVIGATION_QA"
+          ],
+          "moduleTypes": [
+            "FOUNDATION",
+            "WALL",
+            "CORNER",
+            "WINDOW",
+            "DOOR",
+            "ROOF",
+            "STAIRS",
+            "BALCONY",
+            "PILLAR",
+            "FENCE",
+            "SIGN",
+            "INTERIOR",
+            "DECORATION"
+          ],
+          "themes": [
+            "FANTASY_VILLAGE",
+            "CASTLE",
+            "DUNGEON",
+            "TEMPLE",
+            "JUNGLE_RUIN",
+            "DESERT",
+            "SNOW",
+            "MODERN_CITY",
+            "INDUSTRIAL",
+            "SCI_FI",
+            "HORROR",
+            "CARTOON"
+          ],
+          "roomKits": [
+            "BEDROOM",
+            "KITCHEN",
+            "SHOP",
+            "BLACKSMITH",
+            "TAVERN",
+            "TEMPLE",
+            "WAREHOUSE",
+            "LAB",
+            "ARMORY",
+            "DUNGEON_ROOM",
+            "BOSS_ROOM"
+          ],
+          "hardRules": [
+            "NO_FLOATING_DOOR",
+            "WINDOW_MUST_BIND_WALL",
+            "STAIRS_CONNECT_FLOORS",
+            "ROOF_COVERS_EXTERNAL_WALL_RANGE",
+            "PLAYER_NAV_CLEAR",
+            "NPC_NAV_CLEAR",
+            "COLLISION_VALID"
+          ]
+        },
+        "biomeDna": {
+          "biomes": [
+            "FOREST",
+            "MAGICAL_FOREST",
+            "JUNGLE",
+            "SWAMP",
+            "DESERT",
+            "SNOW",
+            "VOLCANO",
+            "MOUNTAIN",
+            "PLAINS",
+            "BEACH",
+            "OCEAN",
+            "CAVE",
+            "UNDERGROUND",
+            "SKY",
+            "VOID",
+            "RUINS",
+            "CITY",
+            "VILLAGE"
+          ],
+          "channels": [
+            "GROUND",
+            "ROCK",
+            "TREE",
+            "PLANT",
+            "CLIFF",
+            "WATER",
+            "FOG",
+            "PARTICLE",
+            "SKY",
+            "LIGHTING",
+            "LANDMARK",
+            "SMALL_PROP",
+            "AMBIENCE",
+            "CREATURE_PREFERENCE",
+            "ARCHITECTURE_PREFERENCE"
+          ],
+          "propDensityDirector": true,
+          "densityInputs": [
+            "BIOME",
+            "CAMERA_DISTANCE",
+            "DEVICE_CLASS",
+            "NAVIGATION_CLEARANCE",
+            "LANDMARK_PRIORITY"
+          ],
+          "mobileDensityReductionRequired": true
+        },
+        "weaponMotionCompatibility": {
+          "required": true,
+          "families": [
+            "UNARMED",
+            "DAGGER",
+            "ONE_HAND_SWORD",
+            "TWO_HAND_SWORD",
+            "GREATSWORD",
+            "SPEAR",
+            "AXE",
+            "HAMMER",
+            "BOW",
+            "CROSSBOW",
+            "FIREARM",
+            "STAFF",
+            "WAND",
+            "SHIELD",
+            "THROWN"
+          ],
+          "weaponChangeMustReevaluateStanceLocomotionAttackDefenseAndHitReadability": true
+        },
+        "skillPresentationKit": {
+          "requiredComponents": [
+            "CAST_MOTION",
+            "VFX",
+            "PROJECTILE_OR_RANGE_PRESENTATION",
+            "IMPACT",
+            "AUDIO",
+            "CAMERA",
+            "REACTION"
+          ],
+          "reusableBySemanticSkillFamily": true,
+          "gameplayDamageCooldownAndTargetingRemainGameplayOwned": true
+        },
+        "bossProductionKit": {
+          "required": [
+            "INTRO",
+            "DETECT",
+            "BASIC_ATTACK_SET",
+            "SPECIAL_ATTACK_SET",
+            "PHASE_CHANGE",
+            "ENRAGE",
+            "FAILED_ATTACK_RECOVERY",
+            "STUN",
+            "GUARD_BREAK",
+            "FINISHER",
+            "DEATH_SEQUENCE",
+            "DEDICATED_VFX",
+            "DEDICATED_AUDIO",
+            "CAMERA_PRESENTATION"
+          ],
+          "minimums": {
+            "basicAttacks": 4,
+            "specialAttacks": 3
+          },
+          "normalEnemyScaledOnlyForbidden": true
+        },
+        "damagePresentationLibrary": {
+          "families": [
+            "SLASH",
+            "BLUNT",
+            "PIERCE",
+            "BITE",
+            "CLAW",
+            "FIRE",
+            "ICE",
+            "ELECTRIC",
+            "POISON",
+            "EXPLOSION",
+            "MAGIC",
+            "HEAVY_KNOCKBACK"
+          ],
+          "components": [
+            "REACTION",
+            "VFX",
+            "AUDIO",
+            "CAMERA_FEEDBACK"
+          ],
+          "gameplayDamageRemainsGameplayOwned": true
+        },
+        "destructionLibrary": {
+          "families": [
+            "WOOD_BREAK",
+            "STONE_BREAK",
+            "DOOR_BREAK",
+            "CONTAINER_BREAK",
+            "ICE_SHATTER",
+            "WALL_CRACK",
+            "METAL_DEFORM"
+          ],
+          "lodModes": [
+            "FULL",
+            "SIMPLIFIED",
+            "VFX_ONLY"
+          ],
+          "mobileBudgetRequired": true
+        },
+        "audioVariation": {
+          "minimumVariantsPerRepeatedEvent": 3,
+          "targetVariantsPerRepeatedEvent": 8,
+          "immediateRepeatSuppression": true,
+          "pitchOrSpeedOnlyDoesNotCountAsFullVariation": true
+        },
+        "materialLibrary": {
+          "surfaces": [
+            "WOOD",
+            "STONE",
+            "METAL",
+            "CLOTH",
+            "LEATHER",
+            "SKIN",
+            "FUR",
+            "SCALE",
+            "ICE",
+            "LAVA",
+            "CRYSTAL",
+            "SLIME",
+            "BONE"
+          ],
+          "styleVariants": [
+            "CARTOON",
+            "REALISTIC",
+            "DARK_FANTASY",
+            "LOW_POLY",
+            "ANIME_OR_CEL_SHADED"
+          ],
+          "platformBudgetProfilesRequired": true
+        },
+        "styleBibleGenerator": {
+          "enabled": true,
+          "requiredFields": [
+            "SHAPE_LANGUAGE",
+            "CHARACTER_PROPORTION",
+            "SILHOUETTE_RULE",
+            "PALETTE_CONTRAST",
+            "MATERIAL_LANGUAGE",
+            "LIGHTING_LANGUAGE",
+            "VFX_SHAPE_LANGUAGE",
+            "ANIMATION_EXAGGERATION",
+            "UI_LANGUAGE",
+            "BUILDING_LANGUAGE",
+            "CREATURE_LANGUAGE"
+          ],
+          "styleLockAlwaysWins": true,
+          "assetDeviationCreatesQaWarningOrFailure": true
+        },
+        "universalCoverageScanner": {
+          "enabled": true,
+          "scans": [
+            "CHARACTER_BODY",
+            "FACE",
+            "HAIR",
+            "CLOTHING",
+            "ARMOR",
+            "ACCESSORY",
+            "CREATURE_BODY_PLAN",
+            "CREATURE_SPECIES",
+            "CREATURE_MOTION",
+            "BUILDING_EXTERIOR",
+            "BUILDING_INTERIOR",
+            "PROP",
+            "BIOME",
+            "TERRAIN",
+            "VEGETATION",
+            "WEAPON",
+            "SKILL_PRESENTATION",
+            "MATERIAL",
+            "AUDIO",
+            "VFX",
+            "UI"
+          ],
+          "measures": [
+            "AVAILABLE_VERIFIED",
+            "AVAILABLE_PREPARED",
+            "REQUIRED_BASELINE",
+            "ACTIVE_GAME_DEMAND",
+            "RUNTIME_FAILURE_COUNT",
+            "USAGE_COUNT",
+            "STYLE_COVERAGE",
+            "PLATFORM_COVERAGE"
+          ],
+          "output": [
+            "COVERAGE_PERCENT",
+            "MISSING_SLOTS",
+            "PRIORITY_SCORE",
+            "REUSE_CANDIDATES",
+            "DERIVATION_CANDIDATES",
+            "EXTERNAL_CANDIDATES",
+            "SEMANTIC_SEEDS",
+            "NATIVE_AUTHORING_TASKS"
+          ]
+        },
+        "assetIdentityQa": {
+          "enabled": true,
+          "semanticFingerprintFields": [
+            "FAMILY",
+            "SUBFAMILY",
+            "BODY_PLAN_OR_MODULE_TYPE",
+            "SILHOUETTE",
+            "MOTION_OR_INTERACTION_LANGUAGE",
+            "MATERIAL_LANGUAGE",
+            "STYLE_FAMILY",
+            "PLATFORM"
+          ],
+          "colorOnlyDifferenceCannotCreateDistinctAssetIdentity": true,
+          "nearDuplicatePrefersVerifiedParentOrVariant": true,
+          "importantCreatureRequiresDistinctSignature": true,
+          "buildingAndPropNearDuplicateRequiresMeaningfulShapeFunctionOrThemeDifference": true
+        },
+        "crossAssetCompatibilityGraph": {
+          "enabled": true,
+          "nodes": [
+            "CHARACTER",
+            "CREATURE",
+            "RIG",
+            "CLOTHING",
+            "ARMOR",
+            "WEAPON",
+            "MOTION",
+            "SKILL",
+            "VFX",
+            "AUDIO",
+            "MATERIAL",
+            "BUILDING",
+            "INTERIOR",
+            "PROP",
+            "BIOME",
+            "UI",
+            "PLATFORM_VARIANT"
+          ],
+          "edgeTypes": [
+            "USES",
+            "FITS",
+            "COMPATIBLE_WITH",
+            "DERIVED_FROM",
+            "BELONGS_TO_STYLE",
+            "USES_MOTION",
+            "USES_VFX",
+            "USES_AUDIO",
+            "USES_MATERIAL",
+            "SPAWNS_IN",
+            "PLACED_IN",
+            "HAS_PLATFORM_VARIANT",
+            "VERIFIED_BY_GAME"
+          ],
+          "unresolvedRequiredEdgeBlocksVerifiedPromotion": true
+        },
+        "libraryHeatmap": {
+          "enabled": true,
+          "factors": {
+            "ACTIVE_GAME_DEMAND": 45,
+            "RUNTIME_MISSING_OR_BROKEN": 50,
+            "MULTI_GAME_REUSE": 30,
+            "PLAYER_VISIBLE_FREQUENCY": 25,
+            "HERO_BOSS_LANDMARK_IMPORTANCE": 25,
+            "STYLE_COVERAGE_GAP": 15,
+            "PLATFORM_COVERAGE_GAP": 15,
+            "EXTERNAL_SOURCE_READY": 10,
+            "VERIFIED_REUSE_AVAILABLE": -15
+          },
+          "highestPriorityGapFirst": true
+        },
+        "autonomousGapFill24h": {
+          "enabled": true,
+          "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+          "usesExistingLearningIdleLane": true,
+          "continuesAlongsideProduction": true,
+          "fillOrder": [
+            "REUSE_VERIFIED_COMPANY_ASSET",
+            "REUSE_LICENSE_VERIFIED_REPOSITORY_ASSET",
+            "DERIVE_VERIFIED_ASSET_WITH_SAFE_STYLE_OR_MODULAR_VARIANT",
+            "ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET",
+            "PREPARE_SEMANTIC_ASSET_SEED",
+            "AUTHOR_NEW_PLATFORM_NATIVE_ASSET"
+          ],
+          "semanticSeedState": "PREPARED_SEMANTIC",
+          "preparedSemanticMayNotClaimVerified": true,
+          "actualRuntimeConsumerRequiredBeforePromotion": true,
+          "unityRobloxNativeVariantsRequired": true,
+          "noArtificialAssetCategoryCap": true,
+          "duplicateSuppressionRequired": true
+        },
+        "runtimeLearning": {
+          "existingCanonicalLearningChainOnly": true,
+          "domains": [
+            "ASSET_ADAPTATION",
+            "VISUAL_IDENTITY",
+            "LIVING_MOTION",
+            "ANIMATION_FEEL",
+            "VFX",
+            "AUDIO_FEEL",
+            "CAMERA_LANGUAGE",
+            "ENVIRONMENT_COMPOSITION"
+          ],
+          "positiveLearningRequiresVerifiedRuntimePass": true,
+          "verifiedFailureMayTeachAvoidPattern": true,
+          "preparedSemanticMayNotIncreaseMastery": true,
+          "rawTelemetryMayNotDirectlyTrain": true
         }
       }
     }
