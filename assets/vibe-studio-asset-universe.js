@@ -385,6 +385,41 @@ export function summarizeVerifiedAssetUsage({events=[]}={}){
   });
 }
 
+export function evaluateConceptCoherence({
+  concept={},styleBible={},lockedStyle='',intentionalPairings=[]
+}={}){
+  const profile=concept.weightedStyles?concept:createConceptProfile(concept);
+  const families=profile.weightedStyles.map(row=>row.family);
+  const pairKey=(a,b)=>[upper(a),upper(b)].sort().join('|');
+  const intentional=new Set((intentionalPairings||[]).map(row=>Array.isArray(row)?pairKey(row[0],row[1]):upper(row)));
+  const tensions=[
+    ['REALISTIC','PAPER_CRAFT'],['REALISTIC','VOXEL'],['REALISTIC','CARTOON'],
+    ['PRIMITIVE','SPACE_OPERA'],['HISTORICAL_EAST_ASIAN','CYBERPUNK'],
+    ['CUTE_CASUAL','COSMIC_HORROR'],['NOIR','CUTE_CASUAL']
+  ];
+  const warnings=[];
+  for(const [a,b] of tensions){
+    if(families.includes(a)&&families.includes(b)&&!intentional.has(pairKey(a,b)))warnings.push('INTENTIONAL_BLEND_CONFIRM:'+pairKey(a,b));
+  }
+  const eras=(profile.axes?.WORLD_ERA||[]).map(upper);
+  if(eras.includes('PRIMITIVE')&&eras.includes('FUTURE')&&!intentional.has('PRIMITIVE|FUTURE'))warnings.push('WORLD_ERA_TENSION:PRIMITIVE|FUTURE');
+  const hardFailures=[];
+  const lock=upper(lockedStyle);
+  if(lock&&!families.includes(lock))hardFailures.push('LOCKED_STYLE_NOT_IN_CONCEPT:'+lock);
+  const bibleStyle=upper(styleBible.styleFamily);
+  if(bibleStyle&&!families.includes(bibleStyle))hardFailures.push('STYLE_BIBLE_OUTSIDE_CONCEPT:'+bibleStyle);
+  return Object.freeze({
+    pass:hardFailures.length===0,
+    reviewRequired:warnings.length>0,
+    warnings:Object.freeze(warnings),
+    hardFailures:Object.freeze(hardFailures),
+    freeMixingPreserved:true,
+    unusualBlendAutomaticFailure:false,
+    intentionalPairingMayResolveWarning:true,
+    gameplayAuthority:false
+  });
+}
+
 export function evaluateStyleBible(asset={},bible={}){
   const dna=asset.dna||asset;
   const expected=upper(bible.styleFamily);
@@ -728,7 +763,9 @@ export function createStudioAssetUniversePlan({
   const gapFill=buildAutonomousAssetGapFillPlan({
     coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey
   });
-  const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:{styleFamily:resolvedStyle,...styleBible},worldDna,...languages});
+  const resolvedBible=createStyleBible({styleFamily:resolvedStyle,...styleBible});
+  const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
+  const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:resolvedBible,worldDna,...languages});
   const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));
   const loadout=buildStudioAssetLoadout({requirements:inferredRequirements,assets,gameDna:{...visualDna,targetPlatform:upper(platform)},usageByAsset});
   const futureDemand=buildFutureAssetDemandForecast({gameDemands:futureGameDemands,coverageReport:coverage});
@@ -741,7 +778,8 @@ export function createStudioAssetUniversePlan({
     concept:conceptProfile,
     conceptAxes:CONCEPT_AXES,
     styleFamilies:ASSET_STYLE_FAMILIES,
-    styleBible:createStyleBible({styleFamily:resolvedStyle,...styleBible}),
+    styleBible:resolvedBible,
+    conceptCoherence,
     gameVisualDna:visualDna,
     loadout,
     futureDemand,
