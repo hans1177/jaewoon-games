@@ -12,7 +12,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const logMap=json('company-learning/company-log-map.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,17);
+  assert.equal(motor.version,18);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -88,6 +88,11 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(ingress?.sameCycleRetrievalAndHandoffUseMergedExperienceMemory,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.persistToCanonicalExperienceMemory,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.outcomeIdEvidenceTokenRequired,true);
+  assert.equal(ingress?.nativePositiveRequiresAuthoritativeTargetEngineQa,true);
+  assert.equal(ingress?.nativeTargetProofMustBeRecheckedAtCanonicalIngress,true);
+  assert.equal(ingress?.uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.nativeTargetProofRecheckedAtCanonicalIngress,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.finalMarkerMustBeExactEvidenceToken,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.prefixedFocusedQaTokenCannotMatchFinalMarker,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.positiveFanInProvenanceRequired,true);
