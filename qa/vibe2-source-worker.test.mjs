@@ -147,6 +147,37 @@ test('studio quality delta retry stays compact while requiring the full connecte
   assert.doesNotMatch(retry,/UNRELATED_READ_ONLY_CONTEXT_SHOULD_BE_DROPPED/);
 });
 
+test('studio build-up starts with the same compact package contract instead of a timeout-prone full prompt',()=>{
+  const huge='x'.repeat(9000);
+  const prompt=[
+    '[STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=PRESENTATION',
+    'Engine: roblox',
+    'Goal: improve presentation with connected real source changes',
+    'Allowed edit paths: client/Game.client.luau, shared/VisualStyle.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    huge,
+    'local camera = workspace.CurrentCamera',
+    '=== FILE shared/VisualStyle.luau [EDITABLE] ===',
+    huge,
+    'local palette = Color3.fromRGB(20,20,20)',
+    '=== FILE server/ReadOnly.server.luau [READ-ONLY] ===',
+    'INITIAL_STUDIO_READ_ONLY_CONTEXT_MUST_DROP'
+  ].join('\n');
+  const initial=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    responsibleFiles:['client/Game.client.luau','shared/VisualStyle.luau'],
+    attempt:1,
+    studioInitial:true
+  });
+  assert.match(initial,/STUDIO QUALITY BUILD-UP: generate the connected implementation package directly/i);
+  assert.match(initial,/return 3-6 connected edits/i);
+  assert.match(initial,/at least 3 actual source deltas/i);
+  assert.match(initial,/at least 2 edits must change real visual/i);
+  assert.doesNotMatch(initial,/previous 1-edit micro patch/i);
+  assert.doesNotMatch(initial,/INITIAL_STUDIO_READ_ONLY_CONTEXT_MUST_DROP/);
+  assert.ok(Buffer.byteLength(initial,'utf8')<Buffer.byteLength(prompt,'utf8'),'initial studio prompt must be compacted before first model call');
+});
+
 test('repeated identical failure signature escalates to root cause mode instead of counting unrelated failures',()=>{
   const result=classifyVibePatchSaturation({
     responsibleFiles:['web-games/demo/index.html'],
