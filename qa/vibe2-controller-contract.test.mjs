@@ -10,6 +10,7 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
+import { settleVibeTask } from '../tools/vibe2-queue-control.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
@@ -575,6 +576,34 @@ test('fan-in release requires exact candidate manifest identity',()=>{
   assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
   assert.equal(blocked.codingTraces[0].verification.fullRegressionPass,false);
   assert.equal(blocked.codingTraces[0].verification.reviewPass,false);
+});
+
+test('presentation fan-in requires actual Web runtime before-after evidence before verified settlement',()=>{
+  const branch='vibe2/candidate/presentation-runtime-demo/primary';
+  const task={
+    id:'presentation-runtime-demo-task',gameId:'presentation-runtime-demo',target:'web',sourceRoot:'web-games/presentation-runtime-demo',
+    status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    studioQualityEvolution:{visibleRenderDeltaRequired:true},
+    evidence:[branch,'graphics-evolution-before-after-comparison-required','role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS']
+  };
+  const valid={
+    version:16,taskId:task.id,outcome:'PASS',candidateBranch:branch,baseMainSha:'abc123',
+    candidateIdentity:{taskId:task.id,gameId:task.gameId,target:'web',sourceRoot:task.sourceRoot,baseMainSha:'abc123',manifestPath:'.vibe2/candidates/presentation-runtime-demo-task/manifest.json'},
+    evidence:[branch]
+  };
+  const fanIn=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[valid]});
+  assert.equal(fanIn.releaseCandidates.length,1);
+  assert.ok(fanIn.queue.tasks[0].evidence.includes('presentation-runtime-before-after-fan-in:REQUIRED'));
+  assert.ok(fanIn.queue.tasks[0].evidence.includes('graphics-runtime-before-after-comparison:PENDING_RELEASE_GATE'));
+  const blocked=settleVibeTask(fanIn.queue,{taskId:task.id,outcome:'PASS',evidence:['web-static-qa-pass']});
+  assert.equal(blocked.updated,false);
+  assert.equal(blocked.reason,'PRESENTATION_RUNTIME_COMPARISON_REQUIRED');
+  const verified=settleVibeTask(fanIn.queue,{taskId:task.id,outcome:'PASS',evidence:['web-static-qa-pass','graphics-runtime-before-after-comparison:PASS','graphics-runtime-before-sha256:before','graphics-runtime-after-sha256:after']});
+  assert.equal(verified.updated,true);
+  assert.equal(verified.queue.tasks.find(row=>row.id===task.id).status,'verified');
+  assert.match(candidateReleaseWorkflow,/Compare actual Web runtime presentation before and after/);
+  assert.match(candidateReleaseWorkflow,/--headless/);
+  assert.match(candidateReleaseWorkflow,/graphics-runtime-before-after-comparison:PASS/);
 });
 
 test('supervised Web candidates learn review decisions and stay unreleased until verified PASS approval',()=>{
