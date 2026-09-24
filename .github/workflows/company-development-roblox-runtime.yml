@@ -612,7 +612,7 @@ jobs:
           echo 'ROBLOX_SOURCE_TARGETS=NONE'
           echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
           echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
-          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=6'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=256'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_RUNTIME_PASS=NO'
@@ -655,11 +655,12 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
+          const EXECUTION_BATCH_MAX=256;
           const rows=[];
           const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
-            if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(rows.length>=EXECUTION_BATCH_MAX)break;
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
