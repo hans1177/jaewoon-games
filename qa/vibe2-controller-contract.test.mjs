@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
-import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
+import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 
@@ -19,6 +19,33 @@ const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-r
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+
+test('legacy presentation tasks expand to existing native visual responsibility files at execution time',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-presentation-scope-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','demo');
+    fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'return {}\n');
+    fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'return {}\n');
+    fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {}\n');
+    const files=expandPresentationResponsibleFiles({
+      repoRoot:root,target:'roblox',
+      task:{
+        target:'roblox',
+        sourceRoot:'roblox-games/demo',
+        responsibleFiles:['roblox-games/demo/client/Game.client.luau'],
+        evidence:['presentation-pass:ASSET_ADAPTATION']
+      }
+    });
+    assert.deepEqual(files,[
+      'roblox-games/demo/client/Game.client.luau',
+      'roblox-games/demo/server/Game.server.luau',
+      'roblox-games/demo/shared/GameConfig.luau'
+    ]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
   const adapter=createVibeEngineAdapter({target:'unreal',gameSlug:'demo'});
