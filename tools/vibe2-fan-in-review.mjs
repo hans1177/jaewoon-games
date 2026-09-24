@@ -105,6 +105,74 @@ function resolveSpecializedFinalVerification({task={},row={},evidence=new Set()}
   return{markers:requested.filter(marker=>SPECIALIZED_FINAL_MARKERS.has(marker)),trace,blocked:[]};
 }
 
+export function finalizePostNativeSpecializedReview({queue={},candidateBranch='',target=''}={}){
+  const branch=clean(candidateBranch);
+  const normalizedTarget=clean(target).toLowerCase();
+  if(!branch.startsWith('vibe2/candidate/'))return{queue,updated:false,reason:'CANDIDATE_BRANCH_REQUIRED',taskId:null,markers:[]};
+  if(!['roblox','unity'].includes(normalizedTarget))return{queue,updated:false,reason:'SUPPORTED_NATIVE_TARGET_REQUIRED',taskId:null,markers:[]};
+  const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];
+  const index=tasks.findIndex(task=>
+    clean(task?.target).toLowerCase()===normalizedTarget
+    &&(task?.evidence||[]).map(clean).includes(branch)
+  );
+  if(index<0)return{queue,updated:false,reason:'CANDIDATE_TASK_NOT_FOUND',taskId:null,markers:[]};
+  const task=tasks[index];
+  const evidence=new Set((task?.evidence||[]).map(clean).filter(Boolean));
+  const expectedBlocker=`candidate-${normalizedTarget}-verification-passed-awaiting-review`;
+  if(clean(task?.status)!=='blocked'||clean(task?.blocker)!==expectedBlocker){
+    return{queue,updated:false,reason:'TASK_NOT_POST_NATIVE_REVIEW_READY',taskId:clean(task?.id)||null,markers:[]};
+  }
+  if(!evidence.has('specialized-verification-request:REQUIRED')){
+    return{queue,updated:false,reason:'SPECIALIZED_VERIFICATION_NOT_REQUESTED',taskId:clean(task?.id)||null,markers:[]};
+  }
+  const focusedPrefix='specialized-focused-qa-pass:';
+  const requested=[...new Set([...evidence]
+    .filter(value=>value.startsWith(focusedPrefix))
+    .map(value=>clean(value.slice(focusedPrefix.length)))
+    .filter(marker=>SPECIALIZED_FINAL_MARKERS.has(marker)))];
+  if(!requested.length){
+    return{queue,updated:false,reason:'NO_FOCUSED_SPECIALIZED_PASS',taskId:clean(task?.id)||null,markers:[]};
+  }
+  const blocked=[];
+  if(!evidence.has('role-result:regression:PASS'))blocked.push('FULL_REGRESSION_NOT_PASS');
+  if(!evidence.has('role-result:review:PASS'))blocked.push('FAN_IN_REVIEW_NOT_PASS');
+  if(!evidence.has('verification-conclusion:success'))blocked.push('TARGET_ENGINE_QA_CONCLUSION_NOT_PASS');
+  if(![...evidence].some(value=>value.startsWith('candidate-head-sha:')))blocked.push('CANDIDATE_HEAD_EVIDENCE_MISSING');
+  const native=specializedNativeRuntimeEvidence({nativeRuntimeRequired:true,target:normalizedTarget},[...evidence]);
+  if(!native.pass)blocked.push('AUTHORITATIVE_TARGET_ENGINE_QA_MISSING');
+  if(blocked.length){
+    return{queue,updated:false,reason:'POST_NATIVE_SPECIALIZED_BLOCKED',taskId:clean(task?.id)||null,markers:[],blocked};
+  }
+  const additions=[
+    ...requested,
+    native.evidence?`specialized-native-runtime-evidence:${native.evidence}`:'',
+    'specialized-final-verification:PASS',
+    'specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION',
+    'specialized-post-native-review:PASS'
+  ].filter(Boolean);
+  const nextEvidence=[...new Set([...(task.evidence||[]),...additions])];
+  const changed=nextEvidence.length!==(task.evidence||[]).length;
+  if(!changed)return{queue,updated:false,reason:'ALREADY_FINALIZED',taskId:clean(task?.id)||null,markers:requested};
+  const nextTasks=tasks.map((row,i)=>i===index?{...row,evidence:nextEvidence}:row);
+  return{
+    queue:{...queue,tasks:nextTasks},
+    updated:true,
+    reason:'POST_NATIVE_SPECIALIZED_FINALIZED',
+    taskId:clean(task?.id)||null,
+    markers:requested,
+    nativeEvidence:native.evidence,
+    taskStatusPreserved:true,
+    releaseDecisionChanged:false
+  };
+}
+
+export function runPostNativeSpecializedReview({queueFile='.vibe2/queue.json',candidateBranch='',target=''}={}){
+  const queue=readJson(queueFile,{tasks:[]});
+  const result=finalizePostNativeSpecializedReview({queue,candidateBranch,target});
+  if(result.updated)writeJson(queueFile,result.queue);
+  return result;
+}
+
 export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const resultRows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
   const ids=new Set([...(taskIds||[]).map(clean),...resultRows.map(row=>clean(row?.taskId))].filter(Boolean));
@@ -320,6 +388,18 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
+  if(clean(args['post-native-branch'])){
+    const nativeResult=runPostNativeSpecializedReview({
+      queueFile:clean(args.queue)||'.vibe2/queue.json',
+      candidateBranch:clean(args['post-native-branch']),
+      target:clean(args['post-native-target'])
+    });
+    console.log(`VIBE2_POST_NATIVE_SPECIALIZED_REVIEW=${nativeResult.updated?'UPDATED':'NO_CHANGE'}`);
+    console.log(`VIBE2_POST_NATIVE_SPECIALIZED_REASON=${nativeResult.reason}`);
+    console.log(`VIBE2_POST_NATIVE_SPECIALIZED_TASK=${nativeResult.taskId||'NONE'}`);
+    console.log(`VIBE2_POST_NATIVE_SPECIALIZED_MARKERS=${(nativeResult.markers||[]).join(',')||'NONE'}`);
+    process.exit(0);
+  }
   const result=runVibe2FanInReview({
     queueFile:clean(args.queue)||'.vibe2/queue.json',
     inputFile:clean(args.input),
