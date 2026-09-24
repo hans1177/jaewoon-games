@@ -15,6 +15,14 @@ local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
 local qaCaptureLast={}
+local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")
+local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
+foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
+local foundationSeen={}
+local foundationSequence=0
+local foundationLast={}
+local movementProbeStart={}
+local foundationSpawn
 
 
 local state="WAITING"
@@ -45,6 +53,65 @@ local monsterSpawn=Vector3.new(0,3,-52)
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
 local escapedPlayers={}
+
+local function loadFoundationState()
+ local ok,old=pcall(function()return foundationStore:GetAsync("latest")end)
+ if not ok or typeof(old)~="table"then return end
+ if tostring(old.gameId or"")~=tostring(C.GameId)or tonumber(old.placeId)~=game.PlaceId or tonumber(old.placeVersion)~=game.PlaceVersion then return end
+ local checkpoints=typeof(old.checkpoints)=="table"and old.checkpoints or{}
+ for name,row in pairs(checkpoints)do foundationSeen[name]=true;foundationSequence=math.max(foundationSequence,math.floor(tonumber(row.sequence)or 0))end
+ foundationSequence=math.max(foundationSequence,math.floor(tonumber(old.sequence)or 0))
+end
+local function foundationCheckpoint(name,p,extra)
+ if foundationSeen[name]then return true end
+ local payload={name=name,at=os.time(),userId=p and p.UserId or 0,gameId=C.GameId,placeId=tostring(game.PlaceId),placeVersion=game.PlaceVersion}
+ if typeof(extra)=="table"then for k,v in pairs(extra)do if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then payload[k]=v end end end
+ local committedSequence=foundationSequence
+ for attempt=1,4 do
+  local ok=pcall(function()
+   foundationStore:UpdateAsync("latest",function(old)
+    local exact=typeof(old)=="table"and tonumber(old.placeVersion)==game.PlaceVersion and tonumber(old.placeId)==game.PlaceId and tostring(old.gameId or"")==tostring(C.GameId)
+    local data=exact and old or{version=3,gameId=C.GameId,placeId=tostring(game.PlaceId),placeVersion=game.PlaceVersion,checkpoints={},sequence=0}
+    data.version=3;data.gameId=C.GameId;data.placeId=tostring(game.PlaceId);data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
+    data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
+    data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
+    if typeof(data.checkpoints[name])=="table"then committedSequence=math.floor(tonumber(data.checkpoints[name].sequence)or foundationSequence);return data end
+    committedSequence=math.max(foundationSequence,math.floor(tonumber(data.sequence)or 0))+1
+    local row={};for k,v in pairs(payload)do row[k]=v end;row.sequence=committedSequence
+    data.sequence=committedSequence;data.checkpoints[name]=row
+    return data
+   end)
+  end)
+  if ok then foundationSeen[name]=true;foundationSequence=math.max(foundationSequence,committedSequence);workspace:SetAttribute("Foundation_"..name,true);return true end
+  if attempt<4 then task.wait(.15*attempt)end
+ end
+ if p then p:SetAttribute("FoundationFailure","CHECKPOINT_WRITE_FAILED:"..name)end
+ return false
+end
+local function ensureFoundationSpawn()
+ local spawn=workspace:FindFirstChild("MidnightFoundationSpawn")
+ if not spawn then
+  spawn=Instance.new("SpawnLocation");spawn.Name="MidnightFoundationSpawn";spawn.Size=Vector3.new(8,1,8)
+  spawn.Position=Vector3.new(survivorSpawns[1].X,.5,survivorSpawns[1].Z);spawn.Anchored=true;spawn.CanCollide=true;spawn.Transparency=1;spawn.Neutral=true;spawn.Parent=workspace
+ end
+ foundationSpawn=spawn
+ return spawn
+end
+loadFoundationState()
+foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
+foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
+ensureFoundationSpawn()
+task.spawn(function()
+ if C.SaveEnabled~=true or foundationSeen.SAVE_ROUNDTRIP then return end
+ local probeKey="__foundation_probe__:"..tostring(game.PlaceVersion)
+ local token=C.GameId..":"..tostring(game.PlaceVersion)..":"..tostring(os.time())
+ local ok,readBack=pcall(function()
+  store:SetAsync(probeKey,{token=token,at=os.time()})
+  local value=store:GetAsync(probeKey)
+  return typeof(value)=="table"and value.token or nil
+ end)
+ if ok and readBack==token then pcall(function()store:RemoveAsync(probeKey)end);foundationCheckpoint("SAVE_ROUNDTRIP",nil,{roundtrip=true})end
+end)
 
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
@@ -865,6 +932,7 @@ end
 local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers();local hc,mc=teamCounts()
  remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft)),RoundScore=actor and(actor:GetAttribute("RoundScore")or 0)or 0})
+ if #participants>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#participants})end
 end
 remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
@@ -879,10 +947,44 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.ABILITY then ability(p)
  elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
  elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)end
+ foundationCheckpoint("CORE_LOOP_READY",p,{action=a})
  broadcastMultiplayerSync(p)
 end)
-local function onCharacter(p)
+
+foundationRemote.OnServerEvent:Connect(function(p,name)
+ if typeof(name)~="string"then return end
+ if name=="REMOTE_PING"then foundationRemote:FireClient(p,"REMOTE_PONG");return end
+ if name=="REMOTE_ROUNDTRIP"then foundationCheckpoint("REMOTE_ROUNDTRIP",p,{roundtrip=true});return end
+ local now=os.clock();if now-(foundationLast[p]or 0)<.05 then return end;foundationLast[p]=now
+ if name=="CAMERA_READY"or name=="INPUT_READY"then foundationCheckpoint(name,p,{clientReported=true})end
+end)
+
+local function validateCharacterFoundation(p,c)
+ local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
+ if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
+ local deadline=os.clock()+10
+ while foundationSeen.SPAWN_READY~=true and os.clock()<deadline do task.wait(.1)end
+ if foundationSeen.SPAWN_READY~=true or not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
+ h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=foundationSpawn
+ local pos=r.Position
+ foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=pos.X,rootY=pos.Y,rootZ=pos.Z})
+ task.spawn(function()
+  local deadline=os.clock()+3
+  local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances={c}
+  repeat
+   if not c.Parent or not r.Parent then return end
+   local hit=workspace:Raycast(r.Position,Vector3.new(0,-14,0),params)
+   if hit and h.FloorMaterial~=Enum.Material.Air then foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y});return end
+   task.wait(.1)
+  until os.clock()>=deadline
+  p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
+ end)
+end
+
+local function onCharacter(p,c)
  task.wait(.1)
+ c=c or p.Character
+ if c then validateCharacterFoundation(p,c)end
  local readyDeadline=os.clock()+10
  while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
  if state=="RUNNING"then
@@ -902,15 +1004,15 @@ Players.PlayerAdded:Connect(function(p)
  load(p)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
- p.CharacterAdded:Connect(function()onCharacter(p)end)
- if p.Character then task.defer(function()onCharacter(p)end)end
+ p.CharacterAdded:Connect(function(c)onCharacter(p,c)end)
+ if p.Character then task.defer(onCharacter,p,p.Character)end
 end)
 for _,p in ipairs(Players:GetPlayers())do
  load(p)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
- p.CharacterAdded:Connect(function()onCharacter(p)end)
- if p.Character then task.defer(function()onCharacter(p)end)end
+ p.CharacterAdded:Connect(function(c)onCharacter(p,c)end)
+ if p.Character then task.defer(onCharacter,p,p.Character)end
 end
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
  if C.QACameraEnabled~=true then return end
@@ -937,7 +1039,7 @@ qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
 end)
 
 Players.PlayerRemoving:Connect(function(p)
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;foundationLast[p]=nil;movementProbeStart[p]=nil
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
@@ -948,6 +1050,9 @@ end
 if not arena or workspace:GetAttribute("MapReady")~=true then
  arena=makeFallbackArena(C.Maps[1],"BOOT_NOT_READY")
 end
+foundationCheckpoint("WORLD_READY",nil,{worldReady=workspace:GetAttribute("MapReady")==true})
+local spawn=ensureFoundationSpawn()
+foundationCheckpoint("SPAWN_READY",nil,{spawnY=spawn.Position.Y})
 for _,p in ipairs(Players:GetPlayers())do
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
@@ -983,6 +1088,14 @@ task.spawn(function()
 end)
 
 RunService.Heartbeat:Connect(function(dt)
+ for _,p in ipairs(Players:GetPlayers())do
+  local h=hum(p);local r=root(p)
+  if h and r and h.MoveDirection.Magnitude>.05 then
+   local start=movementProbeStart[p]
+   if not start then movementProbeStart[p]=r.Position
+   elseif (r.Position-start).Magnitude>=2 then foundationCheckpoint("MOVEMENT_CONFIRMED",p,{displacement=(r.Position-start).Magnitude});movementProbeStart[p]=nil end
+  elseif h and h.MoveDirection.Magnitude<=.05 then movementProbeStart[p]=nil end
+ end
  if state=="RUNNING"then
   for _,b in ipairs(bots)do
    if b.visuals then for _,v in ipairs(b.visuals)do if v.part and v.part.Parent then v.part.CFrame=b.part.CFrame*CFrame.new(v.offset)end end end
@@ -1009,7 +1122,7 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 
- movementGuardClock+=dt movementGuardClock+=dt
+ movementGuardClock+=dt
  if movementGuardClock<.25 then return end
  movementGuardClock=0
  local now=os.clock()

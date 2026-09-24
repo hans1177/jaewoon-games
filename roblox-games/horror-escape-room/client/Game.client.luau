@@ -25,6 +25,31 @@ end
 
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
+local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
+local foundationRoundtrip=false
+foundationRemote.OnClientEvent:Connect(function(kind)
+ if kind=="REMOTE_PONG"then foundationRoundtrip=true;foundationRemote:FireServer("REMOTE_ROUNDTRIP")end
+end)
+task.spawn(function()
+ for _=1,20 do
+  foundationRemote:FireServer("INPUT_READY")
+  foundationRemote:FireServer("REMOTE_PING")
+  if foundationRoundtrip then break end
+  task.wait(.5)
+ end
+end)
+task.spawn(function()
+ local camera=workspace.CurrentCamera
+ local character=p.Character or p.CharacterAdded:Wait()
+ local h=character:WaitForChild("Humanoid",10)
+ if camera and h then
+  camera.CameraSubject=h
+  for _=1,30 do
+   if camera.CameraSubject==h then foundationRemote:FireServer("CAMERA_READY");break end
+   task.wait(.1)
+  end
+ end
+end)
 
 -- 사운드
 local function makeSound(name,id,volume,looped)

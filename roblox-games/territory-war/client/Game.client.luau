@@ -16,6 +16,40 @@ end
 -- STUDIO_ASSET_BINDING_CLIENT_END
 
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
+local foundationRoundtrip = false
+
+foundationRemote.OnClientEvent:Connect(function(kind)
+  if kind == "REMOTE_PONG" then
+    foundationRoundtrip = true
+    foundationRemote:FireServer("REMOTE_ROUNDTRIP")
+  end
+end)
+
+task.spawn(function()
+  for _ = 1, 20 do
+    foundationRemote:FireServer("INPUT_READY")
+    foundationRemote:FireServer("REMOTE_PING")
+    if foundationRoundtrip then break end
+    task.wait(0.5)
+  end
+end)
+
+task.spawn(function()
+  local camera = workspace.CurrentCamera
+  local character = player.Character or player.CharacterAdded:Wait()
+  local humanoid = character:WaitForChild("Humanoid", 10)
+  if camera and humanoid then
+    camera.CameraSubject = humanoid
+    for _ = 1, 30 do
+      if camera.CameraSubject == humanoid then
+        foundationRemote:FireServer("CAMERA_READY")
+        break
+      end
+      task.wait(0.1)
+    end
+  end
+end)
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "TerritoryWarHud"
