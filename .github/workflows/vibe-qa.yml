@@ -213,7 +213,8 @@ jobs:
       - name: Validate changed Roblox source synchronization
         run: |
           node --check tools/company-roblox-source-drift-sync.mjs
-          node --test qa/company-roblox-source-drift-sync.test.mjs
+          node --check tools/company-development-roblox-source-reconcile.mjs
+          node --test qa/company-roblox-source-drift-sync.test.mjs qa/company-development-roblox-source-reconcile.test.mjs
 
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
