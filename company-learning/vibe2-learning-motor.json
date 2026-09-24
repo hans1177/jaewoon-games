@@ -315,7 +315,7 @@
       "QUEST_GRAPH",
       "FORESHADOWING_PAYOFF",
       "CHARACTER_BEHAVIOR",
-      "RELATIONSHIP_MEMORY",
+      "CHARACTER_RELATIONSHIP_MEMORY",
       "CHARACTER_PERSONA",
       "WORLD_NARRATIVE",
       "VISUAL_IDENTITY",
@@ -647,6 +647,17 @@
       "QUEST_REPETITION",
       "RELATIONSHIP_INCONSISTENCY",
       "WORLD_STATE_CONTRADICTION"
+    ],
+    "practiceDrills": [
+      "NARRATIVE_STRUCTURE_DRILL",
+      "QUEST_CAUSALITY_DRILL",
+      "MAIN_STORY_GENERATION_DRILL",
+      "FORESHADOWING_PAYOFF_DRILL",
+      "TWIST_EVIDENCE_CHAIN_DRILL",
+      "CHARACTER_VOICE_DRILL",
+      "RELATIONSHIP_MEMORY_DRILL",
+      "CHARACTER_BEHAVIOR_DRILL",
+      "WORLD_NARRATIVE_BINDING_DRILL"
     ]
   },
   "presentationLearning": {
@@ -904,6 +915,13 @@
       "WORLD_STATE_PERSISTENCE_ACROSS_UNLOAD"
     ],
     "mapSpecificValuesDoNotGeneralizeWithoutRepeatedVerification": true,
-    "preparedSemanticMayIncreaseMastery": false
+    "preparedSemanticMayIncreaseMastery": false,
+    "practiceDrills": [
+      "CONCEPT_DIRECTION_DRILL",
+      "WORLD_GENERATION_DRILL",
+      "LEVEL_DESIGN_DRILL",
+      "ROUTE_DESIGN_DRILL",
+      "STREAMING_OPTIMIZATION_DRILL"
+    ]
   }
 }
