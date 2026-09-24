@@ -27,6 +27,7 @@ const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
+const TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE = 'recovery:transient-work-lock-requeue-v1';
 const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
@@ -152,6 +153,27 @@ function isWorkerCapacityReleasedBlocker(value = '') {
 
 function clearedReservation() {
   return { reservationId:null, reservationRunId:null, reservationRunAttempt:0, reservedAt:null };
+}
+
+export function recoverTransientWorkLockBlocks(queueInput) {
+  const queue=createVibeContinuousQueue(queueInput);
+  let recovered=0;
+  const tasks=queue.tasks.map(task=>{
+    const blocker=clean(task.blocker);
+    if(task.status!=='blocked'||!/^work-lock-conflict:/i.test(blocker))return task;
+    recovered+=1;
+    return{
+      ...task,
+      ...clearedReservation(),
+      status:'queued',
+      blocker:null,
+      lastOutcome:'DEFERRED_BY_WORK_LOCK',
+      neuronExpectedVariants:0,
+      neuronResults:[],
+      evidence:[...new Set([...(task.evidence||[]),TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE,`transient-work-lock-deferred:${blocker}`])]
+    };
+  });
+  return{recovered,queue:recovered?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
 }
 
 export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now(), staleMs = DEFAULT_STALE_RUNNING_MS } = {}) {
@@ -581,6 +603,27 @@ export function applyVibeFanInResults(queueInput, results = []) {
     }
     const passes = variants.filter((row) => clean(row.outcome).toUpperCase() === 'PASS');
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
+    const transientWorkLock=passes.length===0&&variants.length>0&&variants.every(row=>
+      clean(row.outcome).toUpperCase()==='BLOCKED'&&/^work-lock-conflict:/i.test(clean(row.blocker))
+    );
+    if(transientWorkLock){
+      const blockers=[...new Set(variants.map(row=>clean(row.blocker)).filter(Boolean))];
+      queue=createVibeContinuousQueue({
+        maxConcurrentTasks:queue.maxConcurrentTasks,
+        tasks:queue.tasks.map(task=>task.id===taskId?{
+          ...task,
+          ...clearedReservation(),
+          status:'queued',
+          blocker:null,
+          lastOutcome:'DEFERRED_BY_WORK_LOCK',
+          neuronExpectedVariants:0,
+          neuronResults:[],
+          evidence:[...new Set([...(task.evidence||[]),TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE,...blockers.map(value=>`transient-work-lock-deferred:${value}`)])]
+        }:task)
+      });
+      applied.push({taskId,outcome:'REQUEUED_TRANSIENT_LOCK',reason:blockers.join('|')||'work-lock-conflict'});
+      continue;
+    }
     const neuralTransactions=new Map(variants.map(row=>[row,buildNeuralWorkerTransaction(row)]));
     const neuralVariantFeedback=variants.map(row=>neuralTransactions.get(row).feedback);
     const neuralVariantEvidence=variants.flatMap(row=>neuralTransactions.get(row).evidence);
@@ -719,6 +762,8 @@ export function runQueueCommand(args = {}) {
     });
   let queue = createVibeContinuousQueue(rawQueue);
   const command = clean(args.command).toLowerCase();
+  const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
+  queue=transientLockRecovery.queue;
   let result;
   if (command === 'verify-worker-sync') {
     const sync=verifyVibeWorkerSynchronization(queue,{
@@ -750,7 +795,7 @@ export function runQueueCommand(args = {}) {
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
-    if (reserved.reserved || reserved.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
   } else if (command === 'reserve-batch') {
     const executionLane=clean(args.lane)||'game-primary';
@@ -760,7 +805,7 @@ export function runQueueCommand(args = {}) {
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
-    if (reserved.reserved || reserved.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
       const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? adaptiveMaxConcurrentTasks;
@@ -813,7 +858,7 @@ export function runQueueCommand(args = {}) {
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const neuron = recordVibeNeuronResult(queue, row, { expectedVariants: optionalMaxConcurrent(args['expected-variants']) ?? 1 });
     queue = neuron.queue;
-    if (neuron.updated) writeJson(file, queue);
+    if (neuron.updated || transientLockRecovery.recovered) writeJson(file, queue);
     result = {
       command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks,
       reservationMaxConcurrentTasks, adaptiveControl, ...neuron,
