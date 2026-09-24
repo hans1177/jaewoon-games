@@ -356,7 +356,8 @@ jobs:
                 const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
                 const compareRequired=studio.finalFanInComparisonRequired===true
                   ||studio.runtimeBeforeAfterComparisonRequired===true
-                  ||evidence.includes('graphics-evolution-before-after-comparison-required');
+                  ||evidence.includes('graphics-evolution-before-after-comparison-required')
+            ||evidence.includes('presentation-runtime-qa-required');
                 const sourceDeltaPass=evidence.includes('presentation-source-delta:PASS');
                 const prior=(q.tasks||[]).filter(row=>{
                   if(row.gameId!==game||String(row.target||'').toLowerCase()!=='roblox')return false;
