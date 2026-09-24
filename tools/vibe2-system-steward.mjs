@@ -27,7 +27,7 @@ const ADAPTIVE_STEPS=new Set(ADAPTIVE_PARALLELISM_STEPS.filter(step=>step>=DEFAU
 const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));
 const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   Number(queueInput?.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
-  Number(controlInput?.version)===3&&
+  Number(controlInput?.version)===4&&
   ADAPTIVE_STEPS.has(Number(controlInput?.currentMax));
 const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null});
 
@@ -50,17 +50,17 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   let queue=createVibeContinuousQueue(queueInput);
   let control=createParallelismControl(controlInput);
   const nowMs=Date.parse(now)||Date.now(),actions=[],taskIds=[];
-  const rawControlVersionHealthy=Number(controlInput?.version||3)===3;
+  const rawControlVersionHealthy=Number(controlInput?.version||0)===4;
   const rawControlStepHealthy=ADAPTIVE_STEPS.has(Number(controlInput?.currentMax));
   const machineRepairActions=[];
 
-  if(rawControlVersionHealthy&&!rawControlStepHealthy){
+  if(!rawControlVersionHealthy||!rawControlStepHealthy){
     control=createParallelismControl({
       currentMax:DEFAULT_ADAPTIVE_TARGET,
       healthyStreak:0,
       pressureStreak:0,
       lastDecision:'RESET',
-      lastReason:`SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET_TO_${DEFAULT_ADAPTIVE_TARGET}`,
+      lastReason:`SYSTEM_STEWARD_INVALID_V4_PARALLELISM_STATE_RESET_TO_${DEFAULT_ADAPTIVE_TARGET}`,
       lastRunId:null,
       lastUpdatedAt:now,
       lastTelemetry:null
@@ -85,7 +85,7 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   if(staleMachineIds.size){
     queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>staleMachineIds.has(row.id)?{
       ...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED',
-      evidence:uniq([...(row.evidence||[]),'system-steward:stale-machine-state-blocker-recovered','system-steward:machine-state-revalidated:v3-external-boundary-256'])
+      evidence:uniq([...(row.evidence||[]),'system-steward:stale-machine-state-blocker-recovered','system-steward:machine-state-revalidated:v4-external-boundary-256'])
     }:row)});
     actions.push('RECOVER_STALE_MACHINE_STATE_BLOCKER'); taskIds.push(...staleMachineIds);
   }
