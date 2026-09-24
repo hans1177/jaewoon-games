@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -21,7 +21,11 @@
     "nativeRuntimeVerificationBeforePromotion": true,
     "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
     "versusActionReadyUnarmedCombat": true,
-    "unarmedStyleResearchNoArtificialCap": true
+    "unarmedStyleResearchNoArtificialCap": true,
+    "automaticMotionCoverageGapFill": true,
+    "automaticSemanticMotionPreparationAllowed": true,
+    "preparedSemanticNeverVerified": true,
+    "motionDuplicateSuppression": true
   },
   "platformPacks": [
     {
@@ -2011,5 +2015,44 @@
       "randomSelectionWithoutContextForbidden": true,
       "contextSelectorAndVariationMemoryRequiredForRepeatedCombat": true
     }
+  },
+  "motionAutoFill": {
+    "target": "AUTOMATIC_MOTION_COVERAGE_GAP_FILL",
+    "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.autoMotionCoverageGapFill",
+    "enabled": true,
+    "requiredGroups": [
+      "locomotion",
+      "attacks",
+      "defense",
+      "reactions",
+      "acting",
+      "deaths",
+      "skill",
+      "signature"
+    ],
+    "baselineMinimums": {
+      "locomotion": 5,
+      "attacks": 3,
+      "defense": 2,
+      "reactions": 4,
+      "acting": 2,
+      "deaths": 2,
+      "skill": 2,
+      "signature": 3
+    },
+    "fillOrder": [
+      "REUSE_VERIFIED_SAME_ARCHETYPE_MOTION",
+      "REUSE_VERIFIED_COMPATIBLE_BODY_PLAN_MOTION",
+      "DERIVE_VERIFIED_MOTION_WITH_SAFE_STYLE_OR_STANCE_MUTATION",
+      "USE_LICENSE_VERIFIED_REPOSITORY_MOTION",
+      "ACQUIRE_LICENSE_VERIFIED_EXTERNAL_MOTION",
+      "PREPARE_SEMANTIC_MOTION_SEED",
+      "AUTHOR_NEW_NATIVE_MOTION"
+    ],
+    "currentBootstrapSetCount": 8,
+    "automaticBinding": true,
+    "usagePriority": true,
+    "duplicateControl": true,
+    "preparedSemanticNeverCountsAsVerified": true
   }
 }
