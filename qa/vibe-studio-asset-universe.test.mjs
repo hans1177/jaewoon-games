@@ -91,6 +91,23 @@ test('character identity adds deterministic persona voice memory and behavior in
   assert.ok(protective.intents.includes('CONTEXTUAL_DIALOGUE_FROM_KNOWN_INFORMATION'));
   assert.equal(protective.gameplayAuthority,false);
   assert.equal(protective.authoritativeActionRequired,true);
+
+  const factionDriven=resolveVibeCharacterBehaviorIntent({
+    persona:{...a,behaviorIntent:{...a.behaviorIntent,socialTendency:'reserved',riskTolerance:'low'}},
+    context:{
+      selfHealthRatio:.8,
+      allyHealthRatio:.8,
+      enemyVisible:true,
+      interactionAvailable:true,
+      factionRelationship:{hostile:80,fear:70,debt:25,trust:-40}
+    }
+  });
+  assert.equal(factionDriven.factionContextUsed,true);
+  assert.ok(factionDriven.intents.includes('FACTION_HOSTILITY_COMBAT_POSTURE'));
+  assert.ok(factionDriven.intents.includes('FACTION_CAUTION_OR_RETREAT_INTENT'));
+  assert.ok(factionDriven.intents.includes('FACTION_DEBT_DIALOGUE_OR_ASSIST_INTENT'));
+  assert.equal(factionDriven.gameOwnedTargetSelectionRequired,true);
+  assert.equal(factionDriven.gameplayAuthority,false);
   const diversity=createVibePopulationPersonaDiversity([
     {name:'연화',goal:'문파 기록 회수',speechRhythm:'short-direct'},
     {name:'무진',goal:'마을 방어',speechRhythm:'rapid'}
