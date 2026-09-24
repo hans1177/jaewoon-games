@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -26,6 +26,26 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
     workerPolicy: { directMainWrite: false }
   };
 }
+
+test('presentation candidate delta rejects marker-only edits and accepts actual visual source changes',()=>{
+  const contract={required:true,pass:'ASSET_ADAPTATION'};
+  const markerOnly=evaluatePresentationCandidateDelta({
+    contract,
+    candidate:{edits:[{path:'client/Game.client.luau',find:'part.Color = Color3.fromRGB(20,20,20)',replace:'part.Color = Color3.fromRGB(20,20,20)\nlocal PRESENTATION_QUALITY_VERSION = 2'}]}
+  });
+  assert.equal(markerOnly.required,true);
+  assert.equal(markerOnly.pass,false);
+  assert.equal(markerOnly.reason,'NO_RELEVANT_PRESENTATION_DELTA_IN_PATCH');
+
+  const visible=evaluatePresentationCandidateDelta({
+    contract,
+    candidate:{edits:[{path:'client/Game.client.luau',find:'part.Color = Color3.fromRGB(20,20,20)',replace:'part.Color = Color3.fromRGB(70,95,130)'}]}
+  });
+  assert.equal(visible.pass,true);
+  assert.equal(visible.presentationPass,'ASSET_ADAPTATION');
+  assert.deepEqual(visible.files,['client/Game.client.luau']);
+  assert.equal(visible.changedVisualUnits,1);
+});
 
 test('repeated identical failure signature escalates to root cause mode instead of counting unrelated failures',()=>{
   const result=classifyVibePatchSaturation({
