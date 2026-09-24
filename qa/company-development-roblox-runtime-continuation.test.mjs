@@ -57,6 +57,15 @@ test('canonical parent watches both fast-path workflows',()=>{
   assert.ok(parent.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });
 
+test('already preflight-ready games wake F0 without requiring a new preflight pass in the same run',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.match(workflow,/f0_ready_count:/);
+  assert.match(workflow,/ROBLOX_EXISTING_F0_READY_COUNT=/);
+  assert.match(workflow,/needs: \[preflight-plan, preflight-persist\]/);
+  assert.match(workflow,/needs\.preflight-plan\.outputs\.f0_ready_count != '0'/);
+  assert.match(workflow,/needs\.preflight-persist\.outputs\.pass_count != '0'/);
+});
+
 test('shared Roblox preflight checkout fans out without an internal six-game cap',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   assert.doesNotMatch(workflow,/rows\.length>=6/);

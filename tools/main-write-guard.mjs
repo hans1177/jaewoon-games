@@ -39,7 +39,12 @@ export function scanChangedWorkflowFiles(files=[]){
 }
 
 function changedFiles(baseRef,headRef){
-  const out=execFileSync('git',['diff','--name-only',`${baseRef}...${headRef}`],{encoding:'utf8'});
+  let out='';
+  try{
+    out=execFileSync('git',['diff','--name-only',`${baseRef}...${headRef}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+  }catch{
+    out=execFileSync('git',['diff','--name-only',baseRef,headRef],{encoding:'utf8'});
+  }
   return out.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
 }
 

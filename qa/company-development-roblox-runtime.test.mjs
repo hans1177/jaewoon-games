@@ -305,6 +305,8 @@ test('successful Roblox package flow auto-dispatches shared preflight then F0 wi
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
   assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
+  assert.ok(workflow.includes('ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'));
+  assert.doesNotMatch(workflow,/\$package_pending" == '0'.*ROBLOX_POST_PACKAGE_CONTINUATION/s);
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));

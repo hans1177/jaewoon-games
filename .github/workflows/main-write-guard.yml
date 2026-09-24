@@ -29,7 +29,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
+          filter: blob:none
 
       - uses: actions/setup-node@v4
         with:
@@ -44,11 +46,13 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            git fetch origin "${{ github.base_ref }}"
-            echo "ref=origin/${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+            base_sha='${{ github.event.pull_request.base.sha }}'
+            git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
+            echo "ref=$base_sha" >> "$GITHUB_OUTPUT"
           else
             before='${{ github.event.before }}'
             if [[ -n "$before" && "$before" != '0000000000000000000000000000000000000000' ]]; then
+              git cat-file -e "$before^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$before"
               echo "ref=$before" >> "$GITHUB_OUTPUT"
             else
               echo "ref=HEAD^" >> "$GITHUB_OUTPUT"
