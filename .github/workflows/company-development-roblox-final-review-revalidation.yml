@@ -280,6 +280,16 @@ jobs:
             q.updatedAt=stamp;
             fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
           }
+          if(requested){
+            const patched=(q.items||[]).find(row=>row.gameId===requested);
+            if(patched)fs.writeFileSync('/tmp/roblox-f9-game-patch.json',JSON.stringify({
+              gameId:requested,
+              sourceRevision:String(patched.robloxSourceCommit||''),
+              artifactIdentity:String(patched.robloxBuildArtifactIdentity||''),
+              candidateVersionNumber:Number(patched.robloxRuntimeCandidateEvidence?.versionNumber||0),
+              item:patched
+            },null,2)+'\n');
+          }
           console.log(`ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=${promoted}`);
           console.log(`ROBLOX_F9_BLOCKED=${blocked}`);
           NODE
@@ -291,18 +301,30 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-roblox-f9-qa'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=NO'
-            exit 0
-          fi
-          git commit -m 'runtime: promote exact Roblox candidate after F9 [skip ci]'
+          patch=/tmp/roblox-f9-game-patch.json
+          [ -s "$patch" ] || { echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=NO'; exit 0; }
           pushed=0
-          for attempt in 1 2 3; do
-            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+          for attempt in 1 2 3 4 5; do
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node --input-type=module - "$patch" <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===patch.gameId);
+          if(!item)throw new Error('F9 patch target missing: '+patch.gameId);
+          if(String(item.robloxSourceCommit||'')!==String(patch.sourceRevision||''))throw new Error('F9 patch source changed: '+patch.gameId);
+          if(String(item.robloxBuildArtifactIdentity||'')!==String(patch.artifactIdentity||''))throw new Error('F9 patch artifact changed: '+patch.gameId);
+          if(Number(item.robloxRuntimeCandidateEvidence?.versionNumber||0)!==Number(patch.candidateVersionNumber||0))throw new Error('F9 patch candidate version changed: '+patch.gameId);
+          Object.assign(item,patch.item);
+          q.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then pushed=1; echo 'ROBLOX_F9_RUNTIME_STATE_ALREADY_APPLIED=YES'; break; fi
+            git commit -m 'runtime: promote exact Roblox candidate after F9 [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
             sleep $((attempt*2))
           done
           test "$pushed" = '1'
