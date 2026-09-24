@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": "  if r and state==\"RUNNING\"then",
+      "replace": "  if r and state==\"RUNNING\"then\n   local pos=r.Position\n   local horizontal=Vector3.new(r.AssemblyLinearVelocity.X,0,r.AssemblyLinearVelocity.Z).Magnitude\n   local previous=lastValidPosition[p]\n   local inBounds=math.abs(pos.X)<=C.ArenaLimit and math.abs(pos.Z)<=C.ArenaLimit and pos.Y>=-8 and pos.Y<=42\n   local grace=now<(movementGraceUntil[p]or 0)\n   local stepOkay=not previous or(pos-previous).Magnitude<=C.MaxTeleportStep\n   local velocityOkay=horizontal<=C.MaxHorizontalVelocity\n   if grace or(inBounds and stepOkay and velocityOkay)then\n    lastValidPosition[p]=pos\n   elseif previous then\n    movementGraceUntil[p]=now+.35\n    r.AssemblyLinearVelocity=Vector3.zero\n    r.CFrame=CFrame.new(previous)\n   end\n  end\n"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
