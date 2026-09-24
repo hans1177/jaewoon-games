@@ -1122,6 +1122,8 @@ jobs:
           let incrementalQaReport={};
           if(fs.existsSync('/tmp/vibe2-incremental-qa.json'))incrementalQaReport=JSON.parse(fs.readFileSync('/tmp/vibe2-incremental-qa.json','utf8'));
           const gameRepairQa=incrementalQaReport?.gameRepairQa&&typeof incrementalQaReport.gameRepairQa==='object'?incrementalQaReport.gameRepairQa:null;
+          const specializedVerificationRequest=manifest?.specializedVerificationRequest&&typeof manifest.specializedVerificationRequest==='object'?manifest.specializedVerificationRequest:{required:false,requestedMarkers:[],nativeRuntimeRequired:false};
+          const specializedVerificationQa=incrementalQaReport?.specializedVerificationQa&&typeof incrementalQaReport.specializedVerificationQa==='object'?incrementalQaReport.specializedVerificationQa:{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY'};
           let workOrder={};
           if(fs.existsSync('/tmp/vibe2-work-order.json'))workOrder=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const explorationFile=clean(process.env.EXPLORATION_FILE);
@@ -1373,7 +1375,7 @@ jobs:
             authorityExpanded:false
           }:null;
           const workLock={required:workLockRequired,acquired:process.env.WORK_LOCK_ACQUIRED==='true',id:clean(process.env.WORK_LOCK_ID)||null,reason:clean(process.env.WORK_LOCK_REASON)||null,worker:'vibe2',baseSha:clean(workOrder?.compiledWorkContract?.workLock?.baseSha)||clean(process.env.BASE_SHA)||null,files:Array.isArray(workOrder?.compiledWorkContract?.workLock?.files)?workOrder.compiledWorkContract.workLock.files:[],releaseRule:clean(workOrder?.compiledWorkContract?.workLock?.releaseRule)||null};
-          const result={version:15,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,gameRepairQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
+          const result={version:16,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
