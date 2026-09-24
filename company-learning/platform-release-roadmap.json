@@ -1,5 +1,5 @@
 {
-  "version": 339,
+  "version": 340,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -20522,6 +20522,38 @@
       "computeExecutionMayYieldToProduction": true,
       "signalGenerationAndQueueingContinueWhileYielded": true,
       "resumeQueuedLearningAutomaticallyWhenCapacityReturns": true
+    }
+  },
+  "securityImmuneSystem": {
+    "scanMinimizationPolicy": {
+      "version": 1,
+      "mode": "RISK_SCOPED_MINIMUM",
+      "ownerDirective": "OWNER_DIRECTIVE_2026-09-24_MINIMIZE_SECURITY_SCAN_REPETITION",
+      "routineGameCandidateScanRequired": false,
+      "periodicFullRepositoryScanRequired": false,
+      "securityRelevantChangeRequiredForRoutineScan": true,
+      "alwaysScan": [
+        "EXTERNAL_AI_SYSTEM_CANDIDATE",
+        "SYSTEM_ARCHITECTURE_OR_AUTHORITY_CHANGE",
+        "CENTRAL_POLICY_OR_SECURITY_POLICY_CHANGE",
+        "WORKFLOW_OR_ACTION_CHANGE",
+        "RELEASE_PUBLISH_PROMOTION_CHANGE",
+        "DEPENDENCY_OR_INSTALL_SURFACE_CHANGE",
+        "ROBLOX_SERVER_AUTHORITY_REMOTE_SAVE_ECONOMY_REWARD_DAMAGE_CHANGE",
+        "CONFIRMED_SECURITY_RECOVERY_RESCAN"
+      ],
+      "skipByDefault": [
+        "GAME_UI_PRESENTATION",
+        "GRAPHICS_OR_ASSET_PRESENTATION",
+        "WEATHER_PRESENTATION",
+        "NON_SECURITY_BALANCE_TUNING",
+        "NON_SECURITY_CLIENT_GAMEPLAY_CHANGE",
+        "ROUTINE_QUEUE_OR_DIAGNOSTIC_CHANGE"
+      ],
+      "candidateBehavior": "SKIP_SECURITY_SCAN_WHEN_CHANGED_SURFACE_IS_NOT_SECURITY_RELEVANT",
+      "scheduledBehavior": "NO_PERIODIC_FULL_REPOSITORY_SCAN",
+      "securityGateBypassAllowed": false,
+      "confirmedSecurityFindingStillHardBlocks": true
     }
   }
 }
