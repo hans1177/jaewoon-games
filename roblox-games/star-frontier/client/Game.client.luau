@@ -357,42 +357,17 @@ end)
 camera.CameraType = Enum.CameraType.Scriptable
 local lastControlSend = 0
 
-local function movementVector()
-    if not ship.PrimaryPart then
-        return Vector3.zero
-    end
-    local forward = ship.PrimaryPart.CFrame.LookVector
-    forward = Vector3.new(forward.X, 0, forward.Z)
-    if forward.Magnitude < 0.01 then
-        forward = Vector3.new(0, 0, -1)
-    else
-        forward = forward.Unit
-    end
-    local right = Vector3.new(-forward.Z, 0, forward.X)
-
-    local vector = Vector3.zero
-    if held.Forward then
-        vector += forward
-    end
-    if held.Back then
-        vector -= forward
-    end
-    if held.Right then
-        vector += right
-    end
-    if held.Left then
-        vector -= right
-    end
-    if held.Up then
-        vector += Vector3.yAxis
-    end
-    if held.Down then
-        vector -= Vector3.yAxis
-    end
-    if vector.Magnitude > 1 then
-        vector = vector.Unit
-    end
-    return vector
+local function controlAxes()
+    local throttle = 0
+    local turn = 0
+    local vertical = 0
+    if held.Forward then throttle += 1 end
+    if held.Back then throttle -= 1 end
+    if held.Right then turn -= 1 end
+    if held.Left then turn += 1 end
+    if held.Up then vertical += 1 end
+    if held.Down then vertical -= 1 end
+    return throttle, turn, vertical
 end
 
 RunService.RenderStepped:Connect(function()
@@ -408,8 +383,11 @@ RunService.RenderStepped:Connect(function()
     local now = os.clock()
     if now - lastControlSend >= 0.08 then
         lastControlSend = now
+        local throttle, turn, vertical = controlAxes()
         remote:FireServer("CONTROL", {
-            Move = movementVector(),
+            Throttle = throttle,
+            Turn = turn,
+            Vertical = vertical,
             Boost = held.Boost,
         })
     end
