@@ -54,3 +54,10 @@ test('한글 영문 유입 메타데이터',()=>{
  assert.equal(launch.gameTitleEn,'Midnight Infection [4v4]');
  assert.ok(launch.gameDescriptionKo.includes('감염전'));assert.ok(launch.gameDescriptionEn.includes('infection'));
 });
+
+
+test('경쟁 라운드 점수는 서버가 승패 기준으로 관리한다',()=>{
+ assert.match(server,/RoundScore/);
+ assert.match(server,/SetAttribute\("RoundScore",win and 1 or 0\)/);
+ assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
+});

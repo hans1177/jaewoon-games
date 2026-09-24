@@ -36,7 +36,7 @@ root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
 
 root.AnchorPoint = Vector2.new(0.5, 1)
 root.Position = UDim2.fromScale(0.5, 0.98)
-root.Size = UDim2.new(1, -24, 0, 290)
+root.Size = UDim2.new(1, -24, 0, 320)
 root.BackgroundColor3 = Color3.fromRGB(31, 34, 46)
 root.BackgroundTransparency = 0.06
 root.Parent = gui
@@ -88,20 +88,40 @@ hint.TextScaled = true
 hint.Text = UserInputService.TouchEnabled and "전선 상태를 보고 터치 명령을 선택해" or "전선 상태를 보고 명령을 선택해"
 hint.Parent = root
 
+local multiplayerStatus = Instance.new("TextLabel")
+multiplayerStatus.Size = UDim2.new(1, -20, 0, 28)
+multiplayerStatus.Position = UDim2.fromOffset(10, 270)
+multiplayerStatus.BackgroundTransparency = 1
+multiplayerStatus.TextColor3 = Color3.fromRGB(166, 211, 255)
+multiplayerStatus.TextScaled = true
+multiplayerStatus.Parent = root
+
 local function render()
   status.Text = string.format(
-    "영토 %d  병력 %d  자원 %d  경제 Lv.%d  적 압력 %d  턴 %d",
+    "영토 %d  병력 %d  자원 %d  경제 Lv.%d  점수 %d  턴 %d",
     player:GetAttribute("Territories") or 1,
     player:GetAttribute("Troops") or 12,
     player:GetAttribute("Resources") or 20,
     player:GetAttribute("EconomyLevel") or 1,
-    player:GetAttribute("EnemyPressure") or 8,
+    player:GetAttribute("RoundScore") or 0,
     player:GetAttribute("CampaignTurn") or 1
   )
   order.Text = "결과: " .. tostring(player:GetAttribute("LastOrder") or "READY")
+  if player:GetAttribute("MultiplayerActive") == true then
+    multiplayerStatus.Text = string.format("경쟁전 동기화 · %d명 · 상대 %s", player:GetAttribute("SyncedParticipantCount") or 2, tostring(player:GetAttribute("OpponentUserId") or 0))
+  else
+    multiplayerStatus.Text = "솔로 전선 · AI 상대"
+  end
 end
 
-for _, name in ipairs({"Territories","Troops","Resources","EconomyLevel","EnemyPressure","CampaignTurn","LastOrder"}) do
+for _, name in ipairs({"Territories","Troops","Resources","EconomyLevel","EnemyPressure","CampaignTurn","RoundScore","MultiplayerActive","OpponentUserId","LastOrder"}) do
   player:GetAttributeChangedSignal(name):Connect(render)
 end
+
+remote.OnClientEvent:Connect(function(kind, snapshot)
+  if kind ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
+  player:SetAttribute("SyncedParticipantCount", tonumber(snapshot.ParticipantCount) or 1)
+  render()
+end)
+
 render()
