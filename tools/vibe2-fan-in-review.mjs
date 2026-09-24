@@ -70,6 +70,29 @@ function presentationRuntimeVisualDecision(task={},row={}){
   const audit=auditVibeRuntimeBeforeAfterComparison(payload);
   return{required:true,deferred:false,pass:audit.pass,audit,target};
 }
+function presentationRuntimeComparisonRequired(task={},row={}){
+  if(clean(task?.target).toLowerCase()!=='web')return false;
+  const evidence=[...(task?.evidence||[]),...(row?.evidence||[])].map(clean).filter(Boolean);
+  return row?.presentationQuality?.runtimeQaRequired===true||evidence.some(value=>
+    /^presentation-runtime-qa-required(?::YES)?$/i.test(value)
+    ||/^graphics-evolution-before-after-comparison-required$/i.test(value)
+    ||/^presentation-real-runtime-graphics:/i.test(value)
+  );
+}
+export function presentationRuntimeEvidenceFailures(task={},row={}){
+  if(!presentationRuntimeComparisonRequired(task,row))return[];
+  const comparison=row?.presentationRuntimeComparison&&typeof row.presentationRuntimeComparison==='object'?row.presentationRuntimeComparison:null;
+  const failures=[];
+  if(!comparison||comparison.required!==true)return['presentation-runtime-before-after-comparison'];
+  if(clean(comparison.authority)!=='CANONICAL_WEB_PLAYWRIGHT_BEFORE_AFTER_COMPARISON')failures.push('presentation-runtime-authority');
+  if(comparison.baselineObserved!==true)failures.push('presentation-runtime-before-observation');
+  if(comparison.candidateObserved!==true)failures.push('presentation-runtime-after-observation');
+  if(comparison.sourceDeltaObserved!==true)failures.push('presentation-runtime-source-delta');
+  if(comparison.meaningfulRuntimeDelta!==true)failures.push('presentation-runtime-meaningful-delta');
+  if(comparison.candidatePass!==true)failures.push('presentation-runtime-candidate-hard-gate');
+  if(comparison.pass!==true)failures.push('presentation-runtime-before-after-pass');
+  return[...new Set(failures)];
+}
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
 function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa|awaiting.*supervised-review/i.test(clean(task.blocker));}
 function releaseCandidateFromEvidence(evidence=new Set()){
@@ -216,6 +239,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       else {
         missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
         missing.push(...gameRepairEvidenceFailures(selectedResult));
+        missing.push(...presentationRuntimeEvidenceFailures(task,selectedResult));
         presentationRuntimeVisual=presentationRuntimeVisualDecision(task,selectedResult);
         if(presentationRuntimeVisual.required){
           if(presentationRuntimeVisual.deferred){
@@ -243,6 +267,11 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      if(presentationRuntimeComparisonRequired(task,selectedResult)){
+        evidence.add('presentation-runtime-before-after:PASS');
+        evidence.add('presentation-runtime-candidate-hard-gate:PASS');
+        evidence.add('presentation-runtime-meaningful-delta:YES');
+      }
       if(selectedResult?.gameRepairQa?.required===true){
         evidence.add('game-repair-source-evidence:PASS');
         evidence.add('game-repair-impact-regression:PASS');
