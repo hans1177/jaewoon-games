@@ -1293,7 +1293,7 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 }
 
 
-function findStudioContinuousImprovementTask(project,repoRoot,queue){
+export function findStudioContinuousImprovementTask(project,repoRoot,queue){
   if(!project?.gameId||!project?.projectPath)return null;
   const sourceRoot=posix(project.projectPath),sourceDir=sourceFile(repoRoot,sourceRoot);
   if(!fs.existsSync(sourceDir)||!fs.statSync(sourceDir).isDirectory())return null;
