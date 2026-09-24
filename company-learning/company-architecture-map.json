@@ -1,5 +1,5 @@
 {
-  "version": 140,
+  "version": 141,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2289,6 +2289,24 @@
         ],
         "gameplayAuthorityExpansionForbidden": true,
         "platformNativeRuntimeVerificationRequired": true
+      },
+      "autoMotionCoverageGapFill": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.autoMotionCoverageGapFill",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "implementation": "assets/vibe-motion-director.js",
+        "stages": [
+          "COVERAGE_AUDIT",
+          "COMPATIBILITY_BIND",
+          "REUSE_OR_ACQUIRE",
+          "SEMANTIC_SEED",
+          "NATIVE_AUTHORING",
+          "RUNTIME_VERIFY",
+          "PROMOTE"
+        ],
+        "preparedSemanticNeverVerified": true,
+        "usagePriorityRequired": true,
+        "duplicateControlRequired": true,
+        "continuousExpansion": true
       }
     }
   },
