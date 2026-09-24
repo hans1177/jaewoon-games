@@ -732,6 +732,27 @@ test('exact edit dry run validates sequential applicability without mutating sou
   assert.doesNotMatch(fs.readFileSync(source, 'utf8'), /return 3;/);
 });
 
+test('exact edit preserves the original EOF shape instead of introducing a git diff blank-line failure',()=>{
+  const cwd=tempRoot();
+  const withEol=path.join(cwd,'GameConfig.luau');
+  write(withEol,'return {\n  Value = 1\n}\n');
+  applyExactEdits(cwd,[{
+    path:'GameConfig.luau',
+    find:'return {\n  Value = 1\n}\n',
+    replace:'return {\n  Value = 2\n}\n\n'
+  }]);
+  assert.equal(fs.readFileSync(withEol,'utf8'),'return {\n  Value = 2\n}\n');
+
+  const withoutEol=path.join(cwd,'NoEol.luau');
+  write(withoutEol,'return { Value = 1 }');
+  applyExactEdits(cwd,[{
+    path:'NoEol.luau',
+    find:'return { Value = 1 }',
+    replace:'return { Value = 2 }\n'
+  }]);
+  assert.equal(fs.readFileSync(withoutEol,'utf8'),'return { Value = 2 }');
+});
+
 test('candidate manifest persists design intelligence requirements and starts evidence unverified', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
