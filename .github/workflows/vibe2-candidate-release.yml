@@ -426,12 +426,15 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$settled" = 1
-          if [ "$result" = PASS ]; then gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main; fi
+          if [ "$result" = PASS ]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+            echo "VIBE2_ROBLOX_RUNTIME_QA_DISPATCHED=${GAME_ID}"
+          fi
           payload="$(jq -nc \
             --arg run "${GITHUB_RUN_ID:-}" \
             --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
             --arg task "${TASK_ID:-}" \
-            --arg outcome "${result:-QUEUE_UPDATED}" \
+            --arg outcome "$([ "$result" = PASS ] && printf 'RUNTIME_QA_PENDING' || printf '%s' "${result:-QUEUE_UPDATED}")" \
             '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
           curl --fail-with-body --silent --show-error \
             --request POST \
@@ -634,6 +637,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
           VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
@@ -665,7 +669,10 @@ jobs:
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs await \
+                --id="$TASK_ID" \
+                --blocker=candidate-awaiting-roblox-runtime-qa \
+                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,roblox-runtime-await-game:${GAME_ID},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
@@ -674,7 +681,11 @@ jobs:
               settled=1
               break
             fi
-            git commit -m "vibe2: settle Roblox task ${TASK_ID} ${result} [skip ci]"
+            if [ "$result" = PASS ]; then
+              git commit -m "vibe2: await Roblox runtime QA for ${TASK_ID} [skip ci]"
+            else
+              git commit -m "vibe2: settle Roblox task ${TASK_ID} ${result} [skip ci]"
+            fi
             if git push origin HEAD:vibe2-unreal-core; then
               settled=1
               break
@@ -698,6 +709,7 @@ jobs:
             --data "$payload"
           echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
           echo "VIBE2_ROBLOX_AUTO_DEPLOY=$result"
+          if [ "$result" = PASS ]; then echo 'VIBE2_ROBLOX_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING'; fi
           [ "$result" = PASS ]
 
   reject:
