@@ -11,7 +11,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const motor=json('company-learning/vibe2-learning-motor.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,8);
+  assert.equal(motor.version,9);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -39,6 +39,15 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.presentationLearning.runtimeMotionLearning.verifiedProjectOutcomeRequiredForPositiveMastery,true);
   assert.equal(motor.presentationLearning.runtimeMotionLearning.verifiedFailureMayTeachAvoidPattern,true);
   assert.equal(motor.presentationLearning.runtimeMotionLearning.trainingThresholdsUnchanged,true);
+  assert.equal(roadmap.continuousLearning24hContract.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(roadmap.continuousLearning24hContract.invariants.learningSignalGenerationNeverStops,true);
+  assert.equal(roadmap.continuousLearning24hContract.invariants.learningQueueAccumulationNeverStops,true);
+  assert.equal(roadmap.continuousLearning24hContract.invariants.productionPresenceDoesNotSuppressLearningGeneration,true);
+  assert.equal(roadmap.continuousLearning24hContract.resourcePolicy.signalGenerationAndQueueingContinueWhileYielded,true);
+  assert.equal(motor.continuous24h.allLearningDomainsAlwaysActive,true);
+  assert.equal(motor.continuous24h.executionLaneRunsDuringProduction,true);
+  assert.equal(motor.idleTraining.productionPresenceDoesNotSuppressLearningExecution,true);
+  assert.equal(motor.idleTraining.minimumConcurrentLearningLaneRequired,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
@@ -73,6 +82,11 @@ test('24H learning cycle persists verified experience and external AI distilled 
   assert.match(workflow,/--external-ai-distilled=\.vibe2\/external-ai-distilled-knowledge\.json/);
   assert.match(workflow,/git add \.vibe2\/queue\.json[\s\S]*\.vibe2\/experience\.json[\s\S]*\.vibe2\/external-ai-distilled-knowledge\.json/);
   assert.match(workflow,/VIBE2_EXTERNAL_AI_ACCEPTED/);
+  assert.match(workflow,/VIBE2_LEARNING_ALWAYS_ON: 'true'/);
+  assert.match(workflow,/VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'/);
+  assert.match(workflow,/learning_idle:[\s\S]*if: \$\{\{ needs\.plan\.outputs\.learning_idle_queued != '0' \}\}/);
+  assert.doesNotMatch(workflow,/learning_idle:[\s\S]{0,250}game_primary_queued == '0'/);
+  assert.match(workflow,/Dispatch next cycle unconditionally/);
 });
 
 test('human-readable roadmap mirror is not part of the learning closed-loop mutation contract',()=>{

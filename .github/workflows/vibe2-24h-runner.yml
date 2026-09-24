@@ -110,6 +110,9 @@ env:
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
   VIBE2_24H_GEMINI_ALLOWED: 'false'
+  VIBE2_LEARNING_ALWAYS_ON: 'true'
+  VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
+  VIBE2_LEARNING_LANE_MAX: '4'
 
 # Keep one continuous scheduler chain. Multiple wake signals collapse into one
 # pending cycle while the running cycle still dispatches its successor unconditionally.
@@ -747,7 +750,9 @@ jobs:
 
   learning_idle:
     needs: plan
-    if: ${{ needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' }}
+    # Learning keeps running beside production. Capacity pressure may reduce throughput,
+    # but queued learning and the learning state machine must not pause.
+    if: ${{ needs.plan.outputs.learning_idle_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle

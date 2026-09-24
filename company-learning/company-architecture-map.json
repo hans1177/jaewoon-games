@@ -1,5 +1,5 @@
 {
-  "version": 142,
+  "version": 143,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3383,5 +3383,21 @@
       "company-learning/company-architecture-map.json",
       "company-learning/security-immune-system.json"
     ]
+  },
+  "continuousLearning24hTopology": {
+    "authority": "company-learning/platform-release-roadmap.json#continuousLearning24hContract",
+    "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+    "lanes": [
+      "GAME_PRIMARY",
+      "LEARNING_IDLE",
+      "RECOVERY_FAST",
+      "CONTROL_FAST"
+    ],
+    "learningRunsConcurrentlyWithProduction": true,
+    "learningSignalGenerationNeverStops": true,
+    "queuedLearningPersistsAcrossCapacityPressure": true,
+    "nextCycleDispatchUnconditional": true,
+    "hourlySafetyNet": true,
+    "separateLearningPipelineForbidden": true
   }
 }

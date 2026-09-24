@@ -1,5 +1,5 @@
 {
-  "version": 320,
+  "version": 321,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -12462,9 +12462,14 @@
         "productionWorkAlwaysPreemptsLibraryPractice": true,
         "ownerRequestGameRepairAndReleaseWorkHigherPriority": true,
         "noArtificialGenerationCap": true,
-        "stopWhenHigherPriorityWorkNeedsCapacity": true,
+        "stopWhenHigherPriorityWorkNeedsCapacity": false,
         "rawPracticeArtifactIsNotCompanyAsset": true,
-        "practicePurpose": "EXPAND_VARIETY_REHEARSE_PLATFORM_ADAPTATION_AND_DISCOVER_REUSABLE_PATTERNS_BEFORE_GAME_CONSUMPTION"
+        "practicePurpose": "EXPAND_VARIETY_REHEARSE_PLATFORM_ADAPTATION_AND_DISCOVER_REUSABLE_PATTERNS_BEFORE_GAME_CONSUMPTION",
+        "learningSignalGenerationNeverStops": true,
+        "queueWhileHigherPriorityWorkUsesCapacity": true,
+        "executionMayYieldToHigherPriorityWork": true,
+        "yieldDoesNotMeanLearningPause": true,
+        "automaticResumeWhenCapacityReturns": true
       },
       "promotionLifecycle": [
         "PREPARED_VARIANT_OR_PRACTICE_ARTIFACT",
@@ -14780,7 +14785,12 @@
       ],
       "practiceSignalGenerationNeverStops": true,
       "executionMayWaitForLowerPriorityCapacity": true,
-      "verifiedProjectOutcomeRequiredForPositiveMastery": true
+      "verifiedProjectOutcomeRequiredForPositiveMastery": true,
+      "learningStateMachineNeverPauses": true,
+      "learningQueueAccumulationNeverStops": true,
+      "productionPresenceDoesNotSuppressLearningGeneration": true,
+      "yieldedWorkRemainsQueued": true,
+      "automaticResumeWhenCapacityReturns": true
     },
     "capabilityGrowth": {
       "objective": "UNBOUNDED_VERIFIED_CAPABILITY_IMPROVEMENT",
@@ -18393,5 +18403,65 @@
     "exactFailureRepairRequired": true,
     "validator": "tools/company-development-web-gameplay-validation.mjs",
     "planner": "tools/vibe2-auto-planner.mjs"
+  },
+  "continuousLearning24hContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-24",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "purpose": "KEEP_ALL_EXISTING_LEARNING_DOMAINS_CONTINUOUSLY_ACTIVE_24H_WITHOUT_PAUSING_SIGNAL_GENERATION_OR_QUEUE_ACCUMULATION",
+    "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+    "existingCanonicalLearningChainOnly": true,
+    "separateLearningPipelineForbidden": true,
+    "appliesTo": [
+      "VERIFIED_EXPERIENCE_LEARNING",
+      "PRACTICE_DISTILLATION",
+      "RELEARNING",
+      "HYPOTHESIS_FALSIFICATION",
+      "BENCHMARK_LADDER",
+      "EXTERNAL_AI_DISTILLATION",
+      "SECURITY_LEARNING",
+      "RECOVERY_LEARNING",
+      "SYSTEM_AI_LEARNING",
+      "UNITY_NATIVE_LEARNING",
+      "ROBLOX_NATIVE_LEARNING",
+      "ASSET_PRODUCTION_LEARNING",
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "AUDIO_FEEL",
+      "CAMERA_LANGUAGE",
+      "COMPANY_GRAPHICS_LIBRARY_24H",
+      "RUNTIME_MOTION_LEARNING"
+    ],
+    "invariants": {
+      "learningSignalGenerationNeverStops": true,
+      "learningQueueAccumulationNeverStops": true,
+      "verifiedOutcomeIngestNeverStops": true,
+      "relearningSignalGenerationNeverStops": true,
+      "benchmarkSignalGenerationNeverStops": true,
+      "graphicsAndMotionResearchSignalGenerationNeverStops": true,
+      "productionPresenceDoesNotSuppressLearningGeneration": true,
+      "higherPriorityProductionMayYieldComputeButMayNotPauseLearningStateMachine": true,
+      "yieldedLearningWorkMustRemainQueuedForNextAvailableCapacity": true,
+      "noArtificialGenerationCap": true,
+      "noDailySessionOrBatchCompletionMeansLearningStopped": true,
+      "workflowFailureMustRetryThroughExistingRecoveryPath": true,
+      "runtimeOrQaFailureDoesNotCountAsPositiveLearning": true,
+      "gatesAndTrainingThresholdsRemainUnchanged": true,
+      "rawUnverifiedOutputCannotSelfPromote": true
+    },
+    "schedulerBehavior": {
+      "continuousDispatchChaining": true,
+      "hourlySafetyNetCron": true,
+      "singletonConcurrency": true,
+      "noManualRestartRequiredAfterNormalCycleCompletion": true,
+      "nextLearningSignalAfterCompletedGenerationRequired": true
+    },
+    "resourcePolicy": {
+      "productionDefaultPriorityHigherThanPractice": true,
+      "computeExecutionMayYieldToProduction": true,
+      "signalGenerationAndQueueingContinueWhileYielded": true,
+      "resumeQueuedLearningAutomaticallyWhenCapacityReturns": true
+    }
   }
 }

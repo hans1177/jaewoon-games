@@ -24,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 3, 'contract.version');
+eq(contract.version, 4, 'contract.version');
 eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
 eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
 eq(contract.policyAuthority, false, 'contract.policyAuthority');
@@ -51,6 +51,14 @@ eq(contract.motionRuntimeEvidence?.rawTelemetryDirectTraining, false, 'raw motio
 eq(contract.motionRuntimeEvidence?.verifiedOutcomeMayBecomeTrainingSample, true, 'verified motion outcome may become sample');
 eq(contract.motionRuntimeEvidence?.existingThresholdsHoldoutCanaryUnchanged, true, 'motion learning thresholds unchanged');
 eq(contract.motionRuntimeEvidence?.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate, true, 'motion platform evidence separation');
+eq(contract.continuous24hIngress?.enabled, true, 'continuous 24h ingress enabled');
+eq(contract.continuous24hIngress?.usesCanonicalChainOnly ?? contract.continuous24hIngress?.existingCanonicalChainOnly, true, 'continuous 24h canonical chain only');
+eq(contract.continuous24hIngress?.separatePipelineForbidden, true, 'continuous 24h separate pipeline forbidden');
+eq(contract.continuous24hIngress?.validatedEvidenceIngressNeverStops, true, 'validated evidence ingress never stops');
+eq(contract.continuous24hIngress?.verifiedFailureIngressNeverStops, true, 'verified failure ingress never stops');
+eq(contract.continuous24hIngress?.practiceAndRelearningCandidateGenerationNeverStops, true, 'practice and relearning generation never stops');
+eq(contract.continuous24hIngress?.productionActivityMayNotDisableIngress, true, 'production cannot disable learning ingress');
+eq(contract.continuous24hIngress?.trainingThresholdsAndPromotionGatesUnchanged, true, '24h learning gates unchanged');
 
 const portableWeb=contract.portableWebLearning;
 eq(portableWeb?.enabled, false, 'legacy portable Web learning disabled');

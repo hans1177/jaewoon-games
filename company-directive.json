@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 64,
+  "revision": 65,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1183,5 +1183,14 @@
     "emptyEntryPointForbidden": true,
     "failureState": "WEB_VIBE_REPAIR_REQUIRED",
     "authority": "company-learning/platform-release-roadmap.json#webRuntimeStartabilityContract"
+  },
+  "continuousLearning24h": {
+    "enabled": true,
+    "noPause": true,
+    "allLearningDomains": true,
+    "productionMayReduceLearningParallelismButMayNotStopLearning": true,
+    "learningLaneConcurrentWithProduction": true,
+    "queueAndSignalGenerationNeverStop": true,
+    "canonicalPipelineOnly": true
   }
 }

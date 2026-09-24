@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -683,5 +683,23 @@
       "MOTION_LINEAGE"
     ],
     "hardFailureBlocksPromotion": true
+  },
+  "continuousLearning24hEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#continuousLearning24hContract",
+    "recordKind": "continuous-learning-24h-evidence",
+    "requiredFields": [
+      "CYCLE_ID",
+      "SCHEDULER_RUN_ID",
+      "LEARNING_QUEUE_DEPTH",
+      "LEARNING_LANE_ACTIVE",
+      "PRODUCTION_LANE_ACTIVE",
+      "NEXT_CYCLE_DISPATCHED",
+      "VERIFIED_INGEST_COUNT",
+      "FAILURE_RETRY_STATE"
+    ],
+    "noLearningPauseMarkerAllowedDuringHealthySchedulerOperation": true,
+    "queuedWorkDuringCapacityPressureCountsAsContinuity": true,
+    "positiveLearningStillRequiresExistingVerificationGates": true
   }
 }
