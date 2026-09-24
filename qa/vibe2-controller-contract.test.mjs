@@ -100,6 +100,10 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
+  assert.equal(runtime.version>=20,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,20);
+  assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
+  assert.equal(runtime.adaptiveBackpressure.mode,'GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY');
   assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
   assert.equal(runtime.coordination.sourceRootExclusive,true);
   assert.equal(runtime.coordination.separateFileLocks,true);
@@ -387,6 +391,12 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.atomicNeuronStream.speculativeVariantsJoinPerTask,true);
   assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_ONLY');
   assert.equal(runtime.continuous.atomicNeuronStream.workerDirectControlWrite,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.universalActionableDomains,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.protectedAuthoritiesRemainCentral,true);
+  assert.ok(runtime.continuous.atomicNeuronStream.gatedAuthorities.includes('FAILURE_CLASS_RETRY_STRATEGY'));
+  assert.ok(runtime.parallelismTelemetry.metrics.includes('verifiedCandidatesPerMinute'));
+  assert.ok(runtime.parallelismTelemetry.metrics.includes('firstCandidatePassRatePct'));
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
   assert.equal(runtime.continuous.refillMode,'task-micro-fanin-repository-dispatch-with-hourly-safety-net');
   assert.equal(runtime.continuous.slotRefillTrigger,'vibe2-neuron-complete');
