@@ -83,7 +83,9 @@ test('exact Roblox foundation QA is isolated per game and cannot globally serial
   assert.match(workflow,/scheduled-scan/);
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-runtime-foundation-qa\s*\n/);
-  assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/roblox-runtime-game-patch\.json/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_STATE_ALREADY_APPLIED=YES/);
 });
 
 test('two-client one-sync is the shared internal and public release gate',()=>{
@@ -112,4 +114,12 @@ test('runtime foundation reuses exact verified candidate evidence without repeat
   assert.match(workflow,/priorFoundation\.artifactIdentity===artifactIdentity/);
   assert.match(workflow,/priorFoundation\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
   assert.match(workflow,/priorFoundation\.runtimeHarnessVersion/);
+});
+
+test('runtime persistence replays only the exact game patch on latest company runtime',()=>{
+  assert.match(workflow,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/Object\.assign\(item,patch\.item\)/);
+  assert.match(workflow,/runtime patch source changed/);
+  assert.match(workflow,/runtime patch artifact changed/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
