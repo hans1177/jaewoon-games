@@ -1,5 +1,5 @@
 {
-  "version": 144,
+  "version": 145,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2091,7 +2091,7 @@
     "ownerControlledFinancialActions": true
   },
   "assetProductionParallelism": {
-    "version": 3,
+    "version": 4,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "codeAndAssetWorkMayRunConcurrently": true,
@@ -2358,10 +2358,50 @@
           "LICENSE_GATE",
           "PLATFORM_VARIANT_GATE",
           "LIBRARY_HEATMAP",
-          "AUTONOMOUS_GAP_FILL_24H"
+          "AUTONOMOUS_GAP_FILL_24H",
+          "CONCEPT_DIRECTOR",
+          "CONCEPT_BLEND_AND_CONFLICT_QA",
+          "REFERENCE_STRUCTURE_ABSTRACTION",
+          "MAP_DNA",
+          "ROUTE_GRAPH",
+          "SEAMLESS_STREAMING_PLAN"
         ],
         "learningUsesExistingCanonicalChainOnly": true,
         "platformNativeRuntimeVerificationRequired": true
+      },
+      "conceptDirector": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.conceptDirector",
+        "implementation": "assets/vibe-studio-asset-universe.js",
+        "mixableConceptFamilies": true,
+        "weightedBlend": true,
+        "styleLockWins": true,
+        "conceptConflictQa": true,
+        "propagation": [
+          "CHARACTER",
+          "CREATURE",
+          "WEAPON",
+          "MOTION",
+          "VFX",
+          "AUDIO",
+          "BUILDING",
+          "BIOME",
+          "LIGHTING",
+          "UI",
+          "NARRATIVE_PRESENTATION"
+        ]
+      },
+      "worldGenerationStudio": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.worldGenerationStudio",
+        "implementation": "assets/vibe-environment-director.js",
+        "referenceLearning": "ABSTRACT_STRUCTURE_ONLY_WITH_RIGHTS_AND_PROVENANCE_BOUNDARIES",
+        "mapDna": true,
+        "routeGraph": true,
+        "chunkStreaming": true,
+        "initialPlayableZonePrewarm": true,
+        "objectPoolingPreferred": true,
+        "mobileBudget": true,
+        "directMapOrLandmarkCopyForbidden": true,
+        "gameplayAndSaveAuthorityExpansion": false
       }
     }
   },
@@ -2608,7 +2648,12 @@
         "COMPOSABLE_MOTION_DIRECTION",
         "STUDIO_ASSET_UNIVERSE",
         "UNIVERSAL_ASSET_COVERAGE",
-        "AUTONOMOUS_LIBRARY_POPULATION"
+        "AUTONOMOUS_LIBRARY_POPULATION",
+        "CONCEPT_DIRECTION_AND_STYLE_BLEND",
+        "MAP_DNA_ROUTE_AND_WORLD_COMPOSITION",
+        "REFERENCE_STRUCTURE_ABSTRACTION",
+        "STREAMING_LOD_AND_MOBILE_WORLD_PRESENTATION",
+        "NARRATIVE_WORLD_PRESENTATION_BINDING"
       ],
       "usesExistingDepartment": true,
       "duplicateArtDepartmentForbidden": true,
@@ -2622,7 +2667,9 @@
         "assets/vibe-presentation-director.js",
         "assets/vibe-visual-quality-gate.js",
         "assets/vibe-motion-director.js",
-        "assets/vibe-studio-asset-universe.js"
+        "assets/vibe-studio-asset-universe.js",
+        "assets/vibe-environment-director.js",
+        "assets/vibe-character-identity-director.js"
       ],
       "oneTopLevelGraphicsWorkUnitPerGameCandidate": true,
       "internalRolesMayNotCreateSiblingTopLevelGraphicsPipelines": true,
@@ -3439,5 +3486,39 @@
     "nextCycleDispatchUnconditional": true,
     "hourlySafetyNet": true,
     "separateLearningPipelineForbidden": true
+  },
+  "narrativeStoryTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract",
+    "existingSystems": {
+      "storyCore": "tools/vibe2-artbook-story-core.mjs",
+      "storyEngine": "tools/vibe2-artbook-story-engine.mjs",
+      "questDialogueState": "assets/quest-dialogue.js",
+      "characterIdentity": "assets/vibe-character-identity-director.js",
+      "environmentDirector": "assets/vibe-environment-director.js"
+    },
+    "flow": [
+      "WORLD_THEME_AND_LOCKED_FACTS",
+      "MAIN_STORY_AND_QUEST_GRAPH",
+      "FORESHADOWING_TWIST_AND_PAYOFF_GRAPH",
+      "CHARACTER_PERSONA_VOICE_RELATIONSHIP_AND_MEMORY",
+      "WORLD_LANDMARK_ENVIRONMENTAL_STORY_BINDING",
+      "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION",
+      "SAVE_AND_RUNTIME_STATE_VALIDATION",
+      "NARRATIVE_GAMEPLAY_QA",
+      "VERIFIED_RESULT_TO_EXISTING_LEARNING_MOTOR"
+    ],
+    "authorityBoundaries": {
+      "narrativeGeneratesIntentAndStateContracts": true,
+      "gameSourceOwnsAuthoritativeImplementation": true,
+      "generatedPersonaCannotDirectlyWriteDamageRewardEconomyOrProgress": true,
+      "multiplayerServerAuthorityPreserved": true,
+      "duplicateQuestDialogueOrShadowNarrativePipelineForbidden": true
+    },
+    "persistence": {
+      "backwardCompatibleStateExpansion": true,
+      "saveMigrationWhenShapeChanges": true,
+      "storyQuestRelationshipMemoryRoundTripRequired": true
+    }
   }
 }
