@@ -1,5 +1,5 @@
 {
-  "version": 323,
+  "version": 324,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -9065,10 +9065,10 @@
     }
   },
   "narrativeStorytellingContract": {
-    "version": 1,
-    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "version": 2,
+    "authority": "OWNER_DIRECTIVE_2026-09-24",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
-    "objective": "BUILD_VERIFIED_GAME_STORYTELLING_QUEST_CHARACTER_AND_DIALOGUE_SKILL_WITHOUT_RAW_COPYING_OR_SEPARATE_SHADOW_TRAINING",
+    "objective": "BUILD_VERIFIED_MAIN_STORY_QUEST_FORESHADOWING_CHARACTER_VOICE_RELATIONSHIP_MEMORY_COMPANION_NPC_MONSTER_BEHAVIOR_AND_WORLD_NARRATIVE_SKILL_WITHOUT_RAW_COPYING_OR_SEPARATE_SHADOW_TRAINING",
     "appliesTo": [
       "DESIGN_AUTHORING",
       "DESIGN_REPAIR",
@@ -9082,7 +9082,17 @@
       "NARRATIVE_STRUCTURE",
       "QUEST_DESIGN",
       "CHARACTER_ARC",
-      "DIALOGUE"
+      "DIALOGUE",
+      "MAIN_STORY_GENERATION",
+      "QUEST_GRAPH",
+      "FORESHADOWING_PAYOFF",
+      "TWIST_EVIDENCE_CHAIN",
+      "CHARACTER_VOICE",
+      "CHARACTER_RELATIONSHIP_MEMORY",
+      "COMPANION_BEHAVIOR",
+      "NPC_BEHAVIOR",
+      "MONSTER_BEHAVIOR_PERSONALITY",
+      "WORLD_NARRATIVE_BINDING"
     ],
     "storyEngine": {
       "requiredWhenNarrativeIsMaterial": true,
@@ -9170,6 +9180,158 @@
       "existingQuestDialogueStateSystemsReusedBeforeAddingDuplicates": true,
       "narrativeChangesMustPreserveLockedWorldAndStoryFacts": true,
       "documentationMustStaySynchronizedWithCentralMachinePolicy": true
+    },
+    "implementation": {
+      "storyCore": "tools/vibe2-artbook-story-core.mjs",
+      "storyEngine": "tools/vibe2-artbook-story-engine.mjs",
+      "questDialogueState": "assets/quest-dialogue.js",
+      "characterIdentity": "assets/vibe-character-identity-director.js",
+      "environmentDirector": "assets/vibe-environment-director.js",
+      "gameSourceOwner": "VIBE2_VIBE3"
+    },
+    "narrativeDirector": {
+      "enabled": true,
+      "outputs": [
+        "MAIN_STORY_SPINE",
+        "QUEST_DEPENDENCY_GRAPH",
+        "FORESHADOWING_PAYOFF_GRAPH",
+        "TWIST_EVIDENCE_CHAIN",
+        "CHARACTER_PERSONA_AND_VOICE_PROFILE",
+        "RELATIONSHIP_AND_MEMORY_CONTRACT",
+        "COMPANION_NPC_MONSTER_BEHAVIOR_INTENT",
+        "WORLD_STORY_BINDINGS",
+        "ENDING_AND_POSTGAME_HOOKS"
+      ],
+      "mainStoryMustHave": [
+        "INCITING_EVENT",
+        "ESCALATION",
+        "MIDPOINT_CHANGE",
+        "LATE_REVERSAL",
+        "FINAL_CONFRONTATION",
+        "ENDING"
+      ],
+      "twistRequiresPriorEvidence": true,
+      "foreshadowingRequiresTrackedPayoffOrIntentionalOpenThread": true,
+      "unresolvedPayoffDebtMustBeVisible": true,
+      "generatedNarrativeIsProposalUntilApprovedOrBoundToApprovedDesign": true
+    },
+    "questGeneration": {
+      "enabled": true,
+      "questClasses": [
+        "MAIN",
+        "SIDE",
+        "COMPANION",
+        "FACTION",
+        "REGION",
+        "HIDDEN",
+        "WORLD_EVENT"
+      ],
+      "requiredFields": [
+        "CAUSE",
+        "PREREQUISITES",
+        "OBJECTIVES",
+        "STATE_CHANGE",
+        "CONSEQUENCE",
+        "REWARD_SEMANTICS",
+        "FOLLOWUP_OR_CLOSE"
+      ],
+      "repetitiveFetchKillTemplateOnlyGenerationForbidden": true,
+      "questMustChangeWorldRelationshipKnowledgeAccessOrProgressWhenNarrativelyMaterial": true,
+      "objectiveReachabilityRequired": true,
+      "duplicateRewardAndCompletionForbidden": true
+    },
+    "characterBrain": {
+      "enabled": true,
+      "profileAxes": [
+        "ROLE",
+        "BACKGROUND",
+        "VALUES",
+        "DESIRE",
+        "NEED",
+        "FEAR",
+        "SECRET",
+        "TABOO",
+        "LOYALTY",
+        "TEMPERAMENT",
+        "FORMALITY",
+        "VOCABULARY",
+        "SENTENCE_RHYTHM",
+        "RELATIONSHIP_SPEECH_SHIFT",
+        "EMOTIONAL_STATE",
+        "COMBAT_TENDENCY",
+        "SOCIAL_TENDENCY",
+        "RISK_TOLERANCE",
+        "KNOWN_INFORMATION_BOUNDARY"
+      ],
+      "appliesTo": [
+        "PLAYER_SUPPORTING_CHARACTER",
+        "NPC",
+        "COMPANION",
+        "ENEMY",
+        "MONSTER",
+        "BOSS_WHEN_RELEVANT"
+      ],
+      "sameVoiceForAllCharactersForbidden": true,
+      "behaviorIntentMayVaryByPersonality": true,
+      "gameplayAuthority": false,
+      "authoritativeActionsMustResolveThroughDeclaredGameApis": true,
+      "serverAuthorityPreservedForNetworkedGameplay": true
+    },
+    "relationshipMemory": {
+      "enabled": true,
+      "tracks": [
+        "TRUST",
+        "AFFINITY",
+        "FEAR",
+        "RESPECT",
+        "DEBT",
+        "BETRAYAL",
+        "PROMISE",
+        "WITNESSED_EVENT",
+        "KNOWN_FACT",
+        "PERSONAL_MEMORY"
+      ],
+      "memoryMustHaveSourceEvent": true,
+      "characterKnowledgeMayOnlyAdvanceFromObservedOrDeclaredInformation": true,
+      "relationshipChangeMustBeBoundedAndSaveableWhenPersistent": true,
+      "memoryOrRelationshipCannotDirectlyGrantUndeclaredRewardDamageOrProgress": true
+    },
+    "worldNarrativeBinding": {
+      "enabled": true,
+      "channels": [
+        "REGION",
+        "LANDMARK",
+        "ENVIRONMENTAL_STORYTELLING",
+        "ITEM_DESCRIPTION",
+        "NPC_DIALOGUE",
+        "FACTION_STATE",
+        "BOSS_PRESENTATION",
+        "QUEST_STATE"
+      ],
+      "worldStateContradictionForbidden": true,
+      "deadRemovedOrUnavailableCharacterCannotAppearWithoutExplicitNarrativeRule": true,
+      "destroyedLockedOrChangedLocationMustRespectCurrentWorldState": true
+    },
+    "stateAndSave": {
+      "reuseExistingQuestDialogueStateBeforeAddingDuplicateSystem": true,
+      "lazyBackwardCompatibleStateExpansionRequired": true,
+      "stableExistingSaveMeaningPreserved": true,
+      "schemaMigrationRequiredWhenPersistedShapeChanges": true,
+      "storyQuestRelationshipMemoryStateMustRoundTripWhenPersisted": true
+    },
+    "runtimeLearning": {
+      "existingCanonicalLearningMotorOnly": true,
+      "positiveLearningRequiresVerifiedGameplayAndNarrativeOutcome": true,
+      "failureCanTeach": [
+        "SOFTLOCK",
+        "KNOWLEDGE_LEAK",
+        "PAYOFF_MISS",
+        "VOICE_COLLAPSE",
+        "QUEST_REPETITION",
+        "RELATIONSHIP_INCONSISTENCY",
+        "WORLD_STATE_CONTRADICTION"
+      ],
+      "rawGeneratedStoryOrDialogueCannotDirectlyBecomeCanonicalMastery": true
     }
   },
   "presentationPipelineImplementation": {
@@ -11613,7 +11775,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 9,
+    "version": 10,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -11825,7 +11987,7 @@
       "genericPrimitiveAssemblyCannotBeDeclaredFinalHighQuality": true
     },
     "highEndVisualProductionContract": {
-      "version": 5,
+      "version": 6,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
@@ -11959,7 +12121,13 @@
         "environmentalStorytellingRequired": true,
         "navigationAndCombatReadabilityRequired": true,
         "biomeAndRegionDifferentiationRequired": true,
-        "emptyBackgroundOrSparsePrototypeWorldCannotPass": true
+        "emptyBackgroundOrSparsePrototypeWorldCannotPass": true,
+        "adaptiveWorldGeneration": true,
+        "mapDnaAndRouteGrammarRequired": true,
+        "allowedReferenceStructureAbstraction": true,
+        "directReferenceLayoutCopyForbidden": true,
+        "perceivedSeamlessStreamingTarget": true,
+        "mobileChunkStreamingAndLodRequired": true
       },
       "presentationStack": {
         "bindToGameplayEvents": true,
@@ -12352,7 +12520,7 @@
       "existing2DGamesRequireSpatialPresentationRebuild": true
     },
     "graphicsProductionUnification": {
-      "version": 6,
+      "version": 7,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "externalWorkUnit": "GRAPHICS_PRODUCTION",
@@ -12367,7 +12535,9 @@
         "presentation": "assets/vibe-presentation-director.js",
         "runtimeQuality": "assets/vibe-visual-quality-gate.js",
         "motionDirector": "assets/vibe-motion-director.js",
-        "studioAssetUniverse": "assets/vibe-studio-asset-universe.js"
+        "studioAssetUniverse": "assets/vibe-studio-asset-universe.js",
+        "environmentDirector": "assets/vibe-environment-director.js",
+        "characterIdentityDirector": "assets/vibe-character-identity-director.js"
       },
       "internalStages": [
         "ART_DIRECTION_AND_VISUAL_TARGET_LOCK",
@@ -12378,7 +12548,10 @@
         "ANIMATION_AND_MOTION_IDENTITY",
         "VFX_UI_AND_PRESENTATION_BINDING",
         "RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION",
-        "PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN"
+        "PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN",
+        "CONCEPT_STYLE_AND_WORLD_DNA_BINDING",
+        "REFERENCE_ABSTRACTION_MAP_DNA_ROUTE_AND_STREAMING_PLAN",
+        "NARRATIVE_WORLD_CHARACTER_PRESENTATION_BINDING"
       ],
       "queueContract": {
         "topLevelGraphicsWorkUnitsPerGameCandidate": 1,
@@ -12448,7 +12621,7 @@
       }
     },
     "companyGraphicsLibrary24h": {
-      "version": 9,
+      "version": 10,
       "authority": "OWNER_DIRECTIVE_2026-09-24",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
@@ -14565,7 +14738,7 @@
         }
       },
       "studioAssetUniverse": {
-        "version": 1,
+        "version": 2,
         "authority": "OWNER_DIRECTIVE_2026-09-24",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "target": "HIGH_END_STUDIO_ASSET_UNIVERSE",
@@ -14573,7 +14746,7 @@
         "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
         "internalModuleOnly": true,
         "createsNewTopLevelPipeline": false,
-        "purpose": "UNIFY_CHARACTER_CREATURE_CLOTHING_BUILDING_ENVIRONMENT_WEAPON_SKILL_MATERIAL_AUDIO_VFX_UI_MOTION_AND_PROP_ASSETS_INTO_ONE_STYLE_LOCKED_COMPATIBILITY_AND_COVERAGE_GRAPH_FOR_CONTINUOUS_24H_LIBRARY_POPULATION",
+        "purpose": "UNIFY_ASSET_CONCEPT_STYLE_WORLD_GENERATION_CHARACTER_CREATURE_CLOTHING_BUILDING_ENVIRONMENT_WEAPON_SKILL_MATERIAL_AUDIO_VFX_UI_MOTION_AND_PROP_CAPABILITIES_INTO_ONE_STYLE_LOCKED_COMPATIBILITY_COVERAGE_AND_RUNTIME_LEARNING_GRAPH",
         "phases": {
           "foundation": {
             "name": "STUDIO_ASSET_UNIVERSE_FOUNDATION",
@@ -15432,6 +15605,217 @@
           "verifiedFailureMayTeachAvoidPattern": true,
           "preparedSemanticMayNotIncreaseMastery": true,
           "rawTelemetryMayNotDirectlyTrain": true
+        },
+        "conceptDirector": {
+          "enabled": true,
+          "goal": "FREE_MIXABLE_GAME_CONCEPTS_WITH_COHERENT_STYLE_WORLD_MOTION_UI_AUDIO_AND_NARRATIVE_LANGUAGE",
+          "presetFamilies": [
+            "CARTOON",
+            "SEMI_CARTOON",
+            "ANIME_OR_CEL_SHADED",
+            "DARK_FANTASY",
+            "HIGH_FANTASY",
+            "LOW_FANTASY",
+            "WUXIA",
+            "XIANXIA",
+            "EAST_ASIAN_FANTASY",
+            "MYTHIC",
+            "FAIRYTALE",
+            "DREAMLIKE",
+            "GOTHIC",
+            "HORROR",
+            "COSMIC_HORROR",
+            "CUTE_CASUAL",
+            "LOW_POLY",
+            "REALISTIC",
+            "STYLIZED_REALISM",
+            "SCI_FI",
+            "MILITARY_SCI_FI",
+            "CYBERPUNK",
+            "STEAMPUNK",
+            "DIESELPUNK",
+            "POST_APOCALYPSE",
+            "PRIMITIVE",
+            "ANCIENT_CIVILIZATION",
+            "MODERN_URBAN",
+            "INDUSTRIAL",
+            "OCEANIC",
+            "SKY_WORLD",
+            "DESERT_CIVILIZATION",
+            "SNOW_KINGDOM",
+            "JUNGLE_RUINS",
+            "UNDERGROUND",
+            "UNDEAD",
+            "MECHANICAL_CIVILIZATION"
+          ],
+          "axes": {
+            "artTone": [
+              "CUTE",
+              "BRIGHT",
+              "MYSTERIOUS",
+              "DARK",
+              "GRITTY",
+              "ELEGANT",
+              "EPIC",
+              "SURREAL",
+              "HORROR",
+              "COMEDIC"
+            ],
+            "worldEra": [
+              "PRIMITIVE",
+              "ANCIENT",
+              "MEDIEVAL",
+              "WUXIA",
+              "INDUSTRIAL",
+              "MODERN",
+              "NEAR_FUTURE",
+              "FUTURE",
+              "POST_APOCALYPSE",
+              "TIMELESS_FANTASY"
+            ],
+            "combatFeel": [
+              "FAST_COMBO",
+              "WEIGHTY",
+              "DODGE",
+              "PARRY",
+              "WUXIA_FLOW",
+              "PROJECTILE",
+              "SKILL_BURST",
+              "SURVIVAL",
+              "CROWD_CONTROL",
+              "BOSS_DUEL"
+            ],
+            "presentation": [
+              "MINIMAL",
+              "READABLE_ARCADE",
+              "CINEMATIC",
+              "ATMOSPHERIC",
+              "HAND_PAINTED",
+              "CEL_SHADED",
+              "MATERIAL_RICH"
+            ]
+          },
+          "weightedBlendAllowed": true,
+          "blendWeightsNormalized": true,
+          "gameStyleLockWinsOverGenericPreset": true,
+          "sameBaseAssetMayCreateRightsVerifiedConceptVariants": true,
+          "colorOnlyTransformationInsufficientForMeaningfulVariant": true,
+          "conceptMustPropagateTo": [
+            "CHARACTER",
+            "CREATURE",
+            "WEAPON",
+            "MOTION",
+            "VFX",
+            "AUDIO",
+            "BUILDING",
+            "BIOME",
+            "LIGHTING",
+            "UI",
+            "NARRATIVE_PRESENTATION"
+          ],
+          "conceptConflictQaRequired": true
+        },
+        "worldGenerationStudio": {
+          "enabled": true,
+          "responsibility": "EXISTING_ENVIRONMENT_DIRECTOR_INSIDE_GRAPHICS_PRODUCTION_PLUS_GAME_SOURCE_IMPLEMENTATION",
+          "implementation": "assets/vibe-environment-director.js",
+          "goal": "FAST_COHERENT_NON_REPETITIVE_MAP_COMPOSITION_WITH_SEAMLESS_PERCEIVED_STREAMING_AND_GAMEPLAY_SAFE_ROUTE_GENERATION",
+          "referenceAbstraction": {
+            "allowedInputs": [
+              "USER_PROVIDED_OR_OWNED_IMAGE",
+              "PUBLIC_DOMAIN_IMAGE",
+              "CLEARLY_LICENSED_REFERENCE",
+              "VERIFIED_INTERNAL_GAME_RUNTIME",
+              "ABSTRACTED_MULTI_REFERENCE_ANALYSIS"
+            ],
+            "protectedModernGameOrImageUse": "ABSTRACT_STRUCTURE_TECHNIQUE_ONLY",
+            "directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden": true,
+            "rawRestrictedReferencePersistentTrainingForbidden": true,
+            "extractOnly": [
+              "RIDGE_AND_VALLEY_FLOW",
+              "ROAD_AND_PATH_GRAPH",
+              "OPEN_SPACE_DENSITY",
+              "OBSTACLE_CLUSTERING",
+              "LANDMARK_HIERARCHY",
+              "VEGETATION_DENSITY",
+              "URBAN_BLOCK_RHYTHM",
+              "CHOKE_AND_RELEASE",
+              "SAFE_DANGER_ZONE_RELATION",
+              "SIGHTLINE_AND_REVEAL"
+            ]
+          },
+          "mapDnaFields": [
+            "BIOME",
+            "ELEVATION_STYLE",
+            "ROAD_STYLE",
+            "LANDMARK_STYLE",
+            "DENSITY",
+            "COMBAT_OPENNESS",
+            "RESOURCE_DISTRIBUTION",
+            "DANGER_CURVE",
+            "VISUAL_MOOD",
+            "SETTLEMENT_PATTERN",
+            "WATER_PATTERN",
+            "RUIN_LEVEL",
+            "ROUTE_BRANCHING",
+            "VERTICALITY",
+            "TRAVERSAL_LANGUAGE",
+            "STORY_CONTEXT"
+          ],
+          "generationPipeline": [
+            "LOAD_GAME_CONCEPT_STYLE_WORLD_AND_LOCKED_GAMEPLAY_CONSTRAINTS",
+            "ABSTRACT_ALLOWED_REFERENCE_STRUCTURE",
+            "GENERATE_MAP_DNA",
+            "GENERATE_MACRO_TERRAIN_REGIONS_AND_LANDMARKS",
+            "GENERATE_ROUTE_GRAPH_AND_SHORTCUTS",
+            "PLACE_SETTLEMENT_DUNGEON_RESOURCE_EVENT_AND_ENCOUNTER_ZONES",
+            "COMPOSE_MID_SCALE_PATHS_AND_GAMEPLAY_SPACES",
+            "FILL_MICRO_PROPS_WITH_BIOME_DNA_AND_NAV_CLEARANCE",
+            "PREWARM_INITIAL_PLAYABLE_ZONE",
+            "STREAM_NEARBY_CHUNKS_AND_LOD",
+            "RUN_REACHABILITY_NAVIGATION_MOBILE_PERFORMANCE_AND_VISUAL_COHESION_QA"
+          ],
+          "routeGrammar": {
+            "mainObjectiveConnectivityRequired": true,
+            "alternateRouteWhenGenreAllows": true,
+            "shortcutAndLoopSupport": true,
+            "chokeOpenSpaceRhythmRequired": true,
+            "slopeWidthCurvatureAndSurfaceMustMatchConcept": true,
+            "criticalObjectiveUnreachableForbidden": true,
+            "randomDecorationMayNotDefineNavigation": true
+          },
+          "runtimeStreaming": {
+            "perceivedSeamlessStreamingTarget": true,
+            "literalZeroLoadingClaimForbidden": true,
+            "initialPlayableZonePrewarmRequired": true,
+            "chunkOrCellStreamingAllowed": true,
+            "distanceAndRelevanceLodRequired": true,
+            "objectPoolingPreferred": true,
+            "backgroundGenerationBudgeted": true,
+            "criticalGameplayStateMustExistBeforePresentationChunk": true,
+            "saveAndAuthoritativeWorldStateCannotBeDroppedByUnloading": true
+          },
+          "generationSafety": {
+            "deterministicSeedSupport": true,
+            "preserveExistingMapRulesRoutesSpawnObjectivesAndSaveMeaningByDefault": true,
+            "generatedWorldMayNotChangeBalanceDropsRewardsOrQuestRequirementsWithoutApprovedGameplayDesign": true,
+            "multiplayerAuthoritativeWorldStatePreserved": true,
+            "mobileBudgetRequired": true
+          },
+          "learning": {
+            "existingCanonicalLearningMotorOnly": true,
+            "learnFromVerified": [
+              "PLAYER_ROUTE_USAGE",
+              "NAVIGATION_FAILURE",
+              "SOFTLOCK",
+              "ENCOUNTER_SPACE_OUTCOME",
+              "PERFORMANCE",
+              "VISUAL_COHESION",
+              "RESOURCE_DISTRIBUTION_DEFECT"
+            ],
+            "mapSpecificValuesDoNotBecomeUniversalRulesWithoutRepeatedVerification": true,
+            "rawReferenceImageOrCopiedLayoutCannotBecomeReusableTemplate": true
+          }
         }
       }
     }
