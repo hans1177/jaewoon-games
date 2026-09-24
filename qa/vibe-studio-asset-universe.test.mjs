@@ -378,6 +378,23 @@ test('asset lineage preserves provenance and native verification linkage',()=>{
   assert.equal(lineage.revalidateDerivedWhenParentImproves,true);
 });
 
+test('company registry fills composable base material atoms without false verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const base=registry.baseMaterialLibrary;
+  assert.equal(base.status,'PREPARED_SEMANTIC_ATOM_LIBRARY');
+  assert.equal(base.productionVerified,false);
+  assert.ok(base.atomCount>=350);
+  assert.deepEqual(Object.keys(base.families).sort(),[...STUDIO_ASSET_FAMILIES].sort());
+  for(const family of STUDIO_ASSET_FAMILIES)assert.ok(base.families[family].length>=20,family);
+  assert.ok(base.mutationAxes.includes('MATERIAL'));
+  assert.ok(base.mutationAxes.includes('FACTION'));
+  assert.equal(base.combinationRules.colorOnlyVariantDoesNotCount,true);
+  assert.equal(base.combinationRules.actualRuntimeQaRequiredBeforeVerifiedPromotion,true);
+  assert.ok(registry.variantRecipeTemplates.some(row=>row.id==='BOSS_VARIANT'&&row.minimumDistinctAxes>=7));
+  assert.equal(registry.identityBudgets.BOSS.distinctMotionRequired,true);
+});
+
 test('company registry exposes semantic template space without claiming production verification',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
