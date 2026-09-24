@@ -10,7 +10,12 @@ import { createParallelismControl, DEFAULT_ADAPTIVE_TARGET, DEFAULT_TELEMETRY_TT
 import { injectSelfArchitectureEvolutionTasks } from './vibe2-self-architecture-evolution.mjs';
 
 const clean=v=>String(v??'').trim();
-const readJson=(file,fallback={})=>file&&fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
+const readJson=(file,fallback={})=>{
+  if(!file||!fs.existsSync(file))return fallback;
+  const raw=fs.readFileSync(file,'utf8');
+  if(!clean(raw))return fallback;
+  return JSON.parse(raw);
+};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const parseArgs=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));
@@ -132,15 +137,18 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
 }
 
 export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile='.vibe2/parallelism-control.json',neuralReadinessFile='',now=new Date().toISOString()}={}){
+  const queueMissing=!fs.existsSync(queueFile);
+  const queueBlank=!queueMissing&&!clean(fs.readFileSync(queueFile,'utf8'));
   const result=runSystemStewardState({
     queueInput:readJson(queueFile,{tasks:[]}),
     controlInput:readJson(controlFile,{}),
     neuralExpansionReadiness:readJson(neuralReadinessFile,{}),
     now
   });
-  if(result.changedQueue)writeJson(queueFile,result.queue);
+  const recoveredBlankQueue=queueMissing||queueBlank;
+  if(result.changedQueue||recoveredBlankQueue)writeJson(queueFile,result.queue);
   if(result.changedControl)writeJson(controlFile,result.control);
-  return result;
+  return{...result,recoveredBlankQueue,changedQueue:result.changedQueue||recoveredBlankQueue};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -155,6 +163,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('VIBE2_SYSTEM_STEWARD_TASK='+(result.taskId||'NONE'));
   console.log('VIBE2_SYSTEM_STEWARD_TASK_COUNT='+result.taskIds.length);
   console.log('VIBE2_SYSTEM_STEWARD_QUEUE_CHANGED='+(result.changedQueue?'YES':'NO'));
+  console.log('VIBE2_SYSTEM_STEWARD_BLANK_QUEUE_RECOVERED='+(result.recoveredBlankQueue?'YES':'NO'));
   console.log('VIBE2_SYSTEM_STEWARD_CONTROL_CHANGED='+(result.changedControl?'YES':'NO'));
   console.log('VIBE2_SYSTEM_STEWARD_QUEUE_MAX='+result.queue.maxConcurrentTasks);
   console.log('VIBE2_SYSTEM_STEWARD_ADAPTIVE_MAX='+result.control.currentMax);
