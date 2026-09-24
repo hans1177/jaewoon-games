@@ -1370,3 +1370,31 @@ test('higher-value owner signal outranks automatic presentation issue',()=>{
   assert.ok(next.graphicsEvolutionTrigger.score>=100);
   assert.equal(next.ownerDirective,true);
 });
+
+test('flat or unstartable Web games are routed to startup and 2.5D repair before normal assessment',()=>{
+  const root=tempRepo();
+  const gameId='flat-start-game';
+  const dir=path.join(root,'web-games',gameId);
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),`<!doctype html><html><body><button id="startBtn">게임 시작</button><script>
+  const startBtn=document.getElementById('startBtn'); startBtn.onclick=()=>{document.body.dataset.state='playing'};
+  </script></body></html>`,'utf8');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Flat Start Game',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[]},
+    queue:{maxConcurrentTasks:4,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.match(task.id,/web-startup-spatial-repair-v1$/);
+  assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
+  assert.ok(task.evidence.includes('owner-directive:minimum-2.5d-final-gameplay'));
+  assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
+  assert.match(task.goal,/최소 2\.5D/);
+  assert.equal(task.maxRetries,null);
+});
+
