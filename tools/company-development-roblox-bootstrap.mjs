@@ -203,7 +203,8 @@ function replaceOrInsertStudioAssetConfig(source='',studioAssets={}){
 function bindExistingClientStudioAssets(source=''){
   const managed=/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n/;
   let output=source;
-  if(!managed.test(output)){
+  const existingUnmanagedClientBinding=/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/.test(output)&&/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(output);
+  if(!managed.test(output)&&!existingUnmanagedClientBinding){
     const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
     if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
     const configVar=requireMatch[1];
