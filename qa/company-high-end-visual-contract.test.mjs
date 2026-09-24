@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
-import {createVibeArtPipeline,createVibeGraphicsProduction,createVibeOwnerChangeRequestStability,VIBE_HIGH_END_TARGET_FRAME_ROLES,GRAPHICS_PRODUCTION_INTERNAL_MODULES,GRAPHICS_PRODUCTION_STAGES} from '../assets/vibe-art-pipeline.js';
+import {createVibeArtPipeline,createVibeGraphicsProduction,createVibeOwnerChangeRequestStability,VIBE_HIGH_END_TARGET_FRAME_ROLES,GRAPHICS_PRODUCTION_INTERNAL_MODULES,GRAPHICS_PRODUCTION_STAGES,VIBE_STUDIO_HUMANOID_LOCOMOTION,VIBE_STUDIO_HUMANOID_COMBAT,VIBE_STUDIO_CREATURE_FAMILIES,VIBE_STUDIO_RETARGET_CLEANUP} from '../assets/vibe-art-pipeline.js';
 import {createVibeHighEndVisualDirection,HIGH_END_VISUAL_TARGET_FRAMES} from '../assets/vibe-visual-autopilot.js';
 import {createVibeHighEndPresentationStack} from '../assets/vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
@@ -95,8 +95,27 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.ok(library.actionMotionLibrary.weaponPacks.includes('FIREARM'));
   assert.equal(library.promotionRules.preparedArtifactMayNotClaimProductionPass,true);
   assert.equal(library.promotionRules.runtimeVerifiedConsumerRequiredBeforeCompanyAssetPromotion,true);
+  assert.equal(library.consumption.requiredForEveryNativeGameDevelopment,true);
+  assert.deepEqual(library.consumption.appliesTo,['UNITY','ROBLOX']);
+  assert.equal(library.consumption.lookupBeforeAssetChoice,true);
+  assert.equal(library.gapFill.enabled,true);
+  assert.deepEqual(library.gapFill.order.slice(0,3),[
+    'INVENTORY_EXISTING_REPOSITORY_ASSETS',
+    'REUSE_OR_DERIVE_RIGHTS_VERIFIED_REPOSITORY_ASSET',
+    'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET_OR_MOTION'
+  ]);
+  assert.equal(library.studioMotionProgram.target,'STUDIO_GRADE_GAME_MOTION');
+  assert.ok(library.studioMotionProgram.humanoidFoundation.locomotion.includes('SPRINT'));
+  assert.ok(library.studioMotionProgram.humanoidFoundation.locomotion.includes('TURN_180'));
+  assert.ok(library.studioMotionProgram.creatureFamilies.includes('QUADRUPED'));
+  assert.ok(library.studioMotionProgram.retargetCleanupRequirements.includes('FOOT_PLANT_AND_FOOT_SLIDE_CONTROL'));
+  assert.equal(library.studioMotionProgram.creatureRules.blindHumanoidMotionReuseForNonHumanoidForbidden,true);
   assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.platformSeparation.includes('UNITY'),true);
   assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.platformSeparation.includes('ROBLOX'),true);
+  assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.companyLibraryLookupRequiredBeforeAssetChoice,true);
+  assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.externalGapFillBeforeNewAuthoring,true);
+  assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioMotionTarget,'STUDIO_GRADE_GAME_MOTION');
+  assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.speciesMotionResearchRequired,true);
 });
 
 test('asset and direction planners consume one high-end profile without Web-first admission',()=>{
@@ -119,14 +138,27 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(plan.companyGraphicsLibrary.enabled,true);
   assert.equal(plan.companyGraphicsLibrary.platformProfile,'UNITY');
   assert.equal(plan.companyGraphicsLibrary.platformSpecificReauthoringRequired,true);
+  assert.equal(plan.companyGraphicsLibrary.mandatoryConsumer,true);
+  assert.equal(plan.companyGraphicsLibrary.lookupBeforeAssetChoice,true);
+  assert.equal(plan.companyGraphicsLibrary.externalGapFillBeforeNewAuthoring,true);
+  assert.equal(plan.companyGraphicsLibrary.studioMotionTarget,'STUDIO_GRADE_GAME_MOTION');
+  assert.ok(plan.companyGraphicsLibrary.studioMotionPriority.includes('HUMANOID_STUDIO_LOCOMOTION'));
+  assert.ok(plan.companyGraphicsLibrary.humanoidFoundation.locomotion.includes('RUN'));
+  assert.ok(plan.companyGraphicsLibrary.creatureFamilies.includes('INSECT'));
+  assert.ok(plan.companyGraphicsLibrary.retargetCleanupRequirements.includes('HAND_WEAPON_CONTACT'));
   assert.equal(plan.companyGraphicsLibrary.motionMinimums.idleVariants>=4,true);
   assert.ok(plan.companyGraphicsLibrary.weaponPacks.includes('HAMMER'));
   assert.equal(plan.policy.companyGraphicsLibrary24h,true);
   assert.equal(plan.policy.unityRobloxLibraryVariantsSeparated,true);
   assert.equal(plan.policy.actionReadyMotionVarietyRequired,true);
+  assert.equal(plan.policy.companyLibraryLookupRequiredBeforeNativeAssetChoice,true);
+  assert.equal(plan.policy.externalGapFillBeforeNewAuthoring,true);
+  assert.equal(plan.policy.studioGradeMotionRequired,true);
+  assert.equal(plan.policy.retargetAndCleanupRequiredForExternalMotion,true);
+  assert.equal(plan.policy.speciesMotionStudyRequired,true);
 
   const art=createVibeArtPipeline({request:'하이엔드 캐릭터 배경 보스 애니메이션 VFX',target:'roblox',quality:3});
-  assert.equal(art.version,7);
+  assert.equal(art.version,8);
   assert.deepEqual([...art.highEndVisual.targetFrames],[...VIBE_HIGH_END_TARGET_FRAME_ROLES]);
   assert.ok(art.art.transforms.includes('kitbash'));
   assert.equal(art.policy.highEndVisualProduction,true);
@@ -136,6 +168,17 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(art.policy.minimumFinalGameplayDimension,'2.5D');
   assert.ok(art.implementation.some(value=>/3D|2\.5D/.test(value)));
   assert.deepEqual([...art.animation.motionLayers],['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
+  assert.equal(art.animation.target,'STUDIO_GRADE_GAME_MOTION');
+  assert.deepEqual([...art.animation.humanoidLocomotion],[...VIBE_STUDIO_HUMANOID_LOCOMOTION]);
+  assert.deepEqual([...art.animation.humanoidCombat],[...VIBE_STUDIO_HUMANOID_COMBAT]);
+  assert.deepEqual([...art.animation.creatureFamilies],[...VIBE_STUDIO_CREATURE_FAMILIES]);
+  assert.deepEqual([...art.animation.retargetCleanup],[...VIBE_STUDIO_RETARGET_CLEANUP]);
+  assert.equal(art.animation.speciesReferenceStudyRequired,true);
+  assert.equal(art.animation.blindHumanoidMotionReuseForNonHumanoidForbidden,true);
+  assert.equal(art.animation.platformNativeRetargetAndRuntimeEvidenceRequired,true);
+  assert.equal(art.assetAcquisition.companyLibraryLookupRequiredForNative,true);
+  assert.equal(art.assetAcquisition.externalGapFillBeforeNewAuthoring,true);
+  assert.equal(art.policy.studioGradeMotionRequired,true);
   assert.equal(art.animation.characterAndCreatureActing,true);
   assert.equal(art.vfx.gameSpecificLanguage,true);
   assert.equal(art.audio.authoringOwner,'audio');
