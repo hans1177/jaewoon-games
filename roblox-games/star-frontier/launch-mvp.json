@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "gameId": "star-frontier",
+  "gameName": "별길 개척자",
+  "gameNameEnglish": "Star Frontier",
+  "releaseStrategy": "FAST_MVP",
+  "releasePrimaryPlatform": "ROBLOX",
+  "scopeFreeze": true,
+  "launchCore": [
+    "server-authoritative free-flight spaceship movement with boost energy",
+    "three connected space sectors with visible warp gates",
+    "asteroid mining with finite cargo capacity and respawn",
+    "central station docking, ore selling, repair and upgrades",
+    "hostile pirate drones with sector-scaled combat pressure",
+    "persistent credits, ore, ship tier, laser level and sector",
+    "mobile-first movement, mining, combat and station controls",
+    "shared-world multiplayer ships and server-owned rewards"
+  ],
+  "deferredUntilAfterMvp": [
+    "player factions and territory ownership",
+    "player-to-player trading",
+    "ship classes and modular equipment",
+    "procedural star-system expansion",
+    "large boss encounters"
+  ],
+  "releaseGates": [
+    "ship movement",
+    "boost energy drain and recharge",
+    "asteroid mining",
+    "cargo cap",
+    "ore sale",
+    "ship upgrade",
+    "laser upgrade",
+    "repair",
+    "pirate drone combat",
+    "ship destruction rescue",
+    "warp sector transition",
+    "save and rejoin",
+    "mobile controls",
+    "server remote validation",
+    "multiplayer shared-world sync",
+    "headless package regression",
+    "exact source revision runtime evidence"
+  ],
+  "evidencePolicy": {
+    "runtimePassRequired": true,
+    "mobilePassRequired": true,
+    "multiplayerPassRequired": true,
+    "saveRejoinPassRequired": true,
+    "regressionPassRequired": true,
+    "aiMayInventPass": false
+  },
+  "gameTitleKo": "별길 개척자",
+  "gameTitleEn": "Star Frontier",
+  "gameDescriptionKo": "작은 개척선을 몰아 운석을 채굴하고, 해적 드론과 싸우고, 정거장에서 장비를 강화해 더 위험한 성역으로 워프하는 우주 탐험 게임.",
+  "gameDescriptionEn": "Pilot a frontier ship, mine asteroids, fight pirate drones, upgrade at stations, and warp into increasingly dangerous sectors.",
+  "artDirection": "STYLIZED_NEON_SPACE_FRONTIER",
+  "robloxServerSize": 12,
+  "designContract": {
+    "designJsonPath": "design/star-frontier/2026-09-24/design-revised.json",
+    "designMarkdownPath": "design/star-frontier/2026-09-24/GAME_DESIGN.md",
+    "rule": "DESIGN_AND_IMPLEMENTED_ROBLOX_CORE_LOOP_MUST_MATCH"
+  },
+  "updatedAt": "2026-09-24T17:41:00+09:00"
+}
