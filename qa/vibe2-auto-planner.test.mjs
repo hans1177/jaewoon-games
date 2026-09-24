@@ -1023,6 +1023,93 @@ test('older studio failure does not pin later verified cycles in repair',()=>{
   assert.ok(next.evidence.includes('studio-quality-next-cycle-required:YES'));
 });
 
+test('full planner replaces low-value micro work with queued studio packages and repeats after verification',()=>{
+  const root=tempRepo();
+  const gameId='studio-full-queue-repeat';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  const validationDir=path.join(root,'design',gameId,'2026-09-24');
+  fs.mkdirSync(validationDir,{recursive:true});
+  fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
+
+  const assessment={
+    id:`${gameId}-existing-web-assessment-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'assessment complete',
+    releaseState:'development-confirmed',status:'verified',retries:0,evidence:['existing-web-assessment-required']
+  };
+  const micro={
+    id:`${gameId}-diagnostic-bundle-touch`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'touch-action 필요 여부만 최소 수정',priority:'normal',releaseState:'development-confirmed',status:'queued',retries:0,
+    evidence:['diagnostic:TOUCH_ACTION_UNSPECIFIED','diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html']
+  };
+  const catalogOnly={games:[{
+    id:gameId,name:'Studio Full Queue Repeat',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+    hasWebArchive:true,homepageWebPlayable:true,webPath:`/web-games/${gameId}/`
+  }]};
+  let working={maxConcurrentTasks:4,tasks:[assessment,micro]};
+  let first=null;
+  for(let i=0;i<20&&!first;i++){
+    const result=planVibe2AutonomousTasks({
+      status:{projects:[]},catalog:catalogOnly,queue:working,repoRoot:root,
+      maxConcurrentTasks:4,queueMaxConcurrentTasks:4,planningBacklogTarget:4,planningBacklogMinimum:0
+    });
+    working=result.queue;
+    first=working.tasks.find(row=>
+      row.gameId===gameId
+      &&String(row.status||'').trim().toLowerCase()==='queued'
+      &&(row.evidence||[]).includes('studio-quality-loop:v1')
+    )||null;
+    if(first)break;
+    working={...working,tasks:working.tasks.map(row=>
+      row.gameId===gameId&&['queued','running'].includes(String(row.status||'').trim().toLowerCase())
+        ?{...row,status:'verified',blocker:null,lastOutcome:'PASS',evidence:[...new Set([...(row.evidence||[]),'test-full-planner-prerequisite-verified'])]}
+        :row
+    )};
+  }
+  const cancelled=working.tasks.find(row=>row.id===micro.id);
+  assert.equal(cancelled?.status,'cancelled');
+  assert.equal(cancelled?.blocker,'superseded-by:STUDIO_QUALITY_PACKAGE');
+  assert.ok(first,'full planner must eventually queue the first studio-quality package');
+  assert.equal(first.workUnits,7);
+  assert.equal(first.studioQualityEvolution?.cycle,1);
+  assert.equal(first.studioQualityEvolution?.minConnectedImprovements,3);
+  assert.equal(first.studioQualityEvolution?.maxConnectedImprovements,6);
+  assert.ok(first.evidence.includes('studio-quality-package:large'));
+
+  working={...working,tasks:working.tasks.map(row=>
+    row.id===first.id?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}:row
+  )};
+  let second=null;
+  for(let i=0;i<12&&!second;i++){
+    const result=planVibe2AutonomousTasks({
+      status:{projects:[]},catalog:catalogOnly,queue:working,repoRoot:root,
+      maxConcurrentTasks:4,queueMaxConcurrentTasks:4,planningBacklogTarget:4,planningBacklogMinimum:0
+    });
+    working=result.queue;
+    second=working.tasks.find(row=>
+      row.gameId===gameId
+      &&row.id!==first.id
+      &&String(row.status||'').trim().toLowerCase()==='queued'
+      &&(row.evidence||[]).includes('studio-quality-loop:v1')
+    )||null;
+    if(second)break;
+    working={...working,tasks:working.tasks.map(row=>
+      row.gameId===gameId&&['queued','running'].includes(String(row.status||'').trim().toLowerCase())
+        ?{...row,status:'verified',blocker:null,lastOutcome:'PASS',evidence:[...new Set([...(row.evidence||[]),'test-full-planner-between-cycle-verified'])]}
+        :row
+    )};
+  }
+  assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
+  assert.notEqual(second.id,first.id);
+  assert.equal(second.workUnits,7);
+  assert.equal(second.studioQualityEvolution?.cycle,2);
+  assert.equal(second.studioQualityEvolution?.baselineId,first.id);
+  assert.equal(second.studioQualityEvolution?.nextCycleRequired,true);
+  assert.ok(second.evidence.includes('studio-quality-package:large'));
+});
+
 test('web presentation planner discovers a real non-index game entry file',()=>{
   const root=tempRepo();
   const gameId='legacy-entry-web';
