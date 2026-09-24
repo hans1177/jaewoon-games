@@ -12,7 +12,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const logMap=json('company-learning/company-log-map.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,13);
+  assert.equal(motor.version,14);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -75,6 +75,14 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(logMap.existingGameWorldPatternEvidenceContract?.singleGameCrossGamePromotionForbidden,true);
   assert.equal(logMap.existingGameWorldPatternEvidenceContract?.positiveCrossGameReuseRequiresTwoIndependentVerifiedGames,true);
   assert.equal(logMap.existingGameWorldPatternEvidenceContract?.exactCoordinatesTerrainMeshOrLayoutInLearningEvidenceForbidden,true);
+  const ingress=roadmap.learningClosedLoopContract?.specializedGameDevelopmentMastery?.verifiedQueueEvidenceIngress;
+  assert.equal(ingress?.enabled,true);
+  assert.equal(ingress?.existingCanonicalLearningMotorOnly,true);
+  assert.equal(ingress?.oneTaskOutcomeCreatesAtMostOnePositiveAndOneNegativeSyntheticExperience,true);
+  assert.equal(ingress?.infrastructureFailureMustNotPenalizeMastery,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.enabled,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.existingSeenExperienceDedupeRequired,true);
+  assert.equal(architecture.learningClosedLoopTopology?.specializedGameDevelopmentMastery?.verifiedQueueEvidenceIngress?.separateTrainer,false);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
