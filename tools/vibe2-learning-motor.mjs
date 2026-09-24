@@ -177,9 +177,21 @@ function matchingNativeRuntimePassEvidence(record={}){
   if(e==='unity')return /unity[^\n]*(?:runtime|playmode|build|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*unity[^\n]*(?:runtime|playmode|build|qa)/i.test(text);
   return /(?:uefn|fortnite)[^\n]*(?:runtime|verse|playtest|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*(?:uefn|fortnite)[^\n]*(?:runtime|verse|playtest|qa)/i.test(text);
 }
+const ROBLOX_STUDIO_ASSET_RUNTIME_REQUIRED_DOMAINS=new Set(['ASSET_PRODUCTION','ASSET_ADAPTATION']);
+function matchingRobloxStudioAssetRuntimePassEvidence(record={}){
+  if(lower(record?.engine||record?.target)!=='roblox')return true;
+  if(record?.studioAssetRuntimeBindingPassed===true)return true;
+  const evidence=(record?.evidence||[]).map(clean).filter(Boolean);
+  return evidence.some(value=>value==='ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS'||value.startsWith('ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS:'));
+}
 function nativePositiveMasteryAllowed(record={},domain=''){
-  const nativeDomains=nativeDomainsForEngine(record?.engine||record?.target);
-  if(!nativeDomains||!nativeDomains.has(upper(domain)))return true;
+  const engine=lower(record?.engine||record?.target);
+  const normalizedDomain=upper(domain);
+  if(engine==='roblox'&&ROBLOX_STUDIO_ASSET_RUNTIME_REQUIRED_DOMAINS.has(normalizedDomain)){
+    return matchingNativeRuntimePassEvidence(record)&&matchingRobloxStudioAssetRuntimePassEvidence(record);
+  }
+  const nativeDomains=nativeDomainsForEngine(engine);
+  if(!nativeDomains||!nativeDomains.has(normalizedDomain))return true;
   return matchingNativeRuntimePassEvidence(record);
 }
 
