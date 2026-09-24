@@ -100,8 +100,8 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
-  assert.equal(runtime.version>=22,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,22);
+  assert.equal(runtime.version>=23,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,23);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.adaptiveBackpressure.mode,'GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY');
   assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
@@ -113,6 +113,9 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.projectLifecycle.downstreamMachineEvidencePreventsBackwardPhaseProjection,true);
   assert.equal(runtime.projectLifecycle.missingGenreMayNotRegressStartedNativeWork,true);
   assert.equal(runtime.projectLifecycle.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(runtime.projectLifecycle.executionEvidencePlatformMatchRequired,true);
+  assert.equal(runtime.projectLifecycle.crossPlatformExecutionEvidenceIsHistoricalContextOnly,true);
+  assert.equal(runtime.projectLifecycle.crossPlatformEvidenceMayNotAdvanceLifecycleOrOverrideCurrentFailure,true);
   assert.equal(runtime.projectLifecycle.nestedExecutionEvidenceFallbackForPlanner,true);
   assert.equal(runtime.projectLifecycle.nestedFailureStageAndSignaturePreserved,true);
   assert.equal(runtime.projectLifecycle.nestedSourceRevisionPreserved,true);
