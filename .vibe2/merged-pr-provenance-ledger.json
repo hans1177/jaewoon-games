@@ -22517,11 +22517,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ee00d0174f5a199e22132ef0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-2814",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "aa04c6010fe315b8ac674954b222b51ec86eaa0b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2814,
+        "baseBranch": "main",
+        "headBranch": "vibe/star-frontier-20260924",
+        "baseSha": "aa04c6010fe315b8ac674954b222b51ec86eaa0b",
+        "headSha": "e00d22d37f484e2c7b603f9be65e430dca4f929a",
+        "mergeCommitSha": "b7b129d7c1c430896178b21a5eaff52facb46ae8",
+        "mergedAt": "2026-09-24T08:59:24Z",
+        "authorLogin": "hans1177",
+        "titleHash": "187e671b77d5fa4a03a5356bf1edccc93fd2fa8a8d5629b605740b9cfd62361d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe/star-frontier-20260924",
+        "candidateSha": "e00d22d37f484e2c7b603f9be65e430dca4f929a"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 1760,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "design/star-frontier/2026-09-24/GAME_DESIGN.md",
+          "design/star-frontier/2026-09-24/design-revised.json",
+          "roblox-games/star-frontier/client/Game.client.luau",
+          "roblox-games/star-frontier/default.project.json",
+          "roblox-games/star-frontier/launch-mvp.json",
+          "roblox-games/star-frontier/roblox-source-bootstrap.json",
+          "roblox-games/star-frontier/server/Game.server.luau",
+          "roblox-games/star-frontier/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          "design/star-frontier/2026-09-24/design-revised.json",
+          "roblox-games/star-frontier/client/Game.client.luau",
+          "roblox-games/star-frontier/default.project.json",
+          "roblox-games/star-frontier/launch-mvp.json",
+          "roblox-games/star-frontier/roblox-source-bootstrap.json",
+          "roblox-games/star-frontier/server/Game.server.luau",
+          "roblox-games/star-frontier/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2814",
+        "merge-commit:b7b129d7c1c430896178b21a5eaff52facb46ae8",
+        "base-main:aa04c6010fe315b8ac674954b222b51ec86eaa0b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 181
+    "total": 182
   }
 }
