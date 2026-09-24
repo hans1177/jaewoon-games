@@ -1109,14 +1109,14 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   }
   return{path:selected.path,find:selected.find,context};
 }
-export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[]}={}){
+export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
   const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
-  const presentationDeltaFailure=/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
+  const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
   const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
   return{
     spec,
@@ -1456,6 +1456,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let speculativeFocusedRetryCreditUsed=false;
   let systemAtomicPairCreditUsed=false;
   let diagnosticPostconditionCreditUsed=false;
+  let presentationPatchDeltaObserved=false;
   let presentationPatchDeltaCreditUsed=false;
   let studioEditMatchCreditUsed=false;
   let missingPathRecoveries=0;
@@ -1504,7 +1505,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :null;
     const preferredFocusedTargets=unique(exploration?.editContract?.primaryTargets||[]);
     const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
-      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets})
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved})
       :null);
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
@@ -1591,6 +1592,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
+      if(failureClass==='PRESENTATION_PATCH_DELTA')presentationPatchDeltaObserved=true;
       if(allowFullRewrite&&lastRaw.trim()&&Buffer.byteLength(lastRaw,'utf8')>Buffer.byteLength(bestFullWebFallbackRaw,'utf8')){
         bestFullWebFallbackRaw=lastRaw;
       }
@@ -1695,12 +1697,13 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         speculativeFocusedRetryCredit=true;
         console.log(`VIBE2_SPECULATIVE_FOCUSED_RETRY_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}:${failureClass}`);
       }
+      const presentationRecoveryRetry=!allowFullRewrite&&presentationPatchDeltaObserved&&focusedFinalRetryAllowed(error)&&attempt<configuredBaseMaxAttempts;
       let presentationPatchDeltaCreditRetry=false;
-      if(!allowFullRewrite&&failureClass==='PRESENTATION_PATCH_DELTA'&&attempt>=maxAttempts&&!presentationPatchDeltaCreditUsed){
-        maxAttempts=attempt+1;
+      if(!allowFullRewrite&&presentationPatchDeltaObserved&&focusedFinalRetryAllowed(error)&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts&&!presentationPatchDeltaCreditUsed){
+        maxAttempts=Math.min(configuredBaseMaxAttempts,attempt+1);
         presentationPatchDeltaCreditUsed=true;
-        presentationPatchDeltaCreditRetry=true;
-        console.log('VIBE2_PRESENTATION_PATCH_DELTA_CREDIT='+attempt+'->'+maxAttempts+':'+candidateVariant);
+        presentationPatchDeltaCreditRetry=maxAttempts>attempt;
+        if(presentationPatchDeltaCreditRetry)console.log('VIBE2_PRESENTATION_RECOVERY_CREDIT='+attempt+'->'+maxAttempts+':'+candidateVariant+':'+failureClass);
       }
       let diagnosticPostconditionCreditRetry=false;
       if(!allowFullRewrite&&failureClass==='DIAGNOSTIC_POSTCONDITION'&&diagnosticFocusedReplaceOnly&&attempt>=maxAttempts&&!diagnosticPostconditionCreditUsed){
@@ -1749,7 +1752,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
