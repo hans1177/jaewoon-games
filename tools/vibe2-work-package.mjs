@@ -242,6 +242,8 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
   const packageId=`${gameId}-wp-${hashText(fingerprint||`${gameId}-${sequence}`)}`;
   const responsibleFiles=unique(list.flatMap(t=>t.responsibleFiles||[]));
   const diagnosticEvidence=unique(list.flatMap(t=>t.evidence||[]).filter(x=>/^diagnostic:|^repair-mode:|^maintenance-file:/.test(clean(x))));
+  const studioContracts=list.map(t=>t?.studioQualityEvolution).filter(value=>value&&typeof value==='object');
+  const studioQualityEvolution=studioContracts[0]?Object.freeze({...studioContracts[0]}):null;
   const completionCriteria=unique(resolved.completionCriteria||[
     'exploration-handoff-produced-and-reused',
     'functional-scope-implemented',
@@ -252,7 +254,19 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
     'machine-contract-and-central-doc-synced-when-architecture-changes'
   ]);
   if(scopes.length)completionCriteria.push(`related-improvement-scopes-verified:${scopes.length}`);
-  const packageGoal=`${clean(project.name)||gameId}: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.`;
+  if(studioQualityEvolution){
+    completionCriteria.push(
+      'studio-quality-baseline-or-explicit-gap-evidence',
+      'studio-quality-focus-implemented',
+      'verified-quality-gap-closure-or-delta',
+      'no-protected-semantics-regression',
+      'next-studio-build-cycle-remains-live'
+    );
+  }
+  const studioGoal=studioQualityEvolution
+    ?` 단계=${clean(studioQualityEvolution.phase)||'BUILD_UP'}, 품질축=${clean(studioQualityEvolution.focusPillar)||'STABILITY'}, 기준선=${clean(studioQualityEvolution.baselineId)||'CURRENT_VERIFIED_BASELINE'}.`
+    :'';
+  const packageGoal=`${clean(project.name)||gameId}: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.${studioGoal}`;
   const packageContext={
     explorationMode:clean(resolved.explorationMode)||'dedicated-exploration-worker-handoff',
     explorationRequired:resolved.explorationRequired!==false,
@@ -268,7 +282,8 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
       performance:'performance-sanity-worker',
       regression:'single-fan-in-regression-worker',
       review:'fan-in-package-review-worker'
-    }
+    },
+    studioQualityEvolution
   };
   const decorated=list.map((task,index)=>({
     ...task,
@@ -282,6 +297,7 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
     packageMinWorkUnits:Number(resolved.minWorkUnitsPerPackage||3),
     packageLongWorkProtected:packageWorkUnits>=Number(resolved.longWorkUnits||5),
     packageContext,
+    studioQualityEvolution:task?.studioQualityEvolution||studioQualityEvolution,
     completionCriteria,
     evidence:unique([
       ...(task.evidence||[]),
@@ -290,6 +306,11 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
       `package-work-units:${packageWorkUnits}`,
       `package-related-improvements:${scopes.length}`,
       'package-role-separation:exploration|implementation|test|performance|regression|review',
+      studioQualityEvolution&&'studio-quality-loop:v1',
+      studioQualityEvolution&&`studio-quality-phase:${clean(studioQualityEvolution.phase)||'BUILD_UP'}`,
+      studioQualityEvolution&&`studio-quality-focus:${clean(studioQualityEvolution.focusPillar)||'STABILITY'}`,
+      studioQualityEvolution&&`studio-quality-baseline:${clean(studioQualityEvolution.baselineId)||'CURRENT_VERIFIED_BASELINE'}`,
+      studioQualityEvolution&&'studio-quality-next-cycle-required:YES',
       quantityGoal&&`package-quantity-goal:${quantityGoal}`
     ].filter(Boolean))
   }));
@@ -308,6 +329,7 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
     minimumWorkloadMet,
     completionCriteria,
     packageContext,
+    studioQualityEvolution,
     tasks:decorated,
     rejectionReason:accepted?null:minimumWorkloadMet?'CYCLE_QUANTITY_GOAL':'MINIMUM_WORKLOAD_GATE'
   };
