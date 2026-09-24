@@ -1,5 +1,6 @@
 // 파일명: tools/vibe2-neural-event-router.mjs
-// 역할: Phase 2 권한 부여 전, 이벤트 기반 뉴런 라우팅 결정과 neural work graph를 shadow simulation으로 계산한다. 실제 worker 생성/우선순위 변경은 절대 하지 않는다.
+// 역할: 이벤트 기반 뉴런 라우팅 결정을 계산하고, 중앙정책이 허용한 안전 범위에서는 기존 wave scheduler에 gated 실행 힌트를 전달한다.
+// 원칙: 정책/보안/릴리즈 권한은 확장하지 않는다. 실제 실행은 기존 queue/reserve/fan-in 경로만 사용한다.
 
 import { buildNeuralWorkGraph, neuralWorkGraphEvidence } from './vibe2-neural-work-graph.mjs';
 
@@ -16,6 +17,12 @@ const EVENT_TYPES=new Set([
   'SUPERVISOR_RESULT',
   'POLICY_CHANGE',
   'RESOURCE_OR_LOCK_CHANGE'
+]);
+
+const GATED_ACTIONS=new Set([
+  'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR',
+  'PREPARE_DIAGNOSTIC_REVALIDATION',
+  'REEVALUATE_DEPENDENCY_AND_LOCKS'
 ]);
 
 function normalizeEvent(event={}){
@@ -78,17 +85,24 @@ function rootCauseIndependentEvent(event={}){
   return ['POLICY_CHANGE','RESOURCE_OR_LOCK_CHANGE'].includes(clean(event?.type).toUpperCase());
 }
 
-function collectInhibitors({event,diagnosis,rootCause,policyFresh=true,lockConflict=false,securityBlocked=false}={}){
+function collectInhibitors({
+  event,
+  diagnosis,
+  rootCause,
+  policyFresh=true,
+  lockConflict=false,
+  securityBlocked=false,
+  gatedExecutionEnabled=false
+}={}){
   const rootCauseRequired=!rootCauseIndependentEvent(event);
-  const inhibitors=uniq([
+  return uniq([
     ...(diagnosis?.inhibitors||[]),
     policyFresh===false?'CENTRAL_POLICY_STALE_OR_INVALID':'',
     lockConflict===true?'SOURCE_OR_RESOURCE_LOCK_CONFLICT':'',
     securityBlocked===true?'SECURITY_POLICY_BLOCK':'',
     rootCauseRequired&&rootCause?.rootCauseVerified!==true?'ROOT_CAUSE_NOT_VERIFIED':'',
-    'PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'
+    gatedExecutionEnabled===true?'':'PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'
   ]);
-  return inhibitors;
 }
 
 export function simulateNeuralEventRoute({
@@ -97,65 +111,105 @@ export function simulateNeuralEventRoute({
   rootCause=null,
   policyFresh=true,
   lockConflict=false,
-  securityBlocked=false
+  securityBlocked=false,
+  gatedExecutionEnabled=false
 }={}){
   const normalizedEvent=normalizeEvent(event);
   const proposedAction=actionFromState({event:normalizedEvent,diagnosis,rootCause});
-  const inhibitors=collectInhibitors({event:normalizedEvent,diagnosis,rootCause,policyFresh,lockConflict,securityBlocked});
+  const inhibitors=collectInhibitors({
+    event:normalizedEvent,
+    diagnosis,
+    rootCause,
+    policyFresh,
+    lockConflict,
+    securityBlocked,
+    gatedExecutionEnabled
+  });
+  const nonAuthorityInhibitors=inhibitors.filter(value=>value!=='PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED');
   const wouldFireWithoutPhase2Authority=
     normalizedEvent.type!=='UNKNOWN'
     &&proposedAction.kind!=='OBSERVE_ONLY'
-    &&inhibitors.filter(value=>value!=='PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED').length===0;
+    &&nonAuthorityInhibitors.length===0;
+  const gatedActionAllowed=
+    gatedExecutionEnabled===true
+    &&GATED_ACTIONS.has(proposedAction.kind)
+    &&normalizedEvent.type!=='UNKNOWN'
+    &&nonAuthorityInhibitors.length===0;
+  const workerCreationAllowed=gatedActionAllowed&&['PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR','PREPARE_DIAGNOSTIC_REVALIDATION'].includes(proposedAction.kind);
+  const queueMutationAllowed=gatedActionAllowed;
+  const waveReorderAllowed=gatedActionAllowed;
+  const automaticTuningAllowed=gatedActionAllowed;
+  const authorityMode=gatedActionAllowed?'GATED':'SHADOW';
 
   const workGraph=buildNeuralWorkGraph({
     event:normalizedEvent,
     diagnosis,
     rootCause,
-    route:{proposedAction,inhibitors,wouldFireWithoutPhase2Authority},
+    route:{
+      proposedAction,
+      inhibitors,
+      wouldFireWithoutPhase2Authority,
+      authorityMode,
+      fireAllowed:gatedActionAllowed,
+      workerCreationAllowed,
+      queueMutationAllowed,
+      waveReorderAllowed,
+      automaticTuningAllowed
+    },
     dependencies:normalizedEvent.dependencies,
     resourceState:{policyFresh,lockConflict,securityBlocked}
   });
   return{
-    version:2,
-    mode:'PHASE2_SHADOW_EVENT_ROUTER',
+    version:3,
+    mode:gatedActionAllowed?'PHASE2_GATED_EVENT_ROUTER':'PHASE2_SHADOW_EVENT_ROUTER',
+    authorityMode,
     event:normalizedEvent,
     proposedAction,
     inhibitors,
     wouldFireWithoutPhase2Authority,
     workGraph,
-    fireAllowed:false,
-    workerCreationAllowed:false,
-    queueMutationAllowed:false,
-    waveReorderAllowed:false,
+    fireAllowed:gatedActionAllowed,
+    workerCreationAllowed,
+    queueMutationAllowed,
+    waveReorderAllowed,
+    automaticTuningAllowed,
     lockAcquisitionAllowed:false,
     policyMutationAllowed:false,
     learningEligible:false,
     authorityPromotionEligible:false,
     comparisonTarget:'CURRENT_WAVE_SCHEDULER_OUTCOME',
-    authority:'SIMULATION_ONLY'
+    authority:gatedActionAllowed?'GATED_EXISTING_SCHEDULER_ONLY':'SIMULATION_ONLY'
   };
 }
 
 export function neuralEventRouteEvidence(route={}){
-  if(clean(route.mode)!=='PHASE2_SHADOW_EVENT_ROUTER')return[];
+  const mode=clean(route.mode);
+  const gated=mode==='PHASE2_GATED_EVENT_ROUTER';
+  if(!gated&&mode!=='PHASE2_SHADOW_EVENT_ROUTER')return[];
   const payload={
-    version:2,
+    version:3,
     eventIdentityVersion:2,
+    authorityMode:gated?'GATED':'SHADOW',
     eventId:clean(route?.event?.id)||null,
     eventType:clean(route?.event?.type)||'UNKNOWN',
     actionKind:clean(route?.proposedAction?.kind)||'OBSERVE_ONLY',
     actionReason:clean(route?.proposedAction?.reason)||null,
     wouldFireWithoutPhase2Authority:route.wouldFireWithoutPhase2Authority===true,
     inhibitors:uniq(route.inhibitors||[]),
-    fireAllowed:false,
-    workerCreationAllowed:false,
-    queueMutationAllowed:false,
-    waveReorderAllowed:false,
+    fireAllowed:route.fireAllowed===true,
+    workerCreationAllowed:route.workerCreationAllowed===true,
+    queueMutationAllowed:route.queueMutationAllowed===true,
+    waveReorderAllowed:route.waveReorderAllowed===true,
+    automaticTuningAllowed:route.automaticTuningAllowed===true,
+    lockAcquisitionAllowed:false,
+    policyMutationAllowed:false,
     authorityPromotionEligible:false
   };
+  const prefix=gated?'neural-event-gated:':'neural-event-shadow:';
+  const actionPrefix=gated?'neural-event-gated-action:':'neural-event-shadow-action:';
   return[
-    `neural-event-shadow:${encodeURIComponent(JSON.stringify(payload))}`,
-    `neural-event-shadow-action:${payload.actionKind}`,
+    `${prefix}${encodeURIComponent(JSON.stringify(payload))}`,
+    `${actionPrefix}${payload.actionKind}`,
     ...neuralWorkGraphEvidence(route.workGraph||{})
   ];
 }
