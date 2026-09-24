@@ -340,6 +340,8 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.equal(parallel.finalReviewParallel,true);
   assert.equal(parallel.promotionParallel,true);
   assert.equal(parallel.internalGameConcurrencyCapsForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.runtimeRunnerCapacityMaySerializeRuntimeQa,false);
+  assert.equal(parallel.runtimeQaMayQueueOnlyWhenExternalProviderCapacityIsExhausted,true);
   assert.equal(parallel.serverBootEvidenceReuse.reuseOnlyWhenExactCandidateUnchanged,true);
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
 });
