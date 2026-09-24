@@ -1,5 +1,5 @@
 {
-  "version": 351,
+  "version": 352,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -19085,7 +19085,15 @@
       "failureMutationRequiresVerifiedRootCause": true,
       "existingSchedulerOnly": true,
       "rawRuntimeFailureMayNotInventRootCause": true,
-      "policySecurityQaReleaseAuthorityUnchanged": true
+      "policySecurityQaReleaseAuthorityUnchanged": true,
+      "platformIdentityPreserved": true,
+      "platformMismatchShadowOnly": true,
+      "newTaskCreationForbidden": true,
+      "existingTaskMutation": "REQUEUE_REPRIORITIZE_ONLY",
+      "ambiguousExistingTaskMutationForbidden": true,
+      "liveIngressVerifiedRunId": 36063857304,
+      "liveIngressVerifiedOutcome": "PASS_SHADOW",
+      "liveGatedFailureMutationObserved": false
     },
     "fortniteUefnChange": false,
     "fortniteUefnPolicyRemains": "OWNER_HOLD"
