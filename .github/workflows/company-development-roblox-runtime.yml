@@ -367,6 +367,8 @@ jobs:
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
           RECONCILIATION_RESULTS_JSON: ${{ needs.source-plan.outputs.reconciliation_json }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -550,7 +552,13 @@ jobs:
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: reconcile and bind Roblox DEVELOPMENT source [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+            if ! git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              args=(--repo "$GITHUB_REPOSITORY" --ref main)
+              if [ -n "$REQUESTED_GAME_ID" ]; then args+=(-f "game_id=$REQUESTED_GAME_ID"); fi
+              gh workflow run company-development-roblox-runtime.yml "${args[@]}"
+              echo "ROBLOX_RUNTIME_STATE_WRITE_COLLISION_REDISPATCH=SOURCE_BIND:${REQUESTED_GAME_ID:-BATCH}"
+              exit 75
+            fi
           fi
           echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
           echo 'ROBLOX_RUNTIME_PASS=NO'
@@ -849,6 +857,8 @@ jobs:
         if: needs.technical-plan.outputs.count != '0'
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -959,7 +969,13 @@ jobs:
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: persist Roblox package checkpoint [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+            if ! git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              args=(--repo "$GITHUB_REPOSITORY" --ref main)
+              if [ -n "$REQUESTED_GAME_ID" ]; then args+=(-f "game_id=$REQUESTED_GAME_ID"); fi
+              gh workflow run company-development-roblox-runtime.yml "${args[@]}"
+              echo "ROBLOX_RUNTIME_STATE_WRITE_COLLISION_REDISPATCH=PACKAGE:${REQUESTED_GAME_ID:-BATCH}"
+              exit 75
+            fi
           fi
       - name: Record isolated package failures without blocking other games
         if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result != 'success'
