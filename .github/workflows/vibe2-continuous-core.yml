@@ -270,46 +270,48 @@ jobs:
               --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-steward.log
             echo 'VIBE2_RESERVE_STEWARD=PASS'
 
-            if [ "$callback_kind" = 'fanin' ]; then
-              git fetch origin company-runtime --quiet
-              git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            # Every non-neuron reserve ingress must synchronize from the current company runtime
+            # before planning or reserving. Otherwise an empty/stale control queue can remain idle
+            # until a later fan-in callback even though company-runtime already has actionable work.
+            git fetch origin company-runtime --quiet
+            git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            echo "VIBE2_RESERVE_RUNTIME_SYNC_SOURCE=company-runtime:$callback_kind"
 
-              # Released Roblox caretakers are primary 24H work. Refill them here too,
-              # not only in the outer 24H planner, so a delayed outer cycle cannot idle them.
-              node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
-              node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
-                --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
-                --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
-                --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
-                --queue="$control_root/.vibe2/queue.json" \
-                --exposure="$control_root/.vibe2/platform-exposure-state.json" \
-                --root=/tmp/vibe2-main | tee /tmp/vibe2-fanin-post-release-focus.log
-              echo 'VIBE2_FANIN_FOCUSED_CARETAKER_REFILL=PASS'
+            # Released Roblox caretakers and active repair work are refilled from the same canonical
+            # company-runtime snapshot on manual, callable, refill and fan-in reserve ingress.
+            node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
+            node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
+              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+              --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
+              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --exposure="$control_root/.vibe2/platform-exposure-state.json" \
+              --root=/tmp/vibe2-main | tee /tmp/vibe2-reserve-post-release-focus.log
+            echo 'VIBE2_RESERVE_FOCUSED_CARETAKER_REFILL=PASS'
 
-              node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
-                --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-                --status=/tmp/vibe2-main/company-status.json \
-                --catalog=/tmp/vibe2-main/game-catalog.json \
-                --development-queue=/tmp/vibe2-company-runtime-queue.json \
-                --queue="$control_root/.vibe2/queue.json" \
-                --control="$control_root/.vibe2/parallelism-control.json" \
-                --experience="$control_root/.vibe2/experience.json" \
-                --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
-                --root=/tmp/vibe2-main \
-                --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-fanin-refill-autoplan.log
-              node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
-                --state="$control_root/.vibe2/learning-motor-state.json" \
-                --experience="$control_root/.vibe2/experience.json" \
-                --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
-                --company-queue=/tmp/vibe2-company-runtime-queue.json \
-                --queue="$control_root/.vibe2/queue.json" \
-                --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
-                --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
-                --practice="$control_root/.vibe2/idle-practice-queue.json" \
-                --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-mesh.log
-              echo 'VIBE2_SELF_SIGNAL_MESH=PASS'
-              echo 'VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'
-            fi
+            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+              --status=/tmp/vibe2-main/company-status.json \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
+              --development-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
+              --root=/tmp/vibe2-main \
+              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-reserve-autoplan.log
+            node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
+              --state="$control_root/.vibe2/learning-motor-state.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
+              --company-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+              --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
+              --practice="$control_root/.vibe2/idle-practice-queue.json" \
+              --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-mesh.log
+            echo 'VIBE2_SELF_SIGNAL_MESH=PASS'
+            echo "VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind"
 
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
