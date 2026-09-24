@@ -1,5 +1,5 @@
 {
-  "version": 148,
+  "version": 149,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3579,7 +3579,7 @@
     "separateLearningPipelineForbidden": true
   },
   "narrativeStoryTopology": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract",
     "existingSystems": {
       "storyCore": "tools/vibe2-artbook-story-core.mjs",
@@ -3597,19 +3597,24 @@
       "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION",
       "SAVE_AND_RUNTIME_STATE_VALIDATION",
       "NARRATIVE_GAMEPLAY_QA",
-      "VERIFIED_RESULT_TO_EXISTING_LEARNING_MOTOR"
+      "VERIFIED_RESULT_TO_EXISTING_LEARNING_MOTOR",
+      "CAUSAL_STORY_TRANSITION_AND_FACTION_RELATIONSHIP_STATE"
     ],
     "authorityBoundaries": {
       "narrativeGeneratesIntentAndStateContracts": true,
       "gameSourceOwnsAuthoritativeImplementation": true,
       "generatedPersonaCannotDirectlyWriteDamageRewardEconomyOrProgress": true,
       "multiplayerServerAuthorityPreserved": true,
-      "duplicateQuestDialogueOrShadowNarrativePipelineForbidden": true
+      "duplicateQuestDialogueOrShadowNarrativePipelineForbidden": true,
+      "factionRelationshipStateGameplayAuthority": false,
+      "factionRelationshipMutationRequiresSourceEvent": true
     },
     "persistence": {
       "backwardCompatibleStateExpansion": true,
       "saveMigrationWhenShapeChanges": true,
-      "storyQuestRelationshipMemoryRoundTripRequired": true
+      "storyQuestRelationshipMemoryRoundTripRequired": true,
+      "factionRelationshipRoundTripRequired": true,
+      "lazyFactionStateExpansionRequired": true
     },
     "learning": {
       "existingCanonicalLearningMotorOnly": true,
@@ -3630,6 +3635,23 @@
         "WORLD_NARRATIVE"
       ],
       "positiveMasteryRequiresVerifiedProjectOutcome": true
+    },
+    "factionRelationshipState": {
+      "implementation": "assets/quest-dialogue.js",
+      "axes": [
+        "ALLY",
+        "RIVAL",
+        "HOSTILE",
+        "NEUTRAL",
+        "DEBT",
+        "TRUST",
+        "FEAR",
+        "CONTROL"
+      ],
+      "duplicateSourceEventIdempotent": true,
+      "bounded": true,
+      "characterContextMayConsumeMembershipAndRelations": true,
+      "gameOwnedSavePersistenceRequiredWhenPersistent": true
     }
   }
 }
