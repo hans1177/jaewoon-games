@@ -56,6 +56,10 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.cohesion.antiKitbashGateRequired,true);
   assert.equal(c.visualTargetFrames.roles.length,7);
   assert.equal(c.runtimeQa.beforeAfterVisualRegressionRequired,true);
+  assert.equal(c.runtimeQa.fanInRequirementCarriesActualRuntimeBeforeAfterEvidence,true);
+  assert.equal(c.runtimeQa.verifiedSettlementRequiresBeforeAfterPassWhenPresentationDeltaRequired,true);
+  assert.equal(c.runtimeQa.webBeforeAfterUsesRenderedBrowserCapture,true);
+  assert.equal(c.runtimeQa.sourceDiffAloneCannotSatisfyBeforeAfter,true);
   const spatial=roadmap.livingMotionVisualQualityContract.minimumSpatialPresentation;
   assert.equal(spatial.status,'ACTIVE_EXECUTABLE_CONTRACT');
   assert.equal(spatial.minimumFinalGameplayDimension,'2.5D');
@@ -69,8 +73,14 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(architecture.departmentTopology.graphics.usesExistingDepartment,true);
   assert.equal(architecture.departmentTopology.graphics.unlimitedEvidenceDrivenEvolutionGenerations,true);
   assert.equal(architecture.departmentTopology.graphics.centralDocumentAndImplementationSynchronizationRequired,true);
+  assert.equal(architecture.departmentTopology.graphics.presentationFanInRuntimeBeforeAfterRequired,true);
+  assert.equal(architecture.departmentTopology.graphics.finalVerifiedSettlementRequiresRuntimeComparisonWhenPresentationRequired,true);
+  assert.equal(architecture.departmentTopology.graphics.studioQualityVerifiedCycleReplansNextGeneration,true);
   assert.equal(logMap.graphicsProductionEvidenceContract.unlimitedEvolutionGenerationsAllowed,true);
   assert.equal(logMap.graphicsProductionEvidenceContract.implementationBindingEvidenceRequired,true);
+  assert.equal(logMap.graphicsProductionEvidenceContract.presentationFanInRequirementMarker,'presentation-runtime-before-after-fan-in:REQUIRED');
+  assert.equal(logMap.graphicsProductionEvidenceContract.verifiedPresentationSettlementMarker,'graphics-runtime-before-after-comparison:PASS');
+  assert.equal(logMap.graphicsProductionEvidenceContract.sourceDiffOrMarkerOnlyCannotSatisfyRuntimeComparison,true);
   assert.match(plannerSource,/function nextGraphicsEvolutionTask\(/);
   assert.match(plannerSource,/graphics-evolution-trigger:/);
   assert.match(plannerSource,/graphics-evolution-unlimited-generations:yes/);
