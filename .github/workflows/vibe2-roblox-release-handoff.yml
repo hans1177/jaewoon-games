@@ -28,9 +28,6 @@ jobs:
     name: verify R5 evidence and hand off to canonical Roblox runtime
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     steps:
       - name: Checkout current main
         uses: actions/checkout@v4
@@ -182,7 +179,9 @@ jobs:
           git config user.name 'jaewoon-vibe2-release-handoff'
           git config user.email 'vibe2-release@users.noreply.github.com'
           success=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
             git fetch origin "$COMPANY_RUNTIME_BRANCH" --quiet
             work="/tmp/vibe2-roblox-release-handoff-${GITHUB_RUN_ID}-${attempt}"
             rm -rf "$work"
@@ -237,9 +236,9 @@ jobs:
             cd "$GITHUB_WORKSPACE"
             git worktree remove --force "$work" >/dev/null 2>&1 || true
             [ "$success" = 1 ] && break
-            sleep $((attempt * 2))
+            echo "ROBLOX_VIBE2_HANDOFF_OPTIMISTIC_RETRY=$attempt"
+            sleep "$((attempt<5?attempt:5))"
           done
-          test "$success" = 1
           echo 'ROBLOX_VIBE2_VERIFIED_HANDOFF=PASS'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
