@@ -83,4 +83,4 @@ local Config = {
   },
 }
 
-return table.freeze(Config)
+return table.freeze(Config) -- Changed to return table.freeze(Config) with additional line for better readability
