@@ -1734,6 +1734,73 @@ test('unobserved runtime state does not invent a runtime neural event',()=>{
   }),null);
 });
 
+test('company-runtime runtime result ingress is observed even when planner creates no task',()=>{
+  const root=tempRepo();
+  const gameId='runtime-observe-without-plan';
+  const existingTask={
+    id:'runtime-observe-existing-work',
+    gameId,
+    target:'roblox',
+    department:'development',
+    type:'implementation',
+    goal:'existing queued work',
+    responsibleFiles:[`roblox-games/${gameId}/shared/GameConfig.luau`],
+    dependencies:[],
+    priority:'normal',
+    releaseState:'development-confirmed',
+    status:'queued',
+    sourceRoot:`roblox-games/${gameId}`
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Runtime Observe Without Plan',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE',
+      robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Runtime Observe Without Plan',
+      status:'ACTIVE',
+      canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      selectedPlatform:'ROBLOX',
+      robloxProjectPath:`roblox-games/${gameId}`,
+      executionEvidence:{
+        platform:'UNITY',
+        sourceRevision:'f'.repeat(40),
+        runtimePassed:true,
+        independentQaPassed:false,
+        regressionPassed:false,
+        failureStage:'INDEPENDENT_QA',
+        failureSignature:'unity:independent-qa-pending'
+      }
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[existingTask]},
+    repoRoot:root,
+    maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:20,
+    planningBacklogTarget:1,
+    planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.tasks.length,0);
+  assert.equal(result.queue.tasks.length,1);
+  assert.equal(result.queue.tasks[0].id,existingTask.id);
+  assert.equal(result.queue.tasks[0].evidence.some(value=>value.startsWith('runtime-neural-event:')),false);
+  assert.equal(result.runtimeNeuralEvents.length,1);
+  const compiled=result.runtimeNeuralEvents[0];
+  assert.equal(compiled.event.type,'RUNTIME_RESULT');
+  assert.equal(compiled.event.platform,'UNITY');
+  assert.equal(compiled.event.outcome,'PASS');
+  assert.equal(compiled.platformMatchesProject,false);
+  assert.equal(compiled.route.authorityMode,'SHADOW');
+  assert.equal(compiled.route.fireAllowed,false);
+  assert.ok(compiled.evidence.includes('runtime-neural-event:compiled'));
+});
+
 test('company-runtime UNITY execution evidence does not become Roblox runtime evidence during planner projection',()=>{
   const root=tempRepo();
   const gameId='runtime-platform-bridge';
