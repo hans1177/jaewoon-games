@@ -1,7 +1,7 @@
 {
-  "version": 1,
+  "version": 2,
   "kind": "AUTONOMOUS_DEVELOPMENT_OPERATING_PLAN",
-  "status": "IMPLEMENTATION_IN_PROGRESS_RUNTIME_BINDINGS_ACTIVE",
+  "status": "IMPLEMENTATION_IN_PROGRESS_STUDIO_QUALITY_EVOLUTION_BINDING",
   "authority": "OWNER_DISCUSSION_2026-09-19",
   "createdAt": "2026-09-19",
   "objective": "30-lane autonomous development that never stops portfolio-wide on a single model, runner, game, or provider failure; prioritizes released and focused games; preserves owner edits; and continuously removes small bottlenecks.",
@@ -385,7 +385,13 @@
     "RUN_VIBE_QA",
     "RUN_EVOLUTION_QA",
     "CANARY",
-    "GRADUAL_30_LANE_ENABLEMENT"
+    "GRADUAL_30_LANE_ENABLEMENT",
+    "BIND_STUDIO_QUALITY_BASELINE_AND_DELTA_TO_EXISTING_VIBE_CHECKPOINTS",
+    "BIND_STUDIO_QUALITY_FOCUS_TO_EXISTING_WORK_PACKAGES",
+    "BIND_VERIFIED_LEARNING_CONTEXT_BEFORE_TASK_IMPLEMENTATION",
+    "BIND_PLAYTEST_AND_VISUAL_GAPS_TO_NEXT_CAUSAL_WORK",
+    "BIND_DUPLICATE_QA_SUPPRESSION_AND_SINGLE_FAN_IN_REGRESSION",
+    "BIND_MAXIMUM_SAFE_INDEPENDENT_PARALLEL_ROLE_EXECUTION"
   ],
   "acceptanceCriteria": [
     "single provider outage does not stop portfolio",
@@ -400,9 +406,16 @@
     "gate failure always produces causal evidence and same-gate revalidation",
     "verified unchanged stages are not repeated",
     "global adaptive ceiling is 30 with lane-specific backpressure",
-    "system steward continuously clears small friction without changing game intent"
+    "system steward continuously clears small friction without changing game intent",
+    "verified game cycles close a real gap or prove quality improvement instead of merely passing syntax/build checks",
+    "verified learning and failure history are consumed before implementation planning and fed back after verification",
+    "unchanged valid evidence is reused and duplicate expensive QA is not repeated",
+    "independent games packages and worker roles progress in parallel without same-file write conflicts",
+    "full core regression runs once at fan-in while affected incremental QA runs earlier",
+    "runtime or playtest checks run only when static evidence cannot establish changed behavior",
+    "strict design pass remains a checkpoint and verified weaknesses can reopen the relevant design axis"
   ],
-  "updatedAt": "2026-09-19",
+  "updatedAt": "2026-09-24",
   "implementationProgress": {
     "documentFrozen": true,
     "central30LanePolicyBound": true,
@@ -423,5 +436,30 @@
       "COMPLETE_MUTATION_AND_FAILURE_TO_REGRESSION_BINDINGS",
       "GREEN_ALL_CENTRAL_CONTRACT_QA"
     ]
+  },
+  "studioQualityEvolution": {
+    "status": "OWNER_APPROVED_IMPLEMENTATION",
+    "policySource": "company-learning/platform-release-roadmap.json#studioQualityEvolution",
+    "operatingLoop": [
+      "baseline",
+      "weakest-verifiable-gap",
+      "functional-package",
+      "parallel-role-execution",
+      "impact-qa",
+      "runtime-playtest-if-required",
+      "compare",
+      "fan-in-regression",
+      "learning",
+      "next-focus"
+    ],
+    "packageRule": "EVERY_COMPLETED_EVOLUTION_PACKAGE_MUST_CLOSE_A_VERIFIED_GAP_OR_PROVE_A_QUALITY_DELTA_WITHOUT_PROTECTED_REGRESSION",
+    "verticalSliceFirst": true,
+    "learningBeforePlanning": true,
+    "learningAfterVerification": true,
+    "duplicateQaSuppression": true,
+    "fullRegressionOnceAtFanIn": true,
+    "maximumSafeIndependentParallelism": true,
+    "runtimeWaitReleasesCapacity": true,
+    "noGlobalStageBarrier": true
   }
 }
