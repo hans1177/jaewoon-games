@@ -1,5 +1,5 @@
 {
-  "version": 343,
+  "version": 344,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -18924,6 +18924,15 @@
       "verifiedEvidenceOnly": true,
       "rawModelOutputMayNotPromoteCapability": true,
       "policyAndReleaseAuthorityRemainExternal": true
+    },
+    "runtimeSynchronization": {
+      "companyRuntimeSource": "company-runtime:development-queue.json",
+      "syncBeforeEveryNonNeuronReserveIngress": true,
+      "staleVibeControlStateMayNotOverrideNewerCompanyRuntime": true,
+      "lifecycleProjectionMustBeMonotonic": true,
+      "downstreamRuntimeEvidenceOverridesMissingDescriptiveMetadata": true,
+      "missingGenreMayNotRegressStartedNativeWork": true,
+      "neuronCompletionIngressRemainsLightweightUntilTaskMicroFanIn": true
     },
     "fortniteUefnChange": false,
     "fortniteUefnPolicyRemains": "OWNER_HOLD"
