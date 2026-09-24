@@ -74,3 +74,12 @@ test('exact Roblox F9 review is isolated per game after multiplayer acceptance',
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
+
+test('scheduled F9 review fans out per game instead of serial portfolio processing',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(workflow,/actions: write/);
+  assert.match(workflow,/name: fan out pending Roblox F9 reviews/);
+  assert.match(workflow,/ROBLOX_F9_PARALLEL_DISPATCH=/);
+  assert.match(workflow,/gh workflow run company-development-roblox-final-review-revalidation\.yml[^\n]*-f game_id=/);
+  assert.match(workflow,/final-review:\s*\n\s*if: github\.event_name == 'workflow_dispatch' && inputs\.game_id != ''/);
+});
