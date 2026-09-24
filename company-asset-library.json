@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -3720,6 +3720,45 @@
       "minimumDistinctAxes": 7,
       "distinctSilhouetteRequired": true,
       "distinctMotionRequired": true
+    }
+  },
+  "baseMaterialRotation": {
+    "version": 1,
+    "status": "ACTIVE_AUTOMATIC_ROTATION",
+    "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+    "usesExistingGapFill": true,
+    "hardDeleteForbidden": true,
+    "retirementMode": "REMOVE_FROM_ACTIVE_SELECTION_PRESERVE_LINEAGE",
+    "triggers": [
+      "DUPLICATE_IDENTITY",
+      "VERIFIED_RUNTIME_FAILURE",
+      "COMPATIBILITY_FAILURE_REPEAT_2",
+      "STALE_UNUSED_30_CYCLES"
+    ],
+    "protections": [
+      "MANUAL_LOCK",
+      "GAME_LOCK",
+      "ACTIVE_GAME_REQUIRED",
+      "FAMILY_MINIMUM_FLOOR"
+    ],
+    "minimumAtomsPerFamily": 20,
+    "maxRetirePerFamilyPerCycle": 2,
+    "staleAfterCycles": 30,
+    "refillSameCycle": true,
+    "refillRoute": "EXISTING_24H_GAP_FILL",
+    "refillOrder": [
+      "REUSE_VERIFIED_COMPANY_ASSET",
+      "REUSE_LICENSE_VERIFIED_REPOSITORY_ASSET",
+      "DERIVE_VERIFIED_ASSET_WITH_SAFE_STYLE_OR_MODULAR_VARIANT",
+      "ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET",
+      "PREPARE_SEMANTIC_ASSET_SEED",
+      "AUTHOR_NEW_PLATFORM_NATIVE_ASSET"
+    ],
+    "reactivation": {
+      "allowed": true,
+      "requiresCauseFixed": true,
+      "requiresCompatibilityRecheck": true,
+      "verifiedAssetRequiresNativeRuntimeReverification": true
     }
   }
 }
