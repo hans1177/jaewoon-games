@@ -8,7 +8,37 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 -- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 1
-local studioAssetConfig = Config.StudioAssets or {}
+local studioAssetConfig = Config.StudioAssets or {
+  Families = {
+    UI = {
+      "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH"
+    },
+    ENVIRONMENT = {
+      "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT"
+    },
+    BUILDING = {
+      "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE"
+    },
+    PROP = {
+      "CHEST", "CRATE", "LAMP"
+    },
+    MATERIAL = {
+      "WOOD", "STONE", "METAL"
+    },
+    VFX = {
+      "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST"
+    },
+    WEAPON = {
+      "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG"
+    },
+    CHARACTER = {
+      "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE"
+    },
+    CREATURE = {
+      "HEAD_CANINE", "JAW_LONG", "CLAW"
+    }
+  }
+}
 local studioAssetFamilies = studioAssetConfig.Families or {}
 local studioUi = studioAssetFamilies.UI or {}
 local function hasStudioAssetAtom(atom)

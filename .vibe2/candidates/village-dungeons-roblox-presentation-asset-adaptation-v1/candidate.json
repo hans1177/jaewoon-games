@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local studioAssetConfig = Config.StudioAssets or {}",
+      "replace": "local studioAssetConfig = Config.StudioAssets or {\n  Families = {\n    UI = {\n      \"FRAME_PANEL\", \"BUTTON_PRIMARY\", \"BAR_HEALTH\"\n    },\n    ENVIRONMENT = {\n      \"TREE_TRUNK_THICK\", \"TREE_CROWN_ROUND\", \"ROCK_MEDIUM\", \"ROAD_DIRT\"\n    },\n    BUILDING = {\n      \"FOUNDATION_RECT\", \"WALL_SOLID\", \"DOOR_SINGLE\", \"ROOF_GABLE\"\n    },\n    PROP = {\n      \"CHEST\", \"CRATE\", \"LAMP\"\n    },\n    MATERIAL = {\n      \"WOOD\", \"STONE\", \"METAL\"\n    },\n    VFX = {\n      \"IMPACT_FLASH\", \"TRAIL_SHORT\", \"SHAPE_BURST\"\n    },\n    WEAPON = {\n      \"BLADE_LONG\", \"GUARD_CROSS\", \"GRIP_LONG\"\n    },\n    CHARACTER = {\n      \"TORSO_CLOTH\", \"SHOULDER_LIGHT\", \"BACK_CAPE\"\n    },\n    CREATURE = {\n      \"HEAD_CANINE\", \"JAW_LONG\", \"CLAW\"\n    }\n  }\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
