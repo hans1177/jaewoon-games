@@ -13,7 +13,8 @@ import {
   beginVibeQueueBatch,
   finishVibeQueueTask,
   summarizeVibeContinuousQueue,
-  DEFAULT_MAX_CONCURRENT_TASKS
+  DEFAULT_MAX_CONCURRENT_TASKS,
+  EXTERNAL_MATRIX_BATCH_MAX
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, DEFAULT_ADAPTIVE_TARGET } from './vibe2-adaptive-backpressure.mjs';
@@ -793,8 +794,8 @@ export function runQueueCommand(args = {}) {
           || !evidence.includes('graphics-atomic-candidate-isolation-required')
         ));
     });
-  let queue = createVibeContinuousQueue(rawQueue);
   const queueStateRecovered=queueFileMissing||queueFileBlank;
+  let queue = createVibeContinuousQueue(queueStateRecovered?{...rawQueue,maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX}:rawQueue);
   if(queueStateRecovered)writeJson(file,queue);
   const command = clean(args.command).toLowerCase();
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
