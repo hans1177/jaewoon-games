@@ -181,7 +181,11 @@ test('homepage front door matches approved sample on desktop and mobile',()=>{
   assert.equal(front.gameDevelopmentSurface?.route,'/asset-library.html');
   assert.equal(front.gameDevelopmentSurface?.registry,'/company-asset-library.json');
   assert.match(index,/href="\/asset-library\.html"/);
-  assert.match(fs.readFileSync('asset-library.html','utf8'),/회사 에셋 라이브러리/);
+  const assetLibrarySurface=fs.readFileSync('asset-library.html','utf8');
+  assert.match(assetLibrarySurface,/회사 에셋 라이브러리/);
+  assert.match(assetLibrarySurface,/data-asset-library-version="[1-9]\d*"/);
+  assert.match(manager,/data-asset-library-version="\[1-9\]\\d\*"/);
+  assert.doesNotMatch(manager,/data-asset-library-version="1"/);
   const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   assert.equal(library.publicInspectionSurface,true);
   assert.equal(library.productionPassAuthority,false);
