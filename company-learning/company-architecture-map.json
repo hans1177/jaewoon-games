@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -983,6 +983,9 @@
         "FAILURE_CLASS_RETRY_STRATEGY_SELECTION"
       ],
       "throughputObjective": "MAXIMIZE_VERIFIED_CANDIDATES_PER_MINUTE_AND_FIRST_CANDIDATE_PASS_RATE",
+      "retryStrategyMutationRequiresVerifiedRootCause": true,
+      "successfulResultMutationForbidden": true,
+      "verifiedSupervisorReviseRequeue": true,
       "fanInRule": "PER_TASK_MICRO_FANIN_RELEASES_CAPACITY_IMMEDIATELY; COHORT_FANIN_IS_REGRESSION_RELEASE_AUDIT_ONLY",
       "protectedAuthority": {
         "policyMutation": false,
