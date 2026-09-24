@@ -131,6 +131,27 @@ function presentationPassFromTask(task = {}) {
   const fromGoal=clean(match?.[1]).toUpperCase();
   return PRESENTATION_PASSES.has(fromGoal)?fromGoal:null;
 }
+export function expandPresentationResponsibleFiles({task={},target='',repoRoot=process.cwd(),fallbackRoot=''}={}){
+  const base=freezeList(task.responsibleFiles||[]);
+  const pass=presentationPassFromTask(task);
+  if(!pass)return base;
+  const root=posix(task.sourceRoot||fallbackRoot);
+  if(!root)return base;
+  const resolvedTarget=clean(target||task.target).toLowerCase();
+  const candidates=resolvedTarget==='roblox'
+    ?[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`]
+    :resolvedTarget==='unity'
+      ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`]
+      :resolvedTarget==='web'
+        ?[`${root}/index.html`,`${root}/style.css`,`${root}/game.js`]
+        :[];
+  const discovered=candidates.filter(relative=>{
+    try{return fs.existsSync(path.resolve(repoRoot,relative))&&fs.statSync(path.resolve(repoRoot,relative)).isFile();}
+    catch{return false;}
+  });
+  return freezeList([...base,...discovered]).slice(0,6);
+}
+
 function presentationTaskType(task = {}) {
   const pass=presentationPassFromTask(task);
   if(pass==='ASSET_ADAPTATION')return'graphics';
@@ -545,7 +566,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'The candidate must be independently playable and reviewable; validation-only patches, placeholder source, and unrelated rewrites are forbidden.',
     supervisionApproved?'Supervised approval is already recorded.':'Supervised approval is NOT recorded; automatic promotion must remain blocked.'
   ].join('\n'):'';
-  const responsibleFiles = freezeList(task.responsibleFiles || []);
+  const responsibleFiles = expandPresentationResponsibleFiles({task,target:plan.target,repoRoot:process.cwd(),fallbackRoot:adapter.source.root});
   const compiledWorkContract = compileVibeCentralWorkContract({
     snapshot:centralPolicy,
     task:{...task,supervisionApproved},
