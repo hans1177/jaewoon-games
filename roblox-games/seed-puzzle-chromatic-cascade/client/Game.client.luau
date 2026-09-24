@@ -23,7 +23,12 @@ gui.Name = "ApprovedScopeHud"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 local root = Instance.new("Frame")
-if hasStudioAssetAtom("FRAME_PANEL") then
+local studioAssetStroke = Instance.new("UIStroke")
+studioAssetStroke.Name = "StudioAssetFramePanel"
+studioAssetStroke.Thickness = 1
+studioAssetStroke.Transparency = 0.55
+studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+studioAssetStroke.Parent = root
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
   studioAssetStroke.Thickness = 1
