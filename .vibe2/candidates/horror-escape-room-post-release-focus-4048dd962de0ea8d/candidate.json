@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "QACamera.install(C,gui,function()",
+      "replace": "p:GetAttributeChangedSignal(\"FeedbackEvent\"):Connect(function()\n local value=tostring(p:GetAttribute(\"FeedbackEvent\")or\"\"\n if value:find(\"^INFECT:\")then warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72\n elseif value:find(\"^PURIFY\")then rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9\n elseif value:find(\"^RESULT:\")then resultSfx.TimePosition=0;resultSfx:Play()\n end\n)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

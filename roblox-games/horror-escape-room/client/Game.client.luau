@@ -530,7 +530,13 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("MonsterCount",tonumber(snapshot.MonsterCount)or 0)
 end)
 
-QACamera.install(C,gui,function()
+p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
+ local value=tostring(p:GetAttribute("FeedbackEvent")or""
+ if value:find("^INFECT:")then warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
+ elseif value:find("^PURIFY")then rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
+ elseif value:find("^RESULT:")then resultSfx.TimePosition=0;resultSfx:Play()
+ end
+)
  local arena=workspace:FindFirstChild("MidnightArena")
  if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
