@@ -1220,7 +1220,23 @@
       "JUNGLE_RUINS",
       "UNDERGROUND",
       "UNDEAD",
-      "MECHANICAL_CIVILIZATION"
+      "MECHANICAL_CIVILIZATION",
+      "INK_WASH",
+      "WATERCOLOR",
+      "NOIR",
+      "TOON_NOIR",
+      "SOLARPUNK",
+      "BIOPUNK",
+      "RETRO_FUTURISM",
+      "COZY",
+      "PAPER_CRAFT",
+      "VOXEL",
+      "DREAMCORE",
+      "HISTORICAL_EAST_ASIAN",
+      "SPACE_OPERA",
+      "UNDERWATER_FANTASY",
+      "DESERT_FANTASY",
+      "MYTHIC_NORDIC"
     ],
     "cartoonTransforms": [
       "BODY_PROPORTION",
@@ -2726,12 +2742,13 @@
         "totalLodSlots": 21
       },
       "concept": {
-        "presetFamilies": 39,
+        "presetFamilies": 55,
         "weightedBlend": true
       },
       "worldGeneration": {
         "mapDnaFields": 16,
-        "streamingRoles": 5
+        "streamingRoles": 5,
+        "referenceObservationFields": 10
       },
       "visualDna": {
         "gameSpecificLock": true
@@ -2793,7 +2810,23 @@
         "UNDERGROUND",
         "UNDEAD",
         "MECHANICAL_CIVILIZATION",
-        "CHIBI"
+        "CHIBI",
+        "INK_WASH",
+        "WATERCOLOR",
+        "NOIR",
+        "TOON_NOIR",
+        "SOLARPUNK",
+        "BIOPUNK",
+        "RETRO_FUTURISM",
+        "COZY",
+        "PAPER_CRAFT",
+        "VOXEL",
+        "DREAMCORE",
+        "HISTORICAL_EAST_ASIAN",
+        "SPACE_OPERA",
+        "UNDERWATER_FANTASY",
+        "DESERT_FANTASY",
+        "MYTHIC_NORDIC"
       ],
       "axes": {
         "artTone": [
@@ -2910,7 +2943,27 @@
         "CASUAL",
         "HORROR",
         "SIMULATION"
-      ]
+      ],
+      "referenceImageObservation": {
+        "supported": true,
+        "structuralFields": [
+          "RIDGE_AND_VALLEY_FLOW",
+          "ROAD_AND_PATH_GRAPH",
+          "OPEN_SPACE_DENSITY",
+          "OBSTACLE_CLUSTERING",
+          "LANDMARK_HIERARCHY",
+          "VEGETATION_DENSITY",
+          "URBAN_BLOCK_RHYTHM",
+          "CHOKE_AND_RELEASE",
+          "SAFE_DANGER_ZONE_RELATION",
+          "SIGHTLINE_AND_REVEAL"
+        ],
+        "sourceBound": true,
+        "sourceRightsRequired": true,
+        "rawProtectedReferencePersistentLearningForbidden": true,
+        "directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden": true,
+        "verifiedAgainstSourceRequiredForPositiveLearning": true
+      }
     },
     "gameVisualDna": {
       "status": "ACTIVE_SEMANTIC_CAPABILITY",
