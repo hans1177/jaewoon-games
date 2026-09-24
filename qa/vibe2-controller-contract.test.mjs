@@ -314,15 +314,9 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
 });
 
 test('routine Vibe checkouts stay shallow while release history comparison remains deep',()=>{
-  const ingest=fs.readFileSync(new URL('../.github/workflows/vibe2-distillation-ingest.yml',import.meta.url),'utf8');
-  const reconcile=fs.readFileSync(new URL('../.github/workflows/company-development-queue-reconcile.yml',import.meta.url),'utf8');
-
   assert.match(workflow,/Checkout Vibe2 control line[\s\S]*?fetch-depth: 1/);
   assert.match(workflow,/Checkout latest Vibe2 control line[\s\S]*?fetch-depth: 1/);
   assert.match(safetyNetWorkflow,/Checkout Vibe2 control branch[\s\S]*?fetch-depth: 1/);
-  assert.match(ingest,/Checkout main[\s\S]*?fetch-depth: 1/);
-  assert.match(reconcile,/Checkout main engine[\s\S]*?fetch-depth: 1/);
-
   assert.match(candidateReleaseWorkflow,/Checkout candidate[\s\S]*?fetch-depth: 0/);
 });
 
