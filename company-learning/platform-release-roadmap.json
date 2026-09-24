@@ -1,5 +1,5 @@
 {
-  "version": 331,
+  "version": 332,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16604,7 +16604,34 @@
         "sameCycleRetrievalAndHandoffUseMergedExperienceMemory": true,
         "duplicatePersistenceMustUseOutcomeIdEvidenceToken": true,
         "repeatedIndependentVerificationMayReinforceConfidenceOncePerDistinctOutcomeId": true,
-        "persistenceMayNotCreatePositiveMasteryWithoutVerifiedEvidence": true
+        "persistenceMayNotCreatePositiveMasteryWithoutVerifiedEvidence": true,
+        "producerContract": {
+          "enabled": true,
+          "requestCompiler": "tools/vibe2-source-worker.mjs",
+          "focusedQa": "tools/vibe2-incremental-qa.mjs",
+          "finalProducer": "tools/vibe2-fan-in-review.mjs",
+          "markerOnlyPassForbidden": true,
+          "requestIsNotPassEvidence": true,
+          "focusedQaIsNotFinalPass": true,
+          "webPositiveRequires": [
+            "SPECIALIZED_FOCUSED_QA_PASS",
+            "FAN_IN_REVIEW_PASS",
+            "FULL_REGRESSION_PASS"
+          ],
+          "nativePositiveRequires": [
+            "SPECIALIZED_FOCUSED_QA_PASS",
+            "FAN_IN_REVIEW_PASS",
+            "FULL_REGRESSION_PASS",
+            "AUTHORITATIVE_TARGET_ENGINE_QA_PASS"
+          ],
+          "negativeRequiresExplicitFocusedOrRuntimeFailure": true,
+          "finalVerifiedMarkerMayOnlyBeEmittedByFanInAfterAllRequiredEvidence": true,
+          "targetEngineQaEvidencePatterns": [
+            "roblox-verification-run:",
+            "unity-verification-run:"
+          ],
+          "authorityExpansion": false
+        }
       }
     },
     "worldAndConceptLearning": {
