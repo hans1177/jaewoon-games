@@ -1,5 +1,5 @@
 {
-  "version": 165,
+  "version": 166,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -53,6 +53,21 @@
     "fixedRuleCount": null,
     "hardcodedRuleNumberBranchesForbidden": true,
     "declarativeAssertionSource": "ownerCanonicalRules.rule<N>.machineEnforcement.assertions"
+  },
+  "minimumNecessaryProcedurePolicyProjection": {
+    "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+    "mode": "DEVELOPMENT_THROUGHPUT_FIRST_MINIMUM_NECESSARY_PROCEDURE",
+    "defaultValidationScope": "CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCIES_ONLY",
+    "securityHardGateScope": "RELEVANT_FINDING_OR_PROTECTED_AUTHORITY_SECURITY_DELTA_ONLY",
+    "duplicateValidationForbidden": true,
+    "duplicateReviewForbiddenWithoutRelevantDelta": true,
+    "passingEvidenceReuseRequiredWhenStillValid": true,
+    "wholeRepositoryRegressionDefaultForbidden": true,
+    "nonblockingAuditPreferred": true,
+    "administrativeChecksConsumeGamePrimarySlots": false,
+    "atomicRefillContinuesDuringUnrelatedChecks": true,
+    "fullRegressionEscalationRequiresRelevantEvidence": true,
+    "releaseAndConfirmedSecurityFindingsRemainFailClosed": true
   },
   "executionTopology": {
     "design": [

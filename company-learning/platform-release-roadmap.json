@@ -1,5 +1,5 @@
 {
-  "version": 346,
+  "version": 347,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -18858,6 +18858,70 @@
     "strictDesignParallelWithDevelopment": true,
     "activeDevelopmentGlobalDesignDeferForbidden": true,
     "activeOwnerResetSource": "owner-design-reset-queue.json"
+  },
+  "minimumNecessaryProcedurePolicy": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-25",
+    "status": "ACTIVE",
+    "priority": "DEVELOPMENT_THROUGHPUT_FIRST_WITH_MINIMUM_NECESSARY_PROCEDURE",
+    "objective": "MINIMIZE_PROCESS_SECURITY_REVIEW_REGRESSION_AND_ADMINISTRATIVE_OVERHEAD_WHILE_PRESERVING_ONLY_EVIDENCE_RELEVANT_TO_THE_CHANGED_RISK_SCOPE",
+    "defaultMode": "MINIMUM_NECESSARY_VALIDATION_AND_NONBLOCKING_AUDIT",
+    "principles": {
+      "procedureIsMeansNotGoal": true,
+      "unrelatedProcedureMayNotDelayDevelopment": true,
+      "alreadyPassingEvidenceMustBeReusedWhenStillValid": true,
+      "duplicateValidationWithoutEvidenceInvalidationForbidden": true,
+      "duplicateReviewWithoutRelevantChangeForbidden": true,
+      "wholeRepositoryRegressionIsNotDefault": true,
+      "administrativeChecksMayNotConsumeGamePrimaryWorkerSlots": true,
+      "asyncOrPosthocAuditPreferredWhenAcceptanceNeedNotBlock": true,
+      "immediateAtomicRefillMustContinueWhileUnrelatedChecksRun": true
+    },
+    "hardGateOnlyWhen": [
+      "CENTRAL_POLICY_OR_AUTHORITY_MUTATION",
+      "SECURITY_RELEVANT_BOUNDARY_OR_PRIVILEGE_CHANGE",
+      "SECRET_CREDENTIAL_OR_EXTERNAL_TRUST_CHANGE",
+      "SERVER_AUTHORITY_REMOTE_INPUT_SAVE_OR_ECONOMY_INTEGRITY_CHANGE",
+      "PUBLIC_RELEASE_OR_EXTERNAL_PROMOTION",
+      "EVIDENCE_INVALIDATED_BY_RELEVANT_SOURCE_OR_DEPENDENCY_CHANGE",
+      "REPRODUCED_BROAD_REGRESSION"
+    ],
+    "security": {
+      "default": "AUTOMATED_SCOPED_SCAN_NONBLOCKING_UNLESS_RELEVANT_FINDING",
+      "manualOrPrimaryAiReviewOnlyForRelevantSecurityOrProtectedAuthorityDelta": true,
+      "repeatExactHeadReviewWithoutSecurityRelevantDeltaForbidden": true,
+      "unrelatedSecurityReviewMayNotHoldDevelopmentSlots": true,
+      "verifiedSecurityEvidenceReusableUntilRelevantDelta": true,
+      "quarantineStillRequiredForConfirmedHighRiskFinding": true
+    },
+    "regression": {
+      "defaultScope": "CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCIES_ONLY",
+      "impactScopedFirst": true,
+      "expandScopeOnlyOnEvidence": true,
+      "fullRegressionRequiredForBroadCrossSystemReleaseOrReproducedBroadFailureOnly": true,
+      "unaffectedPassingEvidenceReusable": true,
+      "rerunSuccessfulUnaffectedStagesForbidden": true
+    },
+    "qaAndReview": {
+      "incrementalFirst": true,
+      "sameFailedGateRetestFirst": true,
+      "unrelatedQaMayRunInParallel": true,
+      "portfolioWideBarrierForbidden": true,
+      "reviewMayNotBecomeRoutineSerializationPoint": true
+    },
+    "execution": {
+      "workerSlotPriority": "IMPLEMENTATION_AND_CAUSAL_REPAIR_BEFORE_NONBLOCKING_PROCEDURE",
+      "nonblockingChecksUseSpareOrSeparateCapacity": true,
+      "taskMicroFanInImmediateRefillPreserved": true,
+      "cohortFanInLimitedToRelevantIntegrationRegressionAndRelease": true
+    },
+    "forbiddenInterpretations": [
+      "SKIP_RELEVANT_SECURITY_FINDING",
+      "SKIP_REQUIRED_RELEASE_EVIDENCE",
+      "FABRICATE_PASS",
+      "REUSE_INVALIDATED_EVIDENCE",
+      "LOWER_QUALITY_THRESHOLD"
+    ]
   },
   "neuralGatedExecution": {
     "version": 1,
