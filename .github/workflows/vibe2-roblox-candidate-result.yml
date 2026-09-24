@@ -148,6 +148,12 @@ jobs:
               echo 'continue_work=0' >> "$GITHUB_OUTPUT"
               exit 0
             fi
+            if [ "$VERIFIED_CONCLUSION" = 'success' ]; then
+              node vibe2-main-contract/tools/vibe2-fan-in-review.mjs \
+                --queue=.vibe2/queue.json \
+                --post-native-branch="$CANDIDATE_BRANCH" \
+                --post-native-target=roblox | tee /tmp/vibe2-roblox-post-native-specialized.log
+            fi
             git add .vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'updated=0' >> "$GITHUB_OUTPUT"
