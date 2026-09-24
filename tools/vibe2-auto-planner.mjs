@@ -198,7 +198,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
     const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
     const executionEvidence=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
-    const runtimeObserved=Object.hasOwn(executionEvidence,'runtimePassed')||item?.robloxRuntimePassed===true;
+    const runtimeObserved=Object.hasOwn(executionEvidence,'runtimePassed')||Object.hasOwn(item||{},'robloxRuntimePassed');
     const queuePatch={
       queueCurrentStep:clean(item?.currentStep),
       queueCanonicalState:clean(item?.canonicalState),
