@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 
-export const VIBE2_DEVELOPMENT_INTELLIGENCE_VERSION = 2;
+export const VIBE2_DEVELOPMENT_INTELLIGENCE_VERSION = 3;
 export const DEFAULT_CONTEXT_LIMITS = Object.freeze({ maxFiles:8, maxBytes:48_000, maxFileBytes:24_000 });
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
@@ -122,12 +122,37 @@ export function classifyImplementationImpact({changedFiles=[],role='development'
   return Object.freeze({version:1,status,score,max:5,changedFiles:Object.freeze(files),metaOnly:Object.freeze(files.filter(isMetaOnlyPath)),visualFiles:Object.freeze(visual),gameplayFiles:Object.freeze(gameplay),implementationCredit:score>0});
 }
 
-export function buildExecutionCheckpoint({gameId='',role='development',sourceCommit='',candidateId='',goal='',completed=[],nextAction='',pendingCi=[],blocker=null,acceptanceCriteria=[],status='IMPLEMENTED_PENDING_QA',fingerprint=null,changedFiles=[]}={}){
+export function buildExecutionCheckpoint({
+  gameId='',role='development',sourceCommit='',candidateId='',goal='',completed=[],nextAction='',pendingCi=[],blocker=null,
+  acceptanceCriteria=[],status='IMPLEMENTED_PENDING_QA',fingerprint=null,changedFiles=[],
+  qualityBaseline=null,qualityFocus=null,qualityDelta=null,studioCycle=null
+}={}){
   const allowed=new Set(['STARTED','IMPLEMENTED_PENDING_QA','VERIFIED','BLOCKED']);
   const resolvedStatus=allowed.has(clean(status).toUpperCase())?clean(status).toUpperCase():'IMPLEMENTED_PENDING_QA';
+  const normalizedFocus=qualityFocus&&typeof qualityFocus==='object'?Object.freeze({
+    pillar:clean(qualityFocus.pillar).toUpperCase()||null,
+    gap:clean(qualityFocus.gap)||null,
+    evidence:clean(qualityFocus.evidence)||null
+  }):null;
+  const normalizedDelta=qualityDelta&&typeof qualityDelta==='object'?Object.freeze({
+    status:clean(qualityDelta.status).toUpperCase()||null,
+    improvedAxes:Object.freeze(safeArray(qualityDelta.improvedAxes).map(clean).filter(Boolean).slice(0,12)),
+    closedGaps:Object.freeze(safeArray(qualityDelta.closedGaps).map(clean).filter(Boolean).slice(0,12)),
+    protectedRegression:qualityDelta.protectedRegression===true,
+    evidence:Object.freeze(safeArray(qualityDelta.evidence).map(clean).filter(Boolean).slice(0,16))
+  }):null;
   return Object.freeze({
-    version:1,status:resolvedStatus,gameId:clean(gameId),role:clean(role)||'development',sourceCommit:clean(sourceCommit)||null,candidateId:clean(candidateId)||null,
-    goal:clean(goal),completed:Object.freeze(safeArray(completed).map(clean).filter(Boolean).slice(0,12)),changedFiles:Object.freeze(uniq(changedFiles)),nextAction:clean(nextAction),pendingCi:Object.freeze(safeArray(pendingCi).map(clean).filter(Boolean).slice(0,12)),blocker:blocker?clean(blocker):null,acceptanceCriteria:Object.freeze(safeArray(acceptanceCriteria).map(clean).filter(Boolean).slice(0,12)),failureFingerprint:fingerprint?.id||clean(fingerprint)||null,updatedAt:new Date().toISOString(),
+    version:2,status:resolvedStatus,gameId:clean(gameId),role:clean(role)||'development',sourceCommit:clean(sourceCommit)||null,candidateId:clean(candidateId)||null,
+    goal:clean(goal),completed:Object.freeze(safeArray(completed).map(clean).filter(Boolean).slice(0,12)),changedFiles:Object.freeze(uniq(changedFiles)),nextAction:clean(nextAction),pendingCi:Object.freeze(safeArray(pendingCi).map(clean).filter(Boolean).slice(0,12)),blocker:blocker?clean(blocker):null,acceptanceCriteria:Object.freeze(safeArray(acceptanceCriteria).map(clean).filter(Boolean).slice(0,16)),failureFingerprint:fingerprint?.id||clean(fingerprint)||null,
+    studioQuality:Object.freeze({
+      baseline:qualityBaseline&&typeof qualityBaseline==='object'?Object.freeze({...qualityBaseline}):qualityBaseline||null,
+      focus:normalizedFocus,
+      delta:normalizedDelta,
+      cycle:studioCycle&&typeof studioCycle==='object'?Object.freeze({...studioCycle}):studioCycle||null,
+      verifiedImprovement:resolvedStatus==='VERIFIED'&&Boolean(normalizedDelta)&&(normalizedDelta.improvedAxes.length>0||normalizedDelta.closedGaps.length>0)&&normalizedDelta.protectedRegression!==true,
+      nextBuildUpRequired:resolvedStatus==='VERIFIED'
+    }),
+    updatedAt:new Date().toISOString(),
   });
 }
 
