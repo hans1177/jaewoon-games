@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -2215,4 +2215,27 @@ test('candidate manifest carries presentation quality contract without expanding
   assert.equal(result.presentationQuality.pass,'LIVING_MOTION');
   assert.equal(result.presentationQuality.authorityExpanded,false);
   assert.deepEqual(persisted.presentationQuality.preserve,workOrder.presentationQuality.preserve);
+});
+
+
+test('specialized verification requests are created only for game targets',()=>{
+  const system=buildSpecializedVerificationRequest({
+    target:'system',
+    goal:'narrative world generation route graph story transition',
+    responsibleFiles:['tools/vibe2-learning-motor.mjs']
+  });
+  assert.equal(system.required,false);
+  assert.equal(system.gameTargetEligible,false);
+  assert.equal(system.blockedReason,'NON_GAME_TARGET');
+  assert.deepEqual([...system.requestedMarkers],[]);
+
+  const web=buildSpecializedVerificationRequest({
+    target:'web',
+    goal:'narrative world generation route graph story transition',
+    responsibleFiles:['web-games/demo/game.js']
+  });
+  assert.equal(web.required,true);
+  assert.equal(web.gameTargetEligible,true);
+  assert.ok(web.requestedMarkers.includes('VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'));
+  assert.ok(web.requestedMarkers.includes('VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS'));
 });
