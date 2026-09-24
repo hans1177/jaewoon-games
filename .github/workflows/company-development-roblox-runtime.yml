@@ -12,10 +12,13 @@ on:
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/company-homepage-platform-exposure-sync.mjs'
+      - 'company-asset-library.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-roblox-runtime.test.mjs'
+      - 'qa/company-development-roblox-source-reconcile.test.mjs'
   workflow_dispatch:
     inputs:
       game_id:
@@ -120,6 +123,7 @@ jobs:
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
+          const reconciliationById=new Map((reconciliation||[]).map(row=>[row.gameId,row]));
           const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
@@ -141,9 +145,11 @@ jobs:
               :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
             if(candidateReady)continue;
             const target=`roblox-games/${item.gameId}`;
+            const reconciliationRow=reconciliationById.get(item.gameId);
+            const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
             if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId))continue;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
-            if(fs.existsSync(target)&&!bootstrapFailed)continue;
+            if(fs.existsSync(target)&&!bootstrapFailed&&!existingSourceAssetRebind)continue;
             rows.push({
               gameId:item.gameId,
               gameName:item.gameName||item.gameId,
@@ -152,6 +158,7 @@ jobs:
               designProfile:item.platformDesignProfiles?.ROBLOX||null,
               target,
               secondaryOwnerFocus,
+              existingSourceAssetRebind,
             });
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
@@ -247,7 +254,7 @@ jobs:
           echo "safe=$safe" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
           echo 'ROBLOX_SOURCE_MODEL_USED=NO'
-          node -e "const e=require(process.argv[1]);if(e.vibe3LearningApplied!==true||!e.recombinationRecipeId)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS')" "$evidence"
+          node -e "const e=require(process.argv[1]);const existing=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';if(existing){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==false)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{if(e.vibe3LearningApplied!==true||!e.recombinationRecipeId)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
 
       - name: Attempt validated Roblox source promotion through PR
         id: merge
