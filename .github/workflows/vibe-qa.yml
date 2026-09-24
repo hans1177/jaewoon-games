@@ -69,6 +69,9 @@ jobs:
       - name: Validate studio asset universe
         run: node --test qa/vibe-studio-asset-universe.test.mjs
 
+      - name: Validate narrative story quest persona and memory
+        run: node --test qa/vibe2-artbook-story-core.test.mjs
+
       - name: Test gameplay quantitative analysis
         run: |
           node --input-type=module <<'NODE'
