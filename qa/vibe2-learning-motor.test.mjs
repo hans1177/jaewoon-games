@@ -1450,3 +1450,23 @@ test('web specialized positive ingress remains independent from native engine QA
   }]});
   assert.equal(extracted.positive,1);
 });
+
+
+test('non-game system target cannot enter specialized game mastery even with final-marker-shaped evidence',()=>{
+  const extracted=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'system-forged-specialized',
+    gameId:'company-system',
+    target:'system',
+    status:'verified',
+    goal:'narrative world generation architecture',
+    evidence:[
+      'VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',
+      'VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS',
+      'specialized-final-verification:PASS',
+      'specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION',
+      'actions-run:9104'
+    ]
+  }]});
+  assert.equal(extracted.positive,0);
+  assert.equal(extracted.records.length,0);
+});
