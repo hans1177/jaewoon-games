@@ -121,8 +121,8 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
     '.github/workflows/company-evolution-qa.yml',
     '.github/workflows/vibe3-engine-contract.yml'
   ]);
-  assert.equal(runtime.version>=28,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,28);
+  assert.equal(runtime.version>=29,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,29);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
   assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
@@ -156,7 +156,7 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.ok(runtime.workManagement.nextWorkerDirective.verifiedState.includes('RUNTIME_RESULT_NEURAL_INGRESS_IMPLEMENTED_QA_PASS'));
   assert.ok(runtime.workManagement.nextWorkerDirective.verifiedState.includes('MINIMUM_NECESSARY_PROCEDURE_POLICY_ACTIVE'));
   assert.equal(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P0_')),false);
-  assert.ok(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P1_CAPTURE_LIVE_RUNTIME_RESULT_NEURAL_EVIDENCE')));
+  assert.ok(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P1_CAPTURE_LIVE_VERIFIED_RUNTIME_FAIL_REQUEUE')));
   assert.ok(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P2_VERIFIED_THROUGHPUT_OPTIMIZATION')));
   assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
   assert.equal(runtime.coordination.sourceRootExclusive,true);
