@@ -1,5 +1,5 @@
 {
-  "version": 337,
+  "version": 338,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16364,7 +16364,7 @@
           "uniqueHeroContentTarget": "20_TO_30_PERCENT_GAME_SPECIFIC_AUTHORING_WHEN_NEEDED"
         },
         "rotation": {
-          "version": 1,
+          "version": 2,
           "enabled": true,
           "scheduler": ".github/workflows/vibe2-24h-runner.yml",
           "usesExistingGapFill": true,
@@ -16385,7 +16385,20 @@
           "minimumAtomsPerFamily": 20,
           "maxRetirePerFamilyPerCycle": 2,
           "refillSameCycle": true,
-          "verifiedAssetsRequireNativeRuntimeReverificationBeforeReactivation": true
+          "verifiedAssetsRequireNativeRuntimeReverificationBeforeReactivation": true,
+          "learningGraduationMode": "MASTERED_LEAVES_LEARNING_EXPANSION_POOL_ONLY",
+          "retirementTriggers": [
+            "DUPLICATE_IDENTITY",
+            "VERIFIED_RUNTIME_FAILURE",
+            "COMPATIBILITY_FAILURE_REPEAT_2",
+            "STALE_UNUSED_30_CYCLES"
+          ],
+          "graduationTrigger": "VERIFIED_MASTERY_SATURATED",
+          "masteryThreshold": 90,
+          "masteryVerifiedPassMinimum": 2,
+          "masteredMaterialRemainsProductionReusable": true,
+          "masteredMaterialCreatesNewDiversityRefillSlot": true,
+          "maxGraduatePerFamilyPerCycle": 2
         }
       }
     }
