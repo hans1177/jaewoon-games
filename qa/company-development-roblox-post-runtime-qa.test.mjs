@@ -16,6 +16,19 @@ test('Roblox runtime foundation QA uses Open Cloud sentinel and never Studio',()
   assert.doesNotMatch(workflow,/ExecuteMultiplayerTestAsync/);
 });
 
+test('Studio asset binding promotion waits for exact accepted Roblox runtime',()=>{
+  assert.match(workflow,/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true/);
+  assert.match(workflow,/result\.runtimeAcceptancePassed===true/);
+  assert.match(workflow,/result\.f5InputCameraUiPassed===true/);
+  assert.match(workflow,/result\.f8GameplaySystemsPassed===true/);
+  assert.match(workflow,/ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS/);
+  assert.match(workflow,/sourceRevision/);
+  assert.match(workflow,/artifactIdentity/);
+  assert.match(workflow,/candidateVersionNumber:Number\(candidate\.versionNumber\)/);
+  assert.match(workflow,/actualPlatformRuntime:true/);
+  assert.match(workflow,/studioAssetRuntimeBindingPassed/);
+});
+
 test('missing actual runtime observation remains on the same gate with unlimited causal retry',()=>{
   assert.match(workflow,/robloxRuntimeRetryCount=attempts/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_PENDING/);
