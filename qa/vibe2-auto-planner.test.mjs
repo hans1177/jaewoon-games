@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -1405,3 +1405,31 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.maxRetries,null);
 });
 
+
+test('existing Roblox games automatically receive a Studio asset selection handoff backfill task',()=>{
+  const root=tempRepo();
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    authority:'MACHINE_EXECUTION_CONTRACT',machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
+    assetProductionParallelContract:{enabled:true}
+  },null,2),'utf8');
+  const gameId='legacy-rbx';
+  const shared=path.join(root,'roblox-games',gameId,'shared');
+  fs.mkdirSync(shared,{recursive:true});
+  fs.writeFileSync(path.join(shared,'GameConfig.luau'),'return { GameName = "Legacy" }\n','utf8');
+  const project={gameId,name:'Legacy Roblox',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const task=findRobloxStudioAssetBackfillTask(project,root,{tasks:[]});
+  assert.ok(task);
+  assert.equal(task.id,`${gameId}-roblox-studio-asset-backfill-v1`);
+  assert.equal(task.target,'roblox');
+  assert.equal(task.studioAssetBackfill,true);
+  assert.equal(task.presentationPass,'ASSET_ADAPTATION');
+  assert.match(task.goal,/플래너는 선택·전달만 하며 게임 소스를 직접 수정하지 않는다/);
+  assert.match(task.goal,/Vibe2\/Vibe3가 현재 책임 Luau 소스에 실제 적용/);
+  assert.match(task.goal,/정확한 Roblox target-engine atom selection match/);
+  assert.ok(task.evidence.includes('roblox-studio-asset-planner-source-mutation:forbidden'));
+  assert.ok(task.evidence.includes('roblox-studio-asset-vibe-application:required'));
+  assert.ok(task.evidence.includes('roblox-studio-asset-runtime-promotion:blocked-until-pass'));
+
+  fs.writeFileSync(path.join(shared,'GameConfig.luau'),'local STUDIO_ASSET_BINDING_VERSION = 1\nreturn { StudioAssets = { BindingVersion = 1 } }\n','utf8');
+  assert.equal(findRobloxStudioAssetBackfillTask(project,root,{tasks:[]}),null);
+});
