@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, compileRuntimeNeuralEvent } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -1659,6 +1659,53 @@ test('existing Roblox games automatically receive a Studio asset selection hando
 });
 
 
+
+
+test('runtime PASS compiles to non-firing neural RUNTIME_RESULT evidence',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-pass',
+    queueRobloxRuntimeObserved:true,
+    queueRobloxRuntimePassed:true,
+    queueRobloxSourceCommit:'a'.repeat(40),
+    queueRobloxFailureStage:'INDEPENDENT_QA'
+  },{inhibitors:[],actionRecommendation:{failureStage:'TARGET_PLATFORM_RUNTIME'}});
+  assert.ok(compiled);
+  assert.equal(compiled.event.type,'RUNTIME_RESULT');
+  assert.equal(compiled.event.outcome,'PASS');
+  assert.equal(compiled.route.fireAllowed,false);
+  assert.equal(compiled.route.authorityMode,'SHADOW');
+  assert.ok(compiled.evidence.some(value=>value.startsWith('neural-event-shadow:')));
+});
+
+test('verified runtime failure may enter gated existing-scheduler route',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-fail',
+    queueRobloxRuntimeObserved:true,
+    queueRobloxRuntimePassed:false,
+    queueRobloxFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRobloxFailureSignature:'server-boot-timeout',
+    queueRobloxSourceCommit:'b'.repeat(40),
+    queueRobloxRootCauseVerified:true,
+    queueRobloxResponsibleSystem:'ROBLOX_RUNTIME'
+  },{inhibitors:[],actionRecommendation:{failureStage:'TARGET_PLATFORM_RUNTIME'}});
+  assert.ok(compiled);
+  assert.equal(compiled.event.outcome,'FAIL');
+  assert.equal(compiled.rootCauseVerified,true);
+  assert.equal(compiled.route.fireAllowed,true);
+  assert.equal(compiled.route.authorityMode,'GATED');
+  assert.equal(compiled.route.policyMutationAllowed,false);
+  assert.ok(compiled.evidence.some(value=>value.startsWith('neural-event-gated:')));
+});
+
+test('unobserved runtime state does not invent a runtime neural event',()=>{
+  assert.equal(compileRuntimeNeuralEvent({
+    gameId:'runtime-pending',
+    queueRobloxRuntimeObserved:false,
+    queueRobloxRuntimePassed:false,
+    queueRobloxFailureStage:'INDEPENDENT_QA'
+  }),null);
+});
+
 test('company-runtime nested Roblox execution evidence survives planner projection into repair context',()=>{
   const root=tempRepo();
   const gameId='runtime-evidence-bridge';
@@ -1706,4 +1753,8 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
   assert.ok(studio,'expected studio repair/evolution task');
   assert.match(studio.goal,/INDEPENDENT_QA/);
   assert.equal(studio.studioQualityEvolution.explicitGap,'INDEPENDENT_QA');
+  assert.ok(studio.evidence.includes('runtime-neural-event:compiled'));
+  assert.ok(studio.evidence.includes('runtime-neural-event-outcome:PASS'));
+  assert.ok(studio.evidence.includes('runtime-neural-event-authority:SHADOW'));
+  assert.ok(studio.evidence.some(value=>value.startsWith('neural-event-shadow:')));
 });
