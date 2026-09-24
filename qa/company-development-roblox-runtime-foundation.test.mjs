@@ -234,6 +234,17 @@ test('Open Cloud engine probe reports missing scope without fabricating evidence
  assert.equal(r.errorCode,'PERMISSION_DENIED');
 });
 
+test('F9 final review requires exact Studio asset runtime proof when a binding was applied',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ assert.match(workflow,/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true/);
+ assert.match(workflow,/const studioAssetRuntimeBindingExact=!studioAssetBindingRequired/);
+ assert.match(workflow,/ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS/);
+ assert.match(workflow,/post\.studioAssetRuntimeBindingEvidence\?\.sourceRevision===sourceRevision/);
+ assert.match(workflow,/post\.studioAssetRuntimeBindingEvidence\?\.artifactIdentity===artifactIdentity/);
+ assert.match(workflow,/candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+ assert.match(workflow,/&&studioAssetRuntimeBindingExact===true/);
+});
+
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/roblox-open-cloud-engine-probes\.json/);
