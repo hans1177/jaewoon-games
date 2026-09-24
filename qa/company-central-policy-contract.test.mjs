@@ -698,6 +698,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.runtimeEvidenceOverridesStaleTopLevelFlags,true);
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.canonicalNativeExecutionEvidenceField,'executionEvidence');
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.plannerPreservesFailureStageSignatureAndSourceRevision,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.reserveIngressRuntimeSync.blankControlQueueRecovery.enabled,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.reserveIngressRuntimeSync.blankControlQueueRecovery.canonicalQueueVersion,5);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.reserveIngressRuntimeSync.blankControlQueueRecovery.nonEmptyMalformedJsonFailClosed,true);
   assert.equal(arch.protectedAuthority.policyMutation,false);
   assert.equal(arch.protectedAuthority.qaBypass,false);
   assert.equal(arch.protectedAuthority.releaseSelfApproval,false);
