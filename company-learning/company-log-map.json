@@ -1,5 +1,5 @@
 {
-  "version": 37,
+  "version": 38,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -617,5 +617,29 @@
     "unityAndRobloxEvidenceRemainPlatformSpecific": true,
     "failureState": "ASSET_REPAIR_REQUIRED",
     "passMeaning": "MOTION_PRESENTATION_CHECKPOINT_NOT_RELEASE_AUTHORITY"
+  },
+  "autoMotionGapFillEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.autoMotionCoverageGapFill",
+    "recordKind": "motion-coverage-gap-fill-evidence",
+    "rootScope": "INSIDE_GRAPHICS_PRODUCTION_ONLY",
+    "requiredFields": [
+      "GAME_ID",
+      "GRAPHICS_PRODUCTION_ID",
+      "ARCHETYPE",
+      "BODY_PLAN",
+      "COVERAGE_AUDIT",
+      "MISSING_GROUPS",
+      "REQUIRED_ROLE_GAPS",
+      "PRIORITY_SCORE",
+      "REUSE_DONOR_CANDIDATES",
+      "EXTERNAL_SOURCE_CANDIDATES",
+      "SEMANTIC_SEEDS_PREPARED",
+      "DUPLICATE_FINGERPRINT_CHECK",
+      "RUNTIME_VERIFICATION_STATE"
+    ],
+    "preparedSemanticMayNotClaimVerified": true,
+    "automaticFillMayNotCreateReleaseAuthority": true,
+    "actualPromotionStillRequiresNativeRuntimeEvidence": true
   }
 }
