@@ -413,8 +413,10 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
-  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"));
+  assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"),false);
   assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"),false);
+  assert(reserveBlock.includes('git fetch origin company-runtime --quiet'));
+  assert(reserveBlock.includes('VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind'));
   assert.equal(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'),false);
   assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS'));
   assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'));
