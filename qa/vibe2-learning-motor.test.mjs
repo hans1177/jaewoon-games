@@ -1090,3 +1090,45 @@ test('verified graphics evolution outcomes learn positive negative and repeated 
   const deduped=applyVerifiedGraphicsEvolutionOutcomes(learned.state,{tasks:[pass,fail]});
   assert.equal(deduped.added,0);
 });
+
+
+test('verified world concept and narrative experience reaches specialized mastery domains',()=>{
+  const learned=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'specialized-exp-1',gameId:'world-story-game',engine:'web',verified:true,reusable:true,outcome:'PASS',
+    goal:'concept direction world generation map DNA level design route graph main story quest graph companion behavior',
+    change:'concept blend style bible adaptive world map DNA encounter space route graph shortcut main story story spine foreshadow payoff twist evidence character voice relationship memory behavior intent companion behavior npc behavior monster personality world narrative',
+    reusablePatterns:[
+      'CONCEPT_DIRECTION WORLD_GENERATION LEVEL_DESIGN ROUTE_DESIGN MAIN_STORY_GENERATION QUEST_GRAPH',
+      'FORESHADOWING_PAYOFF TWIST_EVIDENCE_CHAIN CHARACTER_VOICE CHARACTER_RELATIONSHIP_MEMORY CHARACTER_BEHAVIOR',
+      'COMPANION_BEHAVIOR NPC_BEHAVIOR MONSTER_BEHAVIOR_PERSONALITY WORLD_NARRATIVE_BINDING'
+    ]
+  }]});
+  assert.equal(learned.added,1);
+  for(const domain of ['CONCEPT_DIRECTION','WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN','MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY','CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING']){
+    assert.ok(learned.state.domains[domain].xp>0,domain);
+  }
+});
+
+test('specialized mastery gaps map to dedicated 24h practice drills',()=>{
+  const idle=buildIdlePracticeQueue({});
+  const byDomain=new Map(idle.drills.filter(row=>Array.isArray(row.domains)&&row.domains.length===1).map(row=>[row.domains[0],row]));
+  assert.equal(byDomain.get('CONCEPT_DIRECTION')?.kind,'CONCEPT_DIRECTION_DRILL');
+  assert.equal(byDomain.get('WORLD_GENERATION')?.kind,'WORLD_GENERATION_DRILL');
+  assert.equal(byDomain.get('LEVEL_DESIGN')?.kind,'LEVEL_DESIGN_DRILL');
+  assert.equal(byDomain.get('ROUTE_DESIGN')?.kind,'ROUTE_DESIGN_DRILL');
+  assert.equal(byDomain.get('STREAMING_OPTIMIZATION')?.kind,'STREAMING_OPTIMIZATION_DRILL');
+  assert.equal(byDomain.get('MAIN_STORY_GENERATION')?.kind,'MAIN_STORY_GENERATION_DRILL');
+  assert.equal(byDomain.get('FORESHADOWING_PAYOFF')?.kind,'FORESHADOWING_PAYOFF_DRILL');
+  assert.equal(byDomain.get('TWIST_EVIDENCE_CHAIN')?.kind,'TWIST_EVIDENCE_CHAIN_DRILL');
+  assert.equal(byDomain.get('CHARACTER_VOICE')?.kind,'CHARACTER_VOICE_DRILL');
+  assert.equal(byDomain.get('CHARACTER_RELATIONSHIP_MEMORY')?.kind,'RELATIONSHIP_MEMORY_DRILL');
+  assert.equal(byDomain.get('CHARACTER_BEHAVIOR')?.kind,'CHARACTER_BEHAVIOR_DRILL');
+  assert.equal(byDomain.get('WORLD_NARRATIVE_BINDING')?.kind,'WORLD_NARRATIVE_BINDING_DRILL');
+});
+
+test('specialized benchmark ladder includes world concept narrative tracks',()=>{
+  const ladder=buildBenchmarkLadder({});
+  for(const track of ['CONCEPT_DIRECTION','WORLD_GENERATION','STREAMING_OPTIMIZATION','FORESHADOWING_PAYOFF','CHARACTER_BEHAVIOR','RELATIONSHIP_MEMORY']){
+    assert.ok(ladder.cases.some(row=>row.track===track),track);
+  }
+});
