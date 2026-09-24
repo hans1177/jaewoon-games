@@ -249,7 +249,14 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     'HOTSPOT_RECHECK:'+clean(row?.kind).toUpperCase()+':'+clean(row?.name),
     clean(row?.kind).toUpperCase()==='SYSTEM'?'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED':''
   ]).filter(Boolean);
-  const causalReplay=compileCausalReplayPlan({order,failures,testTargets,diagnosticReplayBaseline});
+  const studioPhase=clean(
+    order?.selectedTask?.studioQualityEvolution?.phase
+    ||order?.studioQualityEvolution?.phase
+    ||order?.workPackage?.sharedContext?.studioQualityEvolution?.phase
+  ).toUpperCase();
+  const repairRequired=studioPhase?studioPhase==='REPAIR':failures.length>0;
+  const repairFailures=repairRequired?failures:[];
+  const causalReplay=compileCausalReplayPlan({order,failures:repairFailures,testTargets,diagnosticReplayBaseline});
   const repairShared=order?.workPackage?.sharedContext?.gameRepair&&typeof order.workPackage.sharedContext.gameRepair==='object'?order.workPackage.sharedContext.gameRepair:{};
   const repairFailureStage=clean(order?.selectedTask?.failureStage||order?.failureStage||repairShared.failureStage)||null;
   const repairFailureSignature=clean(order?.selectedTask?.failureSignature||order?.selectedTask?.blocker||order?.failureSignature||repairShared.failureSignature)||null;
@@ -263,7 +270,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const classifiedTargets=unique(testTargets||[]);
   const gameRepair={
     version:1,
-    required:failures.length>0,
+    required:repairRequired,
     failureStage:repairFailureStage,
     failureSignature:repairFailureSignature,
     prePatchReproduced:causalReplay.prePatchReproduced===true,
@@ -271,7 +278,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     responsibleFiles:responsibleFiles.slice(0,16),
     revisions:{lastKnownGoodRevision,firstBrokenRevision,currentRevision,historyAvailable:Boolean(lastKnownGoodRevision||firstBrokenRevision)},
     originalScenarioReplay:{
-      required:failures.length>0,
+      required:repairRequired,
       coveredByCausalReplay:causalReplay.executable===true,
       identicalOrEquivalentInputStateRequired:true,
       testTargets:causalReplay.nodeTestTargets||[]
@@ -282,18 +289,18 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
       testTargets:classifiedTargets.filter(value=>/(?:invariant|state|progress|quest|wave|combat|scenario|integration)/i.test(value)).slice(0,8)
     },
     saveMigration:{
-      required:saveRequired,
+      required:repairRequired&&saveRequired,
       stableKeys:(sourceAnalysis.storageKeys||[]).slice(0,24),
       testTargets:classifiedTargets.filter(value=>/(?:save|load|migration|persist|storage)/i.test(value)).slice(0,8)
     },
     multiplayerLifecycle:{
-      required:multiplayerRequired,
+      required:repairRequired&&multiplayerRequired,
       minimumPlayers:2,
       userAssistanceRequired:false,
       manualOwnerParticipationMayNotBeRequiredForPass:true,
       testTargets:classifiedTargets.filter(value=>/(?:multi|network|sync|join|rejoin|server|client|remote)/i.test(value)).slice(0,8),
       automation:{
-        required:multiplayerRequired,
+        required:repairRequired&&multiplayerRequired,
         minimumSyntheticOrRealClients:2,
         machineDrivenScenarios:[
           'TWO_CLIENT_JOIN_AND_READY',
@@ -313,11 +320,11 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     },
     repeatCount:repairRepeatCount,
     repairMode,
-    sameApproachWithoutNewCausalEvidenceForbidden:repairMode==='ROOT_CAUSE_MODE',
+    sameApproachWithoutNewCausalEvidenceForbidden:repairRequired&&repairMode==='ROOT_CAUSE_MODE',
     impactRegressionRequired:true,
     fullRegressionFanInRequired:true,
     unchangedSourceRevalidationForbidden:true,
-    directResponsibleSystemRepairRequired:true,
+    directResponsibleSystemRepairRequired:repairRequired,
     authorityExpanded:false
   };
   const requiredFocusedChecks=unique([
@@ -325,13 +332,13 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
     ...hotspotChecks,
     ...(causalReplay.executable?['CAUSAL_REPLAY_POSTPATCH_REQUIRED']:[]),
-    ...(failures.length?['GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY','GAME_REPAIR_INVARIANT_VALIDATION']:[]),
-    ...(saveRequired?['GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION']:[]),
-    ...(multiplayerRequired?['GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION']:[]),
-    ...(repairMode==='ROOT_CAUSE_MODE'?['ROOT_CAUSE_COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT','ROOT_CAUSE_RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED']:[]),
+    ...(repairRequired?['GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY','GAME_REPAIR_INVARIANT_VALIDATION']:[]),
+    ...(repairRequired&&saveRequired?['GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION']:[]),
+    ...(repairRequired&&multiplayerRequired?['GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION']:[]),
+    ...(repairRequired&&repairMode==='ROOT_CAUSE_MODE'?['ROOT_CAUSE_COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT','ROOT_CAUSE_RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED']:[]),
     ...(testTargets||[]).map(value=>'TEST_TARGET:'+value)
   ]).slice(0,32);
-  const strategyHint=failures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
+  const strategyHint=repairFailures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
     :primaryTargets.length?'RESPONSIBILITY_FIRST'
     :sourceAnalysis.present?'PRESERVE_PATCH_RESPONSIBLE_SCOPE'
     :'ARCHITECTURE_FIRST_GREENFIELD';
@@ -340,7 +347,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const confidence=rawResponsibilityConfidence==='HIGH'&&calibrationRecommendation==='DOWNGRADE_HIGH_TO_MEDIUM'?'MEDIUM':rawResponsibilityConfidence;
   const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
   const allowedDependentSymbolsOrSystems=unique([...directDependentSymbols,...directDependentSystems]).slice(0,24);
-  const patchRecipe=compilePatchRecipe({order,failures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
+  const patchRecipe=compilePatchRecipe({order,failures:repairFailures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
   return{
     version:1,
     mode:'COMPILED_EDIT_CONTRACT',
