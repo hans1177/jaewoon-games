@@ -89,6 +89,46 @@ test('queue ingress preserves explicit atomic graphics metadata and evidence',()
   assert.ok(task.evidence.includes('atomic-neuron-stream:presentation'));
 });
 
+test('queue normalization preserves studio quality cycle state and package handoff',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'studio-cycle',
+    gameId:'g',
+    target:'unity',
+    department:'development',
+    type:'implementation',
+    goal:'[STUDIO_QUALITY_EVOLUTION] cycle=3; phase=OPTIMIZE; focus=PRESENTATION',
+    sourceRoot:'unity-games/g',
+    responsibleFiles:['unity-games/g/Assets/Scripts/GameCore.cs'],
+    studioQualityEvolution:{
+      version:1,cycle:3,phase:'OPTIMIZE',focusPillar:'PRESENTATION',
+      baselineId:'g-studio-evolution-v2',baselineSource:'VERIFIED_QUEUE_TASK',
+      explicitGap:'attack readability',designIsImplementationCeiling:false,
+      requiredConnectedImprovements:{min:3,max:6},
+      realSourceDeltaRequired:true,visibleRenderDeltaRequired:true,
+      protectedRegressionForbidden:true,nextCycleRequired:true
+    },
+    packageContext:{
+      explorationMode:'dedicated-exploration-worker-handoff',
+      sourceRoot:'unity-games/g',
+      responsibleFiles:['unity-games/g/Assets/Scripts/GameCore.cs'],
+      studioQualityEvolution:{
+        version:1,cycle:3,phase:'OPTIMIZE',focusPillar:'PRESENTATION',
+        baselineId:'g-studio-evolution-v2',
+        requiredConnectedImprovements:{min:3,max:6},
+        realSourceDeltaRequired:true,visibleRenderDeltaRequired:true,
+        protectedRegressionForbidden:true,nextCycleRequired:true
+      }
+    }
+  }]});
+  const task=queue.tasks[0];
+  assert.equal(task.studioQualityEvolution?.cycle,3);
+  assert.equal(task.studioQualityEvolution?.phase,'OPTIMIZE');
+  assert.equal(task.studioQualityEvolution?.focusPillar,'PRESENTATION');
+  assert.equal(task.studioQualityEvolution?.visibleRenderDeltaRequired,true);
+  assert.equal(task.packageContext?.studioQualityEvolution?.cycle,3);
+  assert.equal(task.packageContext?.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
+});
+
 test('reserve persists atomic graphics schema migration even when no task can be newly reserved',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-atomic-graphics-migration-'));
   const queueFile=path.join(dir,'queue.json');
