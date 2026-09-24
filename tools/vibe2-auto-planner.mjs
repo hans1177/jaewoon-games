@@ -1318,12 +1318,16 @@ function findStudioContinuousImprovementTask(project,repoRoot,queue){
     ...(project?.queueRoutingBlockers||[])
   ].map(clean).filter(Boolean);
   const signalText=knownSignals.join(' | ').toLowerCase();
-  let focusPillar='STABILITY';
-  if(/visual|graphic|render|animation|vfx|camera|audio|presentation|silhouette|style|lighting|environment/.test(signalText))focusPillar='PRESENTATION';
-  else if(/mobile|touch|input|readability|navigation|tutorial|accessib|hud|ui/.test(signalText))focusPillar='USABILITY';
-  else if(/progress|reward|unlock|quest|goal|economy|content depth/.test(signalText))focusPillar='PROGRESSION';
-  else if(/combat|core.?loop|feedback|interaction|fun|feel|gameplay/.test(signalText))focusPillar='CORE_FUN';
-  else if(!knownSignals.length)focusPillar=['PRESENTATION','CORE_FUN','USABILITY','STABILITY','PROGRESSION'][Math.max(0,cycle-1)%5];
+  let signalFocus=null;
+  if(/visual|graphic|render|animation|vfx|camera|audio|presentation|silhouette|style|lighting|environment/.test(signalText))signalFocus='PRESENTATION';
+  else if(/mobile|touch|input|readability|navigation|tutorial|accessib|hud|ui/.test(signalText))signalFocus='USABILITY';
+  else if(/progress|reward|unlock|quest|goal|economy|content depth/.test(signalText))signalFocus='PROGRESSION';
+  else if(/combat|core.?loop|feedback|interaction|fun|feel|gameplay/.test(signalText))signalFocus='CORE_FUN';
+  const studioRotation=['PRESENTATION','CORE_FUN','USABILITY','PRESENTATION','PROGRESSION','STABILITY'];
+  let focusPillar=studioRotation[Math.max(0,cycle-1)%studioRotation.length];
+  if(phase==='REPAIR')focusPillar=signalFocus||'STABILITY';
+  else if(signalFocus==='PRESENTATION')focusPillar='PRESENTATION';
+  else if(cycle>1&&signalFocus&&cycle%2===0)focusPillar=signalFocus;
 
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
