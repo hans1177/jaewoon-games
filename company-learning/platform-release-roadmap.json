@@ -1,5 +1,5 @@
 {
-  "version": 342,
+  "version": 343,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -6540,7 +6540,15 @@
           ".github/workflows/company-development-roblox-final-review-revalidation.yml",
           "tools/vibe2-work-package.mjs",
           "tools/vibe2-auto-planner.mjs"
-        ]
+        ],
+        "nativeFirstPresentationCycle": {
+          "whenNoPriorVerifiedActualRuntimeBaseline": true,
+          "action": "ESTABLISH_ACTUAL_RUNTIME_BASELINE_AT_POST_NATIVE_FAN_IN",
+          "mayClaimBeforeAfterPass": false,
+          "baselineEstablishmentIsVerifiedCheckpoint": true,
+          "nextPresentationCycleRequiresPriorBaselineAndCurrentRuntime": true,
+          "fabricatedBeforeEvidenceForbidden": true
+        }
       }
     }
   },
@@ -12412,7 +12420,9 @@
         "staticOrMarkerOnlyCannotSatisfyBeforeAfterComparison": true,
         "exactCandidateRevisionBindingRequired": true,
         "webPresentationComparisonAtCandidateFanIn": true,
-        "nativePresentationComparisonAtPostNativeFanIn": true
+        "nativePresentationComparisonAtPostNativeFanIn": true,
+        "nativeFirstPresentationCycleMayEstablishRuntimeBaseline": true,
+        "subsequentNativePresentationCyclesRequireBeforeAfterComparison": true
       },
       "preservation": {
         "gameplayBalanceSaveProgressionEconomyAndHitSemanticsImmutableForPresentationOnlyWork": true,
