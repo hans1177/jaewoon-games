@@ -1275,7 +1275,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
           if(attempt>=3||timeoutFailure||studioInitial){
             const body=section.split('\n').slice(1).join('\n');
-            const excerpt=boundedLargeExcerpt(body,5000);
+            const excerpt=boundedLargeExcerpt(body,studioInitial?2500:5000);
             section=header+'\n'+excerpt.content;
           }
           editable.push(section);
@@ -1427,7 +1427,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const focusedFinal=!allowFullRewrite&&!studioExpansion&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
-    const diagnosticFocusedReplaceOnly=!allowFullRewrite
+    const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
     const systemAtomicPairCompletion=!allowFullRewrite&&systemAtomicPairRequired&&priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'
