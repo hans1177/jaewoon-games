@@ -106,4 +106,4 @@ local Config = {
   -- STUDIO_ASSET_BINDING_END
 }
 
-return table.freeze(Config)
+return table.freeze(Config) /no_replace
