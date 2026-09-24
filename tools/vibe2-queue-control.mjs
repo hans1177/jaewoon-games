@@ -407,8 +407,22 @@ export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence
   return { released:true, updated:true, reason:'RELEASED', queue:nextQueue };
 }
 
+function webPresentationRuntimeComparisonRequired(task={}){
+  if(clean(task?.target).toLowerCase()!=='web')return false;
+  const taskEvidence=(task?.evidence||[]).map(clean);
+  return taskEvidence.includes('graphics-evolution-before-after-comparison-required')
+    ||task?.studioQualityEvolution?.visibleRenderDeltaRequired===true;
+}
 export function settleVibeTask(queueInput, { taskId = '', outcome = 'PASS', evidence = [], blocker = '', retryable = true } = {}) {
-  return finishVibeQueueTask(queueInput, { taskId, outcome, evidence, blocker, retryable });
+  const queue=createVibeContinuousQueue(queueInput);
+  const task=queue.tasks.find(row=>row.id===clean(taskId));
+  if(clean(outcome).toUpperCase()==='PASS'&&task&&webPresentationRuntimeComparisonRequired(task)){
+    const combined=[...(task.evidence||[]),...(evidence||[])].map(clean);
+    if(!combined.includes('graphics-runtime-before-after-comparison:PASS')){
+      return{updated:false,reason:'PRESENTATION_RUNTIME_COMPARISON_REQUIRED',taskId:clean(taskId),queue};
+    }
+  }
+  return finishVibeQueueTask(queue, { taskId, outcome, evidence, blocker, retryable });
 }
 
 export function verifyVibeWorkerSynchronization(queueInput, {
@@ -910,6 +924,7 @@ export function runQueueCommand(args = {}) {
     const settled = settleVibeTask(queue, {
       taskId: clean(args.id), outcome, evidence: list(args.evidence), blocker: clean(args.blocker), retryable: !bool(args['no-retry'])
     });
+    if (!settled.updated&&settled.reason==='PRESENTATION_RUNTIME_COMPARISON_REQUIRED')throw new Error(`presentation runtime before/after comparison required: ${clean(args.id)}`);
     if (!settled.updated) throw new Error(`task not found: ${clean(args.id)}`);
     writeJson(file, settled.queue);
     result = { command, ...settled, summary: summarizeVibeContinuousQueue(settled.queue) };
