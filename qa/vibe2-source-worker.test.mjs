@@ -178,6 +178,67 @@ test('studio build-up starts with the same compact package contract instead of a
   assert.ok(Buffer.byteLength(initial,'utf8')<Buffer.byteLength(prompt,'utf8'),'initial studio prompt must be compacted before first model call');
 });
 
+
+test('studio edit-match at the base budget gets one exact-anchor recovery attempt without widening scope',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local alpha = 1',
+    'local beta = 1',
+    'local gamma = 1',
+    'return { alpha = alpha, beta = beta, gamma = gamma }'
+  ].join('\n')+'\n';
+  const workOrder=order({
+    target:'roblox',
+    root,
+    responsibleFiles:[`${root}/${relative}`],
+    taskId:'studio-edit-match-credit'
+  });
+  workOrder.selectedTask={
+    id:workOrder.taskId,
+    gameId:'demo',
+    target:'roblox',
+    evidence:['studio-quality-loop:v1'],
+    studioQualityEvolution:{
+      phase:'BUILD_UP',
+      focusPillar:'STABILITY',
+      realSourceDeltaRequired:true,
+      requiredConnectedImprovements:{min:3,max:6}
+    }
+  };
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const responseFiles=[];
+  for(let i=1;i<=3;i+=1){
+    const file=path.join(cwd,`bad-studio-${i}.json`);
+    write(file,JSON.stringify({edits:[
+      {path:relative,find:'local alpha = 9',replace:'local alpha = 2'},
+      {path:relative,find:'local beta = 9',replace:'local beta = 2'},
+      {path:relative,find:'local gamma = 9',replace:'local gamma = 2'}
+    ]}));
+    responseFiles.push(file);
+  }
+  const good=path.join(cwd,'good-studio.json');
+  write(good,JSON.stringify({edits:[
+    {path:relative,find:'local alpha = 1',replace:'local alpha = 2'},
+    {path:relative,find:'local beta = 1',replace:'local beta = 2'},
+    {path:relative,find:'local gamma = 1',replace:'local gamma = 2'}
+  ]}));
+  responseFiles.push(good);
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.baseAttemptBudget,3);
+  assert.equal(result.generation.effectiveAttemptBudget,4);
+  assert.deepEqual(result.changedFiles,[relative]);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/local alpha = 2/);
+  assert.match(candidate,/local beta = 2/);
+  assert.match(candidate,/local gamma = 2/);
+});
+
 test('repeated identical failure signature escalates to root cause mode instead of counting unrelated failures',()=>{
   const result=classifyVibePatchSaturation({
     responsibleFiles:['web-games/demo/index.html'],
