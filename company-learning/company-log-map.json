@@ -1,5 +1,5 @@
 {
-  "version": 48,
+  "version": 49,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -838,7 +838,7 @@
     "existingCanonicalLearningMotorOnly": true
   },
   "verifiedSpecializedQueueEvidenceIngressContract": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
     "implementation": "tools/vibe2-learning-motor.mjs",
     "correlationKeys": [
@@ -861,7 +861,9 @@
       "MASTERY_APPLICATION_RESULT",
       "TARGET_ENGINE_QA_REFERENCE_WHEN_NATIVE",
       "NATIVE_QA_RECHECK_RESULT",
-      "UEFN_BLOCK_REASON_WHEN_TARGET"
+      "UEFN_BLOCK_REASON_WHEN_TARGET",
+      "GAME_TARGET_ELIGIBILITY_RESULT",
+      "NEGATIVE_FAILURE_PROVENANCE_RESULT_WHEN_NEGATIVE"
     ],
     "onePositiveAndOneNegativeMaximumPerTask": true,
     "infrastructureFailureNegativeLearningForbidden": true,
@@ -888,7 +890,10 @@
     "authorityExpansion": false,
     "nativePositiveWithoutMatchingTargetQaMustBeIgnored": true,
     "nativeTargetProofMustPersistAsSanitizedReference": true,
-    "uefnPositiveMustRemainBlockedWithoutAuthoritativeExecutorEvidenceContract": true
+    "uefnPositiveMustRemainBlockedWithoutAuthoritativeExecutorEvidenceContract": true,
+    "nonGamePositiveAndNegativeSpecializedLearningForbidden": true,
+    "negativeMarkerAloneMustNotPenalizeMastery": true,
+    "focusedStaticNotVerifiedMustNotBeLoggedAsVerifiedRuntimeFailure": true
   },
   "specializedVerifiedQueueEvidenceContract": {
     "version": 1,
