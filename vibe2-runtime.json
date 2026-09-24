@@ -400,6 +400,13 @@
       "designTextIsNotImplementationCeiling": true,
       "sameResponsibleFileConcurrentWrite": false,
       "fullRegressionOnceAtFanIn": true
+    },
+    "workLockConflictPolicy": {
+      "transientSchedulingState": true,
+      "requeueWithoutRetryPenalty": true,
+      "blockedStateForbidden": true,
+      "failureLearningForbidden": true,
+      "reserveCycleRecovery": true
     }
   },
   "adaptiveBackpressure": {
