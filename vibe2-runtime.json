@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -23,7 +23,7 @@
     "machineStateVersions": {
       "runtime": 19,
       "queue": 5,
-      "parallelism": 3,
+      "parallelism": 4,
       "experience": 3,
       "handoff": 2
     },
@@ -364,7 +364,17 @@
         256
       ],
       "internalPolicyCap": null,
-      "externalProviderBoundary": 256
+      "externalProviderBoundary": 256,
+      "universalActionableDomains": true,
+      "neuralGatedExecution": true,
+      "gatedAuthorities": [
+        "REQUEUE_EXISTING_TASK",
+        "REPRIORITIZE_EXISTING_TASK",
+        "IMMEDIATE_REFILL",
+        "FAILURE_CLASS_RETRY_STRATEGY",
+        "ADAPTIVE_CONCURRENCY_TUNING"
+      ],
+      "protectedAuthoritiesRemainCentral": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -411,7 +421,7 @@
   },
   "adaptiveBackpressure": {
     "enabled": true,
-    "mode": "GAME_PRIMARY_SELF_ADAPTIVE_WITH_EXTERNAL_BOUNDARY",
+    "mode": "GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
       4,
@@ -611,6 +621,9 @@
       "qaDuplicateRatePct",
       "packageCycleTime",
       "preparationRatioPct",
+      "verifiedCandidatesPerMinute",
+      "firstCandidatePassRatePct",
+      "changedLinesPerMinute",
       "bottleneck"
     ],
     "loadProbeTargetWorkers": 256,
