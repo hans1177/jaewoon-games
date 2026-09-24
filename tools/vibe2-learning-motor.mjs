@@ -1884,6 +1884,104 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={},q
   };
 }
 
+const SPECIALIZED_QUEUE_POSITIVE_EVIDENCE=freeze({
+  VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS:'concept direction visual identity environment composition game visual dna compatibility',
+  VERIFIED_WORLD_ROUTE_NAVIGATION_PASS:'world generation level design route design navigation objective reachability',
+  VERIFIED_STREAMING_MOBILE_BUDGET_PASS:'streaming optimization chunk budget lod mobile world performance',
+  VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS:'storytelling narrative structure main story generation story transition causality',
+  VERIFIED_QUEST_GRAPH_PASS:'quest design quest graph prerequisite consequence',
+  VERIFIED_CHARACTER_PERSONA_VOICE_MEMORY_PASS:'character persona character voice relationship memory character behavior',
+  VERIFIED_WORLD_NARRATIVE_STATE_PASS:'world narrative world narrative binding faction state world state consistency'
+});
+const SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE=freeze({
+  VERIFIED_CONCEPT_CONFLICT:'concept direction visual identity concept conflict style conflict',
+  VERIFIED_NAVIGATION_REACHABILITY_FAILURE:'world generation level design route design navigation unreachable objective',
+  VERIFIED_STREAMING_HITCH:'streaming optimization streaming hitch chunk budget performance',
+  VERIFIED_MOBILE_WORLD_BUDGET_FAILURE:'streaming optimization mobile world performance budget failure',
+  VERIFIED_KNOWLEDGE_LEAK:'dialogue character voice relationship memory knowledge boundary leak',
+  VERIFIED_PAYOFF_MISS:'storytelling narrative structure foreshadow payoff miss',
+  VERIFIED_VOICE_COLLAPSE:'dialogue character voice persona voice collapse',
+  VERIFIED_QUEST_REPETITION:'quest design quest graph repetitive quest structure',
+  VERIFIED_RELATIONSHIP_INCONSISTENCY:'relationship memory character relationship memory inconsistency',
+  VERIFIED_WORLD_STATE_CONTRADICTION:'world narrative binding world state contradiction faction state inconsistency',
+  VERIFIED_STORY_SOFTLOCK:'narrative structure quest graph story softlock state machine',
+  VERIFIED_FACTION_RELATIONSHIP_INCONSISTENCY:'faction relationship relationship memory world narrative binding inconsistency',
+  VERIFIED_STORY_TRANSITION_CAUSALITY_FAILURE:'story transition narrative structure main story generation causality failure'
+});
+
+export function collectVerifiedSpecializedQueueExperience(queueInput={}){
+  const records=[];
+  const positiveStatuses=new Set(['verified','done']);
+  const negativeStatuses=new Set(['failed','verified','done']);
+  for(const task of queueInput?.tasks||[]){
+    const status=lower(task?.status);
+    const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
+    if(!positiveStatuses.has(status)&&!negativeStatuses.has(status))continue;
+    const normalized=evidence.map(upper);
+    const matchesMarker=marker=>normalized.some(value=>value===marker||value.endsWith(':'+marker)||value.startsWith(marker+':'));
+    const positiveMarkers=Object.keys(SPECIALIZED_QUEUE_POSITIVE_EVIDENCE).filter(matchesMarker);
+    const negativeMarkers=Object.keys(SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE).filter(matchesMarker);
+    const infrastructureFailure=task?.infrastructureFailure===true||evidence.some(value=>/infrastructure[ _-]?failure\s*[:=]\s*(?:true|yes|1)|infra[ _-]?failure\s*[:=]\s*(?:true|yes|1)/i.test(value));
+    const runIdentity=evidence.find(value=>value.startsWith('actions-run:'))||evidence.find(value=>value.startsWith('qa-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task?.id)||'unknown-run';
+    const gameId=clean(task?.gameId)||'unknown';
+    const engine=lower(task?.target||task?.engine);
+    const base={
+      gameId,engine,verified:true,reusable:true,
+      problem:clean(task?.blocker)||clean(task?.goal),
+      goal:clean(task?.goal),
+      evidence:[...evidence,'source-task:'+clean(task?.id),'source-run:'+runIdentity],
+      syntheticVerifiedQueueEvidence:true,
+      sourceTaskId:clean(task?.id)||null,
+      sourceRun:runIdentity
+    };
+    if(positiveStatuses.has(status)&&positiveMarkers.length){
+      const patterns=uniq(positiveMarkers.map(marker=>SPECIALIZED_QUEUE_POSITIVE_EVIDENCE[marker]));
+      records.push({
+        ...base,
+        id:'specialized_queue_'+hash([clean(task?.id),runIdentity,'PASS',positiveMarkers.slice().sort().join('|')].join('|')),
+        outcome:'PASS',
+        change:patterns.join(' | '),
+        reusablePatterns:patterns,
+        verifiedEvidenceMarkers:positiveMarkers
+      });
+    }
+    if(negativeStatuses.has(status)&&negativeMarkers.length&&!infrastructureFailure){
+      const patterns=uniq(negativeMarkers.map(marker=>SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE[marker]));
+      records.push({
+        ...base,
+        id:'specialized_queue_'+hash([clean(task?.id),runIdentity,'FAIL',negativeMarkers.slice().sort().join('|')].join('|')),
+        outcome:'FAIL',
+        failureCause:negativeMarkers.join(' | '),
+        avoidPatterns:patterns,
+        verifiedEvidenceMarkers:negativeMarkers
+      });
+    }
+  }
+  return {
+    version:1,
+    kind:'verified-specialized-queue-experience',
+    records,
+    positive:records.filter(row=>upper(row.outcome)==='PASS').length,
+    negative:records.filter(row=>upper(row.outcome)!=='PASS').length,
+    authority:'verified-queue-evidence-to-existing-learning-motor-only'
+  };
+}
+
+export function applyVerifiedSpecializedQueueOutcomes(stateInput={},queueInput={}){
+  const state=createMasteryState(stateInput);
+  const seen=new Set(state.seenExperienceIds||[]);
+  const extracted=collectVerifiedSpecializedQueueExperience(queueInput);
+  const fresh=extracted.records.filter(row=>!seen.has(clean(row.id)));
+  const applied=applyVerifiedExperienceToMastery(state,extracted);
+  return{
+    state:applied.state,
+    added:applied.added,
+    positive:fresh.filter(row=>upper(row.outcome)==='PASS').length,
+    negative:fresh.filter(row=>upper(row.outcome)!=='PASS').length,
+    candidates:extracted.records.length
+  };
+}
+
 function lastGraphicsEvolutionMarker(evidence=[],prefix=''){
   return (evidence||[]).map(clean).filter(value=>value.startsWith(prefix)).at(-1)?.slice(prefix.length)||'';
 }
@@ -1940,7 +2038,8 @@ export function applyVerifiedGraphicsEvolutionOutcomes(stateInput={},queueInput=
 
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
-  const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
+  const specializedApplied=applyVerifiedSpecializedQueueOutcomes(applied.state,queueInput);
+  const patternApplied=applyVerifiedCodePatternsToMastery(specializedApplied.state,codePatternsInput);
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
   const calibrationApplied=applyVerifiedCodingCalibration(strategyApplied.state,queueInput);
   const driftApplied=applyVerifiedArchitectureDriftOutcomes(calibrationApplied.state,queueInput);
@@ -1956,6 +2055,10 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   return {
     state:graphicsApplied.state,
     addedExperience:applied.added,
+    addedSpecializedVerifiedOutcomes:specializedApplied.added||0,
+    specializedVerifiedPositiveOutcomes:specializedApplied.positive||0,
+    specializedVerifiedNegativeOutcomes:specializedApplied.negative||0,
+    specializedVerifiedOutcomeCandidates:specializedApplied.candidates||0,
     addedCodePatterns:patternApplied.added,
     addedCodingStrategyOutcomes:strategyApplied.added,
     addedCodingStrategyNegativeOutcomes:strategyApplied.negativeAdded||0,
@@ -2009,6 +2112,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_KNOWLEDGE_ATTRIBUTION_OUTCOMES_ADDED=${result.addedKnowledgeAttributionOutcomes||0}`);
   console.log(`VIBE2_KNOWLEDGE_POSITIVE_APPLICATIONS=${result.knowledgePositiveApplications||0}`);
   console.log(`VIBE2_KNOWLEDGE_NEGATIVE_APPLICATIONS=${result.knowledgeNegativeApplications||0}`);
+  console.log(`VIBE2_SPECIALIZED_VERIFIED_OUTCOMES_ADDED=${result.addedSpecializedVerifiedOutcomes||0}`);
+  console.log(`VIBE2_SPECIALIZED_VERIFIED_POSITIVE=${result.specializedVerifiedPositiveOutcomes||0}`);
+  console.log(`VIBE2_SPECIALIZED_VERIFIED_NEGATIVE=${result.specializedVerifiedNegativeOutcomes||0}`);
   console.log(`VIBE2_GRAPHICS_EVOLUTION_OUTCOMES_ADDED=${result.addedGraphicsEvolutionOutcomes||0}`);
   console.log(`VIBE2_GRAPHICS_EVOLUTION_POSITIVE=${result.graphicsEvolutionPositiveOutcomes||0}`);
   console.log(`VIBE2_GRAPHICS_EVOLUTION_NEGATIVE=${result.graphicsEvolutionNegativeOutcomes||0}`);
