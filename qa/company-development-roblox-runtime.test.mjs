@@ -497,6 +497,15 @@ test('Roblox game source pushes route through exact changed-source sync instead 
 });
 
 
+test('Roblox source and technical self-refills dispatch exact games in parallel instead of broad batches',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/ROBLOX_NEXT_SOURCE_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL/);
+  assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL/);
+  assert.match(workflow,/ROBLOX_NEXT_SOURCE_DISPATCH_GAME=/);
+  assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_DISPATCH_GAME=/);
+  assert.ok((workflow.match(/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id="\$id" &/g)||[]).length>=2);
+});
+
 test('exact Roblox runtime dispatch has an isolated workflow concurrency lane',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
