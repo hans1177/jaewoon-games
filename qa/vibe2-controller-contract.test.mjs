@@ -112,6 +112,10 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.projectLifecycle.lifecycleProjectionMonotonic,true);
   assert.equal(runtime.projectLifecycle.downstreamMachineEvidencePreventsBackwardPhaseProjection,true);
   assert.equal(runtime.projectLifecycle.missingGenreMayNotRegressStartedNativeWork,true);
+  assert.equal(runtime.projectLifecycle.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(runtime.projectLifecycle.nestedExecutionEvidenceFallbackForPlanner,true);
+  assert.equal(runtime.projectLifecycle.nestedFailureStageAndSignaturePreserved,true);
+  assert.equal(runtime.projectLifecycle.nestedSourceRevisionPreserved,true);
   assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
   assert.equal(runtime.coordination.sourceRootExclusive,true);
   assert.equal(runtime.coordination.separateFileLocks,true);
