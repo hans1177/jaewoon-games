@@ -151,12 +151,12 @@ test('Roblox visual planning selects concrete base material atoms and requires n
       target:'roblox',repoRoot:root,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
     });
     assert.ok(plan.baseMaterialLoadout.selectedAtomCount>=20);
-    assert.equal(plan.baseMaterialLoadout.robloxAutoApply.consultRequired,true);
-    assert.equal(plan.baseMaterialLoadout.robloxAutoApply.sourceMutationRequired,true);
+    assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.consultRequired,true);
+    assert.equal(plan.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,true);
     assert.ok(plan.baseMaterialLoadout.families.UI.includes('FRAME_PANEL'));
     assert.equal(plan.baseMaterialLoadout.runtimeVerificationRequired,true);
     const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/ROBLOX STUDIO ASSET AUTO APPLY/);
+    assert.match(guidance,/ROBLOX STUDIO ASSET SELECTION HANDOFF/);
     assert.match(guidance,/STUDIO_ASSET_BINDING_VERSION/);
     assert.match(guidance,/FRAME_PANEL/);
 
@@ -164,7 +164,7 @@ test('Roblox visual planning selects concrete base material atoms and requires n
       task:{gameId:'demo',goal:'save null guard repair'},target:'roblox',repoRoot:root,
       manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
     });
-    assert.equal(nonVisual.baseMaterialLoadout.robloxAutoApply.sourceMutationRequired,false);
+    assert.equal(nonVisual.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -243,12 +243,16 @@ test('Roblox visual plan selects stable base material atoms and requires source 
     const first=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
     const second=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
     assert.ok(first.baseMaterialLoadout.selectedAtomCount>=9);
-    assert.equal(first.baseMaterialLoadout.robloxAutoApply.consultRequired,true);
-    assert.equal(first.baseMaterialLoadout.robloxAutoApply.sourceMutationRequired,true);
-    assert.equal(first.baseMaterialLoadout.robloxAutoApply.markerOnlyBindingForbidden,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.selectionRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.plannerSourceMutationForbidden,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.downstreamApplicationOwner,'VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION');
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.downstreamApplicationRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.postApplicationVerificationRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.markerOnlyApplicationForbidden,true);
     assert.deepEqual(first.baseMaterialLoadout.families,second.baseMaterialLoadout.families);
     const guidance=assetProductionGuidance(first);
-    assert.match(guidance,/ROBLOX STUDIO ASSET AUTO APPLY/);
+    assert.match(guidance,/ROBLOX STUDIO ASSET SELECTION HANDOFF/);
     assert.match(guidance,/STUDIO_ASSET_BINDING_VERSION/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -338,7 +342,7 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
       assetProduction:{
         baseMaterialLoadout:{
           families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
-          robloxAutoApply:{sourceMutationRequired:true}
+          robloxSelectionHandoff:{handoffRequired:true}
         }
       }
     };
@@ -499,7 +503,7 @@ panel.Parent = gui
       assetProduction:{
         baseMaterialLoadout:{
           families:{UI:['FRAME_PANEL']},
-          robloxAutoApply:{sourceMutationRequired:true}
+          robloxSelectionHandoff:{handoffRequired:true}
         }
       }
     },null,2));
