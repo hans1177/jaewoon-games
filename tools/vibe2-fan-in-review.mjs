@@ -57,6 +57,17 @@ function gameRepairEvidenceFailures(row={}){
   if(repair.readyForFanIn!==true)failures.push('game-repair-ready-for-fan-in');
   return[...new Set(failures)];
 }
+function presentationRuntimeComparisonRequired(task={}){
+  const evidence=(task?.evidence||[]).map(clean);
+  return evidence.includes('graphics-evolution-before-after-comparison-required')
+    ||task?.studioQualityEvolution?.visibleRenderDeltaRequired===true;
+}
+function markPresentationRuntimeFanInRequirement(task={},evidence=new Set()){
+  if(!presentationRuntimeComparisonRequired(task))return false;
+  evidence.add('presentation-runtime-before-after-fan-in:REQUIRED');
+  evidence.add('graphics-runtime-before-after-comparison:PENDING_RELEASE_GATE');
+  return true;
+}
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
 function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa|awaiting.*supervised-review/i.test(clean(task.blocker));}
 function releaseCandidateFromEvidence(evidence=new Set()){
@@ -213,6 +224,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      markPresentationRuntimeFanInRequirement(task,evidence);
       if(selectedResult?.gameRepairQa?.required===true){
         evidence.add('game-repair-source-evidence:PASS');
         evidence.add('game-repair-impact-regression:PASS');
