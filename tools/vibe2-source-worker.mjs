@@ -1612,6 +1612,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         }
       }
       let focusedNoOpCreditRetry=false;
+      if(focusedReplaceOnly&&failureClass==='PRESENTATION_PATCH_DELTA'){
+        focusedReplaceAnchorCursor+=1;
+        focusedReplaceAnchorRotations+=1;
+        console.log('VIBE2_PRESENTATION_PATCH_DELTA_ANCHOR_ROTATE='+attempt+':anchor='+(focusedReplaceAnchorCursor+1));
+      }
       if(focusedReplaceOnly&&failureClass==='NO_OP'){
         focusedReplaceAnchorCursor+=1;
         focusedReplaceAnchorRotations+=1;
