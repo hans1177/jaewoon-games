@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -387,6 +387,46 @@
       "platform": "UNITY_ROBLOX_SPLIT",
       "status": "RESEARCH_ACTIVE",
       "note": "공격자/피격자 위치 동기화, 잡기·던지기·잡기풀기·낙법을 플랫폼별로 재authoring하고 런타임 검증"
+    },
+    {
+      "id": "biped-small-humanoid",
+      "title": "Small Humanoid Biped",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "고블린/코볼트 계열. 낮은 무게중심·짧은 보폭·빠른 피벗·민첩한 공격/피격/사망 연구"
+    },
+    {
+      "id": "biped-heavy",
+      "title": "Heavy Biped",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "미노타우로스/오우거/트롤 계열. 상체 관성·돌진·긴 제동·무거운 공격 회복·붕괴 사망 연구"
+    },
+    {
+      "id": "biped-digitigrade",
+      "title": "Digitigrade Biped",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "늑대인간/악마형. digitigrade 다리·전방 기울기·탄성 있는 추진과 포식자 회전 연구"
+    },
+    {
+      "id": "cartoon-style-motion-variants",
+      "title": "Cartoon Style Motion Variants",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "동일 모션 역할을 카툰 비율·강한 키포즈·anticipation·squash/stretch·overshoot·반동으로 변형하되 게임 판정은 보존"
+    },
+    {
+      "id": "creature-library-graph",
+      "title": "Creature Library Interlink Graph",
+      "category": "CHARACTER",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Creature Archetype→Rig→Locomotion→Combat→Hit/Death→VFX→Environment→Style Variant→Unity/Roblox 네이티브 변형을 ID 참조로 연동"
     }
   ],
   "studioMotion": {
@@ -858,5 +898,177 @@
     ],
     "rawExternalMotionRequiresRetargetCleanup": true,
     "nativeRuntimeVerificationRequired": true
+  },
+  "bipedCreatureMotion": {
+    "target": "BODY_PLAN_SPECIFIC_BIPED_CREATURE_MOTION",
+    "taxonomy": {
+      "SMALL_HUMANOID_BIPED": {
+        "examples": [
+          "GOBLIN",
+          "KOBOLD",
+          "SMALL_IMP"
+        ],
+        "traits": [
+          "LOW_CENTER_OF_MASS",
+          "SHORT_STRIDE",
+          "FAST_PIVOT",
+          "QUICK_RECOVERY"
+        ]
+      },
+      "STANDARD_HUMANOID_MONSTER": {
+        "examples": [
+          "ORC",
+          "UNDEAD_WARRIOR"
+        ],
+        "traits": [
+          "HUMANOID_BASE",
+          "SPECIES_PERSONALITY_VARIATION"
+        ]
+      },
+      "HEAVY_BIPED": {
+        "examples": [
+          "MINOTAUR",
+          "OGRE",
+          "TROLL"
+        ],
+        "traits": [
+          "HEAVY_INERTIA",
+          "LONG_BRAKING",
+          "POWERFUL_WEIGHT_SHIFT",
+          "HEAVY_COLLAPSE_DEATH"
+        ]
+      },
+      "DIGITIGRADE_BIPED": {
+        "examples": [
+          "WEREWOLF",
+          "DEMON",
+          "BEASTMAN"
+        ],
+        "traits": [
+          "DIGITIGRADE_LEGS",
+          "FORWARD_LEAN",
+          "SPRINGY_PUSH_OFF"
+        ]
+      },
+      "HUNCHED_BIPED": {
+        "examples": [
+          "GHOUL",
+          "FERAL_MUTANT"
+        ],
+        "traits": [
+          "HUNCHED_SPINE",
+          "ASYMMETRIC_GAIT",
+          "FERAL_RECOVERY"
+        ]
+      },
+      "APE_LIKE_BIPED": {
+        "examples": [
+          "GORILLA_BEAST",
+          "APE_MONSTER"
+        ],
+        "traits": [
+          "LONG_ARMS",
+          "SHOULDER_DOMINANCE",
+          "SEMI_QUADRUPED_TRANSITION"
+        ]
+      },
+      "SKELETAL_BIPED": {
+        "examples": [
+          "SKELETON",
+          "BONE_KNIGHT"
+        ],
+        "traits": [
+          "JOINT_ACCENT",
+          "RIGID_OR_RATTLING_STYLE",
+          "BONE_DEATH_VARIANTS"
+        ]
+      },
+      "BOSS_BIPED": {
+        "examples": [
+          "GIANT_MINOTAUR",
+          "DEMON_LORD",
+          "OGRE_BOSS"
+        ],
+        "traits": [
+          "INTRO_ACTING",
+          "PHASE_CHANGE",
+          "ENRAGE",
+          "FAILED_ATTACK_RECOVERY",
+          "BOSS_DEATH_SEQUENCE"
+        ]
+      }
+    },
+    "sharedRigDoesNotImplySharedMotionIdentity": true,
+    "speedScaleOnlyVariationForbidden": true,
+    "profiles": {
+      "goblin": {
+        "family": "SMALL_HUMANOID_BIPED",
+        "motions": [
+          "SCAMPER_RUN",
+          "QUICK_SLASH",
+          "CLUB_SWING",
+          "SIDESTEP_EVADE",
+          "PANIC_BACKSTEP",
+          "FAST_FALL_DEATH"
+        ]
+      },
+      "minotaur": {
+        "family": "HEAVY_BIPED",
+        "motions": [
+          "HORN_CHARGE",
+          "HORN_GORE",
+          "SHOULDER_RAM",
+          "HEAVY_STOMP",
+          "RAGE_SNORT",
+          "WALL_IMPACT_RECOVERY"
+        ]
+      }
+    }
+  },
+  "styleVariants": {
+    "target": "STYLE_LOCK_AWARE_ASSET_AND_MOTION_DERIVATION",
+    "styles": [
+      "CARTOON",
+      "ANIME_OR_CEL_SHADED",
+      "STYLIZED_FANTASY",
+      "DARK_FANTASY",
+      "LOW_POLY",
+      "REALISTIC",
+      "CHIBI",
+      "HORROR",
+      "WUXIA_FANTASY"
+    ],
+    "cartoonTransforms": [
+      "BODY_PROPORTION",
+      "SILHOUETTE",
+      "HEAD_HAND_FOOT_SCALE",
+      "POSE_EXAGGERATION",
+      "ANTICIPATION_EXAGGERATION",
+      "CONTROLLED_SQUASH_STRETCH",
+      "OVERSHOOT_SETTLE",
+      "BOUNCE_SECONDARY_MOTION",
+      "FACIAL_HEAD_ACTING",
+      "OUTLINE_MATERIAL_PALETTE",
+      "VFX_SHAPE_LANGUAGE"
+    ],
+    "preservation": [
+      "GAMEPLAY_SPEED",
+      "HITBOX_SEMANTICS",
+      "DAMAGE",
+      "COOLDOWN",
+      "AUTHORITATIVE_ROOT_MOVEMENT",
+      "CONTACT_EVENT_SYNC"
+    ],
+    "graphBindings": [
+      "CHARACTER_ARCHETYPE_LIBRARY",
+      "CREATURE_RIG_LIBRARY",
+      "ACTION_MOTION_LIBRARY",
+      "WEAPON_MOTION_LIBRARY",
+      "VFX_LIBRARY",
+      "ENVIRONMENT_KIT_LIBRARY",
+      "UI_PRESENTATION_LIBRARY"
+    ],
+    "sameSourceMayHaveMultipleStyleVariants": true,
+    "runtimeVerificationRequiredPerGameAndPlatform": true
   }
 }
