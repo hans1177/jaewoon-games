@@ -548,7 +548,9 @@ local function loadPlayerState(player)
         sector = Config.InitialState.Sector,
         hull = hullMaximum(Config.InitialState.ShipTier),
         energy = Config.Ship.MaxEnergy,
-        move = Vector3.zero,
+        throttle = 0,
+        turn = 0,
+        vertical = 0,
         boost = false,
         yaw = 0,
         gateCooldownUntil = 0,
@@ -611,7 +613,9 @@ local function rescuePlayer(player, state)
     state.hull = hullMaximum(state.shipTier)
     state.energy = Config.Ship.MaxEnergy
     state.sector = 1
-    state.move = Vector3.zero
+    state.throttle = 0
+    state.turn = 0
+    state.vertical = 0
     state.boost = false
     local spawnAt = sectorCenter(1) + Vector3.new(0, 0, 95)
     if state.ship and state.ship.Parent then
@@ -830,7 +834,9 @@ local function checkGate(player, state)
                 local target = sectorCenter(targetSector) + Vector3.new(0, 0, 105)
                 state.sector = targetSector
                 state.gateCooldownUntil = os.clock() + 2.2
-                state.move = Vector3.zero
+                state.throttle = 0
+                state.turn = 0
+                state.vertical = 0
                 state.ship:PivotTo(CFrame.lookAt(target, sectorCenter(targetSector)))
                 syncDerivedAttributes(player, state)
                 emitPulse(target, Color3.fromRGB(176, 110, 255), 8)
@@ -903,8 +909,11 @@ local function updatePlayerMovement(player, state, dt)
         state.hull = maximumHull
     end
 
-    local move = state.move
-    local boostActive = state.boost and move.Magnitude > 0.05 and state.energy > 1
+    state.yaw += math.rad(Config.Ship.TurnDegreesPerSecond) * state.turn * dt
+    local facing = CFrame.Angles(0, state.yaw, 0)
+    local forward = facing.LookVector
+    local move = forward * state.throttle + Vector3.yAxis * state.vertical
+    local boostActive = state.boost and math.abs(state.throttle) > 0.05 and state.energy > 1
     local speed = Config.Ship.BaseSpeed * (1 + (state.shipTier - 1) * 0.08)
     if boostActive then
         speed *= Config.Ship.BoostMultiplier
@@ -917,12 +926,8 @@ local function updatePlayerMovement(player, state, dt)
     local nextPosition = current
     if move.Magnitude > 0.01 then
         nextPosition = clampWorldPosition(current + move.Unit * speed * dt)
-        local horizontal = Vector3.new(move.X, 0, move.Z)
-        if horizontal.Magnitude > 0.05 then
-            state.yaw = math.atan2(-horizontal.X, -horizontal.Z)
-        end
     end
-    local nextCFrame = CFrame.new(nextPosition) * CFrame.Angles(0, state.yaw, 0)
+    local nextCFrame = CFrame.new(nextPosition) * facing
     state.ship:PivotTo(nextCFrame)
 
     local character = player.Character
@@ -958,19 +963,16 @@ remote.OnServerEvent:Connect(function(player, action, payload)
         if typeof(payload) ~= "table" then
             return
         end
-        local move = payload.Move
+        local throttle = payload.Throttle
+        local turn = payload.Turn
+        local vertical = payload.Vertical
         local boost = payload.Boost
-        if typeof(move) ~= "Vector3" or typeof(boost) ~= "boolean" then
+        if typeof(throttle) ~= "number" or typeof(turn) ~= "number" or typeof(vertical) ~= "number" or typeof(boost) ~= "boolean" then
             return
         end
-        if move.Magnitude > 1.05 then
-            move = move.Unit
-        end
-        state.move = Vector3.new(
-            math.clamp(move.X, -1, 1),
-            math.clamp(move.Y, -1, 1),
-            math.clamp(move.Z, -1, 1)
-        )
+        state.throttle = math.clamp(throttle, -1, 1)
+        state.turn = math.clamp(turn, -1, 1)
+        state.vertical = math.clamp(vertical, -1, 1)
         state.boost = boost
         return
     end
