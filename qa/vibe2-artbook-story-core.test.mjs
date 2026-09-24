@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { gameplayEvidenceSnippets, buildFallbackSeed, expandCompactSeed, validExpandedDraft } from '../tools/vibe2-artbook-story-core.mjs';
+import { JaewoonQuestDialogue } from '../assets/quest-dialogue.js';
 
 test('minified gameplay source becomes bounded gameplay snippets instead of whole technical line',()=>{
   const source=`<canvas id="game"></canvas><script>ctx.imageSmoothingEnabled=true;function resize(){canvas.width=devicePixelRatio*innerWidth} let day=1; function bossSpawn(){ if(day===6) spawnBoss('거미 여왕') } function eat(){food+=5} function survive(){health=Math.max(0,health-1)}</script>`;
@@ -16,6 +17,9 @@ test('compact seed expands into six causal phases and six main quests',()=>{
   assert.equal(draft.phasePlans.length,6);
   assert.equal(draft.mainQuestChain.length,6);
   assert.equal(draft.regionTransitions.length,5);
+  assert.equal(draft.questGraph.nodes.length>=6,true);
+  assert.equal(draft.foreshadowingGraph.length>=2,true);
+  assert.equal(draft.relationshipMemoryContract.knowledgeBoundaryRequired,true);
   assert.equal(draft.recommendedPages,18);
   assert.equal(validExpandedDraft(draft),true);
 });
@@ -48,4 +52,40 @@ test('model seed can remain concise while deterministic expansion supplies trans
   assert.match(draft.phasePlans[0].nextHook,/풀숲 가장자리/);
   assert.match(draft.bossCausality[0].boss,/거미 여왕/);
   assert.equal(validExpandedDraft(draft),true);
+});
+
+
+test('narrative expansion builds distinct character voice persona and tracked payoff threads',()=>{
+  const seed=buildFallbackSeed({gameName:'무협 어둠숲',genreText:'무협 다크 판타지 RPG',minimumPages:18});
+  seed.twist='초반에 사라진 문파의 표식이 사실 동료의 과거와 최종 적을 동시에 가리켰음이 드러난다.';
+  seed.npcSeeds=[
+    {name:'연화',goal:'사라진 문파의 기록을 찾는다',conflict:'적 세력과 혈연으로 얽혀 있다',relationshipToPlayer:'조심스럽게 협력한다',voice:'짧고 절제된 존댓말',fear:'정체가 밝혀지는 것',secret:'적 수장의 혈족이다'},
+    {name:'무진',goal:'마을을 지킨다',conflict:'복수를 위해 무리한 선택을 한다',relationshipToPlayer:'거칠지만 신뢰한다',voice:'짧고 직설적인 반말',fear:'또 가족을 잃는 것',secret:'과거 적의 협박에 굴복한 적이 있다'}
+  ];
+  const draft=expandCompactSeed(seed,{gameName:'무협 어둠숲',genreText:'무협 다크 판타지 RPG',minimumPages:18,evidenceSnippets:['문파 npc quest boss']});
+  assert.equal(draft.characterProfiles.length,2);
+  assert.notEqual(draft.characterProfiles[0].voice.rhythm,draft.characterProfiles[1].voice.rhythm);
+  assert.ok(draft.foreshadowingGraph.every(row=>row.clue&&row.reveal&&row.payoff));
+  assert.equal(draft.questGraph.edges.length,5);
+  assert.equal(validExpandedDraft(draft),true);
+});
+
+test('quest dialogue extended state preserves causal memories relationships facts and clue prerequisites',()=>{
+  const q=new JaewoonQuestDialogue();
+  const state=q.createState();
+  q.registerStory(state,{id:'main',stage:'OPENING'});
+  q.setFact(state,'saw-mark',true,'evt-1');
+  assert.equal(q.addMemory(state,'yeonhwa',{eventId:'evt-1',type:'WITNESSED_EVENT',factId:'saw-mark'}),true);
+  assert.equal(q.addMemory(state,'yeonhwa',{eventId:'evt-1',type:'WITNESSED_EVENT'}),false);
+  const relation=q.adjustRelationship(state,'yeonhwa','player',{trust:15,respect:10});
+  assert.equal(relation.trust,15);
+  q.revealClue(state,{id:'clue-1',threadId:'THREAD-01',sourceEvent:'evt-1',payoffId:'reveal-1'});
+  const def=q.createQuestDefinition({id:'q2',requirements:{facts:{'saw-mark':true},clues:['clue-1']},objectives:[{id:'talk',target:1}]});
+  assert.equal(q.canStartQuest(state,def),true);
+  const context=q.buildCharacterContext(state,'yeonhwa',{voice:{rhythm:'short'}});
+  assert.equal(context.memories.length,1);
+  assert.equal(context.gameplayAuthority,false);
+  const restored=q.createState(q.snapshot(state));
+  assert.equal(restored.relationships['yeonhwa->player'].respect,10);
+  assert.equal(restored.clues['clue-1'].revealed,true);
 });
