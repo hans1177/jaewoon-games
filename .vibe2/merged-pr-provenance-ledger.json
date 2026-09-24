@@ -23002,11 +23002,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3113c3e4975a8ed96c0d2828",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2825",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a8db80e541fc231df4b1a614e1daa1c4ffbacfc2",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2825,
+        "baseBranch": "main",
+        "headBranch": "assistant/roblox-end-to-end-parallel-20260924",
+        "baseSha": "a8db80e541fc231df4b1a614e1daa1c4ffbacfc2",
+        "headSha": "231752168b56704828fb0199c5a48990e849b588",
+        "mergeCommitSha": "44500aad0227163663eb700e54b8b7432f30a06d",
+        "mergedAt": "2026-09-24T10:26:24Z",
+        "authorLogin": "hans1177",
+        "titleHash": "45fe2b7676f7b11a09cfe004041cdd5236e7c8aeb4a1633d31253cd15d3e5914",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/roblox-end-to-end-parallel-20260924",
+        "candidateSha": "231752168b56704828fb0199c5a48990e849b588"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 178,
+        "deletedLineCount": 10,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-headless-fast-mvp.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-headless-fast-mvp.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2825",
+        "merge-commit:44500aad0227163663eb700e54b8b7432f30a06d",
+        "base-main:a8db80e541fc231df4b1a614e1daa1c4ffbacfc2"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 185
+    "total": 186
   }
 }
