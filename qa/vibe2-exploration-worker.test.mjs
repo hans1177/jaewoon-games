@@ -264,7 +264,7 @@ test('studio build-up and optimize ignore stale repair evidence while preserving
     assert.equal(result.editContract.gameRepair.multiplayerLifecycle.required,false);
     assert.equal(result.editContract.gameRepair.multiplayerLifecycle.automation.required,false);
     assert.equal(result.editContract.causalReplay.required,false);
-    assert.equal(result.editContract.directResponsibleSystemRepairRequired,false);
+    assert.equal(result.editContract.gameRepair.directResponsibleSystemRepairRequired,false);
     assert.equal(result.editContract.requiredFocusedChecks.some(check=>check.startsWith('GAME_REPAIR_')),false);
   }
 });
