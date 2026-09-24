@@ -1,5 +1,5 @@
 {
-  "version": 41,
+  "version": 42,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -742,5 +742,65 @@
       "SEMANTIC_SEEDS"
     ],
     "heatmapPriorityMustBeEvidenceBased": true
+  },
+  "referenceImageWorldObservationEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.worldGenerationStudio.referenceAbstraction.visionObservationContract",
+    "evidenceScope": "PER_REFERENCE_SOURCE_AND_GAME_CANDIDATE",
+    "correlationKeys": [
+      "GAME_ID",
+      "CANDIDATE_SHA",
+      "SOURCE_ID",
+      "SOURCE_TYPE",
+      "TARGET_PLATFORM"
+    ],
+    "requiredEvidence": [
+      "SOURCE_RIGHTS_OR_OWNERSHIP_STATUS",
+      "SOURCE_PROVENANCE_REFERENCE",
+      "REQUESTED_STRUCTURE_FIELDS",
+      "OBSERVATION_SOURCE_BINDING",
+      "VERIFIED_AGAINST_SOURCE_STATUS",
+      "MAP_DNA_CONSUMPTION_REFERENCE",
+      "ROUTE_REACHABILITY_QA",
+      "STREAMING_AND_MOBILE_QA_WHEN_APPLICABLE"
+    ],
+    "rawReferenceImageBytesInLearningLogsForbidden": true,
+    "rawProtectedSceneTemplatePersistenceForbidden": true,
+    "directMapLayoutOrDistinctiveLandmarkCopyForbidden": true,
+    "structuralObservationProposalMayBeLogged": true,
+    "positiveLearningRequiresVerifiedAgainstSourceAndVerifiedProjectOutcome": true,
+    "artifactReferenceOrSourceIdPreferred": true,
+    "gameplayAuthority": false
+  },
+  "narrativeRuntimeEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract.runtimeLearning",
+    "evidenceScope": "PER_GAME_CANDIDATE_AND_STORY_STATE_VERSION",
+    "correlationKeys": [
+      "GAME_ID",
+      "CANDIDATE_SHA",
+      "STORY_STATE_VERSION",
+      "QUEST_ID",
+      "CHARACTER_ID",
+      "THREAD_ID",
+      "FAILURE_SIGNATURE"
+    ],
+    "requiredEvidence": [
+      "MAIN_STORY_CAUSALITY_RESULT",
+      "QUEST_GRAPH_PREREQUISITE_AND_COMPLETION_RESULT",
+      "FORESHADOWING_PAYOFF_RESULT",
+      "CHARACTER_KNOWLEDGE_BOUNDARY_RESULT",
+      "CHARACTER_VOICE_DISTINCTNESS_RESULT",
+      "RELATIONSHIP_MEMORY_SOURCE_EVENT_RESULT",
+      "COMPANION_NPC_MONSTER_BEHAVIOR_INTENT_RESULT",
+      "WORLD_NARRATIVE_STATE_CONSISTENCY_RESULT",
+      "SAVE_LOAD_STORY_RELATIONSHIP_MEMORY_RESULT_WHEN_PERSISTENT"
+    ],
+    "positiveLearningRequiresVerifiedRuntimeOrIndependentQaOutcome": true,
+    "rawGeneratedStoryOrDialogueDirectMasteryForbidden": true,
+    "duplicateRewardOrCompletionMustBeLoggedAsFailure": true,
+    "worldStateContradictionMustBeLoggedAsFailure": true,
+    "gameplayAuthorityWriteFromNarrativeMustBeLoggedAsHardFailure": true,
+    "existingCanonicalLearningMotorOnly": true
   }
 }
