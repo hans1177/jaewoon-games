@@ -1,5 +1,5 @@
 {
-  "version": 36,
+  "version": 37,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -580,5 +580,42 @@
     "rawSavePayloadLoggingForbidden": true,
     "rawPrivateReasoningLogged": false,
     "structuredEvidenceRequiredForAcceptance": true
+  },
+  "motionDirectorEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
+    "recordKind": "motion-director-evidence",
+    "rootScope": "INSIDE_GRAPHICS_PRODUCTION_ONLY",
+    "topLevelWorkUnitForbidden": true,
+    "requiredFields": [
+      "GAME_ID",
+      "CANDIDATE_SHA",
+      "GRAPHICS_PRODUCTION_ID",
+      "MOTION_DIRECTOR_TARGET",
+      "BODY_PLAN",
+      "RIG_PROFILE",
+      "STYLE_LOCK",
+      "MOTION_DNA_SUMMARY",
+      "COMPATIBILITY_RESULT",
+      "COMPOSITION_CHANNELS_USED",
+      "CONTEXT_SELECTOR_INPUTS",
+      "SELECTED_MOTION_IDS",
+      "REACTION_MATCH_RESULT",
+      "PAIR_MOTION_ALIGNMENT_WHEN_USED",
+      "STYLE_VARIANT_PROVENANCE",
+      "MUTATION_PROVENANCE",
+      "VARIATION_HISTORY_SUMMARY",
+      "ROOT_MOVEMENT_ENVELOPE_RESULT",
+      "CONTACT_SYNC_RESULT",
+      "PLATFORM_RUNTIME_CAPTURE",
+      "QA_RESULT"
+    ],
+    "unresolvedCompatibilityOrLibraryEdgeBlocksVerifiedPromotion": true,
+    "markerOnlyEvidenceForbidden": true,
+    "actualRuntimeCaptureRequired": true,
+    "gameplayAuthorityMutationEvidenceMustFail": true,
+    "unityAndRobloxEvidenceRemainPlatformSpecific": true,
+    "failureState": "ASSET_REPAIR_REQUIRED",
+    "passMeaning": "MOTION_PRESENTATION_CHECKPOINT_NOT_RELEASE_AUTHORITY"
   }
 }
