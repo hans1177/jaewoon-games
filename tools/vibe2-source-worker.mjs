@@ -1395,7 +1395,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let diagnosticPostconditionCreditUsed=false;
   let studioEditMatchCreditUsed=false;
   let fullWebProgressCreditCount=0;
-  const studioExpansion=/\[STUDIO_QUALITY_EVOLUTION\]/i.test(String(prompt??''));
+  const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const initialStudioPrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
     :prompt;
