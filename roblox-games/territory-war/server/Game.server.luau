@@ -28,9 +28,46 @@ local function setNumber(player, name, value)
   player:SetAttribute(name, math.max(0, math.floor(value)))
 end
 
+local function opponentFor(player)
+  for _, participant in ipairs(Players:GetPlayers()) do
+    if participant ~= player then return participant end
+  end
+  return nil
+end
+
+local function stateSnapshot(player)
+  return {
+    UserId = player.UserId,
+    Territories = number(player, "Territories", 1),
+    Troops = number(player, "Troops", 12),
+    Resources = number(player, "Resources", 20),
+    EconomyLevel = number(player, "EconomyLevel", 1),
+    RoundScore = number(player, "RoundScore", 0),
+  }
+end
+
+local function broadcastMultiplayerSync(actor)
+  local participants = Players:GetPlayers()
+  local states = {}
+  for _, participant in ipairs(participants) do
+    local opponent = opponentFor(participant)
+    participant:SetAttribute("MultiplayerActive", #participants >= Config.MinimumParticipants)
+    participant:SetAttribute("OpponentUserId", opponent and opponent.UserId or 0)
+    table.insert(states, stateSnapshot(participant))
+  end
+  remote:FireAllClients("MULTIPLAYER_SYNC", {
+    ActorUserId = actor and actor.UserId or 0,
+    ParticipantCount = #participants,
+    Players = states,
+  })
+end
+
 local function initialize(player)
   for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end
   player:SetAttribute("LastOrder", "READY")
+  player:SetAttribute("RoundScore", 0)
+  player:SetAttribute("MultiplayerActive", false)
+  player:SetAttribute("OpponentUserId", 0)
 end
 
 local function loadPlayer(player)
@@ -46,6 +83,9 @@ local function loadPlayer(player)
     player:SetAttribute(key, typeof(value) == "number" and value or fallback)
   end
   player:SetAttribute("LastOrder", "RESTORED")
+  player:SetAttribute("RoundScore", 0)
+  player:SetAttribute("MultiplayerActive", false)
+  player:SetAttribute("OpponentUserId", 0)
 end
 
 local function savePlayer(player)
@@ -63,7 +103,13 @@ local function advanceTurn(player)
   local economy = number(player, "EconomyLevel", 1)
   setNumber(player, "CampaignTurn", turn)
   setNumber(player, "Resources", number(player, "Resources", 0) + 3 + economy)
-  setNumber(player, "EnemyPressure", math.min(50, number(player, "EnemyPressure", 8) + 2))
+  local opponent = opponentFor(player)
+  if opponent then
+    local pressure = number(opponent, "Troops", 12) + number(opponent, "EconomyLevel", 1) * 2
+    setNumber(player, "EnemyPressure", pressure)
+  else
+    setNumber(player, "EnemyPressure", math.min(50, number(player, "EnemyPressure", 8) + 2))
+  end
 end
 
 local function scout(player)
@@ -80,17 +126,29 @@ local function attack(player)
     return
   end
   setNumber(player, "Resources", resources - Config.AttackCost)
-  local pressure = number(player, "EnemyPressure", 8)
+  local opponent = opponentFor(player)
+  local pressure = opponent and (number(opponent, "Troops", 12) + number(opponent, "EconomyLevel", 1) * 2) or number(player, "EnemyPressure", 8)
   local attackPower = troops + number(player, "EconomyLevel", 1) * 2
   if attackPower >= pressure then
     setNumber(player, "Territories", number(player, "Territories", 1) + 1)
     setNumber(player, "Troops", troops - 2)
-    setNumber(player, "EnemyPressure", math.max(5, pressure - 3))
     setNumber(player, "Progress", number(player, "Progress", 0) + 8)
+    setNumber(player, "RoundScore", number(player, "RoundScore", 0) + 1)
+    if opponent then
+      setNumber(opponent, "Territories", math.max(0, number(opponent, "Territories", 1) - 1))
+      opponent:SetAttribute("LastOrder", "TERRITORY_LOST")
+    else
+      setNumber(player, "EnemyPressure", math.max(5, pressure - 3))
+    end
     player:SetAttribute("LastOrder", "TERRITORY_CAPTURED")
   else
     setNumber(player, "Troops", math.max(1, troops - 4))
-    setNumber(player, "EnemyPressure", pressure + 3)
+    if opponent then
+      setNumber(opponent, "RoundScore", number(opponent, "RoundScore", 0) + 1)
+      opponent:SetAttribute("LastOrder", "DEFENSE_HELD")
+    else
+      setNumber(player, "EnemyPressure", pressure + 3)
+    end
     player:SetAttribute("LastOrder", "ATTACK_REPELLED")
   end
   advanceTurn(player)
@@ -130,7 +188,10 @@ local handlers = {
   [Config.Actions.ECONOMY] = economy,
 }
 
-Players.PlayerAdded:Connect(loadPlayer)
+Players.PlayerAdded:Connect(function(player)
+  loadPlayer(player)
+  task.defer(function() broadcastMultiplayerSync(player) end)
+end)
 for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function()
     if player:GetAttribute("Territories") == nil then loadPlayer(player) end
@@ -146,11 +207,13 @@ remote.OnServerEvent:Connect(function(player, action)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   handler(player)
+  broadcastMultiplayerSync(player)
 end)
 
 Players.PlayerRemoving:Connect(function(player)
   savePlayer(player)
   lastAction[player] = nil
+  task.defer(function() broadcastMultiplayerSync(nil) end)
 end)
 
 game:BindToClose(function()
