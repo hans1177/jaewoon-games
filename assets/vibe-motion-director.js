@@ -408,6 +408,652 @@ export function estimateMotionCombinationSpace({layers={},styleVariants=[],skill
   });
 }
 
+
+export const DEFAULT_MOTION_COVERAGE_MINIMUMS=Object.freeze({
+  locomotion:5,
+  attacks:3,
+  defense:2,
+  reactions:4,
+  acting:2,
+  deaths:2,
+  skill:2,
+  signature:3
+});
+
+export const BODY_PLAN_MOTION_COVERAGE=Object.freeze({
+  FLYING:Object.freeze({
+    locomotion:8,attacks:4,defense:3,reactions:4,acting:2,deaths:2,skill:2,signature:4,
+    requiredRoles:Object.freeze(['TAKEOFF','FLY','BANK','HOVER','LAND_FROM_FLIGHT'])
+  }),
+  ARACHNID:Object.freeze({
+    locomotion:7,attacks:4,defense:3,reactions:4,acting:2,deaths:2,skill:2,signature:4,
+    requiredRoles:Object.freeze(['CRAWL','STRAFE','WALL_CRAWL_OR_EQUIVALENT'])
+  }),
+  REPTILE_OR_SERPENT:Object.freeze({
+    locomotion:5,attacks:4,defense:2,reactions:4,acting:2,deaths:2,skill:2,signature:4,
+    requiredRoles:Object.freeze(['SLITHER_OR_BODY_PLAN_EQUIVALENT'])
+  }),
+  HEAVY_BIPED:Object.freeze({
+    locomotion:6,attacks:5,defense:3,reactions:5,acting:3,deaths:3,skill:3,signature:4,
+    requiredRoles:Object.freeze(['HEAVY_START_STOP','HEAVY_TURN','HEAVY_RECOVERY'])
+  }),
+  BOSS_BIPED:Object.freeze({
+    locomotion:6,attacks:6,defense:3,reactions:5,acting:5,deaths:2,skill:4,signature:6,
+    requiredRoles:Object.freeze(['INTRO','PHASE_CHANGE','ENRAGE','FAILED_ATTACK_RECOVERY','BOSS_DEATH_SEQUENCE'])
+  }),
+  HEAVY_GOLEM_OR_BOSS:Object.freeze({
+    locomotion:6,attacks:5,defense:3,reactions:5,acting:3,deaths:3,skill:3,signature:4,
+    requiredRoles:Object.freeze(['HEAVY_START_STOP','HEAVY_TURN','HEAVY_RECOVERY'])
+  })
+});
+
+const SEMANTIC_GAP_ROLE_TEMPLATES=Object.freeze({
+  locomotion:Object.freeze(['IDLE','WALK','RUN','START','STOP','TURN_L','TURN_R','STRAFE_L','STRAFE_R','BACKSTEP','DASH']),
+  attacks:Object.freeze(['LIGHT_ATTACK_A','LIGHT_ATTACK_B','HEAVY_ATTACK_A','GAP_CLOSER','AOE_ATTACK','AIR_ATTACK','SIGNATURE_ATTACK']),
+  defense:Object.freeze(['GUARD','DODGE_L','DODGE_R','PARRY_OR_DEFLECT','COUNTER','REVERSAL']),
+  reactions:Object.freeze(['LIGHT_HIT','HEAVY_HIT','HIT_LEFT','HIT_RIGHT','KNOCKBACK','KNOCKDOWN','GET_UP','WALL_HIT']),
+  acting:Object.freeze(['BREATH_IDLE','ALERT','THREAT_DISPLAY','TAUNT','SEARCH','ENRAGE']),
+  deaths:Object.freeze(['DEATH_FRONT','DEATH_BACK','DEATH_SIDE','HEAVY_DEATH','SIGNATURE_DEATH']),
+  skill:Object.freeze(['SKILL_PREPARE','SKILL_RELEASE','SKILL_RECOVERY','BUFF_OR_ENRAGE','PROJECTILE_OR_AOE','ULTIMATE']),
+  signature:Object.freeze(['IDLE_SIGNATURE','LOCOMOTION_SIGNATURE','ATTACK_SIGNATURE','HIT_SIGNATURE','DEATH_SIGNATURE','SPECIAL_BODY_PART_SIGNATURE'])
+});
+
+function bodyPlanSemanticRoles(bodyPlan='',group=''){
+  const plan=upper(bodyPlan);
+  const key=text(group);
+  if(key!=='locomotion')return SEMANTIC_GAP_ROLE_TEMPLATES[key]||Object.freeze([]);
+  if(plan==='FLYING')return Object.freeze(['PERCH_IDLE','TAKEOFF','FLY','FAST_FLY','BANK_L','BANK_R','HOVER','LAND_FROM_FLIGHT']);
+  if(plan==='ARACHNID')return Object.freeze(['IDLE_LEG_SHIFT','CRAWL','RUN','STRAFE_L','STRAFE_R','WALL_CRAWL','CEILING_CRAWL','TURN']);
+  if(plan==='REPTILE_OR_SERPENT')return Object.freeze(['IDLE_COIL','SLITHER_SLOW','SLITHER_FAST','TURN_COIL','RAISE_HEAD','LOWER_HEAD']);
+  if(['HEAVY_BIPED','BOSS_BIPED','HEAVY_GOLEM_OR_BOSS'].includes(plan))return Object.freeze(['HEAVY_IDLE','HEAVY_WALK','HEAVY_RUN','HEAVY_START','HEAVY_STOP','HEAVY_TURN_L','HEAVY_TURN_R','HEAVY_RECOVERY']);
+  return SEMANTIC_GAP_ROLE_TEMPLATES.locomotion;
+}
+
+export function resolveMotionCoverageRequirements(profile={},overrides={}){
+  const bodyPlan=upper(profile.bodyPlan||profile.BODY_PLAN);
+  const specific=BODY_PLAN_MOTION_COVERAGE[bodyPlan]||{};
+  const merged={...DEFAULT_MOTION_COVERAGE_MINIMUMS,...specific,...overrides};
+  const requiredRoles=unique([...(specific.requiredRoles||[]),...(overrides.requiredRoles||[])]);
+  delete merged.requiredRoles;
+  return Object.freeze({
+    bodyPlan,
+    minimums:Object.freeze(merged),
+    requiredRoles:Object.freeze(requiredRoles)
+  });
+}
+
+export function auditMotionCoverage(profile={},requirements={}){
+  const p=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const resolved=resolveMotionCoverageRequirements(p,requirements);
+  const groups={};
+  const gaps=[];
+  for(const [group,minimum] of Object.entries(resolved.minimums)){
+    if(typeof minimum!=='number')continue;
+    const current=(p.groups?.[group]||[]).length;
+    const missing=Math.max(0,minimum-current);
+    groups[group]=Object.freeze({current,minimum,missing,complete:missing===0});
+    if(missing>0)gaps.push(Object.freeze({group,current,minimum,missing}));
+  }
+  const normalizedMotions=(p.motionIds||[]).map(upper);
+  const roleGaps=resolved.requiredRoles.filter(role=>{
+    const tokens=upper(role).split('_OR_').filter(Boolean);
+    return !normalizedMotions.some(id=>tokens.some(token=>id.includes(token.replace('_EQUIVALENT',''))));
+  });
+  return Object.freeze({
+    profileId:p.id,
+    archetype:p.archetype,
+    bodyPlan:p.bodyPlan,
+    groups:Object.freeze(groups),
+    gaps:Object.freeze(gaps),
+    requiredRoleGaps:Object.freeze(roleGaps),
+    complete:gaps.length===0&&roleGaps.length===0,
+    verifiedComplete:gaps.length===0&&roleGaps.length===0&&p.productionVerified===true,
+    productionVerified:p.productionVerified===true
+  });
+}
+
+export function motionSemanticFingerprint(input={}){
+  const dna=input.dna||input;
+  const fields=[
+    upper(dna.BODY_PLAN||dna.bodyPlan),
+    upper(dna.RIG_PROFILE||dna.rigProfile),
+    upper(dna.COMBAT_ROLE||dna.combatRole||dna.SKILL_ROLE||dna.skillRole||dna.REACTION_ROLE||dna.reactionRole||dna.role),
+    upper(dna.WEAPON_FAMILY||dna.weaponFamily),
+    upper(dna.STANCE||dna.stance),
+    upper(dna.STYLE_FAMILY||dna.styleFamily),
+    upper(dna.CONTACT_LIMB||dna.contactLimb),
+    upper(dna.TRAVEL_VECTOR||dna.travelVector)
+  ];
+  return fields.join('|');
+}
+
+export function findNearDuplicateMotionCandidates({candidate={},library=[]}={}){
+  const fingerprint=motionSemanticFingerprint(candidate);
+  return Object.freeze((library||[])
+    .map(row=>Object.freeze({id:text(row.id||row.dna?.MOTION_ID),fingerprint:motionSemanticFingerprint(row),verified:(row.dna?.RUNTIME_VERIFICATION_STATE||row.RUNTIME_VERIFICATION_STATE)==='VERIFIED_RUNTIME'}))
+    .filter(row=>row.id&&row.fingerprint===fingerprint)
+    .sort((a,b)=>Number(b.verified)-Number(a.verified)||a.id.localeCompare(b.id)));
+}
+
+function donorCompatibilityScore(target={},donor={},group=''){
+  const t=target.groups?target:createCreatureMotionSetProfile(target);
+  const d=donor.groups?donor:createCreatureMotionSetProfile(donor);
+  if(text(group)==='signature'&&t.archetype!==d.archetype)return -Infinity;
+  if(t.bodyPlan!==d.bodyPlan)return -Infinity;
+  let score=40;
+  if(t.rigProfile===d.rigProfile)score+=25;
+  if(t.archetype===d.archetype)score+=30;
+  if(t.weightClass===d.weightClass)score+=10;
+  if((t.compatibleStyles||[]).some(style=>(d.compatibleStyles||[]).includes(style)))score+=10;
+  if(d.productionVerified===true)score+=50;
+  return score;
+}
+
+export function findCompatibleMotionDonors({targetProfile={},librarySets=[],group='locomotion'}={}){
+  const target=targetProfile.groups?targetProfile:createCreatureMotionSetProfile(targetProfile);
+  return Object.freeze((librarySets||[])
+    .map(row=>row.groups?row:createCreatureMotionSetProfile(row))
+    .filter(row=>row.id&&row.id!==target.id&&(row.groups?.[group]||[]).length>0)
+    .map(row=>Object.freeze({
+      id:row.id,
+      archetype:row.archetype,
+      bodyPlan:row.bodyPlan,
+      rigProfile:row.rigProfile,
+      group:text(group),
+      motionIds:Object.freeze([...(row.groups?.[group]||[])]),
+      productionVerified:row.productionVerified===true,
+      score:donorCompatibilityScore(target,row,group)
+    }))
+    .filter(row=>Number.isFinite(row.score))
+    .sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id)));
+}
+
+export function scoreMotionGapPriority({gap={},usage={}}={}){
+  let score=0;
+  if(usage.brokenOrMissingRuntimeMotion===true)score+=50;
+  if(usage.activeGameConsumer===true)score+=40;
+  if(usage.heroOrBoss===true)score+=30;
+  score+=Math.min(25,Math.max(0,Number(usage.gameConsumerCount)||0)*5);
+  if(usage.playerVisibleFrequencyHigh===true)score+=20;
+  if(usage.combatCritical===true||['attacks','defense','reactions','signature'].includes(text(gap.group)))score+=20;
+  if(usage.mobileReadabilityDefect===true)score+=15;
+  if(usage.externalSourceReady===true)score+=10;
+  score+=Math.min(20,Math.max(0,Number(gap.missing)||0)*4);
+  return score;
+}
+
+function semanticSeedIds(profile={},group='',count=0){
+  const p=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const roles=bodyPlanSemanticRoles(p.bodyPlan,group);
+  const existing=new Set((p.groups?.[group]||[]).map(upper));
+  const prefix=upper(p.archetype||p.id||'CREATURE').replace(/[^A-Z0-9]+/g,'_');
+  const result=[];
+  for(const role of roles){
+    if(result.length>=count)break;
+    if(![...existing].some(id=>id.includes(upper(role))))result.push(prefix+'_'+upper(role));
+  }
+  let n=1;
+  while(result.length<count){
+    const id=prefix+'_'+upper(group)+'_AUTO_'+String(n).padStart(2,'0');
+    if(!existing.has(id))result.push(id);
+    n+=1;
+  }
+  return Object.freeze(result.slice(0,count));
+}
+
+export function buildAutomaticMotionGapFillPlan({
+  profile={},
+  librarySets=[],
+  externalSources=[],
+  usage={},
+  requirements={}
+}={}){
+  const target=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const audit=auditMotionCoverage(target,requirements);
+  const externalMotionSources=(externalSources||[]).filter(row=>upper(row.category)==='MOTION'&&/LICENSE_VERIFIED/.test(upper(row.status||'')));
+  const actions=[];
+  for(const gap of audit.gaps){
+    const donors=findCompatibleMotionDonors({targetProfile:target,librarySets,group:gap.group});
+    const verifiedDonor=donors.find(row=>row.productionVerified===true);
+    const preparedDonor=donors.find(row=>row.productionVerified!==true);
+    const priority=scoreMotionGapPriority({gap,usage});
+    let route='PREPARE_SEMANTIC_MOTION_SEED';
+    let sourceId=null;
+    if(verifiedDonor){
+      route=verifiedDonor.archetype===target.archetype?'REUSE_VERIFIED_SAME_ARCHETYPE_MOTION':'REUSE_VERIFIED_COMPATIBLE_BODY_PLAN_MOTION';
+      sourceId=verifiedDonor.id;
+    }else if(externalMotionSources.length){
+      route='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_MOTION';
+      sourceId=text(externalMotionSources[0].id);
+    }else if(preparedDonor){
+      route='REFERENCE_COMPATIBLE_PREPARED_SEMANTIC_DONOR';
+      sourceId=preparedDonor.id;
+    }
+    actions.push(Object.freeze({
+      group:gap.group,
+      missing:gap.missing,
+      priority,
+      route,
+      sourceId,
+      semanticSeeds:semanticSeedIds(target,gap.group,gap.missing),
+      verifiedFill:route.startsWith('REUSE_VERIFIED_'),
+      promotionBlockedUntilRuntimeQa:!route.startsWith('REUSE_VERIFIED_')
+    }));
+  }
+  for(const role of audit.requiredRoleGaps){
+    actions.push(Object.freeze({
+      group:'requiredRole',
+      requiredRole:role,
+      missing:1,
+      priority:scoreMotionGapPriority({gap:{group:'signature',missing:1},usage})+10,
+      route:externalMotionSources.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_MOTION':'PREPARE_SEMANTIC_MOTION_SEED',
+      sourceId:externalMotionSources.length?text(externalMotionSources[0].id):null,
+      semanticSeeds:Object.freeze([upper(target.archetype||target.id||'CREATURE')+'_'+upper(role).replace(/_OR_EQUIVALENT/g,'')]),
+      verifiedFill:false,
+      promotionBlockedUntilRuntimeQa:true
+    }));
+  }
+  actions.sort((a,b)=>b.priority-a.priority||a.group.localeCompare(b.group));
+  return Object.freeze({
+    targetId:target.id,
+    archetype:target.archetype,
+    audit,
+    actions:Object.freeze(actions),
+    externalMotionSourceIds:Object.freeze(externalMotionSources.map(row=>text(row.id)).filter(Boolean)),
+    semanticPreparationCanClosePlanningGap:true,
+    semanticPreparationCannotCreateVerifiedCoverage:true,
+    runtimeVerificationRequired:true,
+    gameplayAuthority:false
+  });
+}
+
+export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
+  const p=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const groups=Object.fromEntries(Object.entries(p.groups||{}).map(([k,v])=>[k,[...v]]));
+  const added=[];
+  for(const action of gapPlan.actions||[]){
+    if(!action.semanticSeeds?.length||action.group==='requiredRole')continue;
+    if(!groups[action.group])groups[action.group]=[];
+    for(const id of action.semanticSeeds){
+      if(!groups[action.group].includes(id)){
+        groups[action.group].push(id);
+        added.push(id);
+      }
+    }
+  }
+  return Object.freeze({
+    profile:createCreatureMotionSetProfile({
+      id:p.id,archetype:p.archetype,bodyPlan:p.bodyPlan,rigProfile:p.rigProfile,weightClass:p.weightClass,
+      ...groups,compatibleStyles:p.compatibleStyles,verificationState:'PREPARED_SEMANTIC'
+    }),
+    added:Object.freeze(added),
+    productionVerified:false,
+    state:'PREPARED_SEMANTIC',
+    runtimeVerificationRequired:true
+  });
+}
+
+
+export function evaluateMotionTransition({
+  from={},
+  to={},
+  metrics={}
+}={}){
+  const pose=Math.max(0,100-Number(metrics.poseDiscontinuity||0));
+  const root=Math.max(0,100-Number(metrics.rootVelocityDelta||0));
+  const angular=Math.max(0,100-Number(metrics.angularVelocityDelta||0));
+  const foot=Math.max(0,100-Number(metrics.footContactBreak||0));
+  const hand=Math.max(0,100-Number(metrics.handContactBreak||0));
+  const marker=Math.max(0,100-Number(metrics.contactMarkerOffset||0));
+  const blend=Math.max(0,100-Number(metrics.blendDurationPenalty||0));
+  const silhouette=Math.max(0,100-Number(metrics.silhouettePop||0));
+  const hardFailures=[];
+  if(metrics.teleportPop===true)hardFailures.push('TELEPORT_POP');
+  if(metrics.doubleRootAuthority===true)hardFailures.push('DOUBLE_ROOT_AUTHORITY');
+  if(Number(metrics.footContactBreak||0)>=80)hardFailures.push('FOOT_CONTACT_SNAP');
+  if(metrics.pairAlignmentBreak===true)hardFailures.push('PAIR_ALIGNMENT_BREAK');
+  if(metrics.gameplayEventDesync===true)hardFailures.push('GAMEPLAY_EVENT_DESYNC');
+  const score=Math.round((pose+root+angular+foot+hand+marker+blend+silhouette)/8);
+  const verdict=hardFailures.length?'FAIL':score>=85?'PASS':score>=70?'WARN':'FAIL';
+  return Object.freeze({
+    fromId:text(from.id||from.MOTION_ID),
+    toId:text(to.id||to.MOTION_ID),
+    score,
+    verdict,
+    hardFailures:Object.freeze(hardFailures),
+    metrics:Object.freeze({pose,root,angular,foot,hand,marker,blend,silhouette}),
+    gameplayWindowAuthority:false
+  });
+}
+
+export function auditMotionContact({
+  footSlideNormalized=0,
+  footPlantDriftNormalized=0,
+  handWeaponOffsetNormalized=0,
+  attackContactOffsetNormalized=0,
+  pairContactOffsetNormalized=0,
+  impactEventNormalizedTimeOffset=0,
+  groundPenetration=false,
+  meshIntersection=false,
+  thresholds={}
+}={}){
+  const limits={
+    footSlideNormalizedMax:Number(thresholds.footSlideNormalizedMax??0.035),
+    handWeaponNormalizedMax:Number(thresholds.handWeaponNormalizedMax??0.04),
+    attackContactNormalizedMax:Number(thresholds.attackContactNormalizedMax??0.06),
+    pairContactNormalizedMax:Number(thresholds.pairContactNormalizedMax??0.05),
+    impactEventNormalizedTimeMax:Number(thresholds.impactEventNormalizedTimeMax??0.04)
+  };
+  const failures=[];
+  if(Number(footSlideNormalized)>limits.footSlideNormalizedMax)failures.push('FOOT_SLIDE_DISTANCE');
+  if(Number(footPlantDriftNormalized)>limits.footSlideNormalizedMax)failures.push('FOOT_PLANT_DRIFT');
+  if(Number(handWeaponOffsetNormalized)>limits.handWeaponNormalizedMax)failures.push('HAND_WEAPON_OFFSET');
+  if(Number(attackContactOffsetNormalized)>limits.attackContactNormalizedMax)failures.push('ATTACK_CONTACT_OFFSET');
+  if(Number(pairContactOffsetNormalized)>limits.pairContactNormalizedMax)failures.push('PAIR_CONTACT_POINT_DRIFT');
+  if(Number(impactEventNormalizedTimeOffset)>limits.impactEventNormalizedTimeMax)failures.push('IMPACT_EVENT_OFFSET');
+  if(groundPenetration===true)failures.push('GROUND_PENETRATION');
+  if(meshIntersection===true)failures.push('MESH_INTERSECTION');
+  const score=Math.max(0,100-failures.length*18);
+  return Object.freeze({
+    pass:failures.length===0,
+    score,
+    failures:Object.freeze(failures),
+    limits:Object.freeze(limits),
+    blocksVerifiedPromotion:failures.length>0
+  });
+}
+
+const GAMEPLAY_EVENT_MOTION_MAP=Object.freeze({
+  MOVE:Object.freeze(['LOCOMOTION']),
+  JUMP:Object.freeze(['PREPARE','TAKEOFF_OR_ENTRY','TRAVEL','CONTACT_OR_EXIT','RECOVERY']),
+  LAND:Object.freeze(['CONTACT_OR_EXIT','RECOVERY']),
+  DODGE:Object.freeze(['READ','BLOCK_OR_EVADE','RECOVERY']),
+  BLOCK:Object.freeze(['READ','BLOCK_OR_EVADE','CONTACT_OR_CLEAR','RECOVERY']),
+  PARRY:Object.freeze(['READ','BLOCK_OR_EVADE','CONTACT_OR_CLEAR','COUNTER_OPTION','RECOVERY']),
+  COUNTER:Object.freeze(['READ','COUNTER_OPTION','RECOVERY']),
+  MELEE_ATTACK:Object.freeze(['ANTICIPATION','STARTUP','ACTIVE_CONTACT','RECOIL','RECOVERY']),
+  RANGED_ATTACK:Object.freeze(['PREPARE','AIM_OR_TARGET','RELEASE','RECOVERY']),
+  BITE:Object.freeze(['ANTICIPATION','STARTUP','ACTIVE_CONTACT','RECOIL','RECOVERY']),
+  CLAW:Object.freeze(['ANTICIPATION','STARTUP','ACTIVE_CONTACT','RECOIL','RECOVERY']),
+  HORN_CHARGE:Object.freeze(['PREPARE','TRAVEL','ACTIVE_CONTACT','RECOIL','RECOVERY']),
+  GRAB:Object.freeze(['ALIGN','LOCK','EXECUTE','SEPARATE','RECOVERY']),
+  THROW:Object.freeze(['ALIGN','LOCK','EXECUTE','IMPACT','SEPARATE','RECOVERY']),
+  KNOCKDOWN:Object.freeze(['HIT_REACTION','KNOCKDOWN','RECOVERY']),
+  GET_UP:Object.freeze(['PREPARE','RECOVERY']),
+  CAST:Object.freeze(['PREPARE','AIM_OR_TARGET','RELEASE','RECOVERY']),
+  CHANNEL:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','HOLD','RELEASE','RECOVERY']),
+  PROJECTILE:Object.freeze(['PREPARE','AIM_OR_TARGET','RELEASE','RECOVERY']),
+  BEAM:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','AIM_OR_TARGET','RELEASE','RECOVERY']),
+  AOE:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','RELEASE','RECOVERY']),
+  BUFF:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','RELEASE','RECOVERY']),
+  DEBUFF:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','RELEASE','RECOVERY']),
+  HEAL:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','RELEASE','RECOVERY']),
+  TELEPORT:Object.freeze(['PREPARE','RELEASE','RECOVERY']),
+  TRANSFORM:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','RELEASE','RECOVERY']),
+  SUMMON:Object.freeze(['PREPARE','CHARGE_OR_CHANNEL','RELEASE','RECOVERY']),
+  PHASE_CHANGE:Object.freeze(['PREPARE','RELEASE','RECOVERY']),
+  ENRAGE:Object.freeze(['PREPARE','RELEASE','RECOVERY']),
+  DEATH:Object.freeze(['ACTIVE_CONTACT','RECOVERY'])
+});
+
+export function bindGameplayEventToMotion({event='',availableRoles=[]}={}){
+  const normalized=upper(event);
+  const required=[...(GAMEPLAY_EVENT_MOTION_MAP[normalized]||[])];
+  const available=(availableRoles||[]).map(upper);
+  const missing=required.filter(role=>!available.includes(role));
+  return Object.freeze({
+    event:normalized,
+    requiredRoles:Object.freeze(required),
+    missingRoles:Object.freeze(missing),
+    complete:missing.length===0,
+    preparedSemanticSeeds:Object.freeze(missing.map(role=>normalized+'_'+role)),
+    state:missing.length?'PREPARED_SEMANTIC':'BOUND',
+    gameplayEventAuthority:true,
+    motionAuthority:false
+  });
+}
+
+export function createProceduralMotionProfile({
+  footIk=true,
+  groundNormal=true,
+  pelvisHeight=true,
+  spineLean=true,
+  headGaze=true,
+  handGrip=true,
+  aimOffset=true,
+  tailBalance=false,
+  wingBalance=false,
+  slopeAdaptation=true,
+  stairContact=true,
+  ledgeContact=true,
+  wallProximityPose=true,
+  platformBudget='MOBILE'
+}={}){
+  return Object.freeze({
+    corrections:Object.freeze({
+      FOOT_IK:footIk===true,
+      GROUND_NORMAL_ALIGNMENT:groundNormal===true,
+      PELVIS_HEIGHT:pelvisHeight===true,
+      SPINE_LEAN:spineLean===true,
+      HEAD_GAZE:headGaze===true,
+      HAND_GRIP:handGrip===true,
+      AIM_OFFSET:aimOffset===true,
+      TAIL_BALANCE:tailBalance===true,
+      WING_BALANCE:wingBalance===true,
+      SLOPE_BODY_ADAPTATION:slopeAdaptation===true,
+      STAIR_CONTACT:stairContact===true,
+      LEDGE_CONTACT:ledgeContact===true,
+      WALL_PROXIMITY_POSE:wallProximityPose===true
+    }),
+    platformBudget:upper(platformBudget),
+    visualOnly:true,
+    gameplayColliderAndMovementAuthorityImmutable:true
+  });
+}
+
+export function createGroupMotionPlan({
+  pattern='PACK_SURROUND',
+  actors=[],
+  targetPosition=null,
+  recentGroupActions=[],
+  spacing=1
+}={}){
+  const normalizedActors=(actors||[]).map((actor,index)=>Object.freeze({
+    id:text(actor.id||('actor-'+index)),
+    role:upper(actor.role||'MEMBER'),
+    slot:index
+  }));
+  const recent=(recentGroupActions||[]).map(upper);
+  const patternName=upper(pattern);
+  const staggered=normalizedActors.map((actor,index)=>Object.freeze({
+    actorId:actor.id,
+    phaseOffset:index%Math.max(1,Math.min(4,normalizedActors.length)),
+    attackSuppressed:recent[recent.length-1]===upper(actor.id)
+  }));
+  return Object.freeze({
+    pattern:patternName,
+    actors:Object.freeze(normalizedActors),
+    targetPosition,
+    spacing:Number(spacing)||1,
+    staggered:Object.freeze(staggered),
+    exactSynchronizedAttackSpamForbidden:true,
+    gameplayAiDecisionAuthorityImmutable:true
+  });
+}
+
+export function createMultiActorMotionContract({
+  id='',
+  pattern='PAIR_GRAB',
+  actors=[],
+  platformProfile='MOBILE',
+  alignment={}
+}={}){
+  const maxActors=upper(platformProfile)==='DESKTOP'?8:4;
+  const rows=(actors||[]).map((actor,index)=>Object.freeze({
+    id:text(actor.id||('actor-'+index)),
+    role:upper(actor.role||('ROLE_'+index)),
+    motionId:text(actor.motionId)
+  }));
+  return Object.freeze({
+    id:text(id),
+    pattern:upper(pattern),
+    actors:Object.freeze(rows),
+    actorCount:rows.length,
+    maxActors,
+    requiresExplicitPerformanceEvidence:rows.length>maxActors,
+    alignment:Object.freeze({
+      roots:alignment.roots!==false,
+      facing:alignment.facing!==false,
+      contactPoints:freezeList(unique(alignment.contactPoints)),
+      phaseMarkers:freezeList(unique(alignment.phaseMarkers)),
+      safeSeparationExit:text(alignment.safeSeparationExit)||null
+    }),
+    gameplayAuthority:false
+  });
+}
+
+export function createEmotionIntentLayer({
+  intent='CALM',
+  intensity=1,
+  channels={}
+}={}){
+  const normalized=upper(intent);
+  return Object.freeze({
+    intent:normalized,
+    intensity:clamp(intensity,0,2),
+    channels:Object.freeze({
+      STANCE:channels.stance!==false,
+      BREATHING:channels.breathing!==false,
+      HEAD_GAZE:channels.headGaze!==false,
+      SHOULDER_SPINE:channels.shoulderSpine!==false,
+      HAND_OR_CLAW_TENSION:channels.handOrClawTension!==false,
+      IDLE_VARIATION:channels.idleVariation!==false,
+      RECOVERY_STYLE:channels.recoveryStyle!==false
+    }),
+    additiveWhenCompatible:true,
+    emotionMayNotChangeGameplayStats:true
+  });
+}
+
+export function selectMotionLod({
+  cameraDistance=0,
+  screenSize=0,
+  deviceClass='MOBILE',
+  actorImportance='STANDARD',
+  combatRelevant=true
+}={}){
+  const importance=upper(actorImportance);
+  const device=upper(deviceClass);
+  let tier='FAR';
+  if(importance==='HERO'||importance==='BOSS'||Number(cameraDistance)<12||Number(screenSize)>0.2)tier='NEAR';
+  else if(Number(cameraDistance)<35||combatRelevant===true)tier='MID';
+  if(device==='LOW_END_MOBILE'&&tier==='NEAR'&&importance!=='HERO'&&importance!=='BOSS')tier='MID';
+  const features=tier==='NEAR'
+    ?['FULL_BODY_LAYERING','IK_CONTACT','HEAD_GAZE','SECONDARY_MOTION','FACIAL_WHEN_AVAILABLE','FULL_VFX_SYNC']
+    :tier==='MID'
+      ?['CORE_LAYERING','SIMPLIFIED_IK','HEAD_GAZE','LIMITED_SECONDARY']
+      :['BASE_LOCOMOTION','PRIMARY_ACTION','CRITICAL_REACTION_ONLY'];
+  return Object.freeze({
+    tier,
+    features:Object.freeze(features),
+    gameplayHitAndCollisionUnaffected:true,
+    mobileBudgetFirst:true
+  });
+}
+
+export function createMotionLineage({
+  assetId='',
+  parentId='',
+  sourceId='',
+  sourceHash='',
+  derivedHash='',
+  transformHistory=[],
+  licenseEvidence='',
+  rigProfile='',
+  styleFamily='',
+  platform='',
+  gameId='',
+  verificationSha='',
+  runtimeEvidenceId=''
+}={}){
+  return Object.freeze({
+    assetId:text(assetId),
+    parentId:text(parentId)||null,
+    sourceId:text(sourceId)||null,
+    sourceHash:text(sourceHash)||null,
+    derivedHash:text(derivedHash)||null,
+    transformHistory:freezeList(unique(transformHistory)),
+    licenseEvidence:text(licenseEvidence)||null,
+    rigProfile:upper(rigProfile),
+    styleFamily:upper(styleFamily),
+    platform:upper(platform),
+    gameId:text(gameId)||null,
+    verificationSha:text(verificationSha)||null,
+    runtimeEvidenceId:text(runtimeEvidenceId)||null,
+    originalImmutable:true,
+    revalidateDerivedWhenParentImproves:true,
+    complete:Boolean(assetId&&sourceId&&derivedHash&&platform)
+  });
+}
+
+export function aggregateRuntimeMotionSignals(samples=[]){
+  const rows=(samples||[]).filter(Boolean);
+  const n=Math.max(1,rows.length);
+  const avg=key=>rows.reduce((sum,row)=>sum+Number(row[key]||0),0)/n;
+  const count=key=>rows.filter(row=>row[key]===true).length;
+  const usage=new Map();
+  for(const row of rows){
+    const id=text(row.motionId);
+    if(id)usage.set(id,(usage.get(id)||0)+1);
+  }
+  const immediateRepeatRate=rows.length?count('immediateRepeat')/rows.length:0;
+  const sameFamilyRepeatRate=rows.length?count('sameFamilyRepeat')/rows.length:0;
+  const verifiedPassCount=rows.filter(row=>row.runtimeVerified===true&&row.pass===true).length;
+  const verifiedFailureCount=rows.filter(row=>row.runtimeVerified===true&&row.pass===false&&text(row.failureReason)).length;
+  return Object.freeze({
+    sampleCount:rows.length,
+    usageByMotion:Object.freeze(Object.fromEntries([...usage.entries()])),
+    transitionQualityScore:avg('transitionQualityScore'),
+    contactQaScore:avg('contactQaScore'),
+    pairAlignmentScore:avg('pairAlignmentScore'),
+    motionLodFrameCost:avg('motionLodFrameCost'),
+    frameStabilityScore:avg('frameStabilityScore'),
+    mobileReadabilityScore:avg('mobileReadabilityScore'),
+    immediateRepeatRate,
+    sameFamilyRepeatRate,
+    verifiedPassCount,
+    verifiedFailureCount,
+    rawTelemetryAuthority:false
+  });
+}
+
+export function buildRuntimeMotionLearningCandidate({
+  gameId='',
+  platform='',
+  signals={},
+  samples=[]
+}={}){
+  const summary=signals.sampleCount!==undefined?signals:aggregateRuntimeMotionSignals(samples);
+  const verifiedSamples=(samples||[]).filter(row=>row.runtimeVerified===true);
+  const positive=verifiedSamples.some(row=>row.pass===true);
+  const negative=verifiedSamples.some(row=>row.pass===false&&text(row.failureReason));
+  const lessons=unique(verifiedSamples.filter(row=>row.pass===false&&text(row.failureReason)).map(row=>upper(row.failureReason)));
+  return Object.freeze({
+    gameId:text(gameId),
+    platform:upper(platform),
+    domains:Object.freeze(['LIVING_MOTION','ANIMATION_FEEL','ASSET_ADAPTATION','VFX','CAMERA_LANGUAGE']),
+    summary,
+    positiveMasteryEligible:positive,
+    negativeAvoidPatternEligible:negative,
+    verifiedFailureLessons:Object.freeze(lessons),
+    preparedSemanticEligible:false,
+    rawTelemetryDirectTraining:false,
+    feedsExistingCanonicalLearningChain:positive||negative,
+    requiresExistingDistillationThresholdHoldoutAndCanary:true,
+    platformEvidenceIndependent:true
+  });
+}
+
 export function createSpeciesSignature({archetype='',idle='',locomotion='',attack='',defense='',hit='',death='',specialBodyPart=''}={}){
   return Object.freeze({
     archetype:upper(archetype),
@@ -424,7 +1070,12 @@ export function createSpeciesSignature({archetype='',idle='',locomotion='',attac
   });
 }
 
-export function createMotionDirectorPlan({platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[]}={}){
+export function createMotionDirectorPlan({
+  platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
+  motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
+  transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
+  emotion=null,lod=null,lineage=null,runtimeSignals=[]
+}={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
     context:{...context,platform,bodyPlan,rigProfile,styleFamily},
@@ -442,9 +1093,21 @@ export function createMotionDirectorPlan({platform='UNITY',bodyPlan='HUMANOID',r
     skillSequence:buildSkillMotionSequence(skill),
     reaction:createReactionMatch(reaction),
     pairMotion:pair?createPairMotionContract(pair):null,
+    transition:transition?evaluateMotionTransition(transition):null,
+    contactQa:contactQa?auditMotionContact(contactQa):null,
+    gameplayEventBinding:gameplayEvent?bindGameplayEventToMotion(gameplayEvent):null,
+    proceduralMotion:procedural?createProceduralMotionProfile(procedural):null,
+    groupMotion:group?createGroupMotionPlan(group):null,
+    multiActorMotion:multiActor?createMultiActorMotionContract(multiActor):null,
+    emotionIntent:emotion?createEmotionIntentLayer(emotion):null,
+    motionLod:lod?selectMotionLod(lod):null,
+    lineage:lineage?createMotionLineage(lineage):null,
+    runtimeLearning:runtimeSignals?.length?buildRuntimeMotionLearningCandidate({platform,signals:aggregateRuntimeMotionSignals(runtimeSignals),samples:runtimeSignals}):null,
     systems:Object.freeze([
       'MOTION_DNA','COMPATIBILITY_GRAPH','BODY_LAYER_COMPOSER','CONTEXT_SELECTOR','MOTION_GRAMMAR',
-      'REACTION_MATCHER','PAIR_MOTION','SPECIES_SIGNATURE','STYLE_MODIFIER','MOTION_MUTATION','VARIATION_MEMORY'
+      'REACTION_MATCHER','PAIR_MOTION','SPECIES_SIGNATURE','STYLE_MODIFIER','MOTION_MUTATION','VARIATION_MEMORY',
+      'TRANSITION_DIRECTOR','AUTOMATIC_CONTACT_QA','GAMEPLAY_EVENT_MOTION_BINDING','PROCEDURAL_MOTION_LAYER',
+      'GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING'
     ]),
     libraryGraphNodes:MOTION_LIBRARY_GRAPH_NODES,
     continuousExpansion:true,

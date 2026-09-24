@@ -24,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 2, 'contract.version');
+eq(contract.version, 3, 'contract.version');
 eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
 eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
 eq(contract.policyAuthority, false, 'contract.policyAuthority');
@@ -43,6 +43,14 @@ eq(contract.trainingPolicy.minFreshTrainSamples, 12, 'minFreshTrainSamples');
 eq(contract.trainingPolicy.minDistinctProjects, 2, 'minDistinctProjects');
 eq(contract.trainingPolicy.maxProjectShare, 0.75, 'maxProjectShare');
 eq(contract.trainingPolicy.promotionGate, 'FIXED_HOLDOUT_AB_THEN_CANARY', 'promotionGate');
+eq(contract.motionRuntimeEvidence?.enabled, true, 'motion runtime evidence enabled');
+eq(contract.motionRuntimeEvidence?.usesCanonicalChainOnly, true, 'motion runtime canonical chain only');
+eq(contract.motionRuntimeEvidence?.separatePipelineForbidden, true, 'motion runtime separate pipeline forbidden');
+eq(contract.motionRuntimeEvidence?.preparedSemanticEvidenceAccepted, false, 'prepared semantic motion cannot teach');
+eq(contract.motionRuntimeEvidence?.rawTelemetryDirectTraining, false, 'raw motion telemetry direct training');
+eq(contract.motionRuntimeEvidence?.verifiedOutcomeMayBecomeTrainingSample, true, 'verified motion outcome may become sample');
+eq(contract.motionRuntimeEvidence?.existingThresholdsHoldoutCanaryUnchanged, true, 'motion learning thresholds unchanged');
+eq(contract.motionRuntimeEvidence?.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate, true, 'motion platform evidence separation');
 
 const portableWeb=contract.portableWebLearning;
 eq(portableWeb?.enabled, false, 'legacy portable Web learning disabled');

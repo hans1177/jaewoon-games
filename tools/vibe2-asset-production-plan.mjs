@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation} from '../assets/vibe-motion-director.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -228,6 +229,41 @@ export function buildVibeAssetProductionPlan({
   const companyCount=decisions.filter(row=>row.companyCandidates.length>0).length;
   const repositoryCount=decisions.filter(row=>row.repositoryCandidates.length>0).length;
   const externalCount=decisions.filter(row=>row.externalCandidates.length>0).length;
+  const bootstrapSets=(companyRegistry?.motionBootstrap?.sets||[]).map(row=>createCreatureMotionSetProfile({...row,verificationState:companyRegistry?.motionBootstrap?.productionVerified===true?'VERIFIED_RUNTIME':'PREPARED_SEMANTIC'}));
+  const motionAutoGapActive=companyLibrary?.autoMotionCoverageGapFill?.status==='ACTIVE_EXECUTABLE_CONTRACT';
+  const requestUpper=request.toUpperCase();
+  const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
+    const usage={
+      activeGameConsumer:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
+      heroOrBoss:/BOSS/.test(profile.bodyPlan)||requestUpper.includes('BOSS')||requestUpper.includes('보스'),
+      gameConsumerCount:Boolean(profile.archetype&&requestUpper.includes(profile.archetype))?1:0,
+      playerVisibleFrequencyHigh:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
+      combatCritical:true,
+      externalSourceReady:(companyRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase()))
+    };
+    const gapPlan=buildAutomaticMotionGapFillPlan({
+      profile,
+      librarySets:bootstrapSets,
+      externalSources:companyRegistry?.externalSources||[],
+      usage,
+      requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}
+    });
+    const prepared=applySemanticGapPreparation({profile,gapPlan});
+    return freeze({
+      id:profile.id,
+      archetype:profile.archetype,
+      complete:gapPlan.audit.complete,
+      verifiedComplete:gapPlan.audit.verifiedComplete,
+      gapCount:gapPlan.audit.gaps.length+gapPlan.audit.requiredRoleGaps.length,
+      missingSlots:gapPlan.audit.gaps.reduce((n,row)=>n+row.missing,0)+gapPlan.audit.requiredRoleGaps.length,
+      topPriority:gapPlan.actions[0]?.priority||0,
+      actionRoutes:freezeList(unique(gapPlan.actions.map(row=>row.route))),
+      semanticSeeds:freezeList(gapPlan.actions.flatMap(row=>row.semanticSeeds||[])),
+      preparedMotionCount:prepared.profile.motionIds.length,
+      productionVerified:prepared.productionVerified===true
+    });
+  }):[];
+  const prioritizedMotionAutoFillPlans=[...motionAutoFillPlans].sort((a,b)=>b.topPriority-a.topPriority||b.missingSlots-a.missingSlots||a.id.localeCompare(b.id));
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
@@ -314,6 +350,16 @@ export function buildVibeAssetProductionPlan({
         libraryGraphNodes:freezeList(companyLibrary?.motionDirectorSystem?.libraryInterlink?.nodes||[]),
         platformAdapters:freeze(companyLibrary?.motionDirectorSystem?.platformAdapters||{}),
         runtimeQa:freezeList(companyLibrary?.motionDirectorSystem?.runtimeQa||[]),
+        transitionDirector:freeze(companyLibrary?.motionDirectorSystem?.transitionDirector||{}),
+        automaticContactQa:freeze(companyLibrary?.motionDirectorSystem?.automaticContactQa||{}),
+        gameplayEventMotionBinding:freeze(companyLibrary?.motionDirectorSystem?.gameplayEventMotionBinding||{}),
+        proceduralMotionLayer:freeze(companyLibrary?.motionDirectorSystem?.proceduralMotionLayer||{}),
+        groupMotionDirector:freeze(companyLibrary?.motionDirectorSystem?.groupMotionDirector||{}),
+        multiActorMotion:freeze(companyLibrary?.motionDirectorSystem?.multiActorMotion||{}),
+        emotionIntentLayer:freeze(companyLibrary?.motionDirectorSystem?.emotionIntentLayer||{}),
+        motionLod:freeze(companyLibrary?.motionDirectorSystem?.motionLod||{}),
+        motionLineage:freeze(companyLibrary?.motionDirectorSystem?.motionLineage||{}),
+        runtimeMotionLearning:freeze(companyLibrary?.motionDirectorSystem?.runtimeMotionLearning||{}),
         gameplayAuthority:companyLibrary?.motionDirectorSystem?.authorityGuard?.motionDirectorOwnsPresentationSelectionAndCompositionOnly===true?false:null
       }),
       motionBootstrap:freeze({
@@ -325,6 +371,23 @@ export function buildVibeAssetProductionPlan({
         bodyPlans:freezeList([...new Set((companyRegistry?.motionBootstrap?.sets||[]).map(row=>clean(row.bodyPlan)).filter(Boolean))]),
         platformTargets:freezeList(companyRegistry?.motionBootstrap?.platformTargets||[]),
         verificationRule:clean(companyRegistry?.motionBootstrap?.verificationRule)||null
+      }),
+      motionAutoGapFill:freeze({
+        enabled:motionAutoGapActive,
+        target:'AUTOMATIC_MOTION_COVERAGE_GAP_FILL',
+        scanTriggers:freezeList(companyLibrary?.autoMotionCoverageGapFill?.scanTriggers||[]),
+        requiredCoverageGroups:freezeList(companyLibrary?.autoMotionCoverageGapFill?.requiredCoverageGroups||[]),
+        fillOrder:freezeList(companyLibrary?.autoMotionCoverageGapFill?.fillOrder||[]),
+        baselineMinimums:freeze(companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}),
+        bodyPlanAdjustments:freeze(companyLibrary?.autoMotionCoverageGapFill?.bodyPlanAdjustments||{}),
+        preparedSemanticNeverVerified:companyLibrary?.autoMotionCoverageGapFill?.promotionGate?.preparedSemanticNeverEqualsRuntimeVerified===true,
+        usagePriorityEnabled:companyLibrary?.autoMotionCoverageGapFill?.usagePriority?.enabled===true,
+        duplicateControlEnabled:companyLibrary?.autoMotionCoverageGapFill?.duplicateControl?.enabled===true,
+        auditedSetCount:motionAutoFillPlans.length,
+        incompleteSetCount:motionAutoFillPlans.filter(row=>!row.complete).length,
+        verifiedCompleteSetCount:motionAutoFillPlans.filter(row=>row.verifiedComplete).length,
+        plannedSemanticSeedCount:motionAutoFillPlans.reduce((n,row)=>n+row.semanticSeeds.length,0),
+        plans:freezeList(prioritizedMotionAutoFillPlans)
       }),
       retargetCleanupRequirements:freezeList(companyLibrary?.studioMotionProgram?.retargetCleanupRequirements||[]),
       unarmedCombat:freeze({
@@ -449,7 +512,24 @@ export function buildVibeAssetProductionPlan({
       reactionMatcherRequired:companyLibrary?.motionDirectorSystem?.reactionMatcher?.enabled===true,
       pairMotionRequired:companyLibrary?.motionDirectorSystem?.pairMotion?.enabled===true,
       variationMemoryRequired:companyLibrary?.motionDirectorSystem?.variationMemory?.enabled===true,
+      transitionDirectorRequired:companyLibrary?.motionDirectorSystem?.transitionDirector?.enabled===true,
+      automaticContactQaRequired:companyLibrary?.motionDirectorSystem?.automaticContactQa?.enabled===true,
+      gameplayEventMotionBindingRequired:companyLibrary?.motionDirectorSystem?.gameplayEventMotionBinding?.enabled===true,
+      proceduralMotionLayerRequired:companyLibrary?.motionDirectorSystem?.proceduralMotionLayer?.enabled===true,
+      groupMotionDirectorRequired:companyLibrary?.motionDirectorSystem?.groupMotionDirector?.enabled===true,
+      multiActorMotionRequired:companyLibrary?.motionDirectorSystem?.multiActorMotion?.enabled===true,
+      emotionIntentLayerRequired:companyLibrary?.motionDirectorSystem?.emotionIntentLayer?.enabled===true,
+      motionLodRequired:companyLibrary?.motionDirectorSystem?.motionLod?.enabled===true,
+      motionLineageRequired:companyLibrary?.motionDirectorSystem?.motionLineage?.enabled===true,
+      verifiedRuntimeMotionLearningRequired:companyLibrary?.motionDirectorSystem?.runtimeMotionLearning?.enabled===true,
+      preparedSemanticCannotTeachPositiveMastery:companyLibrary?.motionDirectorSystem?.runtimeMotionLearning?.preparedSemanticMayNotIncreaseMastery===true,
+      rawRuntimeTelemetryDirectTrainingForbidden:companyLibrary?.motionDirectorSystem?.runtimeMotionLearning?.rawTelemetryMayNotCreateTrainingSample===true,
       preparedSemanticMotionSetsDoNotCountAsVerified:companyRegistry?.motionBootstrap?.status==='PREPARED_SEMANTIC_LIBRARY'&&companyRegistry?.motionBootstrap?.productionVerified!==true,
+      automaticMotionCoverageGapFill:motionAutoGapActive,
+      automaticMotionGapSemanticPreparationAllowed:companyLibrary?.autoMotionCoverageGapFill?.semanticGapPreparation?.enabled===true,
+      automaticMotionGapMayNotSelfPromote:companyLibrary?.autoMotionCoverageGapFill?.semanticGapPreparation?.mayNotPromoteCompanyAsset===true,
+      motionGapUsagePriorityRequired:companyLibrary?.autoMotionCoverageGapFill?.usagePriority?.enabled===true,
+      motionGapDuplicateSuppressionRequired:companyLibrary?.autoMotionCoverageGapFill?.duplicateControl?.enabled===true,
       motionBootstrapAvailable:Array.isArray(companyRegistry?.motionBootstrap?.sets)&&companyRegistry.motionBootstrap.sets.length>0,
       latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
       wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
@@ -486,7 +566,18 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.motionDirector?.enabled?'Motion DNA와 호환성 그래프를 기준으로 상체/하체/사지/머리/꼬리/날개/VFX/오디오/카메라를 조합하고, 거리·방향·속도·지형·벽·이전 모션을 Context Selector에 넣어 가장 맞는 표현을 선택한다.':'',
     plan.companyGraphicsLibrary?.motionDirector?.enabled?'스킬은 PREPARE→CHARGE/CHANNEL→AIM→RELEASE→IMPACT_RESPONSE→RECOVERY 문법을 사용하고, 피격은 방향/높이/강도/현재자세/벽/공중상태로 Reaction Matcher가 표현을 고른다. Pair Motion은 잡기·던지기·피니셔 등 2인 정렬을 플랫폼별로 검증한다.':'',
     plan.companyGraphicsLibrary?.motionDirector?.enabled?'Motion Mutation과 Variation Memory로 Mirror/stance/pose/anticipation/style 파생과 반복 억제를 수행하되 데미지·히트박스·쿨다운·콤보/캔슬·이동 권한은 게임플레이가 유지한다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.transitionDirector?.enabled?'Transition Director가 locomotion/combat/skill/reaction/traversal 전환의 pose/root velocity/angular/contact/event sync를 점수화하고 hard pop·접촉 snap·event desync를 FAIL 처리한다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.automaticContactQa?.enabled?'Automatic Contact QA가 발 미끄러짐/발고정/손-무기/입·뿔·발톱·꼬리 접촉/2인 정렬/메시 관통/impact event offset을 측정하며 실패 시 검증 승격을 막는다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.gameplayEventMotionBinding?.enabled?'Gameplay event가 추가되면 필요한 motion grammar를 자동 매핑하고 없는 role은 PREPARED_SEMANTIC gap으로 생성하되 실제 판정 권한은 게임플레이가 유지한다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.proceduralMotionLayer?.enabled?'Procedural Motion Layer가 foot IK/경사/계단/골반/척추/시선/손그립/꼬리·날개 균형을 플랫폼 예산 안에서 보정한다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.groupMotionDirector?.enabled?'Group/Multi-Actor Motion은 pack surround/formation/swarm/보스+소환수/잡기·협동 피니셔 등을 actor spacing·phase offset·contact alignment로 조정하며 AI 의사결정을 침범하지 않는다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.emotionIntentLayer?.enabled?'Emotion/Intent Layer는 calm/alert/aggressive/afraid/confident/enraged/injured/exhausted 등을 자세·호흡·시선·척추·손/발톱 긴장·idle/recovery에 additive 표현한다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.motionLod?.enabled?'Motion LOD는 NEAR/MID/FAR에서 layering/IK/시선/secondary/facial/VFX 수준만 줄이고 hit/collision/gameplay 의미는 바꾸지 않는다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.motionLineage?.enabled?'Motion Lineage는 source→cleanup→semantic parent→archetype→style→platform→target-game verification 계보와 hash/provenance를 보존하고 부모 개선 시 파생본을 재검증 대상으로 표시한다.':'',
+    plan.companyGraphicsLibrary?.motionDirector?.runtimeMotionLearning?.enabled?'Runtime Motion Learning은 실제 검증 PASS/FAIL만 기존 LIVING_MOTION·ANIMATION_FEEL 학습 모터에 공급한다. PREPARED_SEMANTIC과 raw telemetry는 positive mastery/직접 training 근거가 아니다.':'',
     plan.companyGraphicsLibrary?.motionBootstrap?.setCount?`모션 시드 세트=${plan.companyGraphicsLibrary.motionBootstrap.setCount}개; archetypes=${plan.companyGraphicsLibrary.motionBootstrap.archetypes.join('|')}; 상태=${plan.companyGraphicsLibrary.motionBootstrap.status}. PREPARED_SEMANTIC은 실제 네이티브 클립 PASS가 아니며 실게임 런타임 검증 후에만 승격한다.`:'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?`자동 모션 Gap Fill: auditSets=${plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount}; incomplete=${plan.companyGraphicsLibrary.motionAutoGapFill.incompleteSetCount}; semanticSeeds=${plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount}; fillOrder=${plan.companyGraphicsLibrary.motionAutoGapFill.fillOrder.join('→')}`:'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?'빈칸은 호환 검증 모션 재사용→안전한 파생→저장소/외부 검증 후보→PREPARED_SEMANTIC 시드→네이티브 신규 제작 순으로 자동 계획한다. 의미 시드는 자동 생성해도 VERIFIED로 승격하지 않는다.':'',
     '선택 순서: 같은 게임/검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
