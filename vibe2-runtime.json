@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 25,
+      "runtime": 26,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -90,8 +90,8 @@
     "nextWorkerDirective": {
       "objective": "CONTINUE_SELF_EVOLVING_ATOMIC_NEURON_SCHEDULER_TOWARD_VERIFIED_EVENT_DRIVEN_DAG_WITH_TRUTHFUL_TELEMETRY",
       "freshnessRule": "FETCH_FRESH_MAIN_HEAD_LIVE_WORKFLOW_STATUS_AND_CONTROL_STATE_BEFORE_MUTATION; DO_NOT_ASSUME_THIS_SNAPSHOT_IS_STILL_CURRENT",
-      "observedMainHead": "08fdd2b730943cd27e2391e3172cb73edd9c9be0",
-      "verifiedAt": "2026-09-24T20:20:31Z",
+      "observedMainHead": "92e2628e5b1ace38587121126663064783d5ade2",
+      "verifiedAt": "2026-09-25T05:57:31+09:00",
       "centralGoalRefs": [
         "company-learning/platform-release-roadmap.json::neuralDevelopmentBrain.currentWaveExecution",
         "company-learning/company-architecture-map.json::neuralWorkGraphTopology.phase1RuntimeBindings.selfAdaptiveGamePrimaryConcurrency",
@@ -111,7 +111,11 @@
         "PENDING_VARIANTS_REPORT_RESULT_RECORDED_PENDING",
         "DEPENDENCY_CONSUMERS_RELEASE_ON_PER_TASK_COMPLETION",
         "PHASE2_GATED_EXISTING_SCHEDULER_AUTHORITY_ENABLED",
-        "COMPANY_RUNTIME_EXECUTION_EVIDENCE_SYNCED_BEFORE_RESERVE"
+        "COMPANY_RUNTIME_EXECUTION_EVIDENCE_SYNCED_BEFORE_RESERVE",
+        "RUNTIME_RESULT_NEURAL_INGRESS_IMPLEMENTED_QA_PASS",
+        "RUNTIME_RESULT_PASS_OBSERVE_ONLY",
+        "RUNTIME_RESULT_FAIL_GATED_ONLY_WITH_VERIFIED_ROOT_CAUSE",
+        "MINIMUM_NECESSARY_PROCEDURE_POLICY_ACTIVE"
       ],
       "liveEvidence": [
         "RUN_35505152601_REPOSITORY_DISPATCH_SUCCESS",
@@ -122,9 +126,9 @@
         "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_SUCCESSFULLY_ON_MAIN"
       ],
       "priorities": [
-        "P1_CAPTURE_END_TO_END_LIVE_EVIDENCE: observe final variant -> TASK_MICRO_FANIN_COMPLETE -> VIBE2_NEURON_SLOT_RELEASED=YES -> immediate reserve/refill before unrelated cohort workers finish on current main",
-        "P1_VERIFY_RUNTIME_RESULT_NEURAL_INGRESS_LIVE: observe canonical company-runtime executionEvidence compile into RUNTIME_RESULT neural evidence without inventing root cause authority",
-        "P2_SELF_EVOLUTION_FEEDBACK: use verified failure and throughput evidence to adjust scheduling heuristics without lowering QA, security, save, or release gates"
+        "P1_CAPTURE_LIVE_TASK_MICRO_FANIN_EVIDENCE: observe final variant -> TASK_MICRO_FANIN_COMPLETE -> VIBE2_NEURON_SLOT_RELEASED=YES -> immediate reserve/refill before unrelated cohort completion",
+        "P1_CAPTURE_LIVE_RUNTIME_RESULT_NEURAL_EVIDENCE: observe company-runtime executionEvidence -> RUNTIME_RESULT evidence while PASS remains observe-only and unverified FAIL remains shadow",
+        "P2_VERIFIED_THROUGHPUT_OPTIMIZATION: use verified candidates/minute, first-candidate pass rate, queue wait, and failure evidence to tune scheduling without redundant process gates"
       ],
       "hardConstraints": [
         "NO_GLOBAL_WAVE_BARRIER_REINTRODUCTION",
@@ -142,7 +146,10 @@
         "AWAITING_VARIANTS_NEVER_REPORTS_MICRO_FANIN_COMPLETE",
         "FINAL_VARIANT_REPORTS_TASK_MICRO_FANIN_COMPLETE_AND_SLOT_RELEASE",
         "NEXT_READY_TASK_CAN_RESERVE_BEFORE_UNRELATED_COHORT_COMPLETES",
-        "RELEVANT_CORE_PARALLELISM_INTEGRATED_SECURITY_AND_CENTRAL_CONTRACT_QA_PASS"
+        "RELEVANT_CORE_PARALLELISM_INTEGRATED_SECURITY_AND_CENTRAL_CONTRACT_QA_PASS",
+        "RUNTIME_RESULT_PASS_COMPILES_TO_OBSERVE_ONLY_NEURAL_EVENT",
+        "RUNTIME_RESULT_FAILURE_CANNOT_GAIN_GATED_MUTATION_WITHOUT_VERIFIED_ROOT_CAUSE",
+        "MINIMUM_NECESSARY_PROCEDURE_POLICY_PRESERVES_REQUIRED_SECURITY_AND_RELEASE_BOUNDARIES"
       ]
     }
   },
