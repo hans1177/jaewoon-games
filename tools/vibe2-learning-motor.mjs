@@ -1909,6 +1909,23 @@ const SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE=freeze({
   VERIFIED_STORY_TRANSITION_CAUSALITY_FAILURE:'story transition narrative structure main story generation causality failure'
 });
 
+function specializedNativePositiveProof(engine='',evidence=[]){
+  const target=lower(engine);
+  const nativeDomains=nativeDomainsForEngine(target);
+  if(!nativeDomains)return{required:false,pass:true,evidence:null,blockedReason:null};
+  if(['uefn','fortnite_uefn','fortnite-uefn','fortnite'].includes(target)){
+    return{required:true,pass:false,evidence:null,blockedReason:'UEFN_AUTHORITATIVE_EXECUTOR_EVIDENCE_CONTRACT_MISSING'};
+  }
+  const prefix=target==='roblox'?'roblox-verification-run:':target==='unity'?'unity-verification-run:':'';
+  if(!prefix)return{required:true,pass:false,evidence:null,blockedReason:'TARGET_ENGINE_QA_EVIDENCE_PATTERN_MISSING'};
+  const rows=(evidence||[]).map(clean).filter(Boolean);
+  const direct=rows.find(value=>value.toLowerCase().startsWith(prefix)&&value.slice(prefix.length).trim())||null;
+  const fanInPrefix='specialized-native-runtime-evidence:'+prefix;
+  const fanIn=rows.find(value=>value.toLowerCase().startsWith(fanInPrefix)&&value.slice(fanInPrefix.length).trim())||null;
+  const hit=direct||fanIn;
+  return{required:true,pass:Boolean(hit),evidence:hit,blockedReason:hit?null:'AUTHORITATIVE_TARGET_ENGINE_QA_MISSING'};
+}
+
 export function collectVerifiedSpecializedQueueExperience(queueInput={}){
   const records=[];
   const positiveStatuses=new Set(['verified','done']);
@@ -1922,15 +1939,16 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
     const fanInProvenance=
       normalized.has('SPECIALIZED-FINAL-VERIFICATION:PASS')
       &&normalized.has('SPECIALIZED-FINAL-AUTHORITY:FAN_IN_AFTER_FULL_REGRESSION');
-    const positiveMarkers=fanInProvenance
+    const gameId=clean(task?.gameId)||'unknown';
+    const engine=lower(task?.target||task?.engine);
+    const nativeProof=specializedNativePositiveProof(engine,evidence);
+    const positiveMarkers=fanInProvenance&&nativeProof.pass
       ?Object.keys(SPECIALIZED_QUEUE_POSITIVE_EVIDENCE).filter(exactMarker)
       :[];
     const negativeMarkers=Object.keys(SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE).filter(exactMarker);
     const infrastructureFailure=task?.infrastructureFailure===true||evidence.some(value=>/infrastructure[ _-]?failure\s*[:=]\s*(?:true|yes|1)|infra[ _-]?failure\s*[:=]\s*(?:true|yes|1)/i.test(value));
     const runIdentity=evidence.find(value=>value.startsWith('actions-run:'))||evidence.find(value=>value.startsWith('qa-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task?.id)||'unknown-run';
-    const traceEvidence=evidence.filter(value=>/^(?:actions-run:|qa-run:|vibe2\/candidate\/|candidate-sha:|source-revision:|artifact-id:|runtime-evidence-ref:|qa-evidence-ref:)/i.test(value)).slice(-20);
-    const gameId=clean(task?.gameId)||'unknown';
-    const engine=lower(task?.target||task?.engine);
+    const traceEvidence=evidence.filter(value=>/^(?:actions-run:|qa-run:|vibe2\/candidate\/|candidate-sha:|source-revision:|artifact-id:|runtime-evidence-ref:|qa-evidence-ref:|roblox-verification-run:|unity-verification-run:|specialized-native-runtime-evidence:(?:roblox-verification-run:|unity-verification-run:))/i.test(value)).slice(-20);
     const base={
       gameId,engine,verified:true,reusable:true,
       taskType:'specialized-game-development',
@@ -1947,7 +1965,7 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
       records.push({
         ...base,
         id,
-        evidence:[...base.evidence,...positiveMarkers.map(marker=>'verified-marker:'+marker),'specialized-outcome-id:'+id],
+        evidence:[...base.evidence,...positiveMarkers.map(marker=>'verified-marker:'+marker),...(nativeProof.evidence?['target-engine-qa-ref:'+nativeProof.evidence]:[]),'specialized-outcome-id:'+id],
         outcome:'PASS',
         change:patterns.join(' | '),
         reusablePatterns:patterns,
