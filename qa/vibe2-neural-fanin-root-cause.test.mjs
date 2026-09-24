@@ -1,7 +1,8 @@
 // 파일명: qa/vibe2-neural-fanin-root-cause.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
+import fs from 'node:fs';
+import { finalizeVibe2FanInReview, finalizePostNativeSpecializedReview } from '../tools/vibe2-fan-in-review.mjs';
 
 function baseTask(extraEvidence=[]){
   return{
@@ -185,4 +186,91 @@ test('native specialized marker requires authoritative target-engine verificatio
   });
   assert.ok(withRuntime.queue.tasks[0].evidence.includes('VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'));
   assert.ok(withRuntime.queue.tasks[0].evidence.some(value=>value==='specialized-native-runtime-evidence:roblox-verification-run:991'));
+});
+
+
+function postNativeTask({target='roblox',runtimeEvidence=true,blocker='',focused=true}={}){
+  const branch='vibe2/candidate/neural-root-task-primary-run';
+  const evidence=[
+    'role-result:exploration:PASS',
+    'role-result:implementation:PASS',
+    'role-result:test:PASS',
+    'role-result:performance:PASS',
+    'role-result:regression:PASS',
+    'role-result:review:PASS',
+    branch,
+    'candidate-head-sha:abc123',
+    'verification-conclusion:success',
+    'specialized-verification-request:REQUIRED',
+    ...(focused?['specialized-focused-qa-pass:VERIFIED_WORLD_ROUTE_NAVIGATION_PASS']:[]),
+    ...(runtimeEvidence?[target==='roblox'?'roblox-verification-run:99101':'unity-verification-run:99201']:[])
+  ];
+  return{
+    id:'neural-root-task',
+    gameId:'demo',
+    target,
+    sourceRoot:target==='roblox'?'roblox-games/demo':'unity-games/demo',
+    status:'blocked',
+    blocker:blocker||`candidate-${target}-verification-passed-awaiting-review`,
+    evidence
+  };
+}
+
+test('post-native fan-in finalizes specialized markers without changing task release state',()=>{
+  const task=postNativeTask({target:'roblox'});
+  const result=finalizePostNativeSpecializedReview({
+    queue:{tasks:[task]},
+    candidateBranch:'vibe2/candidate/neural-root-task-primary-run',
+    target:'roblox'
+  });
+  assert.equal(result.updated,true);
+  assert.equal(result.reason,'POST_NATIVE_SPECIALIZED_FINALIZED');
+  assert.deepEqual(result.markers,['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS']);
+  const next=result.queue.tasks[0];
+  assert.equal(next.status,'blocked');
+  assert.equal(next.blocker,'candidate-roblox-verification-passed-awaiting-review');
+  assert.ok(next.evidence.includes('VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'));
+  assert.ok(next.evidence.includes('specialized-final-verification:PASS'));
+  assert.ok(next.evidence.includes('specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION'));
+  assert.ok(next.evidence.includes('specialized-native-runtime-evidence:roblox-verification-run:99101'));
+  assert.ok(next.evidence.includes('specialized-post-native-review:PASS'));
+  assert.equal(result.taskStatusPreserved,true);
+  assert.equal(result.releaseDecisionChanged,false);
+
+  const again=finalizePostNativeSpecializedReview({
+    queue:result.queue,
+    candidateBranch:'vibe2/candidate/neural-root-task-primary-run',
+    target:'roblox'
+  });
+  assert.equal(again.updated,false);
+  assert.equal(again.reason,'ALREADY_FINALIZED');
+});
+
+test('post-native fan-in refuses wrong blocker or missing authoritative engine QA',()=>{
+  const wrongBlocker=finalizePostNativeSpecializedReview({
+    queue:{tasks:[postNativeTask({target:'roblox',blocker:'candidate-roblox-verification-incomplete'})]},
+    candidateBranch:'vibe2/candidate/neural-root-task-primary-run',
+    target:'roblox'
+  });
+  assert.equal(wrongBlocker.updated,false);
+  assert.equal(wrongBlocker.reason,'TASK_NOT_POST_NATIVE_REVIEW_READY');
+
+  const missingRuntime=finalizePostNativeSpecializedReview({
+    queue:{tasks:[postNativeTask({target:'unity',runtimeEvidence:false})]},
+    candidateBranch:'vibe2/candidate/neural-root-task-primary-run',
+    target:'unity'
+  });
+  assert.equal(missingRuntime.updated,false);
+  assert.equal(missingRuntime.reason,'POST_NATIVE_SPECIALIZED_BLOCKED');
+  assert.ok(missingRuntime.blocked.includes('AUTHORITATIVE_TARGET_ENGINE_QA_MISSING'));
+  assert.equal(missingRuntime.queue.tasks[0].evidence.includes('VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'),false);
+});
+
+test('native candidate-result workflows invoke fan-in post-native finalizer instead of minting markers themselves',()=>{
+  const roblox=fs.readFileSync('.github/workflows/vibe2-roblox-candidate-result.yml','utf8');
+  const unity=fs.readFileSync('.github/workflows/vibe2-unity-candidate-result.yml','utf8');
+  assert.match(roblox,/vibe2-fan-in-review\.mjs[\s\S]{0,260}--post-native-branch="\$CANDIDATE_BRANCH"[\s\S]{0,180}--post-native-target=roblox/);
+  assert.match(unity,/vibe2-fan-in-review\.mjs[\s\S]{0,260}--post-native-branch="\$CANDIDATE_BRANCH"[\s\S]{0,180}--post-native-target=unity/);
+  assert.doesNotMatch(roblox,/echo\s+['"]?VERIFIED_WORLD_ROUTE_NAVIGATION_PASS/);
+  assert.doesNotMatch(unity,/echo\s+['"]?VERIFIED_WORLD_ROUTE_NAVIGATION_PASS/);
 });
