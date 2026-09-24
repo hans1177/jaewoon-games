@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -308,7 +308,12 @@
       "EXTERNAL_REFERENCE_SYNTHESIS_DRILL",
       "RELEARNING_REPLAY_DRILL",
       "UNITY_NATIVE_DRILL",
-      "FORTNITE_UEFN_NATIVE_DRILL"
+      "FORTNITE_UEFN_NATIVE_DRILL",
+      "MOTION_TRANSITION_DRILL",
+      "MOTION_CONTACT_QA_DRILL",
+      "MOTION_REPETITION_REDUCTION_DRILL",
+      "MOTION_PAIR_ALIGNMENT_DRILL",
+      "MOTION_LOD_PERFORMANCE_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -548,7 +553,62 @@
       "HIT_SEMANTICS_UNCHANGED",
       "NETWORK_AUTHORITY_UNCHANGED"
     ],
-    "companyGraphicsLibrary24hAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h"
+    "companyGraphicsLibrary24hAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
+    "runtimeMotionLearning": {
+      "enabled": true,
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem.runtimeMotionLearning",
+      "existingLearningMotorOnly": true,
+      "separateTrainerForbidden": true,
+      "domains": [
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "ASSET_ADAPTATION",
+        "VFX",
+        "CAMERA_LANGUAGE"
+      ],
+      "acceptedPositiveEvidence": [
+        "VERIFIED_UNITY_RUNTIME_MOTION_PASS",
+        "VERIFIED_ROBLOX_RUNTIME_MOTION_PASS"
+      ],
+      "acceptedNegativeEvidence": [
+        "VERIFIED_TRANSITION_FAILURE",
+        "VERIFIED_CONTACT_QA_FAILURE",
+        "VERIFIED_PAIR_ALIGNMENT_FAILURE",
+        "VERIFIED_REPETITION_DEFECT",
+        "VERIFIED_MOTION_LOD_PERFORMANCE_DEFECT"
+      ],
+      "retrievalPriority": [
+        "SAME_GAME_SAME_MOTION_FAILURE_VERIFIED",
+        "SAME_ARCHETYPE_SAME_FAILURE_VERIFIED",
+        "SAME_BODY_PLAN_SAME_FAILURE_VERIFIED",
+        "SAME_PLATFORM_VERIFIED_MOTION_PATTERN",
+        "CROSS_PLATFORM_ABSTRACTED_VERIFIED_MOTION_PATTERN"
+      ],
+      "signals": [
+        "MOTION_USAGE_COUNT",
+        "CONTEXT_SELECTION_COUNT",
+        "IMMEDIATE_REPEAT_RATE",
+        "SAME_FAMILY_REPEAT_RATE",
+        "TRANSITION_QUALITY_SCORE",
+        "FOOT_SLIDE_SCORE",
+        "CONTACT_QA_SCORE",
+        "PAIR_ALIGNMENT_SCORE",
+        "REACTION_MATCH_SUCCESS",
+        "MOTION_LOD_FRAME_COST",
+        "RUNTIME_FRAME_STABILITY",
+        "MOBILE_READABILITY",
+        "PLAYER_VISIBLE_DEFECT",
+        "QA_FAILURE_REASON",
+        "RUNTIME_VERIFICATION_RESULT"
+      ],
+      "preparedSemanticMayEnterPositiveMastery": false,
+      "rawTelemetryMayEnterCanonicalTraining": false,
+      "verifiedProjectOutcomeRequiredForPositiveMastery": true,
+      "verifiedFailureMayTeachAvoidPattern": true,
+      "canonicalTrainingPipeline": "company-learning/canonical-learning-pipeline.json",
+      "trainingThresholdsUnchanged": true,
+      "platformRuntimeEvidenceIndependent": true
+    }
   },
   "closedLoop": {
     "enabled": true,
