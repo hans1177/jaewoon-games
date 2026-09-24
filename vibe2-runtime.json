@@ -946,7 +946,7 @@
     "targetFeaturePackagesPerCycle": 2,
     "maxPackagesPerCycle": 256,
     "maxTasksPerPackage": 8,
-    "smallTaskAction": "merge-into-coherent-studio-package-or-defer",
+    "smallTaskAction": "auto-expand-or-defer",
     "automaticExpansionMode": "real-disjoint-candidates-first-explicit-related-scopes-fallback",
     "automaticExpansion": [
       "implementation-completeness",
@@ -1079,7 +1079,8 @@
         "USABILITY",
         "STABILITY"
       ]
-    }
+    },
+    "studioSmallTaskAction": "merge-into-coherent-studio-package-or-defer"
   },
   "learningMotor": {
     "enabled": true,
