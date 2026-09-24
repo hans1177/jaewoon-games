@@ -620,6 +620,23 @@ test('supervised Web candidates learn review decisions and stay unreleased until
   assert.equal(revise.experienceReviews[0].outcome,'FAIL');
   assert.match(revise.experienceReviews[0].failureCause,/모바일 입력 피드백/);
 
+  const gatedValid=structuredClone(valid);
+  gatedValid.neuralDiagnosis={responsibility:{system:'GAME_INPUT'},inhibitors:[],actionRecommendation:{failureStage:'WEB_REPAIR'}};
+  gatedValid.evidence=[
+    branch,
+    'causal-replay-prepatch-reproduced:YES',
+    'causal-replay-executed:YES',
+    'causal-replay-status:EXECUTED_PASS',
+    'verified-responsible-system:GAME_INPUT'
+  ];
+  const gatedRevise=finalizeVibe2FanInReview({queue:{tasks:[reviseTask]},results:[gatedValid]});
+  assert.equal(gatedRevise.queue.tasks[0].status,'queued');
+  assert.equal(gatedRevise.queue.tasks[0].priority,'high');
+  assert.equal(gatedRevise.queue.tasks[0].blocker,null);
+  assert.equal(gatedRevise.queue.tasks[0].lastOutcome,'RETRY_AFTER_GATED_SUPERVISOR_REVISE');
+  assert.ok(gatedRevise.queue.tasks[0].evidence.includes('neural-gated-supervisor-requeue:HIGH'));
+  assert.equal(gatedRevise.reviewed[0].gatedRequeue,true);
+
   const approvedTask=structuredClone(baseTask);
   approvedTask.supervisionApproved=true;
   approvedTask.supervisionReview={
