@@ -24,14 +24,23 @@ export function resolveVibeCharacterBehaviorIntent({persona={},context={}}={}){
   const selfHealth=Math.max(0,Math.min(1,Number(context.selfHealthRatio??1)));
   const allyHealth=Math.max(0,Math.min(1,Number(context.allyHealthRatio??1)));
   const trust=Math.max(-100,Math.min(100,Number(context.relationshipTrust??0)));
+  const factionRelation=context.factionRelationship&&typeof context.factionRelationship==='object'?context.factionRelationship:{};
+  const factionHostile=Math.max(-100,Math.min(100,Number(factionRelation.hostile??0)));
+  const factionAlly=Math.max(-100,Math.min(100,Number(factionRelation.ally??0)));
+  const factionTrust=Math.max(-100,Math.min(100,Number(factionRelation.trust??0)));
+  const factionFear=Math.max(-100,Math.min(100,Number(factionRelation.fear??0)));
+  const factionDebt=Math.max(-100,Math.min(100,Number(factionRelation.debt??0)));
   const enemyVisible=context.enemyVisible===true;
   const interaction=context.interactionAvailable===true;
   const newFact=context.newKnownFact===true;
   const intents=[];
   if(selfHealth<0.25&&risk==='low')intents.push('RETREAT_OR_SEEK_SAFETY');
-  if(allyHealth<0.35&&['protective','supportive'].includes(social)&&trust>=0)intents.push('PROTECT_ALLY');
+  if(factionFear>=60&&risk==='low')intents.push('FACTION_CAUTION_OR_RETREAT_INTENT');
+  if(allyHealth<0.35&&(['protective','supportive'].includes(social)&&trust>=0||factionAlly>=40||factionTrust>=40))intents.push('PROTECT_ALLY');
+  if(enemyVisible&&factionHostile>=50)intents.push('FACTION_HOSTILITY_COMBAT_POSTURE');
   if(enemyVisible)intents.push('COMBAT_'+combat.toUpperCase().replace(/[^A-Z0-9]+/g,'_'));
   if(interaction&&newFact)intents.push('CONTEXTUAL_DIALOGUE_FROM_KNOWN_INFORMATION');
+  if(interaction&&factionDebt>0)intents.push('FACTION_DEBT_DIALOGUE_OR_ASSIST_INTENT');
   if(context.objectiveUrgency===true)intents.push(risk==='high'?'PRESS_OBJECTIVE':'ADVANCE_OBJECTIVE_CAUTIOUSLY');
   if(!intents.length)intents.push(social==='supportive'?'SUPPORTIVE_IDLE_OR_FOLLOW':'OBSERVE_AND_HOLD');
   return Object.freeze({
@@ -39,9 +48,11 @@ export function resolveVibeCharacterBehaviorIntent({persona={},context={}}={}){
     intents:Object.freeze(uniq(intents)),
     voiceMode:persona.voice?.sentenceRhythm||'contextual',
     knowledgeBoundary:persona.voice?.knowledgeBoundary!==false,
+    factionContextUsed:Object.keys(factionRelation).length>0,
     authoritativeActionRequired:true,
+    gameOwnedTargetSelectionRequired:true,
     gameplayAuthority:false,
-    rule:'intent is advisory presentation/AI intent; authoritative movement combat reward progression and networking resolve through game-owned AI/gameplay APIs'
+    rule:'intent is advisory presentation/AI intent; faction context may alter advisory posture only; authoritative target selection movement combat reward progression and networking resolve through game-owned AI/gameplay APIs'
   });
 }
 export function createVibePopulationPersonaDiversity(characters=[]){const personas=characters.map((c,i)=>createVibeCharacterPersona(c,i)),keys=personas.map(p=>JSON.stringify([p.temperament,p.voice.formality,p.voice.sentenceRhythm,p.desire,p.fear,p.behaviorIntent.socialTendency,p.behaviorIntent.combatTendency])),unique=uniq(keys).length,score=Math.round(unique/Math.max(1,personas.length)*100);return Object.freeze({score,unique,total:personas.length,pass:score>=75,rule:'major characters must not collapse into one voice personality or behavior intent'})}
