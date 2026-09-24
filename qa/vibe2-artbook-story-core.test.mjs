@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { gameplayEvidenceSnippets, buildFallbackSeed, expandCompactSeed, validExpandedDraft } from '../tools/vibe2-artbook-story-core.mjs';
 import { JaewoonQuestDialogue } from '../assets/quest-dialogue.js';
 
@@ -162,4 +163,28 @@ test('faction relationships are source-event bounded, idempotent, clamped, conte
   assert.equal(restored.factions['sect-a'].controlledRegionIds[0],'north');
   assert.equal(restored.factionRelationships['sect-a->sect-b'].trust,-100);
   assert.deepEqual(restored.factionRelationships['sect-a->sect-b'].events,['evt-faction-1','evt-faction-2']);
+});
+
+
+test('canonical narrative contract requires causal faction relationship state and evidence tracing',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  const contract=roadmap.narrativeStorytellingContract;
+  assert.equal(contract.factionRelationshipState.enabled,true);
+  assert.equal(contract.factionRelationshipState.sourceEventRequiredForEveryMutation,true);
+  assert.equal(contract.factionRelationshipState.duplicateSourceEventMustBeIdempotent,true);
+  assert.deepEqual(contract.factionRelationshipState.boundedRange,{min:-100,max:100});
+  assert.equal(contract.factionRelationshipState.gameplayAuthority,false);
+  assert.equal(contract.stateAndSave.factionAndFactionRelationshipStateMustRoundTripWhenPersisted,true);
+  assert.ok(contract.runtimeLearning.failureCanTeach.includes('FACTION_RELATIONSHIP_INCONSISTENCY'));
+  assert.ok(contract.runtimeLearning.learnableVerifiedSignals.includes('FACTION_RELATIONSHIP_CAUSALITY'));
+
+  assert.equal(architecture.narrativeStoryTopology.factionRelationshipState.duplicateSourceEventIdempotent,true);
+  assert.equal(architecture.narrativeStoryTopology.persistence.factionRelationshipRoundTripRequired,true);
+
+  const evidence=logMap.narrativeRuntimeEvidenceContract;
+  assert.ok(evidence.correlationKeys.includes('SOURCE_EVENT_ID'));
+  assert.ok(evidence.requiredEvidence.includes('FACTION_RELATIONSHIP_IDEMPOTENCY_RESULT'));
+  assert.equal(evidence.duplicateFactionRelationshipSourceEventMustNotApplyDeltaTwice,true);
 });
