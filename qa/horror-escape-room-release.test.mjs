@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {inspectHeadlessSourceTexts} from '../tools/company-development-roblox-headless-fast-mvp.mjs';
 
 const config=fs.readFileSync('roblox-games/horror-escape-room/shared/GameConfig.luau','utf8');
 const server=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server.luau','utf8');
@@ -66,4 +67,26 @@ test('경쟁 라운드 점수는 서버가 승패 기준으로 관리한다',()=
 test('horror 서버에는 중복 Luau 함수 선언이 없다',()=>{
  assert.doesNotMatch(server,/local function\s+([A-Za-z_][A-Za-z0-9_]*)\([^)]*\)local function\s+\1\([^)]*\)/);
  assert.doesNotMatch(server,/remote\.OnServerEvent:Connect\(function\([^)]*\)remote\.OnServerEvent:Connect\(function\([^)]*\)/);
+});
+
+
+test('horror F0 source contract passes native foundation preflight',()=>{
+ const project=fs.readFileSync('roblox-games/horror-escape-room/default.project.json','utf8');
+ const artifact='sha256:'+'a'.repeat(64);
+ const result=inspectHeadlessSourceTexts({
+  gameId:'horror-escape-room',
+  sourcePath:'roblox-games/horror-escape-room',
+  sourceRevision:'b'.repeat(40),
+  artifactIdentity:artifact,
+  rebuiltArtifactIdentity:artifact,
+  artifactRunId:1,
+  nativeLanguageCompilePassed:true,
+  nativeCompilerVersion:'0.739',
+  config,server,client,project
+ });
+ assert.equal(result.pass,true,result.blockers.join(','));
+ assert.equal(result.checks.foundationSentinelContract,true);
+ assert.equal(result.checks.characterPhysicsGuard,true);
+ assert.equal(result.checks.f0SourceIntegrity,true);
+ assert.doesNotMatch(server,/movementGuardClock\+=dt movementGuardClock\+=dt/);
 });
