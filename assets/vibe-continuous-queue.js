@@ -218,7 +218,7 @@ function normalizeTask(input = {}, index = 0) {
     &&/source-candidate-generation-failed|parallel-candidate-generation-failed|retry-limit-exceeded/i.test(clean(input.blocker));
   const status = rawStatus==='done' ? 'verified' : legacyRetryableFailure ? 'queued' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
   const inputEvidence=normalizeEvidence(input.evidence||[]);
-  if(legacyRetryableFailure)inputEvidence.push('recovery:legacy-failed-unlimited-requeue-v1');
+  if(legacyRetryableFailure)inputEvidence.push('recovery:legacy-failed-unlimited-requeue-v1',`recovered-from-blocker:${clean(input.blocker)}`);
   const atomicPresentation=/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
     ||inputEvidence.some(value=>/^presentation-pass:|^weather-presentation:v1$|^asset-production-parallel:v1$/i.test(clean(value)));
   const normalizedEvidence=atomicPresentation
@@ -248,7 +248,7 @@ function normalizeTask(input = {}, index = 0) {
     supervisionApproved: supervised && input.supervisionApproved === true,
     supervisionContract,
     supervisionReview: normalizeSupervisionReview(input.supervisionReview),
-    blocker: clean(input.blocker) || null,
+    blocker: legacyRetryableFailure ? null : (clean(input.blocker) || null),
     evidence: freezeList(normalizedEvidence),
     lastOutcome: clean(input.lastOutcome) || null,
     reservationId: clean(input.reservationId) || null,
