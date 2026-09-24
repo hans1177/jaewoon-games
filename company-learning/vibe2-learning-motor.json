@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -1001,6 +1001,14 @@
     "canonicalExperienceStore": ".vibe2/experience.json",
     "sameCycleMergedMemoryForRetrieval": true,
     "outcomeIdEvidenceTokenRequired": true,
-    "repeatedSameOutcomePersistenceForbidden": true
+    "repeatedSameOutcomePersistenceForbidden": true,
+    "producerContract": {
+      "requestCompiler": "tools/vibe2-source-worker.mjs",
+      "focusedQa": "tools/vibe2-incremental-qa.mjs",
+      "finalProducer": "tools/vibe2-fan-in-review.mjs",
+      "markerOnlyPassForbidden": true,
+      "webRequiresFocusedQaFanInAndRegression": true,
+      "nativeAlsoRequiresTargetEngineQa": true
+    }
   }
 }
