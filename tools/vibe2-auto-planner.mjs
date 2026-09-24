@@ -1462,7 +1462,7 @@ function findSafeTasks(project,repoRoot,queue){
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair)return[startupSpatialRepair];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
