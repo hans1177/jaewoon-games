@@ -1,5 +1,5 @@
 {
-  "version": 134,
+  "version": 135,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -163,6 +163,16 @@
       "SIMPLIFIED_MULTIPLAYER_CONTRACT_MAY_PROMOTE_INTERNAL_RELEASE",
       "FULL_TWO_PLUS_CLIENT_MULTIPLAYER_EVIDENCE_REQUIRED_BEFORE_PUBLIC_RELEASE",
       "INTERNAL_PLAYTEST_CONTINUES_WHILE_FULL_MULTIPLAYER_VALIDATION_RUNS_IN_PARALLEL"
+    ],
+    "webStartupRepair": [
+      "SCAN_REAL_ENTRYPOINT_AND_DEPENDENCIES",
+      "REJECT_EMPTY_OR_VALIDATION_PROXY_SURFACE",
+      "REQUIRE_START_OR_AUTO_START_REAL_GAMEPLAY",
+      "REQUIRE_FIRST_REAL_INPUT_STATE_CHANGE",
+      "REQUIRE_MINIMUM_2_5D_SPATIAL_PRESENTATION",
+      "DIRECT_RESPONSIBLE_SOURCE_REPAIR",
+      "RUNTIME_REVALIDATION",
+      "KEEP_HOMEPAGE_EXPOSURE_FALSE_UNTIL_PASS"
     ]
   },
   "workerRoles": {
@@ -2424,7 +2434,12 @@
       "companyGraphicsLibrary24h": true,
       "unityRobloxNativeVariantsSeparated": true,
       "actionReadyMotionVarietyRequired": true,
-      "idlePreparationPreemptibleByProduction": true
+      "idlePreparationPreemptibleByProduction": true,
+      "minimumFinalGameplayDimension": "2.5D",
+      "flat2DFinalGameplayForbidden": true,
+      "ui2DOverlayAllowed": true,
+      "existing2DGamesRequireSpatialPresentationRebuild": true,
+      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
     }
   },
   "recordsGovernance": {
@@ -2814,7 +2829,8 @@
       "gate": "DEPLOYABLE_BUNDLE_MANIFEST",
       "staleCatalogAvailabilityMustFailClosed": true,
       "qaPassStillSeparateFromHomepageLink": true
-    }
+    },
+    "webGameStartabilityGate": "company-learning/platform-release-roadmap.json#webRuntimeStartabilityContract"
   },
   "developmentPipeline": {
     "focusedCaretakers": {
