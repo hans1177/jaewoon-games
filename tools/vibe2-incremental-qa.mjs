@@ -528,6 +528,39 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
   };
 }
 
+function robloxStudioAssetBindingContract(data={}){
+  const loadout=data?.assetProduction?.baseMaterialLoadout;
+  const auto=loadout?.robloxAutoApply;
+  if(clean(data?.target).toLowerCase()!=='roblox'||auto?.sourceMutationRequired!==true)return null;
+  return loadout;
+}
+function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
+  const loadout=robloxStudioAssetBindingContract(data);
+  if(!loadout)return{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false};
+  const text=presentationSourceText(root,changed);
+  if(!text.trim())throw new Error('ROBLOX_STUDIO_ASSET_BINDING_SOURCE_REQUIRED');
+  const checks=[],issues=[];
+  const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
+  const atoms=Object.values(loadout.families||{}).flat().map(clean).filter(Boolean);
+  const atomBound=atoms.some(atom=>text.includes(atom));
+  const nativeSignals=patternHits(text,[
+    /Instance\.new\s*\(/i,
+    /\b(?:MeshPart|SpecialMesh|SurfaceAppearance|ParticleEmitter|Trail|Beam|Attachment|WeldConstraint|Motor6D|ScreenGui|Frame|TextButton|ImageButton)\b/i,
+    /\.(?:Material|Color|BrickColor|TextureID|MeshId|CFrame|Size|Position|Orientation)\s*=/i,
+    /Color3\.(?:fromRGB|new)\s*\(/i
+  ]);
+  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*1\b/.test(text));
+  require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
+  require('ROBLOX_NATIVE_VISUAL_BINDING',nativeSignals>=2);
+  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound);
+  if(issues.length)throw new Error(`ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:${issues.join('|')}`);
+  return{
+    status:'STATIC_PASS',checks,selectedAtomCount:atoms.length,runtimeStillRequired:true,
+    requiredRuntimeEvidence:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
+    companyAssetPromotionBlockedUntilRuntime:true,masteryPromotionBlockedUntilRuntime:true,
+    markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
+  };
+}
 function runWeatherPresentationStaticQa({root,data={},changed=[]}={}){
   const contract=weatherPresentationContract(data);
   if(!contract)return{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false};
@@ -605,7 +638,8 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const presentation=presentationContract(data);
   const weatherPresentation=weatherPresentationContract(data);
   const specializedRequest=specializedVerificationRequest(data);
-  const payload = ['vibe2-incremental-qa-v11', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null)];
+  const studioAssetBinding=robloxStudioAssetBindingContract(data);
+  const payload = ['vibe2-incremental-qa-v12', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -614,10 +648,10 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:9,entries:{}}) : {version:9,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:10,entries:{}}) : {version:10,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
@@ -627,11 +661,12 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const architectureDrift=runArchitectureDrift({root,data});
   const presentationQa=runPresentationStaticQa({root,data,changed});
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
+  const robloxStudioAssetBindingQa=runRobloxStudioAssetBindingQa({root,data,changed});
   const specializedVerificationQa=runSpecializedFocusedQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
-    cache.version=9; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, specializedVerificationQa, savedAt:new Date().toISOString() };
+    cache.version=10; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
