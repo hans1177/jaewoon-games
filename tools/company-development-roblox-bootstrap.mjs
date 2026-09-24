@@ -226,9 +226,7 @@ end
     if(!frameMatch)throw new Error('EXISTING_STUDIO_ASSET_VISIBLE_TARGET_REQUIRED');
     const frameVar=frameMatch[1];
     const tail=output.slice((frameMatch.index||0)+frameMatch[0].length);
-    const parentRe=new RegExp('\\n\\s*'+frameVar.replace(/[.*+?^$\{\}()|[\]\\]/g,'\\  return Object.freeze({version:1,applied:selectedAtomCount>=12,source:'company-asset-library.json#baseMaterialLibrary',libraryVersion:Number(assetLibrary?.version||0),atomState:clean(assetLibrary?.baseMaterialLibrary?.status)||null,selectedAtomCount,families:Object.freeze(selected),recipeId:'NORMAL_VARIANT',productionVerified:false,runtimeVerificationRequired:true,verifiedPromotionAllowed:false,gameplayAuthority:false});
-}
-function sourceBlockers')+'\\.Parent\\s*=.*');
+    const parentRe=new RegExp('\\n\\s*'+frameVar+'\\.Parent\\s*=.*');
     const parentMatch=tail.match(parentRe);
     if(!parentMatch)throw new Error('EXISTING_STUDIO_ASSET_VISIBLE_PARENT_MISSING');
     const lineEnd=(frameMatch.index||0)+frameMatch[0].length+(parentMatch.index||0)+parentMatch[0].length;
