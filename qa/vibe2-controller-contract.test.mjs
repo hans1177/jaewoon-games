@@ -15,6 +15,7 @@ const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-co
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
 const coreQaWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-core-qa.yml',import.meta.url),'utf8');
 const candidateReleaseWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+const unityReleaseResultWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-unity-release-result.yml',import.meta.url),'utf8');
 const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-recovery-fast.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
@@ -915,4 +916,18 @@ test('worker result transports presentation candidate delta into fan-in',()=>{
   assert.match(resultStep,/presentationCandidateDelta=manifest\?\.presentationCandidateDelta/);
   assert.match(resultStep,/presentation-source-delta:/);
   assert.match(resultStep,/version:17/);
+});
+
+
+test('Unity final fan-in reuses exact Android runtime screenshot evidence for presentation comparison',()=>{
+  assert.match(unityReleaseResultWorkflow,/Resolve exact Unity Android presentation runtime evidence/);
+  assert.match(unityReleaseResultWorkflow,/android16-install-gate-\*\/evidence\.json/);
+  assert.match(unityReleaseResultWorkflow,/android16-install-gate-\*\/screenshot\.png/);
+  assert.match(unityReleaseResultWorkflow,/qaPassEligibleRuntimeEvidence/);
+  assert.match(unityReleaseResultWorkflow,/unity-runtime-screenshot-sha256:/);
+  assert.match(unityReleaseResultWorkflow,/presentation-runtime-baseline-established:unity/);
+  assert.match(unityReleaseResultWorkflow,/presentation-runtime-before-after:PASS/);
+  assert.match(unityReleaseResultWorkflow,/BLOCK_NO_VISUAL_DELTA/);
+  assert.match(unityReleaseResultWorkflow,/unity-presentation-runtime-visible-delta-missing/);
+  assert.match(unityReleaseResultWorkflow,/presentation-source-delta:PASS/);
 });
