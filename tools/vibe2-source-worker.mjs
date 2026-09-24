@@ -712,6 +712,32 @@ function studioQualityWorkerGuidance(order = {}) {
   ].filter(Boolean).join('\n');
 }
 
+function gatedRetryStrategyGuidance(order = {}) {
+  const evidence=(order?.selectedTask?.evidence||[]).map(clean).filter(Boolean);
+  const marker=[...evidence].reverse().find(value=>value.startsWith('neural-gated-retry-strategy:'));
+  if(!marker)return'';
+  const failureClass=clean(marker.slice('neural-gated-retry-strategy:'.length)).toUpperCase()||'UNCLASSIFIED';
+  const strategy={
+    NO_OP:'이전 시도는 실제 변경이 없었다. 같은 응답 구조를 반복하지 말고 목표와 직접 연결된 책임 심볼을 선택해 실제 동작을 바꾼다.',
+    EDIT_MATCH:'이전 시도는 source anchor가 맞지 않았다. 추측한 find를 재사용하지 말고 제공된 exact source window에서 유일한 원문을 그대로 복사한다.',
+    MALFORMED_OUTPUT:'이전 시도는 출력 형식이 깨졌다. 설명을 줄이고 가장 먼저 완전한 유효 candidate 구조를 닫은 뒤 필요한 변경만 담는다.',
+    INVALID_PATH:'이전 시도는 책임 경로를 벗어났다. Allowed edit paths 밖의 파일을 절대 만들거나 수정하지 않는다.',
+    TIMEOUT:'이전 시도는 시간 초과였다. 동일한 장황한 접근을 반복하지 말고 가장 영향 큰 책임 변경을 먼저 완결한 뒤 연결된 필수 변경만 추가한다.',
+    SEMANTIC_DIFF_BUDGET:'이전 시도는 의미 변경 범위를 넘었다. 핵심 책임 시스템과 직접 의존성만 유지하고 보호된 게임 규칙은 건드리지 않는다.',
+    STUDIO_QUALITY_DELTA:'이전 시도는 스튜디오 품질 구현 폭이 부족했다. 마커 추가가 아니라 허용된 책임 파일 안에서 연결된 실질 개선 단위를 실제 코드로 완성한다.',
+    DIAGNOSTIC_POSTCONDITION:'이전 시도는 진단 후조건을 닫지 못했다. 재현된 실패 조건을 직접 없애는 변경을 우선하고 동일 조건이 다시 성립하지 않게 한다.',
+    SYSTEM_CAUSAL_TEST_REQUIRED:'이전 시스템 수정은 원인 증명 테스트가 부족했다. 책임 소스와 회귀 테스트를 같은 candidate에서 함께 완성한다.',
+    SYSTEM_CANDIDATE_SYNTAX:'이전 시스템 candidate는 문법이 깨졌다. 구조를 단순화하고 기존 함수/구문 패턴에 맞춰 완전한 문법 단위로 교체한다.',
+    UNCLASSIFIED:'이전 실패와 같은 구현 접근을 반복하지 말고 현재 진단·책임 파일·검증 근거를 기준으로 다른 직접 수정 전략을 선택한다.'
+  }[failureClass]||'이전 실패와 같은 구현 접근을 반복하지 말고 현재 진단과 책임 범위를 기준으로 다른 직접 수정 전략을 선택한다.';
+  return [
+    '[NEURAL GATED RETRY STRATEGY]',
+    `previousFailureClass=${failureClass}`,
+    strategy,
+    '재시도는 범위를 넓히기 위한 핑계가 아니다. 동일 책임 범위에서 전략만 바꾸고 기존 검증된 동작과 저장 의미는 보존한다.'
+  ].join('\n');
+}
+
 function weatherWorkerGuidance(order = {}) {
   const contract=order?.weatherPresentation||{};
   if(contract?.required!==true)return'';
@@ -747,6 +773,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 studioQualityWorkerGuidance(order),
+gatedRetryStrategyGuidance(order),
 weatherWorkerGuidance(order),
 clean(order.target).toLowerCase()==='system'?systemArchitectureGuidance(order.selectedTask||{}):'',
 `Allowed edit paths: ${allowed}`,
@@ -1156,7 +1183,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false}={}){
   const rawPrompt=String(prompt??'');
-  const studioExpansion=/\[STUDIO_QUALITY_EVOLUTION\]/i.test(rawPrompt);
+  const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
     ? allowedLine.slice(allowedLine.indexOf(':')+1).split(',').map(clean).filter(Boolean)
@@ -1248,7 +1275,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
           if(attempt>=3||timeoutFailure||studioInitial){
             const body=section.split('\n').slice(1).join('\n');
-            const excerpt=boundedLargeExcerpt(body,5000);
+            const excerpt=boundedLargeExcerpt(body,studioInitial?2500:5000);
             section=header+'\n'+excerpt.content;
           }
           editable.push(section);
@@ -1368,11 +1395,14 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let diagnosticPostconditionCreditUsed=false;
   let studioEditMatchCreditUsed=false;
   let fullWebProgressCreditCount=0;
-  const studioExpansion=/\[STUDIO_QUALITY_EVOLUTION\]/i.test(String(prompt??''));
+  const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const initialStudioPrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
     :prompt;
-  const baseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
+  const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
+  const baseMaxAttempts=studioExpansion&&!allowFullRewrite
+    ?Math.min(3,configuredBaseMaxAttempts)
+    :configuredBaseMaxAttempts;
   let maxAttempts=baseMaxAttempts;
   let additiveAttemptCreditUsed=false;
   let additiveAttemptCreditLogged=false;
@@ -1400,7 +1430,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const focusedFinal=!allowFullRewrite&&!studioExpansion&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
-    const diagnosticFocusedReplaceOnly=!allowFullRewrite
+    const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
     const systemAtomicPairCompletion=!allowFullRewrite&&systemAtomicPairRequired&&priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'

@@ -100,6 +100,14 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
+  assert.equal(runtime.version>=21,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,21);
+  assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
+  assert.equal(runtime.adaptiveBackpressure.mode,'GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY');
+  assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.retryStrategyMutationRequiresVerifiedRootCause,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.successfulResultMutationForbidden,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.verifiedSupervisorReviseRequeue,true);
   assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
   assert.equal(runtime.coordination.sourceRootExclusive,true);
   assert.equal(runtime.coordination.separateFileLocks,true);
@@ -387,6 +395,12 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.atomicNeuronStream.speculativeVariantsJoinPerTask,true);
   assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_ONLY');
   assert.equal(runtime.continuous.atomicNeuronStream.workerDirectControlWrite,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.universalActionableDomains,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.protectedAuthoritiesRemainCentral,true);
+  assert.ok(runtime.continuous.atomicNeuronStream.gatedAuthorities.includes('FAILURE_CLASS_RETRY_STRATEGY'));
+  assert.ok(runtime.parallelismTelemetry.metrics.includes('verifiedCandidatesPerMinute'));
+  assert.ok(runtime.parallelismTelemetry.metrics.includes('firstCandidatePassRatePct'));
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
   assert.equal(runtime.continuous.refillMode,'task-micro-fanin-repository-dispatch-with-hourly-safety-net');
   assert.equal(runtime.continuous.slotRefillTrigger,'vibe2-neuron-complete');
@@ -610,6 +624,23 @@ test('supervised Web candidates learn review decisions and stay unreleased until
   assert.equal(revise.experienceReviews[0].outcome,'FAIL');
   assert.match(revise.experienceReviews[0].failureCause,/모바일 입력 피드백/);
 
+  const gatedValid=structuredClone(valid);
+  gatedValid.neuralDiagnosis={responsibility:{system:'GAME_INPUT'},inhibitors:[],actionRecommendation:{failureStage:'WEB_REPAIR'}};
+  gatedValid.evidence=[
+    branch,
+    'causal-replay-prepatch-reproduced:YES',
+    'causal-replay-executed:YES',
+    'causal-replay-status:EXECUTED_PASS',
+    'verified-responsible-system:GAME_INPUT'
+  ];
+  const gatedRevise=finalizeVibe2FanInReview({queue:{tasks:[reviseTask]},results:[gatedValid]});
+  assert.equal(gatedRevise.queue.tasks[0].status,'queued');
+  assert.equal(gatedRevise.queue.tasks[0].priority,'high');
+  assert.equal(gatedRevise.queue.tasks[0].blocker,null);
+  assert.equal(gatedRevise.queue.tasks[0].lastOutcome,'RETRY_AFTER_GATED_SUPERVISOR_REVISE');
+  assert.ok(gatedRevise.queue.tasks[0].evidence.includes('neural-gated-supervisor-requeue:HIGH'));
+  assert.equal(gatedRevise.reviewed[0].gatedRequeue,true);
+
   const approvedTask=structuredClone(baseTask);
   approvedTask.supervisionApproved=true;
   approvedTask.supervisionReview={
@@ -814,7 +845,7 @@ test('explicit work-order output path overrides runtime default path',()=>{
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:256,tasks:[]}), 'utf8');
-  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:256}), 'utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:256}), 'utf8');
   fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}), 'utf8');
   fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
 

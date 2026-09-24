@@ -25,7 +25,7 @@ function stepUp(current) {
 
 export function createParallelismControl(input = {}) {
   return Object.freeze({
-    version: 3,
+    version: 4,
     currentMax: normalizeStep(input.currentMax),
     healthyStreak: Math.max(0, Math.floor(num(input.healthyStreak))),
     pressureStreak: Math.max(0, Math.floor(num(input.pressureStreak))),
@@ -72,12 +72,16 @@ function pressureReasons(telemetry = {}) {
 
 function isHealthy(telemetry = {}) {
   const bottleneck = clean(telemetry.bottleneck);
+  const firstPass=num(telemetry?.throughput?.firstCandidatePassRatePct);
+  const throughput=num(telemetry?.throughput?.verifiedCandidatesPerMinute);
   return num(telemetry.failureRatePct) < 10
     && ['LOW', 'NONE'].includes(pressureLevel(telemetry))
     && (!bottleneck || bottleneck === 'NONE')
     && num(telemetry.effectivePeakUtilizationPct) >= 80
     && num(telemetry.queueWait?.p95Ms) < 15000
-    && num(telemetry.checkout?.p95Ms) < 15000;
+    && num(telemetry.checkout?.p95Ms) < 15000
+    && (firstPass===0||firstPass>=80)
+    && throughput>0;
 }
 
 export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = DEFAULT_ADAPTIVE_TARGET } = {}) {
@@ -117,6 +121,11 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const localBackpressureActive = effectiveMax < current;
   const level = pressureLevel(telemetry);
   const reasons = pressureReasons(telemetry);
+  const firstPass=num(telemetry?.throughput?.firstCandidatePassRatePct);
+  const throughput=num(telemetry?.throughput?.verifiedCandidatesPerMinute);
+  const previousThroughput=num(control?.lastTelemetry?.verifiedCandidatesPerMinute);
+  if(workerCount>=4&&firstPass>0&&firstPass<60)reasons.push('FIRST_CANDIDATE_PASS_RATE');
+  if(previousThroughput>0&&throughput>0&&throughput<previousThroughput*.75)reasons.push('VERIFIED_THROUGHPUT_REGRESSION');
   const strongPressure = ['SEVERE', 'HIGH'].includes(level) || reasons.length > 0;
   const mediumPressure = level === 'MEDIUM' && reasons.length === 0;
 
@@ -195,7 +204,9 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
       effectivePeakUtilizationPct: num(telemetry.effectivePeakUtilizationPct),
       failureRatePct: num(telemetry.failureRatePct),
       pressureLevel: level,
-      bottleneck: clean(telemetry.bottleneck) || 'NONE'
+      bottleneck: clean(telemetry.bottleneck) || 'NONE',
+      firstCandidatePassRatePct:firstPass,
+      verifiedCandidatesPerMinute:throughput
     }
   });
 }

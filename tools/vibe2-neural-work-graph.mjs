@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-neural-work-graph.mjs
-// 역할: Phase 2 권한 부여 전, 진단/원인/이벤트를 결정론적 neural work graph로 투영한다.
-// 원칙: graph는 관찰·감사용 shadow state만 만든다. worker/queue/wave/lock/policy/learning 실행 권한은 절대 부여하지 않는다.
+// 역할: 진단/원인/이벤트를 결정론적 neural work graph로 투영하고 중앙정책이 허용한 범위의 gated 실행 상태를 표현한다.
+// 원칙: 기존 scheduler만 실행하며 정책/보안/릴리즈/자기권한확장은 금지한다.
 
 const clean=value=>String(value??'').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
@@ -217,7 +217,13 @@ export function buildNeuralWorkGraph({
   const inhibitors=actionInhibitors({route,dependencies:normalizedDependencies,resourceState});
   const nonAuthorityInhibitors=inhibitors.filter(value=>value!=='PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED');
   const actionKind=clean(proposedAction?.kind)||'OBSERVE_ONLY';
+  const gated=clean(route?.authorityMode).toUpperCase()==='GATED';
   const hypothetical=route?.wouldFireWithoutPhase2Authority===true&&nonAuthorityInhibitors.length===0&&actionKind!=='OBSERVE_ONLY';
+  const executionAllowed=gated&&route?.fireAllowed===true&&inhibitors.length===0;
+  const workerCreationAllowed=executionAllowed&&route?.workerCreationAllowed===true;
+  const queueMutationAllowed=executionAllowed&&route?.queueMutationAllowed===true;
+  const waveReorderAllowed=executionAllowed&&route?.waveReorderAllowed===true;
+  const automaticTuningAllowed=executionAllowed&&route?.automaticTuningAllowed===true;
   const actionInputs=[
     nodes.some(x=>x.id==='plan')?'plan':'',
     nodes.some(x=>x.id==='root-cause')?'root-cause':'',
@@ -237,8 +243,8 @@ export function buildNeuralWorkGraph({
 
   const counts=nodeCounts(nodes);
   return{
-    version:1,
-    mode:'PHASE2_SHADOW_NEURAL_WORK_GRAPH',
+    version:2,
+    mode:gated?'PHASE2_GATED_NEURAL_WORK_GRAPH':'PHASE2_SHADOW_NEURAL_WORK_GRAPH',
     graphId:eventId||`event:${eventType.toLowerCase()}`,
     event:{id:eventId,type:eventType},
     nodes,
@@ -255,10 +261,12 @@ export function buildNeuralWorkGraph({
       unsatisfiedDependencyCount:normalizedDependencies.filter(dep=>dep.required&&dep.satisfied!==true).length
     },
     authority:{
-      executionAllowed:false,
-      workerCreationAllowed:false,
-      queueMutationAllowed:false,
-      waveReorderAllowed:false,
+      mode:gated?'GATED':'SHADOW',
+      executionAllowed,
+      workerCreationAllowed,
+      queueMutationAllowed,
+      waveReorderAllowed,
+      automaticTuningAllowed,
       lockAcquisitionAllowed:false,
       policyMutationAllowed:false,
       automaticLearningAllowed:false,
@@ -270,10 +278,14 @@ export function buildNeuralWorkGraph({
 }
 
 export function neuralWorkGraphEvidence(graph={}){
-  if(clean(graph?.mode)!=='PHASE2_SHADOW_NEURAL_WORK_GRAPH')return[];
+  const mode=clean(graph?.mode);
+  const gated=mode==='PHASE2_GATED_NEURAL_WORK_GRAPH';
+  if(!gated&&mode!=='PHASE2_SHADOW_NEURAL_WORK_GRAPH')return[];
   const summary=graph.summary||{};
+  const authority=graph.authority||{};
   const payload={
-    version:1,
+    version:2,
+    authorityMode:gated?'GATED':'SHADOW',
     graphId:clean(graph.graphId)||null,
     eventId:clean(graph?.event?.id)||null,
     eventType:clean(graph?.event?.type)||'UNKNOWN',
@@ -287,28 +299,34 @@ export function neuralWorkGraphEvidence(graph={}){
     wouldActivateWithoutPhase2Authority:summary.wouldActivateWithoutPhase2Authority===true,
     dependencyCount:Number(summary.dependencyCount||0),
     unsatisfiedDependencyCount:Number(summary.unsatisfiedDependencyCount||0),
-    executionAllowed:false,
-    workerCreationAllowed:false,
-    queueMutationAllowed:false,
-    waveReorderAllowed:false,
+    executionAllowed:authority.executionAllowed===true,
+    workerCreationAllowed:authority.workerCreationAllowed===true,
+    queueMutationAllowed:authority.queueMutationAllowed===true,
+    waveReorderAllowed:authority.waveReorderAllowed===true,
+    automaticTuningAllowed:authority.automaticTuningAllowed===true,
     lockAcquisitionAllowed:false,
     policyMutationAllowed:false,
     automaticLearningAllowed:false,
     authorityPromotionAllowed:false
   };
-  return[`neural-work-graph-shadow:${encodeURIComponent(JSON.stringify(payload))}`];
+  const prefix=gated?'neural-work-graph-gated:':'neural-work-graph-shadow:';
+  return[`${prefix}${encodeURIComponent(JSON.stringify(payload))}`];
 }
 
 export function summarizeNeuralWorkGraphEvidence(values=[]){
   const seen=new Map();
   let rawRows=0,conflicts=0,unauthorizedAuthorityBitCount=0;
   const byAction={},byState={};
+  let gatedGraphs=0;
   for(const raw of Array.isArray(values)?values:[]){
     const value=clean(raw);
-    if(!value.startsWith('neural-work-graph-shadow:'))continue;
+    const shadowPrefix='neural-work-graph-shadow:';
+    const gatedPrefix='neural-work-graph-gated:';
+    const prefix=value.startsWith(gatedPrefix)?gatedPrefix:(value.startsWith(shadowPrefix)?shadowPrefix:'');
+    if(!prefix)continue;
     rawRows+=1;
     let row;
-    try{row=JSON.parse(decodeURIComponent(value.slice('neural-work-graph-shadow:'.length)));}catch{continue;}
+    try{row=JSON.parse(decodeURIComponent(value.slice(prefix.length)));}catch{continue;}
     const id=clean(row.eventId)||clean(row.graphId)||`legacy-${rawRows}`;
     if(seen.has(id)){
       if(JSON.stringify(seen.get(id))!==JSON.stringify(row))conflicts+=1;
@@ -317,24 +335,30 @@ export function summarizeNeuralWorkGraphEvidence(values=[]){
     seen.set(id,row);
     const action=clean(row.actionKind)||'OBSERVE_ONLY';
     const state=clean(row.actionActivationState)||'DORMANT';
+    const gated=clean(row.authorityMode).toUpperCase()==='GATED'||prefix===gatedPrefix;
+    if(gated)gatedGraphs+=1;
     byAction[action]=(byAction[action]||0)+1;
     byState[state]=(byState[state]||0)+1;
-    if([
-      row.executionAllowed,row.workerCreationAllowed,row.queueMutationAllowed,row.waveReorderAllowed,
+    const protectedAuthorityViolation=[
       row.lockAcquisitionAllowed,row.policyMutationAllowed,row.automaticLearningAllowed,row.authorityPromotionAllowed
-    ].some(Boolean))unauthorizedAuthorityBitCount+=1;
+    ].some(Boolean);
+    const gatedExecutionViolation=!gated&&[
+      row.executionAllowed,row.workerCreationAllowed,row.queueMutationAllowed,row.waveReorderAllowed,row.automaticTuningAllowed
+    ].some(Boolean);
+    if(protectedAuthorityViolation||gatedExecutionViolation)unauthorizedAuthorityBitCount+=1;
   }
   return{
-    version:1,
+    version:2,
     rawRows,
     distinctGraphs:seen.size,
+    gatedGraphs,
     duplicateRows:Math.max(0,rawRows-seen.size),
     conflicts,
     byAction,
     byState,
     unauthorizedAuthorityBitCount,
     safetyInvariantPass:conflicts===0&&unauthorizedAuthorityBitCount===0,
-    executionAuthorityGranted:false,
+    executionAuthorityGranted:gatedGraphs>0,
     automaticPromotionAllowed:false
   };
 }

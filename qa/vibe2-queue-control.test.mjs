@@ -247,7 +247,7 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });
 
-test('game-primary reservation uses provider boundary while adaptive max remains advisory',()=>{
+test('game-primary reservation applies adaptive target inside provider boundary',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-primary-summary-'));
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
@@ -262,13 +262,15 @@ test('game-primary reservation uses provider boundary while adaptive max remains
     goal:'queued',status:'queued',sourceRoot:`web-games/queued-${i}`,responsibleFiles:['index.html']
   }));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
-  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'},null,2));
 
   const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20'});
   assert.equal(summary.summary.persistentMaxConcurrentTasks,256);
-  assert.equal(summary.summary.requestedMaxConcurrentTasks,256);
-  assert.equal(summary.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(summary.summary.freeSlots,249);
+  assert.equal(summary.adaptiveMaxConcurrentTasks,20);
+  assert.equal(summary.reservationMaxConcurrentTasks,20);
+  assert.equal(summary.summary.requestedMaxConcurrentTasks,20);
+  assert.equal(summary.summary.effectiveMaxConcurrentTasks,20);
+  assert.equal(summary.summary.freeSlots,13);
 
   const reserved=runQueueCommand({
     command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20',
@@ -276,14 +278,14 @@ test('game-primary reservation uses provider boundary while adaptive max remains
   });
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
   assert.equal(reserved.adaptiveMaxConcurrentTasks,20);
-  assert.equal(reserved.reservationMaxConcurrentTasks,256);
+  assert.equal(reserved.reservationMaxConcurrentTasks,20);
   assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
   assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,20);
-  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.freeSlotsBeforeReservation,249);
-  assert.equal(reserved.tasks.length,20);
-  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(reserved.summary.freeSlots,229);
+  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,20);
+  assert.equal(batch.scheduler.freeSlotsBeforeReservation,13);
+  assert.equal(reserved.tasks.length,13);
+  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,20);
+  assert.equal(reserved.summary.freeSlots,0);
 });
 
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
@@ -755,7 +757,7 @@ test('fan-in persists neural shadow calibration without granting learning or rou
   const eventMarker=task.evidence.find(value=>value.startsWith('neural-event-shadow:'));
   assert.ok(eventMarker);
   const eventPayload=JSON.parse(decodeURIComponent(eventMarker.slice('neural-event-shadow:'.length)));
-  assert.equal(eventPayload.version,2);
+  assert.equal(eventPayload.version,3);
   assert.equal(eventPayload.eventIdentityVersion,2);
   assert.equal(eventPayload.eventType,'WORKER_RESULT');
   assert.match(eventPayload.eventId,/\|WORKER_RESULT$/);
@@ -1397,4 +1399,91 @@ test('24H plan uses optimistic writes while reserve stays serialized and fan-in 
   assert.match(fanInHeader,/group: \$\{\{ format\('vibe2-control-state-fanin-\{0\}-\{1\}', github\.run_id, github\.run_attempt\) \}\}/);
   assert.match(fanInHeader,/cancel-in-progress: false/);
   assert.doesNotMatch(fanInHeader,/group: vibe2-control-state-vibe2-unreal-core/);
+});
+
+
+test('verified neural root cause alone may mutate retry strategy and queue priority',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'gated-retry',gameId:'g',target:'web',department:'development',type:'implementation',
+    goal:'repair source generation',status:'running',priority:'normal',sourceRoot:'web-games/g',
+    responsibleFiles:['index.html'],reservationId:'run:1'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'gated-retry',reservationId:'run:1',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EDIT_MATCH',message:'anchor mismatch'},
+    neuralDiagnosis:{responsibility:{system:'SOURCE_GENERATION'},inhibitors:[],actionRecommendation:{failureStage:'SOURCE_CANDIDATE_GENERATION'}},
+    evidence:[
+      'causal-replay-prepatch-reproduced:YES',
+      'causal-replay-executed:YES',
+      'causal-replay-status:EXECUTED_PASS',
+      'role-result:regression:PASS',
+      'role-result:review:PASS',
+      'verified-responsible-system:SOURCE_GENERATION'
+    ]
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='gated-retry');
+  assert.equal(task.status,'queued');
+  assert.equal(task.priority,'high');
+  assert.ok(task.evidence.includes('neural-gated-retry-strategy:EDIT_MATCH'));
+  assert.ok(task.evidence.includes('neural-gated-worker-refill-eligible'));
+  assert.equal(merged.applied[0].retryStrategy,'EDIT_MATCH');
+});
+
+test('unverified failure may retry but cannot receive neural gated mutation markers',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'plain-retry',gameId:'g2',target:'web',department:'development',type:'implementation',
+    goal:'repair source generation',status:'running',priority:'normal',sourceRoot:'web-games/g2',
+    responsibleFiles:['index.html'],reservationId:'run:2'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'plain-retry',reservationId:'run:2',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EDIT_MATCH',message:'anchor mismatch'},
+    neuralDiagnosis:{responsibility:{system:'SOURCE_GENERATION'},inhibitors:[],actionRecommendation:{failureStage:'SOURCE_CANDIDATE_GENERATION'}},
+    evidence:[]
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='plain-retry');
+  assert.equal(task.status,'queued');
+  assert.equal(task.priority,'normal');
+  assert.equal(task.evidence.some(value=>value.startsWith('neural-gated-retry-strategy:')),false);
+  assert.equal(task.evidence.some(value=>value.startsWith('neural-gated-execution:')),false);
+  assert.equal(merged.applied[0].retryStrategy,null);
+});
+
+
+test('verified gated root cause reprioritizes retry and changes strategy',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'gated-repair',gameId:'gated',target:'web',department:'development',type:'implementation',
+    goal:'repair source generation',status:'running',priority:'normal',sourceRoot:'web-games/gated',
+    responsibleFiles:['index.html'],retries:0,maxRetries:2,
+    reservationId:'gated-run:1',reservationRunId:'gated-run'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'gated-repair',reservationId:'gated-run:1',variant:'primary',outcome:'FAIL',
+    blocker:'parallel-candidate-generation-failed',
+    candidateFailure:{class:'EDIT_MATCH',message:'anchor mismatch'},
+    neuralDiagnosis:{
+      inhibitors:[],
+      responsibility:{system:'SOURCE_GENERATION',confidence:1,basis:'TEST'},
+      actionRecommendation:{failureStage:'SOURCE_CANDIDATE_GENERATION'}
+    },
+    evidence:[
+      'causal-replay-prepatch-reproduced:YES',
+      'causal-replay-executed:YES',
+      'causal-replay-status:EXECUTED_PASS',
+      'role-result:regression:PASS',
+      'role-result:review:PASS',
+      'verified-responsible-system:SOURCE_GENERATION'
+    ]
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='gated-repair');
+  assert.equal(task.status,'queued');
+  assert.equal(task.priority,'high');
+  assert.ok(task.evidence.includes('neural-gated-retry-strategy:EDIT_MATCH'));
+  assert.ok(task.evidence.includes('retry-strategy-must-change-after:EDIT_MATCH'));
+  assert.ok(task.evidence.includes('neural-gated-queue-reprioritized:HIGH'));
+  assert.ok(task.evidence.includes('neural-gated-worker-refill-eligible'));
+  assert.equal(merged.applied[0].gatedAction,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
+  assert.equal(merged.applied[0].retryStrategy,'EDIT_MATCH');
 });
