@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 59,
+  "revision": 60,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1054,7 +1054,11 @@
     "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
     "versusActionReadyUnarmedCombatMotion": true,
     "unarmedStyleResearchHasNoArtificialCap": true,
-    "wuxiaUnarmedFantasyMotionResearch": true
+    "wuxiaUnarmedFantasyMotionResearch": true,
+    "bodyPlanSpecificBipedCreatureMotion": true,
+    "sharedRigDoesNotImplySharedMotionIdentity": true,
+    "cartoonAndConceptStyleVariantsAllowed": true,
+    "styleVariantMustPreserveGameplayAuthority": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1094,7 +1098,20 @@
         "WUXIA_FANTASY",
         "VERSUS_ACTION_REACTIONS"
       ],
-      "animationMarkersMayNotOwnGameplayRules": true
+      "animationMarkersMayNotOwnGameplayRules": true,
+      "bipedCreatureTaxonomy": [
+        "SMALL_HUMANOID_BIPED",
+        "STANDARD_HUMANOID_MONSTER",
+        "HEAVY_BIPED",
+        "DIGITIGRADE_BIPED",
+        "HUNCHED_BIPED",
+        "APE_LIKE_BIPED",
+        "SKELETAL_BIPED",
+        "BOSS_BIPED"
+      ],
+      "styleVariantTarget": "STYLE_LOCK_AWARE_ASSET_AND_MOTION_DERIVATION",
+      "styleVariantLibraryGraphInterlink": true,
+      "originalImmutableDerivedVariants": true
     }
   },
   "centralDocumentation": {
