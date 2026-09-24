@@ -82,4 +82,4 @@ local Config = {
   },
 }
 
-return table.freeze(Config)
+return table.freeze(Config) -- Removed to allow for dynamic configuration
