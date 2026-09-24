@@ -11,7 +11,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const motor=json('company-learning/vibe2-learning-motor.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,7);
+  assert.equal(motor.version,8);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -31,6 +31,14 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.idleTraining.practiceSignalGenerationAlwaysOn,true);
   assert.equal(motor.idleTraining.practiceGenerationLimit,null);
   assert.equal(motor.idleTraining.productionPresenceDoesNotSuppressPracticeGeneration,true);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.enabled,true);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.existingLearningMotorOnly,true);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.separateTrainerForbidden,true);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.preparedSemanticMayEnterPositiveMastery,false);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.rawTelemetryMayEnterCanonicalTraining,false);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.verifiedProjectOutcomeRequiredForPositiveMastery,true);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.verifiedFailureMayTeachAvoidPattern,true);
+  assert.equal(motor.presentationLearning.runtimeMotionLearning.trainingThresholdsUnchanged,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
