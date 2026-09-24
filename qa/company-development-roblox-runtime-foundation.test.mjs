@@ -342,6 +342,13 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.equal(parallel.internalGameConcurrencyCapsForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.runtimeRunnerCapacityMaySerializeRuntimeQa,false);
   assert.equal(parallel.runtimeQaMayQueueOnlyWhenExternalProviderCapacityIsExhausted,true);
+  assert.equal(parallel.continuationDispatchMode,'PER_GAME_EXACT_EVENT_DRIVEN');
+  assert.equal(parallel.f0DispatchMode,'PER_GAME_EXACT_EVENT_DRIVEN');
+  assert.equal(parallel.crossGameStageBarrierForbidden,true);
+  assert.equal(parallel.globalContinuationConcurrencyForbidden,true);
+  assert.equal(parallel.heavyStageGlobalWorkflowSerializationForbidden,true);
+  assert.equal(parallel.runtimeHarnessVersion,'9');
+  assert.equal(parallel.checkoutThroughPromotionPolicy,'EACH_GAME_ADVANCES_IMMEDIATELY_WHEN_ITS_OWN_PREDECESSOR_GATE_PASSES');
   assert.equal(parallel.serverBootEvidenceReuse.reuseOnlyWhenExactCandidateUnchanged,true);
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
 });
