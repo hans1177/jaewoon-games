@@ -134,7 +134,12 @@ export function computeParallelismTelemetry(input={}){
   const qa=durationStats(rows,'qaMs');
   const workerTotal=durationStats(rows,'workerTotalMs');
   const workload=computeWorkload(rows,input.tasks||[]);
-  const failureRate=workerCount?(outcomes.FAIL+outcomes.BLOCKED)/workerCount:0;
+  const transientWorkLockDeferrals=rows.filter(row=>
+    clean(row?.outcome).toUpperCase()==='BLOCKED'
+    &&/^work-lock-conflict:(?:transient-state-update-race|file-lock-conflict)$/i.test(clean(row?.blocker))
+  ).length;
+  const effectiveFailureCount=Math.max(0,outcomes.FAIL+outcomes.BLOCKED-transientWorkLockDeferrals);
+  const failureRate=workerCount?effectiveFailureCount/workerCount:0;
   const sourceFailureClasses={};
   for(const row of rows){
     const failureClass=sourceGenerationFailureClass(row);
@@ -142,7 +147,7 @@ export function computeParallelismTelemetry(input={}){
     sourceFailureClasses[failureClass]=(sourceFailureClasses[failureClass]||0)+1;
   }
   const sourceGenerationFailureCount=Object.values(sourceFailureClasses).reduce((sum,value)=>sum+value,0);
-  const failedWorkerCount=outcomes.FAIL+outcomes.BLOCKED;
+  const failedWorkerCount=effectiveFailureCount;
   const workerFailureStages={};
   if(sourceGenerationFailureCount>0)workerFailureStages.SOURCE_CANDIDATE_GENERATION=sourceGenerationFailureCount;
   for(const row of rows){
@@ -197,6 +202,8 @@ export function computeParallelismTelemetry(input={}){
     workerTotal,
     ollamaCache:{known:cacheKnown.length,hits:cacheHits,hitRatePct:round(cacheKnown.length?cacheHits/cacheKnown.length*100:0)},
     outcomes,
+    transientWorkLockDeferrals,
+    effectiveFailureCount,
     failureRatePct:round(failureRate*100),
     pressureLevel,
     sourceGenerationFailures:{
