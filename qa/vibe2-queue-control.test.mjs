@@ -19,6 +19,7 @@ import {
   recoverFixedFullWebTransportFailures,
   recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
+  recoverTransientWorkLockBlocks,
   recoverFanInRegressionFailure,
   verifyVibeWorkerSynchronization,
   runQueueCommand
@@ -28,6 +29,44 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
+
+test('transient work lock conflicts are requeued without consuming retry budget or poisoning failure learning',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'visual-lock',gameId:'visual-game',target:'roblox',department:'development',type:'implementation',
+    goal:'presentation pass',status:'running',sourceRoot:'roblox-games/visual-game',
+    responsibleFiles:['client/Game.client.luau'],retries:2,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',
+    evidence:['presentation-pass:ASSET_ADAPTATION']
+  }]});
+  const result=applyVibeFanInResults(queue,[{
+    taskId:'visual-lock',variant:'primary',outcome:'BLOCKED',blocker:'work-lock-conflict:not-acquired',
+    evidence:['worker-route:text-source-worker']
+  }]);
+  const task=result.queue.tasks.find(row=>row.id==='visual-lock');
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,2);
+  assert.equal(task.blocker,null);
+  assert.equal(task.lastOutcome,'DEFERRED_BY_WORK_LOCK');
+  assert.ok(task.evidence.includes('recovery:transient-work-lock-requeue-v1'));
+  assert.ok(task.evidence.includes('transient-work-lock-deferred:work-lock-conflict:not-acquired'));
+  assert.equal(task.evidence.some(value=>value==='failure-cause:work-lock-conflict:not-acquired'),false);
+  assert.equal(result.applied[0].outcome,'REQUEUED_TRANSIENT_LOCK');
+});
+
+test('existing blocked work-lock tasks are recovered before the next reserve cycle',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'old-visual-lock',gameId:'old-visual',target:'roblox',department:'development',type:'implementation',
+    goal:'presentation pass',status:'blocked',blocker:'work-lock-conflict:worker-task-lock-mismatch',
+    sourceRoot:'roblox-games/old-visual',responsibleFiles:['client/Game.client.luau'],retries:0,
+    evidence:['presentation-pass:ASSET_ADAPTATION']
+  }]});
+  const recovered=recoverTransientWorkLockBlocks(queue);
+  const task=recovered.queue.tasks.find(row=>row.id==='old-visual-lock');
+  assert.equal(recovered.recovered,1);
+  assert.equal(task.status,'queued');
+  assert.equal(task.blocker,null);
+  assert.equal(task.retries,0);
+  assert.equal(task.lastOutcome,'DEFERRED_BY_WORK_LOCK');
+});
 
 test('worker preflight requires exact live Vibe reservation identity',()=>{
   const reservation={id:'sync:1',runId:'sync-run',runAttempt:2,reservedAt:'2026-09-20T14:18:00Z'};
