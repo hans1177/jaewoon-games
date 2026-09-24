@@ -20,6 +20,15 @@ const ACTOR_TYPES = Object.freeze(['character', 'enemy', 'boss']);
 const DEFAULT_MOTION_STATES = Object.freeze(['idle', 'move', 'attack', 'hit', 'skill', 'death']);
 const LOCOMOTION_STATES = Object.freeze(['move', 'walk', 'run', 'jump', 'fly', 'swim', 'crawl']);
 const BLOCKED_LICENSE_WORDS = Object.freeze(['NC', 'unknown', '출처 불명', '재배포 제한']);
+function blockedLicense(license='') {
+  const value = text(license);
+  const lower = value.toLowerCase();
+  return BLOCKED_LICENSE_WORDS.some((blocked) => {
+    const token = String(blocked).toLowerCase();
+    if (token === 'nc') return /(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value);
+    return lower.includes(token);
+  });
+}
 const BLOCKED_ACTOR_VISUAL_WORDS = Object.freeze(['circle', 'sphere', 'orb', 'ball', '원형', '구체', 'placeholder', 'dummy', 'primitive']);
 
 function text(value) { return String(value ?? '').trim(); }
@@ -177,7 +186,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const assets = Array.isArray(manifest?.assets) ? manifest.assets : [];
   const candidates = assets.filter((asset) => {
     const license = text(asset?.license || asset?.policy || '');
-    return !BLOCKED_LICENSE_WORDS.some((blocked) => license.toLowerCase().includes(blocked.toLowerCase()));
+    return !blockedLicense(license);
   });
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
   const production = buildProductionPlan(request, prototypePreset);
