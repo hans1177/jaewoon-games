@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "gameId": "survival",
   "gameName": "나의 생존기",
   "platform": "ROBLOX",
@@ -11,111 +11,89 @@
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "saveRequired": true,
-  "approvedScopeCount": 7,
-  "robloxBuildProfile": {
-    "version": 2,
-    "targetPlatform": "ROBLOX",
-    "taxonomy": "DIRECT_NATIVE_DESIGN_PROFILE",
-    "declaredGameCategory": null,
-    "genre": "Strategy",
-    "subgenre": null,
-    "playMode": "SINGLE",
-    "multiplayerRequired": false,
-    "coopImplementationRequired": false,
-    "competitiveImplementationRequired": false,
-    "networkingRequired": false,
-    "multiplayerQaRequired": false,
-    "minimumParticipantsForRequiredQa": 1,
-    "displayLabelKo": "Strategy"
-  },
-  "robloxPlatformProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
-    "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
-    "multiplayerRuntime": "single-player server boundary with local presentation; no fake multiplayer claims",
-    "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
-    "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
-    "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
-    "platformContentAdaptation": "Adapt \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.\" and its loop \"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다. → 밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다. → 전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다. → 생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
-    "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
-    "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
-  },
-  "minimumDesignContractRequired": true,
-  "genreImplementationRequired": true,
-  "multiplayerImplementationRequired": false,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "default.project.json"
+    "client/Game.client.luau"
   ],
-  "generationMode": "DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT",
-  "model": "none",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": true,
-  "robloxPlaybookChecklist": [
-    "bind-roblox-source-and-place",
-    "separate-server-client-authority",
-    "validate-remotes-and-datastore-boundaries",
-    "run-real-roblox-runtime-and-independent-qa",
-    "verify-save-rejoin-and-mobile-ui-when-applicable",
-    "publish-only-after-exact-revision-pass",
-    "rank-responsible-source-before-edit",
-    "generate-3-to-5-independent-candidates",
-    "prefer-smallest-behavior-preserving-diff",
-    "run-syntax-tests-runtime-regression"
-  ],
-  "recombinationRecipeId": "recombine_e0cdf2a3aa96b995",
-  "recombinationOperator": "change-risk-reward-relationship",
-  "recombinationSourceProjects": [
-    "block-blast",
-    "external-commercial-hill-climb-racing-2"
-  ],
-  "learningFeatureBlend": [
-    "board-grid-placement",
-    "score-combo-reward",
-    "input-drag-touch",
-    "progression-difficulty",
-    "save-state-persistence",
-    "ads-monetization",
-    "short-session",
-    "simple-input",
-    "fast-retry",
-    "score-loop"
-  ],
-  "platformDesignProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
-    "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
-    "multiplayerRuntime": "single-player server boundary with local presentation; no fake multiplayer claims",
-    "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
-    "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
-    "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
-    "platformContentAdaptation": "Adapt \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.\" and its loop \"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다. → 밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다. → 전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다. → 생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
-    "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
-    "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
+  "vibe3LearningApplied": false,
+  "recombinationRecipeId": null,
+  "studioAssetBinding": {
+    "version": 1,
+    "applied": true,
+    "source": "company-asset-library.json#baseMaterialLibrary",
+    "libraryVersion": 16,
+    "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    "selectedAtomCount": 29,
+    "families": {
+      "UI": [
+        "FRAME_PANEL",
+        "BUTTON_PRIMARY",
+        "BAR_HEALTH"
+      ],
+      "ENVIRONMENT": [
+        "TREE_TRUNK_THICK",
+        "TREE_CROWN_ROUND",
+        "ROCK_MEDIUM",
+        "ROAD_DIRT"
+      ],
+      "BUILDING": [
+        "FOUNDATION_RECT",
+        "WALL_SOLID",
+        "DOOR_SINGLE",
+        "ROOF_GABLE"
+      ],
+      "PROP": [
+        "CHEST",
+        "CRATE",
+        "LAMP"
+      ],
+      "MATERIAL": [
+        "WOOD",
+        "STONE",
+        "METAL"
+      ],
+      "VFX": [
+        "IMPACT_FLASH",
+        "TRAIL_SHORT",
+        "SHAPE_BURST"
+      ],
+      "WEAPON": [
+        "BLADE_LONG",
+        "GUARD_CROSS",
+        "GRIP_LONG"
+      ],
+      "CHARACTER": [
+        "TORSO_CLOTH",
+        "SHOULDER_LIGHT",
+        "BACK_CAPE"
+      ],
+      "CREATURE": [
+        "HEAD_CANINE",
+        "JAW_LONG",
+        "CLAW"
+      ]
+    },
+    "recipeId": "NORMAL_VARIANT",
+    "productionVerified": false,
+    "runtimeVerificationRequired": true,
+    "verifiedPromotionAllowed": false,
+    "gameplayAuthority": false
   },
-  "webPlatformHandoffLegacy": null,
-  "webPlatformHandoffRequired": false,
+  "studioAssetBindingApplied": true,
+  "studioAssetRuntimeVerified": false,
+  "studioAssetPromotionEligible": false,
   "implementationNotes": [
-    "approved scope count=7",
-    "roblox genre=Strategy",
-    "play mode=SINGLE",
-    "multiplayer required=no",
-    "genre core action is compiled from the approved Roblox build profile",
-    "minimum dual-platform design contract carried forward",
-    "Roblox platform session: Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
-    "Roblox internal release target: Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
-    "single-player source does not claim multiplayer implementation",
-    "mobile-first ScreenGui exposes approved gameplay actions",
-    "Vibe3 Roblox playbook applied: bind-roblox-source-and-place, separate-server-client-authority, validate-remotes-and-datastore-boundaries, run-real-roblox-runtime-and-independent-qa, verify-save-rejoin-and-mobile-ui-when-applicable, publish-only-after-exact-revision-pass, rank-responsible-source-before-edit, generate-3-to-5-independent-candidates, prefer-smallest-behavior-preserving-diff, run-syntax-tests-runtime-regression",
-    "transformative recipe=recombine_e0cdf2a3aa96b995; operator=change-risk-reward-relationship; features=board-grid-placement, score-combo-reward, input-drag-touch, progression-difficulty, save-state-persistence, ads-monetization, short-session, simple-input, fast-retry, score-loop",
-    "persistent player state uses DataStoreService with safe fallback",
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-21T14:59:56.859Z"
+  "createdAt": "2026-09-24T06:08:15.918Z"
 }
