@@ -1,5 +1,5 @@
 {
-  "version": 146,
+  "version": 147,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2364,7 +2364,15 @@
           "REFERENCE_STRUCTURE_ABSTRACTION",
           "MAP_DNA",
           "ROUTE_GRAPH",
-          "SEAMLESS_STREAMING_PLAN"
+          "SEAMLESS_STREAMING_PLAN",
+          "GAME_VISUAL_DNA",
+          "ASSET_LOADOUT_SELECTOR",
+          "VERIFIED_USAGE_FEEDBACK",
+          "FUTURE_DEMAND_FORECAST",
+          "CREATURE_SPECIES_BLUEPRINT",
+          "PLATFORM_VARIANT_OPTIMIZER",
+          "STUDIO_TESTBED",
+          "GENRE_WORLD_GRAMMAR"
         ],
         "learningUsesExistingCanonicalChainOnly": true,
         "platformNativeRuntimeVerificationRequired": true
@@ -2401,7 +2409,8 @@
         "objectPoolingPreferred": true,
         "mobileBudget": true,
         "directMapOrLandmarkCopyForbidden": true,
-        "gameplayAndSaveAuthorityExpansion": false
+        "gameplayAndSaveAuthorityExpansion": false,
+        "genreWorldGrammar": true
       },
       "conceptAndWorldLearning": {
         "source": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.worldAndConceptLearning",
@@ -2415,6 +2424,31 @@
         "verifiedSignalsRequired": true,
         "mapSpecificValuesDoNotGeneralizeWithoutRepeatedVerification": true,
         "protectedReferenceLayoutCannotBecomeReusableTemplate": true
+      },
+      "gameVisualDna": {
+        "implementation": "assets/vibe-studio-asset-universe.js",
+        "gameSpecificLock": true,
+        "readBeforeVisualMutation": true,
+        "gameplayAuthority": false
+      },
+      "assetLoadoutSelector": {
+        "implementation": "assets/vibe-studio-asset-universe.js",
+        "verifiedAndCompatibilityFirst": true,
+        "usageAware": true,
+        "verifiedFailurePenalty": true
+      },
+      "futureDemandForecast": {
+        "implementation": "assets/vibe-studio-asset-universe.js",
+        "preparationOnly": true,
+        "selfPromotionForbidden": true
+      },
+      "studioTestbed": {
+        "implementation": "assets/vibe-studio-asset-universe.js",
+        "actualGameRuntimeStillRequired": true
+      },
+      "verifiedUsageFeedback": {
+        "existingCanonicalLearningChainOnly": true,
+        "rawTelemetryDirectTraining": false
       }
     }
   },
@@ -3571,7 +3605,10 @@
         "COMPANION_BEHAVIOR",
         "NPC_BEHAVIOR",
         "MONSTER_BEHAVIOR_PERSONALITY",
-        "WORLD_NARRATIVE_BINDING"
+        "WORLD_NARRATIVE_BINDING",
+        "CHARACTER_PERSONA",
+        "RELATIONSHIP_MEMORY",
+        "WORLD_NARRATIVE"
       ],
       "positiveMasteryRequiresVerifiedProjectOutcome": true
     }
