@@ -4,11 +4,44 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {compileRobloxSource,projectJsonForGame} from '../tools/company-development-roblox-bootstrap.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,compileRobloxSource,projectJsonForGame} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
 const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system',platformProfiles:{ROBLOX:{platform:'ROBLOX',inputModel:'Roblox touch input and gamepad fallback',sessionModel:'Roblox private server session lifecycle',multiplayerRuntime:'Roblox server authoritative RemoteEvent synchronization',performanceBudget:'Mobile Roblox performance budget for frame memory network instances',uiUx:'Roblox ScreenGui touch-first interaction layout',saveAndNetwork:'DataStore and validated remote network boundaries',platformContentAdaptation:'Roblox native avatar camera scene and UI adaptation',internalReleaseTarget:'Private restricted Roblox owner playtest experience',validationEvidence:'Exact Roblox runtime independent QA regression evidence'}}}};
+const companyAssetLibrary=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
+
+function writeLegacyStudioUnboundTree(root){
+  fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  fs.writeFileSync(path.join(root,'default.project.json'),JSON.stringify(projectJsonForGame(gameId),null,2)+'\n');
+  fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),`local Config = {
+  PolicySource = "company-learning/platform-release-roadmap.json",
+  Platform = "ROBLOX",
+  MobileFirst = true,
+  GameId = "${gameId}",
+  GameName = "Pocket Foundry",
+  Genre = "Simulation",
+  PlayMode = "SINGLE",
+  MultiplayerRequired = false,
+  RemoteName = "GameAction",
+  RateLimitSeconds = 0.1,
+}
+return table.freeze(Config)
+`);
+  fs.writeFileSync(path.join(root,'server','Game.server.luau'),'-- existing authoritative gameplay server source\n');
+  fs.writeFileSync(path.join(root,'client','Game.client.luau'),`local Players=game:GetService("Players")
+local RS=game:GetService("ReplicatedStorage")
+local p=Players.LocalPlayer
+local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local gui=Instance.new("ScreenGui")
+gui.Parent=p:WaitForChild("PlayerGui")
+local root=Instance.new("Frame")
+root.BackgroundColor3=Color3.fromRGB(30,40,50)
+root.Parent=gui
+`);
+}
 
 function writeCompiledTree(root){
   const compiled=compileRobloxSource({gameId,gameName:'Pocket Foundry',baseline,artbook:{}});
@@ -226,4 +259,77 @@ test('existing source reconciliation refuses malformed source instead of advanci
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+
+test('existing Roblox source automatically enters rebind when company library binding is missing even without source drift',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-rebind-detect-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={
+      ...staleItem(),
+      currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      robloxSourceCommit:revision,
+    };
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+    assert.equal(rows[0].studioAssetBinding.libraryVersion,companyAssetLibrary.version);
+    assert.ok(rows[0].blockers.includes('ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox library rebind preserves gameplay server and updates only config plus client presentation binding',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-rebind-apply-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    const serverFile=path.join(root,'server','Game.server.luau');
+    const serverBefore=fs.readFileSync(serverFile,'utf8');
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    assert.equal(applied.existingSourcePreserved,true);
+    assert.equal(applied.gameplayAuthorityChanged,false);
+    assert.equal(applied.serverSourceChanged,false);
+    assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
+    const config=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(config,/STUDIO_ASSET_BINDING_BEGIN/);
+    assert.match(config,/StudioAssets\s*=\s*\{/);
+    assert.match(config,new RegExp('LibraryVersion\\s*=\\s*'+companyAssetLibrary.version));
+    assert.match(client,/STUDIO_ASSET_BINDING_CLIENT_BEGIN/);
+    assert.match(client,/C\.StudioAssets/);
+    assert.match(client,/StudioAssetFramePanel/);
+    assert.match(client,/StudioAssetAtoms/);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    const configAgain=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    const clientAgain=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.equal((configAgain.match(/STUDIO_ASSET_BINDING_BEGIN/g)||[]).length,1);
+    assert.equal((clientAgain.match(/STUDIO_ASSET_BINDING_CLIENT_BEGIN/g)||[]).length,1);
+    assert.equal((clientAgain.match(/StudioAssetFramePanel/g)||[]).length,1);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('Roblox runtime workflow watches library changes and routes existing sources through the same source PR lane',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/company-asset-library\.json/);
+  assert.match(workflow,/company-development-roblox-source-reconcile\.mjs/);
+  assert.match(workflow,/existingSourceAssetRebind/);
+  assert.match(workflow,/existing-source-studio-asset-binding-required/);
+  assert.match(workflow,/ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS/);
 });
