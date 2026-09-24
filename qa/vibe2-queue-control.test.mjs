@@ -1450,3 +1450,40 @@ test('unverified failure may retry but cannot receive neural gated mutation mark
   assert.equal(task.evidence.some(value=>value.startsWith('neural-gated-execution:')),false);
   assert.equal(merged.applied[0].retryStrategy,null);
 });
+
+
+test('verified gated root cause reprioritizes retry and changes strategy',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'gated-repair',gameId:'gated',target:'web',department:'development',type:'implementation',
+    goal:'repair source generation',status:'running',priority:'normal',sourceRoot:'web-games/gated',
+    responsibleFiles:['index.html'],retries:0,maxRetries:2,
+    reservationId:'gated-run:1',reservationRunId:'gated-run'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'gated-repair',reservationId:'gated-run:1',variant:'primary',outcome:'FAIL',
+    blocker:'parallel-candidate-generation-failed',
+    candidateFailure:{class:'EDIT_MATCH',message:'anchor mismatch'},
+    neuralDiagnosis:{
+      inhibitors:[],
+      responsibility:{system:'SOURCE_GENERATION',confidence:1,basis:'TEST'},
+      actionRecommendation:{failureStage:'SOURCE_CANDIDATE_GENERATION'}
+    },
+    evidence:[
+      'causal-replay-prepatch-reproduced:YES',
+      'causal-replay-executed:YES',
+      'causal-replay-status:EXECUTED_PASS',
+      'role-result:regression:PASS',
+      'role-result:review:PASS',
+      'verified-responsible-system:SOURCE_GENERATION'
+    ]
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='gated-repair');
+  assert.equal(task.status,'queued');
+  assert.equal(task.priority,'high');
+  assert.ok(task.evidence.includes('neural-gated-retry-strategy:EDIT_MATCH'));
+  assert.ok(task.evidence.includes('retry-strategy-must-change-after:EDIT_MATCH'));
+  assert.ok(task.evidence.includes('neural-gated-queue-reprioritized:HIGH'));
+  assert.ok(task.evidence.includes('neural-gated-worker-refill-eligible'));
+  assert.equal(merged.applied[0].gatedAction,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
+  assert.equal(merged.applied[0].retryStrategy,'EDIT_MATCH');
+});
