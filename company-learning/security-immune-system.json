@@ -1,5 +1,5 @@
 {
-  "version": 45,
+  "version": 46,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -690,7 +690,7 @@
     "failureAction": "BLOCK_SPECIALIZED_LEARNING_PROMOTION_AND_KEEP_GAME_RELEASE_DECISION_SEPARATE_UNLESS_EXISTING_RELEASE_GATE_ALSO_FAILS"
   },
   "robloxStudioAssetBindingSecurity": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.robloxSelectionHandoff",
     "protections": {
       "plannerMaySelectAndHandoffOnly": true,
@@ -702,8 +702,13 @@
       "runtimePassRequiredBeforeVerifiedAssetPromotion": true,
       "targetEngineRuntimePassRequiredBeforePositiveMastery": true,
       "exactSourceArtifactAndPlaceVersionBindingRequired": true,
-      "gameplayBalanceSaveProgressionEconomyAndNetworkAuthorityMutationForbiddenForAssetReasons": true
+      "gameplayBalanceSaveProgressionEconomyAndNetworkAuthorityMutationForbiddenForAssetReasons": true,
+      "openCloudPublishMayNotCompleteVibeTask": true,
+      "f9ExactReviewRequiredBeforeVibeTaskPass": true,
+      "f9FanInMustMatchGameAndWaitingRuntimeEvidence": true,
+      "assetMasteryRequiresStudioAssetRuntimeBindingPass": true,
+      "genericRobloxRuntimePassAloneInsufficientForAssetProductionOrAdaptationMastery": true
     },
-    "failureAction": "ASSET_REPAIR_REQUIRED"
+    "failureAction": "KEEP_VIBE_TASK_RUNTIME_QA_PENDING_OR_ASSET_REPAIR_REQUIRED"
   }
 }
