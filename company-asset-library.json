@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -3723,12 +3723,12 @@
     }
   },
   "baseMaterialRotation": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_AUTOMATIC_ROTATION",
     "scheduler": ".github/workflows/vibe2-24h-runner.yml",
     "usesExistingGapFill": true,
     "hardDeleteForbidden": true,
-    "retirementMode": "REMOVE_FROM_ACTIVE_SELECTION_PRESERVE_LINEAGE",
+    "retirementMode": "REMOVE_BROKEN_DUPLICATE_OR_STALE_FROM_PRODUCTION_ACTIVE_POOL_PRESERVE_LINEAGE",
     "triggers": [
       "DUPLICATE_IDENTITY",
       "VERIFIED_RUNTIME_FAILURE",
@@ -3759,6 +3759,19 @@
       "requiresCauseFixed": true,
       "requiresCompatibilityRecheck": true,
       "verifiedAssetRequiresNativeRuntimeReverification": true
-    }
+    },
+    "learningGraduationMode": "MASTERED_MATERIAL_LEAVES_LEARNING_EXPANSION_POOL_BUT_REMAINS_PRODUCTION_REUSABLE",
+    "retirementTriggers": [
+      "DUPLICATE_IDENTITY",
+      "VERIFIED_RUNTIME_FAILURE",
+      "COMPATIBILITY_FAILURE_REPEAT_2",
+      "STALE_UNUSED_30_CYCLES"
+    ],
+    "graduationTrigger": "VERIFIED_MASTERY_SATURATED",
+    "masteryThreshold": 90,
+    "masteryVerifiedPassMinimum": 2,
+    "masteredMaterialRemainsProductionReusable": true,
+    "masteredMaterialCreatesNewDiversityRefillSlot": true,
+    "maxGraduatePerFamilyPerCycle": 2
   }
 }
