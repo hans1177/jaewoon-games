@@ -1,5 +1,5 @@
 {
-  "version": 47,
+  "version": 48,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -838,7 +838,7 @@
     "existingCanonicalLearningMotorOnly": true
   },
   "verifiedSpecializedQueueEvidenceIngressContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
     "implementation": "tools/vibe2-learning-motor.mjs",
     "correlationKeys": [
@@ -847,7 +847,9 @@
       "RUN_ID",
       "SPECIALIZED_OUTCOME_ID",
       "OUTCOME_DIRECTION",
-      "VERIFIED_MARKERS"
+      "VERIFIED_MARKERS",
+      "TARGET_PLATFORM",
+      "TARGET_ENGINE_QA_REFERENCE"
     ],
     "requiredEvidence": [
       "TERMINAL_TASK_STATUS",
@@ -856,7 +858,10 @@
       "SOURCE_RUN_REFERENCE",
       "SPECIALIZED_OUTCOME_ID",
       "CANONICAL_EXPERIENCE_PERSISTENCE_RESULT",
-      "MASTERY_APPLICATION_RESULT"
+      "MASTERY_APPLICATION_RESULT",
+      "TARGET_ENGINE_QA_REFERENCE_WHEN_NATIVE",
+      "NATIVE_QA_RECHECK_RESULT",
+      "UEFN_BLOCK_REASON_WHEN_TARGET"
     ],
     "onePositiveAndOneNegativeMaximumPerTask": true,
     "infrastructureFailureNegativeLearningForbidden": true,
@@ -880,7 +885,10 @@
     "distinctVerifiedOutcomeIdMayReinforceConfidence": true,
     "canonicalExperienceStore": ".vibe2/experience.json",
     "sameCycleRetrievalUsesMergedExperience": true,
-    "authorityExpansion": false
+    "authorityExpansion": false,
+    "nativePositiveWithoutMatchingTargetQaMustBeIgnored": true,
+    "nativeTargetProofMustPersistAsSanitizedReference": true,
+    "uefnPositiveMustRemainBlockedWithoutAuthoritativeExecutorEvidenceContract": true
   },
   "specializedVerifiedQueueEvidenceContract": {
     "version": 1,
