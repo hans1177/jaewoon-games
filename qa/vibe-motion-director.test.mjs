@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {
   MOTION_DIRECTOR_TARGET,
   MOTION_COMPOSITION_CHANNELS,
@@ -17,6 +20,9 @@ import {
   mutateMotionVariant,
   createVariationMemory,
   createSpeciesSignature,
+  createCreatureMotionSetProfile,
+  motionSetToCandidates,
+  estimateMotionCombinationSpace,
   createMotionDirectorPlan
 } from '../assets/vibe-motion-director.js';
 
@@ -179,4 +185,62 @@ test('motion director plan composes systems and remains presentation-only',()=>{
   assert.equal(plan.continuousExpansion,true);
   assert.equal(plan.noArtificialCombinationCap,true);
   assert.equal(plan.gameplayAuthority,false);
+});
+
+
+test('company motion bootstrap seeds diverse creature sets without false verified claims',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.motionBootstrap.status,'PREPARED_SEMANTIC_LIBRARY');
+  assert.equal(registry.motionBootstrap.productionVerified,false);
+  assert.equal(registry.motionBootstrap.sets.length>=8,true);
+  const ids=new Set(registry.motionBootstrap.sets.map(row=>row.id));
+  for(const id of ['goblin-small-biped','minotaur-heavy-biped','wolf-quadruped','bear-heavy-quadruped','spider-arachnid','snake-serpent','flying-predator','golem-heavy']){
+    assert.equal(ids.has(id),true);
+  }
+  const minotaur=registry.motionBootstrap.sets.find(row=>row.id==='minotaur-heavy-biped');
+  assert.ok(minotaur.attacks.includes('MINOTAUR_HORN_GORE'));
+  assert.ok(minotaur.reactions.includes('MINOTAUR_WALL_IMPACT'));
+  assert.ok(minotaur.deaths.includes('MINOTAUR_HEAVY_COLLAPSE'));
+  const spider=registry.motionBootstrap.sets.find(row=>row.id==='spider-arachnid');
+  assert.ok(spider.locomotion.includes('SPIDER_CEILING_CRAWL'));
+  assert.ok(spider.deaths.includes('SPIDER_LEGS_CURL_DEATH'));
+});
+
+test('prepared creature set expands into Motion DNA candidates but remains unverified',()=>{
+  const profile=createCreatureMotionSetProfile({
+    id:'goblin',
+    archetype:'GOBLIN',
+    bodyPlan:'SMALL_HUMANOID_BIPED',
+    rigProfile:'HUMANOID',
+    weightClass:'LIGHT_FAST',
+    locomotion:['GOBLIN_RUN'],
+    attacks:['GOBLIN_SLASH'],
+    reactions:['GOBLIN_HIT'],
+    signature:['GOBLIN_SLASH'],
+    compatibleStyles:['CARTOON','STYLIZED_FANTASY']
+  });
+  assert.equal(profile.productionVerified,false);
+  const candidates=motionSetToCandidates(profile,'ROBLOX','CARTOON');
+  assert.equal(candidates.length,3);
+  const attack=candidates.find(row=>row.id==='GOBLIN_SLASH');
+  assert.equal(attack.dna.BODY_PLAN,'SMALL_HUMANOID_BIPED');
+  assert.equal(attack.dna.PLATFORM_VARIANT,'ROBLOX');
+  assert.equal(attack.dna.STYLE_FAMILY,'CARTOON');
+  assert.equal(attack.preparedSemanticOnly,true);
+});
+
+test('motion combination estimator reports theoretical space without artificial cap',()=>{
+  const space=estimateMotionCombinationSpace({
+    layers:{
+      locomotion:['walk','run','dash'],
+      upperBody:['slash','stab','guard','cast'],
+      headGaze:['target','scan']
+    },
+    styleVariants:['cartoon','dark'],
+    reactionVariants:['light','heavy','wall'],
+    pairVariants:['none','throw']
+  });
+  assert.equal(space.theoreticalCombinationCount,288);
+  assert.equal(space.artificialCapApplied,false);
 });
