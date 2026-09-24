@@ -81,6 +81,29 @@ local Config = {
     { Id = "scope-coreloop-3-133b4afeb9", Label = "생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.", Kind = "MOVEMENT", Order = 6, LearningPattern = "ads-monetization" },
     { Id = "scope-mobileux-4d98ef9e2d", Label = "한 손 조작이 가능한 가상 조이스틱 기반의 이동과, 자동 공격/수동 스킬 발동의 하이브리드 방식을 채택합니다. 짧은 세션(5-10분)에 최적화된 UI 배치로 이동 중에도 쾌적한 플레이를 지원합니다.", Kind = "COMBAT", Order = 7, LearningPattern = "short-session" },
   },
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 
 return table.freeze(Config)
