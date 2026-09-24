@@ -65,6 +65,44 @@ test('web-only assets are never reused directly by Unity or Roblox',()=>{
   assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
 });
 
+
+test('native asset plan prefers verified company library then repository then external gap fill',()=>{
+  const root=tempRoot();
+  try{
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[{
+        id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
+        path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity']
+      }],
+      externalSources:[{id:'external-source'}]
+    },null,2));
+    const manifest={version:1,assets:[
+      {id:'repo-ui',path:'unity-games/demo/Assets/UI/repo.png',types:['ui'],tags:['UI'],license:'project-original'},
+      {id:'external-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',source:'KayKit',sourceUrl:'https://example.invalid/ui',downloaded:false,platforms:['unity']}
+    ]};
+    const plan=buildVibeAssetProductionPlan({
+      task:{gameId:'demo',goal:'UI 그래픽 개선'},target:'unity',repoRoot:root,
+      manifest,presetCatalog:{version:1,presets:[]}
+    });
+    const row=plan.decisions.find(item=>item.type==='ui');
+    assert.ok(row);
+    assert.deepEqual(row.companyCandidates.map(item=>item.id),['company-ui']);
+    assert.deepEqual(row.repositoryCandidates.map(item=>item.id),['repo-ui']);
+    assert.deepEqual(row.externalCandidates.map(item=>item.id),['external-ui']);
+    assert.deepEqual(row.reuseCandidates.map(item=>item.id),['company-ui','repo-ui']);
+    assert.deepEqual(row.decisionOrder.slice(0,3),[
+      'REUSE_VERIFIED_COMPANY_ASSET',
+      'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
+      'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'
+    ]);
+    assert.equal(plan.summary.companyCandidateTypes>0,true);
+    assert.equal(plan.summary.externalCandidateTypes>0,true);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
 test('native presentation pass is available to every confirmed project while the first adoption keeps owner priority',()=>{
   const root=tempRoot();
   try{
