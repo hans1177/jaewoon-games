@@ -154,10 +154,10 @@ test('development planner binds adaptive world and narrative work into existing 
   assert.ok(characterTask);
   assert.ok(worldTask);
   assert.ok(verifyTask);
-  assert.match(narrativeTask.instruction,/story-transition history/i);
-  assert.match(characterTask.instruction,/faction membership\/relationships/i);
-  assert.match(worldTask.instruction,/faction relationships/i);
-  assert.match(verifyTask.instruction,/duplicate-transition idempotency/i);
-  assert.match(verifyTask.instruction,/faction relationship persistence/i);
+  assert.match(narrativeTask.reason,/story-transition history/i);
+  assert.match(characterTask.reason,/faction membership\/relationships/i);
+  assert.match(worldTask.reason,/faction relationships/i);
+  assert.match(verifyTask.reason,/duplicate-transition idempotency/i);
+  assert.match(verifyTask.reason,/faction relationship persistence/i);
   assert.ok(context.patchPlan.forbidden.includes('UNAUTHORIZED_EXTERNAL_SOURCE_ASSET_OR_TEXT_COPY'));
 });
