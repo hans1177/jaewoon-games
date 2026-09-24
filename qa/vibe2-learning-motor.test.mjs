@@ -1219,12 +1219,12 @@ test('verified specialized queue evidence enters canonical mastery once and igno
     {
       id:'world-fail',gameId:'world-g2',target:'web',status:'failed',
       goal:'월드 도달성과 스트리밍 실패',
-      evidence:['VERIFIED_NAVIGATION_REACHABILITY_FAILURE','VERIFIED_STREAMING_HITCH','actions-run:7003']
+      evidence:['VERIFIED_NAVIGATION_REACHABILITY_FAILURE','VERIFIED_STREAMING_HITCH','specialized-negative-verification:FAIL','specialized-negative-authority:RUNTIME_QA','actions-run:7003']
     },
     {
       id:'infra-fail',gameId:'world-g3',target:'web',status:'failed',
       goal:'러너 장애',
-      evidence:['VERIFIED_STREAMING_HITCH','infrastructure-failure:YES','actions-run:7004']
+      evidence:['VERIFIED_STREAMING_HITCH','specialized-negative-verification:FAIL','specialized-negative-authority:RUNTIME_QA','infrastructure-failure:YES','actions-run:7004']
     },
     {
       id:'not-terminal',gameId:'story-g2',target:'web',status:'queued',
@@ -1469,4 +1469,36 @@ test('non-game system target cannot enter specialized game mastery even with fin
   }]});
   assert.equal(extracted.positive,0);
   assert.equal(extracted.records.length,0);
+});
+
+
+test('specialized negative markers require explicit verified failure provenance and game target',()=>{
+  const markerOnly=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'negative-marker-only',gameId:'g-neg',target:'web',status:'failed',goal:'navigation failure',
+    evidence:['VERIFIED_NAVIGATION_REACHABILITY_FAILURE','actions-run:9201']
+  }]});
+  assert.equal(markerOnly.negative,0);
+  assert.equal(markerOnly.records.length,0);
+
+  const wrongAuthority=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'negative-wrong-authority',gameId:'g-neg',target:'web',status:'failed',goal:'navigation failure',
+    evidence:['VERIFIED_NAVIGATION_REACHABILITY_FAILURE','specialized-negative-verification:FAIL','specialized-negative-authority:UNKNOWN','actions-run:9202']
+  }]});
+  assert.equal(wrongAuthority.negative,0);
+
+  const valid=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'negative-valid',gameId:'g-neg',target:'web',status:'failed',goal:'navigation failure',
+    evidence:['VERIFIED_NAVIGATION_REACHABILITY_FAILURE','specialized-negative-verification:FAIL','specialized-negative-authority:FOCUSED_QA','actions-run:9203']
+  }]});
+  assert.equal(valid.negative,1);
+  assert.equal(valid.records.length,1);
+  assert.ok(valid.records[0].evidence.includes('specialized-negative-verification:FAIL'));
+  assert.ok(valid.records[0].evidence.includes('specialized-negative-authority:focused_qa'));
+
+  const nonGame=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'negative-system',gameId:'system',target:'system',status:'failed',goal:'world route system test',
+    evidence:['VERIFIED_NAVIGATION_REACHABILITY_FAILURE','specialized-negative-verification:FAIL','specialized-negative-authority:RUNTIME_QA','actions-run:9204']
+  }]});
+  assert.equal(nonGame.negative,0);
+  assert.equal(nonGame.records.length,0);
 });
