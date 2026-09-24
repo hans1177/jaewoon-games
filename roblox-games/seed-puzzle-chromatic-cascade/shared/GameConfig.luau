@@ -80,6 +80,29 @@ local Config = {
     { Id = "scope-coreloop-2-dfaecf820e", Label = "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.", Kind = "PROGRESSION", Order = 5, LearningPattern = "save-state-persistence" },
     { Id = "scope-mobileux-62f2f81cf4", Label = "한 손 조작이 가능하도록 주요 조작 버튼과 보드를 화면 하단 및 중앙에 집중 배치합니다. 햅틱 피드백을 적극 활용하여 노드를 튜닝하거나 폭발시킬 때 손끝으로 전해지는 타격감을 극대화합니다.", Kind = "COMBAT", Order = 6, LearningPattern = "ads-monetization" },
   },
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 
 return table.freeze(Config)
