@@ -85,6 +85,13 @@ function rootCauseIndependentEvent(event={}){
   return ['POLICY_CHANGE','RESOURCE_OR_LOCK_CHANGE'].includes(clean(event?.type).toUpperCase());
 }
 
+function eventAllowsGatedMutation(event={}){
+  if(rootCauseIndependentEvent(event))return true;
+  const outcome=clean(event?.outcome).toUpperCase();
+  if(!outcome)return true;
+  return !['PASS','SUCCESS','VERIFIED','APPROVED','DONE'].includes(outcome);
+}
+
 function collectInhibitors({
   event,
   diagnosis,
@@ -134,6 +141,7 @@ export function simulateNeuralEventRoute({
     gatedExecutionEnabled===true
     &&GATED_ACTIONS.has(proposedAction.kind)
     &&normalizedEvent.type!=='UNKNOWN'
+    &&eventAllowsGatedMutation(normalizedEvent)
     &&nonAuthorityInhibitors.length===0;
   const workerCreationAllowed=gatedActionAllowed&&['PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR','PREPARE_DIAGNOSTIC_REVALIDATION'].includes(proposedAction.kind);
   const queueMutationAllowed=gatedActionAllowed;
