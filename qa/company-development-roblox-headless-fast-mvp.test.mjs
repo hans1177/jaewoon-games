@@ -130,3 +130,11 @@ test('Roblox F0 runs all eligible games in parallel up to GitHub matrix capacity
   assert.match(workflow,/group: company-development-roblox-f0-source-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.doesNotMatch(workflow,/max-parallel:\s*6/);
 });
+
+test('F0 persistence replays per-game patches without global writer serialization',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/roblox-f0-runtime-patch\.json/);
+  assert.match(workflow,/ROBLOX_F0_RUNTIME_STATE_ALREADY_APPLIED=YES/);
+});
