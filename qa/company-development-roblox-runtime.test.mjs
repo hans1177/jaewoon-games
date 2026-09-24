@@ -519,7 +519,9 @@ test('central Roblox policy keeps build-through-final-promotion parallel and exa
   assert.equal(policy?.mode,'PARALLEL_FROM_BUILD_THROUGH_FINAL_PROMOTION');
   assert.equal(policy?.maxParallelGames,256);
   assert.equal(policy?.crossGameStageBarrierForbidden,true);
-  assert.equal(policy?.statePersistenceSerializationOnly,true);
+  assert.equal(policy?.statePersistenceSerializationOnly,false);
+  assert.equal(policy?.statePersistenceConflictSafeReplayRequired,true);
+  assert.equal(policy?.crossGameRuntimeJsonRebaseForbidden,true);
   assert.equal(policy?.exactEvidenceReuse?.serverBootEvidenceMayBeReusedWithoutReboot,true);
   assert.equal(policy?.exactEvidenceReuse?.exactRuntimeHarnessRequired,true);
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
