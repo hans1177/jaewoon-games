@@ -1130,7 +1130,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'Return exactly one JSON object with exactly one key named "replace".',
       'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
-      presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, and gameplay-only changes are invalid.':'',
+      presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
       robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: the fixed anchor must be treated as presentation-owned source. Change native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI while preserving gameplay numbers and save/progression semantics.':'',
       presentationDeltaFailure?'This recovery is specifically for a PRESENTATION_PATCH_DELTA failure. Do not return another nonvisual candidate.':'',
       robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: produce an observable native visual delta at this exact client/visual owner anchor.':'',
