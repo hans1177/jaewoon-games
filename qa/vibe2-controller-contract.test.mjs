@@ -845,7 +845,7 @@ test('explicit work-order output path overrides runtime default path',()=>{
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:256,tasks:[]}), 'utf8');
-  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:256}), 'utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:256}), 'utf8');
   fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}), 'utf8');
   fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
 
