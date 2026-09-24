@@ -9093,7 +9093,11 @@
       "NPC_BEHAVIOR",
       "MONSTER_BEHAVIOR_PERSONALITY",
       "WORLD_NARRATIVE_BINDING",
-      "CHARACTER_BEHAVIOR"
+      "CHARACTER_BEHAVIOR",
+      "CHARACTER_PERSONA",
+      "RELATIONSHIP_MEMORY",
+      "COMPANION_AI",
+      "WORLD_NARRATIVE"
     ],
     "storyEngine": {
       "requiredWhenNarrativeIsMaterial": true,
@@ -9276,7 +9280,18 @@
       "behaviorIntentMayVaryByPersonality": true,
       "gameplayAuthority": false,
       "authoritativeActionsMustResolveThroughDeclaredGameApis": true,
-      "serverAuthorityPreservedForNetworkedGameplay": true
+      "serverAuthorityPreservedForNetworkedGameplay": true,
+      "behaviorIntentLayers": [
+        "SOCIAL",
+        "COMBAT",
+        "TRAVEL",
+        "RISK",
+        "ALLY_PROTECTION",
+        "RETREAT",
+        "INITIATIVE",
+        "CONTEXTUAL_DIALOGUE"
+      ],
+      "authoritativeAiActionMustPassGameplayAiApi": true
     },
     "relationshipMemory": {
       "enabled": true,
@@ -9346,6 +9361,16 @@
         "NPC_INITIATIVE_CONSISTENCY",
         "MONSTER_PERSONALITY_BEHAVIOR",
         "WORLD_STORY_STATE_CONSISTENCY"
+      ],
+      "learningDomains": [
+        "STORYTELLING",
+        "NARRATIVE_STRUCTURE",
+        "QUEST_DESIGN",
+        "CHARACTER_ARC",
+        "DIALOGUE",
+        "CHARACTER_PERSONA",
+        "RELATIONSHIP_MEMORY",
+        "WORLD_NARRATIVE"
       ]
     }
   },
@@ -15614,7 +15639,13 @@
             "VFX",
             "AUDIO_FEEL",
             "CAMERA_LANGUAGE",
-            "ENVIRONMENT_COMPOSITION"
+            "ENVIRONMENT_COMPOSITION",
+            "ASSET_PRODUCTION",
+            "CONCEPT_DIRECTION",
+            "WORLD_GENERATION",
+            "LEVEL_DESIGN",
+            "NAVIGATION",
+            "STREAMING"
           ],
           "positiveLearningRequiresVerifiedRuntimePass": true,
           "verifiedFailureMayTeachAvoidPattern": true,
@@ -15848,8 +15879,208 @@
               "STREAMING_OPTIMIZATION"
             ],
             "positiveMasteryRequiresVerifiedProjectOutcome": true,
-            "verifiedFailureMayTeachAvoidPattern": true
+            "verifiedFailureMayTeachAvoidPattern": true,
+            "verifiedMemorySignals": [
+              "PLAYER_ROUTE_USAGE",
+              "NAVIGATION_FAILURE",
+              "SOFTLOCK",
+              "ENCOUNTER_SPACE_OUTCOME",
+              "PERFORMANCE",
+              "VISUAL_COHESION",
+              "RESOURCE_DISTRIBUTION_DEFECT",
+              "LANDMARK_DISCOVERY_RATE",
+              "ROUTE_ABANDONMENT",
+              "REVISIT_USE",
+              "STREAMING_HITCH",
+              "MOBILE_FRAME_COST"
+            ]
+          },
+          "genreWorldGrammar": {
+            "enabled": true,
+            "genreFamilies": [
+              "SURVIVAL",
+              "RPG",
+              "ACTION_RPG",
+              "ROGUELIKE",
+              "DEFENSE",
+              "TYCOON",
+              "OPEN_WORLD",
+              "DUNGEON",
+              "PUZZLE",
+              "CASUAL",
+              "HORROR",
+              "SIMULATION"
+            ],
+            "grammarChannels": [
+              "MAIN_ROUTE",
+              "OPTIONAL_ROUTE",
+              "SAFE_ZONE",
+              "DANGER_ZONE",
+              "RESOURCE_ZONE",
+              "ENCOUNTER_SPACE",
+              "LANDMARK",
+              "SETTLEMENT",
+              "DUNGEON",
+              "SHORTCUT",
+              "REVISIT",
+              "SIGHTLINE",
+              "VERTICALITY"
+            ],
+            "genreGrammarGuidesGenerationButLockedGameRulesWin": true,
+            "sameMacroPatternAcrossAllGenresForbidden": true
           }
+        },
+        "systems": [
+          "GAME_VISUAL_DNA",
+          "ASSET_LOADOUT_SELECTOR",
+          "VERIFIED_USAGE_FEEDBACK",
+          "FUTURE_DEMAND_FORECAST",
+          "CREATURE_SPECIES_BLUEPRINT",
+          "PLATFORM_VARIANT_OPTIMIZER",
+          "STUDIO_TESTBED",
+          "GENRE_WORLD_GRAMMAR"
+        ],
+        "gameVisualDna": {
+          "enabled": true,
+          "purpose": "PERSIST_GAME_SPECIFIC_VISUAL_CONCEPT_WORLD_MOTION_UI_AUDIO_AND_NARRATIVE_PRESENTATION_IDENTITY_ACROSS_ITERATIONS",
+          "fields": [
+            "GAME_ID",
+            "CONCEPT_BLEND",
+            "STYLE_BIBLE",
+            "WORLD_DNA",
+            "BIOME_LANGUAGE",
+            "CHARACTER_LANGUAGE",
+            "CREATURE_LANGUAGE",
+            "BUILDING_LANGUAGE",
+            "MOTION_LANGUAGE",
+            "VFX_LANGUAGE",
+            "AUDIO_LANGUAGE",
+            "UI_LANGUAGE",
+            "NARRATIVE_PRESENTATION_LANGUAGE"
+          ],
+          "gameStyleLockWins": true,
+          "genericPresetMayNotOverrideGameDna": true,
+          "existingGameDnaMustBeReadBeforeVisualMutation": true,
+          "gameplayAuthority": false
+        },
+        "assetLoadoutSelector": {
+          "enabled": true,
+          "order": [
+            "VERIFIED_COMPANY_ASSET",
+            "LICENSE_VERIFIED_REPOSITORY_ASSET",
+            "LICENSE_VERIFIED_EXTERNAL_ASSET",
+            "SAFE_DERIVATION",
+            "NEW_NATIVE_AUTHORING"
+          ],
+          "scoreBy": [
+            "GAME_VISUAL_DNA_COMPATIBILITY",
+            "PLATFORM_COMPATIBILITY",
+            "BODY_RIG_MOTION_COMPATIBILITY",
+            "RUNTIME_VERIFICATION",
+            "USAGE_HISTORY",
+            "MOBILE_BUDGET",
+            "DUPLICATE_RISK"
+          ],
+          "verifiedFailurePenaltyRequired": true,
+          "colorOnlyDistinctnessForbidden": true,
+          "manualOrLockedAssetChoiceWins": true
+        },
+        "futureDemandForecast": {
+          "enabled": true,
+          "inputs": [
+            "ACTIVE_GAME_DEMAND",
+            "APPROVED_DESIGN_QUEUE",
+            "KNOWN_PLATFORM_TARGETS",
+            "CURRENT_LIBRARY_COVERAGE",
+            "VERIFIED_FAILURE_GAPS"
+          ],
+          "output": "PRIORITIZED_MISSING_ASSET_CAPABILITY_SLOTS",
+          "forecastMayPrepareSemanticWork": true,
+          "forecastMayNotSelfPromoteToVerified": true,
+          "noArtificialCategoryCap": true
+        },
+        "creatureSpeciesBlueprint": {
+          "enabled": true,
+          "inputs": [
+            "BODY_PLAN",
+            "SPECIES",
+            "CONCEPT",
+            "SILHOUETTE",
+            "LOCOMOTION",
+            "ATTACK_LANGUAGE",
+            "SIGNATURE_SKILL",
+            "AUDIO_IDENTITY",
+            "HIT_DEATH_IDENTITY",
+            "PLATFORM"
+          ],
+          "meaningfulIdentityRequired": true,
+          "colorOnlySpeciesVariantForbidden": true,
+          "gameplayStatsRemainDesignOwned": true
+        },
+        "platformVariantOptimizer": {
+          "enabled": true,
+          "platforms": [
+            "UNITY",
+            "ROBLOX"
+          ],
+          "mayAdapt": [
+            "LOD",
+            "MESH_DENSITY",
+            "MATERIAL_COMPLEXITY",
+            "TEXTURE_BUDGET",
+            "PARTICLE_BUDGET",
+            "AUDIO_VARIANT_BUDGET",
+            "MOTION_LOD",
+            "LIGHTING_COMPLEXITY"
+          ],
+          "mustPreserve": [
+            "GAMEPLAY_SPEED",
+            "HITBOX_SEMANTICS",
+            "DAMAGE",
+            "COOLDOWN",
+            "SAVE_MEANING",
+            "PROGRESSION",
+            "NETWORK_AUTHORITY",
+            "STYLE_IDENTITY"
+          ],
+          "runtimeVerificationRequiredPerPlatform": true
+        },
+        "studioTestbed": {
+          "enabled": true,
+          "scenarios": [
+            "DEFAULT_LIGHT",
+            "LOW_LIGHT",
+            "COMBAT_CLOSE",
+            "COMBAT_CROWD",
+            "RAIN_OR_WEATHER",
+            "MOBILE_LOW_BUDGET",
+            "LOD_DISTANCE",
+            "NAVIGATION_AND_COLLISION",
+            "MOTION_CONTACT",
+            "UI_READABILITY"
+          ],
+          "purpose": "VERIFY_ASSET_MOTION_WORLD_AND_STYLE_BEFORE_OR_DURING_GAME_BINDING_WITHOUT_GRANTING_PRODUCTION_PASS",
+          "actualGameRuntimeStillRequiredForFinalPromotion": true,
+          "testbedPassAloneCannotPromoteCompanyAsset": true
+        },
+        "verifiedUsageFeedback": {
+          "enabled": true,
+          "signals": [
+            "ASSET_USAGE_COUNT",
+            "GAME_CONSUMER_COUNT",
+            "CONTEXT_SELECTION",
+            "RUNTIME_PASS",
+            "RUNTIME_FAILURE",
+            "IDENTITY_QA",
+            "STYLE_QA",
+            "NAVIGATION_QA",
+            "MOBILE_FRAME_COST",
+            "PLAYER_VISIBLE_DEFECT"
+          ],
+          "positiveLearningRequiresVerifiedRuntimePass": true,
+          "negativeLearningRequiresVerifiedFailureCause": true,
+          "rawTelemetryDirectTrainingForbidden": true,
+          "existingCanonicalLearningChainOnly": true
         }
       }
     }
