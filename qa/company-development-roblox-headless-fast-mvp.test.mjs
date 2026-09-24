@@ -122,3 +122,26 @@ test('daechung-rpg runtime foundation survives late player binding and transient
  assert.match(client,/local foundationRoundtrip=false/);
  assert.match(client,/for _=1,20 do[\s\S]*foundationRemote:FireServer\("REMOTE_PING"\)[\s\S]*task\.wait\(\.5\)/);
 });
+
+
+for(const gameId of ['horror-escape-room','territory-war']){
+ test(gameId+' exact source satisfies F0 native foundation sentinel contract',()=>{
+  const root='roblox-games/'+gameId;
+  const actualConfig=fs.readFileSync(root+'/shared/GameConfig.luau','utf8');
+  const actualServer=fs.readFileSync(root+'/server/Game.server.luau','utf8');
+  const actualClient=fs.readFileSync(root+'/client/Game.client.luau','utf8');
+  const actualProject=fs.readFileSync(root+'/default.project.json','utf8');
+  const r=inspectHeadlessSourceTexts({
+   gameId,sourcePath:root,sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:1,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+   config:actualConfig,server:actualServer,client:actualClient,project:actualProject,
+  });
+  assert.equal(r.pass,true,r.blockers.join(','));
+  assert.equal(r.checks.foundationSentinelContract,true);
+  assert.equal(r.checks.characterPhysicsGuard,true);
+  assert.equal(r.checks.f0SourceIntegrity,true);
+  for(const marker of ['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'])assert.ok(actualServer.includes(marker),gameId+' missing '+marker);
+  for(const marker of ['RuntimeFoundationReport','CameraSubject','CAMERA_READY','INPUT_READY','REMOTE_PING','REMOTE_PONG'])assert.ok(actualClient.includes(marker),gameId+' missing '+marker);
+ });
+}
