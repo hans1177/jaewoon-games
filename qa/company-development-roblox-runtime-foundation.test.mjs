@@ -349,6 +349,10 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.equal(parallel.heavyStageGlobalWorkflowSerializationForbidden,true);
   assert.equal(parallel.runtimeHarnessVersion,'9');
   assert.equal(parallel.checkoutThroughPromotionPolicy,'EACH_GAME_ADVANCES_IMMEDIATELY_WHEN_ITS_OWN_PREDECESSOR_GATE_PASSES');
+  assert.equal(parallel.orchestratorDispatchMode,'PER_GAME_EXACT_PARALLEL');
+  assert.equal(parallel.topLevelRobloxBatchHeavyExecutionForbidden,true);
+  assert.equal(parallel.perGameWorkflowStartsWithoutWaitingForOtherGames,true);
+  assert.equal(parallel.crossGameFanInMayNotGateNextHeavyStage,true);
   assert.equal(parallel.serverBootEvidenceReuse.reuseOnlyWhenExactCandidateUnchanged,true);
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
 });
