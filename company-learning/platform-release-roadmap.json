@@ -1,5 +1,5 @@
 {
-  "version": 338,
+  "version": 339,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16399,6 +16399,26 @@
           "masteredMaterialRemainsProductionReusable": true,
           "masteredMaterialCreatesNewDiversityRefillSlot": true,
           "maxGraduatePerFamilyPerCycle": 2
+        },
+        "robloxSelectionHandoff": {
+          "version": 1,
+          "order": [
+            "LIBRARY_SELECT_COMPATIBLE_MATERIALS_AND_VERIFIED_REUSE_CANDIDATES",
+            "HANDOFF_SELECTION_TO_VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION",
+            "VIBE2_VIBE3_APPLY_TO_EXISTING_RESPONSIBLE_ROBLOX_SOURCE",
+            "INCREMENTAL_STATIC_BINDING_QA",
+            "ROBLOX_TARGET_ENGINE_RUNTIME_QA",
+            "FAN_IN_REGRESSION_AND_SECURITY",
+            "VERIFIED_COMPANY_ASSET_OR_LEARNING_PROMOTION_IF_ELIGIBLE"
+          ],
+          "plannerSourceMutationForbidden": true,
+          "selectionAuthority": "GRAPHICS_PRODUCTION_INPUT_PLANNER",
+          "sourceApplicationAuthority": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION_OWNER",
+          "validationBeforeApplicationForbidden": true,
+          "markerOnlyApplicationPassForbidden": true,
+          "runtimeEvidenceRequiredBeforePromotion": true,
+          "positiveMasteryRequiresTargetEngineRuntimeEvidence": true,
+          "gameplayBalanceSaveProgressionEconomyAndNetworkAuthorityImmutable": true
         }
       }
     }
