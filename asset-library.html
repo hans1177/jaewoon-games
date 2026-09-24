@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="1">
+<html lang="ko" data-asset-library-version="2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -40,6 +40,7 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
 <section class="stats">
   <div class="stat"><b id="realCount">-</b><span>실제 repo 자산 프리뷰</span></div>
   <div class="stat"><b id="researchCount">-</b><span>연구 팩</span></div>
+  <div class="stat"><b id="externalCount">-</b><span>외부 검증 후보</span></div>
   <div class="stat"><b id="unityCount">7</b><span>Unity 라이브러리 계열</span></div>
   <div class="stat"><b id="robloxCount">7</b><span>Roblox 라이브러리 계열</span></div>
 </section>
@@ -58,6 +59,7 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
   <article class="platform"><h3>Unity</h3><p>Humanoid / Generic Rig · Animator · Blend Tree · Avatar Mask · IK 또는 Animation Rigging · Secondary Motion · LOD · 모바일 성능 스케일링.</p></article>
   <article class="platform"><h3>Roblox</h3><p>R15 호환 또는 전용 Custom Rig · Motor6D · Attachment · Animator / AnimationTrack · 모바일 예산에 맞춘 Secondary Motion.</p></article>
 </div></section>
+<section class="section"><div class="sectionHead"><div><h2>외부 검증 후보</h2><p>회사/저장소에 없는 항목을 먼저 채우는 라이선스 확인 후보 · 런타임 검증 전 회사 자산 아님</p></div></div><div class="grid" id="externalGrid"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>연구중 라이브러리</h2><p>실게임 검증 후 공용 자산으로 승격</p></div></div><div class="grid" id="researchGrid"></div></section>
 <footer class="footer">회사 그래픽 라이브러리 · production PASS 권한 없음 · 실제 게임 검증 우선</footer>
 </main>
@@ -69,11 +71,14 @@ async function load(){const r=await fetch('/company-asset-library.json?ts='+Date
 function render(){
   document.getElementById('realCount').textContent=data.assets.length;
   document.getElementById('researchCount').textContent=data.research.length;
+  document.getElementById('externalCount').textContent=(data.externalSources||[]).length;
   document.getElementById('filters').innerHTML=Object.keys(labels).map(k=>'<button class="chip '+(filter===k?'active':'')+'" data-filter="'+k+'">'+labels[k]+'</button>').join('');
   document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;render()});
   const assets=data.assets.filter(x=>filter==='ALL'||x.category===filter);
   document.getElementById('assetSummary').textContent=assets.length+'개 표시';
   document.getElementById('assetGrid').innerHTML=assets.length?assets.map(x=>'<article class="card"><div class="thumb"><img src="'+esc(x.path)+'" alt="'+esc(x.title)+'" loading="lazy"></div><div class="body"><div class="tagrow"><span class="tag real">실제 repo 자산</span><span class="tag">'+esc(x.category)+'</span><span class="tag">'+esc(x.platform)+'</span></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.note)+' · '+esc(x.license)+'</p></div></article>').join(''):'<div class="empty">이 분류의 실제 자산 프리뷰가 아직 없어.</div>';
+  const external=(data.externalSources||[]).filter(x=>filter==='ALL'||x.category===filter||(filter==='CHARACTER'&&x.category==='CREATURE'));
+  document.getElementById('externalGrid').innerHTML=external.length?external.map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">외부 후보</span><span class="tag">'+esc(x.category)+'</span><span class="tag">'+esc(x.license)+'</span></div><h3>'+esc(x.name)+'</h3><p>'+esc((x.capabilities||[]).join(' · '))+' · '+esc((x.platformTargets||[]).join('/'))+'</p></div></article>').join(''):'<div class="empty">이 분류의 외부 검증 후보가 아직 없어.</div>';
   const research=data.research.filter(x=>filter==='ALL'||x.category===filter);
   document.getElementById('researchGrid').innerHTML=research.length?research.map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">연구중</span><span class="tag">'+esc(x.platform)+'</span><span class="tag">'+esc(x.category)+'</span></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.note)+'</p></div></article>').join(''):'<div class="empty">이 분류의 연구 항목이 아직 없어.</div>';
   const c=data.motionCoverage;const rows=[['Idle',c.idleVariants+'+'],['이동 방향',c.locomotionDirections],['회전',c.turnVariants+'+'],['회피',c.dodgeVariants+'+'],['약공격 콤보',c.lightComboAttacks+'타+'],['강공격',c.heavyAttacks+'+'],['공중 공격',c.aerialAttacks+'+'],['돌진 공격',c.dashOrGapCloserAttacks+'+'],['방향 피격',c.directionalHitReactions],['피격 강도',c.hitStrengthLevels],['사망',c.deathVariants+'+'],['스킬/시전',c.skillOrCastVariants+'+']];
