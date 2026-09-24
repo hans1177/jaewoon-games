@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "shared/GameConfig.luau",
+      "find": "  GameName = \"색채의 연쇄\",",
+      "replace": "local Config = {\n  PolicySource = \"company-learning/platform-release-roadmap.json\",\n  Platform = \"ROBLOX\",\n  MobileFirst = true,\n  SaveEnabled = true,\n  GameId = \"seed-puzzle-chromatic-cascade\",\n  GameName = \"색채의 연쇄\",\n  Genre = \"Puzzle\",\n  Subgenre = \"\",\n  PlayMode = \"SINGLE\",\n  MultiplayerRequired = false,\n  CoopRequired = false,\n  CompetitiveRequired = false,\n  MinimumParticipants = 1,\n  RemoteName = \"GameAction\",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = \"MINIMUM_DUAL_PLATFORM_DESIGN_READY\",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = \"ROBLOX\",\n    InputModel = \"Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.\",\n    SessionModel = \"Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.\",\n    MultiplayerRuntime = \"single-player server boundary with local presentation; no fake multiplayer claims\",\n    PerformanceBudget = \"Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.\",\n    UiUx = \"Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.\",\n    SaveAndNetwork = \"Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.\",\n    ContentAdaptation = \"Adapt \"색채 /no\\n\"}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
