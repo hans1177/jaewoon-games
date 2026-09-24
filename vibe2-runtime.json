@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 23,
+      "runtime": 24,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -75,6 +75,18 @@
     ],
     "autonomous24hWithoutPrimaryAi": true,
     "primaryAiIsRuntimeGate": false,
+    "controlStateRecovery": {
+      "enabled": true,
+      "blankOrMissingQueueRecovery": "CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN",
+      "queueRecoveryOwners": [
+        "tools/vibe2-system-steward.mjs",
+        "tools/vibe2-queue-control.mjs"
+      ],
+      "parallelismContractVersion": 4,
+      "nonEmptyMalformedJsonFailClosed": true,
+      "centralPolicyMutation": false,
+      "gameplayOrSaveMeaningMutation": false
+    },
     "nextWorkerDirective": {
       "objective": "CONTINUE_SELF_EVOLVING_ATOMIC_NEURON_SCHEDULER_TOWARD_VERIFIED_EVENT_DRIVEN_DAG_WITH_TRUTHFUL_TELEMETRY",
       "freshnessRule": "FETCH_FRESH_MAIN_HEAD_LIVE_WORKFLOW_STATUS_AND_CONTROL_STATE_BEFORE_MUTATION; DO_NOT_ASSUME_THIS_SNAPSHOT_IS_STILL_CURRENT",
