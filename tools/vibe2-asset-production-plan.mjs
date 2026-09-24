@@ -57,7 +57,13 @@ function inferRequestedConcept(task={},request=''){
     ['STEAMPUNK',/STEAMPUNK|스팀펑크/],['POST_APOCALYPSE',/POST.?APOC|아포칼립스|폐허세계/],['PRIMITIVE',/PRIMITIVE|원시/],
     ['ANCIENT_CIVILIZATION',/ANCIENT|고대.?문명/],['MODERN_URBAN',/MODERN.?URBAN|현대.?도시/],['OCEANIC',/OCEAN|해양/],['SKY_WORLD',/SKY.?WORLD|천공/],
     ['DESERT_CIVILIZATION',/DESERT.?CIVIL|사막.?문명/],['SNOW_KINGDOM',/SNOW.?KINGDOM|설원.?왕국/],['JUNGLE_RUINS',/JUNGLE.?RUIN|밀림.?유적/],
-    ['UNDERGROUND',/UNDERGROUND|지하.?세계/],['UNDEAD',/UNDEAD|언데드/],['MECHANICAL_CIVILIZATION',/MECHANICAL.?CIVIL|기계.?문명/]
+    ['UNDERGROUND',/UNDERGROUND|지하.?세계/],['UNDEAD',/UNDEAD|언데드/],['MECHANICAL_CIVILIZATION',/MECHANICAL.?CIVIL|기계.?문명/],
+    ['INK_WASH',/INK.?WASH|수묵|먹화/],['WATERCOLOR',/WATERCOLOR|수채화/],['TOON_NOIR',/TOON.?NOIR|카툰.?누아르/],['NOIR',/NOIR|누아르/],
+    ['SOLARPUNK',/SOLARPUNK|솔라펑크/],['BIOPUNK',/BIOPUNK|바이오펑크/],['RETRO_FUTURISM',/RETRO.?FUTUR|레트로.?퓨처|복고.?미래/],
+    ['COZY',/COZY|코지|아늑/],['PAPER_CRAFT',/PAPER.?CRAFT|페이퍼.?크래프트|종이.?공예/],['VOXEL',/VOXEL|복셀/],['DREAMCORE',/DREAMCORE|드림코어/],
+    ['HISTORICAL_EAST_ASIAN',/HISTORICAL.?EAST.?ASIAN|동아시아.?역사|사극/],['SPACE_OPERA',/SPACE.?OPERA|스페이스.?오페라/],
+    ['UNDERWATER_FANTASY',/UNDERWATER.?FANTASY|수중.?판타지|해저.?판타지/],['DESERT_FANTASY',/DESERT.?FANTASY|사막.?판타지/],
+    ['MYTHIC_NORDIC',/MYTHIC.?NORDIC|노르드|북유럽.?신화/]
   ];
   for(const [family,re] of rules)if(re.test(text))found.push({family,weight:1});
   if(!found.length)found.push({family:clean(task.styleFamily||task.style)||'STYLIZED_FANTASY',weight:1});
