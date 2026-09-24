@@ -1149,6 +1149,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
   const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
+  const robloxAssetAdaptationTask=robloxPresentationTask&&/ASSET_ADAPTATION/i.test(raw);
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
   const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
   return{
@@ -1164,7 +1165,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
       presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
-      robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: the fixed anchor must be treated as presentation-owned source. The replacement must change all five domains in the patch itself: character/monster, weapon/equipment, environment/world, style/material/color/lighting, and motion/animation. Motion is mandatory. Use native Roblox composition primitives including Model/MeshPart/Attachment/Weld/Motor6D/SurfaceAppearance/Clone plus Color3/Material/Lighting and Tween/CFrame/Animation where appropriate, while preserving gameplay numbers and save/progression semantics.':'',
+      robloxAssetAdaptationTask?'ROBLOX ASSET ADAPTATION RULE: the fixed anchor must be treated as presentation-owned source. The replacement must change all five domains in the patch itself: character/monster, weapon/equipment, environment/world, style/material/color/lighting, and motion/animation. Motion is mandatory. Use native Roblox composition primitives including Model/MeshPart/Attachment/Weld/Motor6D/SurfaceAppearance/Clone plus Color3/Material/Lighting and Tween/CFrame/Animation where appropriate, while preserving gameplay numbers and save/progression semantics.':robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: change the requested native Roblox presentation behavior at this exact anchor while preserving gameplay numbers and save/progression semantics.':'',
       presentationDeltaFailure?'This recovery is specifically for a PRESENTATION_PATCH_DELTA failure. Do not return another nonvisual candidate.':'',
       robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: produce an observable native visual delta at this exact client/visual owner anchor.':'',
       'Returning the exact find anchor unchanged is invalid. Change at least one behaviorally meaningful source token while preserving unrelated behavior.',
@@ -1289,6 +1290,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const presentationDelta=/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
   const presentationShape=/PRESENTATION_PATCH_SHAPE_REQUIRED/i.test(reason);
   const robloxPresentationDelta=(presentationDelta||presentationShape)&&/Engine:\s*roblox/i.test(rawPrompt);
+  const robloxAssetAdaptation=/Engine:\s*roblox/i.test(rawPrompt)&&/ASSET_ADAPTATION/i.test(rawPrompt);
   const studioQualityDelta=studioInitial||/STUDIO_QUALITY_DELTA_REQUIRED/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
@@ -1386,7 +1388,8 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
           'Every edits[].find MUST be copied character-for-character from the matching EDITABLE FILE block and occur exactly once.',
           studioExpansion?'STUDIO_QUALITY_EVOLUTION BUILD_UP: return 3-6 connected edits with at least 3 actual source deltas. Keep each replacement concise and directly related so the package finishes within the model budget.':'',
-          (presentationDelta||presentationShape||studioExpansion&&/focus=PRESENTATION/i.test(rawPrompt))?'PRESENTATION focus: Roblox ASSET_ADAPTATION must change all five presentation domains in the candidate patch itself: character/monster, weapon/equipment, environment/world, style/material/color/lighting, and motion/animation. Motion is mandatory. Also create native composite form signals; marker-only metadata, one-line color/UI tweaks, and gameplay-only edits do not count.':'',
+          (presentationDelta||presentationShape||studioExpansion&&/focus=PRESENTATION/i.test(rawPrompt))?'PRESENTATION focus: at least 2 edits must change real visual/render/motion/camera/VFX/UI source so the rendered result can visibly differ; marker-only metadata and gameplay-only edits do not count.':'',
+          robloxAssetAdaptation&&(presentationDelta||presentationShape)?'ROBLOX ASSET_ADAPTATION COMPLETE PATCH: change all five domains in the candidate patch itself: character/monster, weapon/equipment, environment/world, style/material/color/lighting, and motion/animation. Motion is mandatory. Also create native composite form signals; one-line color/UI tweaks are invalid.':'',
           robloxPresentationDelta?'ROBLOX PRESENTATION PATCH DELTA RECOVERY: prefer an Allowed edit path owned by client/visual/render/UI/camera/VFX code before server/gameplay owners. The candidate must create an observable native visual delta, not a marker.':'',
           'Do not expand unrelated code.'
         ].filter(Boolean).join('\n'):prefix;
