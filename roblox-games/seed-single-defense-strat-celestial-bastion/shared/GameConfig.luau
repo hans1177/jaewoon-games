@@ -80,6 +80,29 @@ local Config = {
     { Id = "scope-coreloop-2-82be788ae8", Label = "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.", Kind = "COMBAT", Order = 5, LearningPattern = "save-state-persistence" },
     { Id = "scope-mobileux-3f1cbb0d73", Label = "작은 화면에서도 타워의 사거리와 지형의 높낮이를 명확히 인지할 수 있도록 UI를 배치하고, 복잡한 메뉴보다는 직관적인 아이콘과 제스처를 우선합니다.", Kind = "COMBAT", Order = 6, LearningPattern = "ads-monetization" },
   },
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 
 return table.freeze(Config)
