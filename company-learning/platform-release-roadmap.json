@@ -6511,7 +6511,9 @@
         "vibe2-runtime.json"
       ],
       "protectedSemanticsUnchanged": true,
-      "gateThresholdsUnchanged": true
+      "gateThresholdsUnchanged": true,
+      "implementationBreadthAdded": true,
+      "perpetualLoopAdded": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -20787,6 +20789,40 @@
       "fanInSerializesOnlySharedAcceptanceAndReleaseMutation": true,
       "runtimeWaitReleasesGeneralDevelopmentCapacity": true,
       "externalProviderCapacityIsBoundaryNotArtificialInternalCap": true
+    },
+    "implementationBreadth": {
+      "designIsMinimumMeaningAndConstraintContractNotImplementationCeiling": true,
+      "vibeMayExceedDesignTextInImplementationDepth": true,
+      "allowedAutonomousDepth": [
+        "IMPLEMENTATION_COMPLETENESS",
+        "ERROR_RECOVERY",
+        "INPUT_AND_UI_REFINEMENT",
+        "FEEDBACK_AND_PRESENTATION_POLISH",
+        "ANIMATION_VFX_CAMERA_AUDIO_TIMING",
+        "PERFORMANCE_OPTIMIZATION",
+        "RESPONSIBILITY_CLEANUP",
+        "REGRESSION_HARDENING",
+        "EDGE_CASE_COMPLETION"
+      ],
+      "mustPreserveApprovedGameMeaning": true,
+      "newCoreRulesRequireOwnerOrApprovedDesign": true,
+      "balanceEconomyProgressionSaveAndNetworkAuthorityChangesRequireExistingAuthority": true
+    },
+    "perpetualBuildLoop": {
+      "terminalQualityStateForbidden": true,
+      "sequence": [
+        "BUILD_UP",
+        "ERROR_REPAIR_WHEN_EVIDENCE_EXISTS",
+        "OPTIMIZE",
+        "COMPARE_TO_VERIFIED_BASELINE",
+        "BUILD_UP"
+      ],
+      "verifiedCheckpointAlwaysGeneratesOrEnablesNextCausalQualityFocus": true,
+      "noMeaningfulImprovementMeansCycleNotCountedAsEvolution": true,
+      "tinyVerifiedImprovementsAreValid": true,
+      "repeatedIdenticalChangeWithoutNewEvidenceForbidden": true,
+      "qualityWorkMayContinueAfterStrictDesignPass": true,
+      "productionAndLiveGamesRemainEligibleForContinuousImprovement": true
     }
   }
 }
