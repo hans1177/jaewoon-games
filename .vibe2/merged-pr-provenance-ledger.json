@@ -23668,11 +23668,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_fb3b0ebe6b3f1e1b41862248",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2862",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "92e2628e5b1ace38587121126663064783d5ade2",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2862,
+        "baseBranch": "main",
+        "headBranch": "assistant/vibe2-central-state-sync",
+        "baseSha": "92e2628e5b1ace38587121126663064783d5ade2",
+        "headSha": "968c0a561f3caaf7d9b4441a46ce718d58a0db11",
+        "mergeCommitSha": "6e8f2abbbd6ee2a3ab42774dd7aa41d9cdfbac62",
+        "mergedAt": "2026-09-24T21:10:25Z",
+        "authorLogin": "hans1177",
+        "titleHash": "cb50613c0603908fb526031b6a00c38dc8935116c98b28d29cbbe1aebb138806",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/vibe2-central-state-sync",
+        "candidateSha": "968c0a561f3caaf7d9b4441a46ce718d58a0db11"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 136,
+        "deletedLineCount": 46,
+        "changedFiles": [
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-handoff.test.mjs",
+          "vibe2-runtime.json"
+        ],
+        "codingRelevantFiles": [
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-handoff.test.mjs",
+          "vibe2-runtime.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2862",
+        "merge-commit:6e8f2abbbd6ee2a3ab42774dd7aa41d9cdfbac62",
+        "base-main:92e2628e5b1ace38587121126663064783d5ade2"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 190
+    "total": 191
   }
 }
