@@ -8509,6 +8509,45 @@
         "PRODUCTION_PASS_NO"
       ],
       "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-company-graphics-unity-weapon-motion-g1",
+      "gameId": null,
+      "target": "web",
+      "department": "learning",
+      "type": "research",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=WEAPON_MOTION_LIBRARY_DRILL\ndomains=LIVING_MOTION,ANIMATION_FEEL\npracticeGeneration=1\npracticeMode=WEB_ARTIFACT\ncompanyGraphicsLibrary=YES\nplatformProfile=UNITY\n소스 파일을 수정하지 않는다. 맨손·한손검·대검·창·도끼·망치·활·총·지팡이 무기별 공격 리듬을 분리한다. 약공격 콤보 3타 이상, 강공격 2종 이상, 공중/돌진/스킬 변형을 준비하고 속도 배율만 바꾼 가짜 다양화는 금지한다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "sourceRoot": "learning-practice:company-graphics-unity-weapon-motion",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:WEAPON_MOTION_LIBRARY_DRILL",
+        "practice-generation:1",
+        "learning-web-artifact-practice",
+        "company-graphics-library-24h",
+        "company-graphics-library-prepared-not-promoted",
+        "company-graphics-platform:UNITY",
+        "practice-domain:LIVING_MOTION",
+        "practice-domain:ANIMATION_FEEL"
+      ],
+      "completionCriteria": [
+        "PRACTICE_WEB_ARTIFACT_VERIFIED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO"
+      ]
     }
   ]
 }
