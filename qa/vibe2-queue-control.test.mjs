@@ -47,6 +47,29 @@ test('worker preflight requires exact live Vibe reservation identity',()=>{
   assert.ok(stale.failures.includes('RESERVATION_ID_MISMATCH'));
 });
 
+test('legacy retryable failed development work revives under unlimited causal retry',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'legacy-failed',
+    gameId:'g',
+    target:'web',
+    department:'development',
+    type:'implementation',
+    goal:'실제 구현 계속',
+    status:'failed',
+    blocker:'source-candidate-generation-failed',
+    lastOutcome:'FAIL',
+    retries:3,
+    maxRetries:2,
+    sourceRoot:'web-games/g',
+    responsibleFiles:['web-games/g/index.html']
+  }]});
+  const task=queue.tasks[0];
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(task.status,'queued');
+  assert.equal(task.blocker,'source-candidate-generation-failed');
+  assert.ok(task.evidence.includes('recovery:legacy-failed-unlimited-requeue-v1'));
+});
+
 test('legacy done state migrates to verified checkpoint and PASS never emits terminal done',()=>{
   const legacy=createVibeContinuousQueue({tasks:[{
     id:'legacy-done',gameId:'legacy',target:'web',department:'development',type:'implementation',
