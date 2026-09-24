@@ -1,5 +1,5 @@
 {
-  "version": 43,
+  "version": 44,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -812,5 +812,29 @@
     "factionRelationshipMutationWithoutSourceEventMustBeLoggedAsFailure": true,
     "duplicateFactionRelationshipSourceEventMustNotApplyDeltaTwice": true,
     "outOfRangeFactionRelationshipStateMustBeLoggedAsFailure": true
+  },
+  "existingGameWorldPatternEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.worldAndConceptLearning.existingGamePatternDistillation",
+    "correlationKeys": [
+      "GAME_ID",
+      "CANDIDATE_SHA",
+      "TARGET_PLATFORM",
+      "GENRE_FAMILY",
+      "PATTERN_SIGNATURE"
+    ],
+    "requiredEvidence": [
+      "VERIFIED_RUNTIME_OUTCOME",
+      "DISTILLED_TECHNIQUE_FIELDS",
+      "SOURCE_GAME_SCOPE",
+      "INDEPENDENT_GAME_COUNT",
+      "PASS_OR_FAILURE_DIRECTION",
+      "CROSS_GAME_REUSE_ELIGIBILITY"
+    ],
+    "exactCoordinatesTerrainMeshOrLayoutInLearningEvidenceForbidden": true,
+    "singleGameCrossGamePromotionForbidden": true,
+    "positiveCrossGameReuseRequiresTwoIndependentVerifiedGames": true,
+    "rawRuntimeTelemetryDirectTrainingForbidden": true,
+    "existingCanonicalLearningMotorOnly": true
   }
 }
