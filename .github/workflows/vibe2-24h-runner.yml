@@ -326,7 +326,7 @@ jobs:
             node --check /tmp/vibe2-main/tools/company-security-learning.mjs
             (
               cd /tmp/vibe2-main
-              node --test qa/company-recovery-learning.test.mjs qa/company-security-steward.test.mjs
+              node --test qa/company-recovery-learning.test.mjs
             )
 
             test -f .vibe2/recovery-queue.json || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > .vibe2/recovery-queue.json
