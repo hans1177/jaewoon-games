@@ -478,6 +478,9 @@ test('Roblox game source pushes route through exact changed-source sync instead 
   assert.doesNotMatch(runtimePush,/roblox-games\/\*\*/);
   assert.match(sync,/paths:\s*\n\s*- 'roblox-games\/\*\*'/);
   assert.match(sync,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id=/);
+  assert.match(runtimePush,/company-roblox-source-drift-sync\.yml/);
+  assert.match(runtimePush,/company-roblox-source-drift-sync\.mjs/);
+  assert.match(runtimePush,/company-roblox-source-drift-sync\.test\.mjs/);
 });
 
 
