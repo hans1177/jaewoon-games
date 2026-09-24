@@ -130,11 +130,9 @@ jobs:
           const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
-          const EXECUTION_BATCH_MAX=256;
           const rows=[];
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
-            if(rows.length>=EXECUTION_BATCH_MAX)break;
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -168,7 +166,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
-          console.log(`ROBLOX_EXECUTION_BATCH_CAPACITY=${EXECUTION_BATCH_MAX}`);
+          console.log('ROBLOX_EXECUTION_BATCH_CAPACITY=EXTERNAL_PROVIDER_MANAGED');
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_REQUESTED_GAME_ID=${requested||'BATCH'}`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
@@ -520,7 +518,8 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxSourceParallelism=6;
+          queue.robloxSourceParallelism=null;
+          queue.robloxSourceParallelismMode='EXTERNAL_PROVIDER_MANAGED';
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
@@ -612,7 +611,7 @@ jobs:
           echo 'ROBLOX_SOURCE_TARGETS=NONE'
           echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
           echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
-          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=6'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_RUNTIME_PASS=NO'
@@ -659,7 +658,6 @@ jobs:
           const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
-            if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -694,7 +692,7 @@ jobs:
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=6');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED');
           NODE
 
   technical-worker:
@@ -937,7 +935,8 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxTechnicalParallelism=6;
+          queue.robloxTechnicalParallelism=null;
+          queue.robloxTechnicalParallelismMode='EXTERNAL_PROVIDER_MANAGED';
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
@@ -1020,7 +1019,7 @@ jobs:
         run: |
           echo 'ROBLOX_TECHNICAL_TARGETS=NONE'
           echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
-          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=6'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
