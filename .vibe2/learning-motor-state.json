@@ -3747,7 +3747,14 @@
       "coding_negative_1x8p7gp",
       "coding_negative_1pt99w0",
       "coding_negative_rmowbo",
-      "coding_negative_1e739mz"
+      "coding_negative_1e739mz",
+      "coding_negative_szxm3s",
+      "coding_negative_vpj8j0",
+      "coding_negative_fasuj",
+      "coding_negative_1xnt4se",
+      "coding_negative_1lym68i",
+      "coding_negative_1ok41s1",
+      "coding_negative_1nogths"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -4952,7 +4959,7 @@
         "verifiedApplications": 216,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 477,
-        "verifiedFailures": 542,
+        "verifiedFailures": 549,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -5011,13 +5018,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 139,
-            "verifiedFailures": 206,
+            "verifiedFailures": 213,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 334,
             "totalContextBytes": 4377796,
             "lastEvidence": "coding_nwrwl2",
-            "lastFailureEvidence": "coding_negative_1e739mz",
-            "lastUpdatedAt": "2026-09-24T23:07:48.958Z"
+            "lastFailureEvidence": "coding_negative_1nogths",
+            "lastUpdatedAt": "2026-09-24T23:16:24.351Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -6094,7 +6101,7 @@
             "verifiedApplications": 91,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 231,
-            "verifiedFailures": 43,
+            "verifiedFailures": 49,
             "games": {
               "cozy-island": 49,
               "horror-escape-room": 42
@@ -6105,23 +6112,23 @@
             "failureGames": {
               "fantasy-survival": 1,
               "survival": 1,
-              "village-dungeons": 3,
+              "village-dungeons": 4,
               "daechung-rpg": 32,
-              "seed-story-complete-rpg-chronicles-of-eldoria": 2,
-              "amusement-tycoon": 1,
-              "monster-adventure": 1,
-              "seed-casual-realm-weaver": 1,
-              "seed-puzzle-chromatic-cascade": 1
+              "seed-story-complete-rpg-chronicles-of-eldoria": 3,
+              "amusement-tycoon": 2,
+              "monster-adventure": 2,
+              "seed-casual-realm-weaver": 2,
+              "seed-puzzle-chromatic-cascade": 2
             },
             "failureTargets": {
-              "roblox": 43
+              "roblox": 49
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 43
+              "INCREMENTAL_QA": 49
             },
             "lastEvidence": "coding_nwrwl2",
-            "lastFailureEvidence": "coding_negative_1e739mz",
-            "lastUpdatedAt": "2026-09-24T23:07:48.958Z"
+            "lastFailureEvidence": "coding_negative_1nogths",
+            "lastUpdatedAt": "2026-09-24T23:16:24.351Z"
           },
           "web|NO_OP|OTHER": {
             "verifiedApplications": 4,
@@ -6662,12 +6669,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_3463zm",
             "lastUpdatedAt": "2026-09-24T22:56:29.550Z"
+          },
+          "roblox|OTHER|PRESENTATION_DELTA": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "bug-defense": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "INCREMENTAL_QA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_vpj8j0",
+            "lastUpdatedAt": "2026-09-24T23:16:24.351Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_nwrwl2",
-        "lastFailureEvidence": "coding_negative_1e739mz",
-        "lastUpdatedAt": "2026-09-24T23:07:48.958Z"
+        "lastFailureEvidence": "coding_negative_1nogths",
+        "lastUpdatedAt": "2026-09-24T23:16:24.351Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 557,
@@ -11117,7 +11144,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-24T23:08:29.973Z",
+    "lastBuiltAt": "2026-09-24T23:16:24.364Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -16946,5 +16973,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-24T23:08:29.973Z"
+  "updatedAt": "2026-09-24T23:16:24.364Z"
 }
