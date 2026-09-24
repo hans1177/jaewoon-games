@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "local function render()\n  status.Text = string.format(\"Score %d · Lv %d · Progress %d · HP %d · Wave %d\", player:GetAttribute(\"Score\") or 0, player:GetAttribute(\"Level\") or 1, player:GetAttribute(\"Progress\") or 0, player:GetAttribute(\"Health\") or 100, player:GetAttribute(\"Wave\") or 1)\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
