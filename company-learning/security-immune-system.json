@@ -1,5 +1,5 @@
 {
-  "version": 42,
+  "version": 43,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -655,7 +655,7 @@
     "failureAction": "DROP_UNSAFE_SYNTHETIC_EXPERIENCE_AND_ROUTE_LEARNING_REPAIR_REQUIRED"
   },
   "verifiedSpecializedQueueEvidenceSecurity": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
     "purpose": "PREVENT_REQUEST_OR_STATIC_QA_MARKERS_FROM_SELF_PROMOTING_INTO_CANONICAL_MASTERY",
     "protections": {
@@ -675,7 +675,10 @@
       "authorityExpansionForbidden": true,
       "exactFinalMarkerTokenRequired": true,
       "prefixedFocusedQaTokenCannotSatisfyFinalMarker": true,
-      "positiveFanInProvenanceTokensRequired": true
+      "positiveFanInProvenanceTokensRequired": true,
+      "canonicalIngressMustRecheckNativeTargetQaEvidence": true,
+      "nativeQaEvidenceMustMatchTargetPlatform": true,
+      "nativeQaEvidenceReferenceMustRemainTraceable": true
     },
     "failureAction": "BLOCK_SPECIALIZED_LEARNING_PROMOTION_AND_KEEP_GAME_RELEASE_DECISION_SEPARATE_UNLESS_EXISTING_RELEASE_GATE_ALSO_FAILS"
   }
