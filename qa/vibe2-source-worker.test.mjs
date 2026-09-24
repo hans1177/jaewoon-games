@@ -421,6 +421,64 @@ test('system architecture still gets one bounded retry when pair-focused complet
 });
 
 
+
+test('Roblox Studio backfill rejects config-only candidate and retries until visual owner is actually bound', async()=>{
+  const cwd=tempRoot();
+  const bad=path.join(cwd,'roblox-studio-config-only.json');
+  const good=path.join(cwd,'roblox-studio-visual-owner.json');
+  const workOrder=order({
+    target:'roblox',
+    root:'roblox-games/demo',
+    responsibleFiles:['roblox-games/demo/shared/GameConfig.luau','roblox-games/demo/client/Game.client.luau'],
+    taskId:'demo-roblox-studio-asset-backfill-v1'
+  });
+  workOrder.selectedTask={
+    id:workOrder.taskId,
+    gameId:'demo',
+    target:'roblox',
+    studioAssetBackfill:true,
+    responsibleFiles:workOrder.source.responsibleFiles
+  };
+  workOrder.goal='[ROBLOX_STUDIO_ASSET_BACKFILL] apply selected materials to the real visual owner';
+  write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),'return { GameId = "demo" }\n');
+  const clientSource=[
+    'local Players = game:GetService("Players")',
+    'local player = Players.LocalPlayer',
+    'local gui = Instance.new("ScreenGui")',
+    'local root = Instance.new("Frame")',
+    'root.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'root.Parent = gui'
+  ].join('\n')+'\n';
+  write(path.join(cwd,'roblox-games/demo/client/Game.client.luau'),clientSource);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(bad,JSON.stringify({
+    edits:[{path:'shared/GameConfig.luau',find:'return { GameId = "demo" }',replace:'return { GameId = "demo", StudioAssets = true }'}]
+  }));
+  const bound=[
+    'local Players = game:GetService("Players")',
+    'local player = Players.LocalPlayer',
+    'local STUDIO_ASSET_BINDING_VERSION = 1',
+    'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+    'local gui = Instance.new("ScreenGui")',
+    'local root = Instance.new("Frame")',
+    'root.BackgroundColor3 = Color3.fromRGB(22,34,58)',
+    'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))',
+    'root.Parent = gui'
+  ].join('\n');
+  write(good,JSON.stringify({
+    edits:[{path:'client/Game.client.luau',find:clientSource.trimEnd(),replace:bound}]
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.deepEqual(result.changedFiles,['client/Game.client.luau']);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files/client/Game.client.luau'),'utf8');
+  assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
+  assert.match(candidate,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+  assert.match(candidate,/StudioAssetAtoms/);
+});
+
 test('unappliable edit is retried inside generation before candidate write', async () => {
   const cwd = tempRoot();
   const bad = path.join(cwd, 'bad-edit.json');
