@@ -801,7 +801,7 @@ test('central runtime enables functional work packages and adaptive workload tel
   assert.equal(runtime.workPackages.smallTaskAction,'auto-expand-or-defer');
   assert.equal(runtime.workPackages.automaticExpansionMode,'real-disjoint-candidates-first-explicit-related-scopes-fallback');
   assert.equal(runtime.workPackages.minRelatedImprovementsPerPackage,3);
-  assert.equal(runtime.workPackages.targetFeaturePackagesPerCycle,1);
+  assert.equal(runtime.workPackages.targetFeaturePackagesPerCycle,2);
   assert.equal(runtime.workPackages.sameFileParallelWrite,false);
   assert.equal(runtime.workPackages.sharedPreparation,false);
   assert.equal(runtime.workPackages.longWorkSlotProtection,true);
