@@ -950,6 +950,31 @@ test('first studio build-up cycle establishes presentation baseline even when no
   assert.ok(task.evidence.includes('graphics-evolution-before-after-comparison-required'));
 });
 
+test('legacy verified studio cycle without presentation is corrected to presentation on the next cycle',()=>{
+  const root=tempRepo();
+  const gameId='studio-legacy-baseline-recovery';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const project={
+    gameId,name:'Studio Legacy Baseline Recovery',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`,
+    developmentValidation:{blockers:['MOBILE_TOUCH_ACTION_NOT_CONNECTED']}
+  };
+  const legacy={
+    id:`${gameId}-studio-evolution-v1`,
+    gameId,target:'web',sourceRoot:`web-games/${gameId}`,status:'verified',lastOutcome:'PASS',
+    evidence:['studio-quality-loop:v1'],
+    studioQualityEvolution:{version:1,cycle:1,phase:'BUILD_UP',focusPillar:'STABILITY',nextCycleRequired:true}
+  };
+  const next=findStudioContinuousImprovementTask(project,root,{tasks:[legacy]});
+  assert.ok(next);
+  assert.equal(next.studioQualityEvolution.cycle,2);
+  assert.equal(next.studioQualityEvolution.phase,'OPTIMIZE');
+  assert.equal(next.studioQualityEvolution.focusPillar,'PRESENTATION');
+  assert.equal(next.studioQualityEvolution.visibleRenderDeltaRequired,true);
+  assert.ok(next.evidence.includes('graphics-evolution-before-after-comparison-required'));
+});
+
 test('verified studio quality package advances to a new large studio cycle instead of returning to micro work',()=>{
   const root=tempRepo();
   const gameId='studio-repeat-cycle';
