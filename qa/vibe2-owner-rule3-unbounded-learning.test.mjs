@@ -49,6 +49,12 @@ test('canonical learning motor exposes one shared Web Roblox Unity UEFN learning
   assert.equal(motor.idleTraining?.relearningGenerationLimit,null);
   assert.equal(motor.idleTraining?.hypothesisGenerationLimit,null);
   assert.equal(motor.idleTraining?.falsificationGenerationLimit,null);
+  assert.equal(motor.continuous24h?.enabled,true);
+  assert.equal(motor.continuous24h?.allLearningDomainsAlwaysActive,true);
+  assert.equal(motor.continuous24h?.signalGenerationNeverStops,true);
+  assert.equal(motor.continuous24h?.queueAccumulationNeverStops,true);
+  assert.equal(motor.continuous24h?.executionLaneRunsDuringProduction,true);
+  assert.equal(motor.idleTraining?.productionPresenceDoesNotSuppressLearningExecution,true);
 });
 
 test('practice generator emits hypothesis falsification previous-result comparison and relearning signals',()=>{
