@@ -1032,7 +1032,7 @@
         "sharedContextMustPassBeforeWork": true,
         "unsynchronizedWorkerAction": "INHIBIT_AND_REPLAN_OR_REQUEUE"
       },
-      "authorityChange": "NONE"
+      "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING"
     },
     "liveShadowRepairLoop": {
       "path": [
