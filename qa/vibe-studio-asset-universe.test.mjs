@@ -41,7 +41,7 @@ import {
   createAssetLineage,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
-import {createVibeCharacterPersona,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
+import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
 
 test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.equal(STUDIO_ASSET_UNIVERSE_TARGET,'HIGH_END_STUDIO_ASSET_UNIVERSE');
@@ -79,6 +79,15 @@ test('character identity adds deterministic persona voice memory and behavior in
   assert.equal(a.voice.knowledgeBoundary,true);
   assert.equal(a.memoryContract.sourceEventRequired,true);
   assert.notEqual(a.voice.sentenceRhythm,b.voice.sentenceRhythm);
+  const protective=resolveVibeCharacterBehaviorIntent({
+    persona:{...a,behaviorIntent:{...a.behaviorIntent,socialTendency:'protective',riskTolerance:'low'}},
+    context:{selfHealthRatio:.8,allyHealthRatio:.2,relationshipTrust:40,enemyVisible:true,newKnownFact:true,interactionAvailable:true}
+  });
+  assert.ok(protective.intents.includes('PROTECT_ALLY'));
+  assert.ok(protective.intents.some(x=>x.startsWith('COMBAT_')));
+  assert.ok(protective.intents.includes('CONTEXTUAL_DIALOGUE_FROM_KNOWN_INFORMATION'));
+  assert.equal(protective.gameplayAuthority,false);
+  assert.equal(protective.authoritativeActionRequired,true);
   const diversity=createVibePopulationPersonaDiversity([
     {name:'연화',goal:'문파 기록 회수',speechRhythm:'short-direct'},
     {name:'무진',goal:'마을 방어',speechRhythm:'rapid'}
