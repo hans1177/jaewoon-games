@@ -1,5 +1,5 @@
 {
-  "version": 34,
+  "version": 35,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -529,5 +529,20 @@
     },
     "failureAction": "QUARANTINE_AFFECTED_MOTION_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
+  },
+  "autoMotionGapFillSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.autoMotionCoverageGapFill",
+    "protections": {
+      "automaticFillMayNotSelfPromote": true,
+      "preparedSemanticMayNotClaimActualClip": true,
+      "incompatibleRigBodyPlanPlatformOrSpecialLimbBindingMustReject": true,
+      "borrowedSignatureMotionRequiresSpeciesOrCharacterSpecificAdaptation": true,
+      "externalCandidateStillRequiresLicenseAndProvenanceGate": true,
+      "nearDuplicateShouldReuseVerifiedParent": true,
+      "gameplayAuthorityMutationForbidden": true,
+      "nativeRuntimeEvidenceRequiredBeforePromotion": true
+    },
+    "failureAction": "ROUTE_AFFECTED_MOTION_GAP_TO_ASSET_REPAIR_REQUIRED"
   }
 }
