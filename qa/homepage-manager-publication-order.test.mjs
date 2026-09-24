@@ -28,6 +28,24 @@ test('legacy homepage policy mirror stays removed and machine roadmap remains au
   assert.equal(roadmap.centralDocumentation.legacyPolicyCleanup.status,'REMOVED_FROM_ACTIVE_REPOSITORY');
 });
 
+test('pull requests use shallow impact-scoped homepage QA instead of the full publication pipeline',()=>{
+  const fast=section('  pr-fast-qa:','  manage-and-self-qa:');
+  const manage=section('  manage-and-self-qa:','  director-supervision:');
+  const director=section('  director-supervision:');
+  assert.match(fast,/name: Homepage PR Fast QA/);
+  assert.match(fast,/fetch-depth: 1/);
+  assert.match(fast,/filter: blob:none/);
+  assert.match(fast,/sparse-checkout-cone-mode: false/);
+  assert.match(fast,/Run impact-scoped homepage QA/);
+  assert.match(fast,/HOMEPAGE_PR_FAST_QA=PASS/);
+  assert.match(manage,/if: github\.event_name != 'pull_request'/);
+  assert.match(director,/if: github\.event_name != 'pull_request'/);
+  assert.doesNotMatch(workflow,/fetch-depth: 0/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+  assert.match(workflow,/git fetch --depth=1 --no-tags origin "\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/git fetch --depth=1 --no-tags origin "\$CONTROL_BRANCH"/);
+});
+
 test('Director reviews and publishes the exact Homepage Manager candidate in one post-work stage',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
   const director=section('  director-supervision:');
@@ -181,7 +199,11 @@ test('homepage front door matches approved sample on desktop and mobile',()=>{
   assert.equal(front.gameDevelopmentSurface?.route,'/asset-library.html');
   assert.equal(front.gameDevelopmentSurface?.registry,'/company-asset-library.json');
   assert.match(index,/href="\/asset-library\.html"/);
-  assert.match(fs.readFileSync('asset-library.html','utf8'),/회사 에셋 라이브러리/);
+  const assetLibrarySurface=fs.readFileSync('asset-library.html','utf8');
+  assert.match(assetLibrarySurface,/회사 에셋 라이브러리/);
+  assert.match(assetLibrarySurface,/data-asset-library-version="[1-9]\d*"/);
+  assert.match(manager,/data-asset-library-version="\[1-9\]\\d\*"/);
+  assert.doesNotMatch(manager,/data-asset-library-version="1"/);
   const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   assert.equal(library.publicInspectionSurface,true);
   assert.equal(library.productionPassAuthority,false);
