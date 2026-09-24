@@ -1178,6 +1178,10 @@
     "lifecycleProjectionMonotonic": true,
     "downstreamMachineEvidencePreventsBackwardPhaseProjection": true,
     "missingGenreMayNotRegressStartedNativeWork": true,
+    "canonicalNativeExecutionEvidenceField": "executionEvidence",
+    "nestedExecutionEvidenceFallbackForPlanner": true,
+    "nestedFailureStageAndSignaturePreserved": true,
+    "nestedSourceRevisionPreserved": true,
     "downstreamEvidencePriority": [
       "RELEASE_EVIDENCE",
       "REGRESSION_EVIDENCE",
