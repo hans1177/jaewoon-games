@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -374,7 +374,10 @@
         "FAILURE_CLASS_RETRY_STRATEGY",
         "ADAPTIVE_CONCURRENCY_TUNING"
       ],
-      "protectedAuthoritiesRemainCentral": true
+      "protectedAuthoritiesRemainCentral": true,
+      "retryStrategyMutationRequiresVerifiedRootCause": true,
+      "successfulResultMutationForbidden": true,
+      "verifiedSupervisorReviseRequeue": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
