@@ -17,7 +17,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-f0-source-preflight
+  group: company-development-roblox-f0-source-preflight-${{ inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
@@ -59,7 +59,7 @@ jobs:
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_F0_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=[];
           for(const item of q.items||[]){
-            if(rows.length>=6)break;
+            if(rows.length>=256)break;
             if(requested&&item.gameId!==requested)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -82,7 +82,7 @@ jobs:
     if: needs.plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 256
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
