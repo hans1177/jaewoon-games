@@ -1,8 +1,8 @@
 {
-  "version": 341,
+  "version": 342,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-24",
+  "recordedAt": "2026-09-25",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -5625,7 +5625,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-24",
+  "updatedAt": "2026-09-25",
   "priorityTiers": [
     {
       "tier": 1,
@@ -18850,6 +18850,80 @@
     "strictDesignParallelWithDevelopment": true,
     "activeDevelopmentGlobalDesignDeferForbidden": true,
     "activeOwnerResetSource": "owner-design-reset-queue.json"
+  },
+  "neuralGatedExecution": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-25",
+    "state": "GATED_EXECUTION_ENABLED",
+    "objective": "USE_VIBE_NEURAL_REASONING_AS_ATOMIC_EXECUTION_CONTROL_WITHOUT_CREATING_A_PARALLEL_PIPELINE_OR_WEAKENING_EXISTING_GATES",
+    "existingSchedulerOnly": true,
+    "universalAtomicNeuronExecution": true,
+    "atomicNeuronFlow": [
+      "INGEST_LOCAL_EVENT",
+      "UPDATE_TASK_LOCAL_FACTS_AND_CAUSAL_STATE",
+      "COMPILE_ONE_GATED_ACTION",
+      "APPLY_EXISTING_POLICY_SECURITY_DEPENDENCY_AND_LOCK_INHIBITORS",
+      "EXECUTE_THROUGH_EXISTING_QUEUE_RESERVE_WORKER_QA_FANIN_PATH",
+      "VERIFY_RESULT",
+      "EMIT_NEXT_CAUSAL_EVENT"
+    ],
+    "gatedAuthorities": [
+      "REQUEUE_EXISTING_TASK",
+      "REPRIORITIZE_EXISTING_TASK_WITHIN_OWNER_AND_RELEASE_PRIORITY",
+      "IMMEDIATE_FREE_SLOT_REFILL",
+      "CHANGE_RETRY_STRATEGY_AFTER_FAILURE",
+      "REEVALUATE_DEPENDENCY_AND_LOCK_STATE",
+      "TUNE_GAME_PRIMARY_CONCURRENCY_FROM_VERIFIED_THROUGHPUT"
+    ],
+    "forbiddenAuthorities": [
+      "CENTRAL_POLICY_MUTATION",
+      "SECURITY_POLICY_BYPASS",
+      "QA_OR_RUNTIME_GATE_BYPASS",
+      "RELEASE_PASS_OR_PROMOTION_SELF_APPROVAL",
+      "SELF_AUTHORITY_PROMOTION",
+      "UNVERIFIED_AUTOMATIC_LEARNING_PROMOTION",
+      "PROTECTED_GAMEPLAY_OR_SAVE_MEANING_CHANGE"
+    ],
+    "sourceCandidateGeneration": {
+      "priority": "FIRST_PASS_VERIFIED_FUNCTIONAL_CHANGE",
+      "sameFailedStrategyRepeatForbidden": true,
+      "failureClassMustChangeRecoveryStrategy": true,
+      "reuseVerifiedPatternsBeforeBlindRegeneration": true,
+      "responsibilityAndExactSourceContextFirst": true,
+      "firstCandidatePassRateMeasured": true
+    },
+    "throughputControl": {
+      "primaryMetric": "VERIFIED_CANDIDATES_PER_MINUTE",
+      "secondaryMetrics": [
+        "FIRST_CANDIDATE_PASS_RATE",
+        "CHANGED_LINES_PER_MINUTE",
+        "FAILURE_RATE",
+        "QUEUE_WAIT_P95",
+        "CHECKOUT_P95"
+      ],
+      "adaptiveMinimum": 20,
+      "externalBoundary": 256,
+      "healthyScaleUpAllowed": true,
+      "pressureScaleDownBelowOwnerMinimumForbidden": true,
+      "configuredMaximumIsNotTheRuntimeTarget": true
+    },
+    "fanIn": {
+      "taskMicroFanIn": true,
+      "immediateRefillAfterTaskMicroFanIn": true,
+      "pendingVariantsDoNotRunHeavyCohortFanIn": true,
+      "cohortFanInScope": [
+        "REGRESSION",
+        "RELEASE_AUDIT",
+        "CROSS_TASK_INTEGRATION_WHEN_REQUIRED"
+      ]
+    },
+    "automaticTuning": {
+      "verifiedEvidenceOnly": true,
+      "rawModelOutputMayNotPromoteCapability": true,
+      "policyAndReleaseAuthorityRemainExternal": true
+    },
+    "fortniteUefnChange": false,
+    "fortniteUefnPolicyRemains": "OWNER_HOLD"
   },
   "aiExecutionEfficiency": {
     "version": 1,
