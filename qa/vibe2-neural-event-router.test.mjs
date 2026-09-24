@@ -121,3 +121,27 @@ test('shadow event evidence includes deterministic event identity',()=>{
   assert.equal(payload.eventId,'task-a|run-1:1|primary|candidate-a');
   assert.equal(payload.fireAllowed,false);
 });
+
+
+test('verified root cause can fire only the central-policy gated scheduler action',()=>{
+  const route=simulateNeuralEventRoute({
+    event:{id:'gated-task|run-1|WORKER_RESULT',type:'WORKER_RESULT',outcome:'FAIL'},
+    diagnosis,
+    rootCause:{state:'ROOT_CAUSE_VERIFIED',rootCauseVerified:true,responsibleSystem:'SOURCE_GENERATION'},
+    gatedExecutionEnabled:true
+  });
+  assert.equal(route.mode,'PHASE2_GATED_EVENT_ROUTER');
+  assert.equal(route.authorityMode,'GATED');
+  assert.equal(route.fireAllowed,true);
+  assert.equal(route.workerCreationAllowed,true);
+  assert.equal(route.queueMutationAllowed,true);
+  assert.equal(route.waveReorderAllowed,true);
+  assert.equal(route.automaticTuningAllowed,true);
+  assert.equal(route.policyMutationAllowed,false);
+  assert.equal(route.lockAcquisitionAllowed,false);
+  assert.equal(route.workGraph.mode,'PHASE2_GATED_NEURAL_WORK_GRAPH');
+  assert.equal(route.workGraph.authority.executionAllowed,true);
+  const markers=neuralEventRouteEvidence(route);
+  assert.ok(markers.some(value=>value.startsWith('neural-event-gated:')));
+  assert.ok(markers.some(value=>value.startsWith('neural-work-graph-gated:')));
+});
