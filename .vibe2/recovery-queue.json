@@ -10926,7 +10926,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-24T07:13:18.247Z"
+      "updatedAt": "2026-09-24T08:08:47.052Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16756,7 +16756,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-24T07:13:18.270Z"
+      "updatedAt": "2026-09-24T08:08:47.077Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -19814,7 +19814,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-24T07:13:18.281Z"
+      "updatedAt": "2026-09-24T08:08:47.088Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118608,10 +118608,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-24T07:13:18.587Z",
+      "updatedAt": "2026-09-24T08:08:47.396Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T07:13:18.587Z"
+        "recovery-dispatched-at:2026-09-24T08:08:47.396Z"
       ]
     },
     {
@@ -144108,10 +144108,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-24T07:13:18.587Z",
+      "updatedAt": "2026-09-24T08:08:47.396Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T07:13:18.587Z"
+        "recovery-dispatched-at:2026-09-24T08:08:47.396Z"
       ]
     },
     {
@@ -144199,7 +144199,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.521Z",
-      "updatedAt": "2026-09-24T07:13:18.235Z"
+      "updatedAt": "2026-09-24T08:08:47.039Z"
     },
     {
       "id": "recovery-828f178e7d13218d39e5",
@@ -144271,7 +144271,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.548Z",
-      "updatedAt": "2026-09-24T07:13:18.258Z"
+      "updatedAt": "2026-09-24T08:08:47.065Z"
     },
     {
       "id": "recovery-ticket-bug-97439712d416497ffce0",
@@ -144314,7 +144314,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-24T07:13:17.805Z"
+      "updatedAt": "2026-09-24T08:08:46.600Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144357,7 +144357,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-24T07:13:17.815Z"
+      "updatedAt": "2026-09-24T08:08:46.610Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144382,6 +144382,55 @@
         "tester-debug-ticket:bug-ea186d71ff8c7f6300a7",
         "tester-debug-category:UI_UX",
         "tester-debug-severity:MEDIUM",
+        "tester-debug-occurrence-count:1",
+        "tester-debug-occurrence-count:2",
+        "recovery-reactivated-after-source-refailure"
+      ],
+      "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "VIBE2_VIBE3",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 2,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-09-24T07:13:17.824Z",
+      "updatedAt": "2026-09-24T08:08:47.396Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-09-24T08:08:47.396Z"
+      ]
+    },
+    {
+      "id": "recovery-ticket-bug-b021616100dca0c3a206",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "tester-debug",
+      "sourceTaskId": "bug-b021616100dca0c3a206",
+      "gameId": "horror-escape-room",
+      "responsibleFiles": [],
+      "contextFiles": [],
+      "goal": null,
+      "relatedTaskIds": [],
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+      "blastRadius": "single-ticket",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "roblox-f0-source-preflight-failed",
+        "{\"sourceRevision\":\"5976a851850e662dc7734303c432a6af5b13c8aa\",\"buildSourceRevision\":\"5976a851850e662dc7734303c432a6af5b13c8aa\",\"artifactIdentity\":\"sha256:0b87408b5644df5594d14910e934b08b41b5a482ef82815e500ed989843949c0\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}",
+        "tester-debug-ticket:bug-b021616100dca0c3a206",
+        "tester-debug-category:PLATFORM",
+        "tester-debug-severity:HIGH",
         "tester-debug-occurrence-count:1"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
@@ -144399,11 +144448,11 @@
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-24T07:13:18.587Z",
+      "createdAt": "2026-09-24T08:08:46.628Z",
+      "updatedAt": "2026-09-24T08:08:47.396Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T07:13:18.587Z"
+        "recovery-dispatched-at:2026-09-24T08:08:47.396Z"
       ]
     }
   ]

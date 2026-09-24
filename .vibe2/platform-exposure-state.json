@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-21",
   "policy": "DIRECT_NATIVE_INTERNAL_RELEASE_PLAYTEST_THEN_PLATFORM_INDEPENDENT_PUBLIC",
-  "updatedAt": "2026-09-24T07:13:22.437Z",
+  "updatedAt": "2026-09-24T08:08:51.424Z",
   "games": [
     {
       "gameId": "cozy-island",
@@ -325,7 +325,9 @@
           "externalExposureState": "INTERNAL_ONLY",
           "publicReleaseReady": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-b021616100dca0c3a206"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
