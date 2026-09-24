@@ -1269,11 +1269,122 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
   };
 }
 
+
+function findStudioContinuousImprovementTask(project,repoRoot,queue){
+  if(!project?.gameId||!project?.projectPath)return null;
+  const sourceRoot=posix(project.projectPath),sourceDir=sourceFile(repoRoot,sourceRoot);
+  if(!fs.existsSync(sourceDir)||!fs.statSync(sourceDir).isDirectory())return null;
+  const id=nextCausalGenerationId(queue,`${project.gameId}-studio-evolution`);
+  if(!id)return null;
+
+  const history=(queue.tasks||[]).filter(item=>
+    clean(item.gameId)===clean(project.gameId)
+    &&(item.evidence||[]).map(clean).includes('studio-quality-loop:v1')
+  );
+  const verified=history.filter(item=>clean(item.status).toLowerCase()==='verified');
+  const previous=verified.at(-1)||null;
+  const previousPhase=clean(previous?.studioQualityEvolution?.phase).toUpperCase();
+  const phase=previousPhase==='BUILD_UP'?'OPTIMIZE':'BUILD_UP';
+  const cycle=verified.length+1;
+
+  const knownSignals=[
+    ...(project?.developmentValidation?.blockers||[]),
+    clean(project?.developmentValidation?.nextAction),
+    clean(project?.queueVibeWebImplementationReason),
+    ...(project?.queueRoutingBlockers||[])
+  ].map(clean).filter(Boolean);
+  const signalText=knownSignals.join(' | ').toLowerCase();
+  let focusPillar='STABILITY';
+  if(/visual|graphic|render|animation|vfx|camera|audio|presentation|silhouette|style|lighting|environment/.test(signalText))focusPillar='PRESENTATION';
+  else if(/mobile|touch|input|readability|navigation|tutorial|accessib|hud|ui/.test(signalText))focusPillar='USABILITY';
+  else if(/progress|reward|unlock|quest|goal|economy|content depth/.test(signalText))focusPillar='PROGRESSION';
+  else if(/combat|core.?loop|feedback|interaction|fun|feel|gameplay/.test(signalText))focusPillar='CORE_FUN';
+  else if(!knownSignals.length)focusPillar=['CORE_FUN','PRESENTATION','USABILITY','STABILITY'][Math.max(0,cycle-1)%4];
+
+  const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
+    :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
+    :project.engine==='web'?new Set(['.html','.htm','.js','.mjs','.css'])
+    :project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini'])
+    :new Set(['.gd','.tscn']);
+  const candidates=[],stack=[sourceDir];
+  while(stack.length&&candidates.length<30){
+    const current=stack.pop();
+    let entries=[];
+    try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+    for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+      if(['node_modules','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache','.git','build','dist'].includes(entry.name))continue;
+      const full=path.join(current,entry.name);
+      if(entry.isDirectory()){stack.push(full);continue;}
+      if(!extensions.has(path.extname(entry.name).toLowerCase()))continue;
+      candidates.push(posix(path.relative(repoRoot,full)));
+      if(candidates.length>=30)break;
+    }
+  }
+  if(!candidates.length)return null;
+
+  const relevance=file=>{
+    const value=file.toLowerCase();
+    let score=0;
+    if(/game|core|runtime|main|controller|player|client|server/.test(value))score+=10;
+    if(focusPillar==='PRESENTATION'&&/visual|render|ui|hud|effect|vfx|camera|audio|anim|style|scene/.test(value))score+=18;
+    if(focusPillar==='USABILITY'&&/ui|hud|input|controller|client|menu/.test(value))score+=18;
+    if(focusPillar==='PROGRESSION'&&/progress|quest|reward|inventory|economy|save/.test(value))score+=18;
+    if(focusPillar==='CORE_FUN'&&/game|combat|enemy|player|world|core|controller/.test(value))score+=18;
+    if(focusPillar==='STABILITY'&&/game|core|runtime|server|save|network|state/.test(value))score+=18;
+    return score;
+  };
+  const responsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b)).slice(0,6);
+  const baselineId=clean(previous?.id)||`source:${sourceRoot}`;
+  const explicitGap=knownSignals[0]||`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`;
+  const phaseInstruction=phase==='BUILD_UP'
+    ?'기존 설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현 3~6개를 한 패키지로 끝내고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다.'
+    :'새 기능을 억지로 늘리지 말고 현재 구현의 병목을 최적화한다. 중복/불필요한 처리, 모바일 입력 지연, 렌더/업데이트 비용, 상태 불일치, UI 가독성, 코드 책임 혼선을 기존 구조 안에서 직접 줄이고 실제 플레이 품질을 한 단계 올린다.';
+  const visualInstruction=focusPillar==='PRESENTATION'
+    ?' 그래픽은 마커/상수/파티클 존재만으로 완료하지 않는다. 캐릭터·적 실루엣, 환경 깊이와 랜드마크, 애니메이션 상태, 공격/피격/사망 반응, VFX, 조명, UI 계층, 카메라/오디오 타이밍 중 현재 약한 부분을 실제 렌더 소스에서 여러 요소 함께 개선하고 전후 차이가 눈에 보여야 한다.'
+    :'';
+  const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
+${phaseInstruction}${visualInstruction}
+현재 근거=${explicitGap}
+설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
+작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
+
+  const out=task(id,project,goal,responsibleFiles,project.ownerFocusedCaretaker?'critical':'high','medium',[
+    'studio-quality-loop:v1',
+    `studio-quality-cycle:${cycle}`,
+    `studio-quality-phase:${phase}`,
+    `studio-quality-focus:${focusPillar}`,
+    `studio-quality-baseline:${baselineId}`,
+    'studio-quality-design-is-not-implementation-ceiling',
+    'studio-quality-real-source-delta-required',
+    'studio-quality-next-cycle-required:YES',
+    'work-package-scope:implementation-completeness',
+    'work-package-scope:quality-delta',
+    'work-package-scope:optimization',
+    ...(focusPillar==='PRESENTATION'?['work-package-scope:visual-runtime-delta']:[])
+  ]);
+  out.workUnits=7;
+  out.maxRetries=null;
+  out.retryPolicy='UNLIMITED_CAUSAL_REPAIR';
+  out.studioQualityEvolution={
+    version:1,cycle,phase,focusPillar,baselineId,
+    baselineSource:previous?.id?'VERIFIED_QUEUE_TASK':'CURRENT_SOURCE',
+    explicitGap,
+    designIsImplementationCeiling:false,
+    requiredConnectedImprovements:{min:3,max:6},
+    realSourceDeltaRequired:true,
+    visibleRenderDeltaRequired:focusPillar==='PRESENTATION',
+    protectedRegressionForbidden:true,
+    nextCycleRequired:true
+  };
+  return out;
+}
+
 function findSafeTasks(project,repoRoot,queue){
   const pilot=isAssetProductionPilot(project,repoRoot);
   if(project.engine==='roblox')return uniqueTaskCandidates([
     findRobloxInternalPlaytestTask(project,repoRoot,queue),
     findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
+    findStudioContinuousImprovementTask(project,repoRoot,queue),
     findWeatherPresentationTask(project,repoRoot,queue),
     findPresentationQualityTask(project,repoRoot,queue),
     scanExplicitMarkerTask(project,repoRoot,queue)
@@ -1283,15 +1394,18 @@ function findSafeTasks(project,repoRoot,queue){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
       if(firstStage)return[firstStage];
       return uniqueTaskCandidates([
+        findStudioContinuousImprovementTask(project,repoRoot,queue),
         findPresentationQualityTask(project,repoRoot,queue),
         scanExplicitMarkerTask(project,repoRoot,queue)
       ]);
     }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
+      findStudioContinuousImprovementTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
     return uniqueTaskCandidates([
+      findStudioContinuousImprovementTask(project,repoRoot,queue),
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
       findUnityTask(project,repoRoot,queue),
@@ -1301,15 +1415,14 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='web'){
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-      return uniqueTaskCandidates([findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+      return uniqueTaskCandidates([findWebDiagnosticTask(project,repoRoot,queue),startupSpatialRepair,findStudioContinuousImprovementTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     }
-    // Preserve canonical Web responsibility order: source bootstrap and exact runtime repair
-    // remain authoritative, and a first existing-Web assessment happens before new spatial repair.
+    // Preserve canonical Web responsibility order for bootstrap and exact repair.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair)return[startupSpatialRepair];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
