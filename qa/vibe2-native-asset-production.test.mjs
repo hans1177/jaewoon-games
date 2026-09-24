@@ -8,7 +8,6 @@ import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRob
 import {findPresentationQualityTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
 function writePolicy(root,{pilot='fantasy-survival'}={}){
   fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
