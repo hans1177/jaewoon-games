@@ -79,10 +79,12 @@ jobs:
             if(preflightFailedValue&&!stalePreflightFailure)continue;
             rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity,secondaryOwnerFocus});
           }
+          const defaultValidationMode=String(roadmap.roblox?.validationMode||'').toUpperCase();
           const f0Ready=(q.items||[]).filter(item=>{
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
-            if(item.robloxValidationMode!=='HEADLESS_FAST_MVP')return false;
+            const validationMode=String(item.robloxValidationMode||defaultValidationMode).toUpperCase();
+            if(validationMode!=='HEADLESS_FAST_MVP')return false;
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
             return item.robloxBuildOrPackagePassed===true

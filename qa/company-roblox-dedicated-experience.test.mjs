@@ -136,3 +136,9 @@ test('dedicated Roblox project titles match the published Experience titles',()=
     assert.equal(project.name,title);
   }
 });
+
+test('dedicated Roblox private publishes have no internal max-parallel cap',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
+  assert.match(workflow,/strategy:\s*\n\s*fail-fast:\s*false\s*\n\s*matrix:/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*[0-9]+/);
+});

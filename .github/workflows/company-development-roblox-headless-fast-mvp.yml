@@ -52,6 +52,8 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const defaultValidationMode=String(roadmap.roblox?.validationMode||'').toUpperCase();
           let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(!requested&&process.env.EVENT_NAME==='push'&&fs.existsSync('roblox-games/.company-runtime-trigger')){
             requested=String(fs.readFileSync('roblox-games/.company-runtime-trigger','utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
@@ -63,7 +65,8 @@ jobs:
             if(requested&&item.gameId!==requested)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(item.robloxValidationMode!=='HEADLESS_FAST_MVP')continue;
+            const validationMode=String(item.robloxValidationMode||defaultValidationMode).toUpperCase();
+            if(validationMode!=='HEADLESS_FAST_MVP')continue;
             const revision=String(item.robloxSourceCommit||'');
             const artifact=String(item.robloxBuildArtifactIdentity||'');
             if(item.robloxBuildOrPackagePassed!==true||item.robloxBuildPreflightPassed!==true||item.robloxFoundationF0Passed===true)continue;
@@ -202,6 +205,7 @@ jobs:
             }
             const e=byId.get(target.gameId);
             const exact=e?.pass===true&&e.sourceRevision===currentSourceRevision&&e.artifactIdentity===currentArtifactIdentity;
+            item.robloxValidationMode='HEADLESS_FAST_MVP';
             item.robloxFoundationF0Passed=exact;
             item.robloxFoundationF0Evidence=exact?e:null;
             item.robloxFoundationF0PassedAt=exact?stamp:null;

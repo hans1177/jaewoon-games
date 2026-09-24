@@ -75,3 +75,9 @@ test('shared Roblox preflight checkout fans out without an internal six-game cap
   assert.match(workflow,/ROBLOX_PREFLIGHT_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
   assert.doesNotMatch(workflow,/ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX/);
 });
+
+test('F0-ready detection inherits the central Roblox validation mode when runtime state omitted it',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.match(workflow,/roadmap\.roblox\?\.validationMode/);
+  assert.match(workflow,/item\.robloxValidationMode\|\|defaultValidationMode/);
+});
