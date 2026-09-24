@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 57,
+  "revision": 58,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -28,7 +28,10 @@
       "_worker.js",
       "tools/vibe2-learning-motor.mjs",
       "company-learning/vibe2-learning-motor.json",
-      "tools/vibe2-asset-production-plan.mjs"
+      "tools/vibe2-asset-production-plan.mjs",
+      "assets/asset-selector.js",
+      "assets/asset-manifest.json",
+      "company-asset-library.json"
     ]
   },
   "homepageOperations": {
@@ -1044,7 +1047,11 @@
     "artBibleAndVisualTargetFramesRequired": true,
     "antiKitbashCohesionGateRequired": true,
     "actualRuntimeVisualEvidenceRequired": true,
-    "platformSpecificReauthoringExpected": true
+    "platformSpecificReauthoringExpected": true,
+    "companyLibraryRequiredForNativeGameDevelopment": true,
+    "externalGapFillBeforeNewAuthoring": true,
+    "studioMotionProgramRequired": true,
+    "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION"
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1060,7 +1067,19 @@
     "siblingTopLevelGraphicsPipelinesForbidden": true,
     "audioAuthoringOwner": "audio",
     "vibeGameSourceMutationOwner": true,
-    "evidenceRoot": "graphics-production-evidence"
+    "evidenceRoot": "graphics-production-evidence",
+    "companyLibrary": {
+      "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
+      "requiredPlatforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "lookupBeforeAssetChoice": true,
+      "repositoryThenExternalGapFillBeforeNewAuthoring": true,
+      "platformNativeVariantRequired": true,
+      "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
+      "rawExternalAssetRequiresRuntimeVerificationBeforeCompanyPromotion": true
+    }
   },
   "centralDocumentation": {
     "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
