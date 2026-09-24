@@ -225,6 +225,15 @@ test('Rojo project maps shared server and client source roots',()=>{
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
 });
 
+test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/company-asset-library\.json/);
+  assert.match(bootstrap,/buildRobloxStudioAssetBootstrapPlan/);
+  assert.match(bootstrap,/studioAssetBindingApplied:built\.studioAssets\.applied===true/);
+  assert.match(bootstrap,/studioAssetRuntimeVerified:false/);
+  assert.match(bootstrap,/studioAssetPromotionEligible:false/);
+});
+
 test('Roblox source workflow persists Studio selection handoff for downstream runtime verification',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/studioAssetBindingApplied:bootstrapEvidence\.studioAssetBindingApplied===true/);
