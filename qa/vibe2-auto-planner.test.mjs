@@ -1072,7 +1072,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.equal(cancelled?.status,'cancelled');
   assert.equal(cancelled?.blocker,'superseded-by:STUDIO_QUALITY_PACKAGE');
   assert.ok(first,'full planner must eventually queue the first studio-quality package');
-  assert.equal(first.workUnits,7);
+  assert.equal(first.taskWorkUnits,7);
   assert.equal(first.studioQualityEvolution?.cycle,1);
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,6);
@@ -1103,7 +1103,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   }
   assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
   assert.notEqual(second.id,first.id);
-  assert.equal(second.workUnits,7);
+  assert.equal(second.taskWorkUnits,7);
   assert.equal(second.studioQualityEvolution?.cycle,2);
   assert.equal(second.studioQualityEvolution?.baselineId,first.id);
   assert.equal(second.studioQualityEvolution?.nextCycleRequired,true);
