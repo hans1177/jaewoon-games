@@ -65,3 +65,11 @@ test('Roblox shared preflight uses full GitHub matrix capacity instead of legacy
   assert.match(workflow,/ROBLOX_EXECUTION_WIP_MAX=256/);
   assert.doesNotMatch(workflow,/max-parallel:\s*6/);
 });
+
+test('shared preflight persistence is conflict-safe and not globally serialized',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/roblox-preflight-runtime-patch\.json/);
+  assert.match(workflow,/ROBLOX_PREFLIGHT_RUNTIME_STATE_ALREADY_APPLIED=YES/);
+});
