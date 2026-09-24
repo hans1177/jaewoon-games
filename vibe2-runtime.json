@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 24,
+      "runtime": 25,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -217,6 +217,21 @@
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_ATOMIC_COMPLETION_REFILL",
     "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_AND_PLANNING_BOUND; GAME_PRIMARY_HAS_NO_FIXED_INTERNAL_CAP; BASELINE_AND_PRESSURE_FLOOR_20; VERIFIED_HEALTHY_TELEMETRY_SELF_EXPANDS",
+    "minimumNecessaryProcedure": {
+      "enabled": true,
+      "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "defaultValidationScope": "CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCIES_ONLY",
+      "reuseStillValidPassEvidence": true,
+      "duplicateValidationForbidden": true,
+      "duplicateReviewWithoutRelevantDeltaForbidden": true,
+      "wholeRepositoryRegressionDefaultForbidden": true,
+      "securityReviewRiskTriggeredOnly": true,
+      "nonblockingAuditPreferred": true,
+      "administrativeChecksConsumeGamePrimarySlots": false,
+      "unrelatedChecksMayNotBlockAtomicRefill": true,
+      "fullRegressionEscalatesOnlyOnRelevantEvidence": true,
+      "publicReleaseAndConfirmedSecurityRiskRemainFailClosed": true
+    },
     "developmentFirstScheduling": {
       "enabled": true,
       "gameImplementationBeforeNonblockingSupervision": true,
