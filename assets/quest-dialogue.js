@@ -2,7 +2,7 @@ function clone(value) { return value == null ? value : JSON.parse(JSON.stringify
 function int(value, fallback = 0) { const n = Number(value); return Number.isFinite(n) ? Math.trunc(n) : fallback; }
 
 export class JaewoonQuestDialogue {
-  createState({ quests = {}, flags = {}, npc = {}, story = {}, relationships = {}, memories = {}, clues = {}, facts = {} } = {}) {
+  createState({ quests = {}, flags = {}, npc = {}, story = {}, relationships = {}, memories = {}, clues = {}, facts = {}, factions = {}, factionRelationships = {} } = {}) {
     return {
       quests: clone(quests) || {},
       flags: clone(flags) || {},
@@ -12,6 +12,8 @@ export class JaewoonQuestDialogue {
       memories: clone(memories) || {},
       clues: clone(clues) || {},
       facts: clone(facts) || {},
+      factions: clone(factions) || {},
+      factionRelationships: clone(factionRelationships) || {},
     };
   }
 
@@ -25,6 +27,8 @@ export class JaewoonQuestDialogue {
     state.memories ||= {};
     state.clues ||= {};
     state.facts ||= {};
+    state.factions ||= {};
+    state.factionRelationships ||= {};
     return state;
   }
 
@@ -114,9 +118,72 @@ export class JaewoonQuestDialogue {
       activeQuestIds: clone(definition.activeQuestIds) || [],
       resolvedThreads: clone(definition.resolvedThreads) || [],
       openThreads: clone(definition.openThreads) || [],
+      history: clone(definition.history) || [],
       meta: clone(definition.meta) || {},
     };
     return clone(state.story[id]);
+  }
+
+  advanceStory(state, storyId = 'main', transition = {}) {
+    this.ensureExtendedState(state);
+    const id = String(storyId || 'main').trim();
+    const story = state.story[id];
+    if (!story) return { ok: false, reason: 'STORY_NOT_REGISTERED' };
+    const eventId = String(transition.eventId || transition.sourceEvent || '').trim();
+    if (!eventId) return { ok: false, reason: 'SOURCE_EVENT_REQUIRED' };
+    story.history ||= [];
+    if (story.history.some((row) => row.eventId === eventId)) return { ok: true, duplicate: true, stage: story.stage };
+
+    const req = transition.requirements || {};
+    for (const [key, expected] of Object.entries(req.flags || {})) if (state.flags[key] !== expected) return { ok: false, reason: 'FLAG_PREREQUISITE_FAILED', key };
+    for (const [key, expected] of Object.entries(req.facts || {})) if (state.facts[key]?.value !== expected) return { ok: false, reason: 'FACT_PREREQUISITE_FAILED', key };
+    for (const questId of req.completedQuests || []) if (state.quests[questId]?.status !== 'completed') return { ok: false, reason: 'QUEST_PREREQUISITE_FAILED', questId };
+    for (const clueId of req.clues || []) if (state.clues[clueId]?.revealed !== true) return { ok: false, reason: 'CLUE_PREREQUISITE_FAILED', clueId };
+
+    const stages = ['OPENING','EARLY','MID','LATE','FINAL_BOSS','ENDING'];
+    const current = String(story.stage || '').toUpperCase();
+    const next = String(transition.nextStage || current).toUpperCase();
+    const currentIndex = stages.indexOf(current), nextIndex = stages.indexOf(next);
+    if (transition.allowBackward !== true && currentIndex >= 0 && nextIndex >= 0 && nextIndex < currentIndex) return { ok: false, reason: 'BACKWARD_TRANSITION_BLOCKED' };
+
+    story.stage = next;
+    if (transition.status) story.status = String(transition.status);
+    story.history.push({ eventId, from: current, to: next, reason: String(transition.reason || '') });
+    return { ok: true, duplicate: false, stage: story.stage };
+  }
+
+  registerFaction(state, definition = {}) {
+    this.ensureExtendedState(state);
+    const id = String(definition.id || '').trim();
+    if (!id) throw new Error('faction id is required');
+    state.factions[id] = {
+      id,
+      name: String(definition.name || id),
+      status: String(definition.status || 'active'),
+      memberIds: clone(definition.memberIds) || [],
+      controlledRegionIds: clone(definition.controlledRegionIds) || [],
+      knownFactIds: clone(definition.knownFactIds) || [],
+      meta: clone(definition.meta) || {},
+    };
+    return clone(state.factions[id]);
+  }
+
+  adjustFactionRelationship(state, fromFactionId, toFactionId, delta = {}, sourceEvent = '') {
+    this.ensureExtendedState(state);
+    const from = String(fromFactionId || '').trim(), to = String(toFactionId || '').trim();
+    const eventId = String(sourceEvent || delta.sourceEvent || delta.eventId || '').trim();
+    if (!from || !to) throw new Error('faction ids are required');
+    if (!eventId) throw new Error('faction relationship source event is required');
+    const key = `${from}->${to}`;
+    const current = state.factionRelationships[key] || { ally: 0, rival: 0, hostile: 0, neutral: 0, debt: 0, trust: 0, fear: 0, control: 0, events: [] };
+    current.events ||= [];
+    if (current.events.includes(eventId)) return clone(current);
+    for (const axis of ['ally','rival','hostile','neutral','debt','trust','fear','control']) {
+      current[axis] = Math.max(-100, Math.min(100, int(current[axis], 0) + int(delta[axis], 0)));
+    }
+    current.events.push(eventId);
+    state.factionRelationships[key] = current;
+    return clone(current);
   }
 
   setFact(state, key, value = true, sourceEvent = '') {
@@ -217,6 +284,11 @@ export class JaewoonQuestDialogue {
       relationships: Object.fromEntries(Object.entries(state.relationships).filter(([key]) => key.startsWith(id + '->') || key.endsWith('->' + id))),
       knownFacts: Object.fromEntries(Object.entries(state.facts).filter(([, row]) => row?.value !== undefined)),
       revealedClues: Object.values(state.clues).filter((row) => row?.revealed),
+      factions: Object.values(state.factions).filter((row) => (row?.memberIds || []).includes(id)),
+      factionRelationships: Object.fromEntries(Object.entries(state.factionRelationships).filter(([key]) => {
+        const factionIds = Object.values(state.factions).filter((row) => (row?.memberIds || []).includes(id)).map((row) => row.id);
+        return factionIds.some((factionId) => key.startsWith(factionId + '->') || key.endsWith('->' + factionId));
+      })),
       gameplayAuthority: false,
     });
   }
