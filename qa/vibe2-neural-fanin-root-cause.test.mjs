@@ -144,7 +144,7 @@ test('fan-in accepts studio build-up breadth evidence only when the configured d
   assert.ok(result.queue.tasks[0].evidence.includes('studio-quality-implementation-delta:PASS'));
 });
 
-test('explicit independently verified responsible system can verify root cause without granting neural execution authority',()=>{
+test('explicit independently verified root cause remains non-firing on successful CI result',()=>{
   const marker='independent-qa-verified-responsible-system:GAME_RUNTIME';
   const result=finalizeVibe2FanInReview({
     queue:{tasks:[baseTask([marker])]},
@@ -162,9 +162,9 @@ test('explicit independently verified responsible system can verify root cause w
   assert.equal(review.rootCause.eventRoutingAuthorityAllowed,false);
   assert.equal(review.rootCause.phase2AuthorityEligible,false);
   assert.equal(review.neuralEventRoute.proposedAction.kind,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
-  assert.equal(review.neuralEventRoute.wouldFireWithoutPhase2Authority,true);
+  assert.equal(review.neuralEventRoute.wouldFireWithoutPhase2Authority,false);
   assert.equal(review.neuralEventRoute.fireAllowed,false);
-  assert.ok(review.neuralEventRoute.inhibitors.includes('PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'));
+  assert.equal(review.neuralEventRoute.inhibitors.includes('PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'),false);
   const encoded=result.queue.tasks[0].evidence.find(value=>value.startsWith('neural-root-cause:'));
   assert.ok(encoded);
   const payload=JSON.parse(decodeURIComponent(encoded.slice('neural-root-cause:'.length)));
