@@ -1941,8 +1941,9 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
       &&normalized.has('SPECIALIZED-FINAL-AUTHORITY:FAN_IN_AFTER_FULL_REGRESSION');
     const gameId=clean(task?.gameId)||'unknown';
     const engine=lower(task?.target||task?.engine);
+    const gameTargetEligible=['web','unity','roblox','uefn','fortnite','fortnite_uefn','fortnite-uefn'].includes(engine);
     const nativeProof=specializedNativePositiveProof(engine,evidence);
-    const positiveMarkers=fanInProvenance&&nativeProof.pass
+    const positiveMarkers=gameTargetEligible&&fanInProvenance&&nativeProof.pass
       ?Object.keys(SPECIALIZED_QUEUE_POSITIVE_EVIDENCE).filter(exactMarker)
       :[];
     const negativeMarkers=Object.keys(SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE).filter(exactMarker);
@@ -1957,7 +1958,8 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
       evidence:[...traceEvidence,'source-task:'+clean(task?.id),'source-run:'+runIdentity],
       syntheticVerifiedQueueEvidence:true,
       sourceTaskId:clean(task?.id)||null,
-      sourceRun:runIdentity
+      sourceRun:runIdentity,
+      gameTargetEligible
     };
     if(positiveStatuses.has(status)&&positiveMarkers.length){
       const patterns=uniq(positiveMarkers.map(marker=>SPECIALIZED_QUEUE_POSITIVE_EVIDENCE[marker]));
