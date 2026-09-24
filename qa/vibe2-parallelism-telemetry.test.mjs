@@ -28,6 +28,9 @@ test('20 overlapping workers report real peak 20 and full utilization',()=>{
   assert.equal(t.scheduledSlotUtilizationPct,100);
   assert.equal(t.observedPeakUtilizationPct,100);
   assert.equal(t.ollamaCache.hitRatePct,100);
+  assert.equal(t.throughput.firstCandidatePassRatePct,100);
+  assert.equal(t.throughput.verifiedCandidateCount,20);
+  assert.ok(t.throughput.verifiedCandidatesPerMinute>0);
   assert.equal(t.bottleneck,'NONE');
   assert.equal(t.pass,true);
 });
@@ -244,7 +247,7 @@ test('healthy saturated runs self-expand one adaptive step per run from floor 20
 
 test('version 1 control state migrates without losing its cap',()=>{
   const migrated=createParallelismControl({version:1,currentMax:16,healthyStreak:1});
-  assert.equal(migrated.version,3);
+  assert.equal(migrated.version,4);
   assert.equal(migrated.currentMax,16);
   assert.equal(migrated.healthyStreak,1);
   assert.equal(migrated.lastRunId,null);
