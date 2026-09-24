@@ -315,7 +315,13 @@
       "QUEST_GRAPH",
       "FORESHADOWING_PAYOFF",
       "CHARACTER_BEHAVIOR",
-      "RELATIONSHIP_MEMORY"
+      "RELATIONSHIP_MEMORY",
+      "CHARACTER_PERSONA",
+      "WORLD_NARRATIVE",
+      "VISUAL_IDENTITY",
+      "ENVIRONMENT_COMPOSITION",
+      "NAVIGATION",
+      "STREAMING"
     ],
     "levels": null,
     "runOn": [
@@ -399,7 +405,17 @@
       "CHARACTER_VOICE_DRILL",
       "RELATIONSHIP_MEMORY_DRILL",
       "CHARACTER_BEHAVIOR_DRILL",
-      "WORLD_NARRATIVE_BINDING_DRILL"
+      "WORLD_NARRATIVE_BINDING_DRILL",
+      "CHARACTER_PERSONA_VOICE_DRILL",
+      "RELATIONSHIP_MEMORY_CAUSALITY_DRILL",
+      "CONCEPT_BLEND_AND_CONFLICT_DRILL",
+      "GAME_VISUAL_DNA_DRILL",
+      "ASSET_LOADOUT_SELECTION_DRILL",
+      "MAP_DNA_ROUTE_GRAMMAR_DRILL",
+      "LEVEL_DESIGN_REACHABILITY_DRILL",
+      "SEAMLESS_STREAMING_BUDGET_DRILL",
+      "FUTURE_ASSET_DEMAND_FORECAST_DRILL",
+      "STUDIO_TESTBED_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -571,7 +587,10 @@
       "COMPANION_BEHAVIOR",
       "NPC_BEHAVIOR",
       "MONSTER_BEHAVIOR_PERSONALITY",
-      "WORLD_NARRATIVE_BINDING"
+      "WORLD_NARRATIVE_BINDING",
+      "CHARACTER_PERSONA",
+      "RELATIONSHIP_MEMORY",
+      "WORLD_NARRATIVE"
     ],
     "existingLearningMotorOnly": true,
     "separateTrainerForbidden": true,
@@ -620,7 +639,15 @@
       "BEHAVIOR_PERSONA_MISMATCH",
       "WORLD_STATE_CONTRADICTION"
     ],
-    "rawGeneratedNarrativeMayIncreaseMastery": false
+    "rawGeneratedNarrativeMayIncreaseMastery": false,
+    "failureSignals": [
+      "KNOWLEDGE_LEAK",
+      "PAYOFF_MISS",
+      "VOICE_COLLAPSE",
+      "QUEST_REPETITION",
+      "RELATIONSHIP_INCONSISTENCY",
+      "WORLD_STATE_CONTRADICTION"
+    ]
   },
   "presentationLearning": {
     "enabled": true,
@@ -634,7 +661,14 @@
       "ANIMATION_FEEL",
       "VFX",
       "AUDIO_FEEL",
-      "CAMERA_LANGUAGE"
+      "CAMERA_LANGUAGE",
+      "VISUAL_IDENTITY",
+      "CONCEPT_DIRECTION",
+      "ENVIRONMENT_COMPOSITION",
+      "WORLD_GENERATION",
+      "LEVEL_DESIGN",
+      "NAVIGATION",
+      "STREAMING"
     ],
     "existingLearningMotorOnly": true,
     "shadowTrainerForbidden": true,
@@ -736,7 +770,12 @@
         "VFX",
         "AUDIO_FEEL",
         "CAMERA_LANGUAGE",
-        "ENVIRONMENT_COMPOSITION"
+        "ENVIRONMENT_COMPOSITION",
+        "CONCEPT_DIRECTION",
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "NAVIGATION",
+        "STREAMING"
       ],
       "signals": [
         "ASSET_FAMILY_USAGE",
@@ -752,13 +791,35 @@
         "AUDIO_REPEAT_DEFECT",
         "MATERIAL_STYLE_MISMATCH",
         "RUNTIME_ASSET_FAILURE",
-        "MOBILE_ASSET_BUDGET_FAILURE"
+        "MOBILE_ASSET_BUDGET_FAILURE",
+        "GAME_VISUAL_DNA_COMPATIBILITY",
+        "ASSET_LOADOUT_SELECTION",
+        "ASSET_USAGE_COUNT",
+        "GAME_CONSUMER_COUNT",
+        "LANDMARK_DISCOVERY_RATE",
+        "ROUTE_USAGE",
+        "ROUTE_ABANDONMENT",
+        "REVISIT_USE",
+        "STREAMING_HITCH",
+        "MOBILE_FRAME_COST",
+        "STUDIO_TESTBED_FAILURE",
+        "PLATFORM_VARIANT_FAILURE"
       ],
       "positiveMasteryRequiresVerifiedNativeRuntimePass": true,
       "preparedSemanticMayIncreaseMastery": false,
       "rawCoverageOrTelemetryDirectTraining": false,
       "verifiedFailureMayTeachAvoidPattern": true,
-      "canonicalPipeline": "company-learning/canonical-learning-pipeline.json"
+      "canonicalPipeline": "company-learning/canonical-learning-pipeline.json",
+      "retrievalPriority": [
+        "SAME_GAME_VERIFIED_VISUAL_WORLD_FAILURE",
+        "SAME_CONCEPT_VERIFIED_STYLE_PATTERN",
+        "SAME_GENRE_VERIFIED_LEVEL_DESIGN_PATTERN",
+        "SAME_PLATFORM_VERIFIED_STREAMING_PATTERN",
+        "CROSS_GAME_ABSTRACTED_VERIFIED_PATTERN"
+      ],
+      "gameVisualDnaRequiredBeforeMutation": true,
+      "verifiedUsageFeedbackOnly": true,
+      "futureDemandForecastMayPrepareButNotPromote": true
     }
   },
   "closedLoop": {
