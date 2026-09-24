@@ -732,7 +732,7 @@ test('development web is assessed before deterministic diagnostics',()=>{
 test('planner groups disjoint post-assessment candidates into one work package',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/dev-web');
-  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Dev</title></head><body><button>Play</button></body></html>\n','utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Dev</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button></body></html>\n`,'utf8');
   fs.writeFileSync(path.join(webRoot,'extra.js'),'// TODO: harden secondary UI path\n','utf8');
   const assessed={id:'dev-web-existing-web-assessment-v1',gameId:'dev-web',target:'web',sourceRoot:'web-games/dev-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const result=planVibe2AutonomousTasks({
@@ -752,7 +752,7 @@ test('completed diagnostic package is never recreated after assessment and compl
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Diag</title></head><body><button>Play</button></body></html>','utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Diag</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button></body></html>`,'utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
   const assessed={id:'diag-web-existing-web-assessment-v1',gameId:'diag-web',target:'web',sourceRoot:'web-games/diag-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4});
