@@ -313,6 +313,13 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (needsArt) steps.push('변형 후보를 스타일 일관성·실루엣 가독성·시각 품질·애니메이션 준비도·모바일 성능으로 실제 화면 비교 후 1개만 채택');
   if (needsArt) steps.push('모든 Unity/Roblox 네이티브 게임은 회사 라이브러리를 먼저 조회하고, 같은 게임/회사 검증 자산 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 → 리타겟/클린업 → 신규 제작 순서로 부족한 부분을 채운다');
   if (needsArt) steps.push('외부 에셋·모션은 다운로드만으로 회사 자산이 되지 않는다. 출처·라이선스·변형 이력을 보존하고 플랫폼 네이티브 적용과 실제 런타임·모바일 QA를 통과한 뒤에만 승격한다');
+  if (needsArt) steps.push('Studio Asset Universe에서 CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP 전체 Coverage를 스캔하고 실제 게임 수요·Style Lock·플랫폼 기준의 최대 gap부터 채운다');
+  if (needsArt) steps.push('몬스터는 30+ Body Plan/50+ Species 체계에서 silhouette/locomotion/attack/signature/audio/hit-death identity를 검증하고 색상만 바꾼 변종은 별도 종으로 세지 않는다');
+  if (needsArt) steps.push('의복/갑옷은 15개 layer slot과 테마 문법·체형/리그 호환·clipping을 검사하고 충돌 시 alternate variant를 선택하거나 조합을 차단한다');
+  if (needsArt) steps.push('건물/실내는 Foundation→Wall→Door/Window→Upper Floor→Roof→Decoration→Interior→Navigation QA 문법과 player/NPC 동선·collision을 검증한다');
+  if (needsArt) steps.push('환경은 Biome DNA와 Prop Density Director를 사용해 terrain/vegetation/water/fog/sky/lighting/landmark/ambience/creature/architecture preference를 같은 지역 언어로 연결한다');
+  if (needsArt) steps.push('무기-모션, 스킬 Cast→VFX→Projectile/Impact→Audio→Camera→Reaction, 재질·오디오 variation·damage/destruction presentation을 Cross-Asset Compatibility Graph로 연결한다');
+  if (needsArt) steps.push('Universal Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순서를 따르며 semantic seed는 실게임 runtime PASS 전 VERIFIED로 취급하지 않는다');
   if (artLevel) steps.push(`${artLevel >= 3 ? '고품질' : artLevel === 2 ? '상세' : '기본'} 캐릭터·적·보스·배경 에셋 구성`);
   if (artLevel >= 2) steps.push('허용 에셋을 분해하고 크롭/스케일/회전/색/명암/재질/실루엣을 재가공');
   if (artLevel >= 2) steps.push('분리 파츠를 재조합하고 지역종·변이종·보스 파생 디자인을 구성');
