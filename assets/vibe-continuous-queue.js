@@ -208,13 +208,17 @@ function normalizeNeuronResults(input = []) {
 }
 function normalizeTask(input = {}, index = 0) {
   const rawStatus=clean(input.status).toLowerCase();
-  const status = rawStatus==='done' ? 'verified' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
   const supervisionContract = normalizeSupervisionContract(input.supervisionContract) || (supervisionEvidenceRequired(input)?defaultSupervisionContract():null);
   const supervised = supervisionContract?.required===true;
   const unlimitedRetry=unlimitedRetryEligible(input);
   const retryPolicy=unlimitedRetry?UNLIMITED_RETRY_POLICY:(clean(input.retryPolicy).toUpperCase()||'BOUNDED');
+  const legacyRetryableFailure=rawStatus==='failed'
+    &&unlimitedRetry
+    &&/source-candidate-generation-failed|parallel-candidate-generation-failed|retry-limit-exceeded/i.test(clean(input.blocker));
+  const status = rawStatus==='done' ? 'verified' : legacyRetryableFailure ? 'queued' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
   const inputEvidence=normalizeEvidence(input.evidence||[]);
+  if(legacyRetryableFailure)inputEvidence.push('recovery:legacy-failed-unlimited-requeue-v1');
   const atomicPresentation=/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
     ||inputEvidence.some(value=>/^presentation-pass:|^weather-presentation:v1$|^asset-production-parallel:v1$/i.test(clean(value)));
   const normalizedEvidence=atomicPresentation
