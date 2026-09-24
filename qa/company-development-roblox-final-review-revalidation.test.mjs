@@ -83,3 +83,11 @@ test('scheduled F9 review fans out per game instead of serial portfolio processi
   assert.match(workflow,/gh workflow run company-development-roblox-final-review-revalidation\.yml[^\n]*-f game_id=/);
   assert.match(workflow,/final-review:\s*\n\s*if: github\.event_name == 'workflow_dispatch' && inputs\.game_id != ''/);
 });
+
+test('F9 persistence replays exact game state on latest runtime without portfolio JSON rebase',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(workflow,/roblox-f9-game-patch\.json/);
+  assert.match(workflow,/Object\.assign\(item,patch\.item\)/);
+  assert.match(workflow,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
