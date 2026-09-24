@@ -28,6 +28,21 @@ const posix=value=>String(value??'').replaceAll('\\','/').replace(/^\.\//,'').re
 const arg=(name,fallback='')=>process.argv.find(x=>x.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
 function sha256File(file){return file&&fs.existsSync(file)&&fs.statSync(file).isFile()?crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'):null;}
+function sha256PresentationSource(root){
+  if(!root||!fs.existsSync(root)||!fs.statSync(root).isDirectory())return null;
+  const hash=crypto.createHash('sha256'),allowed=new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg']),files=[],stack=[root];
+  while(stack.length){
+    const current=stack.pop();
+    for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+      if(['.git','node_modules','dist','build'].includes(entry.name))continue;
+      const full=path.join(current,entry.name);
+      if(entry.isDirectory()){stack.push(full);continue;}
+      if(entry.isFile()&&allowed.has(path.extname(entry.name).toLowerCase()))files.push(full);
+    }
+  }
+  for(const file of files.sort()){hash.update(posix(path.relative(root,file)));hash.update('\0');hash.update(fs.readFileSync(file));hash.update('\0');}
+  return files.length?hash.digest('hex'):null;
+}
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function safeFile(root,urlPath){const pathname=decodeURIComponent(String(urlPath||'/').split('?')[0]);const requested=pathname.endsWith('/')?`${pathname}index.html`:pathname;const file=path.resolve(root,`.${requested}`),base=path.resolve(root);if(!file.startsWith(base+path.sep)&&file!==base)return null;return file;}
 function startServer(root,port){const server=http.createServer((req,res)=>{const file=safeFile(root,req.url);if(!file||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end('not found');return;}res.setHeader('content-type',MIME[path.extname(file).toLowerCase()]||'application/octet-stream');fs.createReadStream(file).pipe(res);});return new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',()=>resolve(server));});}
@@ -307,6 +322,7 @@ async function observePresentationRoot({browser,repoRoot,sourcePath,port}={}){
     return{
       observed:true,
       sourceIndexSha256:sha256File(path.join(sourceDir,'index.html')),
+      presentationSourceSha256:sha256PresentationSource(sourceDir),
       screenshotSha256:crypto.createHash('sha256').update(png).digest('hex'),
       runtime,
       view,
@@ -323,7 +339,7 @@ async function observePresentationRoot({browser,repoRoot,sourcePath,port}={}){
 export function comparePresentationRuntimeObservations({before={},after={},baseRevision='',candidateRevision=''}={}){
   const exactCandidateRevisionBound=/^[0-9a-f]{40}$/i.test(clean(candidateRevision));
   const actualRuntimeObserved=before?.observed===true&&after?.observed===true;
-  const sourceChanged=Boolean(before?.sourceIndexSha256&&after?.sourceIndexSha256&&before.sourceIndexSha256!==after.sourceIndexSha256);
+  const sourceChanged=Boolean(before?.presentationSourceSha256&&after?.presentationSourceSha256&&before.presentationSourceSha256!==after.presentationSourceSha256);
   const screenshotChanged=Boolean(before?.screenshotSha256&&after?.screenshotSha256&&before.screenshotSha256!==after.screenshotSha256);
   const structureChanged=presentationStructureFingerprint(before)!==presentationStructureFingerprint(after);
   const visibleRenderDelta=sourceChanged&&(screenshotChanged||structureChanged);
