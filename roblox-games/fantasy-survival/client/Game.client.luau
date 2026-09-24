@@ -47,6 +47,14 @@ multiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)
 multiplayerStatus.TextScaled = true
 multiplayerStatus.Text = "Multiplayer sync ready"
 multiplayerStatus.Parent = root
+multiplayerStatus.Name = "MultiplayerStatus"
+multiplayerStatus.Size = UDim2.new(1, -20, 0, 36)
+multiplayerStatus.Position = UDim2.fromOffset(10, 104)
+multiplayerStatus.BackgroundTransparency = 1
+multiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)
+multiplayerStatus.TextScaled = true
+multiplayerStatus.Text = "Multiplayer sync ready"
+multiplayerStatus.Parent = root
 remote.OnClientEvent:Connect(function(kind, payload)
   if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end
   multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)
