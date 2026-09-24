@@ -93,9 +93,17 @@ jobs:
           if [ "$EVENT_NAME" = 'pull_request' ] && [ -n "${PR_BASE:-}" ]; then
             base_sha="$PR_BASE"
             git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --depth=1 --no-tags origin "$base_sha" --quiet
-          elif [ "$EVENT_NAME" = 'push' ] && [ -n "${PUSH_BEFORE:-}" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+          echo "base=$base_sha" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = 'push' ] && [ -n "${PUSH_BEFORE:-}" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+$'; then
+            base_sha="$PUSH_BEFORE"
+            git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --depth=1 --no-tags origin "$base_sha" --quiet
+          else
+            git fetch --deepen=1 --no-tags origin main --quiet || true
+            base_sha="$(git rev-parse "$head_sha^" 2>/dev/null || git rev-parse "$head_sha")"
+          fi
+          git cat-file -e "$base_sha^{commit}"
+          git cat-file -e "$head_sha^{commit}"
+          echo "base=$base_sha" >> "$GITHUB_OUTPUT"
           echo "head=$head_sha" >> "$GITHUB_OUTPUT"
-
       - name: Scan changed attack surface
         id: scan
         shell: bash
