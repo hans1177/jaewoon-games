@@ -66,3 +66,15 @@ test('shared Roblox preflight checkout fans out without an internal six-game cap
   assert.match(workflow,/ROBLOX_PREFLIGHT_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
   assert.doesNotMatch(workflow,/ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX/);
 });
+
+
+test('Roblox continuation is exact-game parallel with no global workflow serialization',()=>{
+  assert.match(preflight,/workflow_dispatch:\s*\n\s*inputs:\s*\n\s*game_id:/);
+  assert.match(preflight,/group: company-development-roblox-runtime-continuation-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
+  assert.match(preflight,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
+  assert.match(preflight,/if\(requested&&item\.gameId!==requested\)continue;/);
+  assert.match(preflight,/pass_ids: \$\{\{ steps\.persist\.outputs\.pass_ids \}\}/);
+  assert.match(preflight,/gh workflow run company-development-roblox-headless-fast-mvp\.yml[^\n]*-f game_id="\$id"/);
+  assert.match(preflight,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED_COUNT=/);
+  assert.doesNotMatch(preflight,/group: company-development-roblox-runtime-continuation\s*\n/);
+});

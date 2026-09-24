@@ -2,13 +2,18 @@ name: Company DEVELOPMENT_CONFIRMED Roblox Vibe Shared Preflight
 
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact game id. Empty keeps batch recovery behavior.
+        required: false
+        type: string
 
 permissions:
   contents: write
   actions: write
 
 concurrency:
-  group: company-development-roblox-runtime-continuation
+  group: company-development-roblox-runtime-continuation-${{ inputs.game_id || github.run_id }}
   cancel-in-progress: false
 
 env:
@@ -48,6 +53,8 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - name: Resolve exact-build preflight slice
         id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -56,9 +63,12 @@ jobs:
           import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_CONTINUATION_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=256)break;
+            if(requested&&item.gameId!==requested)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
@@ -83,6 +93,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log(`ROBLOX_CONTINUATION_REQUESTED_GAME_ID=${requested||'BATCH_RECOVERY'}`);
           console.log('ROBLOX_EXECUTION_WIP_MAX=EXTERNAL_PROVIDER_CAPACITY_ONLY');
           console.log('ROBLOX_PREFLIGHT_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
@@ -173,6 +184,7 @@ jobs:
     timeout-minutes: 12
     outputs:
       pass_count: ${{ steps.persist.outputs.pass_count }}
+      pass_ids: ${{ steps.persist.outputs.pass_ids }}
     concurrency:
       group: company-runtime-writer
       cancel-in-progress: false
@@ -208,7 +220,7 @@ jobs:
           const results=[];
           if(fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.preflight.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(dir,name),'utf8')));
           const byId=new Map(results.map(x=>[x.gameId,x]));
-          const stamp=new Date().toISOString();let pass=0,fail=0;
+          const stamp=new Date().toISOString();let pass=0,fail=0;const passIds=[];
           for(const target of expected){
             const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
             const result=byId.get(target.gameId);
@@ -223,7 +235,7 @@ jobs:
                   ownerFocusRobloxServerClientBoundaryPassed:false,ownerFocusRobloxDatastoreRejoinPassed:false,ownerFocusRobloxMobileControlUiPassed:false,
                   ownerFocusRobloxIndependentQaPassed:false,ownerFocusRobloxIndependentQaPassedAt:null,ownerFocusRobloxRegressionPassed:false,ownerFocusRobloxRegressionPassedAt:null,
                   ownerFocusRobloxPostRuntimeQaEvidence:null,ownerFocusRobloxAssetPipelineState:'PREFLIGHT_READY',updatedAt:stamp});
-                pass++;
+                pass++;passIds.push(target.gameId);
               }else{
                 Object.assign(item,{ownerFocusRobloxBuildPreflightPassed:false,ownerFocusRobloxBuildPreflightFailedAt:stamp,ownerFocusRobloxBuildPreflightEvidence:result||null,
                   ownerFocusRobloxAssetPipelineState:'PREFLIGHT_REPAIR_REQUIRED',ownerFocusRobloxPreflightFailure:result?'ROBLOX_BUILD_PREFLIGHT_BLOCKED':'ROBLOX_BUILD_PREFLIGHT_RESULT_MISSING',updatedAt:stamp});
@@ -242,7 +254,7 @@ jobs:
                 robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
                 robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
                 robloxLastSuccessfulStage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',robloxFailureStage:'F0_SOURCE_INTEGRITY',robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_PENDING',routingBlockers:['roblox-f0-source-preflight-pending'],updatedAt:stamp});
-              pass++;
+              pass++;passIds.push(target.gameId);
             }else{
               Object.assign(item,{robloxBuildPreflightPassed:false,robloxBuildPreflightFailedAt:stamp,robloxBuildPreflightEvidence:result||null,
                 robloxFailureStage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',robloxFailureSignature:result?'ROBLOX_BUILD_PREFLIGHT_BLOCKED':'ROBLOX_BUILD_PREFLIGHT_RESULT_MISSING',routingBlockers:['roblox-build-preflight-blocked'],updatedAt:stamp});
@@ -251,6 +263,7 @@ jobs:
           }
           queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass_count=${pass}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass_ids=${JSON.stringify(passIds)}\n`);
           console.log(`ROBLOX_BUILD_PREFLIGHT_PASS_COUNT=${pass}`);console.log(`ROBLOX_BUILD_PREFLIGHT_FAIL_COUNT=${fail}`);
           console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');
           NODE
@@ -281,7 +294,16 @@ jobs:
       - name: Dispatch exact-package F0 source preflight
         env:
           GH_TOKEN: ${{ github.token }}
+          PASS_IDS: ${{ needs.preflight-persist.outputs.pass_ids }}
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main
+          mapfile -t ids < <(PASS_IDS="$PASS_IDS" node -e "for(const id of JSON.parse(process.env.PASS_IDS||'[]'))console.log(id)")
+          pids=()
+          for id in "${ids[@]}"; do
+            gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" &
+            pids+=("$!")
+            echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED_GAME=$id"
+          done
+          for pid in "${pids[@]}"; do wait "$pid"; done
+          echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED_COUNT=${#ids[@]}"
           echo 'ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'

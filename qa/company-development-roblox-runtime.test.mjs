@@ -297,16 +297,20 @@ test('new Roblox package identity clears every downstream preflight runtime and 
   ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
 });
 
-test('successful Roblox package flow auto-dispatches shared preflight then F0 without a Studio approval gate',()=>{
+test('successful Roblox package flow dispatches each ready game independently into shared preflight then F0',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
   assert.ok(workflow.includes('Dispatch Roblox HEADLESS FAST_MVP continuation')||workflow.includes('continuation'));
   assert.ok(!workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
-  assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
-  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
-  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_GAME='));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT='));
+  assert.ok(workflow.includes('ROBLOX_CROSS_GAME_STAGE_BARRIER=NONE'));
+  assert.ok(!workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
+  assert.ok(!workflow.includes("ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1"));
+  assert.ok(workflow.includes("ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=EXTERNAL_PROVIDER_CAPACITY_ONLY"));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
   assert.ok(!preflight.includes('studio_run_approved:'));
@@ -402,6 +406,15 @@ test('central development orchestrator dispatches both native lanes without Web 
   assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
+test('central orchestrator launches each Roblox game as an exact parallel workflow instead of one batch barrier',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/IFS=',' read -ra native_ids <<< "\$ELIGIBLE_IDS"/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id="\$id" &/);
+  assert.match(workflow,/ROBLOX_RUNTIME_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL/);
+  assert.match(workflow,/ROBLOX_RUNTIME_DISPATCH_COUNT=/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main\s*$/m);
+});
+
 test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
@@ -483,6 +496,15 @@ test('Roblox game source pushes route through exact changed-source sync instead 
   assert.match(runtimePush,/company-roblox-source-drift-sync\.test\.mjs/);
 });
 
+
+test('Roblox source and technical self-refills dispatch exact games in parallel instead of broad batches',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/ROBLOX_NEXT_SOURCE_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL/);
+  assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL/);
+  assert.match(workflow,/ROBLOX_NEXT_SOURCE_DISPATCH_GAME=/);
+  assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_DISPATCH_GAME=/);
+  assert.ok((workflow.match(/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id="\$id" &/g)||[]).length>=2);
+});
 
 test('exact Roblox runtime dispatch has an isolated workflow concurrency lane',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
