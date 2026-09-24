@@ -23,6 +23,8 @@ on:
       - '.github/workflows/company-growth-marketing-runtime.yml'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
+      - 'assets/vibe-studio-asset-universe.js'
+      - 'qa/vibe-studio-asset-universe.test.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
@@ -189,6 +191,7 @@ jobs:
               node --check tools/vibe2-auto-planner.mjs
               node --check tools/vibe2-continuous-runner.mjs
               node --check tools/vibe2-asset-production-plan.mjs
+              node --check assets/vibe-studio-asset-universe.js
               node --check tools/vibe2-source-worker.mjs
               node --check tools/vibe2-capability-distillation.mjs
               node --check tools/vibe3-roblox-distillation.mjs
@@ -200,6 +203,7 @@ jobs:
               node --test qa/vibe2-learning-motor.test.mjs
               node --test qa/vibe2-auto-planner.test.mjs
               node --test qa/vibe2-native-asset-production.test.mjs
+              node --test qa/vibe-studio-asset-universe.test.mjs
               node --test qa/vibe2-source-worker.test.mjs
               node --test qa/vibe2-capability-distillation.test.mjs
               node --test qa/vibe3-roblox-distillation.test.mjs

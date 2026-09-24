@@ -1,5 +1,5 @@
 {
-  "version": 40,
+  "version": 41,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -701,5 +701,46 @@
     "noLearningPauseMarkerAllowedDuringHealthySchedulerOperation": true,
     "queuedWorkDuringCapacityPressureCountsAsContinuity": true,
     "positiveLearningStillRequiresExistingVerificationGates": true
+  },
+  "studioAssetUniverseEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse",
+    "recordKind": "studio-asset-universe-evidence",
+    "requiredFields": [
+      "GAME_ID",
+      "PLATFORM",
+      "STYLE_LOCK",
+      "COVERAGE_REPORT",
+      "IDENTITY_QA",
+      "COMPATIBILITY_GRAPH_RESULT",
+      "STYLE_BIBLE_RESULT",
+      "LINEAGE_RESULT",
+      "LICENSE_RESULT",
+      "PLATFORM_VARIANT_RESULT",
+      "GAP_PRIORITY",
+      "FILL_ROUTE",
+      "RUNTIME_VERIFICATION_STATE"
+    ],
+    "preparedSemanticMayNotClaimVerified": true,
+    "actualNativeRuntimeEvidenceRequiredForPromotion": true,
+    "unresolvedRequiredCompatibilityEdgeBlocksPromotion": true
+  },
+  "universalAssetCoverageEvidenceContract": {
+    "version": 1,
+    "recordKind": "universal-asset-coverage-evidence",
+    "requiredFields": [
+      "ASSET_FAMILY",
+      "SUBFAMILY",
+      "REQUIRED_BASELINE",
+      "AVAILABLE_VERIFIED",
+      "AVAILABLE_PREPARED",
+      "MISSING_SLOTS",
+      "COVERAGE_PERCENT",
+      "PRIORITY_SCORE",
+      "REUSE_CANDIDATES",
+      "EXTERNAL_CANDIDATES",
+      "SEMANTIC_SEEDS"
+    ],
+    "heatmapPriorityMustBeEvidenceBased": true
   }
 }

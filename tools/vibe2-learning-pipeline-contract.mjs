@@ -24,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 4, 'contract.version');
+eq(contract.version, 5, 'contract.version');
 eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
 eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
 eq(contract.policyAuthority, false, 'contract.policyAuthority');
@@ -59,6 +59,14 @@ eq(contract.continuous24hIngress?.verifiedFailureIngressNeverStops, true, 'verif
 eq(contract.continuous24hIngress?.practiceAndRelearningCandidateGenerationNeverStops, true, 'practice and relearning generation never stops');
 eq(contract.continuous24hIngress?.productionActivityMayNotDisableIngress, true, 'production cannot disable learning ingress');
 eq(contract.continuous24hIngress?.trainingThresholdsAndPromotionGatesUnchanged, true, '24h learning gates unchanged');
+eq(contract.studioAssetUniverseEvidence?.enabled, true, 'studio asset universe evidence enabled');
+eq(contract.studioAssetUniverseEvidence?.usesCanonicalChainOnly, true, 'studio asset universe canonical chain only');
+eq(contract.studioAssetUniverseEvidence?.separatePipelineForbidden, true, 'studio asset universe separate pipeline forbidden');
+eq(contract.studioAssetUniverseEvidence?.preparedSemanticEvidenceAccepted, false, 'semantic asset templates cannot teach positive mastery');
+eq(contract.studioAssetUniverseEvidence?.rawCoverageTelemetryDirectTraining, false, 'raw asset coverage direct training forbidden');
+eq(contract.studioAssetUniverseEvidence?.verifiedOutcomeMayBecomeTrainingSample, true, 'verified asset outcome may become training sample');
+eq(contract.studioAssetUniverseEvidence?.existingThresholdsHoldoutCanaryUnchanged, true, 'studio asset universe learning thresholds unchanged');
+eq(contract.studioAssetUniverseEvidence?.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate, true, 'asset platform evidence separation');
 
 const portableWeb=contract.portableWebLearning;
 eq(portableWeb?.enabled, false, 'legacy portable Web learning disabled');

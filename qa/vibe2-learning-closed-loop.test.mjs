@@ -11,7 +11,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const motor=json('company-learning/vibe2-learning-motor.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,9);
+  assert.equal(motor.version,10);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -48,6 +48,15 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.continuous24h.executionLaneRunsDuringProduction,true);
   assert.equal(motor.idleTraining.productionPresenceDoesNotSuppressLearningExecution,true);
   assert.equal(motor.idleTraining.minimumConcurrentLearningLaneRequired,true);
+  assert.equal(motor.presentationLearning.studioAssetUniverse.enabled,true);
+  assert.equal(motor.presentationLearning.studioAssetUniverse.existingLearningMotorOnly,true);
+  assert.equal(motor.presentationLearning.studioAssetUniverse.separateTrainerForbidden,true);
+  assert.equal(motor.presentationLearning.studioAssetUniverse.positiveMasteryRequiresVerifiedNativeRuntimePass,true);
+  assert.equal(motor.presentationLearning.studioAssetUniverse.preparedSemanticMayIncreaseMastery,false);
+  assert.equal(motor.presentationLearning.studioAssetUniverse.rawCoverageOrTelemetryDirectTraining,false);
+  assert.ok(motor.idleTraining.drills.includes('UNIVERSAL_ASSET_COVERAGE_DRILL'));
+  assert.ok(motor.idleTraining.drills.includes('CLOTHING_ARMOR_LIBRARY_DRILL'));
+  assert.ok(motor.idleTraining.drills.includes('BUILDING_MODULAR_LIBRARY_DRILL'));
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{

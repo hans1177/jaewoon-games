@@ -1,5 +1,5 @@
 {
-  "version": 143,
+  "version": 144,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2148,7 +2148,17 @@
         "UI_PRESENTATION_LIBRARY",
         "SKILL_MOTION_LIBRARY",
         "REACTION_MOTION_LIBRARY",
-        "PAIR_MOTION_LIBRARY"
+        "PAIR_MOTION_LIBRARY",
+        "CLOTHING_LIBRARY",
+        "ARMOR_LIBRARY",
+        "BUILDING_MODULAR_LIBRARY",
+        "INTERIOR_KIT_LIBRARY",
+        "PROP_LIBRARY",
+        "MATERIAL_LIBRARY",
+        "AUDIO_LIBRARY",
+        "SKILL_PRESENTATION_LIBRARY",
+        "DAMAGE_PRESENTATION_LIBRARY",
+        "DESTRUCTION_LIBRARY"
       ],
       "ownerVisualInspectionRoute": "/asset-library.html",
       "registry": "company-asset-library.json",
@@ -2326,6 +2336,32 @@
         "usagePriorityRequired": true,
         "duplicateControlRequired": true,
         "continuousExpansion": true
+      },
+      "studioAssetUniverse": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "HIGH_END_STUDIO_ASSET_UNIVERSE",
+        "implementation": "assets/vibe-studio-asset-universe.js",
+        "internalModuleOnly": true,
+        "createsNewTopLevelPipeline": false,
+        "phases": [
+          "STUDIO_ASSET_UNIVERSE_FOUNDATION",
+          "AUTONOMOUS_LIBRARY_POPULATION_24H"
+        ],
+        "systems": [
+          "ASSET_DNA",
+          "UNIVERSAL_COVERAGE_SCANNER",
+          "CROSS_ASSET_COMPATIBILITY_GRAPH",
+          "ASSET_IDENTITY_QA",
+          "STYLE_BIBLE",
+          "LINEAGE_PROVENANCE",
+          "LICENSE_GATE",
+          "PLATFORM_VARIANT_GATE",
+          "LIBRARY_HEATMAP",
+          "AUTONOMOUS_GAP_FILL_24H"
+        ],
+        "learningUsesExistingCanonicalChainOnly": true,
+        "platformNativeRuntimeVerificationRequired": true
       }
     }
   },
@@ -2569,7 +2605,10 @@
         "CHARACTER_AND_CREATURE_ACTING",
         "ENVIRONMENTAL_STORYTELLING",
         "CONTINUOUS_PRESENTATION_EVOLUTION",
-        "COMPOSABLE_MOTION_DIRECTION"
+        "COMPOSABLE_MOTION_DIRECTION",
+        "STUDIO_ASSET_UNIVERSE",
+        "UNIVERSAL_ASSET_COVERAGE",
+        "AUTONOMOUS_LIBRARY_POPULATION"
       ],
       "usesExistingDepartment": true,
       "duplicateArtDepartmentForbidden": true,
@@ -2582,7 +2621,8 @@
         "assets/vibe-visual-autopilot.js",
         "assets/vibe-presentation-director.js",
         "assets/vibe-visual-quality-gate.js",
-        "assets/vibe-motion-director.js"
+        "assets/vibe-motion-director.js",
+        "assets/vibe-studio-asset-universe.js"
       ],
       "oneTopLevelGraphicsWorkUnitPerGameCandidate": true,
       "internalRolesMayNotCreateSiblingTopLevelGraphicsPipelines": true,
