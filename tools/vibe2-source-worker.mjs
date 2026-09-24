@@ -1006,7 +1006,9 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
         if(!match)continue;
         const original=match[0];
         if(fullSource.split(original).length-1!==1)continue;
-        rows.push({value:original,score:100,length:original.length});
+        const presentationPreferred=/(?:render|visual|presentation|camera|vfx|effect|effects|ui|hud|style|fx|Color|Material|Lighting|Tween|Animation|Particle|Trail|Beam|CFrame|FieldOfView)/i.test(symbol+' '+original);
+        const score=presentationTask?(presentationPreferred?180:12):100;
+        rows.push({value:original,score,length:original.length});
         break;
       }
     }
@@ -1030,7 +1032,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
       let score=0;
       if(/\b(?:function|const|let|var|if|for|while|return|addEventListener|querySelector|getElementById|classList|dataset|localStorage)\b|<(?:button|canvas|div|section|main)\b|\bid=|\bdata-/i.test(trimmed))score+=4;
       if(/\b(?:assert(?:\.|\()|test\s*\(|describe\s*\(|it\s*\()/i.test(trimmed))score+=8;
-      if(presentationTask&&/(?:Color3|BackgroundColor3|Material|Texture|Mesh|Instance\.new|Camera|FieldOfView|Particle|Trail|Beam|Tween|Animation|Animator|Motor6D|CFrame|\.Size\b|\.Position\b|Lighting|render|visual|motion|vfx|effect|Frame|ImageLabel|ImageButton)/i.test(trimmed))score+=20;
+      if(presentationTask&&/(?:Color3|BackgroundColor3|Material|Texture|Mesh|Instance\.new|Camera|FieldOfView|Particle|Trail|Beam|Tween|Animation|Animator|Motor6D|CFrame|\.Size\b|\.Position\b|Lighting|render|visual|motion|vfx|effect|Frame|ImageLabel|ImageButton)/i.test(trimmed))score+=160;
       if(trimmed.length>=20&&trimmed.length<=120)score+=2;
       if(/[=(){}<>]/.test(trimmed))score+=1;
       rows.push({value:original,score,length:trimmed.length});
@@ -1112,8 +1114,10 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
+  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
   const presentationDeltaFailure=/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
-  const robloxPresentationDeltaFailure=presentationDeltaFailure&&/Engine:\s*roblox/i.test(raw);
+  const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
   return{
     spec,
     prompt:[
@@ -1126,8 +1130,10 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'Return exactly one JSON object with exactly one key named "replace".',
       'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
-      presentationDeltaFailure?'This recovery is for a PRESENTATION_PATCH_DELTA failure. replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
-      robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: the worker has prioritized a client/visual owner anchor. Make the replacement visibly affect native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI. Preserve gameplay numbers and save/progression semantics.':'',
+      presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, and gameplay-only changes are invalid.':'',
+      robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: the fixed anchor must be treated as presentation-owned source. Change native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI while preserving gameplay numbers and save/progression semantics.':'',
+      presentationDeltaFailure?'This recovery is specifically for a PRESENTATION_PATCH_DELTA failure. Do not return another nonvisual candidate.':'',
+      robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: produce an observable native visual delta at this exact client/visual owner anchor.':'',
       'Returning the exact find anchor unchanged is invalid. Change at least one behaviorally meaningful source token while preserving unrelated behavior.',
       'Preserve save keys, gameplay values, existing behavior, and unrelated systems unless the Goal explicitly requires changing them.',
       'No markdown, prose, comments outside source, extra keys, placeholders, ellipsis, or unchanged copy.',
