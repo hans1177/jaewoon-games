@@ -185,6 +185,204 @@ export function evaluateConceptCompatibility({asset={},concept={}}={}){
   });
 }
 
+export function createGameVisualDNA({
+  gameId='',concept={},styleBible={},worldDna={},biomeLanguage='',characterLanguage='',creatureLanguage='',
+  buildingLanguage='',motionLanguage='',vfxLanguage='',audioLanguage='',uiLanguage='',narrativePresentationLanguage=''
+}={}){
+  const conceptProfile=concept.weightedStyles?concept:createConceptProfile(concept);
+  const bible=createStyleBible({styleFamily:conceptProfile.dominantStyle,...styleBible});
+  const fingerprint=[
+    text(gameId)||'GAME',
+    conceptProfile.weightedStyles.map(row=>row.family+':'+row.weight).join(','),
+    upper(worldDna?.BIOME||worldDna?.biome||worldDna?.fields?.BIOME),
+    text(bible.shapeLanguage),text(bible.materialLanguage),text(bible.lightingLanguage),
+    text(motionLanguage),text(vfxLanguage),text(audioLanguage),text(uiLanguage),text(narrativePresentationLanguage)
+  ].join('|');
+  return Object.freeze({
+    gameId:text(gameId),
+    fingerprint,
+    concept:conceptProfile,
+    styleBible:bible,
+    worldDna:Object.freeze({...worldDna}),
+    languages:Object.freeze({
+      BIOME:text(biomeLanguage)||upper(worldDna?.BIOME||worldDna?.biome||worldDna?.fields?.BIOME),
+      CHARACTER:text(characterLanguage)||text(bible.characterProportion),
+      CREATURE:text(creatureLanguage)||text(bible.creatureLanguage),
+      BUILDING:text(buildingLanguage)||text(bible.buildingLanguage),
+      MOTION:text(motionLanguage)||text(bible.animationExaggeration),
+      VFX:text(vfxLanguage)||text(bible.vfxShapeLanguage),
+      AUDIO:text(audioLanguage)||'MATCH_CONCEPT_WORLD_AND_EVENT_ROLE',
+      UI:text(uiLanguage)||text(bible.uiLanguage),
+      NARRATIVE_PRESENTATION:text(narrativePresentationLanguage)||'MATCH_GAME_CONCEPT_AND_WORLD_STATE'
+    }),
+    gameStyleLockWins:true,
+    gameplayAuthority:false
+  });
+}
+
+function assetSourceTier(row={}){
+  if(row.verified)return 5;
+  if(/REPO_ASSET|REPOSITORY/.test(row.status))return 4;
+  if(/LICENSE_VERIFIED_EXTERNAL/.test(row.status))return 3;
+  if(row.prepared)return 1;
+  return 2;
+}
+
+export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
+  const row=normalizeRegistryAsset(asset);
+  const concept=gameDna?.concept||createConceptProfile({styleFamily:row.styleFamily||'STYLIZED_FANTASY'});
+  const conceptQa=evaluateConceptCompatibility({asset,concept});
+  const platform=upper(gameDna?.platform||gameDna?.PLATFORM_VARIANT||asset.platformVariant||asset.platform);
+  const targetPlatform=upper(gameDna?.targetPlatform||gameDna?.platform);
+  let score=assetSourceTier(row)*20;
+  if(conceptQa.pass)score+=25; else score-=45;
+  if(targetPlatform&&(!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE'))score+=15;
+  if(usage.runtimePass===true)score+=20;
+  score+=Math.min(20,Math.max(0,Number(usage.gameConsumerCount)||0)*4);
+  score+=Math.min(10,Math.max(0,Number(usage.usageCount)||0));
+  if(usage.runtimeFailure===true||Number(usage.verifiedFailureCount)>0)score-=Math.min(60,20+Number(usage.verifiedFailureCount||0)*10);
+  if(usage.identityFailure===true||usage.styleFailure===true||usage.navigationFailure===true)score-=25;
+  if(usage.mobileBudgetFailure===true)score-=20;
+  return Object.freeze({
+    id:row.id,
+    score:Math.round(score),
+    sourceTier:assetSourceTier(row),
+    verified:row.verified,
+    conceptPass:conceptQa.pass,
+    platformCompatible:!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE',
+    rejected:Boolean(!conceptQa.pass||usage.lockedOut===true),
+    reasons:Object.freeze([
+      row.verified?'VERIFIED_RUNTIME_OR_COMPANY':'UNVERIFIED_OR_PREPARED',
+      conceptQa.pass?'CONCEPT_COMPATIBLE':'CONCEPT_MISMATCH',
+      usage.runtimeFailure===true?'VERIFIED_RUNTIME_FAILURE':''
+    ].filter(Boolean))
+  });
+}
+
+export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},usageByAsset={}}={}){
+  const normalized=(assets||[]).map(asset=>({asset,row:normalizeRegistryAsset(asset)}));
+  const selections=[];
+  for(const requirement of requirements||[]){
+    const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
+    const candidates=normalized
+      .filter(({row})=>row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily)))
+      .map(({asset,row})=>({asset,row,score:scoreStudioAssetCandidate({asset,gameDna,usage:usageByAsset[row.id]||{}})}))
+      .filter(x=>!x.score.rejected)
+      .sort((a,b)=>b.score.sourceTier-a.score.sourceTier||b.score.score-a.score.score||a.row.id.localeCompare(b.row.id));
+    const picked=candidates[0]||null;
+    selections.push(Object.freeze({
+      family,subfamily,required:requirement.required!==false,
+      assetId:picked?.row.id||null,
+      score:picked?.score.score??null,
+      sourceTier:picked?.score.sourceTier??0,
+      verified:picked?.row.verified===true,
+      unresolved:!picked
+    }));
+  }
+  return Object.freeze({
+    selections:Object.freeze(selections),
+    unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
+    complete:selections.every(row=>!row.required||!row.unresolved),
+    manualOrLockedChoiceWins:true,
+    gameplayAuthority:false
+  });
+}
+
+export function buildFutureAssetDemandForecast({gameDemands=[],coverageReport={}}={}){
+  const demand=new Map();
+  for(const game of gameDemands||[]){
+    const weight=Math.max(1,Number(game.priorityWeight)||1);
+    for(const req of game.requirements||[]){
+      const key=upper(req.family)+':'+upper(req.subfamily);
+      if(key===':')continue;
+      demand.set(key,(demand.get(key)||0)+weight*Math.max(1,Number(req.count)||1));
+    }
+  }
+  const rows=(coverageReport.rows||[]).map(row=>{
+    const key=row.family+':'+row.subfamily;
+    const futureDemand=demand.get(key)||0;
+    const forecastScore=futureDemand*20+Math.max(0,Number(row.missingSlots)||0)*8+(Number(row.coveragePercent)<50?15:0);
+    return Object.freeze({...row,futureDemand,forecastScore});
+  }).filter(row=>row.futureDemand>0||row.missingSlots>0)
+    .sort((a,b)=>b.forecastScore-a.forecastScore||b.futureDemand-a.futureDemand||a.family.localeCompare(b.family));
+  return Object.freeze({
+    rows:Object.freeze(rows),
+    highestPriority:rows[0]||null,
+    preparationOnly:true,
+    maySelfPromoteVerified:false
+  });
+}
+
+export function createCreatureSpeciesBlueprint({
+  id='',bodyPlan='',species='',concept={},silhouette='',locomotion='',attackLanguage='',signatureSkill='',audioIdentity='',hitDeathIdentity='',platform=''
+}={}){
+  const profile=createConceptProfile(concept);
+  const missing=[];
+  for(const [key,value] of Object.entries({BODY_PLAN:bodyPlan,SPECIES:species,SILHOUETTE:silhouette,LOCOMOTION:locomotion,ATTACK_LANGUAGE:attackLanguage,SIGNATURE_SKILL:signatureSkill,AUDIO_IDENTITY:audioIdentity,HIT_DEATH_IDENTITY:hitDeathIdentity}))if(!text(value))missing.push(key);
+  return Object.freeze({
+    id:text(id)||[upper(species||'CREATURE'),upper(bodyPlan||'BODY'),profile.dominantStyle].join('_'),
+    bodyPlan:upper(bodyPlan),species:upper(species),concept:profile,
+    identity:Object.freeze({
+      silhouette:text(silhouette),locomotion:text(locomotion),attackLanguage:text(attackLanguage),
+      signatureSkill:text(signatureSkill),audioIdentity:text(audioIdentity),hitDeathIdentity:text(hitDeathIdentity)
+    }),
+    platform:upper(platform),complete:missing.length===0,missing:Object.freeze(missing),
+    colorOnlySpeciesVariantAllowed:false,gameplayStatsAuthority:false
+  });
+}
+
+export function createPlatformAssetVariantPlan({
+  platform='UNITY',deviceClass='MOBILE',styleIdentity='',sourceAssetId='',lod='AUTO',meshDensity='AUTO',materialComplexity='AUTO',
+  textureBudget='AUTO',particleBudget='AUTO',audioVariantBudget='AUTO',motionLod='AUTO',lightingComplexity='AUTO'
+}={}){
+  const p=upper(platform),mobile=/MOBILE/.test(upper(deviceClass));
+  return Object.freeze({
+    sourceAssetId:text(sourceAssetId),platform:p,deviceClass:upper(deviceClass),styleIdentity:text(styleIdentity),
+    adaptation:Object.freeze({
+      LOD:upper(lod),MESH_DENSITY:upper(meshDensity),MATERIAL_COMPLEXITY:upper(materialComplexity),
+      TEXTURE_BUDGET:upper(textureBudget),PARTICLE_BUDGET:upper(particleBudget),AUDIO_VARIANT_BUDGET:upper(audioVariantBudget),
+      MOTION_LOD:upper(motionLod),LIGHTING_COMPLEXITY:upper(lightingComplexity)
+    }),
+    mobileBudgetRequired:mobile,
+    preserve:Object.freeze(['GAMEPLAY_SPEED','HITBOX_SEMANTICS','DAMAGE','COOLDOWN','SAVE_MEANING','PROGRESSION','NETWORK_AUTHORITY','STYLE_IDENTITY']),
+    runtimeVerificationRequired:true
+  });
+}
+
+export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=true}={}){
+  const scenarios=['DEFAULT_LIGHT','LOW_LIGHT','COMBAT_CLOSE','COMBAT_CROWD','RAIN_OR_WEATHER','MOBILE_LOW_BUDGET','LOD_DISTANCE','NAVIGATION_AND_COLLISION','MOTION_CONTACT','UI_READABILITY'];
+  return Object.freeze({
+    assetIds:freezeList(uniq(assetIds)),platform:upper(platform),mobile:Boolean(mobile),scenarios:Object.freeze(scenarios),
+    checks:Object.freeze(['STYLE_IDENTITY','SILHOUETTE_READABILITY','MOTION_CONTACT','NAVIGATION_COLLISION','LOD_POP','MOBILE_FRAME_COST','VFX_READABILITY','AUDIO_REPETITION','UI_READABILITY']),
+    testbedPassMayPromoteCompanyAsset:false,
+    actualGameRuntimeStillRequired:true
+  });
+}
+
+export function summarizeVerifiedAssetUsage({events=[]}={}){
+  const rows=new Map();
+  for(const event of events||[]){
+    const id=text(event.assetId);if(!id)continue;
+    const row=rows.get(id)||{assetId:id,usageCount:0,gameIds:new Set(),runtimePassCount:0,runtimeFailureCount:0,failureReasons:new Set()};
+    row.usageCount+=Math.max(1,Number(event.count)||1);
+    if(event.gameId)row.gameIds.add(text(event.gameId));
+    if(event.verifiedRuntimePass===true)row.runtimePassCount++;
+    if(event.verifiedRuntimeFailure===true){row.runtimeFailureCount++;if(event.failureReason)row.failureReasons.add(upper(event.failureReason));}
+    rows.set(id,row);
+  }
+  return Object.freeze({
+    rows:Object.freeze([...rows.values()].map(row=>Object.freeze({
+      assetId:row.assetId,usageCount:row.usageCount,gameConsumerCount:row.gameIds.size,
+      runtimePassCount:row.runtimePassCount,runtimeFailureCount:row.runtimeFailureCount,
+      failureReasons:freezeList([...row.failureReasons]),
+      positiveLearningEligible:row.runtimePassCount>0,
+      negativeLearningEligible:row.runtimeFailureCount>0
+    }))),
+    rawTelemetryDirectTrainingAllowed:false,
+    existingCanonicalLearningChainOnly:true
+  });
+}
+
 export function evaluateStyleBible(asset={},bible={}){
   const dna=asset.dna||asset;
   const expected=upper(bible.styleFamily);
@@ -518,7 +716,8 @@ export function createAssetLineage({
 
 export function createStudioAssetUniversePlan({
   assets=[],repositoryAssets=[],externalSources=[],activeDemand={},signalsByKey={},platform='UNITY',
-  styleFamily='STYLIZED_FANTASY',styleBible={},concept={}
+  styleFamily='STYLIZED_FANTASY',styleBible={},concept={},gameId='',worldDna={},languages={},
+  requirements=[],usageByAsset={},futureGameDemands=[],usageEvents=[]
 }={}){
   const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
@@ -527,14 +726,25 @@ export function createStudioAssetUniversePlan({
   const gapFill=buildAutonomousAssetGapFillPlan({
     coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey
   });
+  const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:{styleFamily:resolvedStyle,...styleBible},worldDna,...languages});
+  const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));
+  const loadout=buildStudioAssetLoadout({requirements:inferredRequirements,assets,gameDna:{...visualDna,targetPlatform:upper(platform)},usageByAsset});
+  const futureDemand=buildFutureAssetDemandForecast({gameDemands:futureGameDemands,coverageReport:coverage});
+  const usageFeedback=summarizeVerifiedAssetUsage({events:usageEvents});
+  const testbed=createStudioTestbedPlan({assetIds:loadout.selections.map(row=>row.assetId).filter(Boolean),platform,mobile:true});
   return Object.freeze({
-    version:2,
+    version:3,
     target:STUDIO_ASSET_UNIVERSE_TARGET,
     platform:upper(platform),
     concept:conceptProfile,
     conceptAxes:CONCEPT_AXES,
     styleFamilies:ASSET_STYLE_FAMILIES,
     styleBible:createStyleBible({styleFamily:resolvedStyle,...styleBible}),
+    gameVisualDna:visualDna,
+    loadout,
+    futureDemand,
+    usageFeedback,
+    testbed,
     coverage,
     heatmap:gapFill.heatmap,
     gapFill,
