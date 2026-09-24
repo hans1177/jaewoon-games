@@ -7,6 +7,16 @@ local SoundService=game:GetService("SoundService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 1
+local studioAssetConfig = C.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioUi = studioAssetFamilies.UI or {}
+local function hasStudioAssetAtom(atom)
+  return table.find(studioUi, atom) ~= nil
+end
+-- STUDIO_ASSET_BINDING_CLIENT_END
+
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
@@ -50,7 +60,18 @@ local function button(parent,text,color)
  local b=Instance.new("TextButton");b.Text=text;b.TextScaled=true;b.Font=Enum.Font.GothamBold;b.TextColor3=Color3.new(1,1,1);b.BackgroundColor3=color;b.Parent=parent;corner(b,11);stroke(b,.48);return b
 end
 
-local stats=Instance.new("Frame");stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(214,82)or UDim2.fromOffset(270,88);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.BackgroundTransparency=.1;stats.Parent=gui;corner(stats,13);stroke(stats,.5)
+local stats=Instance.new("Frame");
+if hasStudioAssetAtom("FRAME_PANEL") then
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = stats
+end
+stats:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+stats:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(214,82)or UDim2.fromOffset(270,88);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.BackgroundTransparency=.1;stats.Parent=gui;corner(stats,13);stroke(stats,.5)
 local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
 local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,38);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
 

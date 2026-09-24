@@ -91,5 +91,28 @@ local Config={
   BLOCK_START="BLOCK_START",BLOCK_END="BLOCK_END",
  },
  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",OwnerDirectDevelopment=true,
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 return table.freeze(Config)
