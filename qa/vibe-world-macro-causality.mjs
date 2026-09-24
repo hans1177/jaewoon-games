@@ -235,6 +235,38 @@ const failureTechnique={
   ENCOUNTER_RHYTHM:'tight-tight-tight',
   CHOKE_OPEN_SPACE_RHYTHM:'no-release'
 };
+
+const sanitizedPattern=distillVibeVerifiedWorldPatterns({events:[
+  {gameId:'safe-a',verifiedRuntimePass:true,outcome:'PASS',technique:{
+    GENRE_FAMILY:'RPG',
+    ROUTE_GRAMMAR:'branch-return',
+    LANDMARK_REVEAL:'x=120,y=44 exact tower position',
+    SAFE_DANGER_RELATION:'safe-to-risk-gradient'
+  }},
+  {gameId:'safe-b',verifiedRuntimePass:true,outcome:'PASS',technique:{
+    GENRE_FAMILY:'RPG',
+    ROUTE_GRAMMAR:'branch-return',
+    LANDMARK_REVEAL:'x=120,y=44 exact tower position',
+    SAFE_DANGER_RELATION:'safe-to-risk-gradient'
+  }}
+]});
+assert.equal(sanitizedPattern.reusable.length,1);
+assert.equal(sanitizedPattern.reusable[0].technique.LANDMARK_REVEAL,undefined);
+assert.equal(sanitizedPattern.reusable[0].exactCoordinateLikeValuesRejected,true);
+assert.ok(sanitizedPattern.reusable[0].rejectedFieldCount>=1);
+
+const exactOnly=distillVibeVerifiedWorldPatterns({events:[
+  {gameId:'exact-a',verifiedRuntimePass:true,outcome:'PASS',technique:{
+    ROUTE_GRAMMAR:'x=1,y=2',
+    LANDMARK_REVEAL:'10.1,20.2'
+  }},
+  {gameId:'exact-b',verifiedRuntimePass:true,outcome:'PASS',technique:{
+    ROUTE_GRAMMAR:'x=1,y=2',
+    LANDMARK_REVEAL:'10.1,20.2'
+  }}
+]});
+assert.equal(exactOnly.candidates.length,0);
+
 const repeatedFailure=distillVibeVerifiedWorldPatterns({events:[
   {gameId:'bad-a',verifiedRuntimeFailure:true,failureReason:'SOFTLOCK',technique:failureTechnique},
   {gameId:'bad-b',verifiedRuntimeFailure:true,failureReason:'SOFTLOCK',technique:failureTechnique}
