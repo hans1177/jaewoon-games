@@ -155,6 +155,7 @@ test('successful CI result never mutates queue even when historical root cause i
     gatedExecutionEnabled:true
   });
   assert.equal(route.proposedAction.kind,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
+  assert.equal(route.wouldFireWithoutPhase2Authority,false);
   assert.equal(route.fireAllowed,false);
   assert.equal(route.authorityMode,'SHADOW');
   assert.equal(route.queueMutationAllowed,false);
