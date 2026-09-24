@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -996,6 +996,11 @@
     "infrastructureFailureNegativeLearningForbidden": true,
     "existingSeenExperienceDedupeRequired": true,
     "rawTelemetryDirectTraining": false,
-    "preparedSemanticDirectTraining": false
+    "preparedSemanticDirectTraining": false,
+    "persistToCanonicalExperienceMemory": true,
+    "canonicalExperienceStore": ".vibe2/experience.json",
+    "sameCycleMergedMemoryForRetrieval": true,
+    "outcomeIdEvidenceTokenRequired": true,
+    "repeatedSameOutcomePersistenceForbidden": true
   }
 }
