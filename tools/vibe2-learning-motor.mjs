@@ -1211,7 +1211,7 @@ function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput
 
 export function buildBenchmarkLadder(masteryInput={},experienceInput={},companyQueueInput={}){
   const state=createMasteryState(masteryInput);
-  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],UNITY_NATIVE:['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE'],FORTNITE_UEFN_NATIVE:['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE'],QUEST_DESIGN:['QUEST_DESIGN'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE']};
+  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],UNITY_NATIVE:['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE'],FORTNITE_UEFN_NATIVE:['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE','MAIN_STORY_GENERATION'],QUEST_DESIGN:['QUEST_DESIGN','QUEST_GRAPH'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE','CHARACTER_VOICE'],CONCEPT_DIRECTION:['CONCEPT_DIRECTION'],WORLD_GENERATION:['WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN'],STREAMING_OPTIMIZATION:['STREAMING_OPTIMIZATION'],FORESHADOWING_PAYOFF:['FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN'],CHARACTER_BEHAVIOR:['CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY'],RELATIONSHIP_MEMORY:['CHARACTER_RELATIONSHIP_MEMORY','WORLD_NARRATIVE_BINDING']};
   const cases=[];
   for(const [track,domains] of Object.entries(mapping)){
     const avg=domains.reduce((n,d)=>n+(state.domains[d]?.level||1),0)/domains.length;
@@ -1249,7 +1249,19 @@ function idleDrillKindForDomain(domain=''){
   if(d==='STORYTELLING'||d==='NARRATIVE_STRUCTURE')return'NARRATIVE_STRUCTURE_DRILL';
   if(d==='QUEST_DESIGN')return'QUEST_CAUSALITY_DRILL';
   if(d==='CHARACTER_ARC')return'CHARACTER_ARC_DRILL';
-  if(d==='DIALOGUE')return'DIALOGUE_SCENE_DRILL';
+  if(d==='DIALOGUE'||d==='CHARACTER_VOICE')return d==='CHARACTER_VOICE'?'CHARACTER_VOICE_DRILL':'DIALOGUE_SCENE_DRILL';
+  if(d==='CONCEPT_DIRECTION')return'CONCEPT_DIRECTION_DRILL';
+  if(d==='WORLD_GENERATION')return'WORLD_GENERATION_DRILL';
+  if(d==='LEVEL_DESIGN')return'LEVEL_DESIGN_DRILL';
+  if(d==='ROUTE_DESIGN')return'ROUTE_DESIGN_DRILL';
+  if(d==='STREAMING_OPTIMIZATION')return'STREAMING_OPTIMIZATION_DRILL';
+  if(d==='MAIN_STORY_GENERATION')return'MAIN_STORY_GENERATION_DRILL';
+  if(d==='QUEST_GRAPH')return'QUEST_CAUSALITY_DRILL';
+  if(d==='FORESHADOWING_PAYOFF')return'FORESHADOWING_PAYOFF_DRILL';
+  if(d==='TWIST_EVIDENCE_CHAIN')return'TWIST_EVIDENCE_CHAIN_DRILL';
+  if(d==='CHARACTER_RELATIONSHIP_MEMORY')return'RELATIONSHIP_MEMORY_DRILL';
+  if(['CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY'].includes(d))return'CHARACTER_BEHAVIOR_DRILL';
+  if(d==='WORLD_NARRATIVE_BINDING')return'WORLD_NARRATIVE_BINDING_DRILL';
   if(UNITY_NATIVE_ONLY.has(d))return'UNITY_NATIVE_DRILL';
   if(UEFN_NATIVE_ONLY.has(d))return'FORTNITE_UEFN_NATIVE_DRILL';
   return'MINI_GAME_SYSTEM_DRILL';
@@ -1287,6 +1299,18 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='QUEST_CAUSALITY_DRILL')return'퀘스트의 선행 조건 → 플레이어 행동 → 상태 변화 → 결과/보상 → 다음 상태를 연결하고 저장/재진입/중복 보상/소프트락 검증을 포함한다.';
   if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
+  if(kind==='CONCEPT_DIRECTION_DRILL')return'카툰·무협·다크·SF 등 컨셉 축을 가중 혼합하고 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현까지 같은 Style Lock으로 전파한다. 색상만 바꾼 가짜 변형과 서로 충돌하는 시대·재질·UI 언어를 탐지한다.';
+  if(kind==='WORLD_GENERATION_DRILL')return'허용된 레퍼런스에서 능선·계곡·길 그래프·밀도·랜드마크 위계·시야 공개 같은 추상 구조만 뽑아 Map DNA와 월드 구성으로 변환한다. 특정 보호 맵이나 랜드마크 배치를 복제하지 않고 게임 규칙·밸런스·저장 의미를 보존한다.';
+  if(kind==='LEVEL_DESIGN_DRILL')return'전투 공간의 좁음/개방 리듬, 시야 유도, 랜드마크 공개, 안전/위험 구역, 자원과 이벤트 간격을 분석한다. 목표 도달성과 플레이 리듬을 검증하고 반복적인 같은 패턴을 회피한다.';
+  if(kind==='ROUTE_DESIGN_DRILL')return'시작점→목표점 연결, 우회로, 지름길, 루프, 병목/개방 전환, 경사·폭·곡률을 장르와 컨셉에 맞게 설계하고 필수 목표가 항상 도달 가능한지 검증한다.';
+  if(kind==='STREAMING_OPTIMIZATION_DRILL')return'초기 플레이 구역 프리워밍, 청크/셀 스트리밍, 거리·중요도 LOD, 오브젝트 풀링, 백그라운드 생성 예산을 검증한다. 청크 해제 시 저장/권위 월드 상태가 사라지지 않게 하고 플랫폼별 실제 런타임 증거 없이는 성공 숙련을 올리지 않는다.';
+  if(kind==='MAIN_STORY_GENERATION_DRILL')return'세계 규칙과 플레이 목표에서 도입 사건→확대→중간 전환→후반 역전→최종 대결→결말이 원인과 결과로 이어지는 메인 스토리를 설계한다. 게임플레이가 가능한 한 서사를 진행하게 하고 설명만으로 진행하는 구조를 피한다.';
+  if(kind==='FORESHADOWING_PAYOFF_DRILL')return'복선마다 seed→clue→reveal→payoff를 추적하고 회수되지 않은 떡밥은 의도적 미해결인지 부채인지 명시한다. 후반 정보가 초반 근거 없이 갑자기 등장하지 않게 검증한다.';
+  if(kind==='TWIST_EVIDENCE_CHAIN_DRILL')return'반전을 결론부터 만드는 대신 플레이어가 이전에 관찰할 수 있었던 증거 연쇄를 먼저 설계한다. 반전 전후의 사건·캐릭터 동기·세계 규칙이 동시에 성립하는지 반증 테스트한다.';
+  if(kind==='CHARACTER_VOICE_DRILL')return'인물별 격식, 어휘, 문장 리듬, 감정 상태, 관계 변화, 알고 있는 정보 범위를 분리해 같은 말투로 붕괴하지 않게 한다. 원문 작가 스타일 모사는 하지 않는다.';
+  if(kind==='RELATIONSHIP_MEMORY_DRILL')return'신뢰·호감·두려움·존중·빚·배신·약속·목격 사건을 원인 이벤트에 연결하고 저장/불러오기 뒤에도 일관되게 복구되는지 검증한다. 기억이나 관계 수치가 선언되지 않은 보상·데미지·진행을 직접 쓰지 못하게 한다.';
+  if(kind==='CHARACTER_BEHAVIOR_DRILL')return'성격·욕망·공포·역할을 NPC/동료/몬스터의 행동 의도와 연결하되 실제 이동·공격·보상은 게임 소유 API가 처리하게 한다. 겁쟁이·호전적·보호형·매복형·영역형 같은 행동 차이가 런타임에서 관찰되는지 검증한다.';
+  if(kind==='WORLD_NARRATIVE_BINDING_DRILL')return'지역·랜드마크·환경·아이템·NPC·세력·보스·퀘스트 표현을 현재 월드/스토리 상태와 묶는다. 죽은 NPC 재등장, 파괴된 장소의 원상복귀, 아직 모르는 사실 대사 같은 모순을 검증한다.';
   if(kind==='UNITY_NATIVE_DRILL')return'Unity 네이티브 런타임, 물리, 입력, 씬 수명주기, 필요 시 Netcode 경계를 분석한다. Unity runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.';
   if(kind==='FORTNITE_UEFN_NATIVE_DRILL')return'Fortnite UEFN의 Verse, device lifecycle, authoritative multiplayer state와 replication 경계를 분석한다. Verse/UEFN 실제 runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.';
   if(kind==='HYPOTHESIS_FALSIFICATION_DRILL')return'현재 가장 약한 검증 도메인에 대해 개선 가설 하나와 반증 조건 하나를 명시하고, 가설을 지지하는 증거보다 먼저 실패시킬 수 있는 테스트를 설계한다. 반증되면 실패 원인을 다음 학습 신호로 보존한다.';
@@ -1317,7 +1341,10 @@ function companyGraphicsLibraryDrills(){
     ['destruction-library','DESTRUCTION_LIBRARY_DRILL',['ASSET_PRODUCTION','VFX','AUDIO_FEEL']],
     ['asset-identity-qa','ASSET_IDENTITY_QA_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
     ['style-bible','STYLE_BIBLE_LIBRARY_DRILL',['ASSET_ADAPTATION','VFX','CAMERA_LANGUAGE']],
-    ['universal-coverage','UNIVERSAL_ASSET_COVERAGE_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']]
+    ['universal-coverage','UNIVERSAL_ASSET_COVERAGE_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['concept-direction','CONCEPT_DIRECTION_DRILL',['CONCEPT_DIRECTION','ASSET_ADAPTATION']],
+    ['world-generation','WORLD_GENERATION_DRILL',['WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN']],
+    ['world-streaming','STREAMING_OPTIMIZATION_DRILL',['STREAMING_OPTIMIZATION','PERFORMANCE']]
   ];
   return ['UNITY','ROBLOX'].flatMap(platform=>families.map(([id,kind,domains])=>({
     id:`company-graphics-${lower(platform)}-${id}`,
@@ -1485,7 +1512,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const {drill,next}=candidates[0];
   const id=idlePracticeTaskId(drill,next.generation);
   const phase4=drill?.phase4Benchmark===true;
-  const artifactPractice=!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','WEB_RUNTIME'].includes(upper(domain)));
+  const artifactPractice=!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','CONCEPT_DIRECTION','WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN','STREAMING_OPTIMIZATION','MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY','CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING','WEB_RUNTIME'].includes(upper(domain)));
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
