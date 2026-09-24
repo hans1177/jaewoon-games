@@ -505,3 +505,10 @@ test('territory-war exact source honors approved competitive multiplayer profile
   assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
   assert.match(client,/OnClientEvent/);
 });
+
+test('Roblox package build wave is bounded only by GitHub matrix capacity',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
+  assert.match(workflow,/if\(rows\.length>=EXECUTION_BATCH_MAX\)break;/);
+  assert.match(workflow,/ROBLOX_RUNNER_PARALLEL_CAPACITY=256/);
+});
