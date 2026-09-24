@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": " if id==\"HOSPITAL\"then",
+      "replace": "ybackSpeed=p:GetAttribute(\"Role\")=='MONSTER' and .82 or 1.08"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
