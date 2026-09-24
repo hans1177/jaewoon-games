@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -427,6 +427,38 @@
       "platform": "UNITY_ROBLOX_SPLIT",
       "status": "RESEARCH_ACTIVE",
       "note": "Creature Archetype→Rig→Locomotion→Combat→Hit/Death→VFX→Environment→Style Variant→Unity/Roblox 네이티브 변형을 ID 참조로 연동"
+    },
+    {
+      "id": "motion-director-composition",
+      "title": "Motion Director Composition",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "상·하체/팔/머리/꼬리/날개/추가사지/VFX/카메라를 채널별로 조합하고 충돌을 검증하는 하이엔드 모션 조합 시스템"
+    },
+    {
+      "id": "motion-dna-compatibility",
+      "title": "Motion DNA & Compatibility Graph",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "체형·리그·무기·자세·공중상태·스타일·플랫폼 메타데이터로 호환 모션을 자동 검색하고 잘못된 조합은 차단"
+    },
+    {
+      "id": "context-reaction-pair-motion",
+      "title": "Context / Reaction / Pair Motion",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "거리·방향·속도·지형·벽·최근 모션을 기반으로 표현 선택, 피격 방향/강도 매칭, 잡기·던지기 2인 모션 정렬"
+    },
+    {
+      "id": "motion-mutation-variation-memory",
+      "title": "Motion Mutation & Variation Memory",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Mirror/stance/pose/anticipation/style 파생과 최근 반복 패널티를 이용해 같은 공격 반복감을 줄이면서 게임 판정은 보존"
     }
   ],
   "studioMotion": {
@@ -1070,5 +1102,340 @@
     ],
     "sameSourceMayHaveMultipleStyleVariants": true,
     "runtimeVerificationRequiredPerGameAndPlatform": true
+  },
+  "motionDirector": {
+    "target": "HIGH_END_COMPOSABLE_MOTION_DIRECTOR",
+    "implementation": "assets/vibe-motion-director.js",
+    "channels": [
+      "ROOT",
+      "LOCOMOTION",
+      "LOWER_BODY",
+      "PELVIS_SPINE",
+      "UPPER_BODY",
+      "LEFT_ARM",
+      "RIGHT_ARM",
+      "HEAD_GAZE",
+      "TAIL",
+      "WINGS",
+      "EXTRA_LIMBS",
+      "SECONDARY_MOTION",
+      "PROCEDURAL_CORRECTION",
+      "VFX_PRESENTATION",
+      "AUDIO_PRESENTATION",
+      "CAMERA_PRESENTATION"
+    ],
+    "systems": [
+      "MOTION_DNA",
+      "COMPATIBILITY_GRAPH",
+      "BODY_LAYER_COMPOSER",
+      "CONTEXT_SELECTOR",
+      "MOTION_GRAMMAR",
+      "REACTION_MATCHER",
+      "PAIR_MOTION",
+      "SPECIES_SIGNATURE",
+      "STYLE_MODIFIER",
+      "MOTION_MUTATION",
+      "VARIATION_MEMORY"
+    ],
+    "extendedLibraries": [
+      "SKILL_MOTION_LIBRARY",
+      "REACTION_MOTION_LIBRARY",
+      "PAIR_MOTION_LIBRARY"
+    ],
+    "categories": {
+      "locomotion": [
+        "IDLE",
+        "WALK",
+        "JOG",
+        "RUN",
+        "SPRINT",
+        "START",
+        "STOP",
+        "TURN",
+        "PIVOT",
+        "STRAFE",
+        "BACKSTEP",
+        "DASH",
+        "CROUCH_MOVE",
+        "CRAWL",
+        "LIMP",
+        "SNEAK"
+      ],
+      "traversal": [
+        "JUMP",
+        "FALL",
+        "LAND",
+        "ROLL",
+        "VAULT",
+        "MANTLE",
+        "CLIMB",
+        "LEDGE_HANG",
+        "LADDER",
+        "WALL_RUN",
+        "WALL_JUMP",
+        "SLIDE",
+        "SWIM",
+        "DIVE",
+        "TAKEOFF",
+        "FLY",
+        "GLIDE",
+        "HOVER"
+      ],
+      "attack": [
+        "PUNCH",
+        "KICK",
+        "ELBOW",
+        "KNEE",
+        "BITE",
+        "CLAW",
+        "HORN",
+        "TAIL_STRIKE",
+        "SLAM",
+        "STOMP",
+        "CHARGE",
+        "SLASH",
+        "THRUST",
+        "CHOP",
+        "SMASH",
+        "BASH",
+        "AERIAL_ATTACK",
+        "DASH_ATTACK",
+        "FINISHER"
+      ],
+      "ranged": [
+        "BOW",
+        "CROSSBOW",
+        "THROWN_WEAPON",
+        "FIREARM",
+        "CREATURE_PROJECTILE",
+        "BREATH_ATTACK",
+        "SPIT_ATTACK",
+        "BEAM_ATTACK"
+      ],
+      "skill": [
+        "PREPARE",
+        "CHARGE",
+        "AIM",
+        "CHANNEL",
+        "HOLD",
+        "CAST",
+        "RELEASE",
+        "PROJECTILE_RELEASE",
+        "BEAM_RELEASE",
+        "AOE_RELEASE",
+        "SUMMON",
+        "BUFF",
+        "DEBUFF",
+        "HEAL",
+        "TELEPORT",
+        "TRANSFORM",
+        "ULTIMATE",
+        "RECOVERY",
+        "CANCEL"
+      ],
+      "defense": [
+        "GUARD",
+        "BLOCK",
+        "PARRY",
+        "DEFLECT",
+        "DODGE",
+        "ROLL_EVADE",
+        "DUCK",
+        "WEAVE",
+        "SWAY",
+        "COUNTER",
+        "REVERSAL",
+        "THROW_BREAK"
+      ],
+      "grapple": [
+        "GRAB",
+        "CLINCH",
+        "BODY_LOCK",
+        "TAKEDOWN",
+        "TRIP",
+        "FOOT_SWEEP",
+        "THROW",
+        "SLAM_THROW",
+        "AIR_THROW",
+        "GRAB_ESCAPE",
+        "PAIR_FINISHER"
+      ],
+      "reaction": [
+        "LIGHT_HIT",
+        "HEAVY_HIT",
+        "DIRECTIONAL_HIT",
+        "COUNTER_HIT",
+        "STAGGER",
+        "KNOCKBACK",
+        "LAUNCH",
+        "AIR_HIT",
+        "WALL_HIT",
+        "WALL_BOUNCE",
+        "GROUND_BOUNCE",
+        "KNOCKDOWN",
+        "BREAKFALL",
+        "TECH_RECOVERY",
+        "GET_UP"
+      ],
+      "interaction": [
+        "PICK_UP",
+        "DROP",
+        "PUSH",
+        "PULL",
+        "CARRY",
+        "DRAG",
+        "OPEN",
+        "CLOSE",
+        "USE_SWITCH",
+        "CRAFT",
+        "GATHER",
+        "MINE",
+        "CHOP",
+        "DIG",
+        "EAT",
+        "DRINK",
+        "SIT",
+        "LIE_DOWN",
+        "SLEEP",
+        "REVIVE",
+        "MOUNT",
+        "DISMOUNT"
+      ],
+      "acting": [
+        "BREATH",
+        "LOOK_AROUND",
+        "ALERT",
+        "RELAX",
+        "TAUNT",
+        "ROAR",
+        "LAUGH",
+        "ANGER",
+        "FEAR",
+        "CONFIDENT",
+        "TIRED",
+        "INJURED",
+        "CELEBRATE",
+        "THREATEN",
+        "NOTICE_PLAYER",
+        "SEARCH"
+      ],
+      "boss": [
+        "INTRO",
+        "PLAYER_DETECT",
+        "THREAT_DISPLAY",
+        "PHASE_CHANGE",
+        "ENRAGE",
+        "STAGGER",
+        "FAILED_ATTACK_RECOVERY",
+        "SIGNATURE_PREPARE",
+        "SIGNATURE_RELEASE",
+        "FINISHER",
+        "DEATH_SEQUENCE"
+      ],
+      "death": [
+        "DEATH_FRONT",
+        "DEATH_BACK",
+        "DEATH_LEFT",
+        "DEATH_RIGHT",
+        "HEAVY_DEATH",
+        "AIR_DEATH",
+        "BURN_DEATH",
+        "FREEZE_DEATH",
+        "SPECIES_SIGNATURE_DEATH",
+        "BOSS_DEATH_SEQUENCE"
+      ]
+    },
+    "compositionExamples": [
+      {
+        "id": "goblin-run-slash-cartoon",
+        "bodyPlan": "SMALL_HUMANOID_BIPED",
+        "layers": [
+          "SCAMPER_RUN",
+          "ONE_HAND_SWORD_READY",
+          "QUICK_SLASH",
+          "HEAD_GAZE"
+        ],
+        "style": "CARTOON"
+      },
+      {
+        "id": "minotaur-charge-guard-rage",
+        "bodyPlan": "HEAVY_BIPED",
+        "layers": [
+          "HORN_CHARGE",
+          "LEFT_ARM_GUARD",
+          "RAGE_SNORT",
+          "DUST_TRAIL"
+        ],
+        "style": "STYLIZED_FANTASY"
+      },
+      {
+        "id": "flying-dragon-breath",
+        "bodyPlan": "FLYING",
+        "layers": [
+          "FLY",
+          "BANK",
+          "BREATH_ATTACK",
+          "HEAD_GAZE",
+          "WING_SECONDARY"
+        ],
+        "style": "DARK_FANTASY"
+      },
+      {
+        "id": "humanoid-run-bow",
+        "bodyPlan": "HUMANOID",
+        "layers": [
+          "RUN",
+          "BOW_AIM",
+          "BOW_RELEASE",
+          "HEAD_GAZE"
+        ],
+        "style": "STYLIZED_FANTASY"
+      }
+    ],
+    "promotionRequirements": [
+      "MOTION_DNA_COMPLETE",
+      "COMPATIBILITY_PASS",
+      "NO_LAYER_CONFLICT",
+      "CONTACT_ALIGNMENT",
+      "ROOT_MOVEMENT_ENVELOPE",
+      "REACTION_MATCH",
+      "PAIR_ALIGNMENT_WHEN_USED",
+      "STYLE_LOCK_COHESION",
+      "MOBILE_READABILITY",
+      "RUNTIME_CAPTURE"
+    ],
+    "continuousExpansion": true,
+    "noArtificialCombinationCap": true,
+    "gameplayAuthority": false
+  },
+  "libraryGraph": {
+    "version": 1,
+    "nodes": [
+      "CHARACTER_ARCHETYPE_LIBRARY",
+      "CREATURE_RIG_LIBRARY",
+      "ACTION_MOTION_LIBRARY",
+      "WEAPON_MOTION_LIBRARY",
+      "SKILL_MOTION_LIBRARY",
+      "REACTION_MOTION_LIBRARY",
+      "PAIR_MOTION_LIBRARY",
+      "VFX_LIBRARY",
+      "ENVIRONMENT_KIT_LIBRARY",
+      "UI_PRESENTATION_LIBRARY"
+    ],
+    "edgeTypes": [
+      "USES_RIG",
+      "COMPATIBLE_WITH",
+      "DERIVED_FROM",
+      "USES_MOTION",
+      "USES_WEAPON",
+      "USES_SKILL_MOTION",
+      "USES_REACTION",
+      "USES_PAIR_MOTION",
+      "USES_VFX",
+      "USES_ENVIRONMENT_PROFILE",
+      "USES_STYLE_VARIANT",
+      "HAS_PLATFORM_VARIANT"
+    ],
+    "unresolvedRequiredEdgeBlocksVerifiedPromotion": true
   }
 }
