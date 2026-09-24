@@ -114,6 +114,8 @@ function normalizeStudioQualityEvolution(input=null){
     requiredConnectedImprovements:connected,
     realSourceDeltaRequired:input.realSourceDeltaRequired!==false,
     visibleRenderDeltaRequired:input.visibleRenderDeltaRequired===true,
+    runtimeBeforeAfterComparisonRequired:input.runtimeBeforeAfterComparisonRequired===true,
+    finalFanInComparisonRequired:input.finalFanInComparisonRequired===true,
     protectedRegressionForbidden:input.protectedRegressionForbidden!==false,
     nextCycleRequired:input.nextCycleRequired!==false
   });
