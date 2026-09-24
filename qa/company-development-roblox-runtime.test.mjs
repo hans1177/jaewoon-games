@@ -297,16 +297,20 @@ test('new Roblox package identity clears every downstream preflight runtime and 
   ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
 });
 
-test('successful Roblox package flow auto-dispatches shared preflight then F0 without a Studio approval gate',()=>{
+test('successful Roblox package flow dispatches each ready game independently into shared preflight then F0',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
   assert.ok(workflow.includes('Dispatch Roblox HEADLESS FAST_MVP continuation')||workflow.includes('continuation'));
   assert.ok(!workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
-  assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
-  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
-  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_GAME='));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT='));
+  assert.ok(workflow.includes('ROBLOX_CROSS_GAME_STAGE_BARRIER=NONE'));
+  assert.ok(!workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
+  assert.ok(!workflow.includes("ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1"));
+  assert.ok(workflow.includes("ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=EXTERNAL_PROVIDER_CAPACITY_ONLY"));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
   assert.ok(!preflight.includes('studio_run_approved:'));
