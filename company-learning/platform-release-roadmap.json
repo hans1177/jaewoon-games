@@ -1,5 +1,5 @@
 {
-  "version": 312,
+  "version": 313,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -42,7 +42,7 @@
     "legacyWebFirstPolicyRemoved": true
   },
   "livingMotionVisualQualityContract": {
-    "version": 4,
+    "version": 5,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "objective": "CONTINUOUS_HIGH_END_CINEMATIC_GAME_PRESENTATION_EVOLUTION_WITH_LIVING_MOTION_CHARACTER_ACTING_ENVIRONMENTAL_STORYTELLING_AND_GAME_SPECIFIC_AUDIO_VISUAL_DIRECTION_WITHOUT_CREATING_A_STANDALONE_RELEASE_GATE",
@@ -403,7 +403,52 @@
       }
     },
     "highEndEvolutionAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
-    "highEndEvolutionRole": "MOTION_AND_PRESENTATION_FOUNDATION_CONSUMED_BY_EXISTING_GRAPHICS_PRODUCTION"
+    "highEndEvolutionRole": "MOTION_AND_PRESENTATION_FOUNDATION_CONSUMED_BY_EXISTING_GRAPHICS_PRODUCTION",
+    "minimumSpatialPresentation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "minimumFinalGameplayDimension": "2.5D",
+      "preferred": "3D_WHEN_GENRE_AND_PLATFORM_SUPPORT",
+      "appliesTo": [
+        "WEB_VALIDATION_SURFACE",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "flat2DFinalGameplayForbidden": true,
+      "uiOverlayMayRemain2D": true,
+      "prototype2DAllowedTemporarily": true,
+      "prototype2DMustCreateVisualDebt": true,
+      "existing2DGamesAction": "SPATIAL_PRESENTATION_REBUILD_REQUIRED",
+      "preserveGameplaySaveProgressionBalanceEconomyAndHitSemantics": true,
+      "accepted2_5DTechniques": [
+        "ISOMETRIC_OR_OBLIQUE_PROJECTION",
+        "PERSPECTIVE_OR_ORTHOGRAPHIC_DEPTH_CAMERA",
+        "FOREGROUND_MIDGROUND_BACKGROUND_PARALLAX",
+        "DEPTH_SORTED_WORLD_ENTITIES",
+        "HEIGHT_OR_VERTICALITY_PRESENTATION",
+        "DIRECTIONAL_LIGHT_AND_CONTACT_SHADOWS",
+        "DEPTH_AWARE_VFX_AND_OCCLUSION",
+        "CAMERA_PAN_ZOOM_ORBIT_WITH_WORLD_DEPTH"
+      ],
+      "accepted3D": [
+        "UNITY_3D_SCENE",
+        "ROBLOX_3D_WORLD",
+        "WEBGL_THREE_BABYLON_OR_EQUIVALENT"
+      ],
+      "insufficientEvidence": [
+        "DATA_ATTRIBUTE_OR_TEXT_MARKER_ONLY",
+        "FLAT_DOM_CARDS_ONLY",
+        "EMOJI_GRID_ONLY",
+        "COLOR_GRADIENT_ONLY",
+        "STATIC_2D_SPRITE_BOARD_WITHOUT_DEPTH_COMPOSITION",
+        "VALIDATION_SESSION_BUTTONS_OR_SCOPE_CONTROLS"
+      ],
+      "runtimeEvidenceRequired": true,
+      "beforeAfterVisualComparisonRequired": true,
+      "mobileReadabilityAndPerformanceRequired": true,
+      "failureState": "ASSET_REPAIR_REQUIRED"
+    }
   },
   "platformRepresentativeSets": {
     "representativeSetSizePerPlatform": 6,
@@ -11751,7 +11796,7 @@
       "genericPrimitiveAssemblyCannotBeDeclaredFinalHighQuality": true
     },
     "highEndVisualProductionContract": {
-      "version": 4,
+      "version": 5,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
@@ -12270,7 +12315,12 @@
           "REBIND_CURRENT_CENTRAL_POLICY_AND_EVIDENCE"
         ]
       },
-      "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract"
+      "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract",
+      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+      "minimumFinalGameplayDimension": "2.5D",
+      "flat2DFinalPresentationForbidden": true,
+      "ui2DOverlayAllowed": true,
+      "existing2DGamesRequireSpatialPresentationRebuild": true
     },
     "graphicsProductionUnification": {
       "version": 4,
@@ -15350,7 +15400,11 @@
       "actualGameAssetsPreferred": true,
       "primitiveOnlyForDebugCollisionOrTemporaryGap": true,
       "placeholderDominatedPlayableCannotPass": true,
-      "rightsAndLicenseTraceabilityRequired": true
+      "rightsAndLicenseTraceabilityRequired": true,
+      "minimumFinalGameplayDimension": "2.5D",
+      "flat2DFinalGameplayForbidden": true,
+      "runtimeSpatialEvidenceRequired": true,
+      "markerOnlySpatialPassForbidden": true
     },
     "mobileInput": {
       "implementedInsideUnityProject": true,
@@ -16386,5 +16440,36 @@
     "strictDesignContinuesParallelWithDevelopment": true,
     "activeDevelopmentMayNotGloballyDeferStrictDesign": true,
     "unityWebRole": "VALIDATION_SURFACE_ONLY"
+  },
+  "webRuntimeStartabilityContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-24",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "scope": "ALL_WEB_GAMES_AND_UNITY_WEB_VALIDATION_SURFACES",
+    "objective": "EVERY_EXPOSED_GAME_MUST_ACTUALLY_START_AND_ENTER_REAL_GAMEPLAY",
+    "required": [
+      "NON_EMPTY_ENTRYPOINT",
+      "ALL_REQUIRED_LOCAL_RUNTIME_DEPENDENCIES_PRESENT",
+      "START_OR_AUTO_START_REACHES_REAL_GAMEPLAY",
+      "FIRST_REAL_INPUT_CHANGES_GAME_STATE_OR_WORLD",
+      "NO_FATAL_CONSOLE_OR_SCRIPT_ERROR",
+      "NO_VALIDATION_PROXY_AS_GAMEPLAY",
+      "RETRY_OR_SAFE_RESET_WHEN_GAME_CAN_END"
+    ],
+    "forbidden": [
+      "EMPTY_INDEX",
+      "INDEX_ONLY_UNITY_WEB_WITHOUT_RUNTIME_BUNDLE",
+      "SESSION_STAGE_BUTTONS_AS_GAMEPLAY",
+      "SCOPE_CONTROL_TEST_HARNESS_AS_GAMEPLAY",
+      "COMING_SOON_OR_PLACEHOLDER_START",
+      "START_BUTTON_WITHOUT_REAL_HANDLER",
+      "STATIC_SCREEN_WITHOUT_GAME_STATE_TRANSITION"
+    ],
+    "failureState": "WEB_VIBE_REPAIR_REQUIRED",
+    "homepageExposureOnFailure": false,
+    "retryLimit": null,
+    "exactFailureRepairRequired": true,
+    "validator": "tools/company-development-web-gameplay-validation.mjs",
+    "planner": "tools/vibe2-auto-planner.mjs"
   }
 }
