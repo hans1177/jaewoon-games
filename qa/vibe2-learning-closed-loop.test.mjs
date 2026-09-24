@@ -9,9 +9,10 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const roadmap=json('company-learning/platform-release-roadmap.json');
   const architecture=json('company-learning/company-architecture-map.json');
   const motor=json('company-learning/vibe2-learning-motor.json');
+  const logMap=json('company-learning/company-log-map.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,12);
+  assert.equal(motor.version,13);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -65,6 +66,15 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.worldConceptLearning?.preparedSemanticMayIncreaseMastery,false);
   assert.equal(roadmap.learningClosedLoopContract?.specializedGameDevelopmentMastery?.existingCanonicalLearningMotorOnly,true);
   assert.equal(roadmap.learningClosedLoopContract?.worldAndConceptLearning?.rawReferenceImageOrProtectedLayoutCannotBecomeReusableTemplate,true);
+  assert.equal(roadmap.learningClosedLoopContract?.worldAndConceptLearning?.existingGamePatternDistillation?.minimumIndependentVerifiedGames,2);
+  assert.equal(roadmap.learningClosedLoopContract?.worldAndConceptLearning?.existingGamePatternDistillation?.rawCoordinatesOrExactLayoutForbidden,true);
+  assert.equal(motor.worldConceptLearning?.existingGamePatternDistillation?.enabled,true);
+  assert.equal(motor.worldConceptLearning?.existingGamePatternDistillation?.minimumIndependentVerifiedGamesForCrossGameReuse,2);
+  assert.equal(motor.worldConceptLearning?.existingGamePatternDistillation?.directMasteryCredit,false);
+  assert.equal(architecture.assetProductionParallelism?.companyGraphicsLibrary24h?.existingGameWorldPatternDistillation?.shadowTrainerForbidden,true);
+  assert.equal(logMap.existingGameWorldPatternEvidenceContract?.singleGameCrossGamePromotionForbidden,true);
+  assert.equal(logMap.existingGameWorldPatternEvidenceContract?.positiveCrossGameReuseRequiresTwoIndependentVerifiedGames,true);
+  assert.equal(logMap.existingGameWorldPatternEvidenceContract?.exactCoordinatesTerrainMeshOrLayoutInLearningEvidenceForbidden,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
