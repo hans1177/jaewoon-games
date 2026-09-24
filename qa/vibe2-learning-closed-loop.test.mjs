@@ -12,7 +12,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const logMap=json('company-learning/company-log-map.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,14);
+  assert.equal(motor.version,15);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -83,6 +83,11 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.enabled,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.existingSeenExperienceDedupeRequired,true);
   assert.equal(architecture.learningClosedLoopTopology?.specializedGameDevelopmentMastery?.verifiedQueueEvidenceIngress?.separateTrainer,false);
+  assert.equal(ingress?.persistAcceptedSyntheticExperienceToCanonicalExperienceMemory,true);
+  assert.equal(ingress?.canonicalExperienceStore,'.vibe2/experience.json');
+  assert.equal(ingress?.sameCycleRetrievalAndHandoffUseMergedExperienceMemory,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.persistToCanonicalExperienceMemory,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.outcomeIdEvidenceTokenRequired,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
@@ -116,6 +121,7 @@ test('24H learning cycle persists verified experience and external AI distilled 
   assert.match(workflow,/--experience=\.vibe2\/experience\.json/);
   assert.match(workflow,/--external-ai-distilled=\.vibe2\/external-ai-distilled-knowledge\.json/);
   assert.match(workflow,/git add \.vibe2\/queue\.json[\s\S]*\.vibe2\/experience\.json[\s\S]*\.vibe2\/external-ai-distilled-knowledge\.json/);
+  assert.match(workflow,/VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED/);
   assert.match(workflow,/VIBE2_EXTERNAL_AI_ACCEPTED/);
   assert.match(workflow,/VIBE2_LEARNING_ALWAYS_ON: 'true'/);
   assert.match(workflow,/VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'/);
