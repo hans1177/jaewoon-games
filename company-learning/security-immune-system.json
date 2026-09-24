@@ -1,5 +1,5 @@
 {
-  "version": 40,
+  "version": 41,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -653,5 +653,27 @@
       "experienceMemoryCannotExpandGameplayOrCodeExecutionAuthority": true
     },
     "failureAction": "DROP_UNSAFE_SYNTHETIC_EXPERIENCE_AND_ROUTE_LEARNING_REPAIR_REQUIRED"
+  },
+  "verifiedSpecializedQueueEvidenceSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
+    "purpose": "PREVENT_REQUEST_OR_STATIC_QA_MARKERS_FROM_SELF_PROMOTING_INTO_CANONICAL_MASTERY",
+    "protections": {
+      "sourceWorkerMayOnlyRequestVerification": true,
+      "incrementalQaMayOnlyEmitFocusedQaStatus": true,
+      "finalVerifiedMarkerFanInOnly": true,
+      "finalMarkerWhitelistRequired": true,
+      "fullRegressionPassRequired": true,
+      "fanInReviewPassRequired": true,
+      "supervisedApprovalRequiredWhenSupervisionApplies": true,
+      "nativePositiveMarkerRequiresAuthoritativeTargetEngineQaEvidence": true,
+      "uefnPositiveMarkerBlockedUntilAuthoritativeExecutorEvidenceContractExists": true,
+      "rawTelemetryDirectTrainingForbidden": true,
+      "infrastructureFailureNegativeLearningForbidden": true,
+      "syntheticOutcomeMustRemainTraceableToTaskAndRun": true,
+      "existingExperienceDedupeRequired": true,
+      "authorityExpansionForbidden": true
+    },
+    "failureAction": "BLOCK_SPECIALIZED_LEARNING_PROMOTION_AND_KEEP_GAME_RELEASE_DECISION_SEPARATE_UNLESS_EXISTING_RELEASE_GATE_ALSO_FAILS"
   }
 }
