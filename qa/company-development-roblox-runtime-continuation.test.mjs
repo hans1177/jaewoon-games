@@ -56,3 +56,13 @@ test('canonical parent watches both fast-path workflows',()=>{
   assert.ok(parent.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
   assert.ok(parent.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });
+
+test('shared Roblox preflight checkout fans out without an internal six-game cap',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.doesNotMatch(workflow,/rows\.length>=6/);
+  assert.match(workflow,/rows\.length>=256/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*6/);
+  assert.match(workflow,/ROBLOX_EXECUTION_WIP_MAX=EXTERNAL_PROVIDER_CAPACITY_ONLY/);
+  assert.match(workflow,/ROBLOX_PREFLIGHT_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
+  assert.doesNotMatch(workflow,/ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX/);
+});

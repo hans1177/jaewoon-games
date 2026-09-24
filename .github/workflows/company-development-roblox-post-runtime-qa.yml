@@ -96,6 +96,38 @@ jobs:
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
             const c=item.robloxRuntimeCandidateEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const runtime=item.robloxRuntimeFoundationEvidence||{};
+            const post=item.robloxPostRuntimeQaEvidence||{};
+            const studioRequired=item.robloxStudioAssetBindingApplied===true;
+            const studio=item.robloxStudioAssetRuntimeBindingEvidence||{};
+            const exactReusable=
+              c.published===true
+              &&Number(c.versionNumber)>0&&c.universeId&&c.placeId
+              &&item.robloxRuntimeFoundationPassed===true
+              &&item.robloxRuntimePassed===true
+              &&item.robloxIndependentQaPassed===true
+              &&item.robloxRegressionPassed===true
+              &&runtime.sourceRevision===sourceRevision
+              &&runtime.artifactIdentity===artifactIdentity
+              &&String(runtime.placeId||'')===String(c.placeId||'')
+              &&Number(runtime.candidateVersionNumber)===Number(c.versionNumber)
+              &&runtime.runtimeFoundationPassed===true
+              &&runtime.runtimeAcceptancePassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(c.versionNumber)
+              &&(!studioRequired||(
+                item.robloxStudioAssetRuntimeBindingPassed===true
+                &&studio.sourceRevision===sourceRevision
+                &&studio.artifactIdentity===artifactIdentity
+                &&Number(studio.candidateVersionNumber)===Number(c.versionNumber)
+              ));
+            if(exactReusable){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE='+item.gameId);
+              return false;
+            }
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           });
           const probes=[];
@@ -176,6 +208,52 @@ jobs:
               item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH';
               item.routingBlockers=['roblox-runtime-candidate-identity-mismatch'];
               item.updatedAt=stamp;changed=true;failed++;
+              continue;
+            }
+
+            const priorRuntime=item.robloxRuntimeFoundationEvidence||{};
+            const priorPost=item.robloxPostRuntimeQaEvidence||{};
+            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+            const priorStudio=item.robloxStudioAssetRuntimeBindingEvidence||{};
+            const exactRuntimeEvidenceReusable=
+              item.robloxRuntimeFoundationPassed===true
+              &&item.robloxRuntimePassed===true
+              &&item.robloxIndependentQaPassed===true
+              &&item.robloxRegressionPassed===true
+              &&priorRuntime.sourceRevision===sourceRevision
+              &&priorRuntime.artifactIdentity===artifactIdentity
+              &&String(priorRuntime.placeId||'')===String(candidate.placeId||'')
+              &&Number(priorRuntime.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&priorRuntime.runtimeFoundationPassed===true
+              &&priorRuntime.runtimeAcceptancePassed===true
+              &&priorPost.sourceRevision===sourceRevision
+              &&priorPost.artifactIdentity===artifactIdentity
+              &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&(!studioAssetBindingRequired||(
+                item.robloxStudioAssetRuntimeBindingPassed===true
+                &&priorStudio.sourceRevision===sourceRevision
+                &&priorStudio.artifactIdentity===artifactIdentity
+                &&Number(priorStudio.candidateVersionNumber)===Number(candidate.versionNumber)
+              ));
+            if(exactRuntimeEvidenceReusable){
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              item.robloxRuntimeEvidenceReuse={
+                sourceRevision,
+                artifactIdentity,
+                candidateVersionNumber:Number(candidate.versionNumber),
+                reusedAt:stamp,
+                reusedServerBootEvidence:true,
+                reason:'EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ALREADY_VERIFIED',
+              };
+              item.updatedAt=stamp;
+              changed=true;
+              f9Ids.push(item.gameId);
+              passed++;
+              console.log('ROBLOX_RUNTIME_EVIDENCE_REUSED='+item.gameId+':version='+candidate.versionNumber);
               continue;
             }
 

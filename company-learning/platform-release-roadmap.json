@@ -1,5 +1,5 @@
 {
-  "version": 339,
+  "version": 340,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -503,7 +503,7 @@
     "qualityOrEvidenceGateWeakeningForbidden": true,
     "globalSelectedPlatformDevelopmentWipMax": null,
     "webValidationParallelismControlledSeparately": false,
-    "runtimeRunnerCapacityMaySerializeRuntimeQa": true,
+    "runtimeRunnerCapacityMaySerializeRuntimeQa": false,
     "canonicalSequence": [
       "CHANGE_DETECTION",
       "CHEAP_PRECHECK",
@@ -536,6 +536,42 @@
     "parallelismMode": "UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_WAVES",
     "externalMatrixBatchMax": 256,
     "immediateWaveRefill": true,
+    "robloxEndToEndParallelExecution": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "scope": "CHECKOUT_BUILD_PREFLIGHT_F0_RUNTIME_QA_REGRESSION_F9_PROMOTION",
+      "gameLevelExecution": "PARALLEL_BY_DEFAULT",
+      "checkoutMode": "PER_GAME_OR_PER_MATRIX_WORKER_INDEPENDENT_WORKSPACE",
+      "checkoutParallel": true,
+      "buildParallel": true,
+      "sharedPreflightParallel": true,
+      "f0Parallel": true,
+      "privateRuntimeCandidateDeploymentParallel": true,
+      "runtimeFoundationQaParallel": true,
+      "independentQaParallel": true,
+      "regressionParallel": true,
+      "finalReviewParallel": true,
+      "promotionParallel": true,
+      "internalGameConcurrencyCapsForbidden": true,
+      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true,
+      "runtimeQaMayQueueOnlyWhenExternalProviderCapacityIsExhausted": true,
+      "matrixBatchMax": 256,
+      "sharedStateWriteCriticalSectionOnly": "COMPANY_RUNTIME_SHARED_JSON_COMMIT_MAY_SERIALIZE_BRIEFLY_FOR_INTEGRITY",
+      "sharedStateWriteSerializationMayNotSerializeHeavyCheckoutBuildRuntimeOrQa": true,
+      "serverBootEvidenceReuse": {
+        "enabled": true,
+        "reuseOnlyWhenExactCandidateUnchanged": true,
+        "requiredExactBindings": [
+          "SOURCE_REVISION",
+          "BUILD_ARTIFACT_IDENTITY",
+          "PLACE_ID",
+          "CANDIDATE_VERSION_NUMBER"
+        ],
+        "fullRuntimeAcceptanceEvidenceMayBeReused": true,
+        "newSourceArtifactOrPlaceVersionInvalidatesReuse": true,
+        "runtimeEvidenceFabricationForbidden": true
+      }
+    },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
       "crossCandidateSerializationForbidden": true,

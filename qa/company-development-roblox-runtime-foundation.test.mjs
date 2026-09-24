@@ -317,3 +317,31 @@ test('two-client sync pending stays before F9 and cannot promote either internal
  assert.match(finalReview,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
  assert.match(finalReview,/item\.robloxPublicReleaseVersionNumber=Number\(candidate\.versionNumber\)/);
 });
+
+test('exact unchanged runtime candidate reuses verified server boot evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EVIDENCE_REUSED=/);
+  assert.match(workflow,/reusedServerBootEvidence:true/);
+  assert.match(workflow,/EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ALREADY_VERIFIED/);
+  assert.match(workflow,/priorRuntime\.sourceRevision===sourceRevision/);
+  assert.match(workflow,/priorRuntime\.artifactIdentity===artifactIdentity/);
+  assert.match(workflow,/Number\(priorRuntime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+});
+
+test('central policy requires Roblox checkout through final promotion to stay game-parallel',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const parallel=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
+  assert.equal(parallel.gameLevelExecution,'PARALLEL_BY_DEFAULT');
+  assert.equal(parallel.checkoutParallel,true);
+  assert.equal(parallel.buildParallel,true);
+  assert.equal(parallel.f0Parallel,true);
+  assert.equal(parallel.runtimeFoundationQaParallel,true);
+  assert.equal(parallel.finalReviewParallel,true);
+  assert.equal(parallel.promotionParallel,true);
+  assert.equal(parallel.internalGameConcurrencyCapsForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.runtimeRunnerCapacityMaySerializeRuntimeQa,false);
+  assert.equal(parallel.runtimeQaMayQueueOnlyWhenExternalProviderCapacityIsExhausted,true);
+  assert.equal(parallel.serverBootEvidenceReuse.reuseOnlyWhenExactCandidateUnchanged,true);
+  assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
+});
