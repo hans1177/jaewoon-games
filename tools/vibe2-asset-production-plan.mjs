@@ -329,7 +329,14 @@ export function buildVibeAssetProductionPlan({
     signalsByKey:universeSignals,
     platform:resolvedTarget==='roblox'?'ROBLOX':resolvedTarget==='unity'?'UNITY':'UNITY',
     styleFamily:clean(task.styleFamily||task.style)||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
-    concept:requestedConcept
+    concept:requestedConcept,
+    gameId:clean(task.gameId),
+    worldDna:task.worldDna||task.mapDna||{},
+    languages:task.visualLanguages||{},
+    requirements:Array.isArray(task.assetRequirements)?task.assetRequirements:[],
+    usageByAsset:task.assetUsageById||{},
+    futureGameDemands:Array.isArray(task.futureGameDemands)?task.futureGameDemands:[],
+    usageEvents:Array.isArray(task.assetUsageEvents)?task.assetUsageEvents:[]
   }):null;
   const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
     const usage={
@@ -506,6 +513,11 @@ export function buildVibeAssetProductionPlan({
         biomes:freezeList(universeContract?.biomeDna?.biomes||[]),
         materialSurfaces:freezeList(universeContract?.materialLibrary?.surfaces||[]),
         audioFamilies:freezeList(universeContract?.audioVariation?companyRegistry?.studioAssetUniverse?.audioCatalog?.families||[]:[]),
+        gameVisualDna:freeze(studioUniversePlan?.gameVisualDna||{}),
+        loadout:freeze(studioUniversePlan?.loadout||{}),
+        futureDemand:freeze(studioUniversePlan?.futureDemand||{}),
+        usageFeedback:freeze(studioUniversePlan?.usageFeedback||{}),
+        testbed:freeze(studioUniversePlan?.testbed||{}),
         coverage:freeze(studioUniversePlan?.coverage||{}),
         heatmap:freezeList(studioUniversePlan?.heatmap?.rows||[]),
         highestPriorityGap:freeze(studioUniversePlan?.heatmap?.highestPriorityGap||null),
@@ -700,6 +712,12 @@ export function buildVibeAssetProductionPlan({
       directReferenceMapCopyForbidden:universeContract?.worldGenerationStudio?.referenceAbstraction?.directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden===true,
       mapDnaRequired:Array.isArray(universeContract?.worldGenerationStudio?.mapDnaFields)&&universeContract.worldGenerationStudio.mapDnaFields.length>0,
       seamlessStreamingPlanRequired:universeContract?.worldGenerationStudio?.runtimeStreaming?.perceivedSeamlessStreamingTarget===true,
+      gameVisualDnaRequired:universeContract?.gameVisualDna?.enabled===true,
+      assetLoadoutSelectorRequired:universeContract?.assetLoadoutSelector?.enabled===true,
+      futureDemandForecastEnabled:universeContract?.futureDemandForecast?.enabled===true,
+      studioTestbedEnabled:universeContract?.studioTestbed?.enabled===true,
+      verifiedUsageFeedbackEnabled:universeContract?.verifiedUsageFeedback?.enabled===true,
+      platformVariantOptimizerEnabled:universeContract?.platformVariantOptimizer?.enabled===true,
       latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
       wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
     }),
@@ -750,6 +768,8 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Studio Asset Universe=${plan.companyGraphicsLibrary.studioAssetUniverse.target}; families=${plan.companyGraphicsLibrary.studioAssetUniverse.families.join('|')}; creatureBodyPlans=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureBodyPlans.length}; species=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureSpecies.length}; biomes=${plan.companyGraphicsLibrary.studioAssetUniverse.biomes.length}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.gameVisualDna?.fingerprint?`Game Visual DNA=${plan.companyGraphicsLibrary.studioAssetUniverse.gameVisualDna.fingerprint}; 이후 업데이트는 이 게임 고유 스타일/월드 언어를 먼저 읽고 유지한다.`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.loadout?`Asset Loadout unresolved=${plan.companyGraphicsLibrary.studioAssetUniverse.loadout.unresolved?.length||0}; 검증 회사 자산과 호환/사용 이력 우선으로 자동 선택하고 잠금 선택은 보존한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.worldGenerationStudio?.enabled?'World Generation Studio는 허용된 이미지/내부 게임/다중 레퍼런스에서 지형·길·밀도·시야·랜드마크 위계 같은 추상 구조만 학습한다. 특정 보호 작품의 맵/랜드마크/장면을 그대로 복제하지 않는다. Map DNA→macro terrain→route graph→zone→micro props→initial prewarm→chunk/LOD streaming→reachability/mobile QA 순으로 연결한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
