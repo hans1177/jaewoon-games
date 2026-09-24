@@ -1098,7 +1098,15 @@
     "directReferenceLayoutCopyForbidden": true,
     "mapDnaRouteGrammarRequired": true,
     "perceivedSeamlessStreamingTarget": true,
-    "mobileChunkStreamingAndLodRequired": true
+    "mobileChunkStreamingAndLodRequired": true,
+    "gameVisualDnaRequired": true,
+    "assetLoadoutSelectorRequired": true,
+    "futureDemandForecast": true,
+    "creatureSpeciesBlueprint": true,
+    "platformVariantOptimizer": true,
+    "studioTestbed": true,
+    "verifiedUsageFeedback": true,
+    "genreWorldGrammar": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1189,7 +1197,15 @@
       "routeGraph": true,
       "initialPlayableZonePrewarm": true,
       "chunkStreaming": true,
-      "objectPoolingPreferred": true
+      "objectPoolingPreferred": true,
+      "gameVisualDna": true,
+      "assetLoadoutSelector": true,
+      "futureDemandForecast": true,
+      "creatureSpeciesBlueprint": true,
+      "platformVariantOptimizer": true,
+      "studioTestbed": true,
+      "verifiedUsageFeedback": true,
+      "genreWorldGrammar": true
     },
     "internalModules": [
       "assets/vibe-motion-director.js",
@@ -1240,7 +1256,11 @@
     "worldNarrativeBinding": true,
     "reuseExistingQuestDialogueState": true,
     "gameplayAuthorityExpansion": false,
-    "canonicalLearningOnly": true
+    "canonicalLearningOnly": true,
+    "characterBehaviorIntent": true,
+    "companionNpcMonsterIntent": true,
+    "relationshipMemoryLearning": true,
+    "worldNarrativeLearning": true
   },
   "specializedGameDevelopmentLearning": {
     "source": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery",
