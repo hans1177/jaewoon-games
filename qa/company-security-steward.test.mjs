@@ -359,3 +359,19 @@ test('security contract protects reference image study and narrative state autho
   assert.equal(narrative.protections.multiplayerServerAuthorityPreserved,true);
   assert.equal(narrative.protections.rawGeneratedStoryOrDialogueDirectMasteryForbidden,true);
 });
+
+
+test('specialized verified experience persistence keeps only sanitized trace evidence',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+  const s=policy.specializedVerifiedExperienceSecurity;
+  assert.equal(s.protections.terminalVerifiedEvidenceRequired,true);
+  assert.equal(s.protections.infrastructureFailureNegativeLearningForbidden,true);
+  assert.equal(s.protections.rawQueueTelemetryPersistentLearningForbidden,true);
+  assert.equal(s.protections.rawBlockerStackPersistentLearningForbidden,true);
+  assert.equal(s.protections.exactMapCoordinatesAndLayoutPersistentLearningForbidden,true);
+  assert.equal(s.protections.onlySanitizedEvidenceReferencesPersist,true);
+  assert.equal(s.protections.specializedOutcomeIdRequired,true);
+  assert.equal(s.protections.repeatedSameOutcomeIdPersistenceForbidden,true);
+  assert.equal(s.protections.positiveMasteryWithoutVerifiedMarkerForbidden,true);
+  assert.equal(s.protections.experienceMemoryCannotExpandGameplayOrCodeExecutionAuthority,true);
+});
