@@ -99,6 +99,32 @@ function normalizedPhases(seed,fallback){
     };
   });
 }
+function buildForeshadowingGraph({phases=[],twist='',boss='',ending=''}={}){
+  const opening=phases[0]||{},early=phases[1]||{},mid=phases[2]||{},late=phases[3]||{};
+  const threads=[
+    {id:'THREAD-01',seedStage:'OPENING',clue:clip(`${opening.cause}의 원인이 아직 전부 설명되지 않는다.`,120),revealStage:'MID',reveal:clip(twist||mid.result,120),payoffStage:'FINAL_BOSS',payoff:clip(`${boss||'최종 위협'}와 초반 사건의 연결이 결전의 이유가 된다.`,120)},
+    {id:'THREAD-02',seedStage:'EARLY',clue:clip(`${early.result} 속에 후반 지역과 연결되는 작은 이상 징후를 남긴다.`,120),revealStage:'LATE',reveal:clip(late.cause,120),payoffStage:'ENDING',payoff:clip(ending,120)},
+  ];
+  return threads.map(row=>({...row,status:'TRACKED',intentionalOpen:false}));
+}
+function buildCharacterProfiles(npcMotivations=[]){
+  const tones=['짧고 단호함','차분하고 신중함','정중하지만 속뜻을 숨김','거칠지만 솔직함'];
+  return npcMotivations.map((n,i)=>({
+    name:n.name,goal:n.goal,conflict:n.conflict,relationshipToPlayer:n.relationshipToPlayer,
+    desire:n.goal,need:clip(`${n.conflict}를 해결하려면 자신의 약점을 직면해야 한다.`,110),
+    fear:n.fear||['실패','배신','상실','통제 상실'][i%4],
+    secret:n.secret||clip(`${n.conflict}와 관련된 개인적 사실을 초반에는 전부 말하지 않는다.`,110),
+    voice:{formality:n.formality||['neutral','formal','casual','guarded'][i%4],rhythm:n.voice||tones[i%tones.length],relationshipShift:true,knowledgeBoundary:true},
+    behaviorIntent:{social:['supportive','reserved','challenging','protective'][i%4],combat:['protect-ally','hold-position','flank','counterattack'][i%4],gameplayAuthority:false}
+  }));
+}
+function buildQuestGraph(mainQuestChain=[],sideQuestHooks=[]){
+  const nodes=mainQuestChain.map((q,i)=>({id:q.id,class:'MAIN',stage:q.stage,region:q.region,quest:q.quest,consequence:q.result,requires:i?[mainQuestChain[i-1].id]:[]}));
+  sideQuestHooks.forEach((hook,i)=>nodes.push({id:`SIDE-${String(i+1).padStart(2,'0')}`,class:'SIDE',stage:'DYNAMIC',region:'CONTEXTUAL',quest:hook,consequence:'RELATIONSHIP_OR_WORLD_STATE_CHANGE',requires:[]}));
+  const edges=[];for(let i=1;i<mainQuestChain.length;i++)edges.push({from:mainQuestChain[i-1].id,to:mainQuestChain[i].id,type:'UNLOCKS'});
+  return {nodes,edges,rule:'QUESTS_REQUIRE_CAUSE_PREREQUISITE_STATE_CHANGE_CONSEQUENCE_AND_NO_DUPLICATE_REWARD'};
+}
+
 export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPages=16,evidenceSnippets=[]}={}){
   const fallback=buildFallbackSeed({gameName,genreText,minimumPages}),phases=normalizedPhases(seed,fallback);
   const contaminated=[];
@@ -119,12 +145,19 @@ export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPa
     winConsequence:narrativeValue(bossSeed.winConsequence,finalPhase.result),
   };
   const npcMotivations=(Array.isArray(seed?.npcSeeds)?seed.npcSeeds:[]).slice(0,4).map((n,i)=>({
-    name:narrativeValue(n?.name,`주요 인물 ${i+1}`),goal:narrativeValue(n?.goal,'플레이어와 얽힌 목표를 가진다'),conflict:narrativeValue(n?.conflict,'핵심 갈등에서 이해관계가 충돌한다'),relationshipToPlayer:narrativeValue(n?.relationshipToPlayer,'협력과 갈등을 오가며 진행에 영향을 준다')
+    name:narrativeValue(n?.name,`주요 인물 ${i+1}`),goal:narrativeValue(n?.goal,'플레이어와 얽힌 목표를 가진다'),conflict:narrativeValue(n?.conflict,'핵심 갈등에서 이해관계가 충돌한다'),relationshipToPlayer:narrativeValue(n?.relationshipToPlayer,'협력과 갈등을 오가며 진행에 영향을 준다'),
+    voice:narrativeValue(n?.voice,['짧고 단호함','차분하고 신중함','정중하지만 속뜻을 숨김','거칠지만 솔직함'][i%4]),
+    fear:narrativeValue(n?.fear,['실패','배신','상실','통제 상실'][i%4]),
+    secret:narrativeValue(n?.secret,`${narrativeValue(n?.conflict,'핵심 갈등')}와 관련된 사실을 처음부터 모두 밝히지 않는다`)
   }));
   const gaps=[];
   if(evidenceSnippets.length<4)gaps.push('현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함');
   if(!npcMotivations.length)gaps.push('주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요');
   const recommendedPages=Math.max(minimumPages,Math.min(30,Math.round(Number(seed?.recommendedPages)||minimumPages)));
+  const sideQuestHooks=npcMotivations.map(n=>`${n.name}의 목표(${n.goal})와 플레이어 진행을 연결하는 선택형 과제`);
+  const characterProfiles=buildCharacterProfiles(npcMotivations);
+  const foreshadowingGraph=buildForeshadowingGraph({phases:phasePlans,twist:narrativeValue(seed?.twist,fallback.twist),boss:boss.boss,ending:narrativeValue(seed?.ending,fallback.ending)});
+  const questGraph=buildQuestGraph(mainQuestChain,sideQuestHooks);
   return {
     recommendedPages,
     playerMotivation:narrativeValue(seed?.playerMotivation,fallback.playerMotivation),
@@ -132,8 +165,11 @@ export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPa
     causalitySummary:clip(phasePlans.map(p=>`${p.stage}:${p.cause}→${p.result}`).join(' / '),600),
     storySpine,phasePlans,
     regions:[...new Set(phasePlans.map(p=>p.region))],regionTransitions,mainQuestChain,
-    sideQuestHooks:npcMotivations.map(n=>`${n.name}의 목표(${n.goal})와 플레이어 진행을 연결하는 선택형 과제`),
-    npcMotivations,majorBosses:[boss.boss],bossCausality:[boss],gaps,
+    sideQuestHooks,questGraph,
+    npcMotivations,characterProfiles,foreshadowingGraph,
+    relationshipMemoryContract:{axes:['TRUST','AFFINITY','FEAR','RESPECT','DEBT','BETRAYAL'],memorySourceEventRequired:true,knowledgeBoundaryRequired:true,gameplayAuthority:false},
+    worldNarrativeBindings:{channels:['REGION','LANDMARK','ENVIRONMENT','ITEM','NPC_DIALOGUE','FACTION_STATE','BOSS','QUEST_STATE'],worldStateConsistencyRequired:true},
+    majorBosses:[boss.boss],bossCausality:[boss],gaps,
     proposalAdditions:phasePlans.map(p=>`${p.stage}: ${p.region} / ${p.quest}`),
     conflictEscalation:clip(phasePlans.map(p=>p.cause).join(' → '),420),
     twist:narrativeValue(seed?.twist,fallback.twist),finalRegion:finalPhase.region,
@@ -144,5 +180,5 @@ export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPa
 }
 export function validExpandedDraft(d){
   const s=d?.storySpine||{},phases=Array.isArray(d?.phasePlans)?d.phasePlans:[],quests=Array.isArray(d?.mainQuestChain)?d.mainQuestChain:[],phaseSet=new Set(phases.map(x=>stageKey(x.stage)));
-  return Boolean(d&&['opening','early','mid','late','finalBoss','ending'].every(k=>clean(s[k]))&&REQUIRED_STAGES.every(x=>phaseSet.has(x))&&phases.length===6&&phases.every(p=>['region','quest','cause','playerAction','result','nextHook'].every(k=>clean(p[k])))&&quests.length>=6&&Array.isArray(d.bossCausality)&&d.bossCausality.length>=1&&clean(d.causalitySummary)&&clean(d.endgame)&&Number(d.recommendedPages)>=12&&Number(d.recommendedPages)<=30);
+  return Boolean(d&&['opening','early','mid','late','finalBoss','ending'].every(k=>clean(s[k]))&&REQUIRED_STAGES.every(x=>phaseSet.has(x))&&phases.length===6&&phases.every(p=>['region','quest','cause','playerAction','result','nextHook'].every(k=>clean(p[k])))&&quests.length>=6&&Array.isArray(d.bossCausality)&&d.bossCausality.length>=1&&Array.isArray(d.foreshadowingGraph)&&d.foreshadowingGraph.length>=2&&d.questGraph?.nodes?.length>=6&&Array.isArray(d.characterProfiles)&&clean(d.causalitySummary)&&clean(d.endgame)&&Number(d.recommendedPages)>=12&&Number(d.recommendedPages)<=30);
 }
