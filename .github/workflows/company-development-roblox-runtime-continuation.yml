@@ -7,14 +7,9 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-roblox-runtime-continuation
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '9'
-  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'
 
 jobs:
   preflight-plan:
@@ -59,7 +54,6 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const rows=[];
           for(const item of q.items||[]){
-            if(rows.length>=6)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
@@ -84,7 +78,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=EXTERNAL_PROVIDER_MANAGED');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
@@ -95,7 +89,6 @@ jobs:
     if: needs.preflight-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 6
       matrix: ${{ fromJSON(needs.preflight-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -174,9 +167,6 @@ jobs:
     timeout-minutes: 12
     outputs:
       pass_count: ${{ steps.persist.outputs.pass_count }}
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -199,8 +189,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          git show origin/main:tools/company-runtime-optimistic-merge.mjs > /tmp/company-runtime-optimistic-merge.mjs
+          cp development-queue.json /tmp/roblox-preflight-runtime-base.json
           node <<'NODE'
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
@@ -255,19 +247,33 @@ jobs:
           console.log(`ROBLOX_BUILD_PREFLIGHT_PASS_COUNT=${pass}`);console.log(`ROBLOX_BUILD_PREFLIGHT_FAIL_COUNT=${fail}`);
           console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');
           NODE
+          cp development-queue.json /tmp/roblox-preflight-runtime-updated.json
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_PREFLIGHT_PERSIST=NO_CHANGE'
+              break
+            fi
             git commit -m 'runtime: persist Roblox shared-model preflight checkpoint [skip ci]'
-            for attempt in 1 2 3; do
-              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
-              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-              sleep $((attempt*2))
-            done
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_PREFLIGHT_PERSIST=PASS:attempt=$attempt"
+              break
+            fi
+            echo "ROBLOX_PREFLIGHT_PERSIST_OPTIMISTIC_RETRY=$attempt"
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node /tmp/company-runtime-optimistic-merge.mjs \
+              --base=/tmp/roblox-preflight-runtime-base.json \
+              --updated=/tmp/roblox-preflight-runtime-updated.json \
+              --current=development-queue.json \
+              --output=development-queue.json
+            sleep "$((attempt<5?attempt:5))"
+          done
 
   dispatch-headless:
     name: dispatch Roblox F0 source preflight
