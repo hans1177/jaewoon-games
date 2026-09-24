@@ -1,5 +1,5 @@
 {
-  "version": 334,
+  "version": 335,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16636,7 +16636,10 @@
           "fanInProvenanceRequiredForPositiveIngress": true,
           "ingressDefenseInDepthNativeQaRecheckRequired": true,
           "nativeTargetProofMustSurviveFanInToCanonicalIngress": true,
-          "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
+          "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true,
+          "negativeMarkerAloneForbidden": true,
+          "negativeFailureProvenanceRequiredAtCanonicalIngress": true,
+          "focusedStaticNotVerifiedIsNotRuntimeFailure": true
         },
         "finalMarkerMustBeExactEvidenceToken": true,
         "prefixedOrSuffixedFocusedQaTokenCannotMatchFinalMarker": true,
@@ -16650,7 +16653,18 @@
         "nativeTargetProofMustBeRecheckedAtCanonicalIngress": true,
         "nativeTargetProofMustBeTraceableInSyntheticExperience": true,
         "webPositiveDoesNotRequireNativeEngineQa": true,
-        "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
+        "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true,
+        "nonGamePositiveAndNegativeSpecializedMasteryForbidden": true,
+        "negativeVerifiedFailureProvenanceRequired": true,
+        "negativeMarkerAloneMustNotPenalizeMastery": true,
+        "negativeProvenanceTokens": {
+          "verification": "specialized-negative-verification:FAIL",
+          "allowedAuthorities": [
+            "specialized-negative-authority:FOCUSED_QA",
+            "specialized-negative-authority:RUNTIME_QA",
+            "specialized-negative-authority:FAN_IN_RUNTIME_FAILURE"
+          ]
+        }
       }
     },
     "worldAndConceptLearning": {
