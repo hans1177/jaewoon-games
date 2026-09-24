@@ -723,14 +723,33 @@ function findWebDiagnosticTask(project,repoRoot,queue){
 }
 function presentationSourcesForProject(project,repoRoot){
   const root=posix(project.projectPath),engine=clean(project.engine).toLowerCase();
-  const candidates=engine==='web'
-    ?[`${root}/index.html`,`${root}/style.css`,`${root}/game.js`]
-    :engine==='unity'
-      ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`]
-      :engine==='roblox'
-        ?[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`]
-        :[];
-  return candidates.filter(relative=>fs.existsSync(sourceFile(repoRoot,relative))).slice(0,6);
+  let candidates=[];
+  if(engine==='web'){
+    candidates=[`${root}/index.html`,`${root}/style.css`,`${root}/game.js`];
+    const dir=sourceFile(repoRoot,root);
+    if(fs.existsSync(dir)&&fs.statSync(dir).isDirectory()){
+      let entries=[];
+      try{entries=fs.readdirSync(dir,{withFileTypes:true});}catch{}
+      const gameToken=clean(project.gameId).toLowerCase().replace(/[^a-z0-9]+/g,'');
+      const discovered=entries
+        .filter(entry=>entry.isFile()&&/\.(?:html?|css|js|mjs)$/i.test(entry.name)&&!/(?:backup|archive|\.bak\b|validation|report|test)/i.test(entry.name))
+        .map(entry=>{
+          const name=entry.name.toLowerCase(),normalized=name.replace(/[^a-z0-9]+/g,'');
+          let score=/^index\.html?$/.test(name)?100:/\.html?$/.test(name)?70:40;
+          if(gameToken&&normalized.includes(gameToken))score+=25;
+          if(/(?:game|main|play|runtime)/i.test(name))score+=10;
+          return{relative:`${root}/${entry.name}`,score};
+        })
+        .sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative))
+        .map(row=>row.relative);
+      candidates=[...candidates,...discovered];
+    }
+  }else if(engine==='unity'){
+    candidates=[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`];
+  }else if(engine==='roblox'){
+    candidates=[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`];
+  }
+  return [...new Set(candidates)].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative))).slice(0,6);
 }
 function presentationSourceForProject(project,repoRoot){
   return presentationSourcesForProject(project,repoRoot)[0]||null;
