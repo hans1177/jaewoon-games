@@ -1029,7 +1029,7 @@ jobs:
           echo 'ROBLOX_REGRESSION_PASS=NO'
           echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
-      - name: Dispatch Roblox HEADLESS FAST_MVP continuation
+      - name: Dispatch ready Roblox packages into per-game parallel continuation
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1039,69 +1039,37 @@ jobs:
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git checkout --detach origin/main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
-          state="$(node --input-type=module <<'NODE'
+          node --input-type=module <<'NODE' > /tmp/roblox-continuation-ready-ids
           import fs from 'node:fs';
           import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
-          let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
-            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
-            if(exactBuild){
-              const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed:item.robloxBuildPreflightPassed;
-              const runtimePassed=secondaryOwnerFocus?item.ownerFocusRobloxRuntimePassed:item.robloxRuntimePassed;
-              const runtimeHarness=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeHarnessVersion:item.robloxRuntimeHarnessVersion;
-              const runtimeEvidence=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeEvidence:item.robloxRuntimeEvidence;
-              const securityHoldFlag=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeSecurityHold:item.robloxRuntimeSecurityHold;
-              if(preflightPassed!==true){
-                preflightReady++;
-              }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
-                const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
-                if(securityBlocked)externalBlocked++;
-                else runtimeReady++;
-              }
-              continue;
-            }
-            if(secondaryOwnerFocus){
-              if(['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))packagePending++;
-              continue;
-            }
-            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
-            packagePending++;
+            const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed===true:item.robloxBuildPreflightPassed===true;
+            if(!exactBuild||preflightPassed)continue;
+            process.stdout.write(String(item.gameId)+'\n');
           }
-          process.stdout.write(`${packagePending} ${preflightReady} ${runtimeReady} ${externalBlocked}`);
           NODE
-          )"
-          read -r package_pending preflight_ready runtime_ready external_blocked <<<"$state"
-          echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
-          echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
-          echo "ROBLOX_RUNTIME_READY_COUNT=$runtime_ready"
-          echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
-          echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
-          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=2'
-          echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
-          echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
-          echo 'ROBLOX_HEADLESS_FAST_MVP_AUTODISPATCH=ENABLED'
+          ready_count="$(grep -c . /tmp/roblox-continuation-ready-ids || true)"
+          echo "ROBLOX_PREFLIGHT_READY_COUNT=$ready_count"
+          echo 'ROBLOX_BUILD_TO_PREFLIGHT_PARALLEL=YES'
           echo 'ROBLOX_STUDIO_RUNTIME_REQUIRED=NO'
-          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
-          active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
-          echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
-          if [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) && "$active_continuations" == '0' ]]; then
-            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'
-          elif [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) ]]; then
-            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE'
-          else
-            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=NO'
-          fi
+          echo 'ROBLOX_RUNTIME_PARALLELISM=PER_GAME_EXTERNAL_CAPACITY'
+          dispatched=0
+          while IFS= read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=EXACT:$id"
+            dispatched=$((dispatched+1))
+          done < /tmp/roblox-continuation-ready-ids
+          echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatched"
