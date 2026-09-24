@@ -50,7 +50,7 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   let queue=createVibeContinuousQueue(queueInput);
   let control=createParallelismControl(controlInput);
   const nowMs=Date.parse(now)||Date.now(),actions=[],taskIds=[];
-  const rawControlVersionHealthy=Number(controlInput?.version||0)===4;
+  const rawControlVersionHealthy=Number(controlInput?.version||4)===4;
   const rawControlStepHealthy=ADAPTIVE_STEPS.has(Number(controlInput?.currentMax));
   const machineRepairActions=[];
 
