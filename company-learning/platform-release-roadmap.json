@@ -1,5 +1,5 @@
 {
-  "version": 341,
+  "version": 342,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -6514,7 +6514,15 @@
       "gateThresholdsUnchanged": true,
       "implementationBreadthAdded": true,
       "perpetualLoopAdded": true,
-      "transientWorkLockRequeueAdded": true
+      "transientWorkLockRequeueAdded": true,
+      "presentationRuntimeBeforeAfterFanInRequired": true,
+      "presentationRuntimeComparisonMustBeActualRenderedRuntime": true,
+      "sourceOrMarkerOnlyComparisonCannotFinalizePresentation": true,
+      "webPresentationComparisonStage": "VIBE2_CANDIDATE_RELEASE_LOCAL_BROWSER_BEFORE_FINAL_QUEUE_PASS",
+      "verifiedStudioCycleAutomaticallyReplansNextCycle": true,
+      "verifiedCycleSequence": "V1_VERIFIED_TO_V2_OPTIMIZE_TO_V3_BUILD_UP_AND_CONTINUE",
+      "studioQualityPackageMinimumConnectedImprovements": 3,
+      "legacyMicroTaskMayNotReplaceStudioQualityPackage": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -12380,7 +12388,11 @@
         "graphicsCheckpointOnly": true,
         "highEndDeficitDoesNotCreateStandaloneReleaseBlocker": true,
         "actualBrokenPresentationStillRoutesToExistingRepairState": true,
-        "releaseAuthorityExpansion": false
+        "releaseAuthorityExpansion": false,
+        "fanInRequirementCarriesActualRuntimeBeforeAfterEvidence": true,
+        "verifiedSettlementRequiresBeforeAfterPassWhenPresentationDeltaRequired": true,
+        "webBeforeAfterUsesRenderedBrowserCapture": true,
+        "sourceDiffAloneCannotSatisfyBeforeAfter": true
       },
       "preservation": {
         "gameplayBalanceSaveProgressionEconomyAndHitSemanticsImmutableForPresentationOnlyWork": true,
@@ -12785,7 +12797,10 @@
         "ownerRequestSemanticTextDeduplicationForbidden": true,
         "automaticSignalDeduplicationPreserved": true,
         "qualityOpportunityMayCreateEvolutionSignal": true,
-        "highImpactAlternativeComparisonRequired": true
+        "highImpactAlternativeComparisonRequired": true,
+        "presentationFanInCarriesRuntimeComparisonRequirement": true,
+        "finalVerifiedSettlementRequiresRuntimeComparisonPass": true,
+        "studioQualityVerifiedCycleMustRemainReplannable": true
       },
       "authorityBoundaries": {
         "graphicsDepartmentOwnsVisualProductionDirection": true,
