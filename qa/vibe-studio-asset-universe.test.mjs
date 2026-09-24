@@ -393,6 +393,7 @@ test('base material rotation retires only eligible atoms and refills through exi
       TABLE:{duplicateOf:'CHAIR'},
       BED:{verifiedRuntimeFailure:true},
       SHELF:{gameLocked:true,usageCount:0,unusedCycles:100},
+      BENCH:{mastered:true,masteryScore:100,verifiedPassCount:3},
       BLADE:{compatibilityFailureCount:2},
       GRIP:{manualLocked:true,compatibilityFailureCount:5}
     }
@@ -401,14 +402,21 @@ test('base material rotation retires only eligible atoms and refills through exi
   assert.equal(plan.historyPreserved,true);
   assert.equal(plan.usesExistingGapFill,true);
   assert.equal(plan.retireCount,3);
-  assert.equal(plan.refillCount,3);
-  assert.ok(plan.retired.some(row=>row.atom==='CHAIR'));
+  assert.equal(plan.graduateCount,1);
+  assert.equal(plan.refillCount,4);
+  assert.equal(plan.retired.some(row=>row.atom==='CHAIR'),false);
   assert.ok(plan.retired.some(row=>row.atom==='TABLE'));
+  assert.ok(plan.retired.some(row=>row.atom==='BED'));
   assert.ok(plan.retired.some(row=>row.atom==='BLADE'));
+  assert.ok(plan.graduated.some(row=>row.atom==='BENCH'&&row.productionReusable===true));
   assert.equal(plan.retired.some(row=>row.atom==='SHELF'),false);
   assert.equal(plan.retired.some(row=>row.atom==='GRIP'),false);
+  assert.ok(plan.productionActive.PROP.includes('BENCH'));
+  assert.equal(plan.learningActive.PROP.includes('BENCH'),false);
   assert.ok(plan.active.PROP.length>=2);
   assert.ok(plan.active.WEAPON.length>=2);
+  assert.equal(plan.masteredMaterialRemainsProductionReusable,true);
+  assert.equal(plan.masteredMaterialLeavesLearningExpansionPool,true);
   assert.ok(plan.refill.every(row=>row.route==='EXISTING_24H_GAP_FILL'));
 });
 
@@ -431,6 +439,9 @@ test('company registry fills composable base material atoms without false verifi
   assert.equal(registry.baseMaterialRotation.hardDeleteForbidden,true);
   assert.equal(registry.baseMaterialRotation.refillSameCycle,true);
   assert.equal(registry.baseMaterialRotation.refillRoute,'EXISTING_24H_GAP_FILL');
+  assert.equal(registry.baseMaterialRotation.graduationTrigger,'VERIFIED_MASTERY_SATURATED');
+  assert.equal(registry.baseMaterialRotation.masteredMaterialRemainsProductionReusable,true);
+  assert.equal(registry.baseMaterialRotation.masteredMaterialCreatesNewDiversityRefillSlot,true);
 });
 
 test('company registry exposes semantic template space without claiming production verification',()=>{
