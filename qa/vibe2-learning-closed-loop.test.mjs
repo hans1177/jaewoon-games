@@ -11,7 +11,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const motor=json('company-learning/vibe2-learning-motor.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,10);
+  assert.equal(motor.version,11);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -57,6 +57,14 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.ok(motor.idleTraining.drills.includes('UNIVERSAL_ASSET_COVERAGE_DRILL'));
   assert.ok(motor.idleTraining.drills.includes('CLOTHING_ARMOR_LIBRARY_DRILL'));
   assert.ok(motor.idleTraining.drills.includes('BUILDING_MODULAR_LIBRARY_DRILL'));
+  for(const domain of ['CONCEPT_DIRECTION','WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN','STREAMING_OPTIMIZATION','MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY','CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING']){
+    assert.ok(motor.mastery.domains.includes(domain),domain);
+  }
+  assert.equal(motor.worldConceptLearning?.existingLearningMotorOnly,true);
+  assert.equal(motor.worldConceptLearning?.shadowTrainerForbidden,true);
+  assert.equal(motor.worldConceptLearning?.preparedSemanticMayIncreaseMastery,false);
+  assert.equal(roadmap.learningClosedLoopContract?.specializedGameDevelopmentMastery?.existingCanonicalLearningMotorOnly,true);
+  assert.equal(roadmap.learningClosedLoopContract?.worldAndConceptLearning?.rawReferenceImageOrProtectedLayoutCannotBecomeReusableTemplate,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
