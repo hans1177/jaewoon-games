@@ -1873,26 +1873,6 @@
       ]
     },
     {
-      "id": "gap-asset_adaptation-l2",
-      "kind": "ASSET_ADAPTATION_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ASSET_ADAPTATION"
-      ]
-    },
-    {
-      "id": "gap-vfx-l2",
-      "kind": "VFX_READABILITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "VFX"
-      ]
-    },
-    {
       "id": "gap-visual_identity-l2",
       "kind": "GAME_VISUAL_DNA_DRILL",
       "priority": "low",
@@ -1900,6 +1880,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "VISUAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "gap-asset_adaptation-l3",
+      "kind": "ASSET_ADAPTATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_ADAPTATION"
       ]
     },
     {
@@ -1923,13 +1913,13 @@
       ]
     },
     {
-      "id": "gap-asset_production-l5",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-vfx-l3",
+      "kind": "VFX_READABILITY_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ASSET_PRODUCTION"
+        "VFX"
       ]
     },
     {
@@ -1950,6 +1940,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "UI_STATE"
+      ]
+    },
+    {
+      "id": "gap-asset_production-l6",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_PRODUCTION"
       ]
     },
     {
