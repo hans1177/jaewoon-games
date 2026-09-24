@@ -706,6 +706,8 @@ function presentationWorkerGuidance(order = {}) {
     '표현 계층은 save key, 진행도, 데미지, 쿨다운, 이동 속도, 보상, 드랍률, authoritative hit timing을 임의 변경하지 않는다.',
     '새 wrapper/override/shadow pipeline으로 덮지 말고 기존 책임 시스템을 직접 정리한다.',
     'ASSET_ADAPTATION에서 Unity는 C# 기반 저폴리 조립 모델·재질·조명·VFX·모션/UI를, Roblox는 Luau 기반 조립 모델·Material/Color·Particle/Beam/Trail·모션/UI를 실제 게임 화면에 구현할 수 있다.',
+    'Roblox ASSET_ADAPTATION은 캐릭터/적, 무기/장비, 환경/지형, 재질·색·스타일의 4개 핵심 시각 도메인을 모두 실제 source delta로 구현해야 한다. 3개만 채우는 부분 그래픽 패치는 완료가 아니다.',
+    'Roblox ASSET_ADAPTATION의 모션은 필수다. TweenService, RenderStepped/Heartbeat, Animator/AnimationTrack, Motor6D/Bone/CFrame 등 실제 네이티브 모션 경로를 기존 visual owner에 적용해야 하며 정적 색상/UI 변경만으로 완료할 수 없다.',
     '단일 primitive, 이름만 바꾼 기본 Part/GameObject, 검증용 임시 도형은 최종 그래픽 완료로 인정하지 않는다. 여러 의미 있는 파트와 Style Lock을 사용해 게임 정체성이 보이는 결과를 만든다.',
     '하이엔드 기본값은 플레이어/적/NPC/무기/아이템/건축/지형/배경/식생/소품/UI/VFX까지 목적 있는 에셋을 실제 게임에 적용하는 것이다.',
     '그래픽 작업의 외부 단위는 GRAPHICS_PRODUCTION 하나다. 캐릭터/환경/애니메이션/VFX/조명/UI를 별도 최상위 그래픽 작업으로 분리하지 말고 내부 단계로 처리한 뒤 같은 루트로 fan-in 한다.',
@@ -962,6 +964,8 @@ export function generationFailureClass(error){
   if(/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(message))return'SYSTEM_CANDIDATE_SYNTAX';
   if(/DIAGNOSTIC_POSTCONDITION_MISSING/i.test(message))return'DIAGNOSTIC_POSTCONDITION';
   if(/ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)/i.test(message))return'ROBLOX_STUDIO_ASSET_APPLICATION';
+  if(/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(message))return'ROBLOX_VISUAL_DOMAINS';
+  if(/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(message))return'ROBLOX_VISUAL_MOTION';
   if(/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(message))return'PRESENTATION_PATCH_DELTA';
   if(/STUDIO_QUALITY_DELTA_REQUIRED/i.test(message))return'STUDIO_QUALITY_DELTA';
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
@@ -971,11 +975,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -1116,6 +1120,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
   const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
+  const robloxAssetAdaptationTask=robloxPresentationTask&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(raw);
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
   const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
   return{
@@ -1132,6 +1137,8 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
       presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
       robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: the fixed anchor must be treated as presentation-owned source. Change native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI while preserving gameplay numbers and save/progression semantics.':'',
+      robloxAssetAdaptationTask?'ROBLOX FULL GRAPHICS CONTRACT: replace MUST implement all 4 source-delta domains together: (1) character/enemy visual form, (2) weapon/equipment visual form, (3) environment/terrain visual form, and (4) material/color/style language. All four are mandatory; 3/4 is invalid.':'',
+      robloxAssetAdaptationTask?'ROBLOX MOTION CONTRACT: motion is mandatory. The replacement must apply a native motion driver such as TweenService, RenderStepped/Heartbeat, Animator/AnimationTrack, or Motor6D/Bone together with a real motion target such as CFrame, Transform, Position, or Orientation. Static-only presentation is invalid.':'',
       presentationDeltaFailure?'This recovery is specifically for a PRESENTATION_PATCH_DELTA failure. Do not return another nonvisual candidate.':'',
       robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: produce an observable native visual delta at this exact client/visual owner anchor.':'',
       'Returning the exact find anchor unchanged is invalid. Change at least one behaviorally meaningful source token while preserving unrelated behavior.',
@@ -1254,14 +1261,17 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const noChangeEdit=/변경 없는 edit/i.test(reason);
   const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
   const presentationDelta=/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
-  const robloxPresentationDelta=presentationDelta&&/Engine:\s*roblox/i.test(rawPrompt);
+  const robloxPresentationTask=/Engine:\s*roblox/i.test(rawPrompt)&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(rawPrompt);
+  const robloxPresentationDelta=presentationDelta&&robloxPresentationTask;
+  const robloxVisualDomainsFailure=/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(reason);
+  const robloxVisualMotionFailure=/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(reason);
   const studioQualityDelta=studioInitial||/STUDIO_QUALITY_DELTA_REQUIRED/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
   const semanticDiffViolation=/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(reason);
   const systemCausalTestRequired=/SYSTEM_CAUSAL_TEST_REQUIRED/i.test(reason);
   const systemSyntaxInvalid=/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(reason);
-  const retryAnchorSuggestions=!allowFullRewrite?exactRetryAnchorSuggestions(rawPrompt,{max:studioExpansion?6:3,sourceRoot,responsibleFiles:exactResponsible}):[];
+  const retryAnchorSuggestions=!allowFullRewrite?exactRetryAnchorSuggestions(rawPrompt,{max:(studioExpansion||robloxPresentationTask)?6:3,sourceRoot,responsibleFiles:exactResponsible}):[];
   const retryAnchorInstruction=retryAnchorSuggestions.length
     ?[
         studioExpansion
@@ -1354,6 +1364,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           studioExpansion?'STUDIO_QUALITY_EVOLUTION BUILD_UP: return 3-6 connected edits with at least 3 actual source deltas. Keep each replacement concise and directly related so the package finishes within the model budget.':'',
           (presentationDelta||studioExpansion&&/focus=PRESENTATION/i.test(rawPrompt))?'PRESENTATION focus: at least 2 edits must change real visual/render/motion/camera/VFX/UI source so the rendered result can visibly differ; marker-only metadata and gameplay-only edits do not count.':'',
           robloxPresentationDelta?'ROBLOX PRESENTATION PATCH DELTA RECOVERY: prefer an Allowed edit path owned by client/visual/render/UI/camera/VFX code before server/gameplay owners. The candidate must create an observable native visual delta, not a marker.':'',
+          robloxPresentationTask?'ROBLOX FULL GRAPHICS CONTRACT: all four domains are mandatory in changed source: character/enemy, weapon/equipment, environment/terrain, material/color/style. Motion is also mandatory through TweenService/RenderStepped/Heartbeat/Animator/AnimationTrack/Motor6D/Bone plus CFrame/Transform/Position/Orientation.':'',
           'Do not expand unrelated code.'
         ].filter(Boolean).join('\n'):prefix;
         retryBase=[compactRetryPrefix,...editable].join('\n\n');
@@ -1377,18 +1388,18 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     : [
         studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${safeReason}`,
-        ((attempt>=3||(attempt>=2&&timeoutFailure))&&!studioExpansion&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired)?'Return exactly one minimal JSON object whose only top-level key is "edits", containing exactly one edit. Copy edits[0].path exactly from Allowed edit paths and edits[0].find exactly from one provided editable source anchor. Write the actual replacement source in edits[0].replace. Never emit template tokens or placeholder path/find/replace values. Do not include summary, expectedEffect, tests, newFiles, replaceFiles, markdown, comments, or extra keys.':(systemCausalTestRequired||systemSyntaxInvalid||systemAtomicPairRequired)?'Return one strict JSON object with an "edits" array containing at least two exact edits: one for the responsible non-QA system source and one for the responsible qa/*.test.js|mjs|cjs regression file. Both paths and find strings must be copied exactly from editable FILE blocks. The test edit must encode the causal regression so the base fails and the repaired candidate passes.':'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
+        ((attempt>=3||(attempt>=2&&timeoutFailure))&&!studioExpansion&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired)?(robloxPresentationTask?'Return exactly one JSON object whose only top-level key is "edits", containing exactly one edit. The single replace block may be larger, but it MUST implement all four Roblox visual domains plus mandatory native motion in coherent executable source at the exact visual owner anchor. Copy path/find exactly; no placeholders, markdown, or extra keys.':'Return exactly one minimal JSON object whose only top-level key is "edits", containing exactly one edit. Copy edits[0].path exactly from Allowed edit paths and edits[0].find exactly from one provided editable source anchor. Write the actual replacement source in edits[0].replace. Never emit template tokens or placeholder path/find/replace values. Do not include summary, expectedEffect, tests, newFiles, replaceFiles, markdown, comments, or extra keys.'):(systemCausalTestRequired||systemSyntaxInvalid||systemAtomicPairRequired)?'Return one strict JSON object with an "edits" array containing at least two exact edits: one for the responsible non-QA system source and one for the responsible qa/*.test.js|mjs|cjs regression file. Both paths and find strings must be copied exactly from editable FILE blocks. The test edit must encode the causal regression so the base fails and the repaired candidate passes.':'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
         retryAnchorInstruction,
         zeroChange?'You MUST produce at least one edits[] entry. Use one EXACT FIND ANCHOR OPTION above when available, then make replace materially different. Do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use one EXACT FIND ANCHOR OPTION above when available, then make the smallest real implementation change required by the work order.':editMatchFailure?(studioExpansion?'Return 3-6 connected edits. For every edit, copy a different EXACT FIND ANCHOR OPTION character-for-character; do not paraphrase, normalize, reconstruct, reuse, or guess any find string.':'Use exactly one EXACT FIND ANCHOR OPTION above when available. Copy the entire anchor value character-for-character, including whitespace and punctuation. Do not paraphrase, normalize, reconstruct, or guess source text.'):semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':presentationDelta?'Use a visual/render anchor when available. The replacement MUST create an actual visible presentation delta through material/color/lighting/mesh/UI/motion/camera/VFX source while preserving gameplay values, save meaning, progression and combat semantics. Do not satisfy this with a version marker, attribute-only metadata, comments, or unrelated gameplay changes.':studioQualityDelta?`${studioInitial?'Return 3-6 connected edits and at least 3 actual source deltas from the first candidate; do not begin with a one-edit micro patch.':'Return 3-6 connected edits and at least 3 actual source deltas; the previous 1-edit micro patch is invalid for BUILD_UP.'} ${/focus=PRESENTATION/i.test(rawPrompt)?'At least 2 edits must be real visual source deltas. ':''}Use distinct exact anchors and keep each replacement concise.`:invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
-        robloxPresentationDelta?'ROBLOX VISUAL OWNER RULE: choose a client/visual/render/UI/camera/VFX owner path first when one is writable, and change native presentation code there before considering server/gameplay anchors.':'',
+        robloxPresentationTask?'ROBLOX VISUAL OWNER RULE: choose a client/visual/render/UI/camera/VFX owner path first when one is writable. The changed source must cover all four visual domains and mandatory native motion before considering the graphics task complete.':'',
         zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':'',
         timeoutFailure&&!systemAtomicPairRequired&&!studioExpansion?'Start immediately with the JSON object. Use only the "edits" top-level key and exactly one edit. Keep find to the shortest unique exact source text and keep replace to the smallest coherent implementation that fixes the requested behavior.':systemSyntaxInvalid?'Repair the syntax error while preserving the required source-plus-regression-test atomic candidate. Both changed JavaScript files must pass node --check before incremental QA.':''
       ].filter(Boolean).join('\n');
   const focusedFinal=!allowFullRewrite&&!studioExpansion&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired&&(attempt>=3||(attempt>=2&&timeoutFailure));
   const fullWebFinal=attempt>=3&&allowFullRewrite;
   const finalInstruction=focusedFinal
-    ?'FINAL FOCUSED RETRY: output one JSON object with only the "edits" key and exactly one edit. Copy path exactly from Allowed edit paths. When EXACT FIND ANCHOR OPTIONS are present, use one entire anchor value verbatim as find. Put actual source code in replace; never output template tokens or placeholders. Keep replace minimal but behaviorally complete. No other keys or prose.'
+    ?(robloxPresentationTask?'FINAL ROBLOX GRAPHICS RETRY: output one JSON object with only the "edits" key and exactly one edit. Copy path/find exactly. The replace block MUST be a coherent composite visual implementation covering character/enemy, weapon/equipment, environment/terrain, material/color/style, and mandatory native motion. Do not reduce this to a one-color or static UI micro-patch. No other keys or prose.':'FINAL FOCUSED RETRY: output one JSON object with only the "edits" key and exactly one edit. Copy path exactly from Allowed edit paths. When EXACT FIND ANCHOR OPTIONS are present, use one entire anchor value verbatim as find. Put actual source code in replace; never output template tokens or placeholders. Keep replace minimal but behaviorally complete. No other keys or prose.')
     :fullWebFinal
       ?`FINAL FULL-WEB RETRY: produce one complete playable index.html replacement of at least ${fullWebTargetMin} UTF-8 bytes and no more than ${fullWebTargetMax} bytes. Include direct mobile input, substantial executable game logic, a real update/render or equivalent state-transition loop, progression, explicit win/loss/result state, restart, responsive layout, and persistent-capable state. Do not stop early. Finish with </html> and the required end marker.`
       :'';
@@ -1489,6 +1500,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
     }
     const retry=attempt>1;
+    const robloxAssetAdaptationTask=!allowFullRewrite&&/Engine:\s*roblox/i.test(String(prompt??''))&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
     const priorFailureClass=generationFailureClass(lastError);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
@@ -1518,15 +1530,15 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?JSON_FOCUSED_REPLACE_MAX_PREDICT:(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
     const timeoutMs=expansionMode
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?JSON_FOCUSED_REPLACE_TIMEOUT_MS:(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
     const contextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?JSON_FOCUSED_REPLACE_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
@@ -2088,6 +2100,26 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(!diagnosticPostcondition.pass)throw new Error('DIAGNOSTIC_POSTCONDITION_MISSING:'+diagnosticPostcondition.type+':'+diagnosticPostcondition.file+':'+diagnosticPostcondition.reason);
     const presentationDelta=evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
     if(presentationDelta.required&&!presentationDelta.pass)throw new Error('PRESENTATION_PATCH_DELTA_REQUIRED:'+presentationDelta.presentationPass);
+    const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+    if(target==='roblox'&&presentationPass==='ASSET_ADAPTATION'){
+      const changedPresentationText=[
+        ...(candidate.edits||[]).map(row=>String(row.replace||'')),
+        ...(candidate.newFiles||[]).map(row=>String(row.content||'')),
+        ...(candidate.replaceFiles||[]).map(row=>String(row.content||''))
+      ].join('\n');
+      const coupledVisual=terms=>new RegExp('(?:'+terms+')[\\s\\S]{0,500}(?:Instance\\.new|Clone\\s*\\(|FindFirstChild|WaitForChild|Color3|BrickColor|Material|SurfaceAppearance|CFrame|\\.Size\\b|\\.Position\\b)|(?:Instance\\.new|Clone\\s*\\(|FindFirstChild|WaitForChild|Color3|BrickColor|Material|SurfaceAppearance|CFrame|\\.Size\\b|\\.Position\\b)[\\s\\S]{0,500}(?:'+terms+')','i').test(changedPresentationText);
+      const visualDomains=[
+        coupledVisual('head|torso|body|arm|leg|character|player|enemy|monster|npc|creature'),
+        coupledVisual('weapon|sword|blade|spear|axe|hammer|bow|staff|shield|gun|claw|fang|equipment|armor'),
+        coupledVisual('terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon'),
+        /(?:Color3|BrickColor|Material|SurfaceAppearance|UIGradient|Lighting|palette|style.?lock|gradient)/i.test(changedPresentationText)
+      ];
+      const visualDomainCount=visualDomains.filter(Boolean).length;
+      if(visualDomainCount<4)throw new Error('ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED:'+visualDomainCount+'/4');
+      const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(changedPresentationText);
+      const motionTarget=/(?:CFrame|Transform|Position|Orientation|Motor6D|Bone)/i.test(changedPresentationText);
+      if(!motionDriver||!motionTarget)throw new Error('ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED:NATIVE_DRIVER_AND_TARGET');
+    }
     const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
     const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract});
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
