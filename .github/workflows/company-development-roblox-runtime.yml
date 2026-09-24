@@ -1046,6 +1046,7 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
           let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;
+          const continuationReadyIds=[];
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
@@ -1065,6 +1066,7 @@ jobs:
               const securityHoldFlag=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeSecurityHold:item.robloxRuntimeSecurityHold;
               if(preflightPassed!==true){
                 preflightReady++;
+                continuationReadyIds.push(item.gameId);
               }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
                 const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
                 if(securityBlocked)externalBlocked++;
@@ -1080,6 +1082,7 @@ jobs:
             if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
             packagePending++;
           }
+          fs.writeFileSync('/tmp/roblox-continuation-ready-ids',continuationReadyIds.join('\n')+(continuationReadyIds.length?'\n':''));
           process.stdout.write(`${packagePending} ${preflightReady} ${runtimeReady} ${externalBlocked}`);
           NODE
           )"
@@ -1094,14 +1097,20 @@ jobs:
           echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
           echo 'ROBLOX_HEADLESS_FAST_MVP_AUTODISPATCH=ENABLED'
           echo 'ROBLOX_STUDIO_RUNTIME_REQUIRED=NO'
-          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
-          active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
-          echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
-          if [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) && "$active_continuations" == '0' ]]; then
-            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=EXTERNAL_PROVIDER_CAPACITY_ONLY'
+          mapfile -t continuation_ids < /tmp/roblox-continuation-ready-ids
+          pids=()
+          for id in "${continuation_ids[@]}"; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" &
+            pids+=("$!")
+            echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_GAME=$id"
+          done
+          for pid in "${pids[@]}"; do wait "$pid"; done
+          echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=${#pids[@]}"
+          if [ "${#pids[@]}" -gt 0 ]; then
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'
-          elif [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) ]]; then
-            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE'
           else
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=NO'
           fi
+          echo 'ROBLOX_CROSS_GAME_STAGE_BARRIER=NONE'
