@@ -1,6 +1,7 @@
 // 파일명: qa/main-write-guard.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
 
 test('workflow path detector only accepts workflow yaml files',()=>{
@@ -22,4 +23,12 @@ test('feature branch pushes remain allowed',()=>{
 test('ordinary workflow references to main are not false positives',()=>{
   const hits=scanTextForDirectMainWrite('ref: main\nbranches: [main]\ngit fetch origin main');
   assert.equal(hits.length,0);
+});
+
+test('main write guard workflow uses shallow partial checkout and exact base fetch',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/main-write-guard.yml',import.meta.url),'utf8');
+  assert.match(workflow,/fetch-depth:\s*1/);
+  assert.match(workflow,/filter:\s*blob:none/);
+  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$base_sha"/);
 });
