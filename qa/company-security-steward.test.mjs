@@ -389,6 +389,9 @@ test('specialized verification security allows only final fan-in to mint canonic
   assert.equal(sec.protections.fanInReviewPassRequired,true);
   assert.equal(sec.protections.nativePositiveMarkerRequiresAuthoritativeTargetEngineQaEvidence,true);
   assert.equal(sec.protections.uefnPositiveMarkerBlockedUntilAuthoritativeExecutorEvidenceContractExists,true);
+  assert.equal(sec.protections.canonicalIngressMustRecheckNativeTargetQaEvidence,true);
+  assert.equal(sec.protections.nativeQaEvidenceMustMatchTargetPlatform,true);
+  assert.equal(sec.protections.nativeQaEvidenceReferenceMustRemainTraceable,true);
   assert.equal(sec.protections.rawTelemetryDirectTrainingForbidden,true);
   assert.equal(sec.protections.infrastructureFailureNegativeLearningForbidden,true);
   assert.equal(sec.protections.authorityExpansionForbidden,true);
@@ -402,4 +405,9 @@ test('specialized verification security allows only final fan-in to mint canonic
   assert.equal(evidence.focusedQaIsNotFinalPassEvidence,true);
   assert.equal(evidence.finalVerifiedMarkerFanInOnly,true);
   assert.equal(evidence.nativePositiveRequiresAuthoritativeTargetEngineQa,true);
+  const ingressEvidence=logMap.verifiedSpecializedQueueEvidenceIngressContract;
+  assert.equal(ingressEvidence.nativePositiveWithoutMatchingTargetQaMustBeIgnored,true);
+  assert.equal(ingressEvidence.nativeTargetProofMustPersistAsSanitizedReference,true);
+  assert.equal(ingressEvidence.uefnPositiveMustRemainBlockedWithoutAuthoritativeExecutorEvidenceContract,true);
+  assert.ok(ingressEvidence.requiredEvidence.includes('TARGET_ENGINE_QA_REFERENCE_WHEN_NATIVE'));
 });
