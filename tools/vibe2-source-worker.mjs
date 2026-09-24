@@ -1075,7 +1075,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     const visualOwnerScore=value=>{
       const normalized=posix(value).toLowerCase();
       let score=0;
-      if(/(?:^|\/)client(?:\/|$)|\.client\.luau$/.test(normalized))score+=40;
+      if(/(?:^|\/)client(?:\/|$)|\.client\.luau$/.test(normalized))score+=100;
       if(/(?:visual|render|presentation|camera|vfx|effect|effects|ui|hud|style|fx)/i.test(normalized))score+=60;
       if(/(?:^|\/)server(?:\/|$)|\.server\.luau$/.test(normalized))score-=40;
       return score;
