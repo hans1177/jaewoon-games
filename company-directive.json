@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 66,
+  "revision": 67,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1089,7 +1089,16 @@
     "crossAssetCompatibilityRequired": true,
     "assetIdentityQaRequired": true,
     "styleBibleGeneratorRequired": true,
-    "autonomousLibraryPopulation24h": true
+    "autonomousLibraryPopulation24h": true,
+    "conceptDirectorRequired": true,
+    "mixableConceptFamilies": true,
+    "conceptConflictQaRequired": true,
+    "adaptiveWorldGeneration": true,
+    "referenceStructureAbstractionAllowed": true,
+    "directReferenceLayoutCopyForbidden": true,
+    "mapDnaRouteGrammarRequired": true,
+    "perceivedSeamlessStreamingTarget": true,
+    "mobileChunkStreamingAndLodRequired": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1172,11 +1181,21 @@
       "buildingGrammarRequired": true,
       "biomeDnaRequired": true,
       "libraryHeatmapRequired": true,
-      "universalGapFill24h": true
+      "universalGapFill24h": true,
+      "conceptDirector": true,
+      "weightedConceptBlend": true,
+      "worldGenerationStudio": true,
+      "mapDna": true,
+      "routeGraph": true,
+      "initialPlayableZonePrewarm": true,
+      "chunkStreaming": true,
+      "objectPoolingPreferred": true
     },
     "internalModules": [
       "assets/vibe-motion-director.js",
-      "assets/vibe-studio-asset-universe.js"
+      "assets/vibe-studio-asset-universe.js",
+      "assets/vibe-environment-director.js",
+      "assets/vibe-character-identity-director.js"
     ]
   },
   "centralDocumentation": {
@@ -1208,5 +1227,19 @@
     "learningLaneConcurrentWithProduction": true,
     "queueAndSignalGenerationNeverStop": true,
     "canonicalPipelineOnly": true
+  },
+  "narrativeStorytelling": {
+    "source": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract",
+    "status": "MIRROR_ONLY",
+    "narrativeDirector": true,
+    "mainStoryQuestGraph": true,
+    "foreshadowingTwistPayoffGraph": true,
+    "characterPersonaVoice": true,
+    "relationshipAndMemory": true,
+    "companionNpcMonsterBehaviorIntent": true,
+    "worldNarrativeBinding": true,
+    "reuseExistingQuestDialogueState": true,
+    "gameplayAuthorityExpansion": false,
+    "canonicalLearningOnly": true
   }
 }
