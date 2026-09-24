@@ -100,6 +100,7 @@ end
 loadFoundationState()
 foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
 foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
+ensureFoundationSpawn()
 task.spawn(function()
  if C.SaveEnabled~=true or foundationSeen.SAVE_ROUNDTRIP then return end
  local probeKey="__foundation_probe__:"..tostring(game.PlaceVersion)
@@ -961,7 +962,9 @@ end)
 local function validateCharacterFoundation(p,c)
  local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
  if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
- if not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
+ local deadline=os.clock()+10
+ while foundationSeen.SPAWN_READY~=true and os.clock()<deadline do task.wait(.1)end
+ if foundationSeen.SPAWN_READY~=true or not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
  h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=foundationSpawn
  local pos=r.Position
  foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=pos.X,rootY=pos.Y,rootZ=pos.Z})
