@@ -14,6 +14,73 @@ const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
+
+const ROBLOX_EXISTING_ASSET_TYPE_RULES=Object.freeze([
+  {types:['audio'],re:/(?:audio|sound|bgm|music|battle|boss|hit|skill|levelup|victory)/i},
+  {types:['animation'],re:/(?:animation|anim|motion|idle|walk|run|attack|death)/i},
+  {types:['character'],re:/(?:character|player|hero|npc|armor|outfit|avatar)/i},
+  {types:['enemy'],re:/(?:enemy|monster|boss|creature|wolf|goblin|beast)/i},
+  {types:['effect'],re:/(?:vfx|effect|particle|trail|beam|aura)/i},
+  {types:['ui'],re:/(?:ui|hud|icon|button|panel)/i},
+  {types:['item'],re:/(?:weapon|sword|spear|axe|hammer|bow|gun|staff|shield|item|tool)/i},
+  {types:['prop','background'],re:/(?:nature|city|dungeon|portal|house|building|tree|rock|forest|village|environment|terrain|prop|decor)/i}
+]);
+function inferRobloxExistingAssetTypes(label=''){
+  const value=clean(label);
+  for(const rule of ROBLOX_EXISTING_ASSET_TYPE_RULES)if(rule.re.test(value))return rule.types;
+  return[];
+}
+function walkRobloxSourceFiles(root){
+  if(!fs.existsSync(root))return[];
+  const out=[];
+  const visit=dir=>{
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())visit(full);
+      else if(entry.isFile()&&/\.(?:lua|luau|json)$/i.test(entry.name))out.push(full);
+    }
+  };
+  visit(root);
+  return out;
+}
+export function discoverExistingRobloxGameAssets({repoRoot=process.cwd(),gameId=''}={}){
+  const id=clean(gameId);
+  if(!id)return freezeList([]);
+  const root=path.join(repoRoot,'roblox-games',id);
+  if(!fs.existsSync(root))return freezeList([]);
+  const discovered=new Map();
+  const add=(assetId,label,file)=>{
+    const numeric=clean(assetId);
+    const types=inferRobloxExistingAssetTypes(label);
+    if(!/^\d{6,}$/.test(numeric)||!types.length)return;
+    const relative=path.relative(repoRoot,file).replaceAll('\\','/');
+    const key=`${numeric}|${types.join(',')}`;
+    if(discovered.has(key))return;
+    discovered.set(key,freeze({
+      id:`same-game-roblox-${id}-${clean(label).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'asset'}-${numeric}`,
+      name:clean(label)||`Roblox asset ${numeric}`,
+      path:relative,
+      types:freezeList(types),
+      tags:freezeList(unique([clean(label),...types,'roblox','same-game-existing'])),
+      license:'SAME_GAME_EXISTING_REFERENCE',
+      source:relative,
+      downloaded:true,
+      platforms:freezeList(['roblox']),
+      robloxAssetId:numeric,
+      sameGameExistingRoblox:true,
+      runtimeVerificationState:'SOURCE_BOUND_UNVERIFIED',
+      verifiedCompanyReusable:false
+    }));
+  };
+  for(const file of walkRobloxSourceFiles(root)){
+    const text=fs.readFileSync(file,'utf8');
+    for(const line of text.split(/\r?\n/)){
+      for(const match of line.matchAll(/([A-Za-z][A-Za-z0-9_]*)\s*=\s*["']rbxassetid:\/\/(\d{6,})["']/g))add(match[2],match[1],file);
+      for(const match of line.matchAll(/([A-Za-z][A-Za-z0-9_]*)\s*=\s*(\d{6,})\b/g))add(match[2],match[1],file);
+    }
+  }
+  return freezeList([...discovered.values()]);
+}
 const readJson=(file,fallback={})=>fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
 const highEndVisualContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.highEndVisualProductionContract||{};
 const companyGraphicsLibraryContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.companyGraphicsLibrary24h||{};
@@ -165,6 +232,7 @@ function mergeManifestWithCompanyLibrary(manifest={},registry={}){
 }
 
 function sourceTierFor(asset={}){
+  if(asset?.sameGameExistingRoblox===true)return 'SAME_GAME_EXISTING_ROBLOX_ASSET';
   if(asset?.companyVerified===true)return 'VERIFIED_COMPANY_ASSET';
   const assetPath=clean(asset.path);
   const sourceUrl=clean(asset.sourceUrl);
@@ -217,6 +285,8 @@ function matchedForType(selector={},type='',manifest={},target=''){
         motionMode:clean(row.motionMode)||null,
         sourceTier:sourceTierFor(asset),
         companyVerified:asset.companyVerified===true,
+        sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
+        robloxAssetId:clean(asset.robloxAssetId)||null,
         retargetable:asset.retargetable===true,
         studioMotionCandidate:asset.studioMotionCandidate===true,
         creatureFamily:clean(asset.creatureFamily)||null,
@@ -249,12 +319,14 @@ function directAuthoringFor(target='',type=''){
 function decisionFor(selector={},target='',binding={},manifest={}){
   const type=clean(binding.type);
   const matched=matchedForType(selector,type,manifest,target);
+  const sameGameCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='SAME_GAME_EXISTING_ROBLOX_ASSET'));
   const companyCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='VERIFIED_COMPANY_ASSET'));
   const repositoryCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'));
   const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
-  const reuseCandidates=freezeList([...companyCandidates,...repositoryCandidates]);
+  const reuseCandidates=freezeList([...sameGameCandidates,...companyCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type);
   const decisionOrder=unique([
+    sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
@@ -265,6 +337,7 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     type,
     required:binding.required!==false,
     targetStates:freezeList(binding.targetStates||[]),
+    sameGameCandidates,
     companyCandidates,
     repositoryCandidates,
     externalCandidates,
@@ -291,7 +364,9 @@ export function buildVibeAssetProductionPlan({
   const resolvedTarget=clean(target||task.target).toLowerCase()||'web';
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
-  const manifestInput=mergeManifestWithCompanyLibrary(manifestBase,companyRegistry);
+  const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
+  const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
+  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const requestedConcept=inferRequestedConcept(task,request);
@@ -322,6 +397,7 @@ export function buildVibeAssetProductionPlan({
   const companyLibraryActive=companyLibrary?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const directCount=decisions.filter(row=>row.directAuthoring.length>0).length;
   const reuseCount=decisions.filter(row=>row.reuseCandidates.length>0).length;
+  const sameGameCount=decisions.filter(row=>row.sameGameCandidates.length>0).length;
   const companyCount=decisions.filter(row=>row.companyCandidates.length>0).length;
   const repositoryCount=decisions.filter(row=>row.repositoryCandidates.length>0).length;
   const externalCount=decisions.filter(row=>row.externalCandidates.length>0).length;
@@ -650,6 +726,8 @@ export function buildVibeAssetProductionPlan({
     summary:freeze({
       decisionCount:decisions.length,
       reuseCandidateTypes:reuseCount,
+      sameGameRobloxCandidateTypes:sameGameCount,
+      discoveredSameGameRobloxAssets:sameGameRobloxAssets.length,
       companyCandidateTypes:companyCount,
       repositoryCandidateTypes:repositoryCount,
       externalCandidateTypes:externalCount,
@@ -698,6 +776,8 @@ export function buildVibeAssetProductionPlan({
       ownerChangeRequestStabilityRequired:highEnd?.ownerChangeRequestStability?.enabled===true,
       companyGraphicsLibrary24h:companyLibraryActive,
       companyLibraryLookupRequiredBeforeNativeAssetChoice:companyLibrary?.consumption?.lookupBeforeAssetChoice===true,
+      sameGameRobloxAssetDiscoveryEnabled:resolvedTarget==='roblox',
+      sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified:true,
       existingRepositoryInventoryBeforeExternal:companyLibrary?.gapFill?.order?.[0]==='INVENTORY_EXISTING_REPOSITORY_ASSETS',
       externalGapFillBeforeNewAuthoring:companyLibrary?.gapFill?.enabled===true,
       unityRobloxLibraryVariantsSeparated:companyLibrary?.promotionRules?.platformSpecificReauthoringRequired===true,
