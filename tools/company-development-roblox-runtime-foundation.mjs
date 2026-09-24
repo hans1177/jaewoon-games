@@ -7,6 +7,56 @@ const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READ
 const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'];
 export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-session:write';
 
+export function reusableRobloxEngineProbe({item={},candidate={}}={}){
+  const sourceRevision=clean(item.robloxSourceCommit);
+  const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
+  const versionNumber=Number(candidate.versionNumber||0);
+  const placeId=clean(candidate.placeId);
+  const universeId=clean(candidate.universeId);
+  const foundation=item.robloxRuntimeFoundationEvidence||item.robloxRuntimeEvidence?.runtimeFoundationEvidence||null;
+  const foundationExact=Boolean(
+    foundation
+    &&foundation.actualRuntimeEvidence===true
+    &&foundation.f1ServerBootPassed===true
+    &&clean(foundation.sourceRevision)===sourceRevision
+    &&clean(foundation.artifactIdentity)===artifactIdentity
+    &&Number(foundation.candidateVersionNumber||foundation.placeVersion||0)===versionNumber
+    &&clean(foundation.placeId)===placeId
+    &&clean(foundation.universeId)===universeId
+  );
+  if(!foundationExact)return null;
+  const studioRequired=item.robloxStudioAssetBindingApplied===true;
+  const studio=item.robloxStudioAssetRuntimeBindingEvidence||null;
+  const studioExact=!studioRequired||Boolean(
+    studio
+    &&clean(studio.sourceRevision)===sourceRevision
+    &&clean(studio.artifactIdentity)===artifactIdentity
+    &&Number(studio.candidateVersionNumber||0)===versionNumber
+    &&studio.targetEngineExecuted===true
+    &&studio.targetEngineExactPlace===true
+    &&studio.targetEngineExactVersion===true
+    &&studio.targetEngineSelectionMatched===true
+  );
+  if(!studioExact)return null;
+  return Object.freeze({
+    available:true,
+    permissionDenied:false,
+    status:200,
+    engineExecuted:true,
+    exactPlace:true,
+    exactVersion:true,
+    serverBootObserved:true,
+    reusedExactEvidence:true,
+    evidenceAuthority:'EXACT_RUNTIME_EVIDENCE_REUSE',
+    studioAssetBindingRequired:studioRequired,
+    studioAssetApplied:studioRequired?studio.targetEngineStudioAssetApplied===true:false,
+    studioAssetBindingVersion:studioRequired?Number(studio.targetEngineStudioAssetBindingVersion||0):0,
+    expectedStudioAssetAtoms:Object.freeze(studioRequired?[...(studio.expectedStudioAssetAtoms||[])]:[]),
+    observedStudioAssetAtoms:Object.freeze(studioRequired?[...(studio.observedStudioAssetAtoms||[])]:[]),
+    studioAssetSelectionMatched:studioRequired?studio.targetEngineSelectionMatched===true:true,
+  });
+}
+
 export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',placeId='',versionNumber=0}={}){
   const checkpoints=sentinel&&typeof sentinel.checkpoints==='object'&&sentinel.checkpoints?sentinel.checkpoints:{};
   const requirements=sentinel&&typeof sentinel.requirements==='object'&&sentinel.requirements?sentinel.requirements:{};
