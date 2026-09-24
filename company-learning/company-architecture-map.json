@@ -1,5 +1,5 @@
 {
-  "version": 162,
+  "version": 163,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1021,6 +1021,27 @@
       "externalSpareBeyond20": "AVAILABLE_TO_GAME_PRIMARY; 20_IS_PRESSURE_FLOOR_NOT_CAP",
       "adaptiveControl": "NO_FIXED_INTERNAL_CAP; BASELINE_20; PRESSURE_FLOOR_20; VERIFIED_HEALTHY_SATURATION_SELF_EXPANDS_20_TO_32_TO_64_TO_128_TO_256",
       "gamePrimaryFixedInternalCap": null,
+      "reserveIngressRuntimeSync": {
+        "required": true,
+        "source": "company-runtime:development-queue.json",
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "before": [
+          "POST_RELEASE_FOCUS",
+          "AUTO_PLANNER",
+          "LEARNING_MOTOR",
+          "MACHINE_HANDOFF",
+          "RESERVE_BATCH"
+        ],
+        "appliesToEveryNonNeuronReserveIngress": true,
+        "neuronCompletionStaysLightweightUntilMicroFanIn": true,
+        "staleControlQueueMayNotSuppressCanonicalRuntimeWork": true
+      },
+      "projectLifecycleMonotonicity": {
+        "producer": "tools/vibe2-learning-motor.mjs",
+        "downstreamMachineEvidencePreventsBackwardProjection": true,
+        "missingGenreMayNotRegressStartedNativeWork": true,
+        "runtimeEvidenceOverridesStaleTopLevelFlags": true
+      },
       "ownerUnlimitedConcurrencyDirective": "2026-09-20",
       "telemetryDenominator": "ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP",
       "workerPreflightSynchronization": {
