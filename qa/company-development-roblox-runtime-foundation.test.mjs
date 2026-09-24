@@ -255,7 +255,9 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
  assert.match(workflow,/ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS/);
  assert.match(workflow,/verification-conclusion:success/);
  assert.match(workflow,/target-engine-qa-ref:roblox-f9-/);
- assert.match(workflow,/while IFS=\
+ assert.match(workflow,/while IFS=\$'\\t' read -r game_id studio_required source_revision version_number/);
+ assert.match(workflow,/vibe2-queue-control\.mjs" pass/);
+});
 
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
