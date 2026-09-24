@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": " for _,ai in ipairs(aiUsers)do",
+      "replace": "  if p:GetAttribute(\"InCombat\") == true and now - (lastCombat[p] or 0) >= C.CombatLockSeconds then p:SetAttribute(\"InCombat\", false)end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
