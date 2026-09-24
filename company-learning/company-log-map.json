@@ -1,5 +1,5 @@
 {
-  "version": 45,
+  "version": 46,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -881,5 +881,41 @@
     "canonicalExperienceStore": ".vibe2/experience.json",
     "sameCycleRetrievalUsesMergedExperience": true,
     "authorityExpansion": false
+  },
+  "specializedVerifiedQueueEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress.producerContract",
+    "evidenceScope": "PER_TASK_CANDIDATE_RUN_AND_REQUESTED_MARKER",
+    "correlationKeys": [
+      "TASK_ID",
+      "GAME_ID",
+      "CANDIDATE_SHA",
+      "ACTIONS_RUN_ID",
+      "TARGET_PLATFORM",
+      "REQUESTED_MARKER"
+    ],
+    "producers": {
+      "request": "tools/vibe2-source-worker.mjs",
+      "focusedQa": "tools/vibe2-incremental-qa.mjs",
+      "finalVerifiedMarker": "tools/vibe2-fan-in-review.mjs",
+      "canonicalIngress": "tools/vibe2-learning-motor.mjs"
+    },
+    "requiredEvidence": [
+      "SPECIALIZED_VERIFICATION_REQUEST",
+      "SPECIALIZED_FOCUSED_QA_RESULT",
+      "FULL_REGRESSION_RESULT",
+      "FAN_IN_REVIEW_RESULT",
+      "TARGET_ENGINE_QA_RESULT_WHEN_NATIVE",
+      "FINAL_VERIFIED_MARKER",
+      "SPECIALIZED_OUTCOME_ID"
+    ],
+    "requestIsNotPassEvidence": true,
+    "focusedQaIsNotFinalPassEvidence": true,
+    "finalVerifiedMarkerFanInOnly": true,
+    "nativePositiveRequiresAuthoritativeTargetEngineQa": true,
+    "arbitraryUnrecognizedVerifiedMarkerForbidden": true,
+    "rawTelemetryDirectTrainingForbidden": true,
+    "infrastructureFailureNegativeLearningForbidden": true,
+    "duplicateOutcomePersistenceForbidden": true
   }
 }
