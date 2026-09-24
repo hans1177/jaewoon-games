@@ -1,5 +1,5 @@
 {
-  "version": 36,
+  "version": 37,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -565,5 +565,18 @@
       "verifiedFailureCauseMayTeachAvoidPattern": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LEARNING_QUARANTINE_BY_SCOPE"
+  },
+  "continuousLearning24hSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#continuousLearning24hContract",
+    "protections": {
+      "alwaysOnLearningMayNotBypassVerification": true,
+      "alwaysOnLearningMayNotLowerTrainingThresholds": true,
+      "alwaysOnLearningMayNotCreateParallelShadowTrainer": true,
+      "rawPracticeOrTelemetryMayNotSelfPromote": true,
+      "productionAndLearningResourceIsolationRequired": true,
+      "capacityPressureMustQueueOrThrottleNotDropLearningWork": true,
+      "failureRetryMayNotFabricatePass": true
+    }
   }
 }
