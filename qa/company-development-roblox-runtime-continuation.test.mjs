@@ -56,3 +56,31 @@ test('canonical parent watches both fast-path workflows',()=>{
   assert.ok(parent.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
   assert.ok(parent.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });
+
+
+test('Roblox build preflight and F0 use per-game external-capacity parallel execution',()=>{
+  assert.match(preflight,/workflow_dispatch:[\s\S]*game_id:/);
+  assert.match(preflight,/group: company-development-roblox-runtime-continuation-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(preflight,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
+  assert.doesNotMatch(preflight,/rows\.length>=6/);
+  assert.doesNotMatch(preflight,/max-parallel:\s*6/);
+  assert.match(preflight,/ROBLOX_EXECUTION_WIP_MAX=EXTERNAL_CAPACITY/);
+  assert.match(preflight,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=EXACT:/);
+  assert.match(headless,/group: company-development-roblox-f0-source-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.doesNotMatch(headless,/rows\.length>=6/);
+  assert.doesNotMatch(headless,/max-parallel:\s*6/);
+});
+
+test('central policy makes Roblox build through final promotion per-game parallel while preserving exact dependencies',()=>{
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const contract=roadmap.directNativeDualPlatformDevelopment?.development?.robloxEndToEndParallelExecution;
+  assert.equal(contract?.mode,'PER_GAME_PIPELINE_PARALLEL_EXTERNAL_CAPACITY');
+  assert.equal(contract?.crossGameParallelRequired,true);
+  assert.equal(contract?.artificialStageBatchBarrierForbidden,true);
+  assert.equal(contract?.globalSingletonAcrossDifferentGamesForbidden,true);
+  assert.equal(contract?.sameGameRequiredDependenciesRemainOrdered,true);
+  assert.equal(contract?.runtimeStatePersistence?.executionMayRunInParallel,true);
+  assert.equal(contract?.runtimeStatePersistence?.canonicalStateMergeMaySerializeBriefly,true);
+  assert.equal(contract?.serverBootEvidenceReuse?.reuseAllowed,true);
+  assert.equal(contract?.serverBootEvidenceReuse?.staleOrCrossVersionEvidenceReuseForbidden,true);
+});

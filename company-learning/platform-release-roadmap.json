@@ -1,5 +1,5 @@
 {
-  "version": 339,
+  "version": 340,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -20227,7 +20227,59 @@
       "onePlatformFailureDoesNotCancelOther": true,
       "noArtificialGlobalGameCountCap": true,
       "globalGameDevelopmentWindow": null,
-      "executionBatchIsCapacityOnly": true
+      "executionBatchIsCapacityOnly": true,
+      "robloxEndToEndParallelExecution": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-24",
+        "mode": "PER_GAME_PIPELINE_PARALLEL_EXTERNAL_CAPACITY",
+        "scope": [
+          "BUILD_PACKAGE",
+          "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+          "F0_SOURCE_PREFLIGHT",
+          "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+          "F1_TO_F8_RUNTIME_FOUNDATION_AND_QA",
+          "F9_FINAL_REVIEW",
+          "INTERNAL_RELEASE_PROMOTION"
+        ],
+        "crossGameParallelRequired": true,
+        "artificialStageBatchBarrierForbidden": true,
+        "globalSingletonAcrossDifferentGamesForbidden": true,
+        "perGameConcurrencyIdentityRequired": true,
+        "sameGameRequiredDependenciesRemainOrdered": true,
+        "independentChecksWithinSameGameMayRunInParallel": true,
+        "executionCapacityPolicy": "EXTERNAL_PROVIDER_CAPACITY_ONLY_NO_INTERNAL_FIXED_SIX_OR_ONE_CAP",
+        "runtimeStatePersistence": {
+          "executionMayRunInParallel": true,
+          "canonicalStateMergeMaySerializeBriefly": true,
+          "sharedCompanyRuntimeWriterMayNotSerializeLongRunningBuildOrQa": true,
+          "staleResultMustBeIgnoredByExactSourceArtifactCandidateIdentity": true,
+          "optimisticRetryRequiredOnStateWriteConflict": true
+        },
+        "serverBootEvidenceReuse": {
+          "mode": "EXACT_CANDIDATE_VERIFIED_EVIDENCE_REUSE",
+          "reuseAllowed": true,
+          "requiredIdentity": [
+            "GAME_ID",
+            "SOURCE_REVISION",
+            "ARTIFACT_IDENTITY",
+            "UNIVERSE_ID",
+            "PLACE_ID",
+            "CANDIDATE_VERSION_NUMBER"
+          ],
+          "priorEvidenceMustBeActualRuntime": true,
+          "priorF1ServerBootMustPass": true,
+          "sourceOrArtifactOrRuntimeCandidateIdentityChangeRequiresFreshEvidence": true,
+          "serverAuthorityOrBootstrapRelevantChangeRequiresFreshEvidence": true,
+          "staleOrCrossVersionEvidenceReuseForbidden": true,
+          "repeatedFinalReviewMayConsumeExistingExactRuntimeEvidenceWithoutRebootProof": true
+        },
+        "sharedPhysicalPublicationTargetConflict": {
+          "parallelizeNonConflictingTargets": true,
+          "sameUniversePlaceConcurrentOverwriteForbidden": true,
+          "serializationAllowedOnlyForExactSharedExternalTargetConflict": true
+        },
+        "expectedFlow": "EACH_GAME_ADVANCES_IMMEDIATELY_TO_NEXT_READY_STAGE_WITHOUT_WAITING_FOR_OTHER_GAMES"
+      }
     },
     "internalRelease": {
       "firstReleaseGoal": true,

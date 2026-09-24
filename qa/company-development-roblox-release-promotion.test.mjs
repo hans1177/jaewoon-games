@@ -277,3 +277,13 @@ test('public release rejects static-only multiplayer evidence and requires the s
   assert.equal(evidence.pass,false);
   assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));
 });
+
+
+test('Roblox deployment runtime QA and F9 use per-game concurrency lanes',()=>{
+  const deploy=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(deploy,/group: company-development-roblox-release-promotion-\$\{\{ inputs\.game_id \}\}/);
+  assert.match(runtime,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id/);
+  assert.match(f9,/group: company-development-roblox-f9-final-review-\$\{\{ inputs\.game_id/);
+});

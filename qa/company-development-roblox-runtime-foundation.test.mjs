@@ -110,6 +110,35 @@ test('runtime acceptance stays pending until actual gameplay core-loop action oc
  assert.equal(r.runtimeFoundationPassed,true);assert.equal(r.runtimeAcceptancePassed,false);assert.equal(r.f8GameplaySystemsPassed,false);
 });
 
+test('exact previously verified F1-F4 evidence can satisfy repeated foundation proof for the same candidate only',()=>{
+ const prior=validateRobloxRuntimeFoundationEvidence({sentinel:good,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
+ const reusable={...prior,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'99',candidateVersionNumber:21};
+ const repeated=structuredClone(good);
+ for(const name of ['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'])delete repeated.checkpoints[name];
+ const reused=validateRobloxRuntimeFoundationEvidence({
+   sentinel:repeated,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21,
+   reusableFoundationEvidence:reusable,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'99'
+ });
+ assert.equal(reused.reusedExactFoundationEvidence,true);
+ assert.equal(reused.runtimeFoundationPassed,true);
+ assert.equal(reused.runtimeAcceptancePassed,true);
+});
+
+test('foundation evidence reuse is blocked when candidate version changes',()=>{
+ const prior=validateRobloxRuntimeFoundationEvidence({sentinel:good,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
+ const reusable={...prior,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'99',candidateVersionNumber:21};
+ const fresh=structuredClone(good);fresh.placeVersion=22;
+ for(const row of Object.values(fresh.checkpoints))row.placeVersion=22;
+ for(const name of ['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'])delete fresh.checkpoints[name];
+ const blocked=validateRobloxRuntimeFoundationEvidence({
+   sentinel:fresh,gameId:'cozy-island',placeId:'116850096561713',versionNumber:22,
+   reusableFoundationEvidence:reusable,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'99'
+ });
+ assert.equal(blocked.reusedExactFoundationEvidence,false);
+ assert.equal(blocked.runtimeFoundationPassed,false);
+ assert.ok(blocked.blockers.includes('checkpoint:SERVER_BOOT'));
+});
+
 test('foundation sentinel blocks stale evidence from another published version',()=>{
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:good,gameId:'cozy-island',placeId:'116850096561713',versionNumber:22});
  assert.equal(r.runtimeFoundationPassed,false);assert.equal(r.runtimeAcceptancePassed,false);assert.ok(r.blockers.includes('exactVersion'));

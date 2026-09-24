@@ -265,7 +265,7 @@ test('Roblox package completion follows F0 then private runtime candidate then e
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(preflight.includes('Vibe plus shared-model build preflight'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
-  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
+  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=EXACT:')||preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=BATCH'));
   assert.ok(f0.includes('Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight'));
   assert.ok(f0.includes('company-development-roblox-headless-fast-mvp.mjs'));
   assert.ok(f0.includes('HEADLESS_SOURCE_PREFLIGHT_F0')||f0.includes('robloxFoundationF0Passed'));
@@ -297,18 +297,18 @@ test('new Roblox package identity clears every downstream preflight runtime and 
   ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
 });
 
-test('successful Roblox package flow auto-dispatches shared preflight then F0 without a Studio approval gate',()=>{
+test('successful Roblox packages dispatch per-game shared preflight immediately without a global batch barrier',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
-  assert.ok(workflow.includes('Dispatch Roblox HEADLESS FAST_MVP continuation')||workflow.includes('continuation'));
   assert.ok(!workflow.includes("github.actor == 'github-actions[bot]'"));
-  assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
-  assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
-  assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
-  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
-  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
+  assert.ok(workflow.includes('ROBLOX_BUILD_TO_PREFLIGHT_PARALLEL=YES'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_PARALLELISM=PER_GAME_EXTERNAL_CAPACITY'));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=EXACT:'));
+  assert.ok(!workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
+  assert.ok(!workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION='));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
-  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
+  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=EXACT:'));
   assert.ok(!preflight.includes('studio_run_approved:'));
 });
 
@@ -430,7 +430,7 @@ test('owner-focused Roblox package completion dispatches the existing continuati
   assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed/);
   assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
   assert.match(workflow,/company-development-roblox-runtime-continuation\.yml/);
-  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=EXACT:/);
 });
 
 
