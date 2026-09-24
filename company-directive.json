@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 56,
+  "revision": 57,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1067,5 +1067,20 @@
     "humanPolicyMirrorRequired": false,
     "duplicatePolicyDocumentAllowed": false,
     "completedMigrationArtifactRetentionRequired": false
+  },
+  "gameVisualQuality": {
+    "minimumFinalGameplayDimension": "2.5D",
+    "preferredDimension": "3D",
+    "flat2DFinalGameplayForbidden": true,
+    "ui2DOverlayAllowed": true,
+    "existing2DRepairRequired": true,
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+  },
+  "webGameStartability": {
+    "allExposedGamesMustActuallyStart": true,
+    "validationProxyCannotCountAsGameplay": true,
+    "emptyEntryPointForbidden": true,
+    "failureState": "WEB_VIBE_REPAIR_REQUIRED",
+    "authority": "company-learning/platform-release-roadmap.json#webRuntimeStartabilityContract"
   }
 }
