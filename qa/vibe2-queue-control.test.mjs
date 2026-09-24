@@ -1487,3 +1487,24 @@ test('verified gated root cause reprioritizes retry and changes strategy',()=>{
   assert.equal(merged.applied[0].gatedAction,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
   assert.equal(merged.applied[0].retryStrategy,'EDIT_MATCH');
 });
+
+
+test('blank control queue is canonically recovered before queue commands',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-blank-queue-'));
+  const queueFile=path.join(dir,'queue.json');
+  fs.writeFileSync(queueFile,'','utf8');
+  const result=runQueueCommand({command:'summary',queue:queueFile});
+  assert.equal(result.queueStateRecovered,true);
+  const repaired=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  assert.equal(repaired.version,5);
+  assert.equal(repaired.maxConcurrentTasks,256);
+  assert.deepEqual(repaired.tasks,[]);
+});
+
+test('non-empty malformed queue remains fail-closed instead of being silently reset',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-malformed-queue-'));
+  const queueFile=path.join(dir,'queue.json');
+  fs.writeFileSync(queueFile,'{"version":5,','utf8');
+  assert.throws(()=>runQueueCommand({command:'summary',queue:queueFile}));
+  assert.equal(fs.readFileSync(queueFile,'utf8'),'{"version":5,');
+});
