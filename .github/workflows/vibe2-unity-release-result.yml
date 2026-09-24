@@ -138,7 +138,8 @@ jobs:
           const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
           const required=studio.finalFanInComparisonRequired===true
             ||studio.runtimeBeforeAfterComparisonRequired===true
-            ||evidence.includes('graphics-evolution-before-after-comparison-required');
+            ||evidence.includes('graphics-evolution-before-after-comparison-required')
+            ||evidence.includes('presentation-runtime-qa-required');
           process.stdout.write(required?'YES':'NO');
           NODE
           )"
@@ -152,8 +153,8 @@ jobs:
           rm -rf /tmp/vibe2-build-artifacts
           mkdir -p /tmp/vibe2-build-artifacts
           gh run download "$BUILD_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir /tmp/vibe2-build-artifacts
-          evidence_file="$(find /tmp/vibe2-build-artifacts -type f -path '*/android16-install-gate-*/evidence.json' -print -quit)"
-          screenshot_file="$(find /tmp/vibe2-build-artifacts -type f -path '*/android16-install-gate-*/screenshot.png' -size +0c -print -quit)"
+          evidence_file="$(find /tmp/vibe2-build-artifacts -type f -name 'evidence.json' -path '*android16-install-gate*' -print -quit)"
+          screenshot_file="$(find /tmp/vibe2-build-artifacts -type f -name 'screenshot.png' -path '*android16-install-gate*' -size +0c -print -quit)"
           test -n "$evidence_file"
           test -n "$screenshot_file"
           node - "$evidence_file" <<'NODE'
@@ -305,7 +306,8 @@ jobs:
             const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
             const required=studio.finalFanInComparisonRequired===true
               ||studio.runtimeBeforeAfterComparisonRequired===true
-              ||evidence.includes('graphics-evolution-before-after-comparison-required');
+              ||evidence.includes('graphics-evolution-before-after-comparison-required')
+            ||evidence.includes('presentation-runtime-qa-required');
             if(!required){process.stdout.write('NOT_REQUIRED|NONE');process.exit(0);}
             if(!evidence.includes('presentation-source-delta:PASS')){process.stdout.write('BLOCK_SOURCE_DELTA|NONE');process.exit(0);}
             const prior=(q.tasks||[]).filter(row=>{
