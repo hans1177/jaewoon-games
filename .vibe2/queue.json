@@ -7875,6 +7875,50 @@
         "PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION"
       ],
       "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-control-g1",
+      "gameId": "amusement-tycoon",
+      "target": "roblox",
+      "department": "learning",
+      "type": "research",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=CAPABILITY_GENERALIZATION_SCREEN\ndomains=CAPABILITY_GENERALIZATION\npracticeGeneration=1\npracticeMode=ANALYSIS\nphase4CapabilityId=capability_ctrace_e24add62615bf96a065576ab\nphase4BenchmarkCaseId=phase4-generalization-capability_ctrace_e24add62615bf96a065576ab\nphase4PairId=phase4-pair-cja4qp\nphase4Role=CONTROL\nphase4HoldoutGameId=amusement-tycoon\nphase4UnseenProblemFingerprint=phase4-unseen-12l4chz\nphase4ScreenOnly=YES\n소스 파일을 수정하지 않는다. 지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.\n이 screen 결과 자체는 GENERALIZED_VERIFIED 증거로 사용할 수 없다. 실제 fresh QA/regression/native runtime 증거는 별도 기존 검증 경로가 필요하다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "sourceRoot": "learning-practice:phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-control",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:CAPABILITY_GENERALIZATION_SCREEN",
+        "practice-generation:1",
+        "learning-analysis-practice",
+        "practice-domain:CAPABILITY_GENERALIZATION",
+        "phase4-generalization-screen-only",
+        "phase4-capability-id:capability_ctrace_e24add62615bf96a065576ab",
+        "phase4-benchmark-case:phase4-generalization-capability_ctrace_e24add62615bf96a065576ab",
+        "phase4-benchmark-pair:phase4-pair-cja4qp",
+        "phase4-benchmark-role:CONTROL",
+        "phase4-unseen-game:amusement-tycoon",
+        "phase4-unseen-problem-fingerprint:phase4-unseen-12l4chz",
+        "phase4-strong-generalization-evidence:NO"
+      ],
+      "completionCriteria": [
+        "PRACTICE_ANALYSIS_COMPLETED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO",
+        "PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION"
+      ]
     }
   ]
 }
