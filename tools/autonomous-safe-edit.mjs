@@ -82,7 +82,16 @@ export function applyExactEdits(root,edits=[],{dryRun=false}={}){
       if(!dryRun)console.log(`VIBE2_EDIT_MATCH=TRIMMED_LINES:${edit.path}`);
     }
 
-    const after=before.slice(0,first)+edit.replace+before.slice(end);
+    let after=before.slice(0,first)+edit.replace+before.slice(end);
+    const beforeTail=before.match(/(?:\r?\n)+$/)?.[0]||'';
+    const afterTail=after.match(/(?:\r?\n)+$/)?.[0]||'';
+    const beforeBreaks=(beforeTail.match(/\n/g)||[]).length;
+    const afterBreaks=(afterTail.match(/\n/g)||[]).length;
+    if(beforeBreaks<=1&&afterBreaks>beforeBreaks){
+      const preservedEol=before.endsWith('\r\n')?'\r\n':before.endsWith('\n')?'\n':'';
+      after=after.slice(0,after.length-afterTail.length)+preservedEol;
+      if(!dryRun)console.log(`VIBE2_EDIT_EOF_BLANK_LINES_NORMALIZED:${edit.path}`);
+    }
     simulated.set(edit.path,after);
     if(!dryRun)fs.writeFileSync(target,after,'utf8');
     changed.add(edit.path);
