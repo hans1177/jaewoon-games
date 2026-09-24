@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "shared/GameConfig.luau",
+      "find": "  PlayMode = \"SINGLE\",",
+      "replace": "  PlayMode = \"MULTIPLAYER\","
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
