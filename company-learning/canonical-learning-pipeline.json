@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -274,5 +274,27 @@
     "productionActivityMayNotDisableIngress": true,
     "trainingThresholdsAndPromotionGatesUnchanged": true,
     "rawUnverifiedOutputStillForbiddenFromPositivePromotion": true
+  },
+  "studioAssetUniverseEvidence": {
+    "enabled": true,
+    "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.runtimeLearning",
+    "usesCanonicalChainOnly": true,
+    "separatePipelineForbidden": true,
+    "acceptedPositiveEvidence": [
+      "VERIFIED_UNITY_RUNTIME_ASSET_PASS",
+      "VERIFIED_ROBLOX_RUNTIME_ASSET_PASS"
+    ],
+    "acceptedNegativeEvidence": [
+      "VERIFIED_ASSET_IDENTITY_FAILURE",
+      "VERIFIED_STYLE_DEVIATION",
+      "VERIFIED_CLOTHING_CLIPPING_FAILURE",
+      "VERIFIED_BUILDING_GRAMMAR_FAILURE",
+      "VERIFIED_RUNTIME_ASSET_FAILURE"
+    ],
+    "preparedSemanticEvidenceAccepted": false,
+    "rawCoverageTelemetryDirectTraining": false,
+    "verifiedOutcomeMayBecomeTrainingSample": true,
+    "existingThresholdsHoldoutCanaryUnchanged": true,
+    "onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate": true
   }
 }
