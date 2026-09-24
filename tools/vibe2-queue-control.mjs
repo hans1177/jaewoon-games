@@ -296,7 +296,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     return task?.packageLongWorkProtected===true?2:1;
   };
   const speculativeEligible = tasks.filter((task) =>
-    task.target !== 'unity' &&
+    !['unity','roblox'].includes(clean(task.target).toLowerCase()) &&
     task.estimatedRisk === 'high' &&
     (task.speculativeEligible || task.priority === 'critical')
   ).map((task,index)=>({task,index,priority:speculativePriority(task)}))
