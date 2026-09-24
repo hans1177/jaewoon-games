@@ -408,6 +408,291 @@ export function estimateMotionCombinationSpace({layers={},styleVariants=[],skill
   });
 }
 
+
+export const DEFAULT_MOTION_COVERAGE_MINIMUMS=Object.freeze({
+  locomotion:5,
+  attacks:3,
+  defense:2,
+  reactions:4,
+  acting:2,
+  deaths:2,
+  skill:2,
+  signature:3
+});
+
+export const BODY_PLAN_MOTION_COVERAGE=Object.freeze({
+  FLYING:Object.freeze({
+    locomotion:8,attacks:4,defense:3,reactions:4,acting:2,deaths:2,skill:2,signature:4,
+    requiredRoles:Object.freeze(['TAKEOFF','FLY','BANK','HOVER','LAND_FROM_FLIGHT'])
+  }),
+  ARACHNID:Object.freeze({
+    locomotion:7,attacks:4,defense:3,reactions:4,acting:2,deaths:2,skill:2,signature:4,
+    requiredRoles:Object.freeze(['CRAWL','STRAFE','WALL_CRAWL_OR_EQUIVALENT'])
+  }),
+  REPTILE_OR_SERPENT:Object.freeze({
+    locomotion:5,attacks:4,defense:2,reactions:4,acting:2,deaths:2,skill:2,signature:4,
+    requiredRoles:Object.freeze(['SLITHER_OR_BODY_PLAN_EQUIVALENT'])
+  }),
+  HEAVY_BIPED:Object.freeze({
+    locomotion:6,attacks:5,defense:3,reactions:5,acting:3,deaths:3,skill:3,signature:4,
+    requiredRoles:Object.freeze(['HEAVY_START_STOP','HEAVY_TURN','HEAVY_RECOVERY'])
+  }),
+  BOSS_BIPED:Object.freeze({
+    locomotion:6,attacks:6,defense:3,reactions:5,acting:5,deaths:2,skill:4,signature:6,
+    requiredRoles:Object.freeze(['INTRO','PHASE_CHANGE','ENRAGE','FAILED_ATTACK_RECOVERY','BOSS_DEATH_SEQUENCE'])
+  }),
+  HEAVY_GOLEM_OR_BOSS:Object.freeze({
+    locomotion:6,attacks:5,defense:3,reactions:5,acting:3,deaths:3,skill:3,signature:4,
+    requiredRoles:Object.freeze(['HEAVY_START_STOP','HEAVY_TURN','HEAVY_RECOVERY'])
+  })
+});
+
+const SEMANTIC_GAP_ROLE_TEMPLATES=Object.freeze({
+  locomotion:Object.freeze(['IDLE','WALK','RUN','START','STOP','TURN_L','TURN_R','STRAFE_L','STRAFE_R','BACKSTEP','DASH']),
+  attacks:Object.freeze(['LIGHT_ATTACK_A','LIGHT_ATTACK_B','HEAVY_ATTACK_A','GAP_CLOSER','AOE_ATTACK','AIR_ATTACK','SIGNATURE_ATTACK']),
+  defense:Object.freeze(['GUARD','DODGE_L','DODGE_R','PARRY_OR_DEFLECT','COUNTER','REVERSAL']),
+  reactions:Object.freeze(['LIGHT_HIT','HEAVY_HIT','HIT_LEFT','HIT_RIGHT','KNOCKBACK','KNOCKDOWN','GET_UP','WALL_HIT']),
+  acting:Object.freeze(['BREATH_IDLE','ALERT','THREAT_DISPLAY','TAUNT','SEARCH','ENRAGE']),
+  deaths:Object.freeze(['DEATH_FRONT','DEATH_BACK','DEATH_SIDE','HEAVY_DEATH','SIGNATURE_DEATH']),
+  skill:Object.freeze(['SKILL_PREPARE','SKILL_RELEASE','SKILL_RECOVERY','BUFF_OR_ENRAGE','PROJECTILE_OR_AOE','ULTIMATE']),
+  signature:Object.freeze(['IDLE_SIGNATURE','LOCOMOTION_SIGNATURE','ATTACK_SIGNATURE','HIT_SIGNATURE','DEATH_SIGNATURE','SPECIAL_BODY_PART_SIGNATURE'])
+});
+
+function bodyPlanSemanticRoles(bodyPlan='',group=''){
+  const plan=upper(bodyPlan);
+  const key=text(group);
+  if(key!=='locomotion')return SEMANTIC_GAP_ROLE_TEMPLATES[key]||Object.freeze([]);
+  if(plan==='FLYING')return Object.freeze(['PERCH_IDLE','TAKEOFF','FLY','FAST_FLY','BANK_L','BANK_R','HOVER','LAND_FROM_FLIGHT']);
+  if(plan==='ARACHNID')return Object.freeze(['IDLE_LEG_SHIFT','CRAWL','RUN','STRAFE_L','STRAFE_R','WALL_CRAWL','CEILING_CRAWL','TURN']);
+  if(plan==='REPTILE_OR_SERPENT')return Object.freeze(['IDLE_COIL','SLITHER_SLOW','SLITHER_FAST','TURN_COIL','RAISE_HEAD','LOWER_HEAD']);
+  if(['HEAVY_BIPED','BOSS_BIPED','HEAVY_GOLEM_OR_BOSS'].includes(plan))return Object.freeze(['HEAVY_IDLE','HEAVY_WALK','HEAVY_RUN','HEAVY_START','HEAVY_STOP','HEAVY_TURN_L','HEAVY_TURN_R','HEAVY_RECOVERY']);
+  return SEMANTIC_GAP_ROLE_TEMPLATES.locomotion;
+}
+
+export function resolveMotionCoverageRequirements(profile={},overrides={}){
+  const bodyPlan=upper(profile.bodyPlan||profile.BODY_PLAN);
+  const specific=BODY_PLAN_MOTION_COVERAGE[bodyPlan]||{};
+  const merged={...DEFAULT_MOTION_COVERAGE_MINIMUMS,...specific,...overrides};
+  const requiredRoles=unique([...(specific.requiredRoles||[]),...(overrides.requiredRoles||[])]);
+  delete merged.requiredRoles;
+  return Object.freeze({
+    bodyPlan,
+    minimums:Object.freeze(merged),
+    requiredRoles:Object.freeze(requiredRoles)
+  });
+}
+
+export function auditMotionCoverage(profile={},requirements={}){
+  const p=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const resolved=resolveMotionCoverageRequirements(p,requirements);
+  const groups={};
+  const gaps=[];
+  for(const [group,minimum] of Object.entries(resolved.minimums)){
+    if(typeof minimum!=='number')continue;
+    const current=(p.groups?.[group]||[]).length;
+    const missing=Math.max(0,minimum-current);
+    groups[group]=Object.freeze({current,minimum,missing,complete:missing===0});
+    if(missing>0)gaps.push(Object.freeze({group,current,minimum,missing}));
+  }
+  const normalizedMotions=(p.motionIds||[]).map(upper);
+  const roleGaps=resolved.requiredRoles.filter(role=>{
+    const tokens=upper(role).split('_OR_').filter(Boolean);
+    return !normalizedMotions.some(id=>tokens.some(token=>id.includes(token.replace('_EQUIVALENT',''))));
+  });
+  return Object.freeze({
+    profileId:p.id,
+    archetype:p.archetype,
+    bodyPlan:p.bodyPlan,
+    groups:Object.freeze(groups),
+    gaps:Object.freeze(gaps),
+    requiredRoleGaps:Object.freeze(roleGaps),
+    complete:gaps.length===0&&roleGaps.length===0,
+    verifiedComplete:gaps.length===0&&roleGaps.length===0&&p.productionVerified===true,
+    productionVerified:p.productionVerified===true
+  });
+}
+
+export function motionSemanticFingerprint(input={}){
+  const dna=input.dna||input;
+  const fields=[
+    upper(dna.BODY_PLAN||dna.bodyPlan),
+    upper(dna.RIG_PROFILE||dna.rigProfile),
+    upper(dna.COMBAT_ROLE||dna.combatRole||dna.SKILL_ROLE||dna.skillRole||dna.REACTION_ROLE||dna.reactionRole||dna.role),
+    upper(dna.WEAPON_FAMILY||dna.weaponFamily),
+    upper(dna.STANCE||dna.stance),
+    upper(dna.STYLE_FAMILY||dna.styleFamily),
+    upper(dna.CONTACT_LIMB||dna.contactLimb),
+    upper(dna.TRAVEL_VECTOR||dna.travelVector)
+  ];
+  return fields.join('|');
+}
+
+export function findNearDuplicateMotionCandidates({candidate={},library=[]}={}){
+  const fingerprint=motionSemanticFingerprint(candidate);
+  return Object.freeze((library||[])
+    .map(row=>Object.freeze({id:text(row.id||row.dna?.MOTION_ID),fingerprint:motionSemanticFingerprint(row),verified:(row.dna?.RUNTIME_VERIFICATION_STATE||row.RUNTIME_VERIFICATION_STATE)==='VERIFIED_RUNTIME'}))
+    .filter(row=>row.id&&row.fingerprint===fingerprint)
+    .sort((a,b)=>Number(b.verified)-Number(a.verified)||a.id.localeCompare(b.id)));
+}
+
+function donorCompatibilityScore(target={},donor={},group=''){
+  const t=target.groups?target:createCreatureMotionSetProfile(target);
+  const d=donor.groups?donor:createCreatureMotionSetProfile(donor);
+  if(text(group)==='signature'&&t.archetype!==d.archetype)return -Infinity;
+  if(t.bodyPlan!==d.bodyPlan)return -Infinity;
+  let score=40;
+  if(t.rigProfile===d.rigProfile)score+=25;
+  if(t.archetype===d.archetype)score+=30;
+  if(t.weightClass===d.weightClass)score+=10;
+  if((t.compatibleStyles||[]).some(style=>(d.compatibleStyles||[]).includes(style)))score+=10;
+  if(d.productionVerified===true)score+=50;
+  return score;
+}
+
+export function findCompatibleMotionDonors({targetProfile={},librarySets=[],group='locomotion'}={}){
+  const target=targetProfile.groups?targetProfile:createCreatureMotionSetProfile(targetProfile);
+  return Object.freeze((librarySets||[])
+    .map(row=>row.groups?row:createCreatureMotionSetProfile(row))
+    .filter(row=>row.id&&row.id!==target.id&&(row.groups?.[group]||[]).length>0)
+    .map(row=>Object.freeze({
+      id:row.id,
+      archetype:row.archetype,
+      bodyPlan:row.bodyPlan,
+      rigProfile:row.rigProfile,
+      group:text(group),
+      motionIds:Object.freeze([...(row.groups?.[group]||[])]),
+      productionVerified:row.productionVerified===true,
+      score:donorCompatibilityScore(target,row,group)
+    }))
+    .filter(row=>Number.isFinite(row.score))
+    .sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id)));
+}
+
+export function scoreMotionGapPriority({gap={},usage={}}={}){
+  let score=0;
+  if(usage.brokenOrMissingRuntimeMotion===true)score+=50;
+  if(usage.activeGameConsumer===true)score+=40;
+  if(usage.heroOrBoss===true)score+=30;
+  score+=Math.min(25,Math.max(0,Number(usage.gameConsumerCount)||0)*5);
+  if(usage.playerVisibleFrequencyHigh===true)score+=20;
+  if(usage.combatCritical===true||['attacks','defense','reactions','signature'].includes(text(gap.group)))score+=20;
+  if(usage.mobileReadabilityDefect===true)score+=15;
+  if(usage.externalSourceReady===true)score+=10;
+  score+=Math.min(20,Math.max(0,Number(gap.missing)||0)*4);
+  return score;
+}
+
+function semanticSeedIds(profile={},group='',count=0){
+  const p=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const roles=bodyPlanSemanticRoles(p.bodyPlan,group);
+  const existing=new Set((p.groups?.[group]||[]).map(upper));
+  const prefix=upper(p.archetype||p.id||'CREATURE').replace(/[^A-Z0-9]+/g,'_');
+  const result=[];
+  for(const role of roles){
+    if(result.length>=count)break;
+    if(![...existing].some(id=>id.includes(upper(role))))result.push(prefix+'_'+upper(role));
+  }
+  let n=1;
+  while(result.length<count){
+    const id=prefix+'_'+upper(group)+'_AUTO_'+String(n).padStart(2,'0');
+    if(!existing.has(id))result.push(id);
+    n+=1;
+  }
+  return Object.freeze(result.slice(0,count));
+}
+
+export function buildAutomaticMotionGapFillPlan({
+  profile={},
+  librarySets=[],
+  externalSources=[],
+  usage={},
+  requirements={}
+}={}){
+  const target=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const audit=auditMotionCoverage(target,requirements);
+  const externalMotionSources=(externalSources||[]).filter(row=>upper(row.category)==='MOTION'&&/LICENSE_VERIFIED/.test(upper(row.status||'')));
+  const actions=[];
+  for(const gap of audit.gaps){
+    const donors=findCompatibleMotionDonors({targetProfile:target,librarySets,group:gap.group});
+    const verifiedDonor=donors.find(row=>row.productionVerified===true);
+    const preparedDonor=donors.find(row=>row.productionVerified!==true);
+    const priority=scoreMotionGapPriority({gap,usage});
+    let route='PREPARE_SEMANTIC_MOTION_SEED';
+    let sourceId=null;
+    if(verifiedDonor){
+      route=verifiedDonor.archetype===target.archetype?'REUSE_VERIFIED_SAME_ARCHETYPE_MOTION':'REUSE_VERIFIED_COMPATIBLE_BODY_PLAN_MOTION';
+      sourceId=verifiedDonor.id;
+    }else if(externalMotionSources.length){
+      route='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_MOTION';
+      sourceId=text(externalMotionSources[0].id);
+    }else if(preparedDonor){
+      route='REFERENCE_COMPATIBLE_PREPARED_SEMANTIC_DONOR';
+      sourceId=preparedDonor.id;
+    }
+    actions.push(Object.freeze({
+      group:gap.group,
+      missing:gap.missing,
+      priority,
+      route,
+      sourceId,
+      semanticSeeds:semanticSeedIds(target,gap.group,gap.missing),
+      verifiedFill:route.startsWith('REUSE_VERIFIED_'),
+      promotionBlockedUntilRuntimeQa:!route.startsWith('REUSE_VERIFIED_')
+    }));
+  }
+  for(const role of audit.requiredRoleGaps){
+    actions.push(Object.freeze({
+      group:'requiredRole',
+      requiredRole:role,
+      missing:1,
+      priority:scoreMotionGapPriority({gap:{group:'signature',missing:1},usage})+10,
+      route:externalMotionSources.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_MOTION':'PREPARE_SEMANTIC_MOTION_SEED',
+      sourceId:externalMotionSources.length?text(externalMotionSources[0].id):null,
+      semanticSeeds:Object.freeze([upper(target.archetype||target.id||'CREATURE')+'_'+upper(role).replace(/_OR_EQUIVALENT/g,'')]),
+      verifiedFill:false,
+      promotionBlockedUntilRuntimeQa:true
+    }));
+  }
+  actions.sort((a,b)=>b.priority-a.priority||a.group.localeCompare(b.group));
+  return Object.freeze({
+    targetId:target.id,
+    archetype:target.archetype,
+    audit,
+    actions:Object.freeze(actions),
+    externalMotionSourceIds:Object.freeze(externalMotionSources.map(row=>text(row.id)).filter(Boolean)),
+    semanticPreparationCanClosePlanningGap:true,
+    semanticPreparationCannotCreateVerifiedCoverage:true,
+    runtimeVerificationRequired:true,
+    gameplayAuthority:false
+  });
+}
+
+export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
+  const p=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const groups=Object.fromEntries(Object.entries(p.groups||{}).map(([k,v])=>[k,[...v]]));
+  const added=[];
+  for(const action of gapPlan.actions||[]){
+    if(!action.semanticSeeds?.length||action.group==='requiredRole')continue;
+    if(!groups[action.group])groups[action.group]=[];
+    for(const id of action.semanticSeeds){
+      if(!groups[action.group].includes(id)){
+        groups[action.group].push(id);
+        added.push(id);
+      }
+    }
+  }
+  return Object.freeze({
+    profile:createCreatureMotionSetProfile({
+      id:p.id,archetype:p.archetype,bodyPlan:p.bodyPlan,rigProfile:p.rigProfile,weightClass:p.weightClass,
+      ...groups,compatibleStyles:p.compatibleStyles,verificationState:'PREPARED_SEMANTIC'
+    }),
+    added:Object.freeze(added),
+    productionVerified:false,
+    state:'PREPARED_SEMANTIC',
+    runtimeVerificationRequired:true
+  });
+}
+
 export function createSpeciesSignature({archetype='',idle='',locomotion='',attack='',defense='',hit='',death='',specialBodyPart=''}={}){
   return Object.freeze({
     archetype:upper(archetype),
