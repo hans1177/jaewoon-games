@@ -122,3 +122,11 @@ test('daechung-rpg runtime foundation survives late player binding and transient
  assert.match(client,/local foundationRoundtrip=false/);
  assert.match(client,/for _=1,20 do[\s\S]*foundationRemote:FireServer\("REMOTE_PING"\)[\s\S]*task\.wait\(\.5\)/);
 });
+
+test('Roblox F0 runs all eligible games in parallel up to GitHub matrix capacity',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(workflow,/if\(rows\.length>=256\)break;/);
+  assert.match(workflow,/max-parallel:\s*256/);
+  assert.match(workflow,/group: company-development-roblox-f0-source-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*6/);
+});
