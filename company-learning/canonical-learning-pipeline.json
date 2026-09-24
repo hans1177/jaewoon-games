@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -394,6 +394,16 @@
     "targetEngineQaEvidencePatterns": [
       "roblox-verification-run:",
       "unity-verification-run:"
-    ]
+    ],
+    "nonGameSpecializedMasteryForbidden": true,
+    "negativeVerifiedFailureProvenanceRequired": true,
+    "negativeMarkerAloneRejected": true,
+    "negativeVerificationToken": "specialized-negative-verification:FAIL",
+    "allowedNegativeAuthorityTokens": [
+      "specialized-negative-authority:FOCUSED_QA",
+      "specialized-negative-authority:RUNTIME_QA",
+      "specialized-negative-authority:FAN_IN_RUNTIME_FAILURE"
+    ],
+    "focusedStaticNotVerifiedIsNotRuntimeFailure": true
   }
 }
