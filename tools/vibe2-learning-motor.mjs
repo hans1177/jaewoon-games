@@ -1671,7 +1671,7 @@ function buildWebBaselineState(item={},verifiedSemantic={}){
 }
 function derivedProjectPhase(item={},platform='',genre=null){
   if(releasedRobloxProject(item))return'POST_RELEASE_FOCUSED_DEVELOPMENT';
-  const explicit=upper(get(item,'PROJECT_PHASE','projectPhase','developmentStage','currentStep'));
+  const explicit=upper(get(item,'PROJECT_PHASE','projectPhase','developmentStage'));
   if(PROJECT_MACHINE_STAGES.has(explicit))return explicit;
 
   // Downstream machine evidence is monotonic authority. Missing descriptive metadata
