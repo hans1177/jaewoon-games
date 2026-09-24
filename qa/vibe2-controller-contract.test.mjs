@@ -342,6 +342,8 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
 
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
   assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes("github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-{0}', github.run_id)"));
+  assert(workflow.includes("startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id)"));
   assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
   const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const end=workflow.indexOf('  model_cache:',start);
