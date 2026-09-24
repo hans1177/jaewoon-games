@@ -108,6 +108,17 @@ export function summarizeVibeVerifiedWorldLearning({events=[]}={}){
 }
 
 const WORLD_PATTERN_TECHNIQUE_FIELDS=Object.freeze(['GENRE_FAMILY','ROUTE_GRAMMAR','ENCOUNTER_RHYTHM','LANDMARK_REVEAL','SAFE_DANGER_RELATION','REVISIT_PATTERN','STREAMING_STRATEGY','CHOKE_OPEN_SPACE_RHYTHM']);
+function safeWorldTechniqueValue(value){
+  const text=String(value??'').trim();
+  if(!text||text.length>120)return null;
+  if(/\b(?:x|y|z|lat|lon|lng|latitude|longitude)\s*[:=]\s*-?\d+(?:\.\d+)?/i.test(text))return null;
+  if(/-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?/.test(text))return null;
+  const numbers=text.match(/-?\d+(?:\.\d+)?/g)||[];
+  if(numbers.length>3)return null;
+  if(/[\[\]{}]/.test(text)&&numbers.length>0)return null;
+  if(/terrain.?mesh|vertex|vertices|exact.?layout|node.?coordinates?|world.?position/i.test(text))return null;
+  return text;
+}
 export function distillVibeVerifiedWorldPatterns({events=[],minimumIndependentGames=2}={}){
   const groups=new Map();
   const min=Math.max(2,Number(minimumIndependentGames)||2);
@@ -120,11 +131,18 @@ export function distillVibeVerifiedWorldPatterns({events=[],minimumIndependentGa
     for(const field of WORLD_PATTERN_TECHNIQUE_FIELDS){
       const camel=field.toLowerCase().replace(/_([a-z])/g,(_,m)=>m.toUpperCase());
       const value=source[field]??source[camel]??event[field]??event[camel];
-      if(value!=null&&String(value).trim())technique[field]=String(value).trim();
+      const safe=safeWorldTechniqueValue(value);
+      if(safe)technique[field]=safe;
     }
+    const suppliedCount=WORLD_PATTERN_TECHNIQUE_FIELDS.filter(field=>{
+      const camel=field.toLowerCase().replace(/_([a-z])/g,(_,m)=>m.toUpperCase());
+      return source[field]!=null||source[camel]!=null||event[field]!=null||event[camel]!=null;
+    }).length;
+    const rejectedFieldCount=Math.max(0,suppliedCount-Object.keys(technique).length);
     if(Object.keys(technique).length<2)continue;
     const signature=JSON.stringify(Object.fromEntries(Object.entries(technique).sort(([a],[b])=>a.localeCompare(b))));
-    if(!groups.has(signature))groups.set(signature,{technique,passGames:new Set(),failGames:new Set(),failureReasons:new Set()});
+    if(!groups.has(signature))groups.set(signature,{technique,passGames:new Set(),failGames:new Set(),failureReasons:new Set(),rejectedFieldCount:0});
+    groups.get(signature).rejectedFieldCount=Math.max(groups.get(signature).rejectedFieldCount,rejectedFieldCount);
     const row=groups.get(signature);
     if(event.verifiedRuntimeFailure===true){
       row.failGames.add(gameId);
@@ -151,6 +169,8 @@ export function distillVibeVerifiedWorldPatterns({events=[],minimumIndependentGa
       exactCoordinatesStored:false,
       exactLayoutStored:false,
       rawTelemetryStored:false,
+      rejectedFieldCount:row.rejectedFieldCount,
+      exactCoordinateLikeValuesRejected:row.rejectedFieldCount>0,
       directMasteryCredit:false
     }));
   }
