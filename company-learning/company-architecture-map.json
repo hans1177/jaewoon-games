@@ -1,5 +1,5 @@
 {
-  "version": 149,
+  "version": 150,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2468,6 +2468,21 @@
         "rawProtectedImagePersistentLearningForbidden": true,
         "directSceneOrMapCopyForbidden": true,
         "gameplayAuthorityExpansion": false
+      },
+      "existingGameWorldPatternDistillation": {
+        "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.worldGenerationStudio.learning.existingGamePatternDistillation",
+        "implementation": "assets/vibe-environment-director.js",
+        "flow": [
+          "VERIFIED_INTERNAL_RUNTIME_WORLD_OUTCOME",
+          "REMOVE_EXACT_COORDINATES_LAYOUT_AND_GAME_SPECIFIC_VALUES",
+          "DISTILL_ALLOWED_WORLD_TECHNIQUE_FIELDS",
+          "KEEP_SINGLE_GAME_PATTERN_GAME_SCOPED",
+          "REQUIRE_TWO_INDEPENDENT_VERIFIED_GAMES_FOR_CROSS_GAME_REUSE",
+          "ROUTE_REUSABLE_OR_AVOID_CANDIDATE_TO_EXISTING_CANONICAL_LEARNING_MOTOR"
+        ],
+        "shadowTrainerForbidden": true,
+        "exactMapTemplateReuseForbidden": true,
+        "directProductionPassAuthority": false
       }
     }
   },
