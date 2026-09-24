@@ -1,5 +1,5 @@
 {
-  "version": 49,
+  "version": 50,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -911,7 +911,8 @@
       "request": "tools/vibe2-source-worker.mjs",
       "focusedQa": "tools/vibe2-incremental-qa.mjs",
       "finalVerifiedMarker": "tools/vibe2-fan-in-review.mjs",
-      "canonicalIngress": "tools/vibe2-learning-motor.mjs"
+      "canonicalIngress": "tools/vibe2-learning-motor.mjs",
+      "postNativeFinalReview": "tools/vibe2-fan-in-review.mjs"
     },
     "requiredEvidence": [
       "SPECIALIZED_VERIFICATION_REQUEST",
@@ -920,7 +921,10 @@
       "FAN_IN_REVIEW_RESULT",
       "TARGET_ENGINE_QA_RESULT_WHEN_NATIVE",
       "FINAL_VERIFIED_MARKER",
-      "SPECIALIZED_OUTCOME_ID"
+      "SPECIALIZED_OUTCOME_ID",
+      "PRE_NATIVE_FAN_IN_REGRESSION_AND_REVIEW_PASS",
+      "POST_NATIVE_TARGET_ENGINE_QA_PASS",
+      "POST_NATIVE_FAN_IN_FINAL_REVIEW_PASS"
     ],
     "requestIsNotPassEvidence": true,
     "focusedQaIsNotFinalPassEvidence": true,
@@ -935,6 +939,10 @@
     "positiveProvenanceTokensRequired": [
       "specialized-final-verification:PASS",
       "specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION"
-    ]
+    ],
+    "nativeTwoStageReviewRequired": true,
+    "postNativeReviewMustPreserveTaskStatusAndReleaseDecision": true,
+    "candidateResultWorkflowCannotMintFinalMarker": true,
+    "focusedQaTraceRequiredPerFinalMarker": true
   }
 }
