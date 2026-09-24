@@ -1,5 +1,5 @@
 {
-  "version": 138,
+  "version": 139,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2145,7 +2145,10 @@
         "WEAPON_MOTION_LIBRARY",
         "VFX_LIBRARY",
         "ENVIRONMENT_KIT_LIBRARY",
-        "UI_PRESENTATION_LIBRARY"
+        "UI_PRESENTATION_LIBRARY",
+        "SKILL_MOTION_LIBRARY",
+        "REACTION_MOTION_LIBRARY",
+        "PAIR_MOTION_LIBRARY"
       ],
       "ownerVisualInspectionRoute": "/asset-library.html",
       "registry": "company-asset-library.json",
@@ -2231,6 +2234,61 @@
         "originalImmutableAndDerivedProvenanceRequired": true,
         "gameplayAuthorityImmutable": true,
         "libraryGraphInterlinkRequired": true
+      },
+      "motionDirectorSystem": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "HIGH_END_COMPOSABLE_MOTION_DIRECTOR",
+        "implementation": "assets/vibe-motion-director.js",
+        "internalModuleOnly": true,
+        "createsNewTopLevelPipeline": false,
+        "continuousExpansion": true,
+        "noArtificialCombinationCap": true,
+        "compositionChannels": [
+          "ROOT",
+          "LOCOMOTION",
+          "LOWER_BODY",
+          "PELVIS_SPINE",
+          "UPPER_BODY",
+          "LEFT_ARM",
+          "RIGHT_ARM",
+          "HEAD_GAZE",
+          "TAIL",
+          "WINGS",
+          "EXTRA_LIMBS",
+          "SECONDARY_MOTION",
+          "PROCEDURAL_CORRECTION",
+          "VFX_PRESENTATION",
+          "AUDIO_PRESENTATION",
+          "CAMERA_PRESENTATION"
+        ],
+        "subsystems": [
+          "MOTION_DNA",
+          "COMPATIBILITY_GRAPH",
+          "BODY_LAYER_COMPOSER",
+          "CONTEXT_SELECTOR",
+          "MOTION_GRAMMAR",
+          "REACTION_MATCHER",
+          "PAIR_MOTION",
+          "SPECIES_SIGNATURE",
+          "STYLE_MODIFIER",
+          "MOTION_MUTATION",
+          "VARIATION_MEMORY"
+        ],
+        "libraryGraphNodes": [
+          "CHARACTER_ARCHETYPE_LIBRARY",
+          "CREATURE_RIG_LIBRARY",
+          "ACTION_MOTION_LIBRARY",
+          "WEAPON_MOTION_LIBRARY",
+          "SKILL_MOTION_LIBRARY",
+          "REACTION_MOTION_LIBRARY",
+          "PAIR_MOTION_LIBRARY",
+          "VFX_LIBRARY",
+          "ENVIRONMENT_KIT_LIBRARY",
+          "UI_PRESENTATION_LIBRARY"
+        ],
+        "gameplayAuthorityExpansionForbidden": true,
+        "platformNativeRuntimeVerificationRequired": true
       }
     }
   },
