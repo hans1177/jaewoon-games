@@ -2300,9 +2300,9 @@ test('candidate manifest carries presentation quality contract without expanding
     runtimeChecks:['idle-walk-run-or-equivalent-runtime-continuity'],
     authorityExpanded:false
   };
-  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player { int Speed() { return 1; } }\n');
+  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player { float motionSmoothing = 0.1f; }\n');
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
-  write(responseFile,JSON.stringify({edits:[{path:'Assets/Player.cs',find:'return 1;',replace:'return 2;'}],newFiles:[]}));
+  write(responseFile,JSON.stringify({edits:[{path:'Assets/Player.cs',find:'float motionSmoothing = 0.1f;',replace:'float motionSmoothing = 0.2f;'}],newFiles:[]}));
   const result=await runVibe2SourceWorker({cwd,responseFile});
   const persisted=JSON.parse(fs.readFileSync(path.join(cwd,'.vibe2/candidates/presentation-contract/manifest.json'),'utf8'));
   assert.equal(result.presentationQuality.required,true);
