@@ -661,6 +661,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(gated.universalAtomicNeuronExecution,true);
   assert.ok(gated.gatedAuthorities.includes('REQUEUE_EXISTING_TASK'));
   assert.ok(gated.gatedAuthorities.includes('TUNE_GAME_PRIMARY_CONCURRENCY_FROM_VERIFIED_THROUGHPUT'));
+  assert.equal(gated.sourceCandidateGeneration.strategyMutationRequiresVerifiedRootCause,true);
+  assert.equal(gated.sourceCandidateGeneration.successfulResultMutationForbidden,true);
+  assert.equal(gated.sourceCandidateGeneration.verifiedSupervisorReviseRequeuesExistingTask,true);
   assert.ok(gated.forbiddenAuthorities.includes('CENTRAL_POLICY_MUTATION'));
   assert.ok(gated.forbiddenAuthorities.includes('QA_OR_RUNTIME_GATE_BYPASS'));
   assert.ok(gated.forbiddenAuthorities.includes('RELEASE_PASS_OR_PROMOTION_SELF_APPROVAL'));
@@ -669,6 +672,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   const arch=architecture.neuralWorkGraphTopology.phase2GatedExecution;
   assert.equal(arch.state,'ENABLED');
   assert.equal(arch.allowedWorkerAuthority,'EXISTING_QUEUED_TASK_DISPATCH_ONLY');
+  assert.equal(arch.retryStrategyMutationRequiresVerifiedRootCause,true);
+  assert.equal(arch.successfulResultMutationForbidden,true);
+  assert.equal(arch.verifiedSupervisorReviseRequeue,true);
   assert.equal(arch.protectedAuthority.policyMutation,false);
   assert.equal(arch.protectedAuthority.qaBypass,false);
   assert.equal(arch.protectedAuthority.releaseSelfApproval,false);
