@@ -139,7 +139,7 @@ export function simulateNeuralEventRoute({
   const queueMutationAllowed=gatedActionAllowed;
   const waveReorderAllowed=gatedActionAllowed;
   const automaticTuningAllowed=gatedActionAllowed;
-  const authorityMode=gatedExecutionEnabled===true?'GATED':'SHADOW';
+  const authorityMode=gatedActionAllowed?'GATED':'SHADOW';
 
   const workGraph=buildNeuralWorkGraph({
     event:normalizedEvent,
@@ -161,7 +161,7 @@ export function simulateNeuralEventRoute({
   });
   return{
     version:3,
-    mode:gatedExecutionEnabled===true?'PHASE2_GATED_EVENT_ROUTER':'PHASE2_SHADOW_EVENT_ROUTER',
+    mode:gatedActionAllowed?'PHASE2_GATED_EVENT_ROUTER':'PHASE2_SHADOW_EVENT_ROUTER',
     authorityMode,
     event:normalizedEvent,
     proposedAction,
@@ -178,7 +178,7 @@ export function simulateNeuralEventRoute({
     learningEligible:false,
     authorityPromotionEligible:false,
     comparisonTarget:'CURRENT_WAVE_SCHEDULER_OUTCOME',
-    authority:gatedExecutionEnabled===true?'GATED_EXISTING_SCHEDULER_ONLY':'SIMULATION_ONLY'
+    authority:gatedActionAllowed?'GATED_EXISTING_SCHEDULER_ONLY':'SIMULATION_ONLY'
   };
 }
 
