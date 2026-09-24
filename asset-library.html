@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="6">
+<html lang="ko" data-asset-library-version="7">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -56,6 +56,9 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
 </section>
 <section class="section"><div class="sectionHead"><div><h2>액션 커버리지 목표</h2><p>회사 공용 모션팩 최소 기준</p></div></div><div class="coverage" id="coverage"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>맨손 대전 액션 연구</h2><p>무술 스타일·보법·타격·킥·카운터·잡기·던지기·낙법·무협 공중연계까지 계속 확장</p></div></div><div class="coverage" id="unarmedCoverage"></div><div class="grid" id="unarmedStyles"></div></section>
+
+<section class="section"><div class="sectionHead"><div><h2>Studio Asset Universe</h2><p>캐릭터·의복·몬스터·건물·환경·무기·스킬·재질·오디오·VFX·UI·모션·소품 통합 라이브러리</p></div></div><div class="coverage" id="studioUniverseCoverage"></div><div class="grid" id="studioUniverseCards"></div></section>
+<section class="section"><div class="sectionHead"><div><h2>Universal Coverage / 24H Gap Fill</h2><p>검증 자산과 의미 시드를 분리하고 가장 큰 빈칸부터 계속 채움</p></div></div><div class="coverage" id="universalCoverageStats"></div><div class="grid" id="semanticTemplateCards"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>Motion Director</h2><p>모션을 파일 단위가 아니라 Motion DNA + 호환성 + 레이어 + 상황 선택으로 조합</p></div></div><div class="coverage" id="motionDirectorCoverage"></div><div class="grid" id="motionDirectorSystems"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>몬스터 모션 시드 세트</h2><p>실제 클립 PASS 전의 조합용 의미 시드 · 런타임 검증 후 승격</p></div></div><div class="coverage" id="bootstrapCoverage"></div><div class="grid" id="bootstrapSets"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>고급 모션 품질·학습</h2><p>전환/접촉/그룹/감정/LOD/계보와 검증된 런타임 학습 상태</p></div></div><div class="grid" id="advancedMotionSystems"></div></section>
@@ -102,6 +105,48 @@ function render(){
   ];
   document.getElementById('unarmedCoverage').innerHTML=urows.map(([a,b])=>'<div><b>'+esc(b)+'</b><span>'+esc(a)+'</span></div>').join('');
   document.getElementById('unarmedStyles').innerHTML=(u.styleFamilies||[]).map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">모션 연구</span></div><h3>'+esc(x.replaceAll('_',' '))+'</h3><p>Unity/Roblox 네이티브 리타겟·클린업·런타임 검증 대상</p></div></article>').join('');
+
+  const universe=data.studioAssetUniverse||{};const tpl=universe.semanticTemplateSpace||{};
+  const creature=universe.creatureCatalog||{};const clothing=universe.clothingCatalog||{};const building=universe.buildingCatalog||{};const biome=universe.biomeCatalog||{};
+  document.getElementById('studioUniverseCoverage').innerHTML=[
+    ['Asset Families',(universe.families||[]).length],
+    ['Creature Body Plans',(creature.bodyPlans||[]).length],
+    ['Creature Species',(creature.species||[]).length],
+    ['Clothing Slots',(clothing.layerSlots||[]).length],
+    ['Building Themes',(building.themes||[]).length],
+    ['Room Kits',(building.roomKits||[]).length],
+    ['Biomes',(biome.biomes||[]).length],
+    ['Research',(data.research||[]).length]
+  ].map(([a,b])=>'<div><b>'+esc(b)+'</b><span>'+esc(a)+'</span></div>').join('');
+  const universeCards=[
+    ['CREATURE','Body Plan + Species + Mutation + Signature Identity'],
+    ['CLOTHING / ARMOR','15-layer compatibility + clipping + theme grammar'],
+    ['BUILDING / INTERIOR','Modular exterior + room kit + navigation grammar'],
+    ['ENVIRONMENT','Biome DNA + prop density + landmark/ambience'],
+    ['WEAPON / SKILL','Weapon-Motion compatibility + Skill Presentation Kit'],
+    ['MATERIAL / AUDIO','Surface style variants + repeated-audio variation'],
+    ['DAMAGE / DESTRUCTION','Reaction/VFX/Audio/Camera + destruction LOD'],
+    ['IDENTITY / STYLE','Color-only rejection + Style Bible + lineage']
+  ];
+  document.getElementById('studioUniverseCards').innerHTML=universeCards.map(([name,note])=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">UNIVERSE</span></div><h3>'+esc(name)+'</h3><p>'+esc(note)+'</p></div></article>').join('');
+  const uc=data.universalCoverage||{};
+  document.getElementById('universalCoverageStats').innerHTML=[
+    ['Verified assets',uc.productionVerifiedAssetCount||0],
+    ['Repository refs',uc.repositoryReferenceAssetCount||0],
+    ['Autonomous 24H',uc.autonomous24h?'ON':'OFF'],
+    ['Semantic ≠ Verified',uc.preparedSemanticDoesNotCountAsVerified?'YES':'NO']
+  ].map(([a,b])=>'<div><b>'+esc(b)+'</b><span>'+esc(a)+'</span></div>').join('');
+  const semanticRows=[
+    ['Creature',(tpl.creature?.bodyPlans||0)+' body plans / '+(tpl.creature?.species||0)+' species'],
+    ['Clothing',(tpl.clothing?.themeLayerCombinations||0)+' theme-layer combinations'],
+    ['Building',(tpl.building?.themedModuleCombinations||0)+' themed modules / '+(tpl.building?.roomKits||0)+' room kits'],
+    ['Biome',(tpl.biome?.biomeChannelSlots||0)+' biome-channel slots'],
+    ['Material',(tpl.material?.surfaceStyleCombinations||0)+' surface-style combinations'],
+    ['Audio',(tpl.audio?.targetVariantSlots||0)+' target variant slots'],
+    ['Damage',(tpl.damagePresentation?.totalComponentSlots||0)+' presentation component slots'],
+    ['Destruction',(tpl.destruction?.totalLodSlots||0)+' LOD slots']
+  ];
+  document.getElementById('semanticTemplateCards').innerHTML=semanticRows.map(([name,note])=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">PREPARED SEMANTIC</span></div><h3>'+esc(name)+'</h3><p>'+esc(note)+' · 실제 Unity/Roblox runtime PASS 전 production verified 아님</p></div></article>').join('');
   const md=data.motionDirector||{};const cats=md.categories||{};
   const mdrows=[
     ['조합 채널',(md.channels||[]).length],
