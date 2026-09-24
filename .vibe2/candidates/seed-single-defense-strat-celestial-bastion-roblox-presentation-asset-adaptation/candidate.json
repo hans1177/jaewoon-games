@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "local function render()\n  status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\n  status.TextColor3 = Color3.fromRGB(220, 232, 250)\n  status.TextScaled = false\n  status.Parent = root\n\n  local list = Instance.new(\"ScrollingFrame\")\n  list.Name = \"ApprovedActions\"\n  list.Size = UDim2.new(1, -20, 1, -112)\n  list.Position = UDim2.fromOffset(10, 106)\n  list.BackgroundTransparency = 1\n  list.BorderSizePixel = 0\n  list.AutomaticCanvasSize = Enum.AutomaticSize.Y\n  list.CanvasSize = UDim2.new()\n  list.ScrollBarThickness = 6\n  list.Parent = root\n\n  local layout = Instance.new(\"UIListLayout\")\n  layout.Padding = UDim.new(0, 8)\n  layout.SortOrder = Enum.SortOrder.LayoutOrder\n  layout.Parent = list\n\n  for index, action in ipairs(Config.Actions) do\n    local button = Instance.new(\"TextButton\")\n    button.Name = \"ScopeAction\" .. index\n    button.LayoutOrder = index\n    button.Size = UDim2.new(1, -4, 0, 56)\n    button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)\n    button.TextColor3 = Color3.fromRGB(16, 24, 40)\n    button.TextWrapped = true\n    button.TextScaled = true\n    button.Text = string.format(\"%d. %s [%s]\", index, action.Label, action.Kind)\n    button.Parent = list\n    button.Activated:Connect(function() remote:FireServer(action.Id) end)\n  end\n\n  local watched = {\"Score\",\"Coins\",\"Level\",\"Progress\",\"Health\",\"Wave\",\"Position\",\"Objective\",\"Combo\",\"EnemyHealth\",\"PuzzleChain\",\"Towers\",\"BaseHealth\",\"SocialBond\",\"SharedObjective\",\"RoundScore\",\"LastApprovedScope\"}\n  local function render()\n    status.Text = string.format(\"Score %d · Lv %d · Progress %d · HP %d · Wave %d\", player:GetAttribute(\"Score\") or 0, player:GetAttribute(\"Level\") or 1, player:GetAttribute(\"Progress\") or 0, player:GetAttribute(\"Health\") or 100, player:GetAttribute(\"Wave\") or 1)\n    status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\n    status.TextColor3 = Color3.fromRGB(220, 232, 250)\n    status.TextScaled = false\n    status.Parent = root\n  end\n  for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\n  render()\n\n  if #Config.Actions > 0 then\n    ContextActionService:BindAction(\"VibePrimaryAction\", function(_, inputState)\n      if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n      return Enum.ContextActionResult.Sink\n    end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\n  end\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
