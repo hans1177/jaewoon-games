@@ -1657,3 +1657,53 @@ test('existing Roblox games automatically receive a Studio asset selection hando
   fs.writeFileSync(path.join(shared,'GameConfig.luau'),'local STUDIO_ASSET_BINDING_VERSION = 1\nreturn { StudioAssets = { BindingVersion = 1 } }\n','utf8');
   assert.equal(findRobloxStudioAssetBackfillTask(project,root,{tasks:[]}),null);
 });
+
+
+test('company-runtime nested Roblox execution evidence survives planner projection into repair context',()=>{
+  const root=tempRepo();
+  const gameId='runtime-evidence-bridge';
+  const sourceRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(sourceRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(sourceRoot,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client','Game.client.luau'),'local function render() return true end\nreturn render\n','utf8');
+  fs.writeFileSync(path.join(sourceRoot,'server','Game.server.luau'),'local function run() return true end\nreturn run\n','utf8');
+  fs.writeFileSync(path.join(sourceRoot,'shared','GameConfig.luau'),'return { version = 1 }\n','utf8');
+  const sha='d'.repeat(40);
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Runtime Evidence Bridge',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE',
+      robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Runtime Evidence Bridge',
+      status:'ACTIVE',
+      canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      selectedPlatform:'ROBLOX',
+      robloxProjectPath:`roblox-games/${gameId}`,
+      executionEvidence:{
+        sourceRevision:sha,
+        runtimePassed:true,
+        independentQaPassed:false,
+        regressionPassed:false,
+        failureStage:'INDEPENDENT_QA',
+        failureSignature:'qa:input-sync-mismatch'
+      }
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:20,
+    planningBacklogTarget:20,
+    planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,true);
+  const studio=result.tasks.find(row=>row.gameId===gameId&&(row.evidence||[]).includes('studio-quality-loop:v1'));
+  assert.ok(studio,'expected studio repair/evolution task');
+  assert.match(studio.goal,/INDEPENDENT_QA/);
+  assert.equal(studio.studioQualityEvolution.explicitGap,'INDEPENDENT_QA');
+});

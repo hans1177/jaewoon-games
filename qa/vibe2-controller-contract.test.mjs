@@ -100,14 +100,22 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
-  assert.equal(runtime.version>=21,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,21);
+  assert.equal(runtime.version>=22,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,22);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.adaptiveBackpressure.mode,'GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY');
   assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
   assert.equal(runtime.continuous.atomicNeuronStream.retryStrategyMutationRequiresVerifiedRootCause,true);
   assert.equal(runtime.continuous.atomicNeuronStream.successfulResultMutationForbidden,true);
   assert.equal(runtime.continuous.atomicNeuronStream.verifiedSupervisorReviseRequeue,true);
+  assert.equal(runtime.projectLifecycle.reserveIngressCompanyRuntimeSyncRequired,true);
+  assert.equal(runtime.projectLifecycle.lifecycleProjectionMonotonic,true);
+  assert.equal(runtime.projectLifecycle.downstreamMachineEvidencePreventsBackwardPhaseProjection,true);
+  assert.equal(runtime.projectLifecycle.missingGenreMayNotRegressStartedNativeWork,true);
+  assert.equal(runtime.projectLifecycle.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(runtime.projectLifecycle.nestedExecutionEvidenceFallbackForPlanner,true);
+  assert.equal(runtime.projectLifecycle.nestedFailureStageAndSignaturePreserved,true);
+  assert.equal(runtime.projectLifecycle.nestedSourceRevisionPreserved,true);
   assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
   assert.equal(runtime.coordination.sourceRootExclusive,true);
   assert.equal(runtime.coordination.separateFileLocks,true);
@@ -409,8 +417,10 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
-  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"));
+  assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"),false);
   assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"),false);
+  assert(reserveBlock.includes('git fetch origin company-runtime --quiet'));
+  assert(reserveBlock.includes('VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind'));
   assert.equal(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'),false);
   assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS'));
   assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'));
@@ -901,4 +911,21 @@ test('continuous core connects existing evidence reasoning into self-generated s
   assert.doesNotMatch(workflow,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \] && \[ "\$\{continue_required:-NO\}" = 'YES' \]/);
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
+});
+
+
+test('every non-neuron reserve ingress syncs current company runtime before planning and reservation',()=>{
+  const steward=workflow.indexOf("echo 'VIBE2_RESERVE_STEWARD=PASS'");
+  const fetchRuntime=workflow.indexOf('git fetch origin company-runtime --quiet',steward);
+  const planner=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs',fetchRuntime);
+  const learning=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs',planner);
+  const handoff=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check',learning);
+  const reserve=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch',handoff);
+  assert.ok(steward>=0&&fetchRuntime>steward&&planner>fetchRuntime&&learning>planner&&handoff>learning&&reserve>handoff);
+  const block=workflow.slice(steward,handoff);
+  assert.match(block,/git show origin\/company-runtime:development-queue\.json > \/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/--company-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC=PASS/);
+  assert.doesNotMatch(block,/if \[ "\$callback_kind" = 'fanin' \]; then/);
 });

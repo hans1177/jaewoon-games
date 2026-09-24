@@ -664,6 +664,12 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(gated.sourceCandidateGeneration.strategyMutationRequiresVerifiedRootCause,true);
   assert.equal(gated.sourceCandidateGeneration.successfulResultMutationForbidden,true);
   assert.equal(gated.sourceCandidateGeneration.verifiedSupervisorReviseRequeuesExistingTask,true);
+  assert.equal(gated.runtimeSynchronization.syncBeforeEveryNonNeuronReserveIngress,true);
+  assert.equal(gated.runtimeSynchronization.staleVibeControlStateMayNotOverrideNewerCompanyRuntime,true);
+  assert.equal(gated.runtimeSynchronization.lifecycleProjectionMustBeMonotonic,true);
+  assert.equal(gated.runtimeSynchronization.missingGenreMayNotRegressStartedNativeWork,true);
+  assert.equal(gated.runtimeSynchronization.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(gated.runtimeSynchronization.plannerMustPreserveNestedFailureStageSignatureAndSourceRevision,true);
   assert.ok(gated.forbiddenAuthorities.includes('CENTRAL_POLICY_MUTATION'));
   assert.ok(gated.forbiddenAuthorities.includes('QA_OR_RUNTIME_GATE_BYPASS'));
   assert.ok(gated.forbiddenAuthorities.includes('RELEASE_PASS_OR_PROMOTION_SELF_APPROVAL'));
@@ -677,6 +683,12 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(arch.verifiedSupervisorReviseRequeue,true);
   assert.equal(architecture.neuralWorkGraphTopology.activation.eventRoutingExecutionAuthority,'GATED_EXISTING_SCHEDULER_ONLY');
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.authorityChange,'GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING');
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.reserveIngressRuntimeSync.required,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.reserveIngressRuntimeSync.appliesToEveryNonNeuronReserveIngress,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.downstreamMachineEvidencePreventsBackwardProjection,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.runtimeEvidenceOverridesStaleTopLevelFlags,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.plannerPreservesFailureStageSignatureAndSourceRevision,true);
   assert.equal(arch.protectedAuthority.policyMutation,false);
   assert.equal(arch.protectedAuthority.qaBypass,false);
   assert.equal(arch.protectedAuthority.releaseSelfApproval,false);

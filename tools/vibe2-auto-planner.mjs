@@ -196,14 +196,18 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   if(queueTarget==='ROBLOX'||/^roblox-games\//.test(queueRobloxRoot)){
     const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
     const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
+    const executionEvidence=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
     const queuePatch={
       queueCurrentStep:clean(item?.currentStep),
       queueCanonicalState:clean(item?.canonicalState),
       queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
-      queueRobloxFailureStage:clean(item?.robloxFailureStage),
-      queueRobloxFailureSignature:clean(item?.robloxFailureSignature),
-      queueRobloxSourceCommit:clean(item?.robloxSourceCommit),
-      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity),
+      queueRobloxFailureStage:clean(item?.robloxFailureStage||executionEvidence.failureStage),
+      queueRobloxFailureSignature:clean(item?.robloxFailureSignature||executionEvidence.failureSignature),
+      queueRobloxSourceCommit:clean(item?.robloxSourceCommit||executionEvidence.sourceRevision),
+      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||executionEvidence.artifactIdentity),
+      queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||executionEvidence.runtimePassed===true,
+      queueRobloxIndependentQaPassed:item?.robloxIndependentQaPassed===true||executionEvidence.independentQaPassed===true,
+      queueRobloxRegressionPassed:item?.robloxRegressionPassed===true||executionEvidence.regressionPassed===true,
       queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
       queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
       queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
@@ -1316,6 +1320,8 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue){
     ...(project?.developmentValidation?.blockers||[]),
     clean(project?.developmentValidation?.nextAction),
     clean(project?.queueVibeWebImplementationReason),
+    clean(project?.queueRobloxFailureStage),
+    clean(project?.queueRobloxFailureSignature),
     ...(project?.queueRoutingBlockers||[])
   ].map(clean).filter(Boolean);
   const signalText=knownSignals.join(' | ').toLowerCase();

@@ -423,6 +423,64 @@ test('project machine state carries canonical web to Roblox lifecycle context',(
 
 
 
+
+
+test('project lifecycle never regresses downstream Roblox machine evidence because genre metadata is missing',()=>{
+  const sha='c'.repeat(40);
+  const pack=buildWebRobloxHandoffs({items:[
+    {
+      gameId:'g-source-no-genre',
+      selectedPlatform:'ROBLOX',
+      currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+      robloxSourceCommit:sha,
+      robloxRuntimePassed:false,
+      robloxIndependentQaPassed:false,
+      robloxRegressionPassed:false
+    },
+    {
+      gameId:'g-runtime-no-genre',
+      selectedPlatform:'ROBLOX',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      robloxSourceCommit:sha,
+      robloxRuntimePassed:false,
+      robloxIndependentQaPassed:false,
+      robloxRegressionPassed:false,
+      executionEvidence:{
+        sourceRevision:sha,
+        runtimePassed:true,
+        independentQaPassed:false,
+        regressionPassed:false,
+        failureStage:'INDEPENDENT_QA'
+      }
+    },
+    {
+      gameId:'g-qa-no-genre',
+      selectedPlatform:'ROBLOX',
+      robloxSourceCommit:sha,
+      executionEvidence:{
+        sourceRevision:sha,
+        runtimePassed:true,
+        independentQaPassed:true,
+        regressionPassed:false,
+        failureStage:'REGRESSION'
+      }
+    }
+  ]});
+  const source=pack.projects.find(project=>project.gameId==='g-source-no-genre');
+  assert.equal(source.GENRE,null);
+  assert.equal(source.PROJECT_PHASE,'TARGET_PLATFORM_RUNTIME');
+  assert.equal(source.NEXT_MACHINE_ACTION,'RUN_TARGET_PLATFORM_RUNTIME');
+
+  const runtime=pack.projects.find(project=>project.gameId==='g-runtime-no-genre');
+  assert.equal(runtime.GENRE,null);
+  assert.equal(runtime.PROJECT_PHASE,'TARGET_PLATFORM_INDEPENDENT_QA');
+  assert.equal(runtime.NEXT_MACHINE_ACTION,'RUN_TARGET_PLATFORM_INDEPENDENT_QA');
+
+  const qa=pack.projects.find(project=>project.gameId==='g-qa-no-genre');
+  assert.equal(qa.PROJECT_PHASE,'TARGET_PLATFORM_REGRESSION');
+  assert.equal(qa.NEXT_MACHINE_ACTION,'RUN_TARGET_PLATFORM_REGRESSION');
+});
+
 test('24h company graphics library keeps Unity and Roblox preparation drills rotating in idle capacity',()=>{
   const idle=buildIdlePracticeQueue({});
   assert.equal(idle.version,4);
