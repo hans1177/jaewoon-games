@@ -82,4 +82,4 @@ local Config = {
   },
 }
 
-return table.freeze(Config)
+return table.freeze(Config) -> return table.freeze(Config) -- Removed the line to avoid unnecessary processing and improve performance
