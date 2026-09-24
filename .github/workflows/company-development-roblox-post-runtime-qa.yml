@@ -158,6 +158,28 @@ jobs:
           let changed=false,passed=0,pending=0,failed=0;
           const f9Ids=[];
           const stamp=new Date().toISOString();
+          const sentinelReads=await Promise.all(candidates.map(async item=>{
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const exactCandidate=
+              candidate.sourceRevision===sourceRevision
+              &&candidate.artifactIdentity===artifactIdentity
+              &&Number(candidate.versionNumber)>0
+              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''));
+            if(!exactCandidate)return [item.gameId,{skipped:true}];
+            try{
+              const sentinel=await fetchRobloxRuntimeFoundationEvidence({
+                universeId:String(candidate.universeId),
+                apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+              });
+              return [item.gameId,{sentinel}];
+            }catch(error){
+              return [item.gameId,{error}];
+            }
+          }));
+          const sentinelByGame=new Map(sentinelReads);
 
           for(const item of candidates){
             const candidate=item.robloxRuntimeCandidateEvidence||{};
@@ -220,13 +242,10 @@ jobs:
               continue;
             }
 
-            let sentinel;
-            try{
-              sentinel=await fetchRobloxRuntimeFoundationEvidence({
-                universeId:String(candidate.universeId),
-                apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
-              });
-            }catch(error){
+            const sentinelRead=sentinelByGame.get(item.gameId)||{};
+            let sentinel=sentinelRead.sentinel;
+            if(sentinelRead.error){
+              const error=sentinelRead.error;
               const message=String(error?.message||error);
               if(/HTTP_404/.test(message)){
                 const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
