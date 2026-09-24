@@ -234,6 +234,41 @@ test('causal replay becomes executable only with explicit prepatch reproduction 
   assert.ok(result.editContract.requiredFocusedChecks.includes('CAUSAL_REPLAY_POSTPATCH_REQUIRED'));
   assert.equal(result.editContract.causalReplay.canonicalQaStillRequired,true);
 });
+test('studio build-up and optimize ignore stale repair evidence while preserving normal fan-in QA',()=>{
+  for(const phase of ['BUILD_UP','OPTIMIZE']){
+    const cwd=tempRoot();
+    const gameId=`studio-${phase.toLowerCase().replace('_','-')}`;
+    const root=path.join(cwd,'web-games',gameId);
+    write(path.join(root,'index.js'),[
+      'const players=new Map();',
+      'function serverAuthoritativeSync(id,state){ players.set(id,state); return players.size; }',
+      'function saveGame(){ localStorage.setItem("studio-save","1"); }'
+    ].join('\n')+'\n');
+    write(path.join(root,'qa/network-sync.test.mjs'),"import test from 'node:test'; test('two clients sync',()=>{});\n");
+    const order={
+      run:true,taskId:`${gameId}-studio-evolution-v1`,gameId,target:'web',
+      goal:'studio quality package with preserved gameplay semantics',
+      source:{root:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.js`],ignoredPaths:[]},
+      selectedTask:{
+        evidence:['runtime-failure:STALE_SIGNAL','causal-replay-prepatch:FAIL_REPRODUCED'],
+        lastOutcome:'FAIL',
+        studioQualityEvolution:{phase}
+      },
+      workPackage:{id:`${gameId}-wp`,sharedContext:{diagnosticEvidence:['runtime-failure:STALE_SIGNAL']}}
+    };
+    const result=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(result.editContract.gameRepair.required,false);
+    assert.equal(result.editContract.gameRepair.originalScenarioReplay.required,false);
+    assert.equal(result.editContract.gameRepair.invariants.required,false);
+    assert.equal(result.editContract.gameRepair.saveMigration.required,false);
+    assert.equal(result.editContract.gameRepair.multiplayerLifecycle.required,false);
+    assert.equal(result.editContract.gameRepair.multiplayerLifecycle.automation.required,false);
+    assert.equal(result.editContract.causalReplay.required,false);
+    assert.equal(result.editContract.directResponsibleSystemRepairRequired,false);
+    assert.equal(result.editContract.requiredFocusedChecks.some(check=>check.startsWith('GAME_REPAIR_')),false);
+  }
+});
+
 test('exploration compiles autonomous multiplayer game repair contract and root-cause escalation',()=>{
   const cwd=tempRoot();
   const root=path.join(cwd,'web-games/multi-repair');
