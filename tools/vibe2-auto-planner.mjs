@@ -1392,7 +1392,9 @@ ${phaseInstruction}${visualInstruction}
     'work-package-scope:optimization',
     ...(focusPillar==='PRESENTATION'?['work-package-scope:visual-runtime-delta']:[])
   ]);
-  out.workUnits=7;
+  out.workUnits=8;
+  out.packageClass='STUDIO_QUALITY_PACKAGE';
+  out.studioQualityPackage=true;
   out.maxRetries=null;
   out.retryPolicy='UNLIMITED_CAUSAL_REPAIR';
   if(focusPillar==='PRESENTATION'){
@@ -1417,6 +1419,8 @@ ${phaseInstruction}${visualInstruction}
     requiredConnectedImprovements:{min:3,max:6},
     realSourceDeltaRequired:true,
     visibleRenderDeltaRequired:focusPillar==='PRESENTATION',
+    runtimeBeforeAfterComparisonRequired:focusPillar==='PRESENTATION',
+    finalFanInComparisonRequired:focusPillar==='PRESENTATION',
     protectedRegressionForbidden:true,
     nextCycleRequired:true
   };
