@@ -63,7 +63,7 @@ test('different failure signatures do not falsely trigger root cause saturation'
 
 test('JSON source generation uses bounded context and structured output mode',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
-  assert.match(source,/const MAX_CONTEXT_BYTES=48000;/);
+  assert.match(source,/const MAX_CONTEXT_BYTES=96000;/);
   assert.match(source,/const JSON_CONTEXT_WINDOW=16384;/);
   assert.match(source,/\^JSON_\/\.test\(completionMode\)\?\{format:'json'\}/);
   assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;/);
@@ -246,12 +246,28 @@ test('speculative DOM null diagnostic uses deterministic repair before model ret
 });
 
 test('speculative candidates use a shorter retry budget without lowering primary gates',()=>{
-  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),3);
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'primary'}),4);
-  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),3);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'speculative-1'}),3);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'speculative-4'}),3);
 });
+
+test('studio quality retries keep package breadth instead of collapsing to one micro edit',()=>{
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Goal: [STUDIO_QUALITY_EVOLUTION] cycle=2; phase=BUILD_UP; focus=PRESENTATION',
+    'Allowed edit paths: Game.cs, Visual.cs',
+    '=== FILE Game.cs [EDITABLE] ===',
+    'void Tick() {}',
+    '=== FILE Visual.cs [EDITABLE] ===',
+    'void Render() {}'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{error:new Error('malformed candidate'),responsibleFiles:['Game.cs','Visual.cs'],attempt:4});
+  assert.doesNotMatch(retry,/FINAL FOCUSED RETRY/);
+  assert.doesNotMatch(retry,/exactly one edit/i);
+});
+
 
 test('Unity text source produces isolated candidate without touching source', async () => {
   const cwd = tempRoot();
@@ -268,7 +284,7 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.roleResults.exploration,'PASS');
   assert.equal(result.codingMethod.version,2);
   assert.equal(result.codingMethod.generationAttempts,1);
-  assert.equal(result.codingMethod.generationAttemptBudget,3);
+  assert.equal(result.codingMethod.generationAttemptBudget,4);
   assert.equal(result.codingMethod.speculativeAttemptBudgetApplied,false);
   assert.equal(result.codingMethod.candidateProducedFirstAttempt,true);
   assert.equal(result.codingMethod.writableScopeExpansionAllowed,false);
@@ -1689,7 +1705,7 @@ test('focused first-edit stream contract is persisted to immutable worker teleme
 });
 
 test('focused no-op retry keeps speculative base budget but grants only targeted credit in worker loop',()=>{
-  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),3);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/VIBE2_FOCUSED_REPLACE_NOOP_CREDIT/);
   assert.match(workerSource,/focusedReplaceAnchorCursor\+=1/);
