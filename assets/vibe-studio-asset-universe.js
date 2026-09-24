@@ -739,9 +739,10 @@ export function buildAutonomousAssetGapFillPlan({
 }
 
 export function buildBaseMaterialRotationPlan({
-  families={},usageByAtom={},minimumPerFamily=20,maxRetirePerFamilyPerCycle=2,staleAfterCycles=30
+  families={},usageByAtom={},minimumPerFamily=20,maxRetirePerFamilyPerCycle=2,maxGraduatePerFamilyPerCycle=2,
+  staleAfterCycles=30,masteryThreshold=90,masteryVerifiedPassMinimum=2
 }={}){
-  const active={},retired=[],refill=[];
+  const productionActive={},learningActive={},retired=[],graduated=[],refill=[];
   const reasons={};
   for(const [family,atomsRaw] of Object.entries(families||{})){
     const atoms=uniq(atomsRaw);
@@ -752,26 +753,52 @@ export function buildBaseMaterialRotationPlan({
       const broken=signal.verifiedRuntimeFailure===true||Number(signal.compatibilityFailureCount||0)>=2;
       const stale=Number(signal.usageCount||0)===0&&Number(signal.unusedCycles||0)>=Math.max(1,Number(staleAfterCycles)||30);
       const protectedAtom=signal.locked===true||signal.gameLocked===true||signal.manualLocked===true;
+      const mastered=signal.mastered===true||(
+        Number(signal.masteryScore||0)>=Math.max(1,Number(masteryThreshold)||90)&&
+        Number(signal.verifiedPassCount||0)>=Math.max(1,Number(masteryVerifiedPassMinimum)||2)
+      );
       const retireReason=protectedAtom?'':duplicate?'DUPLICATE':broken?'VERIFIED_FAILURE_OR_COMPATIBILITY_BREAK':stale?'STALE_UNUSED':'';
       const priority=duplicate?300:broken?250:stale?100:0;
-      return{atom,retireReason,priority,protectedAtom};
+      return{atom,retireReason,priority,protectedAtom,mastered,learningLocked:signal.activeLearningRequired===true};
     });
-    const candidates=scored.filter(row=>row.retireReason).sort((a,b)=>b.priority-a.priority||a.atom.localeCompare(b.atom));
+    const retireCandidates=scored.filter(row=>row.retireReason).sort((a,b)=>b.priority-a.priority||a.atom.localeCompare(b.atom));
     const maxAllowed=Math.max(0,atoms.length-floor);
-    const retireCount=Math.min(candidates.length,Math.max(0,Number(maxRetirePerFamilyPerCycle)||2),maxAllowed);
-    const retiredSet=new Set(candidates.slice(0,retireCount).map(row=>row.atom));
-    active[family]=freezeList(atoms.filter(atom=>!retiredSet.has(atom)));
-    for(const row of candidates.slice(0,retireCount)){
-      retired.push(Object.freeze({family,atom:row.atom,reason:row.retireReason,historyPreserved:true,physicalDelete:false}));
+    const retireCount=Math.min(retireCandidates.length,Math.max(0,Number(maxRetirePerFamilyPerCycle)||2),maxAllowed);
+    const retiredRows=retireCandidates.slice(0,retireCount);
+    const retiredSet=new Set(retiredRows.map(row=>row.atom));
+    const graduateRows=scored
+      .filter(row=>row.mastered&&!row.learningLocked&&!retiredSet.has(row.atom))
+      .sort((a,b)=>a.atom.localeCompare(b.atom))
+      .slice(0,Math.max(0,Number(maxGraduatePerFamilyPerCycle)||2));
+    const graduatedSet=new Set(graduateRows.map(row=>row.atom));
+    productionActive[family]=freezeList(atoms.filter(atom=>!retiredSet.has(atom)));
+    learningActive[family]=freezeList(atoms.filter(atom=>!retiredSet.has(atom)&&!graduatedSet.has(atom)));
+    for(const row of retiredRows){
+      retired.push(Object.freeze({family,atom:row.atom,reason:row.retireReason,historyPreserved:true,physicalDelete:false,productionReusable:false}));
       reasons[row.atom]=row.retireReason;
-      refill.push(Object.freeze({family,count:1,replaces:row.atom,reason:row.retireReason,route:'EXISTING_24H_GAP_FILL'}));
+      refill.push(Object.freeze({family,count:1,replaces:row.atom,reason:row.retireReason,route:'EXISTING_24H_GAP_FILL',replacementGoal:'RESTORE_ACTIVE_MATERIAL_SLOT'}));
+    }
+    for(const row of graduateRows){
+      graduated.push(Object.freeze({
+        family,atom:row.atom,reason:'MASTERY_SATURATED',historyPreserved:true,physicalDelete:false,
+        productionReusable:true,learningQueueRemoved:true
+      }));
+      reasons[row.atom]='MASTERY_SATURATED';
+      refill.push(Object.freeze({
+        family,count:1,replaces:row.atom,reason:'MASTERY_SATURATED',route:'EXISTING_24H_GAP_FILL',
+        replacementGoal:'NEW_UNMASTERED_DIVERSITY_SLOT'
+      }));
     }
   }
   return Object.freeze({
-    version:1,status:'ROTATION_PLAN',active:Object.freeze(active),retired:Object.freeze(retired),refill:Object.freeze(refill),
-    retireCount:retired.length,refillCount:refill.length,historyPreserved:true,physicalDeleteForbidden:true,
+    version:2,status:'ROTATION_PLAN',active:Object.freeze(productionActive),productionActive:Object.freeze(productionActive),
+    learningActive:Object.freeze(learningActive),retired:Object.freeze(retired),graduated:Object.freeze(graduated),refill:Object.freeze(refill),
+    retireCount:retired.length,graduateCount:graduated.length,refillCount:refill.length,historyPreserved:true,physicalDeleteForbidden:true,
+    masteredMaterialRemainsProductionReusable:true,masteredMaterialLeavesLearningExpansionPool:true,
     minimumPerFamily:Number(minimumPerFamily)||20,maxRetirePerFamilyPerCycle:Number(maxRetirePerFamilyPerCycle)||2,
-    staleAfterCycles:Number(staleAfterCycles)||30,reasons:Object.freeze(reasons),usesExistingGapFill:true
+    maxGraduatePerFamilyPerCycle:Number(maxGraduatePerFamilyPerCycle)||2,staleAfterCycles:Number(staleAfterCycles)||30,
+    masteryThreshold:Number(masteryThreshold)||90,masteryVerifiedPassMinimum:Number(masteryVerifiedPassMinimum)||2,
+    reasons:Object.freeze(reasons),usesExistingGapFill:true
   });
 }
 
