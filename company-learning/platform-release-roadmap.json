@@ -1,5 +1,5 @@
 {
-  "version": 318,
+  "version": 319,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -12447,7 +12447,7 @@
       }
     },
     "companyGraphicsLibrary24h": {
-      "version": 6,
+      "version": 7,
       "authority": "OWNER_DIRECTIVE_2026-09-24",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
@@ -14050,6 +14050,199 @@
           "motionDirectorOwnsPresentationSelectionAndCompositionOnly": true,
           "gameplayOwnsDamageHitboxCooldownComboCancelWindowMovementAuthoritySaveEconomyProgressionAndMultiplayerIntent": true,
           "visualOrMotionWorkMayNotSilentlyChangeGameplaySemantics": true
+        }
+      },
+      "autoMotionCoverageGapFill": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-24",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "implementation": "assets/vibe-motion-director.js",
+        "purpose": "AUTOMATICALLY_DETECT_MOTION_LIBRARY_COVERAGE_GAPS_AND_PREPARE_THE_SAFEST_REUSE_ACQUISITION_OR_SEMANTIC_AUTHORING_PATH_WITHOUT_FALSE_PROMOTION",
+        "appliesTo": [
+          "UNITY",
+          "ROBLOX"
+        ],
+        "scanTriggers": [
+          "NEW_CREATURE_OR_CHARACTER_ARCHETYPE",
+          "NEW_WEAPON_OR_SKILL_FAMILY",
+          "STYLE_LOCK_CHANGE",
+          "NEW_PLATFORM_VARIANT",
+          "RUNTIME_USAGE_SIGNAL",
+          "GRAPHICS_PRODUCTION_REOPEN",
+          "IDLE_LIBRARY_PREPARATION"
+        ],
+        "requiredCoverageGroups": [
+          "locomotion",
+          "attacks",
+          "defense",
+          "reactions",
+          "acting",
+          "deaths",
+          "skill",
+          "signature"
+        ],
+        "baselineMinimums": {
+          "locomotion": 5,
+          "attacks": 3,
+          "defense": 2,
+          "reactions": 4,
+          "acting": 2,
+          "deaths": 2,
+          "skill": 2,
+          "signature": 3
+        },
+        "bodyPlanAdjustments": {
+          "FLYING": {
+            "locomotion": 8,
+            "attacks": 4,
+            "defense": 3,
+            "reactions": 4,
+            "deaths": 2,
+            "skill": 2,
+            "signature": 4,
+            "requiredRoles": [
+              "TAKEOFF",
+              "FLY",
+              "BANK",
+              "HOVER",
+              "LAND_FROM_FLIGHT"
+            ]
+          },
+          "ARACHNID": {
+            "locomotion": 7,
+            "attacks": 4,
+            "defense": 3,
+            "reactions": 4,
+            "deaths": 2,
+            "skill": 2,
+            "signature": 4,
+            "requiredRoles": [
+              "CRAWL",
+              "STRAFE",
+              "WALL_CRAWL_OR_EQUIVALENT"
+            ]
+          },
+          "REPTILE_OR_SERPENT": {
+            "locomotion": 5,
+            "attacks": 4,
+            "defense": 2,
+            "reactions": 4,
+            "deaths": 2,
+            "skill": 2,
+            "signature": 4,
+            "requiredRoles": [
+              "SLITHER_OR_BODY_PLAN_EQUIVALENT"
+            ]
+          },
+          "HEAVY_BIPED": {
+            "locomotion": 6,
+            "attacks": 5,
+            "defense": 3,
+            "reactions": 5,
+            "acting": 3,
+            "deaths": 3,
+            "skill": 3,
+            "signature": 4,
+            "requiredRoles": [
+              "HEAVY_START_STOP",
+              "HEAVY_TURN",
+              "HEAVY_RECOVERY"
+            ]
+          },
+          "BOSS_BIPED": {
+            "locomotion": 6,
+            "attacks": 6,
+            "defense": 3,
+            "reactions": 5,
+            "acting": 5,
+            "deaths": 2,
+            "skill": 4,
+            "signature": 6,
+            "requiredRoles": [
+              "INTRO",
+              "PHASE_CHANGE",
+              "ENRAGE",
+              "FAILED_ATTACK_RECOVERY",
+              "BOSS_DEATH_SEQUENCE"
+            ]
+          },
+          "HEAVY_GOLEM_OR_BOSS": {
+            "locomotion": 6,
+            "attacks": 5,
+            "defense": 3,
+            "reactions": 5,
+            "acting": 3,
+            "deaths": 3,
+            "skill": 3,
+            "signature": 4
+          }
+        },
+        "fillOrder": [
+          "REUSE_VERIFIED_SAME_ARCHETYPE_MOTION",
+          "REUSE_VERIFIED_COMPATIBLE_BODY_PLAN_MOTION",
+          "DERIVE_VERIFIED_MOTION_WITH_SAFE_STYLE_OR_STANCE_MUTATION",
+          "USE_LICENSE_VERIFIED_REPOSITORY_MOTION",
+          "ACQUIRE_LICENSE_VERIFIED_EXTERNAL_MOTION",
+          "PREPARE_SEMANTIC_MOTION_SEED",
+          "AUTHOR_NEW_NATIVE_MOTION"
+        ],
+        "automaticBinding": {
+          "enabled": true,
+          "bodyPlanRigPlatformAndRoleCompatibilityRequired": true,
+          "speciesSignatureMayNotBeBorrowedBlindly": true,
+          "importantCreatureSignatureSlotsRequireSpeciesOrCharacterSpecificVariant": true,
+          "donorSetMaySupplyGenericLocomotionDefenseReactionOrTraversalWhenCompatible": true,
+          "contactLimbAndSpecialBodyPartCompatibilityRequired": true,
+          "incompatibleOrExcludedTagHardReject": true
+        },
+        "semanticGapPreparation": {
+          "enabled": true,
+          "state": "PREPARED_SEMANTIC",
+          "naming": "ARCHETYPE_ROLE_VARIANT",
+          "mayCreateMissingMotionIdsAndAuthoringTasks": true,
+          "mayNotCreateVerifiedClipClaim": true,
+          "mayNotCreateRuntimeEvidence": true,
+          "mayNotPromoteCompanyAsset": true
+        },
+        "usagePriority": {
+          "enabled": true,
+          "factors": {
+            "ACTIVE_GAME_CONSUMER": 40,
+            "HERO_OR_BOSS": 30,
+            "MULTIPLE_GAME_CONSUMERS": 25,
+            "PLAYER_VISIBLE_FREQUENCY": 20,
+            "COMBAT_CRITICAL": 20,
+            "BROKEN_OR_MISSING_RUNTIME_MOTION": 50,
+            "MOBILE_READABILITY_DEFECT": 15,
+            "EXTERNAL_SOURCE_READY": 10
+          },
+          "idlePreparationUsesHighestPriorityGapFirst": true
+        },
+        "duplicateControl": {
+          "enabled": true,
+          "semanticFingerprintFields": [
+            "BODY_PLAN",
+            "RIG_PROFILE",
+            "ROLE",
+            "WEAPON_FAMILY",
+            "STANCE",
+            "STYLE_FAMILY",
+            "CONTACT_LIMB",
+            "TRAVEL_VECTOR"
+          ],
+          "nearDuplicateCandidateMustPreferExistingVerifiedParent": true,
+          "cosmeticOnlyDifferenceShouldUseStyleOrMutationVariant": true,
+          "redundantClipAuthoringRequiresEvidenceOfDistinctSilhouetteTimingOrGameplayPresentationNeed": true
+        },
+        "promotionGate": {
+          "preparedSemanticNeverEqualsRuntimeVerified": true,
+          "actualClipRequired": true,
+          "sourceProvenanceRequired": true,
+          "retargetCleanupRequiredWhenApplicable": true,
+          "nativeTargetGameRuntimeCaptureRequired": true,
+          "compatibilityQaRequired": true,
+          "mobileQaRequired": true,
+          "unresolvedRequiredLibraryEdgeBlocksPromotion": true
         }
       }
     }
