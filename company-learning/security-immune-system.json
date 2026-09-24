@@ -1,5 +1,5 @@
 {
-  "version": 44,
+  "version": 45,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -688,5 +688,22 @@
       "specializedLearningFailureMustNotConvertEngineQaPassIntoReleaseFailure": true
     },
     "failureAction": "BLOCK_SPECIALIZED_LEARNING_PROMOTION_AND_KEEP_GAME_RELEASE_DECISION_SEPARATE_UNLESS_EXISTING_RELEASE_GATE_ALSO_FAILS"
+  },
+  "robloxStudioAssetBindingSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.robloxSelectionHandoff",
+    "protections": {
+      "plannerMaySelectAndHandoffOnly": true,
+      "plannerGameSourceMutationForbidden": true,
+      "gameSourceMutationOwnerMustRemainVibe2Vibe3": true,
+      "markerOnlyApplicationForbidden": true,
+      "exactTargetEngineSelectionMatchRequired": true,
+      "expectedAndObservedAtomListsMustMatch": true,
+      "runtimePassRequiredBeforeVerifiedAssetPromotion": true,
+      "targetEngineRuntimePassRequiredBeforePositiveMastery": true,
+      "exactSourceArtifactAndPlaceVersionBindingRequired": true,
+      "gameplayBalanceSaveProgressionEconomyAndNetworkAuthorityMutationForbiddenForAssetReasons": true
+    },
+    "failureAction": "ASSET_REPAIR_REQUIRED"
   }
 }
