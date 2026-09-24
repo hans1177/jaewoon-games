@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": "local function bindPlayer(p)",
+      "replace": " local h=hum(p);local r=root(p)\n if h and h.FloorMaterial==Enum.Material.Water and h:GetState()~=Enum.HumanoidStateType.Swimming then h:ChangeState(Enum.HumanoidStateType.Swimming)end\n if h and r and h.MoveDirection.Magnitude>.05 then h:MoveTo(r.Position) end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

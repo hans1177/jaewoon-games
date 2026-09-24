@@ -422,7 +422,9 @@ local function validateCharacterFoundation(p,c)
   p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
  end)
 end
-local function bindPlayer(p)
+ local h=hum(p);local r=root(p)
+ if h and h.FloorMaterial==Enum.Material.Water and h:GetState()~=Enum.HumanoidStateType.Swimming then h:ChangeState(Enum.HumanoidStateType.Swimming)end
+ if h and r and h.MoveDirection.Magnitude>.05 then h:MoveTo(r.Position) end
  load(p)
  p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)
  if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end
