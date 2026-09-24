@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
+import {probeRobloxOpenCloudEngine,reusableRobloxEngineProbe,validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
@@ -13,6 +13,48 @@ test('recurring Roblox runtime foundation QA does not require full git history',
  assert.match(workflow,/schedule:\s*\n\s*- cron: '\*\/15 \* \* \* \*'/);
  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
  assert.match(workflow,/Checkout current canonical implementation[\s\S]*?fetch-depth:\s*1/);
+});
+
+test('exact proven server boot and engine evidence is reused without another engine probe',()=>{
+ const candidate={sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'1',placeId:'2',versionNumber:9};
+ const item={
+  robloxSourceCommit:candidate.sourceRevision,
+  robloxBuildArtifactIdentity:candidate.artifactIdentity,
+  robloxRuntimeFoundationEvidence:{
+    actualRuntimeEvidence:true,f1ServerBootPassed:true,sourceRevision:candidate.sourceRevision,
+    artifactIdentity:candidate.artifactIdentity,candidateVersionNumber:9,placeId:'2',universeId:'1',
+  },
+  robloxStudioAssetBindingApplied:false,
+ };
+ const reused=reusableRobloxEngineProbe({item,candidate});
+ assert.equal(reused?.reusedExactEvidence,true);
+ assert.equal(reused?.serverBootObserved,true);
+ assert.equal(reused?.exactVersion,true);
+});
+
+test('runtime proof is not reused after source artifact or deployed version changes',()=>{
+ const candidate={sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'1',placeId:'2',versionNumber:9};
+ const base={
+  robloxSourceCommit:candidate.sourceRevision,
+  robloxBuildArtifactIdentity:candidate.artifactIdentity,
+  robloxRuntimeFoundationEvidence:{
+    actualRuntimeEvidence:true,f1ServerBootPassed:true,sourceRevision:candidate.sourceRevision,
+    artifactIdentity:candidate.artifactIdentity,candidateVersionNumber:9,placeId:'2',universeId:'1',
+  },
+  robloxStudioAssetBindingApplied:false,
+ };
+ assert.equal(reusableRobloxEngineProbe({item:{...base,robloxSourceCommit:'c'.repeat(40)},candidate}),null);
+ assert.equal(reusableRobloxEngineProbe({item:base,candidate:{...candidate,versionNumber:10}}),null);
+});
+
+test('runtime foundation workflow uses provider-managed parallel probes and optimistic persistence',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.doesNotMatch(workflow,/slice\(0,4\)/);
+ assert.ok((workflow.match(/Promise\.all\(candidates\.map\(async item=>/g)||[]).length>=2);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_REUSED=/);
+ assert.match(workflow,/company-runtime-optimistic-merge\.mjs/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_OPTIMISTIC_RETRY/);
+ assert.doesNotMatch(workflow,/for attempt in 1 2 3/);
 });
 
 test('actual Roblox sentinel passes F1 through F8 only for the exact deployed place version',()=>{
