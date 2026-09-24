@@ -1,5 +1,5 @@
 {
-  "version": 327,
+  "version": 328,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -9372,6 +9372,81 @@
         "RELATIONSHIP_MEMORY",
         "WORLD_NARRATIVE"
       ]
+    },
+    "worldStoryGraph": {
+      "enabled": true,
+      "nodes": [
+        "CHARACTER",
+        "FACTION",
+        "REGION",
+        "LANDMARK",
+        "QUEST",
+        "BOSS",
+        "STORY_THREAD"
+      ],
+      "edges": [
+        "MEMBER_OF",
+        "ALLY_OF",
+        "RIVAL_OF",
+        "CONTROLS",
+        "AFFECTS",
+        "UNLOCKS",
+        "KNOWS",
+        "OWES",
+        "BETRAYED",
+        "FORESHADOWS",
+        "PAYS_OFF"
+      ],
+      "currentWorldStateWins": true,
+      "contradictionCheckRequired": true,
+      "generatedGraphMayNotMutateGameplayAuthority": true
+    },
+    "storyStateMachine": {
+      "enabled": true,
+      "standardStages": [
+        "OPENING",
+        "EARLY",
+        "MID",
+        "LATE",
+        "FINAL_BOSS",
+        "ENDING"
+      ],
+      "transitionRequiresSourceEvent": true,
+      "duplicateTransitionEventIdempotent": true,
+      "prerequisiteCheckRequired": true,
+      "impossibleBackwardTransitionBlockedUnlessExplicitRule": true,
+      "stateMustRoundTripWhenPersistent": true
+    },
+    "emotionalPacingCurve": {
+      "enabled": true,
+      "defaultShape": [
+        "CALM_OR_CURIOSITY",
+        "RISING_TENSION",
+        "MIDPOINT_CHANGE",
+        "HIGH_PRESSURE",
+        "CLIMAX",
+        "RELEASE_AND_HOOK"
+      ],
+      "phaseIntensityMustVary": true,
+      "gameplayRhythmMustNotBeBlockedByExposition": true,
+      "tensionAndRecoveryBothRequiredWhenGenreAllows": true,
+      "emotionalBeatMustRemainConsistentWithCurrentWorldAndCharacterState": true
+    },
+    "factionRelationship": {
+      "enabled": true,
+      "tracks": [
+        "ALLY",
+        "RIVAL",
+        "HOSTILE",
+        "NEUTRAL",
+        "DEBT",
+        "TRUST",
+        "FEAR",
+        "CONTROL"
+      ],
+      "relationshipChangeRequiresCauseEvent": true,
+      "persistentWhenGameUsesFactionState": true,
+      "factionStateCannotDirectlyGrantUndeclaredRewardDamageOrProgress": true
     }
   },
   "presentationPipelineImplementation": {
@@ -15788,6 +15863,24 @@
               "CROSS_ASSET_STYLE_COMPATIBILITY"
             ],
             "rawReferenceOrPreparedSemanticMayNotIncreasePositiveMastery": true
+          },
+          "coherenceQa": {
+            "enabled": true,
+            "freeMixingPreserved": true,
+            "unusualBlendIsNotAutomaticFailure": true,
+            "intentionalPairingMayResolveWarning": true,
+            "mustCheck": [
+              "STYLE_FAMILY",
+              "WORLD_ERA",
+              "MATERIAL_LANGUAGE",
+              "LIGHTING_LANGUAGE",
+              "UI_LANGUAGE",
+              "MOTION_LANGUAGE",
+              "AUDIO_LANGUAGE",
+              "NARRATIVE_PRESENTATION_LANGUAGE"
+            ],
+            "hardFailureOnlyForUnresolvedLockedStyleOrGameplayReadabilityConflict": true,
+            "colorOnlyVariantStillInsufficient": true
           }
         },
         "worldGenerationStudio": {
