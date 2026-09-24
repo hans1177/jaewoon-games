@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl&&/^([1-9]|10)$/.test(roomFromUrl)){$('startRoom').value=roomFromUrl;$('roomInput').value=roomFromUrl}",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
