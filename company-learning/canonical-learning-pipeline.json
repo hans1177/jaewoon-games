@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -372,6 +372,12 @@
       "negative": 1
     },
     "rawTelemetryDirectTraining": false,
-    "preparedSemanticDirectTraining": false
+    "preparedSemanticDirectTraining": false,
+    "canonicalExperienceStore": ".vibe2/experience.json",
+    "persistVerifiedSyntheticExperience": true,
+    "duplicatePersistenceKey": "SPECIALIZED_OUTCOME_ID_EVIDENCE_TOKEN",
+    "sameCycleUnifiedRetrievalUsesMergedExperience": true,
+    "existingExperienceNormalizer": "assets/vibe-experience-memory.js::createVibeExperienceMemory",
+    "rawQueueTelemetryNotPersistedAsTrainingSample": true
   }
 }
