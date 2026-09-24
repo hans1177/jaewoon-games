@@ -462,12 +462,15 @@ test('Roblox source and package workers avoid full repository history checkout',
 });
 
 
-test('Roblox runtime persist writers serialize with the shared company runtime writer lock',()=>{
+test('Roblox source and package persistence replay game-local patches instead of globally serializing runtime writes',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  const sourcePersist=workflow.slice(workflow.indexOf('  source-bootstrap:'),workflow.indexOf('  technical-plan:'));
-  const packagePersist=workflow.slice(workflow.indexOf('  technical-persist:'),workflow.indexOf('  ',workflow.indexOf('  technical-persist:')+10)>0?workflow.length:workflow.length);
-  assert.match(sourcePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
-  assert.match(packagePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.match(workflow,/roblox-source-runtime-patch\.json/);
+  assert.match(workflow,/roblox-technical-runtime-patch\.json/);
+  assert.match(workflow,/ROBLOX_SOURCE_BIND_RUNTIME_STATE_ALREADY_APPLIED=YES/);
+  assert.match(workflow,/ROBLOX_PACKAGE_RUNTIME_STATE_ALREADY_APPLIED=YES/);
+  assert.match(workflow,/q\.robloxSourceParallelism=256/);
+  assert.match(workflow,/q\.robloxTechnicalParallelism=256/);
 });
 
 
@@ -484,11 +487,11 @@ test('Roblox game source pushes route through exact changed-source sync instead 
 });
 
 
-test('exact Roblox runtime dispatch has an isolated workflow concurrency lane',()=>{
+test('exact Roblox runtime dispatch isolates orchestration without reintroducing global persist locks',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  assert.match(workflow,/source-bootstrap:[\s\S]*group: company-runtime-writer/);
-  assert.match(workflow,/technical-persist:[\s\S]*group: company-runtime-writer/);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
 
@@ -504,4 +507,26 @@ test('territory-war exact source honors approved competitive multiplayer profile
   assert.match(server,/RoundScore/);
   assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
   assert.match(client,/OnClientEvent/);
+});
+
+test('Roblox package build wave is bounded only by GitHub matrix capacity',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
+  assert.match(workflow,/if\(rows\.length>=EXECUTION_BATCH_MAX\)break;/);
+  assert.match(workflow,/ROBLOX_RUNNER_PARALLEL_CAPACITY=256/);
+});
+
+test('central Roblox policy keeps build-through-final-promotion parallel and exact-evidence reusable',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=roadmap.directNativeDualPlatformDevelopment?.robloxEndToEndParallelExecution;
+  assert.equal(policy?.mode,'PARALLEL_FROM_BUILD_THROUGH_FINAL_PROMOTION');
+  assert.equal(policy?.maxParallelGames,256);
+  assert.equal(policy?.crossGameStageBarrierForbidden,true);
+  assert.equal(policy?.statePersistenceSerializationOnly,false);
+  assert.equal(policy?.statePersistenceConflictSafeReplayRequired,true);
+  assert.equal(policy?.crossGameRuntimeJsonRebaseForbidden,true);
+  assert.equal(policy?.exactEvidenceReuse?.serverBootEvidenceMayBeReusedWithoutReboot,true);
+  assert.equal(policy?.exactEvidenceReuse?.exactRuntimeHarnessRequired,true);
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/ROBLOX_RUNTIME_HARNESS_VERSION: '9'/);
 });

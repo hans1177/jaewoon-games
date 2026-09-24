@@ -27,9 +27,48 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  ROBLOX_RUNTIME_HARNESS_VERSION: '9'
 
 jobs:
+  fanout:
+    name: fan out pending Roblox runtime candidates
+    if: github.event_name != 'workflow_dispatch' || inputs.game_id == ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+      - name: Dispatch each pending game independently
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/roblox-runtime-fanout-ids
+          const q=require('./development-queue.json');
+          for(const item of q.items||[]){
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            if(candidate.published!==true)continue;
+            if(item.robloxFoundationF0Passed!==true)continue;
+            if(item.robloxInternalReleaseReady===true||item.robloxPublicRelease===true)continue;
+            if(!['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||'')))continue;
+            console.log(item.gameId);
+          }
+          NODE
+          pids=()
+          while read -r id; do
+            [ -n "$id" ] || continue
+            (gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id") &
+            pids+=("$!")
+            echo "ROBLOX_FOUNDATION_PARALLEL_DISPATCH=$id"
+          done < /tmp/roblox-runtime-fanout-ids
+          for pid in "${pids[@]}"; do wait "$pid"; done
+          echo "ROBLOX_FOUNDATION_PARALLEL_FANOUT_COUNT=$(wc -l < /tmp/roblox-runtime-fanout-ids | tr -d ' ')"
+
   runtime-foundation-qa:
+    if: github.event_name == 'workflow_dispatch' && inputs.game_id != ''
     name: existing game tester and QA validate exact Roblox runtime candidate
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -78,6 +117,7 @@ jobs:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_RUNTIME_HARNESS_VERSION: ${{ env.ROBLOX_RUNTIME_HARNESS_VERSION }}
         shell: bash
         run: |
           set -euo pipefail
@@ -99,7 +139,7 @@ jobs:
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           });
           const probes=[];
-          for(const item of candidates.slice(0,4)){
+          for(const item of candidates){
             const c=item.robloxRuntimeCandidateEvidence;
             const result=await probeRobloxOpenCloudEngine({
               universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
@@ -220,6 +260,54 @@ jobs:
               continue;
             }
 
+            const priorFoundation=item.robloxRuntimeFoundationEvidence||{};
+            const priorPost=item.robloxPostRuntimeQaEvidence||{};
+            const reusableExactRuntime=
+              priorFoundation.runtimeAcceptancePassed===true
+              &&priorFoundation.sourceRevision===sourceRevision
+              &&priorFoundation.artifactIdentity===artifactIdentity
+              &&String(priorFoundation.universeId||'')===String(candidate.universeId||'')
+              &&String(priorFoundation.placeId||'')===String(candidate.placeId||'')
+              &&Number(priorFoundation.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&Number(priorFoundation.runtimeHarnessVersion||0)===Number(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||0)
+              &&priorPost.sourceRevision===sourceRevision
+              &&priorPost.artifactIdentity===artifactIdentity
+              &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&priorPost.actualRuntimeEvidence===true
+              &&priorPost.independentQaPassed===true
+              &&priorPost.regressionPassed===true;
+            if(reusableExactRuntime){
+              item.robloxRuntimeFoundationPassed=true;
+              item.robloxRuntimePassed=true;
+              item.robloxServerClientBoundaryPassed=priorFoundation.f6CoreServicesPassed===true;
+              item.robloxDatastoreRejoinPassed=priorFoundation.f6CoreServicesPassed===true;
+              item.robloxMobileControlUiPassed=priorFoundation.f5InputCameraUiPassed===true;
+              item.robloxMultiplayerQaPassed=priorFoundation.f7MultiplayerFoundationPassed===true;
+              item.robloxIndependentQaPassed=true;
+              item.robloxRegressionPassed=true;
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
+              item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              item.robloxRuntimeEvidenceReuse={
+                reused:true,
+                sourceRevision,
+                artifactIdentity,
+                universeId:String(candidate.universeId),
+                placeId:String(candidate.placeId),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                runtimeHarnessVersion:Number(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||0),
+                sourceAuthority:priorFoundation.authority||null,
+                reusedAt:stamp,
+                reason:'EXACT_CANDIDATE_RUNTIME_ALREADY_VERIFIED'
+              };
+              item.updatedAt=stamp;changed=true;passed++;f9Ids.push(item.gameId);
+              console.log('ROBLOX_RUNTIME_EXACT_EVIDENCE_REUSED='+item.gameId);
+              continue;
+            }
+
             let sentinel;
             try{
               sentinel=await fetchRobloxRuntimeFoundationEvidence({
@@ -304,6 +392,7 @@ jobs:
               artifactRunId:Number(candidate.artifactRunId||0),
               universeId:String(candidate.universeId),
               candidateVersionNumber:Number(candidate.versionNumber),
+              runtimeHarnessVersion:Number(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||0),
               observedAt:stamp,
               workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
               authority:'existing-game-tester-roblox-runtime-foundation-v1',
@@ -492,6 +581,16 @@ jobs:
             q.updatedAt=stamp;
             fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
           }
+          if(requested){
+            const patched=(q.items||[]).find(row=>row.gameId===requested);
+            if(patched)fs.writeFileSync('/tmp/roblox-runtime-game-patch.json',JSON.stringify({
+              gameId:requested,
+              sourceRevision:String(patched.robloxSourceCommit||''),
+              artifactIdentity:String(patched.robloxBuildArtifactIdentity||''),
+              candidateVersionNumber:Number(patched.robloxRuntimeCandidateEvidence?.versionNumber||0),
+              item:patched
+            },null,2)+'\n');
+          }
           console.log(`ROBLOX_FOUNDATION_CANDIDATES=${candidates.length}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PASS=${passed}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
@@ -506,18 +605,30 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-roblox-tester-qa'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
-            exit 0
-          fi
-          git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
+          patch=/tmp/roblox-runtime-game-patch.json
+          [ -s "$patch" ] || { echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'; exit 0; }
           pushed=0
-          for attempt in 1 2 3; do
-            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+          for attempt in 1 2 3 4 5; do
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node --input-type=module - "$patch" <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===patch.gameId);
+          if(!item)throw new Error('runtime patch target missing: '+patch.gameId);
+          if(String(item.robloxSourceCommit||'')!==String(patch.sourceRevision||''))throw new Error('runtime patch source changed: '+patch.gameId);
+          if(String(item.robloxBuildArtifactIdentity||'')!==String(patch.artifactIdentity||''))throw new Error('runtime patch artifact changed: '+patch.gameId);
+          if(Number(item.robloxRuntimeCandidateEvidence?.versionNumber||0)!==Number(patch.candidateVersionNumber||0))throw new Error('runtime patch candidate version changed: '+patch.gameId);
+          Object.assign(item,patch.item);
+          q.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then pushed=1; echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_ALREADY_APPLIED=YES'; break; fi
+            git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
             sleep $((attempt*2))
           done
           test "$pushed" = '1'

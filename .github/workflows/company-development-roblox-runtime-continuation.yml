@@ -14,7 +14,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '9'
-  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'
+  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '256'
 
 jobs:
   preflight-plan:
@@ -59,7 +59,7 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const rows=[];
           for(const item of q.items||[]){
-            if(rows.length>=6)break;
+            if(rows.length>=256)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
@@ -84,7 +84,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=256');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
@@ -95,7 +95,7 @@ jobs:
     if: needs.preflight-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 256
       matrix: ${{ fromJSON(needs.preflight-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -174,9 +174,6 @@ jobs:
     timeout-minutes: 12
     outputs:
       pass_count: ${{ steps.persist.outputs.pass_count }}
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -204,6 +201,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const beforeById=new Map((queue.items||[]).map(row=>[row.gameId,JSON.parse(JSON.stringify(row))]));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
           const dir='/tmp/roblox-preflight-batch/results';
           const results=[];
@@ -251,23 +249,62 @@ jobs:
             }
           }
           queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          const patchItems=[];
+          for(const target of expected){
+            const row=(queue.items||[]).find(item=>item.gameId===target.gameId);
+            if(!row)continue;
+            const before=beforeById.get(row.gameId)||{};
+            const changes={};
+            for(const key of new Set([...Object.keys(before),...Object.keys(row)])){
+              if(JSON.stringify(before[key])!==JSON.stringify(row[key]))changes[key]=row[key];
+            }
+            if(Object.keys(changes).length)patchItems.push({
+              gameId:row.gameId,
+              sourceRevision:target.sourceRevision,
+              artifactIdentity:target.artifactIdentity,
+              secondaryOwnerFocus:target.secondaryOwnerFocus===true,
+              changes
+            });
+          }
+          fs.writeFileSync('/tmp/roblox-preflight-runtime-patch.json',JSON.stringify({items:patchItems},null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass_count=${pass}\n`);
           console.log(`ROBLOX_BUILD_PREFLIGHT_PASS_COUNT=${pass}`);console.log(`ROBLOX_BUILD_PREFLIGHT_FAIL_COUNT=${fail}`);
           console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');
           NODE
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          patch=/tmp/roblox-preflight-runtime-patch.json
+          [ -s "$patch" ] || exit 0
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node --input-type=module - "$patch" <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          for(const row of patch.items||[]){
+            const item=(q.items||[]).find(current=>current.gameId===row.gameId);
+            if(!item)continue;
+            const source=String(row.secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'');
+            const artifact=String(row.secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'');
+            if(source!==String(row.sourceRevision||'')||artifact!==String(row.artifactIdentity||'')){
+              console.log('ROBLOX_PREFLIGHT_PATCH_STALE_IGNORED='+row.gameId);
+              continue;
+            }
+            Object.assign(item,row.changes||{});
+          }
+          q.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then pushed=1; echo 'ROBLOX_PREFLIGHT_RUNTIME_STATE_ALREADY_APPLIED=YES'; break; fi
             git commit -m 'runtime: persist Roblox shared-model preflight checkpoint [skip ci]'
-            for attempt in 1 2 3; do
-              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
-              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-              sleep $((attempt*2))
-            done
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
 
   dispatch-headless:
     name: dispatch Roblox F0 source preflight

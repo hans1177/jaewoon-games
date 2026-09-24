@@ -1,5 +1,5 @@
 {
-  "version": 339,
+  "version": 341,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -20280,7 +20280,48 @@
     "legacyStrictScoreAdmissionForbidden": true,
     "designOnlyIsTransientPreMinimumDesignState": true,
     "minimumDesignPromotionIsPerGame": true,
-    "strictDesignReviewRunsInParallel": true
+    "strictDesignReviewRunsInParallel": true,
+    "robloxEndToEndParallelExecution": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "mode": "PARALLEL_FROM_BUILD_THROUGH_FINAL_PROMOTION",
+      "maxParallelGames": 256,
+      "internalPolicyConcurrencyLimit": null,
+      "stages": [
+        "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+        "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+        "F0_SOURCE_INTEGRITY",
+        "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+        "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "POST_RUNTIME_INDEPENDENT_QA",
+        "ROBLOX_FINAL_REVIEW_REVALIDATION",
+        "INTERNAL_PLATFORM_RELEASE_PROMOTION"
+      ],
+      "perGameIndependent": true,
+      "crossGameStageBarrierForbidden": true,
+      "independentChecksWithinGameMayRunInParallel": true,
+      "sameGameCausalDependenciesMustRemainOrdered": true,
+      "statePersistenceSerializationOnly": false,
+      "statePersistenceSerializationReason": "COMPANY_RUNTIME_JSON_CONFLICT_AVOIDANCE_NOT_EXECUTION_SERIALIZATION",
+      "exactEvidenceReuse": {
+        "enabled": true,
+        "sameCandidateRequired": true,
+        "exactSourceRevisionRequired": true,
+        "exactArtifactIdentityRequired": true,
+        "exactUniversePlaceVersionRequired": true,
+        "exactRuntimeHarnessRequired": true,
+        "serverBootEvidenceMayBeReusedWithoutReboot": true,
+        "reuseDoesNotPermitRuntimePassFabrication": true,
+        "invalidateOnSourceArtifactTargetOrHarnessChange": true,
+        "invalidateOnServerAuthorityRemoteSaveEconomyRewardOrDamageChange": true
+      },
+      "fallbackSharedPublicationTargetMaySerializeOnlyWhenTargetIdentityConflicts": true,
+      "externalExecutionCapacityIsOnlyParallelismLimit": true,
+      "statePersistenceConflictSafeReplayRequired": true,
+      "statePersistenceMode": "PARALLEL_GAME_RESULTS_WITH_LATEST_RUNTIME_FIELD_PATCH_REPLAY",
+      "sameGameCausalWriteOrderPreserved": true,
+      "crossGameRuntimeJsonRebaseForbidden": true
+    }
   },
   "centralDocumentation": {
     "version": 3,

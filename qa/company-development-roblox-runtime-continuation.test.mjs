@@ -56,3 +56,20 @@ test('canonical parent watches both fast-path workflows',()=>{
   assert.ok(parent.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
   assert.ok(parent.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });
+
+test('Roblox shared preflight uses full GitHub matrix capacity instead of legacy six-game serialization',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.match(workflow,/ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '256'/);
+  assert.match(workflow,/if\(rows\.length>=256\)break;/);
+  assert.match(workflow,/max-parallel:\s*256/);
+  assert.match(workflow,/ROBLOX_EXECUTION_WIP_MAX=256/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*6/);
+});
+
+test('shared preflight persistence is conflict-safe and not globally serialized',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/roblox-preflight-runtime-patch\.json/);
+  assert.match(workflow,/ROBLOX_PREFLIGHT_RUNTIME_STATE_ALREADY_APPLIED=YES/);
+});

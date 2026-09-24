@@ -83,7 +83,9 @@ test('exact Roblox foundation QA is isolated per game and cannot globally serial
   assert.match(workflow,/scheduled-scan/);
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-runtime-foundation-qa\s*\n/);
-  assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/roblox-runtime-game-patch\.json/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_STATE_ALREADY_APPLIED=YES/);
 });
 
 test('two-client one-sync is the shared internal and public release gate',()=>{
@@ -93,4 +95,31 @@ test('two-client one-sync is the shared internal and public release gate',()=>{
   assert.match(workflow,/item\.routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
   assert.match(workflow,/item\.robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
   assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+});
+
+test('runtime foundation broad scans fan out into independent exact-game workflows',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/name: fan out pending Roblox runtime candidates/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PARALLEL_DISPATCH=/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml[^\n]*-f game_id=/);
+  assert.match(workflow,/runtime-foundation-qa:\s*\n\s*if: github\.event_name == 'workflow_dispatch' && inputs\.game_id != ''/);
+});
+
+test('runtime foundation reuses exact verified candidate evidence without repeating server boot proof',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/ROBLOX_RUNTIME_HARNESS_VERSION: '9'/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_EVIDENCE_REUSED=/);
+  assert.match(workflow,/EXACT_CANDIDATE_RUNTIME_ALREADY_VERIFIED/);
+  assert.match(workflow,/priorFoundation\.sourceRevision===sourceRevision/);
+  assert.match(workflow,/priorFoundation\.artifactIdentity===artifactIdentity/);
+  assert.match(workflow,/priorFoundation\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+  assert.match(workflow,/priorFoundation\.runtimeHarnessVersion/);
+});
+
+test('runtime persistence replays only the exact game patch on latest company runtime',()=>{
+  assert.match(workflow,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/Object\.assign\(item,patch\.item\)/);
+  assert.match(workflow,/runtime patch source changed/);
+  assert.match(workflow,/runtime patch artifact changed/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });

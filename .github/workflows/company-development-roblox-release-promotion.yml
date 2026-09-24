@@ -19,7 +19,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-release-promotion
+  group: company-development-roblox-release-promotion-${{ inputs.game_id || 'workflow-change' }}
   cancel-in-progress: false
 
 env:
@@ -457,6 +457,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const beforeById=new Map((q.items||[]).map(row=>[row.gameId,JSON.parse(JSON.stringify(row))]));
           const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
           if(!item)throw new Error(`queue item missing: ${process.env.GAME_ID}`);
           const version=Number(process.env.VERSION_NUMBER);
@@ -567,6 +568,22 @@ jobs:
           item.updatedAt=stamp;
           q.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          const patchItems=[];
+          for(const row of q.items||[]){
+            const before=beforeById.get(row.gameId)||{};
+            const changes={};
+            const keys=new Set([...Object.keys(before),...Object.keys(row)]);
+            for(const key of keys){
+              if(JSON.stringify(before[key])!==JSON.stringify(row[key]))changes[key]=row[key];
+            }
+            if(Object.keys(changes).length)patchItems.push({gameId:row.gameId,changes});
+          }
+          fs.writeFileSync('/tmp/roblox-release-runtime-patch.json',JSON.stringify({
+            primaryGameId:process.env.GAME_ID,
+            sourceRevision:process.env.SOURCE_REVISION,
+            artifactIdentity:process.env.ARTIFACT_IDENTITY,
+            items:patchItems
+          },null,2)+'\n');
           console.log(`ROBLOX_PUBLICATION_TARGET_PERSISTED=${universeId}/${placeId}`);
           if(preserveExistingVisibility){
             console.log('ROBLOX_FAST_MVP_TARGET_PUBLISHED=YES');
@@ -585,19 +602,36 @@ jobs:
           NODE
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          patch=/tmp/roblox-release-runtime-patch.json
+          [ -s "$patch" ] || { echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=NO_CHANGE'; exit 0; }
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node --input-type=module - "$patch" <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const primary=(q.items||[]).find(row=>row.gameId===patch.primaryGameId);
+          if(!primary)throw new Error('release patch primary game missing: '+patch.primaryGameId);
+          if(String(primary.robloxSourceCommit||'')!==String(patch.sourceRevision||''))throw new Error('release patch source changed: '+patch.primaryGameId);
+          if(String(primary.robloxBuildArtifactIdentity||'')!==String(patch.artifactIdentity||''))throw new Error('release patch artifact changed: '+patch.primaryGameId);
+          for(const row of patch.items||[]){
+            const item=(q.items||[]).find(current=>current.gameId===row.gameId);
+            if(!item)continue;
+            Object.assign(item,row.changes||{});
+          }
+          q.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then pushed=1; echo 'ROBLOX_RELEASE_RUNTIME_STATE_ALREADY_APPLIED=YES'; break; fi
             git commit -m 'runtime: persist Roblox private runtime candidate [skip ci]'
-            pushed=0
-            for attempt in 1 2 3; do
-              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
-              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-              sleep $((attempt*2))
-            done
-            test "$pushed" = '1'
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
 
       - name: Dispatch existing game tester runtime foundation QA
