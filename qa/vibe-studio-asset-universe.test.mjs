@@ -15,6 +15,14 @@ import {
   createAssetDNA,
   createConceptProfile,
   evaluateConceptCompatibility,
+  createGameVisualDNA,
+  scoreStudioAssetCandidate,
+  buildStudioAssetLoadout,
+  buildFutureAssetDemandForecast,
+  createCreatureSpeciesBlueprint,
+  createPlatformAssetVariantPlan,
+  createStudioTestbedPlan,
+  summarizeVerifiedAssetUsage,
   createStyleBible,
   evaluateStyleBible,
   evaluateAssetIdentity,
@@ -76,6 +84,78 @@ test('character identity adds deterministic persona voice memory and behavior in
     {name:'무진',goal:'마을 방어',speechRhythm:'rapid'}
   ]);
   assert.equal(diversity.pass,true);
+});
+
+test('game visual DNA keeps mixed concept identity stable across asset selection',()=>{
+  const concept=createConceptProfile({styles:[{family:'WUXIA',weight:7},{family:'DARK_FANTASY',weight:3}]});
+  const dna=createGameVisualDNA({
+    gameId:'dark-wuxia',
+    concept,
+    worldDna:{BIOME:'MOUNTAIN'},
+    motionLanguage:'flowing-sword',
+    uiLanguage:'ink-metal'
+  });
+  assert.equal(dna.gameId,'dark-wuxia');
+  assert.equal(dna.concept.dominantStyle,'WUXIA');
+  assert.equal(dna.languages.BIOME,'MOUNTAIN');
+  assert.equal(dna.gameStyleLockWins,true);
+
+  const assets=[
+    {id:'verified-wuxia',family:'WEAPON',subfamily:'MELEE',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,styleFamily:'WUXIA',platformVariant:'UNITY'},
+    {id:'failed-wuxia',family:'WEAPON',subfamily:'MELEE',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,styleFamily:'WUXIA',platformVariant:'UNITY'},
+    {id:'sci-fi',family:'WEAPON',subfamily:'MELEE',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,styleFamily:'SCI_FI',platformVariant:'UNITY'}
+  ];
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'WEAPON',subfamily:'MELEE'}],
+    assets,
+    gameDna:{...dna,targetPlatform:'UNITY'},
+    usageByAsset:{'verified-wuxia':{runtimePass:true,gameConsumerCount:3},'failed-wuxia':{runtimeFailure:true,verifiedFailureCount:2}}
+  });
+  assert.equal(loadout.complete,true);
+  assert.equal(loadout.selections[0].assetId,'verified-wuxia');
+  assert.equal(scoreStudioAssetCandidate({asset:assets[2],gameDna:{...dna,targetPlatform:'UNITY'}}).rejected,true);
+});
+
+test('future demand creature blueprint platform optimizer testbed and usage feedback stay preparation or verified-evidence bounded',()=>{
+  const coverage={rows:[
+    {family:'CREATURE',subfamily:'SPECIES',missingSlots:3,coveragePercent:25},
+    {family:'BUILDING',subfamily:'MODULAR_EXTERIOR',missingSlots:1,coveragePercent:70}
+  ]};
+  const forecast=buildFutureAssetDemandForecast({
+    gameDemands:[
+      {gameId:'g1',priorityWeight:2,requirements:[{family:'CREATURE',subfamily:'SPECIES',count:4}]},
+      {gameId:'g2',priorityWeight:1,requirements:[{family:'BUILDING',subfamily:'MODULAR_EXTERIOR',count:2}]}
+    ],
+    coverageReport:coverage
+  });
+  assert.equal(forecast.highestPriority.family,'CREATURE');
+  assert.equal(forecast.maySelfPromoteVerified,false);
+
+  const creature=createCreatureSpeciesBlueprint({
+    bodyPlan:'QUADRUPED_CANINE',species:'WOLF',
+    concept:{styles:[{family:'DARK_FANTASY',weight:1}]},
+    silhouette:'low-spined-long-jaw',locomotion:'stalking-quadruped',attackLanguage:'circle-then-lunge',
+    signatureSkill:'shadow-pounce',audioIdentity:'dry-growl',hitDeathIdentity:'collapse-and-kick'
+  });
+  assert.equal(creature.complete,true);
+  assert.equal(creature.gameplayStatsAuthority,false);
+
+  const variant=createPlatformAssetVariantPlan({platform:'ROBLOX',deviceClass:'MOBILE',sourceAssetId:'wolf'});
+  assert.equal(variant.runtimeVerificationRequired,true);
+  assert.ok(variant.preserve.includes('DAMAGE'));
+
+  const testbed=createStudioTestbedPlan({assetIds:['wolf'],platform:'ROBLOX',mobile:true});
+  assert.equal(testbed.testbedPassMayPromoteCompanyAsset,false);
+  assert.equal(testbed.actualGameRuntimeStillRequired,true);
+
+  const usage=summarizeVerifiedAssetUsage({events:[
+    {assetId:'wolf',gameId:'g1',verifiedRuntimePass:true,count:3},
+    {assetId:'wolf',gameId:'g2',verifiedRuntimeFailure:true,failureReason:'FOOT_SLIDE'}
+  ]});
+  assert.equal(usage.rows[0].gameConsumerCount,2);
+  assert.equal(usage.rows[0].positiveLearningEligible,true);
+  assert.equal(usage.rows[0].negativeLearningEligible,true);
+  assert.equal(usage.rawTelemetryDirectTrainingAllowed,false);
 });
 
 test('asset DNA and style bible preserve semantic identity',()=>{
@@ -296,6 +376,9 @@ test('full studio asset universe plan exposes coverage heatmap and 24h gap fill'
   assert.equal(plan.preparedSemanticMayClaimVerified,false);
   assert.equal(plan.concept.dominantStyle,'CARTOON');
   assert.ok(plan.styleFamilies.includes('WUXIA'));
+  assert.equal(plan.gameVisualDna.gameStyleLockWins,true);
+  assert.equal(plan.testbed.actualGameRuntimeStillRequired,true);
+  assert.equal(plan.usageFeedback.existingCanonicalLearningChainOnly,true);
   assert.ok(plan.coverage.missingSlotCount>0);
   assert.ok(plan.heatmap.highestPriorityGap);
   assert.ok(plan.gapFill.actions.length>0);
