@@ -129,6 +129,17 @@ objective.TextScaled=true
 objective.Font=Enum.Font.GothamBold
 objective.Parent=gui
 roundify(objective,9)
+objective.Size=touchEnabled and UDim2.fromOffset(220,24)or UDim2.fromOffset(310,28)
+objective.AnchorPoint=touchEnabled and Vector2.new(0,0)or Vector2.new(.5,0)
+objective.Position=touchEnabled and UDim2.fromOffset(8,64)or UDim2.new(.5,0,0,8)
+objective.BackgroundColor3=Color3.fromRGB(29,50,46)
+objective.BackgroundTransparency=.18
+objective.TextColor3=Color3.fromRGB(255,232,158)
+objective.TextWrapped=true
+objective.TextScaled=true
+objective.Font=Enum.Font.GothamBold
+objective.Parent=gui
+roundify(objective,9)
 
 local gatherHint=Instance.new("TextLabel")
 gatherHint.Name="ManualGatherHint"

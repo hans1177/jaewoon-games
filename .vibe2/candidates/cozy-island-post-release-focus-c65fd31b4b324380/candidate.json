@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial malformed edit",
+  "expectedEffect": "recovered complete edit from bounded malformed output",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local objective=Instance.new(\"TextLabel\")",
+      "replace": "local objective=Instance.new(\"TextLabel\")\nobjective.Size=touchEnabled and UDim2.fromOffset(220,24)or UDim2.fromOffset(310,28)\nobjective.AnchorPoint=touchEnabled and Vector2.new(0,0)or Vector2.new(.5,0)\nobjective.Position=touchEnabled and UDim2.fromOffset(8,64)or UDim2.new(.5,0,0,8)\nobjective.BackgroundColor3=Color3.fromRGB(29,50,46)\nobjective.BackgroundTransparency=.18\nobjective.TextColor3=Color3.fromRGB(255,232,158)\nobjective.TextWrapped=true\nobjective.TextScaled=true\nobjective.Font=Enum.Font.GothamBold\nobjective.Parent=gui\nroundify(objective,9)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
