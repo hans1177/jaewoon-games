@@ -80,6 +80,29 @@ local Config = {
     { Id = "scope-coreloop-2-071119a2c2", Label = "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.", Kind = "PROGRESSION", Order = 5, LearningPattern = "save-state-persistence" },
     { Id = "scope-mobileux-9237576110", Label = "한 손 조작이 가능한 세로형 레이아웃을 채택하고, 화면 하단 30% 영역에 핵심 성장 버튼을 배치하여 엄지손가락만으로 모든 루프를 수행할 수 있도록 UX를 설계합니다.", Kind = "PROGRESSION", Order = 6, LearningPattern = "ads-monetization" },
   },
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 
 return table.freeze(Config)
