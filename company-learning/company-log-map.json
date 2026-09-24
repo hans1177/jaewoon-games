@@ -1,5 +1,5 @@
 {
-  "version": 44,
+  "version": 45,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -836,5 +836,50 @@
     "positiveCrossGameReuseRequiresTwoIndependentVerifiedGames": true,
     "rawRuntimeTelemetryDirectTrainingForbidden": true,
     "existingCanonicalLearningMotorOnly": true
+  },
+  "verifiedSpecializedQueueEvidenceIngressContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
+    "implementation": "tools/vibe2-learning-motor.mjs",
+    "correlationKeys": [
+      "GAME_ID",
+      "TASK_ID",
+      "RUN_ID",
+      "SPECIALIZED_OUTCOME_ID",
+      "OUTCOME_DIRECTION",
+      "VERIFIED_MARKERS"
+    ],
+    "requiredEvidence": [
+      "TERMINAL_TASK_STATUS",
+      "VERIFIED_MARKER_SET",
+      "SOURCE_TASK_REFERENCE",
+      "SOURCE_RUN_REFERENCE",
+      "SPECIALIZED_OUTCOME_ID",
+      "CANONICAL_EXPERIENCE_PERSISTENCE_RESULT",
+      "MASTERY_APPLICATION_RESULT"
+    ],
+    "onePositiveAndOneNegativeMaximumPerTask": true,
+    "infrastructureFailureNegativeLearningForbidden": true,
+    "rawQueueTelemetryInExperienceForbidden": true,
+    "rawBlockerStackInExperienceForbidden": true,
+    "allowedPersistentEvidenceClasses": [
+      "VERIFIED_MARKER",
+      "SOURCE_TASK",
+      "SOURCE_RUN",
+      "ACTIONS_RUN",
+      "QA_RUN",
+      "CANDIDATE_REFERENCE",
+      "CANDIDATE_SHA",
+      "SOURCE_REVISION",
+      "ARTIFACT_ID",
+      "RUNTIME_EVIDENCE_REFERENCE",
+      "QA_EVIDENCE_REFERENCE",
+      "SPECIALIZED_OUTCOME_ID"
+    ],
+    "repeatedSameOutcomeIdPersistenceForbidden": true,
+    "distinctVerifiedOutcomeIdMayReinforceConfidence": true,
+    "canonicalExperienceStore": ".vibe2/experience.json",
+    "sameCycleRetrievalUsesMergedExperience": true,
+    "authorityExpansion": false
   }
 }
