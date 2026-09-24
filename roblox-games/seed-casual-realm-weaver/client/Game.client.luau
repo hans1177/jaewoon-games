@@ -16,7 +16,13 @@ local function hasStudioAssetAtom(atom)
 end
 -- STUDIO_ASSET_BINDING_CLIENT_END
 
-local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
+if remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end
+if not remote then
+  remote = Instance.new("RemoteEvent")
+  remote.Name = Config.RemoteName
+  remote.Parent = ReplicatedStorage
+end
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "ApprovedScopeHud"

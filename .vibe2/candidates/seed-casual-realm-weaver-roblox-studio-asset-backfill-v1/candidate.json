@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)",
+      "replace": "local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA(\"RemoteEvent\") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new(\"RemoteEvent\")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
