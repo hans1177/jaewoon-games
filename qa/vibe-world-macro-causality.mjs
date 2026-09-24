@@ -2,7 +2,7 @@
 // 역할: World LOD/Macro/Fate-Order-Chaos 결정성과 엔진 권한 격리를 회귀 검사
 import assert from 'node:assert/strict';
 import {resolveVibeWorldLod,createVibeWorldForces,createVibeMacroEventCandidate,createVibeMacroResolutionRequest,resolveVibeMacroCandidate,runVibeMacroResolutionLoop} from '../assets/vibe-orchestrator.js';
-import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan,planVibeMapAutopilot} from '../assets/vibe-environment-director.js';
+import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,distillVibeVerifiedWorldPatterns,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan,planVibeMapAutopilot} from '../assets/vibe-environment-director.js';
 
 assert.equal(resolveVibeWorldLod({distance:0}).level,'micro');
 assert.equal(resolveVibeWorldLod({distance:3,relevance:.4}).level,'meso');
@@ -204,5 +204,43 @@ assert.equal(mapAuto.version,7);
 assert.equal(mapAuto.plans[0].adaptiveWorld.referenceImageStudy.request.ready,true);
 assert.equal(mapAuto.plans[0].adaptiveWorld.referenceImageStudy.observation.verifiedAgainstSource,true);
 assert.equal(mapAuto.policy.referenceImagesSourceBound,true);
+
+
+const techniqueA={
+  GENRE_FAMILY:'ACTION_RPG',
+  ROUTE_GRAMMAR:'branch-return-shortcut',
+  ENCOUNTER_RHYTHM:'tight-open-tight',
+  LANDMARK_REVEAL:'late-ridge-reveal'
+};
+const oneGame=distillVibeVerifiedWorldPatterns({events:[
+  {gameId:'game-a',verifiedRuntimePass:true,outcome:'PASS',technique:techniqueA}
+]});
+assert.equal(oneGame.reusable.length,0);
+assert.equal(oneGame.candidates[0].scope,'GAME_SCOPED_ONLY');
+
+const twoGames=distillVibeVerifiedWorldPatterns({events:[
+  {gameId:'game-a',verifiedRuntimePass:true,outcome:'PASS',technique:techniqueA},
+  {gameId:'game-b',verifiedRuntimePass:true,outcome:'PASS',technique:techniqueA}
+]});
+assert.equal(twoGames.reusable.length,1);
+assert.equal(twoGames.reusable[0].crossGameReuseEligible,true);
+assert.equal(twoGames.reusable[0].verifiedPassGameCount,2);
+assert.equal(twoGames.reusable[0].exactCoordinatesStored,false);
+assert.equal(twoGames.reusable[0].exactLayoutStored,false);
+assert.equal(twoGames.reusable[0].directMasteryCredit,false);
+
+const failureTechnique={
+  GENRE_FAMILY:'SURVIVAL',
+  ROUTE_GRAMMAR:'single-dead-end',
+  ENCOUNTER_RHYTHM:'tight-tight-tight',
+  CHOKE_OPEN_SPACE_RHYTHM:'no-release'
+};
+const repeatedFailure=distillVibeVerifiedWorldPatterns({events:[
+  {gameId:'bad-a',verifiedRuntimeFailure:true,failureReason:'SOFTLOCK',technique:failureTechnique},
+  {gameId:'bad-b',verifiedRuntimeFailure:true,failureReason:'SOFTLOCK',technique:failureTechnique}
+]});
+assert.equal(repeatedFailure.avoid.length,1);
+assert.equal(repeatedFailure.avoid[0].avoidCandidate,true);
+assert.ok(repeatedFailure.avoid[0].failureReasons.includes('SOFTLOCK'));
 
 console.log('vibe-world-macro-causality: ok');
