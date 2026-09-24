@@ -16554,7 +16554,52 @@
       "verifiedFailureMayTeachAvoidPattern": true,
       "rawReferenceOrRawGeneratedContentMayNotDirectlyIncreaseMastery": true,
       "crossPlatformTransferOnlyForAbstractTechnique": true,
-      "nativeRuntimeEvidenceStillRequiredForPlatformSpecificClaims": true
+      "nativeRuntimeEvidenceStillRequiredForPlatformSpecificClaims": true,
+      "verifiedQueueEvidenceIngress": {
+        "enabled": true,
+        "implementation": "tools/vibe2-learning-motor.mjs",
+        "source": "EXISTING_VIBE_QUEUE_TASK_EVIDENCE",
+        "terminalStatusesForPositive": [
+          "VERIFIED",
+          "DONE"
+        ],
+        "terminalStatusesForNegative": [
+          "FAILED",
+          "VERIFIED",
+          "DONE"
+        ],
+        "acceptedPositiveEvidence": [
+          "VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS",
+          "VERIFIED_WORLD_ROUTE_NAVIGATION_PASS",
+          "VERIFIED_STREAMING_MOBILE_BUDGET_PASS",
+          "VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS",
+          "VERIFIED_QUEST_GRAPH_PASS",
+          "VERIFIED_CHARACTER_PERSONA_VOICE_MEMORY_PASS",
+          "VERIFIED_WORLD_NARRATIVE_STATE_PASS"
+        ],
+        "acceptedNegativeEvidence": [
+          "VERIFIED_CONCEPT_CONFLICT",
+          "VERIFIED_NAVIGATION_REACHABILITY_FAILURE",
+          "VERIFIED_STREAMING_HITCH",
+          "VERIFIED_MOBILE_WORLD_BUDGET_FAILURE",
+          "VERIFIED_KNOWLEDGE_LEAK",
+          "VERIFIED_PAYOFF_MISS",
+          "VERIFIED_VOICE_COLLAPSE",
+          "VERIFIED_QUEST_REPETITION",
+          "VERIFIED_RELATIONSHIP_INCONSISTENCY",
+          "VERIFIED_WORLD_STATE_CONTRADICTION",
+          "VERIFIED_STORY_SOFTLOCK",
+          "VERIFIED_FACTION_RELATIONSHIP_INCONSISTENCY",
+          "VERIFIED_STORY_TRANSITION_CAUSALITY_FAILURE"
+        ],
+        "infrastructureFailureMustNotPenalizeMastery": true,
+        "oneTaskOutcomeCreatesAtMostOnePositiveAndOneNegativeSyntheticExperience": true,
+        "syntheticExperienceMustRemainTraceableToTaskAndRunEvidence": true,
+        "existingSeenExperienceDedupeRequired": true,
+        "rawTelemetryOrPreparedSemanticMayNotEnterPositiveMastery": true,
+        "existingCanonicalLearningMotorOnly": true,
+        "authorityExpansion": false
+      }
     },
     "worldAndConceptLearning": {
       "enabled": true,
