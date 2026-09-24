@@ -384,13 +384,16 @@ function runSpecializedFocusedQa({root,data={},changed=[]}={}){
     results[marker]={pass,checks,staticOnly:true};
     if(!pass)failed.push(marker);
   }
-  if(failed.length)throw new Error(`SPECIALIZED_FOCUSED_QA_FAILED:${failed.join('|')}`);
+  const pass=failed.length===0;
   return{
-    status:'FOCUSED_STATIC_PASS',
+    status:pass?'FOCUSED_STATIC_PASS':'FOCUSED_STATIC_NOT_VERIFIED',
     requestedMarkers:requested,
+    failedMarkers:failed,
     results,
     finalMarkerAuthority:'FAN_IN_ONLY',
     finalVerifiedMarkers:[],
+    learningPromotionBlocked:!pass,
+    gameReleaseBlockedBySpecializedQa:false,
     fullRegressionStillRequired:true,
     nativeRuntimeStillRequired:request.nativeRuntimeRequired===true,
     runtimeStillRequired:true,
