@@ -12,7 +12,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const logMap=json('company-learning/company-log-map.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,18);
+  assert.equal(motor.version,19);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -96,6 +96,9 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.finalMarkerMustBeExactEvidenceToken,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.prefixedFocusedQaTokenCannotMatchFinalMarker,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.positiveFanInProvenanceRequired,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.negativeVerifiedFailureProvenanceRequired,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.negativeMarkerAloneMustNotPenalizeMastery,true);
+  assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.negativeProvenanceTokens?.verification,'specialized-negative-verification:FAIL');
   const producer=ingress?.producerContract;
   assert.equal(producer?.nativeTwoStageFanInReview,true);
   assert.equal(producer?.preNativeFanInMayApproveGameCandidateButMustNotEmitNativePositiveMarkerWithoutEngineQa,true);
