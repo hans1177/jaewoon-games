@@ -33,6 +33,7 @@ import {
   createAssetLineage,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
+import {createVibeCharacterPersona,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
 
 test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.equal(STUDIO_ASSET_UNIVERSE_TARGET,'HIGH_END_STUDIO_ASSET_UNIVERSE');
@@ -61,6 +62,20 @@ test('concept director supports weighted mixed concepts without flattening style
   assert.equal(compatible.pass,true);
   const mismatch=evaluateConceptCompatibility({asset:{STYLE_FAMILY:'SCI_FI'},concept});
   assert.equal(mismatch.pass,false);
+});
+
+test('character identity adds deterministic persona voice memory and behavior intent without gameplay authority',()=>{
+  const a=createVibeCharacterPersona({name:'연화',role:'companion',goal:'문파 기록 회수',traits:['guarded'],speechRhythm:'short-direct'},0);
+  const b=createVibeCharacterPersona({name:'무진',role:'companion',goal:'마을 방어',traits:['proud'],speechRhythm:'rapid'},1);
+  assert.equal(a.gameplayAuthority,false);
+  assert.equal(a.voice.knowledgeBoundary,true);
+  assert.equal(a.memoryContract.sourceEventRequired,true);
+  assert.notEqual(a.voice.sentenceRhythm,b.voice.sentenceRhythm);
+  const diversity=createVibePopulationPersonaDiversity([
+    {name:'연화',goal:'문파 기록 회수',speechRhythm:'short-direct'},
+    {name:'무진',goal:'마을 방어',speechRhythm:'rapid'}
+  ]);
+  assert.equal(diversity.pass,true);
 });
 
 test('asset DNA and style bible preserve semantic identity',()=>{
