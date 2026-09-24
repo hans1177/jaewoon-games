@@ -64,6 +64,11 @@ local function form(p)
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
  return C.MonsterForms[1]
 end
+ local id=p:GetAttribute("MonsterForm")or"DRACULA"
+ id=legacyMonsterIds[id]or id
+ for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
+ return C.MonsterForms[1]
+end
 local function humanForm(p)
  local id=p:GetAttribute("HumanForm")or"BROADCAST"
  for _,f in ipairs(C.HumanForms or{})do if f.Id==id then return f end end
