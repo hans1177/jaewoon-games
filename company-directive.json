@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 63,
+  "revision": 64,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1073,7 +1073,17 @@
     "automaticMotionCoverageGapDetection": true,
     "compatibleMotionAutoBinding": true,
     "usagePriorityMotionGapFill": true,
-    "motionDuplicateSuppression": true
+    "motionDuplicateSuppression": true,
+    "transitionDirectorRequired": true,
+    "automaticContactQaRequired": true,
+    "gameplayEventMotionBindingRequired": true,
+    "proceduralMotionLayerRequired": true,
+    "groupMotionDirectorRequired": true,
+    "multiActorMotionRequired": true,
+    "emotionIntentLayerRequired": true,
+    "motionLodRequired": true,
+    "motionLineageRequired": true,
+    "verifiedRuntimeMotionLearningRequired": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1144,7 +1154,10 @@
         "EXTERNAL",
         "SEMANTIC_SEED",
         "NATIVE_AUTHORING"
-      ]
+      ],
+      "runtimeMotionLearning": "EXISTING_CANONICAL_LEARNING_CHAIN_ONLY",
+      "preparedSemanticCannotTeachPositiveMastery": true,
+      "verifiedFailureMayTeachAvoidPattern": true
     },
     "internalModules": [
       "assets/vibe-motion-director.js"
