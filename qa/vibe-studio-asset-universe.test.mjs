@@ -39,6 +39,7 @@ import {
   buildLibraryHeatmap,
   buildAutonomousAssetGapFillPlan,
   createAssetLineage,
+  buildBaseMaterialRotationPlan,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
@@ -378,6 +379,39 @@ test('asset lineage preserves provenance and native verification linkage',()=>{
   assert.equal(lineage.revalidateDerivedWhenParentImproves,true);
 });
 
+test('base material rotation retires only eligible atoms and refills through existing 24H gap fill',()=>{
+  const plan=buildBaseMaterialRotationPlan({
+    families:{
+      PROP:['CHAIR','TABLE','BED','SHELF','BENCH'],
+      WEAPON:['BLADE','GRIP','GUARD']
+    },
+    minimumPerFamily:3,
+    maxRetirePerFamilyPerCycle:2,
+    staleAfterCycles:30,
+    usageByAtom:{
+      CHAIR:{usageCount:0,unusedCycles:40},
+      TABLE:{duplicateOf:'CHAIR'},
+      BED:{verifiedRuntimeFailure:true},
+      SHELF:{gameLocked:true,usageCount:0,unusedCycles:100},
+      BLADE:{compatibilityFailureCount:2},
+      GRIP:{manualLocked:true,compatibilityFailureCount:5}
+    }
+  });
+  assert.equal(plan.physicalDeleteForbidden,true);
+  assert.equal(plan.historyPreserved,true);
+  assert.equal(plan.usesExistingGapFill,true);
+  assert.equal(plan.retireCount,3);
+  assert.equal(plan.refillCount,3);
+  assert.ok(plan.retired.some(row=>row.atom==='CHAIR'));
+  assert.ok(plan.retired.some(row=>row.atom==='TABLE'));
+  assert.ok(plan.retired.some(row=>row.atom==='BLADE'));
+  assert.equal(plan.retired.some(row=>row.atom==='SHELF'),false);
+  assert.equal(plan.retired.some(row=>row.atom==='GRIP'),false);
+  assert.ok(plan.active.PROP.length>=3);
+  assert.ok(plan.active.WEAPON.length>=3);
+  assert.ok(plan.refill.every(row=>row.route==='EXISTING_24H_GAP_FILL'));
+});
+
 test('company registry fills composable base material atoms without false verification',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
@@ -393,6 +427,10 @@ test('company registry fills composable base material atoms without false verifi
   assert.equal(base.combinationRules.actualRuntimeQaRequiredBeforeVerifiedPromotion,true);
   assert.ok(registry.variantRecipeTemplates.some(row=>row.id==='BOSS_VARIANT'&&row.minimumDistinctAxes>=7));
   assert.equal(registry.identityBudgets.BOSS.distinctMotionRequired,true);
+  assert.equal(registry.baseMaterialRotation.status,'ACTIVE_AUTOMATIC_ROTATION');
+  assert.equal(registry.baseMaterialRotation.hardDeleteForbidden,true);
+  assert.equal(registry.baseMaterialRotation.refillSameCycle,true);
+  assert.equal(registry.baseMaterialRotation.refillRoute,'EXISTING_24H_GAP_FILL');
 });
 
 test('company registry exposes semantic template space without claiming production verification',()=>{
