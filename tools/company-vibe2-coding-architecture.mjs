@@ -67,6 +67,7 @@ function activeSystems({gameplaySketch={},sourceAnalysis={}}={}){
   if(gameplaySketch?.interactionGraph?.required||sourceAnalysis.capabilities?.interactions)systems.push('INTERACTION');
   if(gameplaySketch?.economyModel?.required||sourceAnalysis.capabilities?.economy)systems.push('ECONOMY');
   if(gameplaySketch?.progressionModel?.required)systems.push('PROGRESSION');
+  if((gameplaySketch?.progressionModel?.objectives||[]).length||gameplaySketch?.interactionGraph?.required)systems.push('NARRATIVE');
   if(gameplaySketch?.placementModel?.required)systems.push('PLACEMENT');
   if(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length)systems.push('SAVE');
   systems.push('GOAL_STATE');
@@ -75,7 +76,7 @@ function activeSystems({gameplaySketch={},sourceAnalysis={}}={}){
 
 function stateOwnership(systems=[]){
   const map={
-    CORE_STATE:['runState','clock','rngSeed','phase'],INPUT:['inputState','pointerState','keyState'],PRESENTATION:['viewState','feedbackState'],WORLD:['worldEntities','regions','routes','collisionState'],PLAYER:['playerPosition','playerVitals','playerInventory'],COMBAT:['damageResolution','combatCooldowns','targetState'],AI:['enemyIntent','enemyNavigation','enemyState'],INTERACTION:['interactionTargets','interactionState'],ECONOMY:['currency','prices','resourceLedger'],PROGRESSION:['objectives','unlocks','progressionState'],PLACEMENT:['placementSlots','placedEntities'],SAVE:['saveSchemaVersion','serializedProgress'],GOAL_STATE:['victoryState','failureState','retryState'],
+    CORE_STATE:['runState','clock','rngSeed','phase'],INPUT:['inputState','pointerState','keyState'],PRESENTATION:['viewState','feedbackState'],WORLD:['worldEntities','regions','routes','collisionState'],PLAYER:['playerPosition','playerVitals','playerInventory'],COMBAT:['damageResolution','combatCooldowns','targetState'],AI:['enemyIntent','enemyNavigation','enemyState'],INTERACTION:['interactionTargets','interactionState'],ECONOMY:['currency','prices','resourceLedger'],PROGRESSION:['objectives','unlocks','progressionState'],NARRATIVE:['storyStage','questGraphState','characterKnowledge','relationships','memories','foreshadowingThreads'],PLACEMENT:['placementSlots','placedEntities'],SAVE:['saveSchemaVersion','serializedProgress'],GOAL_STATE:['victoryState','failureState','retryState'],
   };
   return systems.map(system=>({system,owns:map[system]||[`${system.toLowerCase()}State`],writeRule:`ONLY_${system}_OR_DECLARED_API_MAY_MUTATE_OWNED_STATE`}));
 }
@@ -91,6 +92,7 @@ function apiContracts(systems=[]){
     ['INTERACTION','resolveInteraction(targetId,action)','INTERACTION_OUTCOME'],
     ['ECONOMY','applyTransaction(transaction)','ECONOMY_LEDGER_DELTA'],
     ['PROGRESSION','advanceObjective(event)','PROGRESSION_DELTA'],
+    ['NARRATIVE','advanceNarrative(event,context)','NARRATIVE_STATE_DELTA'],
     ['PLACEMENT','placeEntity(request)','PLACEMENT_OUTCOME'],
     ['SAVE','saveOrRestore(command)','SAVE_RESULT'],
     ['GOAL_STATE','evaluateGoalState(context)','GOAL_STATE_RESULT'],
@@ -100,7 +102,7 @@ function apiContracts(systems=[]){
 }
 
 function eventContracts(systems=[]){
-  const events=['PLAYER_INTENT','WORLD_ENTERED','ENTITY_INTERACTED','DAMAGE_APPLIED','ENTITY_DEFEATED','RESOURCE_CHANGED','OBJECTIVE_ADVANCED','AREA_UNLOCKED','PLACEMENT_COMPLETED','RUN_WON','RUN_FAILED','SAVE_COMMITTED','SAVE_RESTORED'];
+  const events=['PLAYER_INTENT','WORLD_ENTERED','ENTITY_INTERACTED','DAMAGE_APPLIED','ENTITY_DEFEATED','RESOURCE_CHANGED','OBJECTIVE_ADVANCED','STORY_FACT_LEARNED','RELATIONSHIP_CHANGED','FORESHADOW_CLUE_REVEALED','STORY_THREAD_RESOLVED','AREA_UNLOCKED','PLACEMENT_COMPLETED','RUN_WON','RUN_FAILED','SAVE_COMMITTED','SAVE_RESTORED'];
   return events.map(name=>({name,delivery:'ONCE_PER_CAUSAL_ACTION',idempotency:'DUPLICATE_CAUSAL_EVENT_MUST_NOT_DUPLICATE_REWARD_DAMAGE_PURCHASE_OR_PROGRESS',observedBy:systems.slice(0,8)}));
 }
 
@@ -118,11 +120,16 @@ function invariants({systems=[],gameplaySketch={}}={}){
   if(systems.includes('ECONOMY'))rows.push(['ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE','Spendable resources cannot become negative unless debt is an explicit mechanic.']);
   if(systems.includes('PLACEMENT'))rows.push(['PLACEMENT_OCCUPANCY_CONSISTENT','A non-stackable placement slot cannot contain multiple mutually exclusive entities.']);
   if(gameplaySketch?.progressionModel?.required)rows.push(['PROGRESSION_REWARD_IDEMPOTENT','Objective completion/unlock rewards must be idempotent.']);
+  if(systems.includes('NARRATIVE')){
+    rows.push(['NARRATIVE_KNOWLEDGE_CAUSAL','Characters may only know facts learned through declared sources or approved initial knowledge.']);
+    rows.push(['NARRATIVE_PAYOFF_TRACKED','Foreshadowing threads must resolve, remain intentionally open, or stay explicitly tracked as debt.']);
+    rows.push(['NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY','Persona dialogue or narrative presentation may not directly mutate damage reward economy or undeclared progress.']);
+  }
   return rows.map(([id,contract])=>({id,contract,severity:'HARD_INTERNAL_CORRECTNESS'}));
 }
 
 function implementationUnits(systems=[]){
-  const preferred=['CORE_STATE','INPUT','WORLD','PLAYER','INTERACTION','ECONOMY','PROGRESSION','PLACEMENT','COMBAT','AI','GOAL_STATE','SAVE','PRESENTATION'];
+  const preferred=['CORE_STATE','INPUT','WORLD','PLAYER','INTERACTION','ECONOMY','PROGRESSION','NARRATIVE','PLACEMENT','COMBAT','AI','GOAL_STATE','SAVE','PRESENTATION'];
   const selected=preferred.filter(x=>systems.includes(x));
   return selected.map((system,index)=>({
     id:`UNIT_${String(index+1).padStart(2,'0')}_${system}`,
@@ -134,14 +141,14 @@ function implementationUnits(systems=[]){
 
 function microRuntimeTests(systems=[]){
   const specs={
-    CORE_STATE:'exercise legal and illegal run-state transitions',INPUT:'inject normalized input and verify one causal intent',WORLD:'move/query across region route or collision boundary',PLAYER:'apply bounded movement/vital delta',INTERACTION:'target -> input -> target state change -> gameplay result',ECONOMY:'earn/spend/reject invalid transaction and verify ledger',PROGRESSION:'advance objective once and reject duplicate reward',PLACEMENT:'select real position -> materialize entity -> verify occupancy/world effect',COMBAT:'attack -> damage/cooldown -> terminal target behavior',AI:'advance enemy intent against changing world/player state',GOAL_STATE:'drive win/fail/retry transitions without impossible mixed terminal state',SAVE:'save -> reload/restore -> compare meaningful critical state',PRESENTATION:'render state changes without mutating gameplay ownership',
+    CORE_STATE:'exercise legal and illegal run-state transitions',INPUT:'inject normalized input and verify one causal intent',WORLD:'move/query across region route or collision boundary',PLAYER:'apply bounded movement/vital delta',INTERACTION:'target -> input -> target state change -> gameplay result',ECONOMY:'earn/spend/reject invalid transaction and verify ledger',PROGRESSION:'advance objective once and reject duplicate reward',NARRATIVE:'advance quest story relationship clue and character knowledge state; reject knowledge leaks duplicate payoff and direct gameplay-authority writes',PLACEMENT:'select real position -> materialize entity -> verify occupancy/world effect',COMBAT:'attack -> damage/cooldown -> terminal target behavior',AI:'advance enemy intent against changing world/player state',GOAL_STATE:'drive win/fail/retry transitions without impossible mixed terminal state',SAVE:'save -> reload/restore -> compare meaningful critical state',PRESENTATION:'render state changes without mutating gameplay ownership',
   };
   return systems.map(system=>({system,scope:'TARGETED_REPAIR_ITERATION_ONLY',spec:specs[system]||`exercise ${system} state transition`,cannotSubstituteFor:'FULL_CANONICAL_PROMOTION_VALIDATION'}));
 }
 
 function impactPrediction(systems=[]){
   const adjacency={
-    CORE_STATE:['INPUT','GOAL_STATE','SAVE','PRESENTATION'],INPUT:['PLAYER','WORLD','INTERACTION','COMBAT','PLACEMENT'],WORLD:['PLAYER','AI','INTERACTION','PLACEMENT','GOAL_STATE'],PLAYER:['COMBAT','INTERACTION','PROGRESSION','SAVE','PRESENTATION'],COMBAT:['AI','PROGRESSION','ECONOMY','GOAL_STATE','SAVE'],AI:['COMBAT','WORLD','GOAL_STATE'],INTERACTION:['WORLD','ECONOMY','PROGRESSION','SAVE'],ECONOMY:['PROGRESSION','SAVE','PRESENTATION'],PROGRESSION:['WORLD','GOAL_STATE','SAVE','PRESENTATION'],PLACEMENT:['WORLD','COMBAT','ECONOMY','SAVE'],GOAL_STATE:['PROGRESSION','SAVE','PRESENTATION'],SAVE:['CORE_STATE','PLAYER','WORLD','ECONOMY','PROGRESSION'],PRESENTATION:[],
+    CORE_STATE:['INPUT','GOAL_STATE','SAVE','PRESENTATION'],INPUT:['PLAYER','WORLD','INTERACTION','COMBAT','PLACEMENT'],WORLD:['PLAYER','AI','INTERACTION','PLACEMENT','GOAL_STATE'],PLAYER:['COMBAT','INTERACTION','PROGRESSION','SAVE','PRESENTATION'],COMBAT:['AI','PROGRESSION','ECONOMY','GOAL_STATE','SAVE'],AI:['COMBAT','WORLD','GOAL_STATE'],INTERACTION:['WORLD','ECONOMY','PROGRESSION','SAVE'],ECONOMY:['PROGRESSION','SAVE','PRESENTATION'],PROGRESSION:['WORLD','NARRATIVE','GOAL_STATE','SAVE','PRESENTATION'],NARRATIVE:['PROGRESSION','WORLD','AI','INTERACTION','SAVE','PRESENTATION'],PLACEMENT:['WORLD','COMBAT','ECONOMY','SAVE'],GOAL_STATE:['PROGRESSION','SAVE','PRESENTATION'],SAVE:['CORE_STATE','PLAYER','WORLD','ECONOMY','PROGRESSION','NARRATIVE'],PRESENTATION:[],
   };
   return systems.map(system=>({system,likelyAffected:(adjacency[system]||[]).filter(x=>systems.includes(x)),requiredChecks:['OWNER_STATE_INVARIANTS',`MICRO_${system}`,'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED']}));
 }
@@ -206,7 +213,7 @@ export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplay
     architectureOrder:['GAME_FLOW_ARCHITECT','GAMEPLAY_SKETCH','SYSTEM_BOUNDARIES','STATE_OWNERSHIP','DATA_SCHEMA','API_CONTRACTS','EVENT_CONTRACTS','IMPLEMENTATION_UNITS','MICRO_RUNTIME_TESTS','INTEGRATION','FULL_CANONICAL_VALIDATION','BUILD'],
     sourceLayout:{logicalModules:systems,physicalPolicy:developmentMode==='PRESERVE_PATCH'?'PRESERVE_EXISTING_PHYSICAL_LAYOUT':developmentMode==='GREENFIELD'?'PLATFORM_APPROPRIATE_MODULES':'NEW_COHERENT_PROJECT_LAYOUT_FROM_ALLOWED_COMPONENTS',webCompatibility:'WEB_CAN_REMAIN_SINGLE_SELF_CONTAINED_HTML_WHILE_KEEPING_LOGICAL_MODULE_BOUNDARIES',singleResponsibility:'ONE_MODULE_OR_FUNCTION_SHOULD_NOT_OWN_UNRELATED_WORLD_COMBAT_UI_SAVE_AND_ECONOMY_MUTATIONS'},
     stateOwnership:owners,
-    dataSchema:{rule:'CRITICAL_ENTITY_PLAYER_WORLD_ECONOMY_PROGRESSION_AND_SAVE_STATE_MUST_HAVE_DECLARED_SHAPE_DEFAULTS_AND_VALIDATION',saveMigration:'VERSION_AND_MIGRATION_REQUIRED_WHEN_EXISTING_PERSISTED_SHAPE_CHANGES',corruptRecovery:'RECOVER_LAST_VALID_OR_SAFE_PARTIAL_STATE_WHEN_SUPPORTED_INSTEAD_OF_SILENT_TOTAL_RESET'},
+    dataSchema:{rule:'CRITICAL_ENTITY_PLAYER_WORLD_ECONOMY_PROGRESSION_NARRATIVE_AND_SAVE_STATE_MUST_HAVE_DECLARED_SHAPE_DEFAULTS_AND_VALIDATION',saveMigration:'VERSION_AND_MIGRATION_REQUIRED_WHEN_EXISTING_PERSISTED_SHAPE_CHANGES',corruptRecovery:'RECOVER_LAST_VALID_OR_SAFE_PARTIAL_STATE_WHEN_SUPPORTED_INSTEAD_OF_SILENT_TOTAL_RESET'},
     apiContracts:apis,eventContracts:events,
     implementationUnits:units,
     codingLoop:['PLAN_CHANGE','PREDICT_IMPACT','IMPLEMENT_ONE_COHERENT_UNIT','SYNTAX_TYPE_IMPORT_CHECK','MICRO_RUNTIME_TEST','INVARIANT_CHECK','ADD_OR_UPDATE_REGRESSION_CASE','SELF_REVIEW','INTEGRATE','FULL_VALIDATION_AT_CANONICAL_GATE'],
@@ -218,7 +225,7 @@ export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplay
     refactorPolicy:{mode:'SEPARATE_FROM_FEATURE_CHANGE_WHEN_PRACTICAL',behaviorContract:'REFACTOR_MUST_PRESERVE_OBSERVABLE_GAMEPLAY_AND_SAVE_BEHAVIOR',requiredEvidence:['REPLAY_OR_EQUIVALENT_REGRESSION','SAVE_COMPATIBILITY_WHEN_APPLICABLE','MICRO_TESTS_FOR_TOUCHED_SYSTEMS']},
     duplicationPolicy:{rule:'DO_NOT_COPY_CORE_DAMAGE_SAVE_REWARD_TRANSACTION_OR_STATE_TRANSITION_LOGIC_ACROSS_UNRELATED_CALL_SITES',action:'CENTRALIZE_ONLY_WHEN_IT_REDUCES_DUPLICATE_CAUSAL_LOGIC_WITHOUT_FORCING_UNRELATED_REWRITE'},
     recoveryPolicy:{rules:['MISSING_ENTITY_REFERENCE_RETURNS_EXPLICIT_SAFE_FAILURE','INVALID_SAVE_DATA_MUST_NOT_CRASH_WHOLE_GAME','PARTIAL_FAILURE_MUST_NOT_DOUBLE_APPLY_TRANSACTION_OR_REWARD','RETRY_PATH_MUST_NOT_REUSE_DIRTY_PARTIAL_STATE_UNLESS_EXPLICITLY_DESIGNED']},
-    performancePolicy:{rules:['NO_UNBOUNDED_PER_FRAME_DOM_REBUILD','NO_ACCIDENTAL_UNBOUNDED_TIMER_CREATION','NO_FULL_WORLD_SCAN_WHEN_A_BOUNDED_INDEX_OR_LOCAL_SCOPE_EXISTS','PROFILE_OR_MEASURE_BEFORE_LARGE_OPTIMIZATION_REWRITE']},
+    performancePolicy:{rules:['NO_UNBOUNDED_PER_FRAME_DOM_REBUILD','NO_ACCIDENTAL_UNBOUNDED_TIMER_CREATION','NO_FULL_WORLD_SCAN_WHEN_A_BOUNDED_INDEX_OR_LOCAL_SCOPE_EXISTS','STREAM_OR_CHUNK_LARGE_WORLDS_WITH_BOUNDED_ACTIVE_SET_WHEN_RELEVANT','PREWARM_INITIAL_PLAYABLE_ZONE_WHEN_RUNTIME_STREAMING_IS_USED','UNLOADING_MAY_NOT_DROP_AUTHORITATIVE_OR_SAVED_WORLD_STATE','PROFILE_OR_MEASURE_BEFORE_LARGE_OPTIMIZATION_REWRITE']},
     selfReview:{questions:['DID_THE_CHANGE_IMPLEMENT_THE_LOCKED_REQUIREMENT','WHO_OWNS_EACH_MUTATED_STATE','CAN_ONE_INPUT_APPLY_THE_EFFECT_TWICE','WHAT_EXISTING_SYSTEMS_CAN_THIS_BREAK','WHAT_HAPPENS_ON_INVALID_OR_MISSING_STATE','DID_UI_OR_PRESENTATION_MUTATE_GAMEPLAY_DIRECTLY','ARE_SAVE_AND_REPLAY_SEMANTICS_PRESERVED','DID_THE_MICRO_TEST_AND_REGRESSION_CASE_COVER_THE_FAILURE_MODE']},
     forbidden:['WRITE_WHOLE_COMPLEX_GAME_IN_ONE_UNVERIFIED_PASS','DIRECT_CROSS_SYSTEM_STATE_MUTATION_WITHOUT_CONTRACT','MICRO_TEST_AS_SUBSTITUTE_FOR_FULL_PROMOTION_VALIDATION','UNAUTHORIZED_EXTERNAL_SOURCE_OR_ASSET_COPY','FEATURE_CHANGE_PLUS_UNRELATED_REFACTOR','STATIC_LABEL_OR_TEST_PANEL_AS_GAMEPLAY_IMPLEMENTATION'],
   };
