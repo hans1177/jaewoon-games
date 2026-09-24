@@ -10926,7 +10926,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-24T08:47:08.806Z"
+      "updatedAt": "2026-09-24T09:14:39.433Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16756,7 +16756,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-24T08:47:08.830Z"
+      "updatedAt": "2026-09-24T09:14:39.451Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -19814,7 +19814,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-24T08:47:08.841Z"
+      "updatedAt": "2026-09-24T09:14:39.459Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118608,10 +118608,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-24T08:47:09.153Z",
+      "updatedAt": "2026-09-24T09:14:39.772Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T08:47:09.153Z"
+        "recovery-dispatched-at:2026-09-24T09:14:39.772Z"
       ]
     },
     {
@@ -144108,10 +144108,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-24T08:47:09.153Z",
+      "updatedAt": "2026-09-24T09:14:39.772Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T08:47:09.153Z"
+        "recovery-dispatched-at:2026-09-24T09:14:39.772Z"
       ]
     },
     {
@@ -144199,7 +144199,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.521Z",
-      "updatedAt": "2026-09-24T08:47:08.792Z"
+      "updatedAt": "2026-09-24T09:14:39.424Z"
     },
     {
       "id": "recovery-828f178e7d13218d39e5",
@@ -144271,7 +144271,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.548Z",
-      "updatedAt": "2026-09-24T08:47:08.817Z"
+      "updatedAt": "2026-09-24T09:14:39.443Z"
     },
     {
       "id": "recovery-ticket-bug-97439712d416497ffce0",
@@ -144314,7 +144314,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-24T08:47:08.344Z"
+      "updatedAt": "2026-09-24T09:14:39.035Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144357,7 +144357,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-24T08:47:08.354Z"
+      "updatedAt": "2026-09-24T09:14:39.042Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144385,7 +144385,8 @@
         "tester-debug-occurrence-count:1",
         "tester-debug-occurrence-count:2",
         "recovery-reactivated-after-source-refailure",
-        "tester-debug-occurrence-count:3"
+        "tester-debug-occurrence-count:3",
+        "tester-debug-occurrence-count:4"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144398,15 +144399,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 3,
+      "recurrenceCount": 4,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-24T08:47:09.153Z",
+      "updatedAt": "2026-09-24T09:14:39.772Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T08:47:09.153Z"
+        "recovery-dispatched-at:2026-09-24T09:14:39.772Z"
       ]
     },
     {
@@ -144452,10 +144453,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-09-24T08:47:09.153Z",
+      "updatedAt": "2026-09-24T09:14:39.772Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T08:47:09.153Z"
+        "recovery-dispatched-at:2026-09-24T09:14:39.772Z"
       ]
     }
   ]
