@@ -1,5 +1,23 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-cu0juf",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-roblox-presentation-asset-adaptation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "roblox-games/horror-escape-room/client/Game.client.luau"
+      ],
+      "baseSha": "5f4a23415a36dbe4170a693479eaf7be03bbc18b",
+      "acquiredAt": "2026-09-24T05:00:43.086Z",
+      "expiresAt": "2026-09-24T05:45:43.086Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-roblox-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
