@@ -1,5 +1,5 @@
 {
-  "version": 43,
+  "version": 44,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -678,7 +678,14 @@
       "positiveFanInProvenanceTokensRequired": true,
       "canonicalIngressMustRecheckNativeTargetQaEvidence": true,
       "nativeQaEvidenceMustMatchTargetPlatform": true,
-      "nativeQaEvidenceReferenceMustRemainTraceable": true
+      "nativeQaEvidenceReferenceMustRemainTraceable": true,
+      "nativeTwoStageFanInReviewRequired": true,
+      "postNativeFinalReviewMustUseExistingFanInReviewModule": true,
+      "candidateResultWorkflowCannotMintVerifiedMarker": true,
+      "postNativeReviewMustPreserveTaskStatusAndReleaseDecision": true,
+      "postNativeReviewRequiresExistingRegressionAndReviewPass": true,
+      "postNativeReviewRequiresFocusedQaTraceForEachMarker": true,
+      "specializedLearningFailureMustNotConvertEngineQaPassIntoReleaseFailure": true
     },
     "failureAction": "BLOCK_SPECIALIZED_LEARNING_PROMOTION_AND_KEEP_GAME_RELEASE_DECISION_SEPARATE_UNLESS_EXISTING_RELEASE_GATE_ALSO_FAILS"
   }
