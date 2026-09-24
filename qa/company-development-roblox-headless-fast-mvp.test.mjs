@@ -145,3 +145,13 @@ for(const gameId of ['horror-escape-room','territory-war']){
   for(const marker of ['RuntimeFoundationReport','CameraSubject','CAMERA_READY','INPUT_READY','REMOTE_PING','REMOTE_PONG'])assert.ok(actualClient.includes(marker),gameId+' missing '+marker);
  });
 }
+
+
+test('horror foundation waits for spawn readiness before character checkpoint',()=>{
+ const server=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server.luau','utf8');
+ assert.match(server,/ensureFoundationSpawn\(\)/);
+ assert.match(server,/while foundationSeen\.SPAWN_READY~=true and os\.clock\(\)<deadline do task\.wait\(\.1\)end/);
+ const world=server.indexOf('foundationCheckpoint("WORLD_READY"');
+ const spawn=server.indexOf('foundationCheckpoint("SPAWN_READY"');
+ assert.ok(world>0&&spawn>world,'WORLD_READY must precede SPAWN_READY in horror runtime source');
+});
