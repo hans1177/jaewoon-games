@@ -2,7 +2,7 @@
 // 역할: World LOD/Macro/Fate-Order-Chaos 결정성과 엔진 권한 격리를 회귀 검사
 import assert from 'node:assert/strict';
 import {resolveVibeWorldLod,createVibeWorldForces,createVibeMacroEventCandidate,createVibeMacroResolutionRequest,resolveVibeMacroCandidate,runVibeMacroResolutionLoop} from '../assets/vibe-orchestrator.js';
-import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan} from '../assets/vibe-environment-director.js';
+import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan,planVibeMapAutopilot} from '../assets/vibe-environment-director.js';
 
 assert.equal(resolveVibeWorldLod({distance:0}).level,'micro');
 assert.equal(resolveVibeWorldLod({distance:3,relevance:.4}).level,'meso');
@@ -179,5 +179,30 @@ assert.equal(adaptive.referenceImageStudy.request.ready,true);
 assert.equal(adaptive.referenceImageStudy.observation.verifiedAgainstSource,true);
 assert.equal(adaptive.reference.verifiedAgainstSource,true);
 assert.equal(adaptive.policy.rawReferencePersistentLearningForbidden,true);
+
+const mapAuto=planVibeMapAutopilot({
+  maps:[{name:'ridge-map',region:'north',biome:'MOUNTAIN'}],
+  regions:[{name:'north',biome:'MOUNTAIN'}],
+  genre:'ACTION_RPG',
+  referenceImagesByMap:{
+    'ridge-map':{
+      sourceId:'owned-ridge-image',
+      sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+      imageRef:'references/ridge.png',
+      rights:{owned:true},
+      verifiedAgainstSource:true,
+      observation:{
+        RIDGE_AND_VALLEY_FLOW:'ridge-valley-ridge',
+        ROAD_AND_PATH_GRAPH:'switchback-loop',
+        OPEN_SPACE_DENSITY:'tight-open-tight',
+        LANDMARK_HIERARCHY:'temple-at-ridge'
+      }
+    }
+  }
+});
+assert.equal(mapAuto.version,7);
+assert.equal(mapAuto.plans[0].adaptiveWorld.referenceImageStudy.request.ready,true);
+assert.equal(mapAuto.plans[0].adaptiveWorld.referenceImageStudy.observation.verifiedAgainstSource,true);
+assert.equal(mapAuto.policy.referenceImagesSourceBound,true);
 
 console.log('vibe-world-macro-causality: ok');
