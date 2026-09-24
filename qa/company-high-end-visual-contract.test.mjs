@@ -194,7 +194,23 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
 
 test('asset and direction planners consume one high-end profile without Web-first admission',()=>{
   const plan=buildVibeAssetProductionPlan({
-    task:{gameId:'demo',goal:'캐릭터 배경 보스 UI VFX 그래픽 개선'},target:'unity',
+    task:{
+      gameId:'demo',
+      goal:'캐릭터 배경 보스 UI VFX 그래픽 개선',
+      referenceImages:[{
+        sourceId:'owned-world-ref',
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef:'references/world.png',
+        rights:{owned:true},
+        verifiedAgainstSource:true,
+        observation:{
+          RIDGE_AND_VALLEY_FLOW:'ridge-valley',
+          ROAD_AND_PATH_GRAPH:'branch-return',
+          OPEN_SPACE_DENSITY:'mixed',
+          LANDMARK_HIERARCHY:'temple-over-village'
+        }
+      }]
+    },target:'unity',
     repoRoot:process.cwd(),manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
   });
   assert.equal(plan.qualityProfile,'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION');
@@ -464,6 +480,10 @@ test('graphics production is one top-level work unit with existing visual module
   assert.equal(assetPlan.graphicsProductionRoot,'GRAPHICS_PRODUCTION');
   assert.equal(assetPlan.externalTopLevelGraphicsWorkUnit,false);
   assert.equal(assetPlan.plannerRole,'GRAPHICS_PRODUCTION_INPUT_ONLY');
+  assert.equal(assetPlan.policy.referenceImageObservationSupported,true);
+  assert.equal(assetPlan.policy.rawProtectedReferenceImagePersistentLearningForbidden,true);
+  assert.equal(assetPlan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.referenceImageStudies.length,1);
+  assert.equal(assetPlan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.verifiedObservationCount,1);
 
   const production=createVibeGraphicsProduction({
     gameId:'demo',
@@ -477,7 +497,20 @@ test('graphics production is one top-level work unit with existing visual module
     sourceRevision:'b'.repeat(40),
     artBibleRef:'design/demo/art-bible.json',
     visualTargetFramesRef:'design/demo/visual-target-frames.json',
-    platformEvidenceRefs:{ROBLOX:'roblox-evidence-ref',UNITY:'unity-evidence-ref'}
+    platformEvidenceRefs:{ROBLOX:'roblox-evidence-ref',UNITY:'unity-evidence-ref'},
+    referenceImages:[{
+      sourceId:'owned-world-ref',
+      sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+      imageRef:'references/world.png',
+      rights:{owned:true},
+      verifiedAgainstSource:true,
+      observation:{
+        RIDGE_AND_VALLEY_FLOW:'ridge-valley',
+        ROAD_AND_PATH_GRAPH:'branch-return',
+        OPEN_SPACE_DENSITY:'mixed',
+        LANDMARK_HIERARCHY:'temple-over-village'
+      }
+    }]
   });
   assert.equal(production.kind,'GRAPHICS_PRODUCTION');
   assert.equal(production.topLevelWorkUnitCount,1);
@@ -492,6 +525,11 @@ test('graphics production is one top-level work unit with existing visual module
   assert.equal(production.continuousEvolution.highEndCompletionIsReleaseGate,false);
   assert.equal(production.changeRequestStability.latestExplicitOwnerIntentWinsWithinSameScope,true);
   assert.equal(production.policy.ownerChangeRequestStabilityRequired,true);
+  assert.equal(production.referenceImageStudies.length,1);
+  assert.equal(production.referenceImageObservationReadyCount,1);
+  assert.equal(production.verifiedReferenceImageObservationCount,1);
+  assert.equal(production.policy.rawProtectedReferenceImagePersistentLearningForbidden,true);
+  assert.equal(production.policy.directReferenceSceneOrMapCopyForbidden,true);
 });
 
 test('owner presentation changes replace conflicting same-scope intent instead of stacking patches',()=>{
