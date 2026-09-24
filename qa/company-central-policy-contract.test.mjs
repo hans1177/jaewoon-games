@@ -680,8 +680,43 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.ok(gated.forbiddenAuthorities.includes('RELEASE_PASS_OR_PROMOTION_SELF_APPROVAL'));
   assert.equal(gated.fortniteUefnChange,false);
   assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
+  assert.equal(roadmap.neuralDevelopmentBrain.currentExecutionMode,'ATOMIC_NEURON_DAG_WITH_GATED_NEURAL_CONTROL_AND_SHADOW_FALLBACK');
+  assert.equal(roadmap.neuralDevelopmentBrain.phase2.mode,'GATED_EVENT_ROUTER_WITH_SHADOW_FALLBACK');
+  assert.equal(roadmap.neuralDevelopmentBrain.phase2.shadowAuthorityScope,'OBSERVE_COMPARE_AUDIT_ONLY');
+  assert.equal(roadmap.neuralDevelopmentBrain.phase2.currentGatedAuthority.mode,'GATED_EXISTING_SCHEDULER_ONLY');
+  assert.equal(roadmap.neuralDevelopmentBrain.phase2.currentGatedAuthority.fireAllowedForVerifiedGatedActions,true);
+  assert.equal(roadmap.neuralDevelopmentBrain.phase2.currentGatedAuthority.policyMutationAllowed,false);
+  assert.equal(roadmap.neuralDevelopmentBrain.phase2.eventBindings.runtimeResult.eventType,'RUNTIME_RESULT');
+  assert.equal(roadmap.neuralDevelopmentBrain.activation.mode,'MERGED_MAIN_GATED_EXECUTION_WITH_SHADOW_FALLBACK');
+  assert.equal(roadmap.neuralDevelopmentBrain.activation.neuralExecutionAuthority,true);
+  assert.equal(roadmap.neuralDevelopmentBrain.activation.neuralQueueMutationAuthority,'REQUEUE_REPRIORITIZE_REFILL_ONLY');
+  assert.equal(roadmap.neuralDevelopmentBrain.currentWaveExecution.phase2NeuralExecutionAuthority,true);
+  assert.equal(roadmap.neuralDevelopmentBrain.currentWaveExecution.neuralAuthorityScope,'GATED_EXISTING_SCHEDULER_ONLY');
+  assert.equal(roadmap.neuralDevelopmentBrain.currentWaveExecution.runtimeResultIngress,true);
+
+  const workGraph=roadmap.neuralDevelopmentBrain.phase2WorkGraphImplementation;
+  assert.equal(workGraph.state,'GATED_EXISTING_SCHEDULER_ACTIVE_WITH_SHADOW_FALLBACK');
+  assert.equal(workGraph.workGraphMayFireAction,true);
+  assert.equal(workGraph.workerCreationAuthority,'GATED_EXISTING_QUEUED_TASK_DISPATCH_ONLY');
+  assert.equal(workGraph.queueMutationAuthority,'GATED_REQUEUE_REPRIORITIZE_REFILL_ONLY');
+  assert.equal(workGraph.waveReorderAuthority,'GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY');
+  assert.equal(workGraph.lockAuthority,'NONE');
+  assert.equal(workGraph.policyMutationAuthority,'NONE');
+  assert.equal(workGraph.shadowFallbackPreserved,true);
+  assert.ok(workGraph.evidencePrefixes.includes('neural-work-graph-gated:'));
+
+  const shadow=architecture.neuralWorkGraphTopology.phase2Shadow;
+  assert.equal(shadow.modeScope,'SHADOW_FALLBACK_AND_AUDIT_ONLY');
+  assert.equal(shadow.currentExecutionAuthoritySource,'phase2GatedExecution');
+  assert.equal(shadow.eventBindings.runtimeResult,'RUNTIME_RESULT');
+  assert.equal(shadow.eventBindings.supervisorResult,'SUPERVISOR_RESULT');
+
   const arch=architecture.neuralWorkGraphTopology.phase2GatedExecution;
   assert.equal(arch.state,'ENABLED');
+  assert.equal(arch.version,2);
+  assert.equal(arch.shadowFallbackPreserved,true);
+  assert.equal(arch.minimumProcedurePolicyRespected,true);
+  assert.equal(arch.runtimeResultIngress.liveCodeMerged,true);
   assert.equal(arch.allowedWorkerAuthority,'EXISTING_QUEUED_TASK_DISPATCH_ONLY');
   assert.equal(arch.retryStrategyMutationRequiresVerifiedRootCause,true);
   assert.equal(arch.successfulResultMutationForbidden,true);
