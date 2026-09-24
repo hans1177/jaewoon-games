@@ -690,7 +690,7 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:16'));
+  assert(resultStep.includes('version:17'));
   assert(resultStep.includes('workLock'));
   assert(resultStep.includes('phase4BenchmarkVerification'));
   assert(resultStep.includes('knowledgeApplication'));
@@ -868,4 +868,51 @@ test('continuous core connects existing evidence reasoning into self-generated s
   assert.doesNotMatch(workflow,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \] && \[ "\$\{continue_required:-NO\}" = 'YES' \]/);
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
+});
+
+
+test('presentation fan-in requires a real visual source delta and defers final runtime approval to the target stage',()=>{
+  const branchName='vibe2/candidate/presentation-fanin/primary';
+  const task={
+    id:'presentation-fanin-task',gameId:'presentation-fanin',target:'web',sourceRoot:'web-games/presentation-fanin',
+    status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    studioQualityEvolution:{cycle:1,focusPillar:'PRESENTATION',visibleRenderDeltaRequired:true,runtimeBeforeAfterComparisonRequired:true,finalFanInComparisonRequired:true},
+    evidence:[branchName,'graphics-evolution-before-after-comparison-required','role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS']
+  };
+  const baseResult={
+    version:17,taskId:task.id,outcome:'PASS',candidateBranch:branchName,baseMainSha:'abc123',
+    candidateIdentity:{taskId:task.id,gameId:task.gameId,target:'web',sourceRoot:task.sourceRoot,baseMainSha:'abc123',manifestPath:'.vibe2/candidates/presentation-fanin-task/manifest.json'},
+    evidence:[branchName]
+  };
+  const missing=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[baseResult]});
+  assert.equal(missing.releaseCandidates.length,0);
+  assert.ok(missing.reviewed[0].missing.includes('presentation-source-delta-evidence'));
+
+  const pass=finalizeVibe2FanInReview({
+    queue:{tasks:[task]},
+    results:[{...baseResult,presentationCandidateDelta:{required:true,pass:true,changedVisualUnits:3,reason:'PATCH_CONTAINS_RELEVANT_PRESENTATION_DELTA'}}]
+  });
+  assert.equal(pass.releaseCandidates.length,1);
+  assert.ok(pass.queue.tasks[0].evidence.includes('presentation-source-delta:PASS'));
+  assert.ok(pass.queue.tasks[0].evidence.includes('presentation-runtime-final-fanin-required:web'));
+  assert.ok(pass.queue.tasks[0].evidence.includes('presentation-runtime-fan-in:TARGET_STAGE_REQUIRED'));
+});
+
+test('Web candidate release requires actual before-after runtime comparison before queue PASS',()=>{
+  assert.match(candidateReleaseWorkflow,/Compare actual Web presentation runtime before and after/);
+  assert.match(candidateReleaseWorkflow,/--mode=presentation-compare/);
+  assert.match(candidateReleaseWorkflow,/--before-root=\/tmp\/vibe2-web-before/);
+  assert.match(candidateReleaseWorkflow,/--candidate-revision="\$CANDIDATE_SHA"/);
+  assert.match(candidateReleaseWorkflow,/web-runtime-presentation-before-after:PASS/);
+  assert.match(candidateReleaseWorkflow,/web-qa-presentation-runtime-or-promotion-failed/);
+  assert.match(candidateReleaseWorkflow,/steps\.presentation_compare\.outcome == 'success'/);
+});
+
+test('worker result transports presentation candidate delta into fan-in',()=>{
+  const start=workflow.indexOf('- name: Build immutable worker result');
+  const end=workflow.indexOf('- name: Upload worker result for fan-in');
+  const resultStep=workflow.slice(start,end);
+  assert.match(resultStep,/presentationCandidateDelta=manifest\?\.presentationCandidateDelta/);
+  assert.match(resultStep,/presentation-source-delta:/);
+  assert.match(resultStep,/version:17/);
 });
