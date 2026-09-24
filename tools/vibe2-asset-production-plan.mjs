@@ -461,7 +461,9 @@ export function buildVibeAssetProductionPlan({
     requirements:Array.isArray(task.assetRequirements)?task.assetRequirements:[],
     usageByAsset:task.assetUsageById||{},
     futureGameDemands:Array.isArray(task.futureGameDemands)?task.futureGameDemands:[],
-    usageEvents:Array.isArray(task.assetUsageEvents)?task.assetUsageEvents:[]
+    usageEvents:Array.isArray(task.assetUsageEvents)?task.assetUsageEvents:[],
+    baseMaterialFamilies:companyRegistry?.baseMaterialLibrary?.families||{},
+    baseMaterialUsageByAtom:task.baseMaterialUsageByAtom||{}
   }):null;
   const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
     const usage={
@@ -648,6 +650,10 @@ export function buildVibeAssetProductionPlan({
         }),
         variantRecipeTemplates:freezeList(companyRegistry?.variantRecipeTemplates||[]),
         identityBudgets:freeze(companyRegistry?.identityBudgets||{}),
+        baseMaterialRotation:freeze({
+          policy:freeze(companyRegistry?.baseMaterialRotation||{}),
+          current:freeze(studioUniversePlan?.baseMaterialRotation||{})
+        }),
         gameVisualDna:freeze(studioUniversePlan?.gameVisualDna||{}),
         loadout:freeze(studioUniversePlan?.loadout||{}),
         futureDemand:freeze(studioUniversePlan?.futureDemand||{}),
@@ -915,6 +921,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Studio Asset Universe=${plan.companyGraphicsLibrary.studioAssetUniverse.target}; families=${plan.companyGraphicsLibrary.studioAssetUniverse.families.join('|')}; creatureBodyPlans=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureBodyPlans.length}; species=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureSpecies.length}; biomes=${plan.companyGraphicsLibrary.studioAssetUniverse.biomes.length}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialLibrary?.atomCount?`Composable Base Materials=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.atomCount}; families=${Object.keys(plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.families||{}).join('|')}; mutationAxes=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.mutationAxes.join('|')}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.variantRecipeTemplates?.length?`Variant Recipes=${plan.companyGraphicsLibrary.studioAssetUniverse.variantRecipeTemplates.map(row=>row.id+':'+row.mutationStrength).join('|')}; 일반/지역/세력/정예/보스/히어로 변형은 색상 변경만으로 구분하지 말고 identity budget을 충족한다.`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialRotation?.policy?.status==='ACTIVE_AUTOMATIC_ROTATION'?`Base Material Rotation=AUTO; retire=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.retireCount||0}; refill=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.refillCount||0}; 중복/검증실패/반복 호환실패/장기 미사용 재료는 활성 선택에서 제외하고 계보를 보존한 채 기존 24H Gap Fill로 같은 사이클에 보충한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.gameVisualDna?.fingerprint?`Game Visual DNA=${plan.companyGraphicsLibrary.studioAssetUniverse.gameVisualDna.fingerprint}; 이후 업데이트는 이 게임 고유 스타일/월드 언어를 먼저 읽고 유지한다.`:'',
