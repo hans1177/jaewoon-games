@@ -1,5 +1,5 @@
 {
-  "version": 50,
+  "version": 51,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -944,5 +944,35 @@
     "postNativeReviewMustPreserveTaskStatusAndReleaseDecision": true,
     "candidateResultWorkflowCannotMintFinalMarker": true,
     "focusedQaTraceRequiredPerFinalMarker": true
+  },
+  "robloxStudioAssetBindingEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.robloxSelectionHandoff",
+    "recordScope": "PER_GAME_EXACT_ROBLOX_SOURCE_ARTIFACT_AND_PLACE_VERSION",
+    "correlationKeys": [
+      "GAME_ID",
+      "SOURCE_REVISION",
+      "ARTIFACT_IDENTITY",
+      "CANDIDATE_VERSION_NUMBER"
+    ],
+    "markers": {
+      "selectionHandoff": "ROBLOX_STUDIO_ASSET_SELECTION_HANDOFF",
+      "staticBinding": "ROBLOX_STUDIO_ASSET_BINDING_VERSION",
+      "runtimePass": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS"
+    },
+    "runtimePassRequires": [
+      "EXACT_SOURCE_REVISION",
+      "EXACT_ARTIFACT_IDENTITY",
+      "EXACT_PUBLISHED_PLACE_VERSION",
+      "TARGET_ENGINE_EXECUTED",
+      "TARGET_ENGINE_STUDIO_ASSET_SELECTION_MATCHED",
+      "F5_INPUT_CAMERA_UI_PASS",
+      "F8_CORE_LOOP_PASS",
+      "RUNTIME_ACCEPTANCE_PASS"
+    ],
+    "expectedAndObservedAtomListsRequired": true,
+    "markerOnlyEvidenceForbidden": true,
+    "positivePromotionRequiresRuntimePass": true,
+    "rawAssetBinaryInLogsForbidden": true
   }
 }
