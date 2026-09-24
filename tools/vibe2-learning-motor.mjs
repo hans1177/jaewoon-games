@@ -52,12 +52,12 @@ const DOMAIN_PATTERNS=freeze({
   AUDIO_FEEL:/audio.?feel|adaptive.?music|music.?state|crossfade|beat.?aware|mute|volume|audio.?context|sound.?effect|bgm|음악|효과음|사운드/i,
   CAMERA_LANGUAGE:/camera.?language|camera.?shake|screen.?shake|camera.?zoom|hero.?moment|camera.?follow|카메라|화면.?흔들/i,
   STORYTELLING:/story|storytelling|서사|스토리|세계관|plot|narrative|theme|reveal|foreshadow|복선|반전|payoff|결말/i,
-  NARRATIVE_STRUCTURE:/narrative.?structure|plot.?structure|story.?structure|act.?structure|scene.?structure|사건.?인과|기승전결|도입|전개|클라이맥스|결말|pacing|tension|긴장/i,
+  NARRATIVE_STRUCTURE:/narrative.?structure|plot.?structure|story.?structure|act.?structure|scene.?structure|story.?transition|causal.?transition|사건.?인과|스토리.?전이|인과.?전이|기승전결|도입|전개|클라이맥스|결말|pacing|tension|긴장/i,
   QUEST_DESIGN:/quest|퀘스트|objective.?chain|mission.?chain|prerequisite|의뢰|선행.?조건|완료.?조건|선택지|choice.?consequence/i,
   CHARACTER_ARC:/character.?arc|character.?growth|want.?need|motivation|캐릭터.?아크|인물.?변화|욕망|동기|갈등|관계.?변화/i,
   DIALOGUE:/dialogue|conversation|대화|대사|subtext|말투|화법|scene.?objective/i,
   CHARACTER_PERSONA:/persona|personality|temperament|character.?voice|성격|말투|행동.?성향|욕망|두려움|비밀|금기/i,
-  RELATIONSHIP_MEMORY:/relationship|memory|trust|affinity|respect|betrayal|promise|관계|기억|신뢰|배신|약속|호감/i,
+  RELATIONSHIP_MEMORY:/relationship|memory|trust|affinity|respect|betrayal|promise|faction.?relationship|관계|기억|신뢰|배신|약속|호감|세력.?관계/i,
   WORLD_NARRATIVE:/world.?narrative|environmental.?story|landmark.?story|lore|세계.?서사|환경.?스토리|지역.?서사|랜드마크.?서사/i,
   VISUAL_IDENTITY:/visual.?identity|style.?bible|silhouette|shape.?language|palette|비주얼.?정체성|스타일.?바이블|실루엣|형태.?언어/i,
   CONCEPT_DIRECTION:/concept.?director|concept.?blend|style.?blend|art.?tone|world.?era|컨셉|스타일.?혼합|아트.?톤|세계관.?톤/i,
@@ -66,17 +66,17 @@ const DOMAIN_PATTERNS=freeze({
   LEVEL_DESIGN:/level.?design|route.?grammar|encounter.?space|choke|shortcut|레벨.?디자인|동선|전투.?공간|병목|지름길/i,
   NAVIGATION:/navigation|navmesh|pathfind|route.?graph|reachability|길찾기|경로.?그래프|도달.?가능|내비/i,
   STREAMING:/streaming|chunk|cell.?stream|lod|prewarm|object.?pool|스트리밍|청크|프리워밍|오브젝트.?풀/i,
-  MAIN_STORY_GENERATION:/main.?story|story.?spine|inciting.?event|final.?confrontation|메인.?스토리|도입.?사건|최종.?대결/i,
+  MAIN_STORY_GENERATION:/main.?story|story.?spine|story.?transition|causal.?story|inciting.?event|final.?confrontation|메인.?스토리|스토리.?전이|인과.?스토리|도입.?사건|최종.?대결/i,
   QUEST_GRAPH:/quest.?graph|quest.?dependency|quest.?prerequisite|퀘스트.?그래프|퀘스트.?선행|의뢰.?연결/i,
   FORESHADOWING_PAYOFF:/foreshadow|payoff|복선|회수|떡밥/i,
   TWIST_EVIDENCE_CHAIN:/twist.?evidence|reveal.?evidence|반전.?근거|증거.?연쇄/i,
   CHARACTER_VOICE:/character.?voice|speech.?rhythm|formality|말투|화법|문장.?리듬/i,
-  CHARACTER_RELATIONSHIP_MEMORY:/relationship.?memory|trust|betrayal|promise|관계.?기억|신뢰|배신|약속/i,
+  CHARACTER_RELATIONSHIP_MEMORY:/relationship.?memory|faction.?relationship|trust|betrayal|promise|debt|관계.?기억|세력.?관계|신뢰|배신|약속|빚/i,
   CHARACTER_BEHAVIOR:/character.?behavior|behavior.?intent|행동.?의도|행동.?성향/i,
   COMPANION_BEHAVIOR:/companion.?behavior|ally.?behavior|동료.?행동/i,
   NPC_BEHAVIOR:/npc.?behavior|npc.?intent|엔피시.?행동|NPC.?행동/i,
   MONSTER_BEHAVIOR_PERSONALITY:/monster.?behavior|monster.?personality|creature.?behavior|몬스터.?행동|몹.?성향/i,
-  WORLD_NARRATIVE_BINDING:/world.?narrative.?binding|environmental.?story|세계.?서사.?연결|환경.?스토리/i,
+  WORLD_NARRATIVE_BINDING:/world.?narrative.?binding|environmental.?story|faction.?state|faction.?relationship|world.?state|세계.?서사.?연결|환경.?스토리|세력.?상태|세력.?관계|월드.?상태/i,
   ROUTE_DESIGN:/route.?design|route.?graph|shortcut|choke|path.?width|길.?설계|동선|지름길|병목/i,
   STREAMING_OPTIMIZATION:/streaming.?optimization|streaming.?hitch|chunk.?budget|lod.?budget|스트리밍.?최적화|청크.?예산/i,
   WEB_RUNTIME:/\bweb\b|browser|html|canvas|dom|css|javascript/i,
@@ -1310,7 +1310,7 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='VFX_READABILITY_DRILL')return'타격 피드백·trail·particle·telegraph를 모바일 가독성과 effect budget 안에서 구현하고 무제한 객체 생성을 막는 방법을 분석한다.';
   if(kind==='AUDIO_FEEL_DRILL')return'상태형 음악 전환, crossfade, 첫 사용자 제스처 오디오 unlock, mute/volume, impact sync, resume 중복재생 방지를 분석한다.';
   if(kind==='CAMERA_LANGUAGE_DRILL')return'일반/강공격/hero moment 카메라 반응을 구분하고 흔들림·줌·추적이 모바일 조작과 위험 정보를 가리지 않도록 검증하는 방법을 분석한다.';
-  if(kind==='NARRATIVE_STRUCTURE_DRILL')return'원문 문장이나 특정 작가 표현을 복사하지 않는다. 세계 규칙, 인물 욕망/갈등, 사건 인과, 긴장 상승, 복선과 회수, 결말 보상을 구조 수준에서 분석하고 검증 방법을 제시한다.';
+  if(kind==='NARRATIVE_STRUCTURE_DRILL')return'원문 문장이나 특정 작가 표현을 복사하지 않는다. 세계 규칙, 인물 욕망/갈등, 사건 인과, 스토리 전이의 선행 조건과 source event, 긴장 상승, 복선과 회수, 결말 보상을 구조 수준에서 분석하고 검증 방법을 제시한다.';
   if(kind==='QUEST_CAUSALITY_DRILL')return'퀘스트의 선행 조건 → 플레이어 행동 → 상태 변화 → 결과/보상 → 다음 상태를 연결하고 저장/재진입/중복 보상/소프트락 검증을 포함한다.';
   if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
@@ -1330,7 +1330,7 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='FORESHADOWING_PAYOFF_DRILL')return'복선마다 seed→clue→reveal→payoff를 추적하고 회수되지 않은 떡밥은 의도적 미해결인지 부채인지 명시한다. 후반 정보가 초반 근거 없이 갑자기 등장하지 않게 검증한다.';
   if(kind==='TWIST_EVIDENCE_CHAIN_DRILL')return'반전을 결론부터 만드는 대신 플레이어가 이전에 관찰할 수 있었던 증거 연쇄를 먼저 설계한다. 반전 전후의 사건·캐릭터 동기·세계 규칙이 동시에 성립하는지 반증 테스트한다.';
   if(kind==='CHARACTER_VOICE_DRILL')return'인물별 격식, 어휘, 문장 리듬, 감정 상태, 관계 변화, 알고 있는 정보 범위를 분리해 같은 말투로 붕괴하지 않게 한다. 원문 작가 스타일 모사는 하지 않는다.';
-  if(kind==='RELATIONSHIP_MEMORY_DRILL')return'신뢰·호감·두려움·존중·빚·배신·약속·목격 사건을 원인 이벤트에 연결하고 저장/불러오기 뒤에도 일관되게 복구되는지 검증한다. 기억이나 관계 수치가 선언되지 않은 보상·데미지·진행을 직접 쓰지 못하게 한다.';
+  if(kind==='RELATIONSHIP_MEMORY_DRILL')return'신뢰·호감·두려움·존중·빚·배신·약속·목격 사건과 세력 관계 변화를 원인 이벤트에 연결하고 동일 source event가 중복 적용되지 않게 한다. 저장/불러오기 뒤에도 관계와 세력 상태가 일관되게 복구되는지 검증하며 관계 수치가 선언되지 않은 보상·데미지·진행을 직접 쓰지 못하게 한다.';
   if(kind==='CHARACTER_BEHAVIOR_DRILL')return'성격·욕망·공포·역할을 NPC/동료/몬스터의 행동 의도와 연결하되 실제 이동·공격·보상은 게임 소유 API가 처리하게 한다. 겁쟁이·호전적·보호형·매복형·영역형 같은 행동 차이가 런타임에서 관찰되는지 검증한다.';
   if(kind==='WORLD_NARRATIVE_BINDING_DRILL')return'지역·랜드마크·환경·아이템·NPC·세력·보스·퀘스트 표현을 현재 월드/스토리 상태와 묶는다. 죽은 NPC 재등장, 파괴된 장소의 원상복귀, 아직 모르는 사실 대사 같은 모순을 검증한다.';
   if(kind==='UNITY_NATIVE_DRILL')return'Unity 네이티브 런타임, 물리, 입력, 씬 수명주기, 필요 시 Netcode 경계를 분석한다. Unity runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.';
