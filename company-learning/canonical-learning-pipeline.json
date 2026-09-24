@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -245,5 +245,21 @@
   },
   "sourceOfTruth": "company-learning/platform-release-roadmap.json#canonicalLearningChain",
   "policyAuthority": false,
-  "policySemanticsDefinedInCentralOnly": true
+  "policySemanticsDefinedInCentralOnly": true,
+  "motionRuntimeEvidence": {
+    "enabled": true,
+    "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem.runtimeMotionLearning",
+    "usesCanonicalChainOnly": true,
+    "separatePipelineForbidden": true,
+    "acceptedEvidence": [
+      "VERIFIED_UNITY_RUNTIME_MOTION_PASS",
+      "VERIFIED_ROBLOX_RUNTIME_MOTION_PASS",
+      "VERIFIED_RUNTIME_MOTION_FAILURE_CAUSE"
+    ],
+    "preparedSemanticEvidenceAccepted": false,
+    "rawTelemetryDirectTraining": false,
+    "verifiedOutcomeMayBecomeTrainingSample": true,
+    "existingThresholdsHoldoutCanaryUnchanged": true,
+    "onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate": true
+  }
 }
