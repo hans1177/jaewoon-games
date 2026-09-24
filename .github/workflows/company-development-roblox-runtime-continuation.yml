@@ -14,7 +14,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '9'
-  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'
+  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '256'
 
 jobs:
   preflight-plan:
@@ -59,7 +59,7 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const rows=[];
           for(const item of q.items||[]){
-            if(rows.length>=6)break;
+            if(rows.length>=256)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
@@ -84,7 +84,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=256');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
@@ -95,7 +95,7 @@ jobs:
     if: needs.preflight-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 256
       matrix: ${{ fromJSON(needs.preflight-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
