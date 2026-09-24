@@ -1,5 +1,5 @@
 {
-  "version": 159,
+  "version": 160,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3766,5 +3766,71 @@
     "f9FanInRequiresExactSourceArtifactPlaceVersion": true,
     "f9FanInCarriesRuntimeMarker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
     "positiveAssetMasteryRequiresRuntimeBindingMarker": true
+  },
+  "studioQualityEvolutionTopology": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "centralPolicyPath": "company-learning/platform-release-roadmap.json#studioQualityEvolution",
+    "status": "ACTIVE_TOPOLOGY_BINDING",
+    "flow": [
+      "VERIFIED_BASELINE",
+      "QUALITY_GAP_SELECTION",
+      "WORK_PACKAGE",
+      "PARALLEL_ROLE_FANOUT",
+      "IMPACT_QA",
+      "RUNTIME_OR_PLAYTEST_IF_REQUIRED",
+      "BEFORE_AFTER_COMPARE",
+      "SINGLE_FAN_IN_REGRESSION",
+      "LEARNING_FAN_IN",
+      "NEXT_CAUSAL_FOCUS"
+    ],
+    "maturityStages": [
+      "CONCEPT",
+      "PRE_PRODUCTION",
+      "VERTICAL_SLICE",
+      "PRODUCTION",
+      "ALPHA",
+      "BETA",
+      "RELEASE_CANDIDATE",
+      "LIVE"
+    ],
+    "qualityPillars": [
+      "CORE_FUN",
+      "PROGRESSION",
+      "PRESENTATION",
+      "USABILITY",
+      "STABILITY"
+    ],
+    "workerBindings": {
+      "planning": "tools/vibe2-auto-planner.mjs",
+      "package": "tools/vibe2-work-package.mjs",
+      "memoryAndDelta": "tools/vibe2-development-intelligence.mjs",
+      "incrementalQa": "tools/vibe2-incremental-qa.mjs",
+      "fanIn": "tools/vibe2-fan-in-review.mjs",
+      "learning": "tools/vibe2-learning-motor.mjs"
+    },
+    "parallelism": {
+      "independentGames": true,
+      "independentNonOverlappingPackages": true,
+      "roleFanOut": true,
+      "sameResponsibleFileWrite": false,
+      "globalStageBarrier": false,
+      "runtimeWaitReleasesCapacity": true,
+      "fanInOnlySharedAcceptanceSerialization": true
+    },
+    "qaEfficiency": {
+      "incrementalFirst": true,
+      "fingerprintReuse": true,
+      "unchangedEvidenceReuse": true,
+      "duplicateFullRegression": false,
+      "fullRegressionOnceAtFanIn": true,
+      "runtimeOnlyWhenRequired": true
+    },
+    "policyBoundary": {
+      "architectureMapDoesNotCreatePolicy": true,
+      "protectedSemanticsPreserved": true,
+      "gateThresholdsUnchanged": true,
+      "learningDoesNotExpandAuthority": true
+    }
   }
 }
