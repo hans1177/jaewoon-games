@@ -10926,7 +10926,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-24T05:00:54.944Z"
+      "updatedAt": "2026-09-24T06:50:56.374Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16756,7 +16756,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-24T05:00:54.966Z"
+      "updatedAt": "2026-09-24T06:50:56.399Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -19814,7 +19814,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-24T05:00:54.975Z"
+      "updatedAt": "2026-09-24T06:50:56.410Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118588,7 +118588,9 @@
         "tester-debug-occurrence-count:518",
         "tester-debug-occurrence-count:519",
         "tester-debug-occurrence-count:520",
-        "tester-debug-occurrence-count:521"
+        "tester-debug-occurrence-count:521",
+        "{\"version\":3,\"platform\":\"ROBLOX\",\"gameId\":\"cozy-island\",\"placeId\":\"116850096561713\",\"placeVersion\":21,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":true,\"requirements\":{\"saveEnabled\":true,\"multiplayerRequired\":true},\"requiredCheckpoints\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\",\"CAMERA_READY\",\"INPUT_READY\",\"MOVEMENT_CONFIRMED\",\"REMOTE_ROUNDTRIP\",\"CORE_LOOP_READY\",\"SAVE_ROUNDTRIP\",\"MULTIPLAYER_SYNC\"],\"checkpointPass\":{\"SERVER_BOOT\":true,\"MODULE_GRAPH_READY\":true,\"WORLD_READY\":true,\"SPAWN_READY\":true,\"CHARACTER_READY\":true,\"GROUND_CONTACT\":true,\"CAMERA_READY\":true,\"INPUT_READY\":true,\"MOVEMENT_CONFIRMED\":true,\"REMOTE_ROUNDTRIP\":true,\"CORE_LOOP_READY\":false,\"SAVE_ROUNDTRIP\":true,\"MULTIPLAYER_SYNC\":false},\"checkpointOrderPassed\":false,\"foundationCausalOrder\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\"],\"f1ServerBootPassed\":true,\"f2WorldFoundationPassed\":true,\"f3CharacterFoundationPassed\":true,\"f4PhysicsAndMovementPassed\":true,\"f5InputCameraUiPassed\":true,\"f6CoreServicesPassed\":true,\"f7MultiplayerFoundationPassed\":false,\"f8GameplaySystemsPassed\":false,\"runtimeFoundationPassed\":false,\"developmentContinuationPassed\":false,\"runtimeAcceptancePassed\":false,\"multiplayerPromotionPending\":true,\"actualRuntimeEvidence\":true,\"state\":\"BLOCKED\",\"blockers\":[\"checkpointOrder\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:MULTIPLAYER_SYNC\"],\"authority\":\"existing-game-tester-roblox-runtime-foundation-v1\",\"sourceRevision\":\"017415a22acb8f921db48a0a41e04dc2e09db32e\",\"artifactIdentity\":\"sha256:86cd892f9eb1a7d2e839b951c629808c73d856c794c61bfe8874834f8a56a13f\",\"artifactRunId\":35780441879,\"universeId\":\"10767445741\",\"candidateVersionNumber\":21,\"observedAt\":\"2026-09-24T06:13:31.951Z\",\"workflowRunId\":35963359221}",
+        "tester-debug-occurrence-count:522"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -118601,15 +118603,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 521,
+      "recurrenceCount": 522,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-24T05:00:55.273Z",
+      "updatedAt": "2026-09-24T06:50:56.728Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T05:00:55.273Z"
+        "recovery-dispatched-at:2026-09-24T06:50:56.728Z"
       ]
     },
     {
@@ -144106,10 +144108,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-24T05:00:55.273Z",
+      "updatedAt": "2026-09-24T06:50:56.728Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T05:00:55.273Z"
+        "recovery-dispatched-at:2026-09-24T06:50:56.728Z"
       ]
     },
     {
@@ -144197,7 +144199,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.521Z",
-      "updatedAt": "2026-09-24T05:00:54.931Z"
+      "updatedAt": "2026-09-24T06:50:56.359Z"
     },
     {
       "id": "recovery-828f178e7d13218d39e5",
@@ -144269,7 +144271,97 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.548Z",
-      "updatedAt": "2026-09-24T05:00:54.954Z"
+      "updatedAt": "2026-09-24T06:50:56.385Z"
+    },
+    {
+      "id": "recovery-ticket-bug-97439712d416497ffce0",
+      "status": "dispatched",
+      "priority": "high",
+      "sourceQueue": "tester-debug",
+      "sourceTaskId": "bug-97439712d416497ffce0",
+      "gameId": "horror-escape-room",
+      "responsibleFiles": [],
+      "contextFiles": [],
+      "goal": null,
+      "relatedTaskIds": [],
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "roblox-build-package-failed",
+      "blastRadius": "single-ticket",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "roblox-build-package:roblox-build-package-failed",
+        "{\"sourceRevision\":\"58c22ad3ad3032cc1a3b1f8c9ffc1c185ca977f8\",\"buildSourceRevision\":\"58c22ad3ad3032cc1a3b1f8c9ffc1c185ca977f8\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-ticket:bug-97439712d416497ffce0",
+        "tester-debug-category:UI_UX",
+        "tester-debug-severity:MEDIUM",
+        "tester-debug-occurrence-count:1"
+      ],
+      "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "VIBE2_VIBE3",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-09-24T06:50:55.919Z",
+      "updatedAt": "2026-09-24T06:50:56.728Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-09-24T06:50:56.728Z"
+      ]
+    },
+    {
+      "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
+      "status": "queued",
+      "priority": "high",
+      "sourceQueue": "tester-debug",
+      "sourceTaskId": "bug-65aa0ffb4ab275d5f5a6",
+      "gameId": "territory-war",
+      "responsibleFiles": [],
+      "contextFiles": [],
+      "goal": null,
+      "relatedTaskIds": [],
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "roblox-build-package-failed",
+      "blastRadius": "single-ticket",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "roblox-source-promotion-pending",
+        "{\"sourceRevision\":\"b69559e4fda74a75e725ceef1e6d9f5c8c90d59f\",\"buildSourceRevision\":\"b69559e4fda74a75e725ceef1e6d9f5c8c90d59f\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-ticket:bug-65aa0ffb4ab275d5f5a6",
+        "tester-debug-category:UI_UX",
+        "tester-debug-severity:MEDIUM",
+        "tester-debug-occurrence-count:1"
+      ],
+      "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "VIBE2_VIBE3",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-09-24T06:50:55.930Z",
+      "updatedAt": "2026-09-24T06:50:55.930Z"
     }
   ]
 }
