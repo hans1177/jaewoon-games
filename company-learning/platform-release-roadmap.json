@@ -1,5 +1,5 @@
 {
-  "version": 344,
+  "version": 345,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -18935,6 +18935,17 @@
       "canonicalNativeExecutionEvidenceField": "executionEvidence",
       "plannerMustPreserveNestedFailureStageSignatureAndSourceRevision": true,
       "neuronCompletionIngressRemainsLightweightUntilTaskMicroFanIn": true
+    },
+    "runtimeResultIngress": {
+      "enabled": true,
+      "source": "company-runtime:development-queue.json#executionEvidence",
+      "compiler": "tools/vibe2-auto-planner.mjs::compileRuntimeNeuralEvent",
+      "eventType": "RUNTIME_RESULT",
+      "passOutcomeObserveOnly": true,
+      "failureMutationRequiresVerifiedRootCause": true,
+      "existingSchedulerOnly": true,
+      "rawRuntimeFailureMayNotInventRootCause": true,
+      "policySecurityQaReleaseAuthorityUnchanged": true
     },
     "fortniteUefnChange": false,
     "fortniteUefnPolicyRemains": "OWNER_HOLD"
