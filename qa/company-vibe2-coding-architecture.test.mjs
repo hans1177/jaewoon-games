@@ -155,7 +155,7 @@ test('development planner binds adaptive world and narrative work into existing 
   assert.ok(worldTask);
   assert.ok(verifyTask);
   assert.match(narrativeTask.instruction,/story-transition history/i);
-  assert.match(characterTask.instruction,/faction membership/relationships/i);
+  assert.match(characterTask.instruction,/faction membership\/relationships/i);
   assert.match(worldTask.instruction,/faction relationships/i);
   assert.match(verifyTask.instruction,/duplicate-transition idempotency/i);
   assert.match(verifyTask.instruction,/faction relationship persistence/i);
