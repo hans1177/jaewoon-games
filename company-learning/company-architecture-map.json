@@ -1,5 +1,5 @@
 {
-  "version": 160,
+  "version": 161,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -960,6 +960,40 @@
         "nextFocus": "ROOT_CAUSE_SAMPLE_CONFLICTS_AND_CALIBRATION_QUALITY"
       }
     },
+    "phase2GatedExecution": {
+      "version": 1,
+      "authority": "company-learning/platform-release-roadmap.json#neuralGatedExecution",
+      "state": "ENABLED",
+      "principle": "EVERY_ACTIONABLE_VIBE_DOMAIN_COMPILES_TO_AN_ATOMIC_NEURON_TRANSACTION_WHILE_EXISTING_SCHEDULER_QA_SECURITY_AND_RELEASE_GATES_REMAIN_AUTHORITATIVE",
+      "router": "tools/vibe2-neural-event-router.mjs",
+      "workGraph": "tools/vibe2-neural-work-graph.mjs",
+      "queueControl": "tools/vibe2-queue-control.mjs",
+      "sourceRecovery": "tools/vibe2-source-worker.mjs",
+      "throughputTelemetry": "tools/vibe2-parallelism-telemetry.mjs",
+      "adaptiveController": "tools/vibe2-adaptive-backpressure.mjs",
+      "allowedQueueMutations": [
+        "REQUEUE_EXISTING_TASK",
+        "REPRIORITIZE_EXISTING_TASK_WITHIN_EXISTING_PRIORITY_MODEL",
+        "MARK_IMMEDIATE_REFILL_ELIGIBLE"
+      ],
+      "allowedWorkerAuthority": "EXISTING_QUEUED_TASK_DISPATCH_ONLY",
+      "allowedWaveAuthority": "REORDER_CONFLICT_FREE_EXISTING_TASKS_ONLY",
+      "allowedAutomaticTuning": [
+        "GAME_PRIMARY_ADAPTIVE_CONCURRENCY",
+        "FAILURE_CLASS_RETRY_STRATEGY_SELECTION"
+      ],
+      "throughputObjective": "MAXIMIZE_VERIFIED_CANDIDATES_PER_MINUTE_AND_FIRST_CANDIDATE_PASS_RATE",
+      "fanInRule": "PER_TASK_MICRO_FANIN_RELEASES_CAPACITY_IMMEDIATELY; COHORT_FANIN_IS_REGRESSION_RELEASE_AUDIT_ONLY",
+      "protectedAuthority": {
+        "policyMutation": false,
+        "securityBypass": false,
+        "qaBypass": false,
+        "releaseSelfApproval": false,
+        "authoritySelfPromotion": false,
+        "unverifiedLearningPromotion": false
+      },
+      "fortniteUefnChange": false
+    },
     "activation": {
       "mainCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
       "shadowObservationActive": true,
@@ -977,9 +1011,9 @@
       "globalActiveWaveBarrier": false,
       "refillRule": "ACTIVE_WORKERS_LT_EFFECTIVE_MAX_AND_RUNNABLE_QUEUED_WORK",
       "conflictSafety": "SOURCE_ROOT_FILE_AND_DEPENDENCY_LOCKS_REMAIN_ENFORCED",
-      "neuralAuthority": "NONE",
+      "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": null,
+      "gamePrimaryActiveExecutionCap": "ADAPTIVE_20_TO_256_FROM_VERIFIED_THROUGHPUT",
       "refillExample": "ACTIVE_19_FREE_237_AT_EXTERNAL_BOUND_256",
       "externalSpareBeyond20": "AVAILABLE_TO_GAME_PRIMARY; 20_IS_PRESSURE_FLOOR_NOT_CAP",
       "adaptiveControl": "NO_FIXED_INTERNAL_CAP; BASELINE_20; PRESSURE_FLOOR_20; VERIFIED_HEALTHY_SATURATION_SELF_EXPANDS_20_TO_32_TO_64_TO_128_TO_256",
@@ -3289,7 +3323,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-24",
+  "updatedAt": "2026-09-25",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
