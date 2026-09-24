@@ -1,5 +1,5 @@
 {
-  "version": 46,
+  "version": 47,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -68,7 +68,20 @@
     "reviewStatus": "REVIEW_REQUIRED",
     "quarantineStatus": "QUARANTINED",
     "resolvedStatus": "RESOLVED_VERIFIED",
-    "systemAiPrePullRequestPersistence": ".github/workflows/company-system-ai-workers.yml"
+    "systemAiPrePullRequestPersistence": ".github/workflows/company-system-ai-workers.yml",
+    "scanMinimization": {
+      "mode": "RISK_SCOPED_MINIMUM",
+      "routineGameCandidateScanRequired": false,
+      "periodicFullRepositoryScanRequired": false,
+      "nonSecurityChangeDisposition": "NOT_REQUIRED",
+      "sensitiveChangeDisposition": "SCAN_REQUIRED",
+      "externalAiSystemCandidatesAlwaysScan": true,
+      "systemArchitectureCandidatesAlwaysScan": true,
+      "releasePublishPromotionAlwaysScan": true,
+      "centralPolicyAndWorkflowChangesAlwaysScan": true,
+      "robloxServerAuthorityRemoteSaveEconomyRewardDamageAlwaysScan": true,
+      "confirmedSecurityRecoveryAlwaysRescan": true
+    }
   },
   "securityLearning": {
     "verifiedIncidentsAreLearningSources": true,
