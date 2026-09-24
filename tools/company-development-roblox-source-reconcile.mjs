@@ -5,13 +5,27 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {validateRobloxBootstrap} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline,validateRobloxBootstrap} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 
 const clean=value=>String(value??'').trim();
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
+
+function studioAssetRefreshState({root='',gameId='',baseline={},assetLibrary={}}={}){
+  const profile=robloxBuildProfileFromBaseline(baseline);
+  const expected=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
+  if(expected.applied!==true)return {required:false,refreshRequired:false,expected};
+  const configFile=path.join(root,'shared','GameConfig.luau');
+  if(!fs.existsSync(configFile))return {required:true,refreshRequired:true,expected,reason:'CONFIG_MISSING'};
+  const config=fs.readFileSync(configFile,'utf8');
+  const libraryVersion=Number(config.match(/LibraryVersion\s*=\s*(\d+)/)?.[1]||0);
+  const bindingVersion=Number(config.match(/BindingVersion\s*=\s*(\d+)/)?.[1]||0);
+  const applied=/StudioAssets\s*=\s*\{[\s\S]*?Applied\s*=\s*true/.test(config);
+  const refreshRequired=!applied||bindingVersion!==1||libraryVersion!==Number(expected.libraryVersion||0);
+  return {required:true,refreshRequired,expected,libraryVersion,bindingVersion,applied,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
+}
 
 export function hasVerifiedVibe2SourceHandoff(item={}){
   const handoff=item.robloxVibe2VerifiedHandoff;
@@ -39,7 +53,7 @@ export function eligibleForRobloxSourceReconciliation(item={}){
   return true;
 }
 
-export function validateExistingRobloxSourceTree({root='',baseline={}}={}){
+export function validateExistingRobloxSourceTree({root='',baseline={},assetLibrary={}}={}){
   const blockers=[];
   const required={
     project:path.join(root,'default.project.json'),
@@ -76,7 +90,7 @@ function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
   }
 }
 
-export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline}={}){
+export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,assetLibrary={}}={}){
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
   const results=[];
   for(const item of queue.items||[]){
@@ -85,6 +99,34 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const root=path.join(repoRoot,sourcePath);
     const sourceBind=clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
     const currentRevision=clean(sourceRevision);
+    let baseline;
+    try{
+      baseline=loadBaseline(item);
+    }catch(error){
+      results.push({
+        gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceDrift:!sourceBind,saveRequired:false,
+        blockers:['SOURCE_BASELINE_OR_VALIDATION_UNAVAILABLE'],failure:'existing-source-static-revalidation-unavailable',
+        detail:String(error?.message||error),
+      });
+      continue;
+    }
+    const studioState=fs.existsSync(root)?studioAssetRefreshState({root,gameId:item.gameId,baseline,assetLibrary}):{required:false,refreshRequired:false,expected:null};
+    if(studioState.refreshRequired===true){
+      results.push({
+        gameId:item.gameId,
+        pass:false,
+        sourcePath,
+        sourceRevision:currentRevision,
+        sourceDrift:!sourceBind,
+        saveRequired:false,
+        blockers:['ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'],
+        failure:'existing-source-studio-asset-binding-required',
+        studioAssetBindingRequired:true,
+        studioAssetBindingRefreshRequired:true,
+        studioAssetBinding:studioState.expected,
+      });
+      continue;
+    }
     if(!sourceBind){
       const boundRevision=clean(item.robloxSourceCommit);
       if(!sha40(currentRevision)||boundRevision===currentRevision)continue;
@@ -151,8 +193,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
       continue;
     }
     try{
-      const baseline=loadBaseline(item);
-      const verdict=validateExistingRobloxSourceTree({root,baseline});
+      const verdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary});
       results.push({
         gameId:item.gameId,
         pass:verdict.pass,
@@ -188,10 +229,12 @@ function runCli(){
   const resultsFile=arg('results','/tmp/roblox-source-reconciliation.json');
   if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
   const queue=readJson(queueFile);
+  const assetLibrary=readJson(path.join(repoRoot,'company-asset-library.json'));
   const results=evaluateExistingRobloxSources({
     queue,
     repoRoot,
     sourceRevision,
+    assetLibrary,
     loadBaseline:item=>{
       const baselinePath=clean(item.designBaselineSource);
       if(!baselinePath)throw new Error(`designBaselineSource missing: ${item.gameId}`);
