@@ -132,3 +132,10 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
   assert.match(workflow,/group: company-development-roblox-f0-source-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
 });
+
+test('F0 workflow inherits central HEADLESS_FAST_MVP mode and normalizes legacy runtime rows',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(workflow,/roadmap\.roblox\?\.validationMode/);
+  assert.match(workflow,/item\.robloxValidationMode\|\|defaultValidationMode/);
+  assert.match(workflow,/item\.robloxValidationMode='HEADLESS_FAST_MVP'/);
+});
