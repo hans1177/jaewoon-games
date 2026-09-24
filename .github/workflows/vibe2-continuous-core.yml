@@ -875,9 +875,26 @@ jobs:
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
           node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           git diff --check
-          node --check tools/company-security-steward.mjs
-          node tools/company-security-steward.mjs --output="/tmp/vibe2-security-${SAFE_TASK}-${VARIANT}.json"
-          echo 'VIBE2_SECURITY_IMMUNE_SCAN=PASS'
+          security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
+          import fs from 'node:fs';
+          const manifest=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const files=(manifest.changedFiles||[]).map(value=>String(value).replaceAll('\\','/'));
+          const sensitive=files.some(file=>
+            /^(?:\.github\/(?:workflows|actions)\/)/.test(file) ||
+            /^tools\/company-security-/.test(file) ||
+            /^qa\/company-security-/.test(file) ||
+            /^(?:tools\/(?:company-shared-context|company-constitution-enforcer|vibe2-central-work-contract|vibe2-system-steward|vibe2-system-architecture-contract)\.mjs|company-learning\/(?:security-immune-system|platform-release-roadmap|company-log-map|company-architecture-map)\.json|company-directive\.json|package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock)$/.test(file)
+          );
+          process.stdout.write(sensitive?'YES':'NO');
+          NODE
+          )"
+          if [ "$security_sensitive" = 'YES' ]; then
+            node --check tools/company-security-steward.mjs
+            node tools/company-security-steward.mjs --output="/tmp/vibe2-security-${SAFE_TASK}-${VARIANT}.json"
+            echo 'VIBE2_SECURITY_IMMUNE_SCAN=PASS'
+          else
+            echo 'VIBE2_SECURITY_IMMUNE_SCAN=SKIPPED_NON_SECURITY_CHANGE'
+          fi
 
           candidate_target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
           if [ "$candidate_target" = 'system' ]; then

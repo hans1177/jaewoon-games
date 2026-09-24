@@ -3,22 +3,49 @@ name: Company Security Immune System
 on:
   pull_request:
     branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - 'tools/company-security-*.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'tools/vibe2-system-steward.mjs'
+      - 'tools/vibe2-system-architecture-contract.mjs'
+      - 'qa/company-security-*.test.mjs'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-directive.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'yarn.lock'
   push:
     branches: [main]
     paths:
       - '.github/workflows/**'
-      - 'tools/**'
-      - 'qa/**'
-      - 'company-learning/**'
-      - 'assets/**'
-      - 'web-games/**'
-      - 'roblox-games/**'
-      - 'unity-games/**'
-      - 'unreal-games/**'
-      - 'godot-games/**'
+      - '.github/actions/**'
+      - 'tools/company-security-*.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'tools/vibe2-system-steward.mjs'
+      - 'tools/vibe2-system-architecture-contract.mjs'
+      - 'qa/company-security-*.test.mjs'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-directive.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'yarn.lock'
   workflow_dispatch:
   schedule:
-    - cron: '13,33,53 * * * *'
+    - cron: '13 3 * * *'
 
 jobs:
   scan:

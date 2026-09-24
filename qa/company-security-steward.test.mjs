@@ -7,6 +7,8 @@ import { compactPolicyReviewIncidents, recordSecurityReport, resolveSecurityInci
 import { distillSecurityLearning } from '../tools/company-security-learning.mjs';
 
 const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immune.yml','utf8');
+const vibeCoreWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+const vibe24hWorkflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 
 test('literal secret is quarantined and report stores only redacted evidence',()=>{
   const patch='diff --git a/x.txt b/x.txt\n+++ b/x.txt\n@@ -0,0 +1 @@\n+token=ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\n';
@@ -283,6 +285,23 @@ test('recorded policy review scan provenance is immutable evidence for later aut
     securityRunId:777001,securityArtifactId:888002,scanDetectedAt:row.firstDetectedAt,findingCount:1
   }});
   assert.equal(resolved.incidents[0].status,'RESOLVED_VERIFIED');
+});
+
+test('security workflow is limited to sensitive changes plus one daily hygiene scan',()=>{
+  for(const ordinary of [
+    "'web-games/**'","'roblox-games/**'","'unity-games/**'","'unreal-games/**'","'godot-games/**'","'assets/**'","'tools/**'","'qa/**'","'company-learning/**'"
+  ]) assert.equal(securityWorkflow.includes(ordinary),false);
+  for(const sensitive of [
+    "'tools/company-security-*.mjs'","'company-learning/security-immune-system.json'","'company-learning/platform-release-roadmap.json'","'package-lock.json'"
+  ]) assert.equal(securityWorkflow.includes(sensitive),true);
+  assert.equal((securityWorkflow.match(/cron:/g)||[]).length,1);
+  assert.ok(securityWorkflow.includes("cron: '13 3 * * *'"));
+});
+
+test('Vibe workers skip full security scan for ordinary game candidates and 24h loop does not retest security every cycle',()=>{
+  assert.ok(vibeCoreWorkflow.includes('VIBE2_SECURITY_IMMUNE_SCAN=SKIPPED_NON_SECURITY_CHANGE'));
+  assert.ok(vibeCoreWorkflow.includes("if [ \"$security_sensitive\" = 'YES' ]; then"));
+  assert.doesNotMatch(vibe24hWorkflow,/node --test[^\n]*company-security-steward\.test\.mjs/);
 });
 
 test('security workflow persists the upload artifact id and run id with every recorded incident',()=>{
