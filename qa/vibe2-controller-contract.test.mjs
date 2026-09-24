@@ -902,3 +902,20 @@ test('continuous core connects existing evidence reasoning into self-generated s
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
 });
+
+
+test('every non-neuron reserve ingress syncs current company runtime before planning and reservation',()=>{
+  const steward=workflow.indexOf("echo 'VIBE2_RESERVE_STEWARD=PASS'");
+  const fetchRuntime=workflow.indexOf('git fetch origin company-runtime --quiet',steward);
+  const planner=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs',fetchRuntime);
+  const learning=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs',planner);
+  const handoff=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check',learning);
+  const reserve=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch',handoff);
+  assert.ok(steward>=0&&fetchRuntime>steward&&planner>fetchRuntime&&learning>planner&&handoff>learning&&reserve>handoff);
+  const block=workflow.slice(steward,handoff);
+  assert.match(block,/git show origin\/company-runtime:development-queue\.json > \/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/--company-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC=PASS/);
+  assert.doesNotMatch(block,/if \[ "\$callback_kind" = 'fanin' \]; then/);
+});
