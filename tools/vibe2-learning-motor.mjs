@@ -1676,7 +1676,9 @@ function derivedProjectPhase(item={},platform='',genre=null){
 
   // Downstream machine evidence is monotonic authority. Missing descriptive metadata
   // must never project an already-built/runtime-tested project back to initial locking.
-  const execution=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
+  const rawExecution=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
+  const executionPlatform=upper(rawExecution?.platform);
+  const execution=!executionPlatform||executionPlatform===platform?rawExecution:{};
   if(platform==='ROBLOX'){
     const sourceRevision=clean(item.robloxSourceCommit||execution.sourceRevision);
     const runtimePassed=item.robloxRuntimePassed===true||execution.runtimePassed===true;
