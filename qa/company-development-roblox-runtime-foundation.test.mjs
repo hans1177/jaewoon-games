@@ -245,6 +245,19 @@ test('F9 final review requires exact Studio asset runtime proof when a binding w
  assert.match(workflow,/&&studioAssetRuntimeBindingExact===true/);
 });
 
+test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tasks',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ assert.match(workflow,/Fan verified F9 runtime proof into waiting Vibe Roblox tasks/);
+ assert.match(workflow,/candidate-awaiting-roblox-runtime-qa/);
+ assert.match(workflow,/roblox-runtime-await-game:/);
+ assert.match(workflow,/robloxRuntimePassed!==true/);
+ assert.match(workflow,/studioRequired&&item\.robloxStudioAssetRuntimeBindingPassed!==true/);
+ assert.match(workflow,/ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS/);
+ assert.match(workflow,/verification-conclusion:success/);
+ assert.match(workflow,/target-engine-qa-ref:roblox-f9-/);
+ assert.match(workflow,/vibe2-queue-control\.mjs" pass/);
+});
+
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/roblox-open-cloud-engine-probes\.json/);
