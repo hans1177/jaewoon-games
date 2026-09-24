@@ -993,6 +993,63 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relative,stages){
   }
   return null;
 }
+export function findRobloxStudioAssetBackfillTask(project,repoRoot,queue){
+  if(clean(project?.engine).toLowerCase()!=='roblox')return null;
+  if(!['development-confirmed','release-confirmed'].includes(clean(project?.releaseState).toLowerCase()))return null;
+  if(!assetProductionEnabled(repoRoot))return null;
+  const root=posix(project.projectPath);
+  if(root!==`roblox-games/${project.gameId}`)return null;
+  const candidates=[
+    `${root}/shared/GameConfig.luau`,
+    `${root}/client/Game.client.luau`,
+    `${root}/shared/VisualStyle.luau`,
+    `${root}/client/BattleVisual.luau`
+  ].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+  if(!candidates.length)return null;
+  const sourceText=candidates.map(relative=>readText(sourceFile(repoRoot,relative))).join('\n');
+  if(/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*1\b/.test(sourceText)&&/(?:StudioAssets|StudioAssetAtoms|StudioAssetAtom)/.test(sourceText))return null;
+  const id=`${project.gameId}-roblox-studio-asset-backfill-v1`;
+  if(hasTask(queue,id))return null;
+  const goal=`[PRESENTATION_PASS:ASSET_ADAPTATION] [ROBLOX_STUDIO_ASSET_BACKFILL]
+게임: ${project.name||project.gameId}
+현재 Roblox 소스에는 최신 Studio Asset Library 선택/전달 바인딩이 없다.
+기존 GRAPHICS_PRODUCTION 입력 플래너가 선택한 Game Base Material Loadout과 검증 재사용 후보를 받아 Vibe2/Vibe3가 현재 책임 Luau 소스에 실제 적용한다.
+플래너는 선택·전달만 하며 게임 소스를 직접 수정하지 않는다.
+적용은 현재 게임의 아트 방향, Style Lock, 기존 실루엣/재질/환경/UI 언어를 보존하고 실제 Instance/Material/Color3/MeshPart/Attachment/Particle/Trail/UI 표현에 연결한다.
+local STUDIO_ASSET_BINDING_VERSION = 1은 실제 바인딩과 함께 남기며 마커/주석/상수만 추가하는 no-op은 금지한다.
+데미지·체력·쿨다운·히트박스·경제·진행·저장 의미·네트워크 권한은 변경하지 않는다.
+적용 후 incremental static binding QA → 정확한 Roblox target-engine atom selection match → F5 UI/input + F8 core loop + runtime acceptance → fan-in/security 순으로 검증한다.
+실제 Roblox 런타임 PASS 전에는 회사 VERIFIED 자산이나 positive mastery로 승격하지 않는다.`;
+  const out=task(id,project,goal,candidates,project.gameId==='fantasy-survival'?'owner-immediate':'high','high',[
+    'asset-production-parallel:v1',
+    'presentation-quality-pipeline:v1',
+    'presentation-pass:ASSET_ADAPTATION',
+    'roblox-studio-asset-backfill:v1',
+    'roblox-studio-asset-selection-handoff:required',
+    'roblox-studio-asset-planner-source-mutation:forbidden',
+    'roblox-studio-asset-vibe-application:required',
+    'roblox-studio-asset-static-binding-qa:required',
+    'roblox-studio-asset-target-engine-selection-match:required',
+    'roblox-studio-asset-runtime-promotion:blocked-until-pass',
+    'presentation-preserve-gameplay-semantics',
+    'graphics-pass-real-asset-binding-runtime-required'
+  ]);
+  out.assetProductionLane=true;
+  out.presentationPass='ASSET_ADAPTATION';
+  out.studioAssetBackfill=true;
+  out.workUnits=4;
+  out.speculativeEligible=true;
+  out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
+  out.atomicCompletionRequired=true;
+  out.evidence=[...new Set([
+    ...(out.evidence||[]),
+    'atomic-neuron-stream:presentation',
+    'atomic-neuron-micro-fanin:per-task',
+    'graphics-atomic-candidate-isolation-required'
+  ])];
+  return out;
+}
+
 export function findPresentationQualityTask(project,repoRoot,queue){
   const engine=clean(project.engine).toLowerCase();
   if(!['web','unity','roblox'].includes(engine))return null;
@@ -1216,6 +1273,7 @@ function findSafeTasks(project,repoRoot,queue){
   const pilot=isAssetProductionPilot(project,repoRoot);
   if(project.engine==='roblox')return uniqueTaskCandidates([
     findRobloxInternalPlaytestTask(project,repoRoot,queue),
+    findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
     findWeatherPresentationTask(project,repoRoot,queue),
     findPresentationQualityTask(project,repoRoot,queue),
     scanExplicitMarkerTask(project,repoRoot,queue)
