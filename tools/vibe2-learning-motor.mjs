@@ -1989,7 +1989,7 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
       records.push({
         ...base,
         id,
-        evidence:[...base.evidence,...negativeMarkers.map(marker=>'verified-marker:'+marker),'specialized-negative-verification:FAIL',negativeAuthority.toLowerCase(),'specialized-outcome-id:'+id],
+        evidence:[...base.evidence,...negativeMarkers.map(marker=>'verified-marker:'+marker),'specialized-negative-verification:FAIL',`specialized-negative-authority:${negativeAuthority.split(':').at(-1)}`,'specialized-outcome-id:'+id],
         outcome:'FAIL',
         failureCause:negativeMarkers.join(' | '),
         avoidPatterns:patterns,
