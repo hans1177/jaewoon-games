@@ -581,7 +581,8 @@ jobs:
           git push origin "HEAD:refs/heads/$branch"
           if pr_url="$(gh pr create --base main --head "$branch" --title 'homepage: publish Director-approved runtime mirror' --body 'Homepage Manager self-QA and Director supervision both passed on the exact same hashed candidate. Publishes verified company-status/game-catalog differences plus synchronized Roblox/Unity internal and public release state. No pre-promotion official cards.' 2>/tmp/homepage-pr-error.log)"; then
             echo "HOMEPAGE_PUBLICATION_PR=$pr_url"
-            gh pr merge "$pr_url" --squash --delete-branch
+            gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash
+            git push origin --delete "$branch" >/dev/null 2>&1 || true
             echo 'HOMEPAGE_PUBLICATION=PR_VALIDATED_AND_MERGED_AFTER_DIRECTOR'
           else
             cat /tmp/homepage-pr-error.log >&2 || true

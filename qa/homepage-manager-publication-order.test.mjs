@@ -59,6 +59,9 @@ test('Director reviews and publishes the exact Homepage Manager candidate in one
   assert.ok(director.includes('Publish Director-approved homepage candidate'));
   assert.ok(director.includes('gh pr create'));
   assert.ok(director.includes('gh pr merge'));
+  assert.match(director,/gh pr merge "\$pr_url" --repo "\$GITHUB_REPOSITORY" --squash/);
+  assert.doesNotMatch(director,/gh pr merge[^\n]*--delete-branch/);
+  assert.match(director,/git push origin --delete "\$branch"/);
   assert.doesNotMatch(workflow,/\\n  publish-after-director:/);
 });
 
