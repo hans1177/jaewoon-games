@@ -7,6 +7,7 @@ import {planVibePresentationAutopilot} from './vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence} from './vibe-visual-quality-gate.js';
 import {createMotionDirectorPlan,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES,MOTION_GRAMMARS} from './vibe-motion-director.js';
 import {createStudioAssetUniversePlan,STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES} from './vibe-studio-asset-universe.js';
+import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation} from './vibe-environment-director.js';
 
 const QUALITY_WORDS = Object.freeze({
   art: ['그래픽', '그림', '비주얼', '캐릭터', '곤충', '배경', '에셋', '퀄리티', '고퀄'],
@@ -564,7 +565,8 @@ export function createVibeGraphicsProduction({
   artBibleRef='',
   visualTargetFramesRef='',
   previousOwnerRequests=[],
-  affectedScopes=[]
+  affectedScopes=[],
+  referenceImages=[]
 }={}){
   const platforms=graphicsProductionPlatforms(target);
   const changeRequestStability=createVibeOwnerChangeRequestStability({request,previousRequests:previousOwnerRequests,affectedScopes});
@@ -573,13 +575,26 @@ export function createVibeGraphicsProduction({
   const visualWork=planVibeVisualAutopilot({files,graph,request});
   const presentation=planVibePresentationAutopilot({files,events,request,changeRequest:changeRequestStability});
   const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
+  const referenceImageStudies=Object.freeze((referenceImages||[]).map((row,index)=>{
+    const request=createVibeReferenceImageStudyRequest({
+      sourceId:row?.sourceId||row?.id||`reference-${index+1}`,
+      sourceType:row?.sourceType||'ABSTRACTED_MULTI_REFERENCE_ANALYSIS',
+      imageRef:row?.imageRef||row?.path||row?.url||'',
+      rights:row?.rights||{},
+      purpose:row?.purpose||'MAP_STRUCTURE'
+    });
+    const observation=row?.observation?bindVibeReferenceImageObservation({
+      request,observation:row.observation,verifiedAgainstSource:row.verifiedAgainstSource===true
+    }):null;
+    return Object.freeze({request,observation});
+  }));
   const runtimeAudit=runtimeEvidence&&Object.keys(runtimeEvidence).length?auditVibeRuntimeVisualEvidence(runtimeEvidence):null;
   const status=runtimeAudit?(runtimeAudit.pass?'GRAPHICS_PASS':'ASSET_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
   const evidence=createVibeGraphicsProductionEvidenceRoot({
     gameId,candidateRevision,sourceRevision,platformEvidenceRefs,assetProvenanceRefs,artBibleRef,visualTargetFramesRef,runtimeAudit
   });
   return Object.freeze({
-    version:2,
+    version:3,
     kind:'GRAPHICS_PRODUCTION',
     status,
     graphicsProductionId:evidence.graphicsProductionId,
@@ -597,6 +612,9 @@ export function createVibeGraphicsProduction({
     visualDirection,
     visualWork,
     presentation,
+    referenceImageStudies,
+    referenceImageObservationReadyCount:referenceImageStudies.filter(row=>row.request.ready&&row.observation?.valid).length,
+    verifiedReferenceImageObservationCount:referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).length,
     changeRequestStability,
     continuousEvolution:Object.freeze({enabled:true,graphicsPassIsCheckpointNotTerminal:true,continuesAfterInternalRelease:true,continuesAfterPublicRelease:true,highEndCompletionIsReleaseGate:false}),
     runtimeAudit,
@@ -629,7 +647,11 @@ export function createVibeGraphicsProduction({
       continuousPresentationEvolution:true,
       graphicsPassIsCheckpointNotTerminal:true,
       highEndPresentationCompletionIsReleaseGate:false,
-      ownerChangeRequestStabilityRequired:true
+      ownerChangeRequestStabilityRequired:true,
+      rightsVerifiedReferenceImageObservationSupported:true,
+      rawProtectedReferenceImagePersistentLearningForbidden:true,
+      directReferenceSceneOrMapCopyForbidden:true,
+      referenceObservationIsProposalUntilVerifiedAgainstSource:true
     })
   });
 }
