@@ -676,7 +676,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
     const failureClass=clean(winner?.candidateFailure?.class).toUpperCase()||'UNCLASSIFIED';
     const gatedTransaction=variants.map(row=>neuralTransactions.get(row)).find(transaction=>transaction?.eventRoute?.fireAllowed===true)||null;
     const gatedAction=clean(gatedTransaction?.eventRoute?.proposedAction?.kind);
-    const retryStrategyEvidence=outcome==='FAIL'
+    const retryStrategyEvidence=outcome==='FAIL'&&gatedTransaction
       ?[`neural-gated-retry-strategy:${failureClass}`,`retry-strategy-must-change-after:${failureClass}`]
       :[];
     const gatedExecutionEvidence=gatedTransaction
@@ -706,7 +706,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
           :task)
       });
     }
-    applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback, gatedAction:gatedAction||null, retryStrategy:outcome==='FAIL'?failureClass:null });
+    applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback, gatedAction:gatedAction||null, retryStrategy:outcome==='FAIL'&&gatedTransaction?failureClass:null });
   }
   const acceptedTaskIds=new Set(applied.filter(row=>clean(row?.outcome)!=='STALE_RESULT_SKIPPED').map(row=>clean(row?.taskId)).filter(Boolean));
   if(acceptedTaskIds.size){
