@@ -738,6 +738,43 @@ export function buildAutonomousAssetGapFillPlan({
   });
 }
 
+export function buildBaseMaterialRotationPlan({
+  families={},usageByAtom={},minimumPerFamily=20,maxRetirePerFamilyPerCycle=2,staleAfterCycles=30
+}={}){
+  const active={},retired=[],refill=[];
+  const reasons={};
+  for(const [family,atomsRaw] of Object.entries(families||{})){
+    const atoms=uniq(atomsRaw);
+    const floor=Math.min(atoms.length,Math.max(1,Number(minimumPerFamily)||20));
+    const scored=atoms.map(atom=>{
+      const signal=usageByAtom?.[atom]||{};
+      const duplicate=Boolean(signal.duplicateOf);
+      const broken=signal.verifiedRuntimeFailure===true||Number(signal.compatibilityFailureCount||0)>=2;
+      const stale=Number(signal.usageCount||0)===0&&Number(signal.unusedCycles||0)>=Math.max(1,Number(staleAfterCycles)||30);
+      const protectedAtom=signal.locked===true||signal.gameLocked===true||signal.manualLocked===true;
+      const retireReason=protectedAtom?'':duplicate?'DUPLICATE':broken?'VERIFIED_FAILURE_OR_COMPATIBILITY_BREAK':stale?'STALE_UNUSED':'';
+      const priority=duplicate?300:broken?250:stale?100:0;
+      return{atom,retireReason,priority,protectedAtom};
+    });
+    const candidates=scored.filter(row=>row.retireReason).sort((a,b)=>b.priority-a.priority||a.atom.localeCompare(b.atom));
+    const maxAllowed=Math.max(0,atoms.length-floor);
+    const retireCount=Math.min(candidates.length,Math.max(0,Number(maxRetirePerFamilyPerCycle)||2),maxAllowed);
+    const retiredSet=new Set(candidates.slice(0,retireCount).map(row=>row.atom));
+    active[family]=freezeList(atoms.filter(atom=>!retiredSet.has(atom)));
+    for(const row of candidates.slice(0,retireCount)){
+      retired.push(Object.freeze({family,atom:row.atom,reason:row.retireReason,historyPreserved:true,physicalDelete:false}));
+      reasons[row.atom]=row.retireReason;
+      refill.push(Object.freeze({family,count:1,replaces:row.atom,reason:row.retireReason,route:'EXISTING_24H_GAP_FILL'}));
+    }
+  }
+  return Object.freeze({
+    version:1,status:'ROTATION_PLAN',active:Object.freeze(active),retired:Object.freeze(retired),refill:Object.freeze(refill),
+    retireCount:retired.length,refillCount:refill.length,historyPreserved:true,physicalDeleteForbidden:true,
+    minimumPerFamily:Number(minimumPerFamily)||20,maxRetirePerFamilyPerCycle:Number(maxRetirePerFamilyPerCycle)||2,
+    staleAfterCycles:Number(staleAfterCycles)||30,reasons:Object.freeze(reasons),usesExistingGapFill:true
+  });
+}
+
 export function createAssetLineage({
   assetId='',parentId='',sourceId='',sourceHash='',derivedHash='',transformHistory=[],licenseEvidence='',
   platform='',styleFamily='',gameId='',verificationSha='',runtimeEvidenceId=''
@@ -754,7 +791,7 @@ export function createAssetLineage({
 export function createStudioAssetUniversePlan({
   assets=[],repositoryAssets=[],externalSources=[],activeDemand={},signalsByKey={},platform='UNITY',
   styleFamily='STYLIZED_FANTASY',styleBible={},concept={},gameId='',worldDna={},languages={},
-  requirements=[],usageByAsset={},futureGameDemands=[],usageEvents=[]
+  requirements=[],usageByAsset={},futureGameDemands=[],usageEvents=[],baseMaterialFamilies={},baseMaterialUsageByAtom={}
 }={}){
   const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
@@ -770,6 +807,7 @@ export function createStudioAssetUniversePlan({
   const loadout=buildStudioAssetLoadout({requirements:inferredRequirements,assets,gameDna:{...visualDna,targetPlatform:upper(platform)},usageByAsset});
   const futureDemand=buildFutureAssetDemandForecast({gameDemands:futureGameDemands,coverageReport:coverage});
   const usageFeedback=summarizeVerifiedAssetUsage({events:usageEvents});
+  const baseMaterialRotation=buildBaseMaterialRotationPlan({families:baseMaterialFamilies,usageByAtom:baseMaterialUsageByAtom});
   const testbed=createStudioTestbedPlan({assetIds:loadout.selections.map(row=>row.assetId).filter(Boolean),platform,mobile:true});
   return Object.freeze({
     version:3,
@@ -784,6 +822,7 @@ export function createStudioAssetUniversePlan({
     loadout,
     futureDemand,
     usageFeedback,
+    baseMaterialRotation,
     testbed,
     coverage,
     heatmap:gapFill.heatmap,
