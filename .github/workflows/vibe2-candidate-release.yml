@@ -41,6 +41,7 @@ jobs:
       candidate_branch: ${{ steps.gate.outputs.candidate_branch }}
       origin: ${{ steps.gate.outputs.origin }}
       already_promoted: ${{ steps.gate.outputs.already_promoted }}
+      presentation_compare_required: ${{ steps.gate.outputs.presentation_compare_required }}
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
@@ -122,6 +123,7 @@ jobs:
           game_id="$(sed -n 's/^game_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
           production_class="$(sed -n 's/^production_class=//p' "$GITHUB_OUTPUT" | tail -n1)"
           candidate_origin="$(sed -n 's/^origin=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          presentation_compare_required=false
 
           if [ "$candidate_origin" = 'VIBE2_NATIVE' ]; then
             git fetch origin vibe2-unreal-core --quiet
@@ -149,7 +151,18 @@ jobs:
               exit 0
             fi
             echo "VIBE2_CANDIDATE_CURRENT_WINNER=$SUBMITTED_CANDIDATE_BRANCH"
+            presentation_compare_required="$(TASK_ID="$task_id" node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-current-control-queue.json','utf8'));
+          const task=(queue.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
+          const evidence=(task?.evidence||[]).map(value=>String(value||'').trim());
+          const required=evidence.includes('graphics-evolution-before-after-comparison-required')||task?.studioQualityEvolution?.visibleRenderDeltaRequired===true;
+          process.stdout.write(required?'true':'false');
+          NODE
+            )"
           fi
+          echo "presentation_compare_required=$presentation_compare_required" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_PRESENTATION_COMPARE_REQUIRED=$presentation_compare_required"
 
           reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
           git cat-file -e "${base_sha}^{commit}" 2>/dev/null || reject base-main-sha-missing
@@ -302,9 +315,81 @@ jobs:
           echo 'VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS'
           echo 'VIBE2_WEB_STATIC_QA=PASS'
 
+      - name: Compare actual Web runtime presentation before and after
+        id: presentation_compare
+        if: steps.webqa.outcome == 'success' && needs.inspect.outputs.presentation_compare_required == 'true'
+        continue-on-error: true
+        env:
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser" || { echo 'VIBE2_PRESENTATION_RUNTIME_BROWSER_MISSING' >&2; exit 1; }
+          rm -rf /tmp/vibe2-presentation-before
+          git worktree prune
+          git worktree add --detach /tmp/vibe2-presentation-before "$BASE_SHA" >/dev/null
+          python3 -m http.server 41731 --bind 127.0.0.1 --directory /tmp/vibe2-presentation-before >/tmp/vibe2-presentation-before-server.log 2>&1 &
+          before_pid=$!
+          python3 -m http.server 41732 --bind 127.0.0.1 --directory "$GITHUB_WORKSPACE" >/tmp/vibe2-presentation-after-server.log 2>&1 &
+          after_pid=$!
+          trap 'kill "$before_pid" "$after_pid" 2>/dev/null || true; git worktree remove --force /tmp/vibe2-presentation-before >/dev/null 2>&1 || true' EXIT
+          before_url="http://127.0.0.1:41731/$SOURCE_ROOT/"
+          after_url="http://127.0.0.1:41732/$SOURCE_ROOT/"
+          for url in "$before_url" "$after_url"; do
+            for attempt in $(seq 1 20); do
+              curl -fsS "$url" >/dev/null 2>&1 && break
+              [ "$attempt" -lt 20 ] || { echo "VIBE2_PRESENTATION_RUNTIME_URL_FAILED=$url" >&2; exit 1; }
+              sleep 0.25
+            done
+          done
+          mkdir -p /tmp/vibe2-presentation-comparison
+          capture() {
+            local url="$1" out="$2" budget="$3" profile="$4"
+            rm -rf "$profile"
+            "$browser" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 \
+              --virtual-time-budget="$budget" --user-data-dir="$profile" --screenshot="$out" "$url" >/dev/null 2>&1
+            test -s "$out"
+          }
+          capture "$before_url" /tmp/vibe2-presentation-comparison/before-1500.png 1500 /tmp/vibe2-chrome-before-1500
+          capture "$after_url"  /tmp/vibe2-presentation-comparison/after-1500.png  1500 /tmp/vibe2-chrome-after-1500
+          capture "$before_url" /tmp/vibe2-presentation-comparison/before-4500.png 4500 /tmp/vibe2-chrome-before-4500
+          capture "$after_url"  /tmp/vibe2-presentation-comparison/after-4500.png  4500 /tmp/vibe2-chrome-after-4500
+          before_1500="$(sha256sum /tmp/vibe2-presentation-comparison/before-1500.png | awk '{print $1}')"
+          after_1500="$(sha256sum /tmp/vibe2-presentation-comparison/after-1500.png | awk '{print $1}')"
+          before_4500="$(sha256sum /tmp/vibe2-presentation-comparison/before-4500.png | awk '{print $1}')"
+          after_4500="$(sha256sum /tmp/vibe2-presentation-comparison/after-4500.png | awk '{print $1}')"
+          delta_count=0
+          [ "$before_1500" != "$after_1500" ] && delta_count=$((delta_count+1))
+          [ "$before_4500" != "$after_4500" ] && delta_count=$((delta_count+1))
+          jq -n \
+            --arg base "$BASE_SHA" --arg candidate "$CANDIDATE_SHA" \
+            --arg before1500 "$before_1500" --arg after1500 "$after_1500" \
+            --arg before4500 "$before_4500" --arg after4500 "$after_4500" \
+            --argjson deltaCount "$delta_count" \
+            '{version:1,required:true,actualRuntime:true,target:"web",viewport:{width:390,height:844,touchPriority:true},baseRevision:$base,candidateRevision:$candidate,before:{capture1500Sha256:$before1500,capture4500Sha256:$before4500},after:{capture1500Sha256:$after1500,capture4500Sha256:$after4500},visibleDeltaObserved:($deltaCount>0),deltaCaptureCount:$deltaCount,pass:($deltaCount>0),authority:"vibe2-candidate-release-local-browser-runtime-before-after"}' \
+            > /tmp/vibe2-presentation-comparison/comparison.json
+          echo "before_sha=$before_4500" >> "$GITHUB_OUTPUT"
+          echo "after_sha=$after_4500" >> "$GITHUB_OUTPUT"
+          echo "delta_count=$delta_count" >> "$GITHUB_OUTPUT"
+          [ "$delta_count" -gt 0 ] || { echo 'VIBE2_PRESENTATION_RUNTIME_VISIBLE_DELTA=FAIL' >&2; exit 1; }
+          echo 'VIBE2_PRESENTATION_RUNTIME_BEFORE_AFTER=PASS'
+          echo "VIBE2_PRESENTATION_RUNTIME_DELTA_CAPTURES=$delta_count"
+
+      - name: Upload Web runtime presentation comparison
+        if: always() && needs.inspect.outputs.presentation_compare_required == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-presentation-runtime-${{ needs.inspect.outputs.task_id }}
+          path: /tmp/vibe2-presentation-comparison
+          if-no-files-found: warn
+          retention-days: 3
+
       - name: Promote approved web source root through reviewed PR
         id: promote
-        if: steps.webqa.outcome == 'success'
+        if: steps.webqa.outcome == 'success' && (needs.inspect.outputs.presentation_compare_required != 'true' || steps.presentation_compare.outcome == 'success')
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -379,10 +464,16 @@ jobs:
           QA_OUTCOME: ${{ steps.webqa.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+          PRESENTATION_COMPARE_REQUIRED: ${{ needs.inspect.outputs.presentation_compare_required }}
+          PRESENTATION_COMPARE_OUTCOME: ${{ steps.presentation_compare.outcome }}
+          PRESENTATION_BEFORE_SHA: ${{ steps.presentation_compare.outputs.before_sha }}
+          PRESENTATION_AFTER_SHA: ${{ steps.presentation_compare.outputs.after_sha }}
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          presentation_ok=true
+          if [ "$PRESENTATION_COMPARE_REQUIRED" = 'true' ] && [ "$PRESENTATION_COMPARE_OUTCOME" != 'success' ]; then presentation_ok=false; fi
+          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ] && [ "$presentation_ok" = true ]; then result=PASS; else result=FAIL; fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
               gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN"
@@ -409,9 +500,13 @@ jobs:
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-pr-merged,actions-run-${GITHUB_RUN_ID}"
+              pass_evidence="web-static-qa-pass,main-pr-merged,actions-run-${GITHUB_RUN_ID}"
+              if [ "$PRESENTATION_COMPARE_REQUIRED" = 'true' ]; then
+                pass_evidence="${pass_evidence},graphics-runtime-before-after-comparison:PASS,graphics-runtime-before-sha256:${PRESENTATION_BEFORE_SHA},graphics-runtime-after-sha256:${PRESENTATION_AFTER_SHA}"
+              fi
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="$pass_evidence"
             else
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-promotion-or-presentation-runtime-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},presentation-compare-${PRESENTATION_COMPARE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
             git add .vibe2/queue.json
             if git diff --cached --quiet; then
