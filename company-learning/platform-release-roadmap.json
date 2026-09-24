@@ -1,5 +1,5 @@
 {
-  "version": 340,
+  "version": 341,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -6496,6 +6496,22 @@
       "explicitPublicExposureEvidenceStillRequired": true,
       "extendedMultiplayerLifecycleStillRequiredForRepairOrSpecificFailure": true,
       "centralPolicyAndImplementationSynchronized": true
+    },
+    "studioQualityEvolution20260924": {
+      "id": "STUDIO_QUALITY_EVOLUTION_2026-09-24",
+      "documentedAt": "2026-09-24",
+      "documentationFirst": true,
+      "summary": "Adds per-game studio maturity, evidence-based quality delta, vertical-slice discipline, playtest-to-work conversion, verified learning feedback, duplicate-QA suppression, and maximum safe independent parallelism without weakening existing gates.",
+      "codeBindings": [
+        "tools/vibe2-auto-planner.mjs",
+        "tools/vibe2-work-package.mjs",
+        "tools/vibe2-development-intelligence.mjs",
+        "tools/vibe2-incremental-qa.mjs",
+        "tools/vibe2-fan-in-review.mjs",
+        "vibe2-runtime.json"
+      ],
+      "protectedSemanticsUnchanged": true,
+      "gateThresholdsUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -20558,6 +20574,219 @@
       "computeExecutionMayYieldToProduction": true,
       "signalGenerationAndQueueingContinueWhileYielded": true,
       "resumeQueuedLearningAutomaticallyWhenCapacityReturns": true
+    }
+  },
+  "studioQualityEvolution": {
+    "version": 1,
+    "status": "ACTIVE_CANONICAL_EXECUTION_POLICY",
+    "authority": "OWNER_DIRECTIVE_2026-09-24",
+    "objective": "MAKE_EVERY_VERIFIED_GAME_DEVELOPMENT_CYCLE_MEASURABLY_CLOSE_A_REAL_QUALITY_GAP_OR_IMPROVE_AT_LEAST_ONE_GAME_QUALITY_AXIS_WITHOUT_REGRESSING_PROTECTED_SEMANTICS",
+    "principles": {
+      "passIsNotImprovement": true,
+      "verifiedCheckpointIsBaselineForNextCycle": true,
+      "unchangedQualityMayNotBeClaimedAsEvolution": true,
+      "actualGameSourceOrApprovedAssetBindingChangeRequiredForImplementationCredit": true,
+      "ownerIntentAndApprovedDesignRemainHighestGameMeaningAuthority": true,
+      "protectedGameplaySaveProgressionEconomyHitAndNetworkSemanticsPreservedUnlessSeparatelyApproved": true,
+      "noFabricatedSubjectiveScore": true,
+      "unknownRuntimeQualityMustRemainUnknownUntilObserved": true
+    },
+    "maturityStages": {
+      "mode": "PER_GAME_EVIDENCE_MATURITY_NOT_GLOBAL_WAVE_BARRIER",
+      "stages": [
+        "CONCEPT",
+        "PRE_PRODUCTION",
+        "VERTICAL_SLICE",
+        "PRODUCTION",
+        "ALPHA",
+        "BETA",
+        "RELEASE_CANDIDATE",
+        "LIVE"
+      ],
+      "independentGamesAndIndependentPackagesMayAdvanceInParallel": true,
+      "stageLabelNeverCreatesPortfolioWideBarrier": true,
+      "verticalSliceRequiredBeforeBlindBroadContentExpansion": true,
+      "verticalSliceRepresentativePlayMinutes": [
+        10,
+        15
+      ],
+      "verticalSliceRequires": [
+        "CORE_LOOP",
+        "INPUT",
+        "FEEDBACK",
+        "PRESENTATION",
+        "SAVE_WHEN_APPLICABLE",
+        "MOBILE_PRIMARY_FLOW",
+        "FAILURE_AND_RECOVERY_PATH"
+      ]
+    },
+    "qualityPillars": {
+      "CORE_FUN": [
+        "core-loop-readability",
+        "combat-or-primary-interaction-feedback",
+        "decision-density",
+        "failure-recovery-clarity"
+      ],
+      "PROGRESSION": [
+        "short-mid-long-goals",
+        "reward-meaning",
+        "unlock-clarity",
+        "repeat-play-reason"
+      ],
+      "PRESENTATION": [
+        "visual-identity",
+        "animation",
+        "vfx",
+        "camera",
+        "audio-visual-timing",
+        "ui-hierarchy",
+        "environment-composition"
+      ],
+      "USABILITY": [
+        "mobile-input",
+        "touch-targets",
+        "readability",
+        "navigation",
+        "tutorialization",
+        "accessibility"
+      ],
+      "STABILITY": [
+        "runtime-integrity",
+        "save-compatibility",
+        "network-consistency",
+        "performance",
+        "error-recovery",
+        "regression-safety"
+      ]
+    },
+    "cycle": [
+      "LOAD_LATEST_VERIFIED_BASELINE_AND_OWNER_INTENT",
+      "COLLECT_CURRENT_FAILURE_PLAYTEST_VISUAL_AND_LEARNING_EVIDENCE",
+      "SELECT_WEAKEST_OR_HIGHEST_VALUE_VERIFIABLE_QUALITY_GAP",
+      "BUILD_ONE_FUNCTIONAL_WORK_PACKAGE_WITH_CLEAR_ACCEPTANCE",
+      "RUN_PARALLEL_EXPLORATION_IMPLEMENTATION_QA_PERFORMANCE_WHERE_FILE_RESPONSIBILITY_DOES_NOT_CONFLICT",
+      "RUN_IMPACT_SCOPED_INCREMENTAL_QA",
+      "RUN_RUNTIME_OR_PLAYTEST_ONLY_WHEN_THE_CHANGED_BEHAVIOR_REQUIRES_OBSERVATION",
+      "COMPARE_AGAINST_VERIFIED_BASELINE",
+      "REQUIRE_VERIFIED_GAP_CLOSURE_OR_QUALITY_DELTA_WITH_NO_PROTECTED_REGRESSION",
+      "FAN_IN_FULL_REGRESSION_ONCE",
+      "RECORD_SUCCESS_FAILURE_AND_CAUSAL_LEARNING",
+      "GENERATE_NEXT_CAUSAL_QUALITY_FOCUS"
+    ],
+    "qualityDeltaContract": {
+      "baselineRequired": true,
+      "baselineSourcePriority": [
+        "LATEST_VERIFIED_GAME_CHECKPOINT",
+        "LATEST_VERIFIED_RUNTIME_OR_PLAYTEST_EVIDENCE",
+        "APPROVED_DESIGN_BASELINE"
+      ],
+      "atLeastOneVerifiedImprovedAxisOrClosedGapRequired": true,
+      "protectedAxisRegressionForbidden": true,
+      "unchangedImplementationMayPassSafetyQaButDoesNotCountAsEvolution": true,
+      "beforeAfterComparisonRequiredForMaterialPresentationOrInteractionChanges": true,
+      "runtimeObservationRequiredWhenStaticEvidenceCannotEstablishUserVisibleImprovement": true,
+      "deterministicEvidencePreferredOverAiJudgment": true,
+      "aiReviewAdvisoryUnlessBackedByDeterministicOrObservedEvidence": true
+    },
+    "definitionOfDone": [
+      "FUNCTIONAL_SCOPE_IMPLEMENTED_IN_EXISTING_RESPONSIBLE_SYSTEM",
+      "NO_WRAPPER_OVERRIDE_OR_TEMPORARY_PATCH_ACCUMULATION",
+      "IMPACT_SCOPED_INCREMENTAL_QA_PASS",
+      "PERFORMANCE_SANITY_PASS_WHEN_IMPACTED",
+      "RUNTIME_OR_PLAYTEST_EVIDENCE_WHEN_REQUIRED",
+      "VERIFIED_QUALITY_GAP_CLOSED_OR_QUALITY_DELTA_PROVEN",
+      "NO_PROTECTED_SEMANTICS_REGRESSION",
+      "FULL_CORE_REGRESSION_ONCE_AT_FAN_IN",
+      "VERIFIED_LEARNING_FEEDBACK_RECORDED",
+      "NEXT_CAUSAL_FOCUS_OR_VERIFIED_CHECKPOINT_CREATED"
+    ],
+    "designEvolution": {
+      "strictDesignPassIsCheckpointNotPermanentTerminal": true,
+      "newOwnerSignalReopensImmediately": true,
+      "verifiedPlaytestOrImplementationWeaknessReopensRelevantDesignAxis": true,
+      "periodicDeepReviewContinues": true,
+      "weakestPillarFeedsNextDesignRevision": true,
+      "noDesignChurnWithoutNewEvidence": true
+    },
+    "graphicsAndPresentation": {
+      "markerPresenceAloneNeverProvesQuality": true,
+      "actualRenderedBindingRequired": true,
+      "visualDebtSignalsInclude": [
+        "placeholder",
+        "primitive-only",
+        "weak-silhouette",
+        "weak-hit-feedback",
+        "animation-state-gap",
+        "style-drift",
+        "ui-clutter",
+        "environment-flatness",
+        "camera-feedback-gap",
+        "audio-visual-desync"
+      ],
+      "goldenSceneOrEquivalentRuntimeComparisonPreferred": true,
+      "presentationImprovementMayNotChangeGameplayNumbers": true
+    },
+    "playtestFeedback": {
+      "feedbackMustBecomeCausalWorkWhenReproducible": true,
+      "convertFeelingProblemToObservableCauses": true,
+      "examples": [
+        "weak-hit-feedback->windup-hitstop-reaction-vfx-audio-timing",
+        "confusing-progression->goal-reward-unlock-feedback",
+        "mobile-friction->touch-layout-input-state-readability"
+      ],
+      "runtimeEvidenceMustBindExactSourceAndArtifactWhenPlatformRequiresIt": true,
+      "unobservedRuntimePassMayNotBeInvented": true
+    },
+    "learningIntegration": {
+      "enabled": true,
+      "consume": [
+        "VERIFIED_GAME_EXPERIENCE",
+        "VERIFIED_FAILURE_MEMORY",
+        "VERIFIED_CODE_PATTERNS",
+        "VERIFIED_PRACTICE_DISTILLATION",
+        "PLATFORM_SPECIFIC_DISTILLATION",
+        "LATEST_VERIFIED_CHECKPOINT"
+      ],
+      "applyBeforeImplementationPlanning": true,
+      "previousSuccessfulAndFailedApproachesMustInfluenceStrategySelection": true,
+      "repeatedSameFailureRequiresChangedHypothesisOrDeeperCausalRepair": true,
+      "verifiedResultFeedsExistingLearningMotor": true,
+      "learningIsAdvisoryAndMayNotExpandAuthority": true,
+      "learningMayNotCopyProtectedGameplayNumbers": true,
+      "negativeResultsAreReusableAvoidEvidence": true
+    },
+    "qaEfficiency": {
+      "goal": "MINIMUM_SUFFICIENT_VERIFICATION_WITHOUT_DUPLICATE_WORK",
+      "impactScopedIncrementalQaFirst": true,
+      "contentAndContractFingerprintReuse": true,
+      "unchangedVerifiedEvidenceReusable": true,
+      "affectedEvidenceOnlyInvalidated": true,
+      "duplicateFullRegressionForbidden": true,
+      "fullCoreRegressionExactlyOnceAtFanIn": true,
+      "runtimeQaOnlyWhenStaticEvidenceCannotVerifyChangedBehavior": true,
+      "identicalSourceContractAndArtifactMustReuseValidEvidence": true,
+      "repeatedUnchangedFailureMustNotTriggerIdenticalExpensiveQa": true,
+      "cacheHitPassMayBeReusedWhenAllRelevantFingerprintsMatch": true,
+      "safetyReleaseSaveSecurityAndPlatformRuntimeGatesMayNotBeWeakened": true
+    },
+    "parallelExecution": {
+      "mode": "MAXIMUM_SAFE_INDEPENDENT_PARALLELISM",
+      "noGlobalStageBarrier": true,
+      "noPortfolioWideWaitForSingleGame": true,
+      "independentGamesParallel": true,
+      "independentPackagesWithinGameParallelWhenResponsibleFilesDoNotOverlap": true,
+      "parallelRoles": [
+        "EXPLORATION",
+        "IMPLEMENTATION",
+        "INCREMENTAL_QA",
+        "PERFORMANCE",
+        "GRAPHICS_ASSET_PRODUCTION",
+        "LEARNING_RETRIEVAL"
+      ],
+      "sameResponsibleFileConcurrentWriteForbidden": true,
+      "fanInSerializesOnlySharedAcceptanceAndReleaseMutation": true,
+      "runtimeWaitReleasesGeneralDevelopmentCapacity": true,
+      "externalProviderCapacityIsBoundaryNotArtificialInternalCap": true
     }
   }
 }
