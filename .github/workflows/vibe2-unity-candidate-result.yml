@@ -77,6 +77,13 @@ jobs:
               exit 0
             fi
 
+            if [ "$BUILD_CONCLUSION" = 'success' ]; then
+              node vibe2-main-contract/tools/vibe2-fan-in-review.mjs \
+                --queue=.vibe2/queue.json \
+                --post-native-branch="$CANDIDATE_BRANCH" \
+                --post-native-target=unity | tee /tmp/vibe2-unity-post-native-specialized.log
+            fi
+
             git add .vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'VIBE2_QUEUE_RESULT_COMMIT=NO_CHANGE'
