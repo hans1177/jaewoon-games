@@ -70,6 +70,27 @@ test('legacy retryable failed development work revives under unlimited causal re
   assert.ok(task.evidence.includes('recovery:legacy-failed-unlimited-requeue-v1'));
 });
 
+test('legacy owner task without responsible files stays quarantined instead of auto-reviving',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'pwa-stale-owner',
+    gameId:'g',
+    target:'unity',
+    department:'development',
+    type:'implementation',
+    goal:'stale owner task',
+    status:'failed',
+    blocker:'source-candidate-generation-failed',
+    retries:3,
+    sourceRoot:'unity-games/g',
+    responsibleFiles:[]
+  }]});
+  const task=queue.tasks[0];
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(task.status,'failed');
+  assert.equal(task.blocker,'source-candidate-generation-failed');
+  assert.equal(task.evidence.includes('recovery:legacy-failed-unlimited-requeue-v1'),false);
+});
+
 test('legacy done state migrates to verified checkpoint and PASS never emits terminal done',()=>{
   const legacy=createVibeContinuousQueue({tasks:[{
     id:'legacy-done',gameId:'legacy',target:'web',department:'development',type:'implementation',
