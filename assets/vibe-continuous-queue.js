@@ -215,6 +215,9 @@ function normalizeTask(input = {}, index = 0) {
   const retryPolicy=unlimitedRetry?UNLIMITED_RETRY_POLICY:(clean(input.retryPolicy).toUpperCase()||'BOUNDED');
   const legacyRetryableFailure=rawStatus==='failed'
     &&unlimitedRetry
+    &&Array.isArray(input.responsibleFiles)
+    &&input.responsibleFiles.length>0
+    &&!/^(?:pwa-|legacy-owner-)/i.test(clean(input.id))
     &&/source-candidate-generation-failed|parallel-candidate-generation-failed|retry-limit-exceeded/i.test(clean(input.blocker));
   const status = rawStatus==='done' ? 'verified' : legacyRetryableFailure ? 'queued' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
   const inputEvidence=normalizeEvidence(input.evidence||[]);
