@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "shared/GameConfig.luau",
+      "find": "return table.freeze(Config)",
+      "replace": "return table.freeze(Config) -- STUDIO_ASSET_BINDING_BEGIN\nStudioAssets = {\n  Applied = true,\n  BindingVersion = 1,\n  LibraryVersion = 16,\n  Source = \"company-asset-library.json#baseMaterialLibrary\",\n  AtomState = \"PREPARED_SEMANTIC_ATOM_LIBRARY\",\n  RecipeId = \"NORMAL_VARIANT\",\n  ProductionVerified = false,\n  RuntimeVerificationRequired = true,\n  Families = {\n    UI = { \"FRAME_PANEL\", \"BUTTON_PRIMARY\", \"BAR_HEALTH\" },\n    ENVIRONMENT = { \"TREE_TRUNK_THICK\", \"TREE_CROWN_ROUND\", \"ROCK_MEDIUM\", \"ROAD_DIRT\" },\n    BUILDING = { \"FOUNDATION_RECT\", \"WALL_SOLID\", \"DOOR_SINGLE\", \"ROOF_GABLE\" },\n    PROP = { \"CHEST\", \"CRATE\", \"LAMP\" },\n    MATERIAL = { \"WOOD\", \"STONE\", \"METAL\" },\n    VFX = { \"IMPACT_FLASH\", \"TRAIL_SHORT\", \"SHAPE_BURST\" },\n    WEAPON = { \"BLADE_LONG\", \"GUARD_CROSS\", \"GRIP_LONG\" },\n    CHARACTER = { \"TORSO_CLOTH\", \"SHOULDER_LIGHT\", \"BACK_CAPE\" },\n    CREATURE = { \"HEAD_CANINE\", \"JAW_LONG\", \"CLAW\" },\n  },\n}\n-- STUDIO_ASSET_BINDING_END"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
