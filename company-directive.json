@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 65,
+  "revision": 66,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1083,7 +1083,13 @@
     "emotionIntentLayerRequired": true,
     "motionLodRequired": true,
     "motionLineageRequired": true,
-    "verifiedRuntimeMotionLearningRequired": true
+    "verifiedRuntimeMotionLearningRequired": true,
+    "studioAssetUniverseRequired": true,
+    "universalAssetCoverageScannerRequired": true,
+    "crossAssetCompatibilityRequired": true,
+    "assetIdentityQaRequired": true,
+    "styleBibleGeneratorRequired": true,
+    "autonomousLibraryPopulation24h": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1157,10 +1163,20 @@
       ],
       "runtimeMotionLearning": "EXISTING_CANONICAL_LEARNING_CHAIN_ONLY",
       "preparedSemanticCannotTeachPositiveMastery": true,
-      "verifiedFailureMayTeachAvoidPattern": true
+      "verifiedFailureMayTeachAvoidPattern": true,
+      "studioAssetUniverseTarget": "HIGH_END_STUDIO_ASSET_UNIVERSE",
+      "creatureBodyPlanTargetMinimum": 30,
+      "creatureSpeciesTargetMinimum": 50,
+      "colorOnlyVariantDoesNotCountAsDistinctAsset": true,
+      "clothingLayerCompatibilityRequired": true,
+      "buildingGrammarRequired": true,
+      "biomeDnaRequired": true,
+      "libraryHeatmapRequired": true,
+      "universalGapFill24h": true
     },
     "internalModules": [
-      "assets/vibe-motion-director.js"
+      "assets/vibe-motion-director.js",
+      "assets/vibe-studio-asset-universe.js"
     ]
   },
   "centralDocumentation": {
