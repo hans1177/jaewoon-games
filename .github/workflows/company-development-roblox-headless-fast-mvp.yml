@@ -59,7 +59,7 @@ jobs:
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_F0_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=[];
           for(const item of q.items||[]){
-            if(rows.length>=6)break;
+            if(rows.length>=256)break;
             if(requested&&item.gameId!==requested)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -75,6 +75,8 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include:rows})+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json='+JSON.stringify(rows)+'\n');
           console.log('ROBLOX_F0_PREFLIGHT_TARGETS='+rows.map(x=>x.gameId).join(','));
+          console.log('ROBLOX_F0_PARALLELISM=EXTERNAL_PROVIDER_CAPACITY_ONLY');
+          console.log('ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL');
           NODE
 
   validate:
@@ -82,7 +84,6 @@ jobs:
     if: needs.plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 6
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
