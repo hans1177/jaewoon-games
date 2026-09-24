@@ -1252,6 +1252,20 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='VFX_LIBRARY_DRILL')return'공용 VFX를 ambient/normal/heavy/critical/boss 강도로 분리해 타격·trail·afterimage·telegraph·impact wave·landing·reward 계열을 준비한다. 게임별 색/재질/밀도 변형이 가능해야 하며 모바일 가독성과 pooling 예산을 지킨다.';
   if(kind==='ENVIRONMENT_KIT_LIBRARY_DRILL')return'숲·설원·사막·마을·던전·폐허 등 환경 키트를 전경/중경/배경, 랜드마크, 지형, 건축, 식생, 소품 조합으로 준비한다. 완성 맵 복제보다 재조합 가능한 모듈과 게임별 환경 언어 변형을 우선한다.';
   if(kind==='UI_PRESENTATION_LIBRARY_DRILL')return'모바일 우선 HUD·인벤토리·상점·설정·체력바·슬롯·버튼·상호작용 피드백을 장르별로 변형 가능한 공용 표현 규격으로 준비한다. 하나의 전역 UI가 모든 게임 정체성을 평준화하지 않게 한다.';
+  if(kind==='CREATURE_UNIVERSE_DRILL')return'몬스터 Body Plan과 Species 라이브러리를 확장한다. 최소 30개 body plan과 50개 species 목표를 유지하고 색만 바꾼 변종은 별도 종으로 세지 않는다. 실루엣·이동·공격·시그니처·오디오·피격/사망 정체성을 분리한다.';
+  if(kind==='CLOTHING_ARMOR_LIBRARY_DRILL')return'HEAD/HAIR/FACE/NECK/TORSO/SHOULDER/ARM/GLOVE/BELT/LEG/BOOT/BACK/CAPE/ACCESSORY 레이어를 체형·리그·Style Lock별로 준비하고 clipping/exclusion/theme grammar를 검증한다.';
+  if(kind==='BUILDING_MODULAR_LIBRARY_DRILL')return'건물을 FOUNDATION/WALL/CORNER/WINDOW/DOOR/ROOF/STAIRS/BALCONY/PILLAR/FENCE/SIGN/INTERIOR/DECORATION 모듈로 준비하고 문·창·계단·지붕·플레이어/NPC 동선·충돌 규칙을 검증한다.';
+  if(kind==='INTERIOR_KIT_LIBRARY_DRILL')return'BEDROOM/KITCHEN/SHOP/BLACKSMITH/TAVERN/TEMPLE/WAREHOUSE/LAB/ARMORY/DUNGEON/BOSS_ROOM 실내 키트와 가구·조명·선반·상자·작업대·장식 조합을 준비한다.';
+  if(kind==='BIOME_DNA_LIBRARY_DRILL')return'FOREST/MAGICAL_FOREST/JUNGLE/SWAMP/DESERT/SNOW/VOLCANO/MOUNTAIN/PLAINS/BEACH/OCEAN/CAVE/UNDERGROUND/SKY/VOID/RUINS/CITY/VILLAGE별 Ground/Rock/Vegetation/Water/Fog/Sky/Lighting/Landmark/Props/Ambience/Creature/Architecture DNA를 채운다.';
+  if(kind==='PROP_LIBRARY_DRILL')return'Furniture/Container/Crafting/Decoration/Resource/Interactive/Destruction 소품을 방/바이옴/상호작용 의미와 연결하고 모바일 Prop Density와 navigation clearance를 함께 검증한다.';
+  if(kind==='MATERIAL_LIBRARY_DRILL')return'Wood/Stone/Metal/Cloth/Leather/Skin/Fur/Scale/Ice/Lava/Crystal/Slime/Bone 재질을 Cartoon/Realistic/Dark/LowPoly/Cel 스타일과 Unity/Roblox 성능 예산별로 준비한다.';
+  if(kind==='AUDIO_VARIATION_LIBRARY_DRILL')return'Footstep/Creature Vocal/Attack/Hit/Weapon/Environment/UI/Magic/Boss/Building/Weather 오디오를 반복 이벤트당 최소 3개, 목표 8개 변형으로 준비하고 같은 샘플 연속 반복을 억제한다.';
+  if(kind==='SKILL_PRESENTATION_LIBRARY_DRILL')return'스킬을 Cast Motion→VFX→Projectile/Range→Impact→Audio→Camera→Reaction 구성으로 준비한다. 데미지·쿨다운·타겟팅 권한은 게임플레이에 남긴다.';
+  if(kind==='DAMAGE_PRESENTATION_LIBRARY_DRILL')return'Slash/Blunt/Pierce/Bite/Claw/Fire/Ice/Electric/Poison/Explosion/Magic/Heavy Knockback별 Reaction+VFX+Audio+Camera Feedback 세트를 준비한다.';
+  if(kind==='DESTRUCTION_LIBRARY_DRILL')return'Wood/Stone/Door/Container/Ice/Wall/Metal 파괴 표현을 FULL/SIMPLIFIED/VFX_ONLY LOD로 준비하고 모바일 파편·VFX 비용을 검증한다.';
+  if(kind==='ASSET_IDENTITY_QA_DRILL')return'색상만 다른 자산을 별도 identity로 세지 않는다. 몬스터는 silhouette/locomotion/attack/signature/audio/death 차이, 건물/소품은 shape/function/theme 차이를 검증한다.';
+  if(kind==='STYLE_BIBLE_LIBRARY_DRILL')return'Shape/Proportion/Silhouette/Palette/Material/Lighting/VFX/Animation/UI/Building/Creature 언어를 Style Bible로 정규화하고 게임 Style Lock에서 벗어난 자산을 감지한다.';
+  if(kind==='UNIVERSAL_ASSET_COVERAGE_DRILL')return'CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP의 verified/prepared/baseline/demand/style/platform coverage를 계산하고 가장 큰 gap부터 재사용→외부 검증→semantic seed→native authoring 순으로 보강한다.';
   if(kind==='MOTION_CONTINUITY_DRILL')return'Idle 생동감, 속도 기반 이동 블렌딩, 가속·감속, 회전 후행, secondary motion, 발 미끄러짐 억제를 게임 수치 변경 없이 구현·검증하는 방법을 분석한다.';
   if(kind==='ANIMATION_FEEL_DRILL')return'준비→가속→impact→표현용 hit-stop→반동→복귀 흐름과 authoritative hit event 동기화를 분석한다. 게임 판정이나 쿨다운을 표현 계층에서 바꾸지 않는다.';
   if(kind==='VFX_READABILITY_DRILL')return'타격 피드백·trail·particle·telegraph를 모바일 가독성과 effect budget 안에서 구현하고 무제한 객체 생성을 막는 방법을 분석한다.';
@@ -1277,7 +1291,21 @@ function companyGraphicsLibraryDrills(){
     ['weapon-motion','WEAPON_MOTION_LIBRARY_DRILL',['LIVING_MOTION','ANIMATION_FEEL']],
     ['vfx-library','VFX_LIBRARY_DRILL',['VFX','ASSET_PRODUCTION']],
     ['environment-kit','ENVIRONMENT_KIT_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
-    ['ui-presentation','UI_PRESENTATION_LIBRARY_DRILL',['ASSET_ADAPTATION','VFX']]
+    ['ui-presentation','UI_PRESENTATION_LIBRARY_DRILL',['ASSET_ADAPTATION','VFX']],
+    ['creature-universe','CREATURE_UNIVERSE_DRILL',['ASSET_PRODUCTION','LIVING_MOTION','ANIMATION_FEEL']],
+    ['clothing-armor','CLOTHING_ARMOR_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['building-modular','BUILDING_MODULAR_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['interior-kit','INTERIOR_KIT_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['biome-dna','BIOME_DNA_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION','AUDIO_FEEL']],
+    ['prop-library','PROP_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['material-library','MATERIAL_LIBRARY_DRILL',['ASSET_ADAPTATION']],
+    ['audio-variation','AUDIO_VARIATION_LIBRARY_DRILL',['AUDIO_FEEL']],
+    ['skill-presentation','SKILL_PRESENTATION_LIBRARY_DRILL',['ASSET_PRODUCTION','LIVING_MOTION','VFX','AUDIO_FEEL','CAMERA_LANGUAGE']],
+    ['damage-presentation','DAMAGE_PRESENTATION_LIBRARY_DRILL',['LIVING_MOTION','VFX','AUDIO_FEEL','CAMERA_LANGUAGE']],
+    ['destruction-library','DESTRUCTION_LIBRARY_DRILL',['ASSET_PRODUCTION','VFX','AUDIO_FEEL']],
+    ['asset-identity-qa','ASSET_IDENTITY_QA_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['style-bible','STYLE_BIBLE_LIBRARY_DRILL',['ASSET_ADAPTATION','VFX','CAMERA_LANGUAGE']],
+    ['universal-coverage','UNIVERSAL_ASSET_COVERAGE_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']]
   ];
   return ['UNITY','ROBLOX'].flatMap(platform=>families.map(([id,kind,domains])=>({
     id:`company-graphics-${lower(platform)}-${id}`,
@@ -1349,8 +1377,8 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
   ];
   return {
     version:4,kind:'vibe2-idle-practice-queue',
-    productionWorkAlwaysPreemptsPractice:true,productionDefaultPriorityHigherThanPractice:true,
-    companyGraphicsLibrary24h:{enabled:true,drillCount:libraryDrills.length,platformProfiles:['UNITY','ROBLOX'],productionPreemptible:true,noGenerationCap:true},
+    productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,
+    companyGraphicsLibrary24h:{enabled:true,studioAssetUniverse:true,universalCoverageScanner:true,autonomousGapFill24h:true,drillCount:libraryDrills.length,platformProfiles:['UNITY','ROBLOX'],productionPreemptible:true,noGenerationCap:true,learningLaneConcurrentWithProduction:true},
     practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,relearningGenerationLimit:null,
     hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
     previousResultComparisonRequired:true,
