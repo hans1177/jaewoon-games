@@ -395,6 +395,12 @@ test('specialized verification security allows only final fan-in to mint canonic
   assert.equal(sec.protections.rawTelemetryDirectTrainingForbidden,true);
   assert.equal(sec.protections.infrastructureFailureNegativeLearningForbidden,true);
   assert.equal(sec.protections.authorityExpansionForbidden,true);
+  assert.equal(sec.protections.nativeTwoStageFanInReviewRequired,true);
+  assert.equal(sec.protections.postNativeFinalReviewMustUseExistingFanInReviewModule,true);
+  assert.equal(sec.protections.candidateResultWorkflowCannotMintVerifiedMarker,true);
+  assert.equal(sec.protections.postNativeReviewMustPreserveTaskStatusAndReleaseDecision,true);
+  assert.equal(sec.protections.postNativeReviewRequiresExistingRegressionAndReviewPass,true);
+  assert.equal(sec.protections.specializedLearningFailureMustNotConvertEngineQaPassIntoReleaseFailure,true);
 
   const evidence=logMap.specializedVerifiedQueueEvidenceContract;
   assert.equal(evidence.producers.request,'tools/vibe2-source-worker.mjs');
