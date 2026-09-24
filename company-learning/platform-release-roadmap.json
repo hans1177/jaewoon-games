@@ -1,5 +1,5 @@
 {
-  "version": 350,
+  "version": 351,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -19016,7 +19016,24 @@
       "verifiedSupervisorReviseRequeuesExistingTask": true,
       "reuseVerifiedPatternsBeforeBlindRegeneration": true,
       "responsibilityAndExactSourceContextFirst": true,
-      "firstCandidatePassRateMeasured": true
+      "firstCandidatePassRateMeasured": true,
+      "omittedEditPathExactResponsibleFileRecovery": true,
+      "omittedEditPathRecoveryMode": "UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES",
+      "ambiguousMissingPathMustFailClosed": true,
+      "invalidRelativePathFailureClass": "INVALID_PATH",
+      "invalidPathBoundedRetry": true,
+      "deterministicRecoveryBeforeAdditionalModelInvocation": true,
+      "missingPathRecoveryTelemetry": "codingMethod.missingPathRecoveries",
+      "latestObservedMissingPathIncident": {
+        "runId": 36057026213,
+        "affectedRobloxTasks": 13,
+        "observedSequence": [
+          "NO_OP",
+          "EMPTY_RELATIVE_PATH"
+        ],
+        "priorTerminalClassification": "OTHER",
+        "repairedClassification": "INVALID_PATH"
+      }
     },
     "throughputControl": {
       "primaryMetric": "VERIFIED_CANDIDATES_PER_MINUTE",
