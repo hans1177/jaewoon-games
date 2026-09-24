@@ -134,6 +134,16 @@ export function computeParallelismTelemetry(input={}){
   const qa=durationStats(rows,'qaMs');
   const workerTotal=durationStats(rows,'workerTotalMs');
   const workload=computeWorkload(rows,input.tasks||[]);
+  const waveStarts=rows.map(row=>parseTime(row?.metrics?.workerStartedAt)).filter(Boolean);
+  const waveEnds=rows.map(row=>parseTime(row?.metrics?.workerFinishedAt)).filter(Boolean);
+  const waveElapsedMs=waveStarts.length&&waveEnds.length?Math.max(1,Math.max(...waveEnds)-Math.min(...waveStarts)):0;
+  const waveElapsedMinutes=waveElapsedMs>0?waveElapsedMs/60000:0;
+  const passTaskIds=new Set(rows.filter(row=>clean(row?.outcome).toUpperCase()==='PASS').map(row=>clean(row?.taskId)).filter(Boolean));
+  const primaryRows=rows.filter(row=>!clean(row?.variant)||clean(row.variant)==='primary');
+  const primaryPassCount=primaryRows.filter(row=>clean(row?.outcome).toUpperCase()==='PASS').length;
+  const firstCandidatePassRatePct=round(primaryRows.length?primaryPassCount/primaryRows.length*100:0);
+  const verifiedCandidatesPerMinute=round(waveElapsedMinutes?passTaskIds.size/waveElapsedMinutes:0);
+  const changedLinesPerMinute=round(waveElapsedMinutes?workload.changedLineCount/waveElapsedMinutes:0);
   const transientWorkLockDeferrals=rows.filter(row=>
     clean(row?.outcome).toUpperCase()==='BLOCKED'
     &&/^work-lock-conflict:(?:transient-state-update-race|file-lock-conflict)$/i.test(clean(row?.blocker))
@@ -183,7 +193,7 @@ export function computeParallelismTelemetry(input={}){
   const secondaryBottlenecks=rankedBottlenecks.slice(1);
   const pressureLevel=failureRate>=.4?'SEVERE':failureRate>=.2?'HIGH':failureRate>=.1?'MEDIUM':'LOW';
   return{
-    version:4,
+    version:5,
     runId,
     runIds,
     requestedMax,
@@ -195,6 +205,13 @@ export function computeParallelismTelemetry(input={}){
     observedPeakUtilizationPct:round(requestedMax?peak/requestedMax*100:0),
     effectivePeakUtilizationPct:round(effectiveMax?peak/effectiveMax*100:0),
     workerStartSpreadMs:starts.length?Math.max(...starts)-Math.min(...starts):0,
+    throughput:{
+      waveElapsedMs:round(waveElapsedMs),
+      verifiedCandidateCount:passTaskIds.size,
+      verifiedCandidatesPerMinute,
+      firstCandidatePassRatePct,
+      changedLinesPerMinute
+    },
     queueWait:{avgMs:round(avg(queueWait)),p95Ms:round(p95(queueWait)),maxMs:round(queueWait.length?Math.max(...queueWait):0)},
     checkout,
     candidate,
@@ -240,6 +257,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PARALLEL_UTILIZATION=${t.observedPeakUtilizationPct}`);
   console.log(`VIBE2_PARALLEL_CACHE_HIT_RATE=${t.ollamaCache.hitRatePct}`);
   console.log(`VIBE2_PARALLEL_FAILURE_RATE=${t.failureRatePct}`);
+  console.log(`VIBE2_VERIFIED_CANDIDATES_PER_MINUTE=${t.throughput.verifiedCandidatesPerMinute}`);
+  console.log(`VIBE2_FIRST_CANDIDATE_PASS_RATE=${t.throughput.firstCandidatePassRatePct}`);
   console.log(`VIBE2_SOURCE_GENERATION_FAILURES=${t.sourceGenerationFailures.count}`);
   console.log(`VIBE2_SOURCE_GENERATION_FAILURE_CLASSES=${Object.entries(t.sourceGenerationFailures.classes).map(([key,value])=>`${key}:${value}`).join(',')||'NONE'}`);
   console.log(`VIBE2_WORKER_FAILURE_STAGES=${Object.entries(t.workerFailureStages.classes).map(([key,value])=>`${key}:${value}`).join(',')||'NONE'}`);
