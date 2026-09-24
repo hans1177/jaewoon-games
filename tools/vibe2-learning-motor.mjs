@@ -1936,9 +1936,11 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
     };
     if(positiveStatuses.has(status)&&positiveMarkers.length){
       const patterns=uniq(positiveMarkers.map(marker=>SPECIALIZED_QUEUE_POSITIVE_EVIDENCE[marker]));
+      const id='specialized_queue_'+hash([clean(task?.id),runIdentity,'PASS',positiveMarkers.slice().sort().join('|')].join('|'));
       records.push({
         ...base,
-        id:'specialized_queue_'+hash([clean(task?.id),runIdentity,'PASS',positiveMarkers.slice().sort().join('|')].join('|')),
+        id,
+        evidence:[...base.evidence,'specialized-outcome-id:'+id],
         outcome:'PASS',
         change:patterns.join(' | '),
         reusablePatterns:patterns,
@@ -1947,9 +1949,11 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
     }
     if(negativeStatuses.has(status)&&negativeMarkers.length&&!infrastructureFailure){
       const patterns=uniq(negativeMarkers.map(marker=>SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE[marker]));
+      const id='specialized_queue_'+hash([clean(task?.id),runIdentity,'FAIL',negativeMarkers.slice().sort().join('|')].join('|'));
       records.push({
         ...base,
-        id:'specialized_queue_'+hash([clean(task?.id),runIdentity,'FAIL',negativeMarkers.slice().sort().join('|')].join('|')),
+        id,
+        evidence:[...base.evidence,'specialized-outcome-id:'+id],
         outcome:'FAIL',
         failureCause:negativeMarkers.join(' | '),
         avoidPatterns:patterns,
@@ -1976,6 +1980,35 @@ export function applyVerifiedSpecializedQueueOutcomes(stateInput={},queueInput={
   return{
     state:applied.state,
     added:applied.added,
+    positive:fresh.filter(row=>upper(row.outcome)==='PASS').length,
+    negative:fresh.filter(row=>upper(row.outcome)!=='PASS').length,
+    candidates:extracted.records.length
+  };
+}
+
+export function mergeVerifiedSpecializedQueueExperienceMemory(experienceInput={},queueInput={}){
+  const current=createVibeExperienceMemory(experienceInput);
+  const extracted=collectVerifiedSpecializedQueueExperience(queueInput);
+  const persistedOutcomeTokens=new Set(
+    (current.records||[])
+      .flatMap(row=>row?.evidence||[])
+      .map(clean)
+      .filter(value=>value.startsWith('specialized-outcome-id:'))
+  );
+  const fresh=extracted.records.filter(row=>!persistedOutcomeTokens.has('specialized-outcome-id:'+clean(row.id)));
+  if(!fresh.length)return{
+    memory:current,
+    changed:false,
+    added:0,
+    positive:0,
+    negative:0,
+    candidates:extracted.records.length
+  };
+  const memory=createVibeExperienceMemory({records:[...(current.records||[]),...fresh]});
+  return{
+    memory,
+    changed:true,
+    added:fresh.length,
     positive:fresh.filter(row=>upper(row.outcome)==='PASS').length,
     negative:fresh.filter(row=>upper(row.outcome)!=='PASS').length,
     candidates:extracted.records.length
@@ -2037,6 +2070,7 @@ export function applyVerifiedGraphicsEvolutionOutcomes(stateInput={},queueInput=
 }
 
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
+  const specializedExperience=mergeVerifiedSpecializedQueueExperienceMemory(experienceInput,queueInput);
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
   const specializedApplied=applyVerifiedSpecializedQueueOutcomes(applied.state,queueInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(specializedApplied.state,codePatternsInput);
@@ -2048,7 +2082,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const constitution=buildCodingConstitution(graphicsApplied.state);
   graphicsApplied.state.codingConstitution=constitution;
   graphicsApplied.state.updatedAt=new Date().toISOString();
-  const benchmark=buildBenchmarkLadder(graphicsApplied.state,experienceInput,companyQueueInput);
+  const benchmark=buildBenchmarkLadder(graphicsApplied.state,specializedExperience.memory,companyQueueInput);
   const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark);
   const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
@@ -2075,7 +2109,12 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     codingConstitutionRuleCount:constitution.rules.length,
     benchmark,
     idlePractice,
-    handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput,practice.queue,roadmapInput),
+    experience:specializedExperience.memory,
+    specializedExperienceChanged:specializedExperience.changed===true,
+    specializedExperiencePersisted:specializedExperience.added||0,
+    specializedExperiencePersistedPositive:specializedExperience.positive||0,
+    specializedExperiencePersistedNegative:specializedExperience.negative||0,
+    handoffs:buildWebRobloxHandoffs(companyQueueInput,specializedExperience.memory,practice.queue,roadmapInput),
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
     idlePracticeTaskAdded:practice.added,
@@ -2097,12 +2136,14 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
   const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{})});
   writeJson(stateFile,result.state);
+  if(result.specializedExperienceChanged) writeJson(experienceFile,result.experience);
   if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
   console.log(`VIBE2_LEARNING_MOTOR=PASS`);
   console.log(`VIBE2_MASTERY_NEW_EXPERIENCE=${result.addedExperience}`);
+  console.log(`VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED=${result.specializedExperiencePersisted||0}`);
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
