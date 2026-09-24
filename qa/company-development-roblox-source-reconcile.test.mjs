@@ -286,7 +286,7 @@ test('existing Roblox source automatically enters rebind when company library bi
     assert.equal(rows[0].pass,false);
     assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
     assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
-    assert.equal(rows[0].studioAssetBinding.libraryVersion,companyAssetLibrary.version);
+    assert.equal(rows[0].studioAssetLibraryVersion,companyAssetLibrary.version);
     assert.ok(rows[0].blockers.includes('ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'));
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
