@@ -80,6 +80,29 @@ local Config = {
     { Id = "scope-coreloop-2-79f736cab9", Label = "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.", Kind = "COMBAT", Order = 5, LearningPattern = "save-state-persistence" },
     { Id = "scope-mobileux-f8e0f864a6", Label = "UI는 화면 하단에 집중 배치하여 엄지손가락만으로 조작이 가능하게 하고, 중요한 정보는 직관적인 아이콘으로 표시합니다.", Kind = "COMBAT", Order = 6, LearningPattern = "ads-monetization" },
   },
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 
 return table.freeze(Config)
