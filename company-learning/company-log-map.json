@@ -1,5 +1,5 @@
 {
-  "version": 51,
+  "version": 52,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -946,7 +946,7 @@
     "focusedQaTraceRequiredPerFinalMarker": true
   },
   "robloxStudioAssetBindingEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.robloxSelectionHandoff",
     "recordScope": "PER_GAME_EXACT_ROBLOX_SOURCE_ARTIFACT_AND_PLACE_VERSION",
     "correlationKeys": [
@@ -958,7 +958,10 @@
     "markers": {
       "selectionHandoff": "ROBLOX_STUDIO_ASSET_SELECTION_HANDOFF",
       "staticBinding": "ROBLOX_STUDIO_ASSET_BINDING_VERSION",
-      "runtimePass": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS"
+      "runtimePass": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
+      "publishPending": "roblox-runtime-verification-required",
+      "f9Review": "roblox-final-review-pass",
+      "targetEngineQaRef": "target-engine-qa-ref:roblox-f9-<RUN_ID>"
     },
     "runtimePassRequires": [
       "EXACT_SOURCE_REVISION",
@@ -973,6 +976,16 @@
     "expectedAndObservedAtomListsRequired": true,
     "markerOnlyEvidenceForbidden": true,
     "positivePromotionRequiresRuntimePass": true,
-    "rawAssetBinaryInLogsForbidden": true
+    "rawAssetBinaryInLogsForbidden": true,
+    "queueCorrelation": {
+      "waitEvidence": "roblox-runtime-await-game:<GAME_ID>",
+      "waitingBlocker": "candidate-awaiting-roblox-runtime-qa",
+      "finalStatusSource": "F9_EXACT_RUNTIME_REVIEW_ONLY"
+    },
+    "finalVibePassRequires": [
+      "ROBLOX_RUNTIME_ACCEPTANCE_PASS",
+      "ROBLOX_F9_FINAL_REVIEW_PASS",
+      "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS_WHEN_BINDING_REQUIRED"
+    ]
   }
 }
