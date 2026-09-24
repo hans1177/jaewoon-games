@@ -1043,6 +1043,116 @@ jobs:
           echo 'VIBE2_PERFORMANCE_ROLE=PASS'
           echo 'VIBE2_PERFORMANCE_ROLE_SOURCE_WRITE=NO'
 
+      - name: Capture actual Web presentation runtime before and after
+        id: runtime_visual
+        if: steps.candidate.outcome == 'success' && steps.incremental_qa.outcome == 'success' && steps.performance.outcome == 'success' && steps.order.outputs.target == 'web' && steps.incremental_qa.outputs.presentation_runtime_required == 'YES'
+        env:
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VARIANT: ${{ matrix.variant }}
+          SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
+          BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.candidate_sha }}
+          CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          baseline_root="$contract_root/$SOURCE_ROOT"
+          candidate_root="$CANDIDATE_DIR/$SOURCE_ROOT"
+          capture_dir="/tmp/vibe2-runtime-visual-$SAFE_TASK-$VARIANT"
+          result_file="/tmp/vibe2-runtime-visual-comparison.json"
+          artifact_name="vibe2-visual-$SAFE_TASK-$VARIANT-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$capture_dir"
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          status=READY
+          before_stable=false
+          after_stable=false
+          visible_delta=false
+          before_sha=''
+          after_sha=''
+          before_bytes=0
+          after_bytes=0
+          before_entry=''
+          after_entry=''
+          resolve_entry() {
+            local root="$1"
+            if [ -f "$root/index.html" ]; then printf '%s' 'index.html'; return 0; fi
+            find "$root" -maxdepth 1 -type f \( -iname '*.html' -o -iname '*.htm' \) -printf '%f\n' | sort | head -n1
+          }
+          before_entry="$(resolve_entry "$baseline_root" || true)"
+          after_entry="$(resolve_entry "$candidate_root" || true)"
+          if [ -z "$browser" ]; then status=BROWSER_UNAVAILABLE; fi
+          if [ -z "$before_entry" ] || [ -z "$after_entry" ]; then status=RUNTIME_ENTRY_MISSING; fi
+          pids=()
+          cleanup() { for pid in "${pids[@]:-}"; do kill "$pid" >/dev/null 2>&1 || true; done; }
+          trap cleanup EXIT
+          if [ "$status" = READY ]; then
+            python3 -m http.server 41731 --bind 127.0.0.1 --directory "$baseline_root" >"$capture_dir/before-server.log" 2>&1 & pids+=("$!")
+            python3 -m http.server 41732 --bind 127.0.0.1 --directory "$candidate_root" >"$capture_dir/after-server.log" 2>&1 & pids+=("$!")
+            ready=0
+            for i in $(seq 1 20); do
+              if curl -fsS "http://127.0.0.1:41731/" >/dev/null && curl -fsS "http://127.0.0.1:41732/" >/dev/null; then ready=1; break; fi
+              sleep 0.25
+            done
+            if [ "$ready" != 1 ]; then status=RUNTIME_SERVER_UNAVAILABLE; fi
+          fi
+          if [ "$status" = READY ]; then
+            before_url="http://127.0.0.1:41731/$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$before_entry")"
+            after_url="http://127.0.0.1:41732/$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$after_entry")"
+            capture() {
+              local url="$1" out="$2"
+              "$browser" --headless=new --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --virtual-time-budget=2500 --screenshot="$out" "$url" >/dev/null 2>&1
+              test -s "$out"
+            }
+            if ! capture "$before_url" "$capture_dir/before-1.png" || ! capture "$before_url" "$capture_dir/before-2.png" || ! capture "$after_url" "$capture_dir/after-1.png" || ! capture "$after_url" "$capture_dir/after-2.png"; then
+              status=RUNTIME_CAPTURE_FAILED
+            fi
+          fi
+          if [ "$status" = READY ]; then
+            before_sha="$(sha256sum "$capture_dir/before-1.png" | awk '{print $1}')"
+            before_sha_2="$(sha256sum "$capture_dir/before-2.png" | awk '{print $1}')"
+            after_sha="$(sha256sum "$capture_dir/after-1.png" | awk '{print $1}')"
+            after_sha_2="$(sha256sum "$capture_dir/after-2.png" | awk '{print $1}')"
+            before_bytes="$(stat -c%s "$capture_dir/before-1.png")"
+            after_bytes="$(stat -c%s "$capture_dir/after-1.png")"
+            [ "$before_sha" = "$before_sha_2" ] && before_stable=true
+            [ "$after_sha" = "$after_sha_2" ] && after_stable=true
+            [ "$before_sha" != "$after_sha" ] && visible_delta=true
+            if [ "$before_stable" != true ] || [ "$after_stable" != true ]; then status=RUNTIME_CAPTURE_NONDETERMINISTIC; fi
+            if [ "$visible_delta" != true ]; then status=NO_VISIBLE_RENDER_DELTA; fi
+          fi
+          STATUS="$status" BEFORE_STABLE="$before_stable" AFTER_STABLE="$after_stable" VISIBLE_DELTA="$visible_delta" \
+          BEFORE_SHA="$before_sha" AFTER_SHA="$after_sha" BEFORE_BYTES="$before_bytes" AFTER_BYTES="$after_bytes" \
+          BEFORE_ENTRY="$before_entry" AFTER_ENTRY="$after_entry" ARTIFACT_NAME="$artifact_name" RESULT_FILE="$result_file" node <<'NODE'
+          const fs=require('fs');
+          const yes=value=>String(value||'').toLowerCase()==='true';
+          const status=String(process.env.STATUS||'UNKNOWN');
+          const pass=status==='READY'&&yes(process.env.BEFORE_STABLE)&&yes(process.env.AFTER_STABLE)&&yes(process.env.VISIBLE_DELTA);
+          const base=String(process.env.BASE_SHA||'').trim();
+          const candidate=String(process.env.CANDIDATE_SHA||'').trim();
+          const artifact=String(process.env.ARTIFACT_NAME||'').trim();
+          const result={
+            version:1,baselineRevision:base,candidateRevision:candidate,
+            before:{source:'runtime-capture',artifactId:`actions-artifact:${artifact}:before-1.png`,candidateRevision:base,observed:status!=='BROWSER_UNAVAILABLE'&&status!=='RUNTIME_ENTRY_MISSING',reviewed:true,markerOnly:false,entry:String(process.env.BEFORE_ENTRY||''),sha256:String(process.env.BEFORE_SHA||''),bytes:Number(process.env.BEFORE_BYTES||0)},
+            after:{source:'runtime-capture',artifactId:`actions-artifact:${artifact}:after-1.png`,candidateRevision:candidate,observed:status!=='BROWSER_UNAVAILABLE'&&status!=='RUNTIME_ENTRY_MISSING',reviewed:true,markerOnly:false,entry:String(process.env.AFTER_ENTRY||''),sha256:String(process.env.AFTER_SHA||''),bytes:Number(process.env.AFTER_BYTES||0)},
+            comparison:{pass,visibleRenderDelta:yes(process.env.VISIBLE_DELTA),beforeStable:yes(process.env.BEFORE_STABLE),afterStable:yes(process.env.AFTER_STABLE),observed:true,reviewed:true,method:'dual-headless-browser-sha256-v1',status},
+            markerOnly:false,authority:'github-actions-actual-web-runtime-before-after'
+          };
+          fs.writeFileSync(process.env.RESULT_FILE,JSON.stringify(result,null,2)+'\n');
+          console.log('VIBE2_RUNTIME_VISUAL_COMPARISON='+status);
+          console.log('VIBE2_RUNTIME_VISUAL_COMPARISON_PASS='+(pass?'YES':'NO'));
+          NODE
+          echo 'created=true' >> "$GITHUB_OUTPUT"
+          if [ -s "$capture_dir/before-1.png" ] && [ -s "$capture_dir/after-1.png" ]; then echo 'captures_created=true' >> "$GITHUB_OUTPUT"; else echo 'captures_created=false' >> "$GITHUB_OUTPUT"; fi
+
+      - name: Upload actual Web presentation before-after captures
+        if: steps.runtime_visual.outputs.captures_created == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-visual-${{ matrix.safeTask }}-${{ matrix.variant }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/vibe2-runtime-visual-${{ matrix.safeTask }}-${{ matrix.variant }}/
+          retention-days: 2
+
       - name: Enforce canonical constitution after worker execution
         if: always()
         shell: bash
@@ -1092,6 +1202,7 @@ jobs:
           IQA_PRESENTATION_STATUS: ${{ steps.incremental_qa.outputs.presentation_status }}
           IQA_PRESENTATION_PASS: ${{ steps.incremental_qa.outputs.presentation_pass }}
           IQA_PRESENTATION_RUNTIME_REQUIRED: ${{ steps.incremental_qa.outputs.presentation_runtime_required }}
+          RUNTIME_VISUAL_COMPARISON_FILE: /tmp/vibe2-runtime-visual-comparison.json
           PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
           PRACTICE_OUTCOME: ${{ steps.practice.outcome }}
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -1186,11 +1297,16 @@ jobs:
             learningAuthorityExpanded:false
           }:null;
           const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod;
-          const presentationQuality=manifest?.presentationQuality&&typeof manifest.presentationQuality==='object'?{
-            ...manifest.presentationQuality,
+          const runtimeQaRequired=clean(process.env.IQA_PRESENTATION_RUNTIME_REQUIRED).toUpperCase()==='YES';
+          const runtimeVisualFile=clean(process.env.RUNTIME_VISUAL_COMPARISON_FILE);
+          const runtimeVisualComparison=runtimeVisualFile&&fs.existsSync(runtimeVisualFile)?JSON.parse(fs.readFileSync(runtimeVisualFile,'utf8')):null;
+          const presentationContract=manifest?.presentationQuality&&typeof manifest.presentationQuality==='object'?manifest.presentationQuality:null;
+          const presentationQuality=presentationContract||runtimeQaRequired||runtimeVisualComparison?{
+            ...(presentationContract||{}),
             staticQaStatus:clean(process.env.IQA_PRESENTATION_STATUS)||'NOT_REQUIRED',
             staticQaPass:clean(process.env.IQA_PRESENTATION_PASS)||null,
-            runtimeQaRequired:clean(process.env.IQA_PRESENTATION_RUNTIME_REQUIRED).toUpperCase()==='YES',
+            runtimeQaRequired,
+            runtimeVisualComparison,
             authorityExpanded:false
           }:null;
           const roleResults={

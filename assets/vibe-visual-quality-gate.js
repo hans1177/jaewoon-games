@@ -54,6 +54,61 @@ export function auditVibeGoldenSceneEvidence(evidence={}){
 }
 
 
+export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
+  const before=evidence?.before&&typeof evidence.before==='object'?evidence.before:{};
+  const after=evidence?.after&&typeof evidence.after==='object'?evidence.after:{};
+  const comparison=evidence?.comparison&&typeof evidence.comparison==='object'?evidence.comparison:{};
+  const baselineRevision=String(evidence.baselineRevision||before.candidateRevision||before.revision||'').trim();
+  const candidateRevision=String(evidence.candidateRevision||after.candidateRevision||after.revision||'').trim();
+  const artifactOf=capture=>String(capture?.artifactId||capture?.captureId||capture?.path||'').trim();
+  const revisionOf=capture=>String(capture?.candidateRevision||capture?.revision||'').trim();
+  const sourceOf=capture=>String(capture?.source||'').trim().toLowerCase();
+  const markerOnly=evidence.markerOnly===true||before.markerOnly===true||after.markerOnly===true
+    ||sourceOf(before)==='source-marker'||sourceOf(after)==='source-marker';
+  const reasons=[];
+  const beforeArtifact=artifactOf(before),afterArtifact=artifactOf(after);
+  const validCapture=(capture,expectedRevision)=>{
+    const source=sourceOf(capture);
+    const revision=revisionOf(capture);
+    return RUNTIME_CAPTURE_SOURCES.has(source)
+      &&Boolean(artifactOf(capture))
+      &&Boolean(revision)
+      &&revision===expectedRevision
+      &&capture.observed===true
+      &&capture.reviewed===true
+      &&capture.markerOnly!==true;
+  };
+  if(!baselineRevision)reasons.push('baseline-runtime-revision-missing');
+  if(!candidateRevision)reasons.push('candidate-runtime-revision-missing');
+  if(baselineRevision&&candidateRevision&&baselineRevision===candidateRevision)reasons.push('before-after-runtime-revision-not-distinct');
+  if(!validCapture(before,baselineRevision))reasons.push('before-runtime-capture-invalid');
+  if(!validCapture(after,candidateRevision))reasons.push('after-runtime-capture-invalid');
+  if(beforeArtifact&&afterArtifact&&beforeArtifact===afterArtifact)reasons.push('before-after-runtime-artifact-not-distinct');
+  if(comparison.observed!==true||comparison.reviewed!==true)reasons.push('before-after-runtime-comparison-not-reviewed');
+  if(comparison.beforeStable!==true||comparison.afterStable!==true)reasons.push('runtime-capture-not-deterministic');
+  if(!String(comparison.method||'').trim())reasons.push('before-after-runtime-comparison-method-missing');
+  if(comparison.pass!==true||comparison.visibleRenderDelta!==true)reasons.push('before-after-visible-render-delta-missing-or-failed');
+  if(markerOnly)reasons.push('marker-only-runtime-comparison-forbidden');
+  return Object.freeze({
+    version:1,
+    pass:reasons.length===0,
+    baselineRevision:baselineRevision||null,
+    candidateRevision:candidateRevision||null,
+    beforeArtifact:beforeArtifact||null,
+    afterArtifact:afterArtifact||null,
+    beforeSource:sourceOf(before)||null,
+    afterSource:sourceOf(after)||null,
+    comparisonMethod:String(comparison.method||'').trim()||null,
+    beforeStable:comparison.beforeStable===true,
+    afterStable:comparison.afterStable===true,
+    visibleRenderDelta:comparison.visibleRenderDelta===true,
+    markerOnly,
+    reasons:Object.freeze(reasons),
+    authority:'runtime-before-after-visual-comparison-audit'
+  });
+}
+
+
 export function auditVibeHighEndTargetFrameEvidence(evidence={}){
   const captures=Array.isArray(evidence.captures)?evidence.captures:[];
   const candidateRevision=String(evidence.candidateRevision||'').trim();

@@ -950,6 +950,27 @@ test('first studio build-up cycle establishes presentation baseline even when no
   assert.ok(task.evidence.includes('graphics-evolution-before-after-comparison-required'));
 });
 
+test('verified studio quality package advances to a new large studio cycle instead of returning to micro work',()=>{
+  const root=tempRepo();
+  const gameId='studio-repeat-cycle';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Studio Repeat Cycle',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]});
+  assert.ok(first);
+  assert.equal(first.studioQualityEvolution.cycle,1);
+  assert.equal(first.workUnits,7);
+  const verified={...first,status:'verified',packageId:`${gameId}-wp-cycle1`,packageWorkUnits:10,lastOutcome:'PASS'};
+  const second=findStudioContinuousImprovementTask(project,root,{tasks:[verified]});
+  assert.ok(second);
+  assert.equal(second.studioQualityEvolution.cycle,2);
+  assert.equal(second.studioQualityEvolution.baselineId,first.id);
+  assert.equal(second.studioQualityEvolution.nextCycleRequired,true);
+  assert.equal(second.workUnits,7);
+  assert.notEqual(second.id,first.id);
+});
+
 test('web presentation planner discovers a real non-index game entry file',()=>{
   const root=tempRepo();
   const gameId='legacy-entry-web';

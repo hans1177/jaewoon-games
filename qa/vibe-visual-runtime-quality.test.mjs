@@ -11,6 +11,7 @@ import {
 } from '../assets/vibe-art-pipeline.js';
 import {
   auditVibeGoldenSceneEvidence,
+  auditVibeRuntimeBeforeAfterComparison,
   auditVibeRuntimeVisualEvidence,
   assertVibeRuntimeVisualQuality,
   GOLDEN_SCENE_ROLES,
@@ -104,4 +105,24 @@ test('high-end target-frame role set extends the existing golden scene contract 
   for(const role of GOLDEN_SCENE_ROLES)assert.ok(HIGH_END_GOLDEN_SCENE_ROLES.includes(role));
   assert.ok(HIGH_END_GOLDEN_SCENE_ROLES.includes('KEY_LANDMARK_OR_HUB'));
   assert.ok(HIGH_END_GOLDEN_SCENE_ROLES.includes('BOSS_OR_SIGNATURE_ENCOUNTER'));
+});
+
+
+test('runtime before-after comparison requires two distinct stable actual runtime captures',()=>{
+  const base='1'.repeat(40),candidate='2'.repeat(40);
+  const evidence={
+    baselineRevision:base,candidateRevision:candidate,
+    before:{source:'runtime-capture',artifactId:'actions-artifact:visual:before.png',candidateRevision:base,observed:true,reviewed:true},
+    after:{source:'runtime-capture',artifactId:'actions-artifact:visual:after.png',candidateRevision:candidate,observed:true,reviewed:true},
+    comparison:{pass:true,visibleRenderDelta:true,beforeStable:true,afterStable:true,observed:true,reviewed:true,method:'dual-headless-browser-sha256-v1'}
+  };
+  const pass=auditVibeRuntimeBeforeAfterComparison(evidence);
+  assert.equal(pass.pass,true);
+  assert.equal(pass.visibleRenderDelta,true);
+  const markerOnly=auditVibeRuntimeBeforeAfterComparison({...evidence,before:{...evidence.before,source:'source-marker',markerOnly:true}});
+  assert.equal(markerOnly.pass,false);
+  assert.ok(markerOnly.reasons.includes('marker-only-runtime-comparison-forbidden'));
+  const unstable=auditVibeRuntimeBeforeAfterComparison({...evidence,comparison:{...evidence.comparison,beforeStable:false}});
+  assert.equal(unstable.pass,false);
+  assert.ok(unstable.reasons.includes('runtime-capture-not-deterministic'));
 });

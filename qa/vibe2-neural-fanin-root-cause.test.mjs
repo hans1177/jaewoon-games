@@ -274,3 +274,42 @@ test('native candidate-result workflows invoke fan-in post-native finalizer inst
   assert.doesNotMatch(roblox,/echo\s+['"]?VERIFIED_WORLD_ROUTE_NAVIGATION_PASS/);
   assert.doesNotMatch(unity,/echo\s+['"]?VERIFIED_WORLD_ROUTE_NAVIGATION_PASS/);
 });
+
+
+function presentationStudioTask(){
+  return{
+    ...baseTask(['graphics-evolution-before-after-comparison-required']),
+    studioQualityEvolution:{version:1,cycle:1,phase:'BUILD_UP',focusPillar:'PRESENTATION',visibleRenderDeltaRequired:true,nextCycleRequired:true}
+  };
+}
+function runtimeVisualComparison(){
+  const base='a'.repeat(40),candidate='b'.repeat(40);
+  return{
+    version:1,baselineRevision:base,candidateRevision:candidate,
+    before:{source:'runtime-capture',artifactId:'actions-artifact:visual:before.png',candidateRevision:base,observed:true,reviewed:true},
+    after:{source:'runtime-capture',artifactId:'actions-artifact:visual:after.png',candidateRevision:candidate,observed:true,reviewed:true},
+    comparison:{pass:true,visibleRenderDelta:true,beforeStable:true,afterStable:true,observed:true,reviewed:true,method:'dual-headless-browser-sha256-v1'}
+  };
+}
+
+test('web studio presentation fan-in blocks release without actual runtime before-after comparison',()=>{
+  const result=finalizeVibe2FanInReview({queue:{tasks:[presentationStudioTask()]},results:[baseResult()],taskIds:['neural-root-task']});
+  assert.equal(result.reviewed[0].pass,false);
+  assert.ok(result.reviewed[0].missing.includes('presentation-runtime-before-after-comparison'));
+  assert.equal(result.releaseCandidates.length,0);
+  const evidence=result.queue.tasks[0].evidence;
+  assert.ok(evidence.includes('graphics-evolution-before-after-comparison:BLOCKED'));
+  assert.ok(evidence.some(value=>value.startsWith('presentation-runtime-before-after-blocker:')));
+});
+
+test('web studio presentation fan-in approves actual stable runtime before-after comparison',()=>{
+  const row=baseResult();
+  row.presentationQuality={required:true,runtimeQaRequired:true,runtimeVisualComparison:runtimeVisualComparison()};
+  const result=finalizeVibe2FanInReview({queue:{tasks:[presentationStudioTask()]},results:[row],taskIds:['neural-root-task']});
+  assert.equal(result.reviewed[0].pass,true);
+  assert.equal(result.reviewed[0].presentationRuntimeVisual.pass,true);
+  assert.equal(result.releaseCandidates.length,1);
+  const evidence=result.queue.tasks[0].evidence;
+  assert.ok(evidence.includes('graphics-evolution-before-after-comparison:PASS'));
+  assert.ok(evidence.includes('presentation-runtime-before-after-audit:PASS'));
+});

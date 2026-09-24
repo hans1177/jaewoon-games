@@ -12,6 +12,7 @@ import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neur
 import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
 import { evaluatePhase2Readiness } from './vibe2-neural-phase2-readiness.mjs';
 import { summarizeNeuralWorkGraphEvidence } from './vibe2-neural-work-graph.mjs';
+import { auditVibeRuntimeBeforeAfterComparison } from '../assets/vibe-visual-quality-gate.js';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -56,6 +57,18 @@ function gameRepairEvidenceFailures(row={}){
   if(clean(repair.multiplayerLifecycle)!=='NOT_APPLICABLE'&&repair?.multiplayerAutomation?.userAssistanceRequired!==false)failures.push('game-repair-multiplayer-must-be-machine-verified');
   if(repair.readyForFanIn!==true)failures.push('game-repair-ready-for-fan-in');
   return[...new Set(failures)];
+}
+function presentationRuntimeVisualDecision(task={},row={}){
+  const evidence=new Set((task?.evidence||[]).map(clean).filter(Boolean));
+  const required=task?.studioQualityEvolution?.visibleRenderDeltaRequired===true
+    ||evidence.has('graphics-evolution-before-after-comparison-required');
+  if(!required)return{required:false,deferred:false,pass:true,audit:null};
+  const target=clean(task?.target).toLowerCase();
+  if(target!=='web')return{required:true,deferred:true,pass:false,audit:null,target};
+  const payload=row?.presentationQuality?.runtimeVisualComparison&&typeof row.presentationQuality.runtimeVisualComparison==='object'
+    ?row.presentationQuality.runtimeVisualComparison:{};
+  const audit=auditVibeRuntimeBeforeAfterComparison(payload);
+  return{required:true,deferred:false,pass:audit.pass,audit,target};
 }
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
 function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa|awaiting.*supervised-review/i.test(clean(task.blocker));}
@@ -194,6 +207,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     const missing=REQUIRED_ROLES.filter(role=>!rolePass(evidence,role));
     const candidateBranch=releaseCandidateFromEvidence(evidence);
     let selectedResult=null;
+    let presentationRuntimeVisual=null;
     if(!candidateBranch)missing.push('candidate-branch');
     else{
       const rows=resultRows.filter(row=>clean(row?.taskId)===clean(task.id));
@@ -202,13 +216,29 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       else {
         missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
         missing.push(...gameRepairEvidenceFailures(selectedResult));
+        presentationRuntimeVisual=presentationRuntimeVisualDecision(task,selectedResult);
+        if(presentationRuntimeVisual.required){
+          if(presentationRuntimeVisual.deferred){
+            evidence.add('graphics-evolution-before-after-comparison:PENDING_TARGET_RUNTIME');
+          }else if(presentationRuntimeVisual.pass){
+            evidence.add('graphics-evolution-before-after-comparison:PASS');
+            evidence.add('presentation-runtime-before-after-audit:PASS');
+            evidence.add(`presentation-runtime-before-after-baseline:${presentationRuntimeVisual.audit.baselineRevision}`);
+            evidence.add(`presentation-runtime-before-after-candidate:${presentationRuntimeVisual.audit.candidateRevision}`);
+            evidence.add(`presentation-runtime-before-after-method:${presentationRuntimeVisual.audit.comparisonMethod}`);
+          }else{
+            evidence.add('graphics-evolution-before-after-comparison:BLOCKED');
+            for(const reason of presentationRuntimeVisual.audit?.reasons||[])evidence.add(`presentation-runtime-before-after-blocker:${reason}`);
+            missing.push('presentation-runtime-before-after-comparison');
+          }
+        }
       }
     }
     const uniqueMissing=[...new Set(missing)];
     if(uniqueMissing.length){
       evidence.add('role-result:review:BLOCKED');
       evidence.add(`package-review-missing:${uniqueMissing.join('|')}`);
-      reviewed.push({taskId:task.id,sampleId:selectedResult?resultSampleId(selectedResult):clean(task.id),pass:false,missing:uniqueMissing});
+      reviewed.push({taskId:task.id,sampleId:selectedResult?resultSampleId(selectedResult):clean(task.id),pass:false,missing:uniqueMissing,presentationRuntimeVisual});
     }else{
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
@@ -296,7 +326,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       for(const marker of specializedFinal.trace)evidence.add(marker);
       const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
       if(capabilityReview)experienceReviews.push(capabilityReview);
-      reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute});
+      reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute,presentationRuntimeVisual});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
