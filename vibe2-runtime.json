@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 22,
+      "runtime": 23,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -78,8 +78,8 @@
     "nextWorkerDirective": {
       "objective": "CONTINUE_SELF_EVOLVING_ATOMIC_NEURON_SCHEDULER_TOWARD_VERIFIED_EVENT_DRIVEN_DAG_WITH_TRUTHFUL_TELEMETRY",
       "freshnessRule": "FETCH_FRESH_MAIN_HEAD_LIVE_WORKFLOW_STATUS_AND_CONTROL_STATE_BEFORE_MUTATION; DO_NOT_ASSUME_THIS_SNAPSHOT_IS_STILL_CURRENT",
-      "observedMainHead": "b28abcdaf3c42bd0d529938e7dc6b7418c3b8244",
-      "verifiedAt": "2026-09-20T10:28:30Z",
+      "observedMainHead": "08fdd2b730943cd27e2391e3172cb73edd9c9be0",
+      "verifiedAt": "2026-09-24T20:20:31Z",
       "centralGoalRefs": [
         "company-learning/platform-release-roadmap.json::neuralDevelopmentBrain.currentWaveExecution",
         "company-learning/company-architecture-map.json::neuralWorkGraphTopology.phase1RuntimeBindings.selfAdaptiveGamePrimaryConcurrency",
@@ -94,7 +94,12 @@
         "COHORT_FAN_IN_REMAINS_REGRESSION_RELEASE_AUDIT_ONLY",
         "GAME_PRIMARY_BASELINE_AND_PRESSURE_FLOOR_20",
         "GAME_PRIMARY_INTERNAL_POLICY_CAP_NULL",
-        "CURRENT_EXTERNAL_PROVIDER_BOUNDARY_256"
+        "CURRENT_EXTERNAL_PROVIDER_BOUNDARY_256",
+        "ATOMIC_TELEMETRY_USES_CURRENT_RESERVATION_CAP",
+        "PENDING_VARIANTS_REPORT_RESULT_RECORDED_PENDING",
+        "DEPENDENCY_CONSUMERS_RELEASE_ON_PER_TASK_COMPLETION",
+        "PHASE2_GATED_EXISTING_SCHEDULER_AUTHORITY_ENABLED",
+        "COMPANY_RUNTIME_EXECUTION_EVIDENCE_SYNCED_BEFORE_RESERVE"
       ],
       "liveEvidence": [
         "RUN_35505152601_REPOSITORY_DISPATCH_SUCCESS",
@@ -105,11 +110,8 @@
         "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_SUCCESSFULLY_ON_MAIN"
       ],
       "priorities": [
-        "P0_FIX_ATOMIC_TELEMETRY_DENOMINATOR: GAME_PRIMARY reservation max is 20 while queue summary currently reports effectiveMax 256 and freeSlots 249; live telemetry and free-slot reasoning must use the current atomic reservation allowance rather than the persistent external boundary where the central contract requires CURRENT_ATOMIC_RESERVATION_CAP",
-        "P0_FIX_MICRO_FANIN_LOG_SEMANTICS: do not emit VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS while result is AWAITING_VARIANTS; distinguish RESULT_RECORDED_PENDING from TASK_MICRO_FANIN_COMPLETE",
-        "P1_CAPTURE_END_TO_END_LIVE_EVIDENCE: observe final variant 3/3 -> TASK_MICRO_FANIN_COMPLETE -> VIBE2_NEURON_SLOT_RELEASED=YES -> immediate reserve/refill before unrelated cohort workers finish",
-        "P1_RECONCILE_CENTRAL_ARCHITECTURE_LIVE_STATE: replace stale pending-merge/source-PR metadata only after fresh evidence confirms current main",
-        "P2_EXTEND_EVENT_DRIVEN_DAG: once truthful telemetry and completion semantics are proven, release dependency consumers immediately from per-task completion instead of adding any global barrier",
+        "P1_CAPTURE_END_TO_END_LIVE_EVIDENCE: observe final variant -> TASK_MICRO_FANIN_COMPLETE -> VIBE2_NEURON_SLOT_RELEASED=YES -> immediate reserve/refill before unrelated cohort workers finish on current main",
+        "P1_VERIFY_RUNTIME_RESULT_NEURAL_INGRESS_LIVE: observe canonical company-runtime executionEvidence compile into RUNTIME_RESULT neural evidence without inventing root cause authority",
         "P2_SELF_EVOLUTION_FEEDBACK: use verified failure and throughput evidence to adjust scheduling heuristics without lowering QA, security, save, or release gates"
       ],
       "hardConstraints": [
@@ -121,7 +123,7 @@
         "PRESSURE_MUST_NOT_LOWER_GAME_PRIMARY_BELOW_20",
         "HEALTHY_VERIFIED_SATURATION_MAY_EXPAND_20_TO_32_TO_64_TO_128_TO_256_AND_BEYOND_WHEN_EXTERNAL_CAPACITY_ALLOWS",
         "256_IS_EXTERNAL_PROVIDER_BOUNDARY_NOT_INTERNAL_POLICY_CAP",
-        "PHASE2_NEURAL_EXECUTION_AUTHORITY_STAYS_DISABLED_UNTIL_EXPLICIT_VERIFIED_PROMOTION"
+        "PHASE2_NEURAL_EXECUTION_AUTHORITY_IS_GATED_EXISTING_SCHEDULER_ONLY; POLICY_SECURITY_QA_RELEASE_AND_SELF_PROMOTION_REMAIN_FORBIDDEN"
       ],
       "successEvidence": [
         "GAME_PRIMARY_LIVE_TELEMETRY_DENOMINATOR_MATCHES_CURRENT_ATOMIC_RESERVATION_CAP",
@@ -377,7 +379,11 @@
       "protectedAuthoritiesRemainCentral": true,
       "retryStrategyMutationRequiresVerifiedRootCause": true,
       "successfulResultMutationForbidden": true,
-      "verifiedSupervisorReviseRequeue": true
+      "verifiedSupervisorReviseRequeue": true,
+      "runtimeResultIngress": true,
+      "runtimeResultSource": "company-runtime:development-queue.json#executionEvidence",
+      "runtimeResultPassIsObserveOnly": true,
+      "runtimeResultFailureRequiresVerifiedRootCauseForGatedMutation": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -1182,6 +1188,8 @@
     "nestedExecutionEvidenceFallbackForPlanner": true,
     "nestedFailureStageAndSignaturePreserved": true,
     "nestedSourceRevisionPreserved": true,
+    "runtimeResultNeuralEventCompilation": true,
+    "runtimeResultNeuralEventCompiler": "tools/vibe2-auto-planner.mjs::compileRuntimeNeuralEvent",
     "downstreamEvidencePriority": [
       "RELEASE_EVIDENCE",
       "REGRESSION_EVIDENCE",
