@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": " if id==\"HOSPITAL\"then",
+      "replace": " if id==\"HOSPITAL\"then\n   local now=os.clock()\n   if now-stepClock>.34 then\n    stepClock=now\n    footstepSfx.TimePosition=0\n    footstepSfx.PlaybackSpeed=p:GetAttribute(\"Role\")==\"MONSTER\"and .82 or 1.08\n    footstepSfx:Play()\n   end\n"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

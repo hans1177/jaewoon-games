@@ -489,6 +489,14 @@ QACamera.install(C,gui,function()
  if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
  if id=="HOSPITAL"then
+   local now=os.clock()
+   if now-stepClock>.34 then
+    stepClock=now
+    footstepSfx.TimePosition=0
+    footstepSfx.PlaybackSpeed=p:GetAttribute("Role")=="MONSTER"and .82 or 1.08
+    footstepSfx:Play()
+   end
+
   return{
    {label="horror-hospital-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)},
    {label="horror-hospital-emergency",position=Vector3.new(-155,25,-45),lookAt=Vector3.new(-118,4,-82)},
