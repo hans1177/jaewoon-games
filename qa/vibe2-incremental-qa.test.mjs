@@ -385,3 +385,56 @@ test('continuous worker persists responsible-system evidence only from a verifie
   assert.ok(workflow.includes("clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES'"));
   assert.ok(workflow.includes("clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED).toUpperCase()==='YES'"));
 });
+
+
+test('specialized focused QA verifies structural evidence but never emits final learning markers',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/story-specialized');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'game.js'),[
+    "const story={stage:'OPENING',state:{}};",
+    "function advanceStory(event){ if(event.cause&&event.prerequisite){ story.stage='EARLY'; story.state.lastEvent=event.id; } }",
+    "const questGraph={quests:[{id:'q1',objective:'find',prerequisite:'story:EARLY',complete:false,consequence:'unlock'}]};",
+    "function completeQuest(q){ q.complete=true; return q.consequence; }"
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/story-specialized',
+    target:'web',
+    changedFiles:['game.js'],
+    specializedVerificationRequest:{
+      version:1,required:true,target:'web',nativeRuntimeRequired:false,focusedQaRequired:true,
+      markerOnlyPassForbidden:true,requestAuthority:'VERIFICATION_REQUEST_ONLY_NOT_PASS',
+      requestedMarkers:['VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS','VERIFIED_QUEST_GRAPH_PASS']
+    }
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:story-specialized'});
+  assert.equal(result.outcome,'PASS');
+  assert.equal(result.specializedVerificationQa.status,'FOCUSED_STATIC_PASS');
+  assert.equal(result.specializedVerificationQa.results.VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS.pass,true);
+  assert.equal(result.specializedVerificationQa.results.VERIFIED_QUEST_GRAPH_PASS.pass,true);
+  assert.deepEqual(result.specializedVerificationQa.finalVerifiedMarkers,[]);
+  assert.equal(result.specializedVerificationQa.finalMarkerAuthority,'FAN_IN_ONLY');
+  assert.equal(result.specializedVerificationQa.fullRegressionStillRequired,true);
+});
+
+test('specialized focused QA fails closed when requested structural evidence is missing',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/missing-world-evidence');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'game.js'),'export const score = 1;\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/missing-world-evidence',
+    target:'web',
+    changedFiles:['game.js'],
+    specializedVerificationRequest:{
+      version:1,required:true,target:'web',nativeRuntimeRequired:false,focusedQaRequired:true,
+      requestedMarkers:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS']
+    }
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'web:missing-world-evidence'}),
+    /SPECIALIZED_FOCUSED_QA_FAILED:VERIFIED_WORLD_ROUTE_NAVIGATION_PASS/
+  );
+});
