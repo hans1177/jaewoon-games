@@ -1,0 +1,22 @@
+{
+  "summary": "Fix causal replay issue in Game.server.luau and Game.client.luau",
+  "expectedEffect": "Fix causal replay contract violation in multiplayer scenario",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": "local id=p:GetAttribute(\"MonsterForm\")or\"DRACULA\"",
+      "replace": "local id=p:GetAttribute(\"MonsterForm\")or\"DRACULA\"; if id==\"HOSPITAL\"then id=\"HOSPITAL\" end; local form=p:GetAttribute(\"Form\")or C.MonsterForms[1]"
+    },
+    {
+      "path": "client/Game.client.luau",
+      "find": "local id=p:GetAttribute(\"MonsterForm\")or\"DRACULA\"",
+      "replace": "local id=p:GetAttribute(\"MonsterForm\")or\"DRACULA\"; if id==\"HOSPITAL\"then id=\"HOSPITAL\" end; local form=p:GetAttribute(\"Form\")or C.MonsterForms[1]"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "game.server.luau:123-145",
+    "game.client.luau:234-256"
+  ]
+}

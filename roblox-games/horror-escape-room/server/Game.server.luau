@@ -59,7 +59,7 @@ end
 local function speed(p,v)restoreMovement(p,v)end
 local legacyMonsterIds={DRAK="DRACULA",FRANKEN="FRANKENSTEIN",WOLF="WEREWOLF",MIRAA="MUMMY",REAPER="GRIM_REAPER"}
 local function form(p)
- local id=p:GetAttribute("MonsterForm")or"DRACULA"
+ local id=p:GetAttribute("MonsterForm")or"DRACULA"; if id=="HOSPITAL"then id="HOSPITAL" end; local form=p:GetAttribute("Form")or C.MonsterForms[1]
  id=legacyMonsterIds[id]or id
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
  return C.MonsterForms[1]

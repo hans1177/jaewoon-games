@@ -362,7 +362,7 @@ abilityButton.Size=UDim2.fromOffset(112,40);abilityButton.Position=UDim2.fromOff
 abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 local function monsterName()
- local id=p:GetAttribute("MonsterForm")or"DRACULA"
+ local id=p:GetAttribute("MonsterForm")or"DRACULA"; if id=="HOSPITAL"then id="HOSPITAL" end; local form=p:GetAttribute("Form")or C.MonsterForms[1]
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f.Name end end
  return"드라큘라"
 end
