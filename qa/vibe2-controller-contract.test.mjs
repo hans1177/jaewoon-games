@@ -112,8 +112,17 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.minimumNecessaryProcedure.unrelatedChecksMayNotBlockAtomicRefill,true);
   assert.equal(runtime.continuous.minimumNecessaryProcedure.fullRegressionEscalatesOnlyOnRelevantEvidence,true);
   assert.equal(runtime.continuous.minimumNecessaryProcedure.publicReleaseAndConfirmedSecurityRiskRemainFailClosed,true);
-  assert.equal(runtime.version>=26,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,26);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.impactScopedWorkflowTriggers,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.unrelatedWorkflowStartupForbidden,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.scopeExpansionRequiresRelevantEvidence,true);
+  assert.deepEqual(runtime.continuous.minimumNecessaryProcedure.impactScopedWorkflowFiles,[
+    '.github/workflows/vibe-qa.yml',
+    '.github/workflows/vibe-regression.yml',
+    '.github/workflows/company-evolution-qa.yml',
+    '.github/workflows/vibe3-engine-contract.yml'
+  ]);
+  assert.equal(runtime.version>=27,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,27);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
   assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');

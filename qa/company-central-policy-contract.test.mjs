@@ -781,4 +781,19 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(projection.administrativeChecksConsumeGamePrimarySlots,false);
   assert.equal(projection.atomicRefillContinuesDuringUnrelatedChecks,true);
   assert.equal(projection.releaseAndConfirmedSecurityFindingsRemainFailClosed,true);
+  assert.equal(projection.impactScopedWorkflowTriggersImplemented,true);
+  assert.equal(projection.unrelatedWorkflowStartupForbidden,true);
+  assert.equal(projection.scopeExpansionRequiresRelevantEvidence,true);
+
+  const impact=p.implementation.impactScopedWorkflowTriggers;
+  assert.equal(impact.enabled,true);
+  assert.equal(impact.pullRequestAndMainPush,true);
+  assert.equal(impact.unrelatedChangesDoNotStartWorkflow,true);
+  assert.equal(impact.scopeMayExpandOnlyWhenRelevantEvidenceRequiresIt,true);
+  assert.deepEqual(impact.workflows,projection.impactScopedWorkflowFiles);
+  for(const workflowFile of impact.workflows){
+    const source=readText(workflowFile);
+    assert.match(source,/push:\n\s+branches: \[main\]\n\s+paths:/,workflowFile);
+    assert.match(source,/pull_request:\n\s+branches: \[main\]\n\s+paths:/,workflowFile);
+  }
 });

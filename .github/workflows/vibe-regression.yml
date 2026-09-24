@@ -3,7 +3,56 @@ name: Vibe Integrated Regression
 on:
   push:
     branches: [main]
+    paths:
+      - 'assets/common-ai.js'
+      - 'assets/ai-party.js'
+      - 'assets/animation-state.js'
+      - 'assets/jaewoon-motion-engine.js'
+      - 'assets/asset-selector.js'
+      - 'assets/game-content.js'
+      - 'assets/game-kit.js'
+      - 'assets/godot-game-generator.js'
+      - 'assets/godot-project-qa.js'
+      - 'assets/vibe-*.js'
+      - 'tools/company-vibe2-*.mjs'
+      - 'qa/company-vibe2-*.test.mjs'
+      - 'qa/company-design-multiplayer-mode-contract.test.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/pwa-chat-flow.test.mjs'
+      - 'qa/jaewoon-motion-engine.test.cjs'
+      - 'index.html'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'command.html'
+      - '.github/workflows/vibe-regression.yml'
   pull_request:
+    branches: [main]
+    paths:
+      - 'assets/common-ai.js'
+      - 'assets/ai-party.js'
+      - 'assets/animation-state.js'
+      - 'assets/jaewoon-motion-engine.js'
+      - 'assets/asset-selector.js'
+      - 'assets/game-content.js'
+      - 'assets/game-kit.js'
+      - 'assets/godot-game-generator.js'
+      - 'assets/godot-project-qa.js'
+      - 'assets/vibe-*.js'
+      - 'tools/company-vibe2-*.mjs'
+      - 'qa/company-vibe2-*.test.mjs'
+      - 'qa/company-design-multiplayer-mode-contract.test.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/pwa-chat-flow.test.mjs'
+      - 'qa/jaewoon-motion-engine.test.cjs'
+      - 'index.html'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'command.html'
+      - '.github/workflows/vibe-regression.yml'
 
 concurrency:
   group: vibe-integrated-regression-${{ github.ref }}
