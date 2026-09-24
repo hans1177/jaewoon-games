@@ -36,6 +36,33 @@ const inferUniverseFamily=row=>{
   return'';
 };
 
+function inferRequestedConcept(task={},request=''){
+  const explicit=Array.isArray(task?.concept?.styles)?task.concept.styles:Array.isArray(task?.conceptStyles)?task.conceptStyles:[];
+  const rows=explicit.map((row,index)=>typeof row==='string'?{family:clean(row),weight:1}:{family:clean(row?.family||row?.styleFamily||row?.id),weight:Number(row?.weight??row?.ratio??1)||1}).filter(row=>row.family);
+  if(rows.length)return{
+    styles:rows,
+    artTone:task?.concept?.artTone||task?.artTone||[],
+    worldEra:task?.concept?.worldEra||task?.worldEra||[],
+    combatFeel:task?.concept?.combatFeel||task?.combatFeel||[],
+    presentation:task?.concept?.presentation||task?.presentationStyle||[],
+    customTags:task?.concept?.customTags||[]
+  };
+  const text=clean(request).toUpperCase(),found=[];
+  const rules=[
+    ['CARTOON',/CARTOON|카툰|만화/],['SEMI_CARTOON',/SEMI.?CARTOON|세미.?카툰/],['ANIME_OR_CEL_SHADED',/ANIME|CEL.?SHADE|애니|셀.?셰이/],
+    ['DARK_FANTASY',/DARK.?FANTASY|다크.?판타지/],['HIGH_FANTASY',/HIGH.?FANTASY|하이.?판타지/],['WUXIA',/WUXIA|무협/],['XIANXIA',/XIANXIA|선협/],
+    ['GOTHIC',/GOTHIC|고딕/],['HORROR',/HORROR|공포|호러/],['COSMIC_HORROR',/COSMIC.?HORROR|코스믹/],['CUTE_CASUAL',/CUTE|CASUAL|귀여|캐주얼/],
+    ['LOW_POLY',/LOW.?POLY|로우.?폴리/],['REALISTIC',/REALISTIC|실사/],['SCI_FI',/SCI.?FI|SF|공상과학/],['CYBERPUNK',/CYBERPUNK|사이버펑크/],
+    ['STEAMPUNK',/STEAMPUNK|스팀펑크/],['POST_APOCALYPSE',/POST.?APOC|아포칼립스|폐허세계/],['PRIMITIVE',/PRIMITIVE|원시/],
+    ['ANCIENT_CIVILIZATION',/ANCIENT|고대.?문명/],['MODERN_URBAN',/MODERN.?URBAN|현대.?도시/],['OCEANIC',/OCEAN|해양/],['SKY_WORLD',/SKY.?WORLD|천공/],
+    ['DESERT_CIVILIZATION',/DESERT.?CIVIL|사막.?문명/],['SNOW_KINGDOM',/SNOW.?KINGDOM|설원.?왕국/],['JUNGLE_RUINS',/JUNGLE.?RUIN|밀림.?유적/],
+    ['UNDERGROUND',/UNDERGROUND|지하.?세계/],['UNDEAD',/UNDEAD|언데드/],['MECHANICAL_CIVILIZATION',/MECHANICAL.?CIVIL|기계.?문명/]
+  ];
+  for(const [family,re] of rules)if(re.test(text))found.push({family,weight:1});
+  if(!found.length)found.push({family:clean(task.styleFamily||task.style)||'STYLIZED_FANTASY',weight:1});
+  return{styles:found,artTone:[],worldEra:[],combatFeel:[],presentation:[],customTags:[]};
+}
+
 const WEB_DIRECT_AUTHORING=freeze([
   'svg-final-art',
   'css-presentation',
@@ -232,6 +259,7 @@ export function buildVibeAssetProductionPlan({
   const manifestInput=mergeManifestWithCompanyLibrary(manifestBase,companyRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
+  const requestedConcept=inferRequestedConcept(task,request);
   const selector=planAssetApplication({
     prompt:request,
     manifest:manifestInput,
@@ -300,7 +328,8 @@ export function buildVibeAssetProductionPlan({
     activeDemand,
     signalsByKey:universeSignals,
     platform:resolvedTarget==='roblox'?'ROBLOX':resolvedTarget==='unity'?'UNITY':'UNITY',
-    styleFamily:clean(task.styleFamily||task.style)||'STYLIZED_FANTASY'
+    styleFamily:clean(task.styleFamily||task.style)||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
+    concept:requestedConcept
   }):null;
   const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
     const usage={
@@ -485,7 +514,29 @@ export function buildVibeAssetProductionPlan({
         autonomous24h:universeContract?.autonomousGapFill24h?.enabled===true,
         preparedSemanticMayNotClaimVerified:universeContract?.autonomousGapFill24h?.preparedSemanticMayNotClaimVerified===true,
         actualRuntimeConsumerRequiredBeforePromotion:universeContract?.autonomousGapFill24h?.actualRuntimeConsumerRequiredBeforePromotion===true,
-        existingCanonicalLearningChainOnly:universeContract?.runtimeLearning?.existingCanonicalLearningChainOnly===true
+        existingCanonicalLearningChainOnly:universeContract?.runtimeLearning?.existingCanonicalLearningChainOnly===true,
+        conceptDirector:freeze({
+          enabled:universeContract?.conceptDirector?.enabled===true,
+          presetFamilies:freezeList(universeContract?.conceptDirector?.presetFamilies||[]),
+          requested:freeze(studioUniversePlan?.concept||{}),
+          axes:freeze(universeContract?.conceptDirector?.axes||{}),
+          weightedBlendAllowed:universeContract?.conceptDirector?.weightedBlendAllowed===true,
+          styleLockWins:universeContract?.conceptDirector?.gameStyleLockWinsOverGenericPreset===true,
+          conceptConflictQaRequired:universeContract?.conceptDirector?.conceptConflictQaRequired===true,
+          propagation:freezeList(universeContract?.conceptDirector?.conceptMustPropagateTo||[])
+        }),
+        worldGenerationStudio:freeze({
+          enabled:universeContract?.worldGenerationStudio?.enabled===true,
+          implementation:clean(universeContract?.worldGenerationStudio?.implementation)||null,
+          referenceInputs:freezeList(universeContract?.worldGenerationStudio?.referenceAbstraction?.allowedInputs||[]),
+          extractOnly:freezeList(universeContract?.worldGenerationStudio?.referenceAbstraction?.extractOnly||[]),
+          directLayoutCopyForbidden:universeContract?.worldGenerationStudio?.referenceAbstraction?.directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden===true,
+          mapDnaFields:freezeList(universeContract?.worldGenerationStudio?.mapDnaFields||[]),
+          generationPipeline:freezeList(universeContract?.worldGenerationStudio?.generationPipeline||[]),
+          routeGrammar:freeze(universeContract?.worldGenerationStudio?.routeGrammar||{}),
+          streaming:freeze(universeContract?.worldGenerationStudio?.runtimeStreaming||{}),
+          learning:freeze(universeContract?.worldGenerationStudio?.learning||{})
+        })
       }),
       retargetCleanupRequirements:freezeList(companyLibrary?.studioMotionProgram?.retargetCleanupRequirements||[]),
       unarmedCombat:freeze({
@@ -641,6 +692,14 @@ export function buildVibeAssetProductionPlan({
       autonomousLibraryPopulation24h:universeContract?.autonomousGapFill24h?.enabled===true,
       semanticAssetSeedCannotSelfPromote:universeContract?.autonomousGapFill24h?.preparedSemanticMayNotClaimVerified===true,
       universalAssetLearningUsesExistingCanonicalChain:universeContract?.runtimeLearning?.existingCanonicalLearningChainOnly===true,
+      conceptDirectorRequired:universeContract?.conceptDirector?.enabled===true,
+      weightedConceptBlendAllowed:universeContract?.conceptDirector?.weightedBlendAllowed===true,
+      conceptConflictQaRequired:universeContract?.conceptDirector?.conceptConflictQaRequired===true,
+      adaptiveWorldGenerationRequired:universeContract?.worldGenerationStudio?.enabled===true,
+      referenceStructureAbstractionRequired:Array.isArray(universeContract?.worldGenerationStudio?.referenceAbstraction?.extractOnly)&&universeContract.worldGenerationStudio.referenceAbstraction.extractOnly.length>0,
+      directReferenceMapCopyForbidden:universeContract?.worldGenerationStudio?.referenceAbstraction?.directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden===true,
+      mapDnaRequired:Array.isArray(universeContract?.worldGenerationStudio?.mapDnaFields)&&universeContract.worldGenerationStudio.mapDnaFields.length>0,
+      seamlessStreamingPlanRequired:universeContract?.worldGenerationStudio?.runtimeStreaming?.perceivedSeamlessStreamingTarget===true,
       latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
       wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
     }),
@@ -690,6 +749,8 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?'빈칸은 호환 검증 모션 재사용→안전한 파생→저장소/외부 검증 후보→PREPARED_SEMANTIC 시드→네이티브 신규 제작 순으로 자동 계획한다. 의미 시드는 자동 생성해도 VERIFIED로 승격하지 않는다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Studio Asset Universe=${plan.companyGraphicsLibrary.studioAssetUniverse.target}; families=${plan.companyGraphicsLibrary.studioAssetUniverse.families.join('|')}; creatureBodyPlans=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureBodyPlans.length}; species=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureSpecies.length}; biomes=${plan.companyGraphicsLibrary.studioAssetUniverse.biomes.length}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.worldGenerationStudio?.enabled?'World Generation Studio는 허용된 이미지/내부 게임/다중 레퍼런스에서 지형·길·밀도·시야·랜드마크 위계 같은 추상 구조만 학습한다. 특정 보호 작품의 맵/랜드마크/장면을 그대로 복제하지 않는다. Map DNA→macro terrain→route graph→zone→micro props→initial prewarm→chunk/LOD streaming→reachability/mobile QA 순으로 연결한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
     '선택 순서: 같은 게임/검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
