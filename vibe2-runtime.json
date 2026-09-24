@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 27,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 26,
+      "runtime": 27,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -237,7 +237,16 @@
       "administrativeChecksConsumeGamePrimarySlots": false,
       "unrelatedChecksMayNotBlockAtomicRefill": true,
       "fullRegressionEscalatesOnlyOnRelevantEvidence": true,
-      "publicReleaseAndConfirmedSecurityRiskRemainFailClosed": true
+      "publicReleaseAndConfirmedSecurityRiskRemainFailClosed": true,
+      "impactScopedWorkflowTriggers": true,
+      "impactScopedWorkflowFiles": [
+        ".github/workflows/vibe-qa.yml",
+        ".github/workflows/vibe-regression.yml",
+        ".github/workflows/company-evolution-qa.yml",
+        ".github/workflows/vibe3-engine-contract.yml"
+      ],
+      "unrelatedWorkflowStartupForbidden": true,
+      "scopeExpansionRequiresRelevantEvidence": true
     },
     "developmentFirstScheduling": {
       "enabled": true,
