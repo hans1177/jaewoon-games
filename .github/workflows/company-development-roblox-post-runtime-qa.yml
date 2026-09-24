@@ -125,6 +125,7 @@ jobs:
           test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
           git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          cp ../runtime/development-queue.json /tmp/roblox-foundation-runtime-base.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {
@@ -517,6 +518,7 @@ jobs:
           fs.writeFileSync('/tmp/roblox-f9-ids',f9Ids.join('\n')+(f9Ids.length?'\n':''));
           console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
           NODE
+          cp ../runtime/development-queue.json /tmp/roblox-foundation-runtime-updated.json
 
       - name: Persist runtime tester and QA evidence
         working-directory: runtime
@@ -525,22 +527,30 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-roblox-tester-qa'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
-            exit 0
-          fi
-          git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
-          pushed=0
-          for attempt in 1 2 3; do
-            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
+              exit 0
+            fi
+            git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES:attempt=$attempt"
+              break
+            fi
+            echo "ROBLOX_FOUNDATION_RUNTIME_OPTIMISTIC_RETRY=$attempt"
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-            sleep $((attempt*2))
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node ../main/tools/company-runtime-optimistic-merge.mjs \
+              --base=/tmp/roblox-foundation-runtime-base.json \
+              --updated=/tmp/roblox-foundation-runtime-updated.json \
+              --current=development-queue.json \
+              --output=development-queue.json
+            sleep "$((attempt<5?attempt:5))"
           done
-          test "$pushed" = '1'
-          echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
       - name: Dispatch F9 review for runtime-accepted candidates
         env:
