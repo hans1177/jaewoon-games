@@ -160,8 +160,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          IFS=',' read -ra native_ids <<< "$ELIGIBLE_IDS"
+          roblox_pids=()
+          roblox_count=0
+          for id in "${native_ids[@]}"; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" &
+            roblox_pids+=("$!")
+            roblox_count=$((roblox_count+1))
+            echo "ROBLOX_RUNTIME_DISPATCH_GAME=$id"
+          done
           gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          for pid in "${roblox_pids[@]}"; do wait "$pid"; done
           web_count=0
           if [ "$GITHUB_REF" = 'refs/heads/main' ] && [ -n "$UNITY_WEB_IDS" ]; then
             IFS=',' read -ra web_ids <<< "$UNITY_WEB_IDS"
@@ -176,6 +186,8 @@ jobs:
             done
           fi
           echo "DIRECT_NATIVE_IDS=$ELIGIBLE_IDS"
+          echo "ROBLOX_RUNTIME_DISPATCH_COUNT=$roblox_count"
+          echo 'ROBLOX_RUNTIME_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL'
           echo 'ROBLOX_RUNTIME_DISPATCH=YES'
           echo 'UNITY_APP_RUNTIME_DISPATCH=YES'
           echo "UNITY_WEB_RUNTIME_DISPATCH_COUNT=$web_count"
