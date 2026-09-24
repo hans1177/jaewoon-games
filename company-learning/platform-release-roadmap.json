@@ -1,5 +1,5 @@
 {
-  "version": 347,
+  "version": 348,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -10293,7 +10293,7 @@
       "legacyUnidentifiedReadinessEvidenceCannotSatisfyQualityMetrics": true
     },
     "phase2WorkGraphImplementation": {
-      "state": "PRODUCTION_VERIFIED_SHADOW_ACTIVE",
+      "state": "GATED_EXISTING_SCHEDULER_ACTIVE_WITH_SHADOW_FALLBACK",
       "source": "tools/vibe2-neural-work-graph.mjs",
       "routerBinding": "tools/vibe2-neural-event-router.mjs",
       "fanInSummaryBinding": "tools/vibe2-fan-in-review.mjs",
@@ -10329,17 +10329,17 @@
       "deterministicGraphState": true,
       "durableEvidenceDeduplicatedByEventIdentity": true,
       "conflictingSameEventGraphEvidenceFailsSafetySummary": true,
-      "workGraphMayFireAction": false,
-      "workerCreationAuthority": "NONE",
-      "queueMutationAuthority": "NONE",
-      "waveReorderAuthority": "NONE",
+      "workGraphMayFireAction": true,
+      "workerCreationAuthority": "GATED_EXISTING_QUEUED_TASK_DISPATCH_ONLY",
+      "queueMutationAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_ONLY",
+      "waveReorderAuthority": "GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY",
       "lockAuthority": "NONE",
       "policyMutationAuthority": "NONE",
       "automaticLearningAuthority": "NONE",
       "authorityPromotionAuthority": "NONE",
       "waveSchedulerRemainsAuthoritative": true,
-      "authorityChange": "NONE",
-      "nextGate": "REDUCE_ROOT_CAUSE_SAMPLE_CONFLICTS_AND_IMPROVE_CALIBRATION_QUALITY_WITHOUT_GRANTING_PHASE2_EXECUTION",
+      "authorityChange": "GATED_EXISTING_SCHEDULER_ONLY",
+      "nextGate": "CAPTURE_LIVE_RUNTIME_RESULT_AND_TASK_MICRO_FANIN_EVIDENCE_THEN_OPTIMIZE_VERIFIED_THROUGHPUT",
       "productionVerification": {
         "runId": 35503376196,
         "verifiedMainHead": "7cdbb5239abb8b8d0280bf6a980dbb094754ed94",
@@ -10354,8 +10354,16 @@
         "phase2ReviewReason": "SHADOW_EVIDENCE_NOT_YET_SUFFICIENT_FOR_PHASE2_REVIEW",
         "calibrationAccuracy": 0,
         "verifiedRootCauseCount": 0,
-        "rootCauseSampleConflicts": 170
-      }
+        "rootCauseSampleConflicts": 170,
+        "verificationScope": "HISTORICAL_SHADOW_BASELINE_ONLY"
+      },
+      "evidencePrefixes": [
+        "neural-work-graph-shadow:",
+        "neural-work-graph-gated:"
+      ],
+      "shadowFallbackPreserved": true,
+      "gatedExecutionPolicyRef": "neuralGatedExecution",
+      "runtimeResultIngress": "company-runtime:development-queue.json#executionEvidence->RUNTIME_RESULT"
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
