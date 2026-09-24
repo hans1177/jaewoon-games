@@ -19,7 +19,7 @@ const MAP_DNA_FIELDS=Object.freeze(['BIOME','ELEVATION_STYLE','ROAD_STYLE','LAND
 export function createVibeReferenceImageStudyRequest({sourceId='',sourceType='ABSTRACTED_MULTI_REFERENCE_ANALYSIS',imageRef='',rights={},purpose='MAP_STRUCTURE'}={}){
   const type=String(sourceType||'').toUpperCase(),id=String(sourceId||'').trim(),ref=String(imageRef||'').trim();
   const sourceAllowed=REFERENCE_MAP_SOURCE_TYPES.includes(type);
-  const rightsVerified=type==='USER_PROVIDED_OR_OWNED_IMAGE'||type==='PUBLIC_DOMAIN_IMAGE'||type==='VERIFIED_INTERNAL_GAME_RUNTIME'||(type==='CLEARLY_LICENSED_REFERENCE'&&rights.licenseVerified===true)||(type==='ABSTRACTED_MULTI_REFERENCE_ANALYSIS'&&rights.sourceSetVerified!==false);
+  const rightsVerified=type==='USER_PROVIDED_OR_OWNED_IMAGE'||type==='PUBLIC_DOMAIN_IMAGE'||type==='VERIFIED_INTERNAL_GAME_RUNTIME'||(type==='CLEARLY_LICENSED_REFERENCE'&&rights.licenseVerified===true)||(type==='ABSTRACTED_MULTI_REFERENCE_ANALYSIS'&&rights.sourceSetVerified===true);
   const ready=Boolean(id&&sourceAllowed&&rightsVerified);
   return Object.freeze({
     sourceId:id||null,sourceType:type,imageRef:ref||null,purpose:String(purpose||'MAP_STRUCTURE').toUpperCase(),
