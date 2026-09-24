@@ -1094,6 +1094,13 @@ RunService.Heartbeat:Connect(function(dt)
      local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
      if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
     end
+    if best then local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)end
+   end
+    local best,bd=nil,math.huge
+    for _,a in ipairs(active())do
+     local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
+     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
+    end
     if best then local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)end end
    elseif b.role=="SURVIVOR"then
     local nearest,best=nil,math.huge
