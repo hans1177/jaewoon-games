@@ -188,3 +188,52 @@ test('canonical narrative contract requires causal faction relationship state an
   assert.ok(evidence.requiredEvidence.includes('FACTION_RELATIONSHIP_IDEMPOTENCY_RESULT'));
   assert.equal(evidence.duplicateFactionRelationshipSourceEventMustNotApplyDeltaTwice,true);
 });
+
+
+test('character context exposes only witnessed declared public or faction-shared knowledge',()=>{
+  const q=new JaewoonQuestDialogue();
+  const state=q.createState();
+  q.setFact(state,'seen-fact','봤던 사실','evt-seen');
+  q.setFact(state,'secret-fact','비밀 사실','evt-secret');
+  q.setFact(state,'faction-fact','세력 공유 사실','evt-faction');
+  state.facts['faction-fact'].factionIds=['sect-a'];
+  q.registerFaction(state,{id:'sect-a',memberIds:['yeonhwa'],knownFactIds:['faction-fact']});
+  q.registerFaction(state,{id:'sect-b',memberIds:['mujin']});
+  q.addMemory(state,'yeonhwa',{eventId:'evt-seen',type:'WITNESSED_EVENT',factId:'seen-fact'});
+  q.revealClue(state,{id:'seen-clue',sourceEvent:'evt-seen',threadId:'thread-1'});
+  q.revealClue(state,{id:'secret-clue',sourceEvent:'evt-secret',threadId:'thread-2'});
+
+  const yeonhwa=q.buildCharacterContext(state,'yeonhwa');
+  assert.equal(yeonhwa.knowledgeBoundaryEnforced,true);
+  assert.equal(yeonhwa.knownFacts['seen-fact'].value,'봤던 사실');
+  assert.equal(yeonhwa.knownFacts['faction-fact'].value,'세력 공유 사실');
+  assert.equal(yeonhwa.knownFacts['secret-fact'],undefined);
+  assert.ok(yeonhwa.revealedClues.some(row=>row.id==='seen-clue'));
+  assert.equal(yeonhwa.revealedClues.some(row=>row.id==='secret-clue'),false);
+
+  const mujin=q.buildCharacterContext(state,'mujin');
+  assert.equal(mujin.knownFacts['seen-fact'],undefined);
+  assert.equal(mujin.knownFacts['faction-fact'],undefined);
+  assert.equal(mujin.knownFacts['secret-fact'],undefined);
+  assert.equal(mujin.revealedClues.length,0);
+});
+
+test('character context supports explicitly declared and public knowledge without leaking unrelated facts',()=>{
+  const q=new JaewoonQuestDialogue();
+  const state=q.createState();
+  q.setFact(state,'public-fact','공개 사실','evt-public');
+  q.setFact(state,'declared-fact','선언 지식','evt-declared');
+  q.setFact(state,'other-fact','다른 비밀','evt-other');
+  state.facts['public-fact'].public=true;
+  q.setNpcState(state,'npc-a',{knownFactIds:['declared-fact'],knownClueIds:['declared-clue']});
+  q.revealClue(state,{id:'declared-clue',sourceEvent:'evt-other',meta:{}});
+  q.revealClue(state,{id:'public-clue',sourceEvent:'evt-public',meta:{public:true}});
+  q.revealClue(state,{id:'other-clue',sourceEvent:'evt-other',meta:{}});
+  const context=q.buildCharacterContext(state,'npc-a');
+  assert.equal(context.knownFacts['public-fact'].value,'공개 사실');
+  assert.equal(context.knownFacts['declared-fact'].value,'선언 지식');
+  assert.equal(context.knownFacts['other-fact'],undefined);
+  assert.ok(context.revealedClues.some(row=>row.id==='declared-clue'));
+  assert.ok(context.revealedClues.some(row=>row.id==='public-clue'));
+  assert.equal(context.revealedClues.some(row=>row.id==='other-clue'),false);
+});
