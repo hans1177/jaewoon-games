@@ -669,6 +669,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(gated.runtimeSynchronization.lifecycleProjectionMustBeMonotonic,true);
   assert.equal(gated.runtimeSynchronization.missingGenreMayNotRegressStartedNativeWork,true);
   assert.equal(gated.runtimeSynchronization.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(gated.runtimeSynchronization.executionEvidencePlatformMatchRequired,true);
+  assert.equal(gated.runtimeSynchronization.crossPlatformExecutionEvidenceAuthority,'HISTORICAL_CONTEXT_ONLY');
+  assert.equal(gated.runtimeSynchronization.crossPlatformEvidenceMayNotAdvanceLifecycleOrOverrideCurrentFailure,true);
   assert.equal(gated.runtimeSynchronization.plannerMustPreserveNestedFailureStageSignatureAndSourceRevision,true);
   assert.ok(gated.forbiddenAuthorities.includes('CENTRAL_POLICY_MUTATION'));
   assert.ok(gated.forbiddenAuthorities.includes('QA_OR_RUNTIME_GATE_BYPASS'));
@@ -688,6 +691,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.downstreamMachineEvidencePreventsBackwardProjection,true);
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.runtimeEvidenceOverridesStaleTopLevelFlags,true);
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.executionEvidencePlatformMatchRequired,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.crossPlatformEvidenceAuthority,'HISTORICAL_CONTEXT_ONLY');
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.crossPlatformEvidenceMayNotAdvanceLifecycleOrOverrideCurrentFailure,true);
   assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.projectLifecycleMonotonicity.plannerPreservesFailureStageSignatureAndSourceRevision,true);
   assert.equal(arch.protectedAuthority.policyMutation,false);
   assert.equal(arch.protectedAuthority.qaBypass,false);

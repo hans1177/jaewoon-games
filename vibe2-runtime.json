@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 22,
+      "runtime": 23,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -1179,6 +1179,9 @@
     "downstreamMachineEvidencePreventsBackwardPhaseProjection": true,
     "missingGenreMayNotRegressStartedNativeWork": true,
     "canonicalNativeExecutionEvidenceField": "executionEvidence",
+    "executionEvidencePlatformMatchRequired": true,
+    "crossPlatformExecutionEvidenceIsHistoricalContextOnly": true,
+    "crossPlatformEvidenceMayNotAdvanceLifecycleOrOverrideCurrentFailure": true,
     "nestedExecutionEvidenceFallbackForPlanner": true,
     "nestedFailureStageAndSignaturePreserved": true,
     "nestedSourceRevisionPreserved": true,

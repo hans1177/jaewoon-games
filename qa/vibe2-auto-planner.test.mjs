@@ -1687,6 +1687,7 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
       selectedPlatform:'ROBLOX',
       robloxProjectPath:`roblox-games/${gameId}`,
       executionEvidence:{
+        platform:'ROBLOX',
         sourceRevision:sha,
         runtimePassed:true,
         independentQaPassed:false,
@@ -1706,4 +1707,60 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
   assert.ok(studio,'expected studio repair/evolution task');
   assert.match(studio.goal,/INDEPENDENT_QA/);
   assert.equal(studio.studioQualityEvolution.explicitGap,'INDEPENDENT_QA');
+});
+
+
+test('planner ignores historical execution evidence from a different platform',()=>{
+  const root=tempRepo();
+  const gameId='cross-platform-runtime-history';
+  const sourceRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(sourceRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(sourceRoot,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client','Game.client.luau'),'return { client = true }\n','utf8');
+  fs.writeFileSync(path.join(sourceRoot,'server','Game.server.luau'),'return { server = true }\n','utf8');
+  fs.writeFileSync(path.join(sourceRoot,'shared','GameConfig.luau'),'return { version = 1 }\n','utf8');
+  const robloxSha='f'.repeat(40);
+  const unitySha='a'.repeat(40);
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Cross Platform Runtime History',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE',
+      robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Cross Platform Runtime History',
+      status:'ACTIVE',
+      canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      selectedPlatform:'ROBLOX',
+      robloxProjectPath:`roblox-games/${gameId}`,
+      robloxSourceCommit:robloxSha,
+      robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND',
+      robloxFailureSignature:'roblox:binding-required',
+      executionEvidence:{
+        platform:'UNITY',
+        sourceRevision:unitySha,
+        runtimePassed:true,
+        independentQaPassed:false,
+        regressionPassed:false,
+        failureStage:'INDEPENDENT_QA',
+        failureSignature:'unity:qa-failure'
+      }
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:20,
+    planningBacklogTarget:20,
+    planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,true);
+  const studio=result.tasks.find(row=>row.gameId===gameId&&(row.evidence||[]).includes('studio-quality-loop:v1'));
+  assert.ok(studio,'expected studio task from current Roblox state');
+  assert.match(studio.goal,/TARGET_PLATFORM_SOURCE_BIND/);
+  assert.doesNotMatch(studio.goal,/INDEPENDENT_QA/);
+  assert.equal(studio.studioQualityEvolution.explicitGap,'TARGET_PLATFORM_SOURCE_BIND');
 });

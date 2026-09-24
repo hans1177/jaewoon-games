@@ -446,6 +446,7 @@ test('project lifecycle never regresses downstream Roblox machine evidence becau
       robloxIndependentQaPassed:false,
       robloxRegressionPassed:false,
       executionEvidence:{
+        platform:'ROBLOX',
         sourceRevision:sha,
         runtimePassed:true,
         independentQaPassed:false,
@@ -458,11 +459,26 @@ test('project lifecycle never regresses downstream Roblox machine evidence becau
       selectedPlatform:'ROBLOX',
       robloxSourceCommit:sha,
       executionEvidence:{
+        platform:'ROBLOX',
         sourceRevision:sha,
         runtimePassed:true,
         independentQaPassed:true,
         regressionPassed:false,
         failureStage:'REGRESSION'
+      }
+    },
+    {
+      gameId:'g-cross-platform-history',
+      selectedPlatform:'ROBLOX',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      robloxSourceCommit:sha,
+      executionEvidence:{
+        platform:'UNITY',
+        sourceRevision:'e'.repeat(40),
+        runtimePassed:true,
+        independentQaPassed:true,
+        regressionPassed:true,
+        failureStage:'RELEASE_PROMOTION'
       }
     }
   ]});
@@ -479,6 +495,10 @@ test('project lifecycle never regresses downstream Roblox machine evidence becau
   const qa=pack.projects.find(project=>project.gameId==='g-qa-no-genre');
   assert.equal(qa.PROJECT_PHASE,'TARGET_PLATFORM_REGRESSION');
   assert.equal(qa.NEXT_MACHINE_ACTION,'RUN_TARGET_PLATFORM_REGRESSION');
+
+  const cross=pack.projects.find(project=>project.gameId==='g-cross-platform-history');
+  assert.equal(cross.PROJECT_PHASE,'TARGET_PLATFORM_RUNTIME');
+  assert.equal(cross.NEXT_MACHINE_ACTION,'RUN_TARGET_PLATFORM_RUNTIME');
 });
 
 test('24h company graphics library keeps Unity and Roblox preparation drills rotating in idle capacity',()=>{
