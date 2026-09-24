@@ -1,17 +1,21 @@
 {
   "version": 4,
   "kind": "vibe2-idle-practice-queue",
-  "productionWorkAlwaysPreemptsPractice": true,
+  "productionWorkAlwaysPreemptsPractice": false,
   "productionDefaultPriorityHigherThanPractice": true,
   "companyGraphicsLibrary24h": {
     "enabled": true,
-    "drillCount": 14,
+    "studioAssetUniverse": true,
+    "universalCoverageScanner": true,
+    "autonomousGapFill24h": true,
+    "drillCount": 42,
     "platformProfiles": [
       "UNITY",
       "ROBLOX"
     ],
     "productionPreemptible": true,
-    "noGenerationCap": true
+    "noGenerationCap": true,
+    "learningLaneConcurrentWithProduction": true
   },
   "practiceSignalGenerationAlwaysOn": true,
   "practiceGenerationLimit": null,
@@ -817,6 +821,195 @@
       ]
     },
     {
+      "id": "company-graphics-unity-creature-universe",
+      "kind": "CREATURE_UNIVERSE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-clothing-armor",
+      "kind": "CLOTHING_ARMOR_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-building-modular",
+      "kind": "BUILDING_MODULAR_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-interior-kit",
+      "kind": "INTERIOR_KIT_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-biome-dna",
+      "kind": "BIOME_DNA_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "AUDIO_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-prop-library",
+      "kind": "PROP_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-material-library",
+      "kind": "MATERIAL_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-audio-variation",
+      "kind": "AUDIO_VARIATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "AUDIO_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-skill-presentation",
+      "kind": "SKILL_PRESENTATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-damage-presentation",
+      "kind": "DAMAGE_PRESENTATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "LIVING_MOTION",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-destruction-library",
+      "kind": "DESTRUCTION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VFX",
+        "AUDIO_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-asset-identity-qa",
+      "kind": "ASSET_IDENTITY_QA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-style-bible",
+      "kind": "STYLE_BIBLE_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "VFX",
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-universal-coverage",
+      "kind": "UNIVERSAL_ASSET_COVERAGE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
       "id": "company-graphics-roblox-character-archetype",
       "kind": "CHARACTER_ARCHETYPE_LIBRARY_DRILL",
       "priority": "low",
@@ -905,6 +1098,195 @@
       "domains": [
         "ASSET_ADAPTATION",
         "VFX"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-creature-universe",
+      "kind": "CREATURE_UNIVERSE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-clothing-armor",
+      "kind": "CLOTHING_ARMOR_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-building-modular",
+      "kind": "BUILDING_MODULAR_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-interior-kit",
+      "kind": "INTERIOR_KIT_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-biome-dna",
+      "kind": "BIOME_DNA_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "AUDIO_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-prop-library",
+      "kind": "PROP_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-material-library",
+      "kind": "MATERIAL_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-audio-variation",
+      "kind": "AUDIO_VARIATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "AUDIO_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-skill-presentation",
+      "kind": "SKILL_PRESENTATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-damage-presentation",
+      "kind": "DAMAGE_PRESENTATION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "LIVING_MOTION",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-destruction-library",
+      "kind": "DESTRUCTION_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VFX",
+        "AUDIO_FEEL"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-asset-identity-qa",
+      "kind": "ASSET_IDENTITY_QA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-style-bible",
+      "kind": "STYLE_BIBLE_LIBRARY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "VFX",
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-universal-coverage",
+      "kind": "UNIVERSAL_ASSET_COVERAGE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
       ]
     },
     {
