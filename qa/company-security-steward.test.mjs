@@ -287,6 +287,13 @@ test('recorded policy review scan provenance is immutable evidence for later aut
   assert.equal(resolved.incidents[0].status,'RESOLVED_VERIFIED');
 });
 
+test('security workflow uses shallow partial checkout and exact comparison fetches',()=>{
+  assert.match(securityWorkflow,/fetch-depth:\s*1/);
+  assert.match(securityWorkflow,/filter:\s*blob:none/);
+  assert.doesNotMatch(securityWorkflow,/fetch-depth:\s*0/);
+  assert.match(securityWorkflow,/git fetch --no-tags --depth=1 origin "\$base_sha"/);
+});
+
 test('security workflow is limited to sensitive changes plus one daily hygiene scan',()=>{
   for(const ordinary of [
     "'web-games/**'","'roblox-games/**'","'unity-games/**'","'unreal-games/**'","'godot-games/**'","'assets/**'","'tools/**'","'qa/**'","'company-learning/**'"
