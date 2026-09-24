@@ -88,6 +88,84 @@ for index, action in ipairs(Config.Actions) do
 end
 local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
 local function render()
+  status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)
+  status.TextColor3 = Color3.fromRGB(220, 232, 250)
+  status.TextScaled = false
+  status.Parent = root
+
+  local list = Instance.new("ScrollingFrame")
+  list.Name = "ApprovedActions"
+  list.Size = UDim2.new(1, -20, 1, -112)
+  list.Position = UDim2.fromOffset(10, 106)
+  list.BackgroundTransparency = 1
+  list.BorderSizePixel = 0
+  list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+  list.CanvasSize = UDim2.new()
+  list.ScrollBarThickness = 6
+  list.Parent = root
+
+  local layout = Instance.new("UIListLayout")
+  layout.Padding = UDim.new(0, 8)
+  layout.SortOrder = Enum.SortOrder.LayoutOrder
+  layout.Parent = list
+
+  for index, action in ipairs(Config.Actions) do
+    local button = Instance.new("TextButton")
+    button.Name = "ScopeAction" .. index
+    button.LayoutOrder = index
+    button.Size = UDim2.new(1, -4, 0, 56)
+    button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)
+    button.TextColor3 = Color3.fromRGB(16, 24, 40)
+    button.TextWrapped = true
+    button.TextScaled = true
+    button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)
+    button.Parent = list
+    button.Activated:Connect(function() remote:FireServer(action.Id) end)
+  end
+
+  local watched = {
+    "Score",
+    "Coins",
+    "Level",
+    "Progress",
+    "Health",
+    "Wave",
+    "Position",
+    "Objective",
+    "Combo",
+    "EnemyHealth",
+    "PuzzleChain",
+    "Towers",
+    "BaseHealth",
+    "SocialBond",
+    "SharedObjective",
+    "RoundScore",
+    "LastApprovedScope"
+  }
+
+  local function render()
+    status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d",
+      player:GetAttribute("Score") or 0,
+      player:GetAttribute("Level") or 1,
+      player:GetAttribute("Progress") or 0,
+      player:GetAttribute("Health") or 100,
+      player:GetAttribute("Wave") or 1
+    )
+  end
+
+  for _, name in ipairs(watched) do
+    player:GetAttributeChangedSignal(name):Connect(render)
+  end
+
+  render()
+
+  if #Config.Actions > 0 then
+    ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
+      if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end
+      return Enum.ContextActionResult.Sink
+    end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)
+  end
+end
   status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
