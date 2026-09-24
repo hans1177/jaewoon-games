@@ -1428,15 +1428,15 @@ function findSafeTasks(project,repoRoot,queue){
     return uniqueTaskCandidates([
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
-      findStudioContinuousImprovementTask(project,repoRoot,queue),
       findUnityTask(project,repoRoot,queue),
+      findStudioContinuousImprovementTask(project,repoRoot,queue),
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
   }
   if(project.engine==='web'){
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-      return uniqueTaskCandidates([findWebDiagnosticTask(project,repoRoot,queue),startupSpatialRepair,findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+      return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     }
     // Preserve canonical Web responsibility order for bootstrap and exact repair.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
