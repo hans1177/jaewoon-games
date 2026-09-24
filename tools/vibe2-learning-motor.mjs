@@ -21,7 +21,9 @@ export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
   'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE',
   'STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','CHARACTER_PERSONA','RELATIONSHIP_MEMORY','WORLD_NARRATIVE',
-  'VISUAL_IDENTITY','CONCEPT_DIRECTION','ENVIRONMENT_COMPOSITION','WORLD_GENERATION','LEVEL_DESIGN','NAVIGATION','STREAMING',
+  'MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY',
+  'CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING',
+  'VISUAL_IDENTITY','CONCEPT_DIRECTION','ENVIRONMENT_COMPOSITION','WORLD_GENERATION','LEVEL_DESIGN','NAVIGATION','ROUTE_DESIGN','STREAMING','STREAMING_OPTIMIZATION',
   'WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
   'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER',
   'UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE',
@@ -64,6 +66,19 @@ const DOMAIN_PATTERNS=freeze({
   LEVEL_DESIGN:/level.?design|route.?grammar|encounter.?space|choke|shortcut|레벨.?디자인|동선|전투.?공간|병목|지름길/i,
   NAVIGATION:/navigation|navmesh|pathfind|route.?graph|reachability|길찾기|경로.?그래프|도달.?가능|내비/i,
   STREAMING:/streaming|chunk|cell.?stream|lod|prewarm|object.?pool|스트리밍|청크|프리워밍|오브젝트.?풀/i,
+  MAIN_STORY_GENERATION:/main.?story|story.?spine|inciting.?event|final.?confrontation|메인.?스토리|도입.?사건|최종.?대결/i,
+  QUEST_GRAPH:/quest.?graph|quest.?dependency|quest.?prerequisite|퀘스트.?그래프|퀘스트.?선행|의뢰.?연결/i,
+  FORESHADOWING_PAYOFF:/foreshadow|payoff|복선|회수|떡밥/i,
+  TWIST_EVIDENCE_CHAIN:/twist.?evidence|reveal.?evidence|반전.?근거|증거.?연쇄/i,
+  CHARACTER_VOICE:/character.?voice|speech.?rhythm|formality|말투|화법|문장.?리듬/i,
+  CHARACTER_RELATIONSHIP_MEMORY:/relationship.?memory|trust|betrayal|promise|관계.?기억|신뢰|배신|약속/i,
+  CHARACTER_BEHAVIOR:/character.?behavior|behavior.?intent|행동.?의도|행동.?성향/i,
+  COMPANION_BEHAVIOR:/companion.?behavior|ally.?behavior|동료.?행동/i,
+  NPC_BEHAVIOR:/npc.?behavior|npc.?intent|엔피시.?행동|NPC.?행동/i,
+  MONSTER_BEHAVIOR_PERSONALITY:/monster.?behavior|monster.?personality|creature.?behavior|몬스터.?행동|몹.?성향/i,
+  WORLD_NARRATIVE_BINDING:/world.?narrative.?binding|environmental.?story|세계.?서사.?연결|환경.?스토리/i,
+  ROUTE_DESIGN:/route.?design|route.?graph|shortcut|choke|path.?width|길.?설계|동선|지름길|병목/i,
+  STREAMING_OPTIMIZATION:/streaming.?optimization|streaming.?hitch|chunk.?budget|lod.?budget|스트리밍.?최적화|청크.?예산/i,
   WEB_RUNTIME:/\bweb\b|browser|html|canvas|dom|css|javascript/i,
   ROBLOX_STUDIO:/roblox|studio|luau|rbxl|rbxlx/i,
   ROBLOX_DATASTORE:/datastore|ordered.?data.?store/i,
@@ -1250,18 +1265,18 @@ function idleDrillKindForDomain(domain=''){
   if(d==='QUEST_DESIGN')return'QUEST_CAUSALITY_DRILL';
   if(d==='CHARACTER_ARC')return'CHARACTER_ARC_DRILL';
   if(d==='DIALOGUE'||d==='CHARACTER_VOICE')return d==='CHARACTER_VOICE'?'CHARACTER_VOICE_DRILL':'DIALOGUE_SCENE_DRILL';
-  if(d==='CONCEPT_DIRECTION')return'CONCEPT_DIRECTION_DRILL';
-  if(d==='WORLD_GENERATION')return'WORLD_GENERATION_DRILL';
+  if(d==='CONCEPT_DIRECTION'||d==='VISUAL_IDENTITY')return d==='VISUAL_IDENTITY'?'GAME_VISUAL_DNA_DRILL':'CONCEPT_DIRECTION_DRILL';
+  if(d==='ENVIRONMENT_COMPOSITION'||d==='WORLD_GENERATION')return'WORLD_GENERATION_DRILL';
   if(d==='LEVEL_DESIGN')return'LEVEL_DESIGN_DRILL';
-  if(d==='ROUTE_DESIGN')return'ROUTE_DESIGN_DRILL';
-  if(d==='STREAMING_OPTIMIZATION')return'STREAMING_OPTIMIZATION_DRILL';
+  if(d==='NAVIGATION'||d==='ROUTE_DESIGN')return'ROUTE_DESIGN_DRILL';
+  if(d==='STREAMING'||d==='STREAMING_OPTIMIZATION')return'STREAMING_OPTIMIZATION_DRILL';
   if(d==='MAIN_STORY_GENERATION')return'MAIN_STORY_GENERATION_DRILL';
   if(d==='QUEST_GRAPH')return'QUEST_CAUSALITY_DRILL';
   if(d==='FORESHADOWING_PAYOFF')return'FORESHADOWING_PAYOFF_DRILL';
   if(d==='TWIST_EVIDENCE_CHAIN')return'TWIST_EVIDENCE_CHAIN_DRILL';
-  if(d==='CHARACTER_RELATIONSHIP_MEMORY')return'RELATIONSHIP_MEMORY_DRILL';
-  if(['CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY'].includes(d))return'CHARACTER_BEHAVIOR_DRILL';
-  if(d==='WORLD_NARRATIVE_BINDING')return'WORLD_NARRATIVE_BINDING_DRILL';
+  if(d==='RELATIONSHIP_MEMORY'||d==='CHARACTER_RELATIONSHIP_MEMORY')return'RELATIONSHIP_MEMORY_DRILL';
+  if(['CHARACTER_PERSONA','CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY'].includes(d))return'CHARACTER_BEHAVIOR_DRILL';
+  if(d==='WORLD_NARRATIVE'||d==='WORLD_NARRATIVE_BINDING')return'WORLD_NARRATIVE_BINDING_DRILL';
   if(UNITY_NATIVE_ONLY.has(d))return'UNITY_NATIVE_DRILL';
   if(UEFN_NATIVE_ONLY.has(d))return'FORTNITE_UEFN_NATIVE_DRILL';
   return'MINI_GAME_SYSTEM_DRILL';
@@ -1299,6 +1314,13 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='QUEST_CAUSALITY_DRILL')return'퀘스트의 선행 조건 → 플레이어 행동 → 상태 변화 → 결과/보상 → 다음 상태를 연결하고 저장/재진입/중복 보상/소프트락 검증을 포함한다.';
   if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
+  if(kind==='GAME_VISUAL_DNA_DRILL')return'게임별 Concept Blend·Style Bible·World DNA·캐릭터/몬스터/건축/모션/VFX/오디오/UI/서사 표현 언어를 하나의 Visual DNA로 고정한다. 이후 업데이트가 일반 프리셋으로 게임 고유 정체성을 덮지 않는지 검증한다.';
+  if(kind==='ASSET_LOADOUT_SELECTION_DRILL')return'요구 자산마다 검증 회사 자산→저장소→라이선스 검증 외부→안전 파생→신규 제작 순으로 후보를 비교하고 Visual DNA·플랫폼·리그/모션·검증 이력·모바일 비용·실패 이력으로 선택한다.';
+  if(kind==='FUTURE_ASSET_DEMAND_FORECAST_DRILL')return'활성 게임과 승인된 설계 큐의 장르·플랫폼·자산 요구를 현재 coverage와 비교해 앞으로 부족할 capability 슬롯을 예측한다. 예측은 준비 작업만 만들 수 있고 VERIFIED 승격은 금지한다.';
+  if(kind==='PLATFORM_VARIANT_OPTIMIZATION_DRILL')return'같은 스타일 정체성을 유지한 채 Unity/Roblox별 LOD·메시·재질·텍스처·파티클·오디오·모션 LOD·조명 비용을 조정한다. 데미지·쿨다운·히트박스·저장·진행·네트워크 권한은 바꾸지 않는다.';
+  if(kind==='STUDIO_TESTBED_DRILL')return'기본/저조도/근접전/군중전/날씨/저사양 모바일/LOD 거리/내비·충돌/모션 접촉/UI 가독성 시험장에서 자산과 월드를 검증한다. 시험장 PASS만으로 회사 검증 자산 승격은 불가하며 실제 게임 런타임이 필요하다.';
+  if(kind==='VERIFIED_ASSET_USAGE_FEEDBACK_DRILL')return'자산 사용 횟수·소비 게임 수·선택 맥락·런타임 PASS/FAIL·스타일/정체성/내비·모바일 비용을 모아 검증된 성공과 실패만 기존 학습 모터에 환류한다. 원시 텔레메트리 직접 학습은 금지한다.';
+  if(kind==='GENRE_WORLD_GRAMMAR_DRILL')return'생존/RPG/로그라이크/디펜스/타이쿤/오픈월드/던전/퍼즐/호러 등 장르마다 메인길·샛길·안전/위험·자원·전투공간·랜드마크·숏컷·재방문 문법을 다르게 적용하고 같은 매크로 패턴 반복을 피한다.';
   if(kind==='CONCEPT_DIRECTION_DRILL')return'카툰·무협·다크·SF 등 컨셉 축을 가중 혼합하고 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현까지 같은 Style Lock으로 전파한다. 색상만 바꾼 가짜 변형과 서로 충돌하는 시대·재질·UI 언어를 탐지한다.';
   if(kind==='WORLD_GENERATION_DRILL')return'허용된 레퍼런스에서 능선·계곡·길 그래프·밀도·랜드마크 위계·시야 공개 같은 추상 구조만 뽑아 Map DNA와 월드 구성으로 변환한다. 특정 보호 맵이나 랜드마크 배치를 복제하지 않고 게임 규칙·밸런스·저장 의미를 보존한다.';
   if(kind==='LEVEL_DESIGN_DRILL')return'전투 공간의 좁음/개방 리듬, 시야 유도, 랜드마크 공개, 안전/위험 구역, 자원과 이벤트 간격을 분석한다. 목표 도달성과 플레이 리듬을 검증하고 반복적인 같은 패턴을 회피한다.';
@@ -1344,7 +1366,14 @@ function companyGraphicsLibraryDrills(){
     ['universal-coverage','UNIVERSAL_ASSET_COVERAGE_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
     ['concept-direction','CONCEPT_DIRECTION_DRILL',['CONCEPT_DIRECTION','ASSET_ADAPTATION']],
     ['world-generation','WORLD_GENERATION_DRILL',['WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN']],
-    ['world-streaming','STREAMING_OPTIMIZATION_DRILL',['STREAMING_OPTIMIZATION','PERFORMANCE']]
+    ['world-streaming','STREAMING_OPTIMIZATION_DRILL',['STREAMING_OPTIMIZATION','PERFORMANCE']],
+    ['game-visual-dna','GAME_VISUAL_DNA_DRILL',['VISUAL_IDENTITY','CONCEPT_DIRECTION']],
+    ['asset-loadout','ASSET_LOADOUT_SELECTION_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION','VISUAL_IDENTITY']],
+    ['future-demand','FUTURE_ASSET_DEMAND_FORECAST_DRILL',['ASSET_PRODUCTION','CONCEPT_DIRECTION']],
+    ['platform-variant','PLATFORM_VARIANT_OPTIMIZATION_DRILL',['ASSET_ADAPTATION','PERFORMANCE']],
+    ['studio-testbed','STUDIO_TESTBED_DRILL',['ASSET_PRODUCTION','VISUAL_IDENTITY','PERFORMANCE']],
+    ['verified-usage','VERIFIED_ASSET_USAGE_FEEDBACK_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
+    ['genre-world-grammar','GENRE_WORLD_GRAMMAR_DRILL',['WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN']]
   ];
   return ['UNITY','ROBLOX'].flatMap(platform=>families.map(([id,kind,domains])=>({
     id:`company-graphics-${lower(platform)}-${id}`,
