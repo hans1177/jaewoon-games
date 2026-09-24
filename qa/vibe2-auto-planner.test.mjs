@@ -1697,6 +1697,34 @@ test('verified runtime failure may enter gated existing-scheduler route',()=>{
   assert.ok(compiled.evidence.some(value=>value.startsWith('neural-event-gated:')));
 });
 
+test('cross-platform runtime evidence stays platform-scoped and cannot gate a different target task',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-cross-platform',
+    engine:'roblox',
+    queueRuntimeObserved:true,
+    queueRuntimeEvidencePlatform:'UNITY',
+    queueRuntimePassed:false,
+    queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'unity-player-runtime-failure',
+    queueRuntimeSourceRevision:'c'.repeat(40),
+    queueRuntimeRootCauseVerified:true,
+    queueRuntimeResponsibleSystem:'UNITY_RUNTIME'
+  },{inhibitors:[],actionRecommendation:{failureStage:'TARGET_PLATFORM_RUNTIME'}});
+  assert.ok(compiled);
+  assert.equal(compiled.event.type,'RUNTIME_RESULT');
+  assert.equal(compiled.event.platform,'UNITY');
+  assert.match(compiled.event.id,/\|RUNTIME_RESULT\|UNITY\|/);
+  assert.equal(compiled.platformMatchesProject,false);
+  assert.equal(compiled.route.fireAllowed,false);
+  assert.equal(compiled.route.authorityMode,'SHADOW');
+  assert.ok(compiled.evidence.includes('runtime-neural-event-platform:UNITY'));
+  assert.ok(compiled.evidence.includes('runtime-neural-event-platform-match:NO'));
+  const marker=compiled.evidence.find(value=>value.startsWith('neural-event-shadow:'));
+  assert.ok(marker);
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-event-shadow:'.length)));
+  assert.equal(payload.eventPlatform,'UNITY');
+});
+
 test('unobserved runtime state does not invent a runtime neural event',()=>{
   assert.equal(compileRuntimeNeuralEvent({
     gameId:'runtime-pending',
@@ -1704,6 +1732,61 @@ test('unobserved runtime state does not invent a runtime neural event',()=>{
     queueRobloxRuntimePassed:false,
     queueRobloxFailureStage:'INDEPENDENT_QA'
   }),null);
+});
+
+test('company-runtime UNITY execution evidence does not become Roblox runtime evidence during planner projection',()=>{
+  const root=tempRepo();
+  const gameId='runtime-platform-bridge';
+  const sourceRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(sourceRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(sourceRoot,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client','Game.client.luau'),'local function render() return true end\nreturn render\n','utf8');
+  fs.writeFileSync(path.join(sourceRoot,'server','Game.server.luau'),'local function run() return true end\nreturn run\n','utf8');
+  fs.writeFileSync(path.join(sourceRoot,'shared','GameConfig.luau'),'return { version = 1 }\n','utf8');
+  const sha='e'.repeat(40);
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Runtime Platform Bridge',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE',
+      robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Runtime Platform Bridge',
+      status:'ACTIVE',
+      canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      selectedPlatform:'ROBLOX',
+      robloxProjectPath:`roblox-games/${gameId}`,
+      executionEvidence:{
+        platform:'UNITY',
+        sourceRevision:sha,
+        runtimePassed:true,
+        independentQaPassed:false,
+        regressionPassed:false,
+        failureStage:'INDEPENDENT_QA',
+        failureSignature:'unity:qa-pending'
+      }
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:20,
+    planningBacklogTarget:20,
+    planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,true);
+  const bridged=result.tasks.find(row=>row.gameId===gameId&&(row.evidence||[]).includes('runtime-neural-event:compiled'));
+  assert.ok(bridged,'expected runtime evidence to reach a planned atomic task');
+  assert.ok(bridged.evidence.includes('runtime-neural-event-platform:UNITY'));
+  assert.ok(bridged.evidence.includes('runtime-neural-event-platform-match:NO'));
+  assert.equal(bridged.evidence.some(value=>value.startsWith('neural-event-gated:')),false);
+  const marker=bridged.evidence.find(value=>value.startsWith('neural-event-shadow:'));
+  assert.ok(marker);
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-event-shadow:'.length)));
+  assert.equal(payload.eventPlatform,'UNITY');
 });
 
 test('company-runtime nested Roblox execution evidence survives planner projection into repair context',()=>{
