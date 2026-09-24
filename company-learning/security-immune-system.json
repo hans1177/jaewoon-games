@@ -1,5 +1,5 @@
 {
-  "version": 41,
+  "version": 42,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -672,7 +672,10 @@
       "infrastructureFailureNegativeLearningForbidden": true,
       "syntheticOutcomeMustRemainTraceableToTaskAndRun": true,
       "existingExperienceDedupeRequired": true,
-      "authorityExpansionForbidden": true
+      "authorityExpansionForbidden": true,
+      "exactFinalMarkerTokenRequired": true,
+      "prefixedFocusedQaTokenCannotSatisfyFinalMarker": true,
+      "positiveFanInProvenanceTokensRequired": true
     },
     "failureAction": "BLOCK_SPECIALIZED_LEARNING_PROMOTION_AND_KEEP_GAME_RELEASE_DECISION_SEPARATE_UNLESS_EXISTING_RELEASE_GATE_ALSO_FAILS"
   }
