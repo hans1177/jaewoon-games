@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 21,
+      "runtime": 22,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -1165,6 +1165,28 @@
     "stateFile": ".vibe2/web-roblox-handoffs.json",
     "stateProducer": "tools/vibe2-learning-motor.mjs",
     "generatedMachineHandoff": "tools/vibe2-handoff.mjs",
+    "companyRuntimeSource": "company-runtime:development-queue.json",
+    "reserveIngressCompanyRuntimeSyncRequired": true,
+    "reserveIngressSyncAppliesTo": [
+      "WORKFLOW_DISPATCH",
+      "WORKFLOW_CALL",
+      "FANIN_REFILL",
+      "FANIN_CALLBACK",
+      "PUSH_REFILL"
+    ],
+    "neuronCompletionIngressMaySkipHeavySyncUntilTaskMicroFanIn": true,
+    "lifecycleProjectionMonotonic": true,
+    "downstreamMachineEvidencePreventsBackwardPhaseProjection": true,
+    "missingGenreMayNotRegressStartedNativeWork": true,
+    "downstreamEvidencePriority": [
+      "RELEASE_EVIDENCE",
+      "REGRESSION_EVIDENCE",
+      "INDEPENDENT_QA_EVIDENCE",
+      "RUNTIME_EVIDENCE",
+      "SOURCE_REVISION",
+      "CURRENT_MACHINE_STEP",
+      "DESCRIPTIVE_METADATA"
+    ],
     "requiredFields": [
       "PROJECT_PHASE",
       "PLATFORM",
