@@ -6,6 +6,23 @@ local ContextActionService = game:GetService("ContextActionService")
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 1
+local studioAssetConfig = Config.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioUi = studioAssetFamilies.UI or {}
+local function hasStudioAssetAtom(atom)
+  return table.find(studioUi, atom) ~= nil
+end
+-- STUDIO_ASSET_BINDING_CLIENT_END
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
+
+local player = Players.LocalPlayer
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("GameConfig"))
 -- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 1
 local studioAssetConfig = Config.StudioAssets or {}
