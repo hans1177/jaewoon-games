@@ -352,10 +352,11 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
     fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2));
     fs.writeFileSync(file,[
       'local STUDIO_ASSET_BINDING_VERSION = 1',
-      'local selectedAtom = "FRAME_PANEL"',
+      'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
       'local root = Instance.new("Frame")',
       'root.BackgroundColor3 = Color3.fromRGB(22, 34, 58)',
-      'root:SetAttribute("StudioAssetAtom", selectedAtom)'
+      'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+      'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))'
     ].join('\n'));
     const result=runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-binding',force:true});
     assert.equal(result.outcome,'PASS');
@@ -365,7 +366,9 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
 
     fs.writeFileSync(file,[
       'local STUDIO_ASSET_BINDING_VERSION = 1',
-      'local selectedAtom = "FRAME_PANEL"'
+      'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+      'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+      'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))'
     ].join('\n'));
     assert.throws(()=>runIncrementalQa({
       root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-marker-only',force:true
@@ -554,11 +557,13 @@ test('Roblox Studio asset auto apply requires selected atom trace and real nativ
     const file=path.join(root,...relative.split('/'));
     fs.mkdirSync(path.dirname(file),{recursive:true});
     fs.writeFileSync(file,`local STUDIO_ASSET_BINDING_VERSION = 1
-local selectedAtom = "FRAME_PANEL"
+local STUDIO_ASSET_SELECTION = {"FRAME_PANEL"}
 local gui = Instance.new("ScreenGui")
 local panel = Instance.new("Frame")
-panel.Name = selectedAtom
+panel.Name = STUDIO_ASSET_SELECTION[1]
 panel.BackgroundColor3 = Color3.fromRGB(22,34,58)
+panel:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+panel:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))
 panel.Parent = gui
 `);
     const manifestPath=path.join(root,'manifest-roblox-studio-asset.json');
@@ -578,9 +583,10 @@ panel.Parent = gui
     assert.equal(result.robloxStudioAssetBindingQa.runtimeStillRequired,true);
     assert.equal(result.robloxStudioAssetBindingQa.companyAssetPromotionBlockedUntilRuntime,true);
 
-    fs.writeFileSync(file,`local selectedAtom = "FRAME_PANEL"
+    fs.writeFileSync(file,`local STUDIO_ASSET_SELECTION = {"FRAME_PANEL"}
 local panel = Instance.new("Frame")
 panel.BackgroundColor3 = Color3.fromRGB(22,34,58)
+panel:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))
 `);
     assert.throws(()=>runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-asset-missing-marker',force:true}),/ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:ROBLOX_STUDIO_ASSET_BINDING_VERSION/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
