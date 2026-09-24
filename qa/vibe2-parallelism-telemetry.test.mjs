@@ -148,6 +148,20 @@ test('blocked work order is not counted as source generation failure even with s
   assert.equal(t.bottleneck,'WORKER_FAILURES_UNCLASSIFIED');
 });
 
+test('transient work-lock deferrals do not count as development failure pressure',()=>{
+  const results=[
+    row(1,{outcome:'BLOCKED',blocker:'work-lock-conflict:transient-state-update-race'}),
+    row(2,{outcome:'BLOCKED',blocker:'work-lock-conflict:file-lock-conflict'}),
+    row(3,{outcome:'PASS'})
+  ];
+  const t=computeParallelismTelemetry({results,requestedMax:3,effectiveMax:3,taskCount:3});
+  assert.equal(t.transientWorkLockDeferrals,2);
+  assert.equal(t.effectiveFailureCount,0);
+  assert.equal(t.failureRatePct,0);
+  assert.equal(t.sourceGenerationFailures.count,0);
+  assert.equal(t.pressureLevel,'LOW');
+});
+
 test('mixed actions runs are not treated as one adaptive sample',()=>{
   const results=[row(1,{runId:'101'}),row(2,{runId:'102'})];
   const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:2});
