@@ -11002,7 +11002,10 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C36041938076%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-36041938076-1%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22REPAIR_PATH_PASSED%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C36041938076%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-36041938076-1%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C36041938076%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-36041938076-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C36041938076%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-36041938076-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C36041938076%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-36041938076-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A23%2C%22edgeCount%22%3A21%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C36041938076%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-36041938076-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C36041938076%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-36041938076-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A23%2C%22edgeCount%22%3A21%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "release-dispatch-recovery-requested:vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-1-36041938076-1",
+        "release-dispatch-recovery-at:1790277530617",
+        "release-dispatch-recovery-candidate-sha:c144b124418a5eee4318d55dd7cec2554978ba86"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -11020,7 +11023,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-24T19:18:35.525Z"
+      "updatedAt": "2026-09-24T20:04:45.263Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16850,7 +16853,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-24T19:18:35.553Z"
+      "updatedAt": "2026-09-24T20:04:45.295Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -19908,7 +19911,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-24T19:18:35.560Z"
+      "updatedAt": "2026-09-24T20:04:45.304Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118702,10 +118705,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-24T19:18:35.843Z",
+      "updatedAt": "2026-09-24T20:04:45.640Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T19:18:35.843Z"
+        "recovery-dispatched-at:2026-09-24T20:04:45.640Z"
       ]
     },
     {
@@ -144202,10 +144205,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-24T19:18:35.843Z",
+      "updatedAt": "2026-09-24T20:04:45.640Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T19:18:35.843Z"
+        "recovery-dispatched-at:2026-09-24T20:04:45.640Z"
       ]
     },
     {
@@ -144293,7 +144296,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.521Z",
-      "updatedAt": "2026-09-24T19:18:35.514Z"
+      "updatedAt": "2026-09-24T20:04:45.250Z"
     },
     {
       "id": "recovery-828f178e7d13218d39e5",
@@ -144365,7 +144368,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.548Z",
-      "updatedAt": "2026-09-24T19:18:35.544Z"
+      "updatedAt": "2026-09-24T20:04:45.284Z"
     },
     {
       "id": "recovery-ticket-bug-97439712d416497ffce0",
@@ -144408,7 +144411,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-24T19:18:35.126Z"
+      "updatedAt": "2026-09-24T20:04:44.777Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144451,7 +144454,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-24T19:18:35.135Z"
+      "updatedAt": "2026-09-24T20:04:44.787Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144497,7 +144500,8 @@
         "tester-debug-occurrence-count:18",
         "tester-debug-occurrence-count:19",
         "tester-debug-occurrence-count:20",
-        "tester-debug-occurrence-count:21"
+        "tester-debug-occurrence-count:21",
+        "tester-debug-occurrence-count:22"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144510,15 +144514,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 21,
+      "recurrenceCount": 22,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-24T19:18:35.843Z",
+      "updatedAt": "2026-09-24T20:04:45.640Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T19:18:35.843Z"
+        "recovery-dispatched-at:2026-09-24T20:04:45.640Z"
       ]
     },
     {
@@ -144564,10 +144568,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-09-24T19:18:35.843Z",
+      "updatedAt": "2026-09-24T20:04:45.640Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T19:18:35.843Z"
+        "recovery-dispatched-at:2026-09-24T20:04:45.640Z"
       ]
     },
     {
@@ -144741,11 +144745,16 @@
         "LEARNING-PRACTICE-relearn-fail_lhx93q-g2",
         "LEARNING-PRACTICE-relearn-fail_wu3qnk-g2",
         "LEARNING-PRACTICE-company-graphics-unity-character-archetype-g2",
-        "LEARNING-PRACTICE-company-graphics-unity-creature-rig-g2"
+        "LEARNING-PRACTICE-company-graphics-unity-creature-rig-g2",
+        "LEARNING-PRACTICE-company-graphics-unity-vfx-library-g2",
+        "LEARNING-PRACTICE-company-graphics-unity-environment-kit-g2",
+        "LEARNING-PRACTICE-company-graphics-unity-ui-presentation-g2",
+        "LEARNING-PRACTICE-gap-performance-l1-g2",
+        "LEARNING-PRACTICE-review-fail_c9xvk3-g2"
       ],
       "failureStage": "learning-web-artifact-practice-failed",
       "failureSignature": "learning-web-artifact-practice-failed",
-      "blastRadius": "portfolio:158",
+      "blastRadius": "portfolio:159",
       "checkpoint": null,
       "sourceMutationRequired": true,
       "sourceMutationBaseline": null,
@@ -144866,7 +144875,27 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041357372%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.5232558139534884%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041357372%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041357372%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041357372%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041357372%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A13%2C%22edgeCount%22%3A11%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041357372%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041357372%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A13%2C%22edgeCount%22%3A11%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "game-repair-repeat-count:161",
+        "actions-run:36041938076",
+        "reservation-id:36041938076:1",
+        "workload:prep-ms:12514",
+        "workload:cycle-ms:55696",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041938076%3A1%7Cprimary%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041938076%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.5232558139534884%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041938076%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041938076%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041938076%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36041938076%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A13%2C%22edgeCount%22%3A11%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_system_ai_fbdb1b74ac3437b5e19cbdfc%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22EXPERIENCE%3Aexp_system_ai_5d4a32876beb0afe53c867ac%22%2C%22CODE_PATTERN%3Apat_1mon1si%22%2C%22CODE_PATTERN%3Apat_1vuz0x7%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_36ety1%22%2C%22CODE_PATTERN%3Apat_5c3wb1%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A92fb83ea92ed0720b0e4%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A73a2ceb29bb96077cecf%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9c328ab0d2941e9c1b3c%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A0de29fd765422439deeb%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_107b55ca6e8e05ede28f9b9f%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_31bc6402f5611fd66c298fb4%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_8d74f51489e0fcd3b8c02e18%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_d1fc214a9466b3499d56576b%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_b8d48cb4bef5453d919f5f04%22%5D",
+        "actions-run:36046738668",
+        "reservation-id:36046738668:1",
+        "workload:prep-ms:9696",
+        "workload:cycle-ms:43682",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36046738668%3A1%7Cprimary%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36046738668%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.5232558139534884%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36046738668%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36046738668%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36046738668%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22LEARNING-PRACTICE-review-fail_1agpu1k-g1%7C36046738668%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A13%2C%22edgeCount%22%3A11%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A1%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -144884,7 +144913,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T17:30:14.689Z",
-      "updatedAt": "2026-09-24T18:37:15.192Z"
+      "updatedAt": "2026-09-24T20:04:45.640Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-09-24T20:04:45.640Z"
+      ]
     },
     {
       "id": "recovery-4d5aeb0b93e719eaa27d",
@@ -145035,11 +145068,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T19:18:35.535Z",
-      "updatedAt": "2026-09-24T19:18:35.843Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T19:18:35.843Z"
-      ]
+      "updatedAt": "2026-09-24T19:18:35.843Z"
     }
   ]
 }
