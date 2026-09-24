@@ -97,6 +97,33 @@ test('409 race rereads state and stops when ChatGPT acquired the same file first
   assert.equal(call, 3);
 });
 
+test('repeated remote acquire state races defer without becoming a worker failure', async () => {
+  let call = 0;
+  const fetchImpl = async (_url, options = {}) => {
+    call += 1;
+    if ((options.method || 'GET') === 'GET') {
+      return jsonResponse(200, { sha: `state-sha-${call}`, content: encodedState([]) });
+    }
+    return jsonResponse(409, {});
+  };
+
+  const result = await acquireRemoteVibeWorkLock({
+    worker: 'vibe2',
+    task: 'vibe-race-defer',
+    game: 'demo',
+    files: 'unity-games/demo/Assets/Scripts/Player.cs',
+    'base-sha': 'main-a'
+  }, { context, fetchImpl, delay: noDelay, maxAttempts: 3 });
+
+  assert.equal(result.acquired, false);
+  assert.equal(result.reason, 'transient-state-update-race');
+  assert.equal(result.transient, true);
+  assert.equal(result.contention, true);
+  assert.equal(result.remoteUpdated, false);
+  assert.equal(result.attempt, 3);
+  assert.equal(call, 6);
+});
+
 test('remote release retries a 409 with the latest state SHA', async () => {
   const held = activeLock({ id: 'vibe-held', worker: 'vibe2', taskId: 'vibe-task' });
   let call = 0;
