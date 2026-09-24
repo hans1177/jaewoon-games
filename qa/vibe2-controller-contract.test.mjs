@@ -313,6 +313,13 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
   assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
 });
 
+test('routine Vibe checkouts stay shallow while release history comparison remains deep',()=>{
+  assert.match(workflow,/Checkout Vibe2 control line[\s\S]*?fetch-depth: 1/);
+  assert.match(workflow,/Checkout latest Vibe2 control line[\s\S]*?fetch-depth: 1/);
+  assert.match(safetyNetWorkflow,/Checkout Vibe2 control branch[\s\S]*?fetch-depth: 1/);
+  assert.match(candidateReleaseWorkflow,/Checkout candidate[\s\S]*?fetch-depth: 0/);
+});
+
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
   assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
   assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
