@@ -90,8 +90,8 @@
     "nextWorkerDirective": {
       "objective": "CONTINUE_SELF_EVOLVING_ATOMIC_NEURON_SCHEDULER_TOWARD_VERIFIED_EVENT_DRIVEN_DAG_WITH_TRUTHFUL_TELEMETRY",
       "freshnessRule": "FETCH_FRESH_MAIN_HEAD_LIVE_WORKFLOW_STATUS_AND_CONTROL_STATE_BEFORE_MUTATION; DO_NOT_ASSUME_THIS_SNAPSHOT_IS_STILL_CURRENT",
-      "observedMainHead": "9ee0c7341f3a56837642b6b8804e800202cae28e",
-      "verifiedAt": "2026-09-25T06:58:59+09:00",
+      "observedMainHead": "f2332ac1000010b4fe63edda2344c4c53cc961a6",
+      "verifiedAt": "2026-09-25T07:39:13+09:00",
       "centralGoalRefs": [
         "company-learning/platform-release-roadmap.json::neuralDevelopmentBrain.currentWaveExecution",
         "company-learning/company-architecture-map.json::neuralWorkGraphTopology.phase1RuntimeBindings.selfAdaptiveGamePrimaryConcurrency",
@@ -117,7 +117,10 @@
         "RUNTIME_RESULT_FAIL_GATED_ONLY_WITH_VERIFIED_ROOT_CAUSE",
         "MINIMUM_NECESSARY_PROCEDURE_POLICY_ACTIVE",
         "RUNTIME_RESULT_LIVE_INGRESS_VERIFIED",
-        "RUNTIME_RESULT_GATED_EXISTING_TASK_REQUEUE_QA_PASS"
+        "RUNTIME_RESULT_GATED_EXISTING_TASK_REQUEUE_QA_PASS",
+        "LIVE_TASK_MICRO_FANIN_SLOT_RELEASE_REFILL_VERIFIED",
+        "UNRELATED_COHORT_COMPLETION_NOT_REQUIRED_FOR_REFILL",
+        "GRAPHICS_PRESENTATION_BUILDUP_RESERVE_WORKER_QA_REQUEUE_FLOW_OBSERVED"
       ],
       "liveEvidence": [
         "RUN_35505152601_REPOSITORY_DISPATCH_SUCCESS",
@@ -126,12 +129,17 @@
         "VIBE2_QUEUE_ACTIVE_WORKERS_7",
         "VIBE2_RESERVE_MODE_FREE_SLOT_REFILL_DURING_ACTIVE_WORK",
         "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_SUCCESSFULLY_ON_MAIN",
-        "RUN_36063857304_RUNTIME_RESULT_PASS_SHADOW"
+        "RUN_36063857304_RUNTIME_RESULT_PASS_SHADOW",
+        "RUN_36068485873_TASK_MICRO_FANIN_COMPLETE",
+        "RUN_36068485873_VIBE2_NEURON_SLOT_RELEASED_YES",
+        "RUN_36068485873_REFILL_DISPATCH_AT_2026-09-25T07:39:02+09:00",
+        "RUN_36068486867_UNRELATED_CONTINUOUS_CORE_STILL_ACTIVE_UNTIL_2026-09-25T07:39:13+09:00",
+        "GRAPHICS_TASK_daechung-rpg-unity-presentation-asset-adaptation-v1_REQUEUED_AFTER_TRANSIENT_WORK_LOCK"
       ],
       "priorities": [
-        "P1_CAPTURE_LIVE_TASK_MICRO_FANIN_EVIDENCE: observe final variant -> TASK_MICRO_FANIN_COMPLETE -> VIBE2_NEURON_SLOT_RELEASED=YES -> immediate reserve/refill before unrelated cohort completion",
         "P1_CAPTURE_LIVE_VERIFIED_RUNTIME_FAIL_REQUEUE: confirm canonical same-platform verified runtime failure requeues one existing task through gated scheduler authority",
-        "P2_VERIFIED_THROUGHPUT_OPTIMIZATION: use verified candidates/minute, first-candidate pass rate, queue wait, and failure evidence to tune scheduling without redundant process gates"
+        "P2_VERIFIED_THROUGHPUT_OPTIMIZATION: use verified candidates/minute, first-candidate pass rate, queue wait, and failure evidence to tune scheduling without redundant process gates",
+        "P2_GRAPHICS_TRANSIENT_LOCK_OBSERVABILITY: preserve automatic retry for presentation/asset adaptation tasks and track transient work-lock collision rate separately from graphics quality failures"
       ],
       "hardConstraints": [
         "NO_GLOBAL_WAVE_BARRIER_REINTRODUCTION",
@@ -152,7 +160,10 @@
         "RELEVANT_CORE_PARALLELISM_INTEGRATED_SECURITY_AND_CENTRAL_CONTRACT_QA_PASS",
         "RUNTIME_RESULT_PASS_COMPILES_TO_OBSERVE_ONLY_NEURAL_EVENT",
         "RUNTIME_RESULT_FAILURE_CANNOT_GAIN_GATED_MUTATION_WITHOUT_VERIFIED_ROOT_CAUSE",
-        "MINIMUM_NECESSARY_PROCEDURE_POLICY_PRESERVES_REQUIRED_SECURITY_AND_RELEASE_BOUNDARIES"
+        "MINIMUM_NECESSARY_PROCEDURE_POLICY_PRESERVES_REQUIRED_SECURITY_AND_RELEASE_BOUNDARIES",
+        "LIVE_FINAL_VARIANT_REPORTS_TASK_MICRO_FANIN_COMPLETE_AND_SLOT_RELEASE",
+        "LIVE_NEXT_REFILL_DISPATCHED_BEFORE_UNRELATED_COHORT_COMPLETION",
+        "GRAPHICS_PRESENTATION_TASK_TRANSIENT_LOCK_REQUEUES_WITHOUT_FALSE_GRAPHICS_PASS"
       ]
     }
   },
