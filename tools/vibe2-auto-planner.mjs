@@ -333,7 +333,7 @@ function supervisedWebBuildRequired(project={},goal=''){
   const text=clean(goal);
   if(/\[(?:WEB_BASE_IMPLEMENTATION|EXISTING_WEB_ASSESS_AND_IMPLEMENT|EXISTING_WEB_DEVELOPMENT_CONTINUATION|WEB_STRICT_80_88_TO_89|PRESENTATION_PASS:[A-Z_]+)\]/.test(text))return true;
   return /\[WEB_REPAIR\]/.test(text)
-    &&/REAL_PLAYABLE_WEB_GAME_REQUIRED|REAL_GAME_MECHANIC_COUNT_TOO_LOW|REAL_GAME_SYSTEM_COUNT_REQUIRED|WEB_TEST_HARNESS_FORBIDDEN|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED/.test(text);
+    &&/REAL_PLAYABLE_WEB_GAME_REQUIRED|REAL_GAME_MECHANIC_COUNT_TOO_LOW|REAL_GAME_SYSTEM_COUNT_REQUIRED|WEB_TEST_HARNESS_FORBIDDEN|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|STARTABILITY_AND_2_5D|MINIMUM_2_5D_PRESENTATION_REQUIRED|START_CONTROL_NOT_WIRED|EMPTY_OR_MISSING_WEB_ENTRYPOINT|VALIDATION_PROXY_NOT_REAL_GAMEPLAY/.test(text);
 }
 function supervisedWebBuildContract(){
   return{
@@ -1241,11 +1241,16 @@ function findSafeTasks(project,repoRoot,queue){
     ]);
   }
   if(project.engine==='web'){
-    const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-    if(startupSpatialRepair)return[startupSpatialRepair];
-    if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    if(project.ownerPreservationPresentationUpgrade===true){
+      const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
+      return uniqueTaskCandidates([findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    }
+    // Preserve canonical Web responsibility order: source bootstrap and exact runtime repair
+    // remain authoritative, and a first existing-Web assessment happens before new spatial repair.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
+    const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
+    if(startupSpatialRepair)return[startupSpatialRepair];
     return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
