@@ -100,3 +100,55 @@ test('legacy v1 sample-only event ids are separated by event type without hiding
   assert.equal(summary.byEventType.CI_RESULT,1);
   assert.equal(summary.unauthorizedFireCount,0);
 });
+
+
+test('telemetry accepts central-policy gated execution without treating it as authority escape',()=>{
+  const payload={
+    version:3,
+    authorityMode:'GATED',
+    eventIdentityVersion:2,
+    eventId:'gated|run-1|WORKER_RESULT',
+    eventType:'WORKER_RESULT',
+    actionKind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR',
+    actionReason:'VERIFIED_ROOT_CAUSE_AVAILABLE',
+    inhibitors:[],
+    fireAllowed:true,
+    workerCreationAllowed:true,
+    queueMutationAllowed:true,
+    waveReorderAllowed:true,
+    automaticTuningAllowed:true,
+    lockAcquisitionAllowed:false,
+    policyMutationAllowed:false,
+    authorityPromotionEligible:false
+  };
+  const value='neural-event-gated:'+encodeURIComponent(JSON.stringify(payload));
+  const summary=summarizeNeuralEventShadowEvidence([value]);
+  assert.equal(summary.gatedFireCount,1);
+  assert.equal(summary.unauthorizedFireCount,0);
+  assert.equal(summary.safetyInvariantPass,true);
+  assert.equal(summary.phase2AuthorityReady,true);
+  assert.equal(summary.automaticTuningAllowed,true);
+});
+
+test('gated telemetry still rejects protected authority escalation',()=>{
+  const payload={
+    version:3,
+    authorityMode:'GATED',
+    eventIdentityVersion:2,
+    eventId:'gated|run-2|WORKER_RESULT',
+    eventType:'WORKER_RESULT',
+    actionKind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR',
+    inhibitors:[],
+    fireAllowed:true,
+    workerCreationAllowed:true,
+    queueMutationAllowed:true,
+    waveReorderAllowed:true,
+    lockAcquisitionAllowed:false,
+    policyMutationAllowed:true,
+    authorityPromotionEligible:false
+  };
+  const value='neural-event-gated:'+encodeURIComponent(JSON.stringify(payload));
+  const summary=summarizeNeuralEventShadowEvidence([value]);
+  assert.equal(summary.unauthorizedFireCount,1);
+  assert.equal(summary.safetyInvariantPass,false);
+});
