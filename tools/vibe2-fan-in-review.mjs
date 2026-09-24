@@ -290,7 +290,8 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         rootCause,
         policyFresh:!evidence.has('CENTRAL_POLICY_STALE_OR_INVALID'),
         lockConflict:false,
-        securityBlocked:evidence.has('SECURITY_POLICY_BLOCK')
+        securityBlocked:evidence.has('SECURITY_POLICY_BLOCK'),
+        gatedExecutionEnabled:true
       });
       for(const marker of neuralEventRouteEvidence(neuralEventRoute))evidence.add(marker);
       const supervised=task?.supervisionContract?.required===true
@@ -321,7 +322,8 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
           rootCause,
           policyFresh:!evidence.has('CENTRAL_POLICY_STALE_OR_INVALID'),
           lockConflict:false,
-          securityBlocked:evidence.has('SECURITY_POLICY_BLOCK')
+          securityBlocked:evidence.has('SECURITY_POLICY_BLOCK'),
+          gatedExecutionEnabled:true
         });
         for(const marker of neuralEventRouteEvidence(supervisorNeuralEventRoute))evidence.add(marker);
         evidence.add('assistant-atomic-neuron:connected');
@@ -335,6 +337,26 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence.add('supervised-promotion:BLOCKED');
         evidence.add(supervisionVerified?`supervised-review:${supervisionDecision||'REVISE'}`:'supervised-review:REQUIRED');
         const releaseBlocker=supervisionVerified&&supervisionDecision&&supervisionDecision!=='PASS'?`SUPERVISED_${supervisionDecision}`:'SUPERVISED_APPROVAL_REQUIRED';
+        const gatedSupervisorRepair=supervisorNeuralEventRoute?.fireAllowed===true&&supervisionDecision!=='PASS';
+        if(gatedSupervisorRepair){
+          evidence.add('neural-gated-supervisor-requeue:HIGH');
+          evidence.add('neural-gated-worker-refill-eligible');
+          reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause,neuralEventRoute,supervisorNeuralEventRoute,gatedRequeue:true});
+          return{
+            ...task,
+            status:'queued',
+            priority:task.priority==='owner-immediate'?'owner-immediate':'high',
+            blocker:null,
+            reservationId:null,
+            reservationRunId:null,
+            reservationRunAttempt:0,
+            reservedAt:null,
+            neuronExpectedVariants:0,
+            neuronResults:[],
+            lastOutcome:'RETRY_AFTER_GATED_SUPERVISOR_REVISE',
+            evidence:[...evidence]
+          };
+        }
         reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause,neuralEventRoute,supervisorNeuralEventRoute});
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
