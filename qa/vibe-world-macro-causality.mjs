@@ -2,7 +2,7 @@
 // 역할: World LOD/Macro/Fate-Order-Chaos 결정성과 엔진 권한 격리를 회귀 검사
 import assert from 'node:assert/strict';
 import {resolveVibeWorldLod,createVibeWorldForces,createVibeMacroEventCandidate,createVibeMacroResolutionRequest,resolveVibeMacroCandidate,runVibeMacroResolutionLoop} from '../assets/vibe-orchestrator.js';
-import {createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan} from '../assets/vibe-environment-director.js';
+import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan} from '../assets/vibe-environment-director.js';
 
 assert.equal(resolveVibeWorldLod({distance:0}).level,'micro');
 assert.equal(resolveVibeWorldLod({distance:3,relevance:.4}).level,'meso');
@@ -96,15 +96,36 @@ assert.equal(streaming.literalZeroLoadingClaim,false);
 assert.ok(streaming.activeChunkBudget<=9);
 assert.equal(streaming.unloadMayNotDiscardSaveOrAuthoritativeWorldState,true);
 
+const rpgGrammar=createVibeGenreWorldGrammar({genre:'ACTION_RPG'});
+const survivalGrammar=createVibeGenreWorldGrammar({genre:'SURVIVAL'});
+assert.notDeepEqual([...rpgGrammar.routeRoles],[...survivalGrammar.routeRoles]);
+assert.equal(rpgGrammar.sameMacroPatternAcrossGenresForbidden,true);
+
+const learning=summarizeVibeVerifiedWorldLearning({events:[
+  {type:'ROUTE_USAGE',verifiedRuntimePass:true,count:5},
+  {type:'LANDMARK_DISCOVERY',verified:true},
+  {type:'STREAMING_HITCH',verifiedRuntimeFailure:true,failureReason:'MOBILE_HITCH'}
+]});
+assert.equal(learning.stats.routeUsage,5);
+assert.equal(learning.stats.landmarkDiscoveries,1);
+assert.equal(learning.stats.streamingHitches,1);
+assert.equal(learning.positiveLearningEligible,true);
+assert.equal(learning.negativeLearningEligible,true);
+assert.equal(learning.rawTelemetryDirectTrainingAllowed,false);
+
 const adaptive=createVibeAdaptiveWorldGenerationPlan({
   map:{name:'dark-wuxia',biome:'MOUNTAIN'},
   region:{name:'north'},
   concept:{mood:'dark'},
   reference:{sourceType:'PUBLIC_DOMAIN_IMAGE',features:{roadPathGraph:'switchback'}},
-  mobile:true
+  mobile:true,
+  genre:'ACTION_RPG',
+  learningEvents:[{type:'ROUTE_USAGE',verifiedRuntimePass:true,count:2}]
 });
 assert.equal(adaptive.policy.directReferenceLayoutCopyForbidden,true);
 assert.equal(adaptive.policy.gameplayRuleMutation,false);
 assert.equal(adaptive.streaming.perceivedSeamlessStreamingTarget,true);
+assert.equal(adaptive.genreGrammar.family,'ACTION_RPG');
+assert.equal(adaptive.learning.stats.routeUsage,2);
 
 console.log('vibe-world-macro-causality: ok');
