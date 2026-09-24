@@ -151,12 +151,29 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
   if(clean(item?.status).toUpperCase()!=='ACTIVE'||stateFromCatalog(game)!=='development-confirmed')continue;
+  const executionEvidence=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
+  const executionPlatform=clean(executionEvidence.platform).toUpperCase();
+  const executionRuntimeObserved=Object.hasOwn(executionEvidence,'runtimePassed');
+  const queueRuntimePatch=executionRuntimeObserved?{
+    queueRuntimeEvidencePlatform:executionPlatform||null,
+    queueRuntimeObserved:true,
+    queueRuntimePassed:executionEvidence.runtimePassed===true,
+    queueRuntimeFailureStage:clean(executionEvidence.failureStage),
+    queueRuntimeFailureSignature:clean(executionEvidence.failureSignature),
+    queueRuntimeSourceRevision:clean(executionEvidence.sourceRevision),
+    queueRuntimeArtifactIdentity:clean(executionEvidence.artifactIdentity),
+    queueRuntimeRootCauseVerified:executionEvidence.rootCauseVerified===true,
+    queueRuntimeResponsibleSystem:clean(executionEvidence.responsibleSystem||executionEvidence.rootCauseSystem),
+    queueRuntimeIndependentQaPassed:executionEvidence.independentQaPassed===true,
+    queueRuntimeRegressionPassed:executionEvidence.regressionPassed===true
+  }:{};
   const firstStagePolicy=centralPresentationPolicy(repoRoot)?.unityWebFirstStage||{};
   const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY'&&firstStagePolicy?.appliesToAllGames===true;
   if(unityWebFirstStage){
     const root=`unity-games/${id}`;
     const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
     const queuePatch={
+      ...queueRuntimePatch,
       queueCurrentStep:clean(item?.currentStep),
       queueCanonicalState:clean(item?.canonicalState),
       queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,4),
@@ -197,22 +214,23 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   if(queueTarget==='ROBLOX'||/^roblox-games\//.test(queueRobloxRoot)){
     const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
     const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
-    const executionEvidence=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
-    const runtimeObserved=Object.hasOwn(executionEvidence,'runtimePassed')||item?.robloxRuntimePassed===true;
+    const executionEvidenceMatchesRoblox=!executionPlatform||executionPlatform==='ROBLOX';
+    const runtimeObserved=(executionEvidenceMatchesRoblox&&executionRuntimeObserved)||item?.robloxRuntimePassed===true;
     const queuePatch={
+      ...queueRuntimePatch,
       queueCurrentStep:clean(item?.currentStep),
       queueCanonicalState:clean(item?.canonicalState),
       queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
-      queueRobloxFailureStage:clean(item?.robloxFailureStage||executionEvidence.failureStage),
-      queueRobloxFailureSignature:clean(item?.robloxFailureSignature||executionEvidence.failureSignature),
-      queueRobloxSourceCommit:clean(item?.robloxSourceCommit||executionEvidence.sourceRevision),
-      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||executionEvidence.artifactIdentity),
+      queueRobloxFailureStage:clean(item?.robloxFailureStage||(executionEvidenceMatchesRoblox?executionEvidence.failureStage:'')),
+      queueRobloxFailureSignature:clean(item?.robloxFailureSignature||(executionEvidenceMatchesRoblox?executionEvidence.failureSignature:'')),
+      queueRobloxSourceCommit:clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:'')),
+      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||(executionEvidenceMatchesRoblox?executionEvidence.artifactIdentity:'')),
       queueRobloxRuntimeObserved:runtimeObserved,
-      queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||executionEvidence.runtimePassed===true,
-      queueRobloxRootCauseVerified:executionEvidence.rootCauseVerified===true,
-      queueRobloxResponsibleSystem:clean(executionEvidence.responsibleSystem||executionEvidence.rootCauseSystem),
-      queueRobloxIndependentQaPassed:item?.robloxIndependentQaPassed===true||executionEvidence.independentQaPassed===true,
-      queueRobloxRegressionPassed:item?.robloxRegressionPassed===true||executionEvidence.regressionPassed===true,
+      queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.runtimePassed===true),
+      queueRobloxRootCauseVerified:executionEvidenceMatchesRoblox&&executionEvidence.rootCauseVerified===true,
+      queueRobloxResponsibleSystem:executionEvidenceMatchesRoblox?clean(executionEvidence.responsibleSystem||executionEvidence.rootCauseSystem):'',
+      queueRobloxIndependentQaPassed:item?.robloxIndependentQaPassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.independentQaPassed===true),
+      queueRobloxRegressionPassed:item?.robloxRegressionPassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.regressionPassed===true),
       queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
       queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
       queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
@@ -477,32 +495,43 @@ function compactRuntimeFailureEvidence({requestedStage='',implementationReason='
 }
 
 export function compileRuntimeNeuralEvent(project={},diagnosis=null){
-  const observed=project?.queueRobloxRuntimeObserved===true;
-  if(!observed)return null;
-  const passed=project?.queueRobloxRuntimePassed===true;
-  const rawStage=clean(project?.queueRobloxFailureStage).toUpperCase();
+  const genericObserved=project?.queueRuntimeObserved===true;
+  const legacyRobloxObserved=project?.queueRobloxRuntimeObserved===true;
+  if(!genericObserved&&!legacyRobloxObserved)return null;
+  const projectPlatform=clean(project?.engine||project?.target).toUpperCase()||null;
+  const platform=genericObserved
+    ?(clean(project?.queueRuntimeEvidencePlatform).toUpperCase()||projectPlatform)
+    :'ROBLOX';
+  const platformMatchesProject=!platform||!projectPlatform||platform===projectPlatform;
+  const passed=genericObserved?project?.queueRuntimePassed===true:project?.queueRobloxRuntimePassed===true;
+  const rawStage=clean(genericObserved?project?.queueRuntimeFailureStage:project?.queueRobloxFailureStage).toUpperCase();
   const runtimeFailure=!passed&&/(?:^|_)(?:TARGET_PLATFORM_)?RUNTIME(?:_|$)|SERVER_BOOT|PLAYTEST|\bF[09]\b/.test(rawStage);
   if(!passed&&!runtimeFailure)return null;
   const stage=passed?'TARGET_PLATFORM_RUNTIME':(rawStage||'TARGET_PLATFORM_RUNTIME');
-  const signature=clean(project?.queueRobloxFailureSignature)||clean(project?.queueRobloxSourceCommit)||null;
-  const responsibleSystem=clean(project?.queueRobloxResponsibleSystem);
-  const rootCauseVerified=project?.queueRobloxRootCauseVerified===true&&Boolean(responsibleSystem);
+  const sourceRevision=clean(genericObserved?project?.queueRuntimeSourceRevision:project?.queueRobloxSourceCommit);
+  const signature=clean(genericObserved?project?.queueRuntimeFailureSignature:project?.queueRobloxFailureSignature)||sourceRevision||null;
+  const responsibleSystem=clean(genericObserved?project?.queueRuntimeResponsibleSystem:project?.queueRobloxResponsibleSystem);
+  const rootCauseVerified=(genericObserved?project?.queueRuntimeRootCauseVerified===true:project?.queueRobloxRootCauseVerified===true)&&Boolean(responsibleSystem);
   const rootCause=rootCauseVerified?{
     state:'ROOT_CAUSE_VERIFIED',
     rootCauseVerified:true,
     responsibleSystem
   }:null;
   const event={
-    id:[clean(project?.gameId)||'unknown','RUNTIME_RESULT',clean(project?.queueRobloxSourceCommit)||stage,passed?'PASS':'FAIL'].join('|'),
+    id:[clean(project?.gameId)||'unknown','RUNTIME_RESULT',platform||'UNKNOWN_PLATFORM',sourceRevision||stage,passed?'PASS':'FAIL'].join('|'),
     type:'RUNTIME_RESULT',
     gameId:clean(project?.gameId)||null,
     taskId:null,
+    platform,
     outcome:passed?'PASS':'FAIL',
     stage,
     signature,
     evidence:[
       'runtime-result-source:company-runtime',
-      clean(project?.queueRobloxSourceCommit)?`runtime-source-revision:${clean(project.queueRobloxSourceCommit)}`:'',
+      `runtime-platform:${platform||'UNKNOWN'}`,
+      `runtime-project-platform:${projectPlatform||'UNKNOWN'}`,
+      `runtime-platform-match:${platformMatchesProject?'YES':'NO'}`,
+      sourceRevision?`runtime-source-revision:${sourceRevision}`:'',
       rawStage?`runtime-observed-stage:${rawStage}`:'',
       signature?`runtime-signature:${signature}`:''
     ].filter(Boolean)
@@ -514,15 +543,18 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
     policyFresh:true,
     lockConflict:false,
     securityBlocked:false,
-    gatedExecutionEnabled:true
+    gatedExecutionEnabled:platformMatchesProject
   });
   return{
-    version:1,
+    version:2,
     event,
     route,
     rootCauseVerified,
+    platformMatchesProject,
     evidence:[
       'runtime-neural-event:compiled',
+      `runtime-neural-event-platform:${platform||'UNKNOWN'}`,
+      `runtime-neural-event-platform-match:${platformMatchesProject?'YES':'NO'}`,
       `runtime-neural-event-outcome:${event.outcome}`,
       `runtime-neural-event-authority:${route.authorityMode}`,
       `runtime-neural-event-action:${clean(route?.proposedAction?.kind)||'OBSERVE_ONLY'}`,
@@ -530,7 +562,6 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
     ]
   };
 }
-
 function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
   if(clean(project.engine).toLowerCase()!=='web')return{pass:true,blockers:[],relative:null};
   const relative=`${posix(project.projectPath)}/index.html`;
