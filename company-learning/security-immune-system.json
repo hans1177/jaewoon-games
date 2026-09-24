@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -596,5 +596,42 @@
       "rawTelemetryDirectTrainingForbidden": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
+  },
+  "referenceImageWorldObservationSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.worldGenerationStudio.referenceAbstraction.visionObservationContract",
+    "purpose": "ALLOW_REFERENCE_IMAGE_STRUCTURE_STUDY_WITHOUT_UNVERIFIED_RIGHTS_RAW_PROTECTED_TRAINING_OR_DIRECT_SCENE_COPY",
+    "protections": {
+      "sourceIdRequired": true,
+      "sourceRightsOrOwnershipVerificationRequired": true,
+      "multiReferenceSourceSetVerificationRequired": true,
+      "rawProtectedReferenceImagePersistentLearningForbidden": true,
+      "rawReferenceImageBytesInLearningLogsForbidden": true,
+      "directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden": true,
+      "structuralObservationOnly": true,
+      "modelObservationProposalUntilVerifiedAgainstSource": true,
+      "positiveLearningRequiresVerifiedSourceBindingAndVerifiedProjectOutcome": true,
+      "referenceInputMayNotExpandCodeExecutionOrGameplayAuthority": true
+    },
+    "failureAction": "QUARANTINE_REFERENCE_STUDY_OR_AFFECTED_WORLD_SCOPE_AND_ROUTE_GRAPHICS_REPAIR_REQUIRED"
+  },
+  "narrativeStateSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract",
+    "purpose": "ALLOW_CAUSAL_STORY_RELATIONSHIP_MEMORY_AND_FACTION_STATE_WITHOUT_EXPANDING_GAMEPLAY_OR_NETWORK_AUTHORITY",
+    "protections": {
+      "storyTransitionRequiresSourceEvent": true,
+      "factionRelationshipMutationRequiresSourceEvent": true,
+      "duplicateSourceEventMustBeIdempotent": true,
+      "relationshipAndFactionAxesMustRemainBounded": true,
+      "generatedNarrativeAndPersonaGameplayAuthorityForbidden": true,
+      "undeclaredDamageRewardEconomyProgressMutationForbidden": true,
+      "multiplayerServerAuthorityPreserved": true,
+      "characterKnowledgeBoundaryRequired": true,
+      "persistentStoryRelationshipMemoryFactionStateMustRoundTrip": true,
+      "backwardCompatibleLazyStateExpansionRequired": true,
+      "rawGeneratedStoryOrDialogueDirectMasteryForbidden": true
+    },
+    "failureAction": "QUARANTINE_AFFECTED_NARRATIVE_STATE_SCOPE_AND_ROUTE_DIRECT_GAMEPLAY_REPAIR_REQUIRED"
   }
 }
