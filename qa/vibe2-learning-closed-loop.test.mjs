@@ -96,6 +96,19 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.finalMarkerMustBeExactEvidenceToken,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.prefixedFocusedQaTokenCannotMatchFinalMarker,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.positiveFanInProvenanceRequired,true);
+  const producer=ingress?.producerContract;
+  assert.equal(producer?.nativeTwoStageFanInReview,true);
+  assert.equal(producer?.preNativeFanInMayApproveGameCandidateButMustNotEmitNativePositiveMarkerWithoutEngineQa,true);
+  assert.equal(producer?.postNativeFinalReviewImplementation,'tools/vibe2-fan-in-review.mjs');
+  assert.equal(producer?.postNativeFinalReviewMustPreserveTaskStatusAndReleaseDecision,true);
+  assert.equal(producer?.candidateResultWorkflowMayInvokeFanInReviewButMayNotMintVerifiedMarkerItself,true);
+  assert.equal(producer?.postNativeFinalReviewRequiresExistingPreNativeRegressionAndReviewPass,true);
+  assert.equal(producer?.postNativeFinalReviewRequiresFocusedQaPassTraceForEachMarker,true);
+  const architectureIngress=architecture.learningClosedLoopTopology?.specializedGameDevelopmentMastery?.verifiedQueueEvidenceIngress;
+  assert.equal(architectureIngress?.nativeTwoStageFanInReview,true);
+  assert.equal(architectureIngress?.postNativeFinalReviewImplementation,'tools/vibe2-fan-in-review.mjs');
+  assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.nativeTwoStageReviewRequired,true);
+  assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.candidateResultWorkflowCannotMintFinalMarker,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
@@ -107,7 +120,7 @@ test('continuous runner loads distilled external AI and emits exact knowledge tr
   assert.match(runner,/exactInjectedKnowledgeIds/);
   assert.match(workflow,/learning-knowledge-ids:/);
   assert.match(workflow,/knowledgeApplication/);
-  assert.match(workflow,/version:15/);
+  assert.match(workflow,/version:16/);
   assert.match(workflow,/workLock/);
 });
 
