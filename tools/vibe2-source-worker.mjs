@@ -1692,6 +1692,36 @@ function validateSystemCandidateSyntax({candidate,sourceRoot}={}){
   }
 }
 function designManifestContract(order={}){const design=order?.designIntelligence||{};return{required:design.required===true,version:Number(design.version||0)||null,pipeline:Array.isArray(design.pipeline)?design.pipeline.map(clean).filter(Boolean):[],implementationGate:{allowed:design?.implementationGate?.allowed===true,blockers:Array.isArray(design?.implementationGate?.blockers)?design.implementationGate.blockers.map(clean).filter(Boolean):[]},evidenceRequirements:{autoPlayer:'verified-runtime-play-evidence-required',telemetry:'verified-observed-metrics-required',designReview:'verified-pass-required-before-experience-memory',qa:'verified-qa-evidence-required'},authorityExpanded:false};}
+
+const SPECIALIZED_VERIFICATION_REQUEST_RULES=Object.freeze([
+  ['VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS',/(?:concept|visual.?dna|style.?bible|style.?lock|art.?direction|컨셉|비주얼.?DNA|스타일.?바이블|스타일.?락|아트.?디렉션)/i],
+  ['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',/(?:world.?generation|map.?dna|level.?design|route|navigation|path.?graph|landmark|objective.?reach|월드.?생성|맵.?DNA|레벨.?디자인|경로|길.?그래프|내비|랜드마크|목표.?도달)/i],
+  ['VERIFIED_STREAMING_MOBILE_BUDGET_PASS',/(?:streaming|chunk|cell.?stream|\blod\b|prewarm|mobile.?world.?performance|스트리밍|청크|셀.?스트림|프리워밍|모바일.?월드.?성능)/i],
+  ['VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS',/(?:main.?story|story.?transition|narrative|storytelling|causal.?story|메인.?스토리|스토리.?전이|서사|스토리텔링|인과.?스토리)/i],
+  ['VERIFIED_QUEST_GRAPH_PASS',/(?:quest.?graph|quest.?dependency|quest.?prerequisite|choice.?consequence|퀘스트.?그래프|퀘스트.?의존|선행.?퀘스트|선택.?결과)/i],
+  ['VERIFIED_CHARACTER_PERSONA_VOICE_MEMORY_PASS',/(?:character.?persona|character.?voice|relationship.?memory|companion.?behavior|npc.?behavior|monster.?personality|persona|페르소나|캐릭터.?말투|관계.?기억|동료.?행동|npc.?행동|몬스터.?성격)/i],
+  ['VERIFIED_WORLD_NARRATIVE_STATE_PASS',/(?:world.?narrative|faction.?state|faction.?relationship|world.?state|environmental.?story|월드.?서사|세력.?상태|세력.?관계|월드.?상태|환경.?스토리)/i]
+]);
+export function buildSpecializedVerificationRequest(order={}){
+  const text=[
+    clean(order?.goal),
+    ...(Array.isArray(order?.acceptanceCriteria)?order.acceptanceCriteria:[]),
+    ...(Array.isArray(order?.evidence)?order.evidence:[]),
+    ...(Array.isArray(order?.responsibleFiles)?order.responsibleFiles:[])
+  ].map(clean).filter(Boolean).join(' ');
+  const requestedMarkers=SPECIALIZED_VERIFICATION_REQUEST_RULES.filter(([,re])=>re.test(text)).map(([marker])=>marker);
+  const target=clean(order?.target).toLowerCase();
+  return Object.freeze({
+    version:1,
+    required:requestedMarkers.length>0,
+    requestedMarkers:Object.freeze([...new Set(requestedMarkers)]),
+    target:target||null,
+    nativeRuntimeRequired:['unity','roblox','uefn','fortnite','fortnite_uefn','fortnite-uefn'].includes(target),
+    focusedQaRequired:requestedMarkers.length>0,
+    markerOnlyPassForbidden:true,
+    requestAuthority:'VERIFICATION_REQUEST_ONLY_NOT_PASS'
+  });
+}
 function waitingDesignEvidence(){return{autoPlayer:{status:'WAITING_EVIDENCE',verified:false},telemetry:{status:'WAITING_EVIDENCE',verified:false},designReview:{status:'WAITING_EVIDENCE',verified:false,decision:null},qa:{status:'WAITING_EVIDENCE',verified:false}};}
 
 export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',responseFiles=[],applySource=false}={}){
@@ -1905,6 +1935,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     roleResults:{exploration:'PASS',implementation:'PASS',test:'WAITING_INCREMENTAL_QA',performance:'WAITING_SANITY',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
+    specializedVerificationRequest:buildSpecializedVerificationRequest(order),
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
     fullFileRewriteAllowed:allowFullRewrite,
     protectedGameplayMutationAutomatic:false,
