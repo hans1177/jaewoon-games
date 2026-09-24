@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-j6xtm5",
+      "worker": "vibe2",
+      "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/rules-v7.js",
+        "web-games/cozy-island/townhall-upgrade.js",
+        "web-games/cozy-island/village-defense.js",
+        "web-games/cozy-island/world-upgrade-v3.js"
+      ],
+      "baseSha": "5d7ecd71df4dea9902731ca29483b6803707735b",
+      "acquiredAt": "2026-09-24T13:21:44.050Z",
+      "expiresAt": "2026-09-24T14:06:44.050Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js"
+      ]
+    }
+  ]
 }
