@@ -6513,7 +6513,8 @@
       "protectedSemanticsUnchanged": true,
       "gateThresholdsUnchanged": true,
       "implementationBreadthAdded": true,
-      "perpetualLoopAdded": true
+      "perpetualLoopAdded": true,
+      "transientWorkLockRequeueAdded": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -20823,6 +20824,14 @@
       "repeatedIdenticalChangeWithoutNewEvidenceForbidden": true,
       "qualityWorkMayContinueAfterStrictDesignPass": true,
       "productionAndLiveGamesRemainEligibleForContinuousImprovement": true
+    },
+    "transientWorkLockPolicy": {
+      "contentionIsFailure": false,
+      "blockedStateForbidden": true,
+      "action": "REQUEUE_WITHOUT_RETRY_PENALTY",
+      "preserveLearningSignal": true,
+      "doNotRecordFailureCause": true,
+      "reason": "SOURCE_ROOT_OR_FILE_LOCK_CONTENTION_IS_SCHEDULING_NOT_GAME_QUALITY_FAILURE"
     }
   }
 }
