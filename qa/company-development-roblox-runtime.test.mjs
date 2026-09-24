@@ -487,3 +487,18 @@ test('exact Roblox runtime dispatch has an isolated workflow concurrency lane',(
   assert.match(workflow,/source-bootstrap:[\s\S]*group: company-runtime-writer/);
   assert.match(workflow,/technical-persist:[\s\S]*group: company-runtime-writer/);
 });
+
+
+test('territory-war exact source honors approved competitive multiplayer profile',()=>{
+  const config=fs.readFileSync('roblox-games/territory-war/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync('roblox-games/territory-war/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/territory-war/client/Game.client.luau','utf8');
+  assert.match(config,/PlayMode = "COMPETITIVE"/);
+  assert.match(config,/MultiplayerRequired = true/);
+  assert.match(config,/CompetitiveRequired = true/);
+  assert.match(config,/MinimumParticipants = 2/);
+  assert.match(server,/Players:GetPlayers\(\)/);
+  assert.match(server,/RoundScore/);
+  assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
+  assert.match(client,/OnClientEvent/);
+});
