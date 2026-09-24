@@ -1209,12 +1209,12 @@ test('verified specialized queue evidence enters canonical mastery once and igno
     {
       id:'world-pass',gameId:'world-g1',target:'web',status:'verified',
       goal:'월드 길과 스트리밍 검증',
-      evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','VERIFIED_STREAMING_MOBILE_BUDGET_PASS','actions-run:7001','raw-telemetry:player-path=12,44,98','blocker-stack:very-long-runtime-log']
+      evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','VERIFIED_STREAMING_MOBILE_BUDGET_PASS','specialized-final-verification:PASS','specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION','actions-run:7001','raw-telemetry:player-path=12,44,98','blocker-stack:very-long-runtime-log']
     },
     {
       id:'narrative-pass',gameId:'story-g1',target:'web',status:'done',
       goal:'스토리와 퀘스트 검증',
-      evidence:['VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS','VERIFIED_QUEST_GRAPH_PASS','VERIFIED_WORLD_NARRATIVE_STATE_PASS','actions-run:7002']
+      evidence:['VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS','VERIFIED_QUEST_GRAPH_PASS','VERIFIED_WORLD_NARRATIVE_STATE_PASS','specialized-final-verification:PASS','specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION','actions-run:7002']
     },
     {
       id:'world-fail',gameId:'world-g2',target:'web',status:'failed',
@@ -1276,6 +1276,9 @@ test('specialized queue ingress policy accepts only verified markers and reuses 
   assert.equal(ingress.infrastructureFailureNegativeLearningForbidden,true);
   assert.equal(ingress.existingSeenExperienceDedupeRequired,true);
   assert.equal(ingress.rawTelemetryDirectTraining,false);
+  assert.equal(ingress.finalMarkerMustBeExactEvidenceToken,true);
+  assert.equal(ingress.prefixedFocusedQaTokenCannotMatchFinalMarker,true);
+  assert.equal(ingress.positiveFanInProvenanceRequired,true);
 });
 
 
@@ -1286,7 +1289,7 @@ test('specialized verified outcomes persist once and become same-game retrieval 
     target:'web',
     status:'verified',
     goal:'world generation route navigation',
-    evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8101']
+    evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','specialized-final-verification:PASS','specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION','actions-run:8101']
   }]};
   const first=mergeVerifiedSpecializedQueueExperienceMemory({records:[]},queue);
   assert.equal(first.changed,true);
@@ -1322,8 +1325,8 @@ test('distinct verified runs may reinforce one reusable specialized experience e
     status:'verified',
     goal:'world generation route navigation'
   };
-  const first=mergeVerifiedSpecializedQueueExperienceMemory({records:[]},{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8201']}]});
-  const second=mergeVerifiedSpecializedQueueExperienceMemory(first.memory,{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8202']}]});
+  const first=mergeVerifiedSpecializedQueueExperienceMemory({records:[]},{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','specialized-final-verification:PASS','specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION','actions-run:8201']}]});
+  const second=mergeVerifiedSpecializedQueueExperienceMemory(first.memory,{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','specialized-final-verification:PASS','specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION','actions-run:8202']}]});
   assert.equal(second.changed,true);
   assert.equal(second.added,1);
   assert.equal(second.memory.records.length,1);
@@ -1331,8 +1334,55 @@ test('distinct verified runs may reinforce one reusable specialized experience e
   assert.ok(second.memory.records[0].evidence.includes('source-run:actions-run:8201'));
   assert.ok(second.memory.records[0].evidence.includes('source-run:actions-run:8202'));
 
-  const duplicate=mergeVerifiedSpecializedQueueExperienceMemory(second.memory,{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8202']}]});
+  const duplicate=mergeVerifiedSpecializedQueueExperienceMemory(second.memory,{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','specialized-final-verification:PASS','specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION','actions-run:8202']}]});
   assert.equal(duplicate.changed,false);
   assert.equal(duplicate.added,0);
   assert.equal(duplicate.memory.records[0].confirmations,2);
+});
+
+
+test('focused-QA trace tokens and unproven exact markers cannot self-promote into positive mastery',()=>{
+  const focusedOnly={tasks:[{
+    id:'focused-only',
+    gameId:'g-focused',
+    target:'web',
+    status:'verified',
+    goal:'world route',
+    evidence:[
+      'specialized-focused-qa-pass:VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',
+      'actions-run:8301'
+    ]
+  }]};
+  const focusedExtracted=collectVerifiedSpecializedQueueExperience(focusedOnly);
+  assert.equal(focusedExtracted.positive,0);
+  assert.equal(focusedExtracted.records.length,0);
+
+  const exactWithoutProvenance={tasks:[{
+    id:'exact-without-provenance',
+    gameId:'g-exact',
+    target:'web',
+    status:'verified',
+    goal:'world route',
+    evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8302']
+  }]};
+  const unproven=collectVerifiedSpecializedQueueExperience(exactWithoutProvenance);
+  assert.equal(unproven.positive,0);
+  assert.equal(unproven.records.length,0);
+
+  const proven={tasks:[{
+    id:'exact-proven',
+    gameId:'g-proven',
+    target:'web',
+    status:'verified',
+    goal:'world route',
+    evidence:[
+      'VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',
+      'specialized-final-verification:PASS',
+      'specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION',
+      'actions-run:8303'
+    ]
+  }]};
+  const accepted=collectVerifiedSpecializedQueueExperience(proven);
+  assert.equal(accepted.positive,1);
+  assert.equal(accepted.records.length,1);
 });
