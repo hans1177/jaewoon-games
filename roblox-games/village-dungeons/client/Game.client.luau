@@ -15,6 +15,17 @@ local function hasStudioAssetAtom(atom)
   return table.find(studioUi, atom) ~= nil
 end
 -- STUDIO_ASSET_BINDING_CLIENT_END
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("GameConfig"))
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 1
+local studioAssetConfig = Config.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioUi = studioAssetFamilies.UI or {}
+local function hasStudioAssetAtom(atom)
+  return table.find(studioUi, atom) ~= nil
+end
+-- STUDIO_ASSET_BINDING_CLIENT_END
 
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
@@ -23,6 +34,16 @@ gui.Name = "ApprovedScopeHud"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 local root = Instance.new("Frame")
+root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+
+root.Name = "Root"
+root.AnchorPoint = Vector2.new(0.5, 1)
+root.Position = UDim2.fromScale(0.5, 0.98)
+root.Size = UDim2.new(1, -24, 0, 360)
+root.BackgroundTransparency = 0.15
+root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
+root.Parent = gui
 if hasStudioAssetAtom("FRAME_PANEL") then
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"

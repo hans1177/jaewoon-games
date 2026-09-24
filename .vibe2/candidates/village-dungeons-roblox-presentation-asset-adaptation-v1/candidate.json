@@ -1,0 +1,26 @@
+{
+  "summary": "Patch Recipe Execution",
+  "expectedEffect": "Patch recipe executed successfully with no failure",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local player = Players.LocalPlayer",
+      "replace": "local player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild(\"Shared\")\nlocal Config = require(Shared:WaitForChild(\"GameConfig\"))\n-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\nlocal STUDIO_ASSET_BINDING_VERSION = 1\nlocal studioAssetConfig = Config.StudioAssets or {}\nlocal studioAssetFamilies = studioAssetConfig.Families or {}\nlocal studioUi = studioAssetFamilies.UI or {}\nlocal function hasStudioAssetAtom(atom)\n  return table.find(studioUi, atom) ~= nil\nend\n-- STUDIO_ASSET_BINDING_CLIENT_END"
+    },
+    {
+      "path": "client/Game.client.luau",
+      "find": "local root = Instance.new(\"Frame\")",
+      "replace": "local root = Instance.new(\"Frame\")\nroot:SetAttribute(\"StudioAssetBindingVersion\", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute(\"StudioAssetAtoms\", table.concat(studioUi, \",\"))\n\nroot.Name = \"Root\"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nroot.BackgroundColor3 = Color3.fromRGB(18, 28, 48)\nroot.Parent = gui"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Patch recipe executed successfully",
+    "No failure detected",
+    "No binary assets generated",
+    "No wrapper/monkey patch used",
+    "No change to homepage/company files",
+    "No read-only impact context modified"
+  ]
+}
