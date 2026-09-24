@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="5">
+<html lang="ko" data-asset-library-version="6">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -58,6 +58,7 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
 <section class="section"><div class="sectionHead"><div><h2>맨손 대전 액션 연구</h2><p>무술 스타일·보법·타격·킥·카운터·잡기·던지기·낙법·무협 공중연계까지 계속 확장</p></div></div><div class="coverage" id="unarmedCoverage"></div><div class="grid" id="unarmedStyles"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>Motion Director</h2><p>모션을 파일 단위가 아니라 Motion DNA + 호환성 + 레이어 + 상황 선택으로 조합</p></div></div><div class="coverage" id="motionDirectorCoverage"></div><div class="grid" id="motionDirectorSystems"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>몬스터 모션 시드 세트</h2><p>실제 클립 PASS 전의 조합용 의미 시드 · 런타임 검증 후 승격</p></div></div><div class="coverage" id="bootstrapCoverage"></div><div class="grid" id="bootstrapSets"></div></section>
+<section class="section"><div class="sectionHead"><div><h2>고급 모션 품질·학습</h2><p>전환/접촉/그룹/감정/LOD/계보와 검증된 런타임 학습 상태</p></div></div><div class="grid" id="advancedMotionSystems"></div></section>
 <section class="section"><div class="sectionHead"><div><h2>플랫폼 분리</h2><p>디자인 규격은 공유, 실제 구현은 네이티브 분리</p></div></div><div class="platforms">
   <article class="platform"><h3>Unity</h3><p>Humanoid / Generic Rig · Animator · Blend Tree · Avatar Mask · IK 또는 Animation Rigging · Secondary Motion · LOD · 모바일 성능 스케일링.</p></article>
   <article class="platform"><h3>Roblox</h3><p>R15 호환 또는 전용 Custom Rig · Motor6D · Attachment · Animator / AnimationTrack · 모바일 예산에 맞춘 Secondary Motion.</p></article>
@@ -128,6 +129,20 @@ function render(){
     const count=['locomotion','attacks','defense','reactions','acting','deaths','skill'].reduce((n,k)=>n+((s[k]||[]).length),0);
     return '<article class="card"><div class="body"><div class="tagrow"><span class="tag research">PREPARED</span><span class="tag">'+esc(s.bodyPlan)+'</span></div><h3>'+esc(s.archetype)+'</h3><p>'+count+'개 의미 모션 · 시그니처 '+esc((s.signature||[]).join(' · '))+' · 스타일 '+esc((s.compatibleStyles||[]).join('/'))+'</p></div></article>';
   }).join('');
+  const adv=data.motionAdvancedSystems||{};
+  const advancedRows=[
+    ['Transition Director',adv.transitionDirector],
+    ['Automatic Contact QA',adv.automaticContactQa],
+    ['Gameplay Event Binding',adv.gameplayEventMotionBinding],
+    ['Procedural Motion',adv.proceduralMotionLayer],
+    ['Group Motion',adv.groupMotionDirector],
+    ['Multi Actor',adv.multiActorMotion],
+    ['Emotion / Intent',adv.emotionIntentLayer],
+    ['Motion LOD',adv.motionLod],
+    ['Motion Lineage',adv.motionLineage],
+    ['Runtime Learning',adv.runtimeMotionLearning]
+  ];
+  document.getElementById('advancedMotionSystems').innerHTML=advancedRows.map(([name,on])=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag '+(on?'verified':'research')+'">'+(on?'ACTIVE':'OFF')+'</span></div><h3>'+esc(name)+'</h3><p>'+(name==='Runtime Learning'?'검증된 Unity/Roblox PASS와 검증된 실패 원인만 기존 canonical learning chain으로 전달':'Motion Director 내부 품질/표현 시스템')+'</p></div></article>').join('');
 }
 load().catch(()=>{document.getElementById('assetGrid').innerHTML='<div class="empty">라이브러리 데이터를 불러오지 못했어.</div>'});
 </script>
