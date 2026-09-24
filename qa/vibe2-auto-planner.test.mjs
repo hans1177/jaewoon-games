@@ -133,6 +133,39 @@ test('planning backlog target stops plan expansion without changing persistent q
   assert.equal(result.queue.maxConcurrentTasks,256);
 });
 
+test('queued low-value micro diagnostics are consolidated so studio presentation work can enter the queue',()=>{
+  const root=tempRepo();
+  const gameId='studio-web';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  const validationDir=path.join(root,'design',gameId,'2026-09-24');
+  fs.mkdirSync(validationDir,{recursive:true});
+  fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
+  const assessment={
+    id:`${gameId}-existing-web-assessment-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'assessment complete',
+    releaseState:'development-confirmed',status:'verified',retries:0,evidence:['existing-web-assessment-required']
+  };
+  const micro={
+    id:`${gameId}-diagnostic-bundle-touch`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'touch-action 필요 여부만 최소 수정',priority:'normal',releaseState:'development-confirmed',status:'queued',retries:0,
+    evidence:['diagnostic:TOUCH_ACTION_UNSPECIFIED','diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Studio Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,homepageWebPlayable:true,webPath:`/web-games/${gameId}/`}]},
+    queue:{maxConcurrentTasks:20,tasks:[assessment,micro]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const cancelled=result.queue.tasks.find(row=>row.id===micro.id);
+  assert.equal(cancelled.status,'cancelled');
+  assert.equal(cancelled.blocker,'superseded-by:STUDIO_QUALITY_PACKAGE');
+  assert.ok(cancelled.evidence.includes('studio-quality-micro-task-consolidation:v1'));
+  assert.equal(result.planningBacklog.supersededLegacyMicroTasks,1);
+  assert.ok(result.tasks.some(row=>row.id===`${gameId}-presentation-asset-adaptation-v1`));
+});
+
 test('effective wave cap does not overwrite persistent external queue max',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({
