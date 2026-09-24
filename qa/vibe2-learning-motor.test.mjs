@@ -2,6 +2,8 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {
+  MASTERY_DOMAINS,
+  classifyLearningDomains,
   createMasteryState,
   applyVerifiedExperienceToMastery,
   applyVerifiedCodePatternsToMastery,
@@ -290,13 +292,43 @@ test('repeated verified failure escalates tournament and idle drill without bypa
   assert.equal(idle.drills[0].countsAsProductionPass,false);
 });
 
+test('learning motor classifies concept world streaming persona relationship and narrative binding domains',()=>{
+  for(const domain of [
+    'CONCEPT_DIRECTION','VISUAL_IDENTITY','ENVIRONMENT_COMPOSITION','WORLD_GENERATION','LEVEL_DESIGN','NAVIGATION','ROUTE_DESIGN','STREAMING','STREAMING_OPTIMIZATION',
+    'MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY',
+    'CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING'
+  ])assert.ok(MASTERY_DOMAINS.includes(domain),domain);
+  const world=classifyLearningDomains({target:'unity',goal:'Map DNA route graph shortcut navigation streaming chunk LOD concept blend style bible'});
+  const worldDomains=world.ranked.map(row=>row.domain);
+  assert.ok(worldDomains.includes('WORLD_GENERATION'));
+  assert.ok(worldDomains.includes('ROUTE_DESIGN'));
+  assert.ok(worldDomains.includes('STREAMING'));
+  assert.ok(worldDomains.includes('CONCEPT_DIRECTION'));
+
+  const narrative=classifyLearningDomains({target:'roblox',goal:'main story quest graph foreshadow payoff character voice companion behavior relationship memory world narrative binding'});
+  const narrativeDomains=narrative.ranked.map(row=>row.domain);
+  assert.ok(narrativeDomains.includes('MAIN_STORY_GENERATION'));
+  assert.ok(narrativeDomains.includes('QUEST_GRAPH'));
+  assert.ok(narrativeDomains.includes('FORESHADOWING_PAYOFF'));
+  assert.ok(narrativeDomains.includes('CHARACTER_VOICE'));
+  assert.ok(narrativeDomains.includes('COMPANION_BEHAVIOR'));
+  assert.ok(narrativeDomains.includes('CHARACTER_RELATIONSHIP_MEMORY'));
+  assert.ok(narrativeDomains.includes('WORLD_NARRATIVE_BINDING'));
+});
+
 test('benchmark ladder includes narrative tracks and never counts directly as training sample',()=>{
   const ladder=buildBenchmarkLadder({});
-  assert.equal(ladder.cases.length,20);
+  assert.equal(ladder.cases.length,26);
   assert.ok(ladder.cases.some(x=>x.track==='STORYTELLING'));
   assert.ok(ladder.cases.some(x=>x.track==='QUEST_DESIGN'));
   assert.ok(ladder.cases.some(x=>x.track==='CHARACTER_ARC'));
   assert.ok(ladder.cases.some(x=>x.track==='DIALOGUE'));
+  assert.ok(ladder.cases.some(x=>x.track==='CONCEPT_DIRECTION'));
+  assert.ok(ladder.cases.some(x=>x.track==='WORLD_GENERATION'));
+  assert.ok(ladder.cases.some(x=>x.track==='STREAMING_OPTIMIZATION'));
+  assert.ok(ladder.cases.some(x=>x.track==='FORESHADOWING_PAYOFF'));
+  assert.ok(ladder.cases.some(x=>x.track==='CHARACTER_BEHAVIOR'));
+  assert.ok(ladder.cases.some(x=>x.track==='RELATIONSHIP_MEMORY'));
   assert.ok(ladder.cases.some(x=>x.track==='UNITY_NATIVE'));
   assert.ok(ladder.cases.some(x=>x.track==='FORTNITE_UEFN_NATIVE'));
   assert.ok(ladder.cases.every(x=>x.countsAsTrainingSample===false));
@@ -393,9 +425,9 @@ test('24h company graphics library keeps Unity and Roblox preparation drills rot
   assert.equal(idle.version,4);
   assert.equal(idle.productionWorkAlwaysPreemptsPractice,false);
   assert.equal(idle.companyGraphicsLibrary24h.enabled,true);
-  assert.equal(idle.companyGraphicsLibrary24h.drillCount,42);
+  assert.equal(idle.companyGraphicsLibrary24h.drillCount,62);
   const library=idle.drills.filter(row=>row.companyGraphicsLibrary===true);
-  assert.equal(library.length,42);
+  assert.equal(library.length,62);
   assert.deepEqual([...new Set(library.map(row=>row.platformProfile))].sort(),['ROBLOX','UNITY']);
   assert.ok(library.some(row=>row.kind==='CHARACTER_ARCHETYPE_LIBRARY_DRILL'));
   assert.ok(library.some(row=>row.kind==='CREATURE_RIG_LIBRARY_DRILL'));
@@ -409,6 +441,13 @@ test('24h company graphics library keeps Unity and Roblox preparation drills rot
   assert.ok(library.some(row=>row.kind==='CLOTHING_ARMOR_LIBRARY_DRILL'));
   assert.ok(library.some(row=>row.kind==='BUILDING_MODULAR_LIBRARY_DRILL'));
   assert.ok(library.some(row=>row.kind==='BIOME_DNA_LIBRARY_DRILL'));
+  assert.ok(library.some(row=>row.kind==='GAME_VISUAL_DNA_DRILL'));
+  assert.ok(library.some(row=>row.kind==='ASSET_LOADOUT_SELECTION_DRILL'));
+  assert.ok(library.some(row=>row.kind==='FUTURE_ASSET_DEMAND_FORECAST_DRILL'));
+  assert.ok(library.some(row=>row.kind==='PLATFORM_VARIANT_OPTIMIZATION_DRILL'));
+  assert.ok(library.some(row=>row.kind==='STUDIO_TESTBED_DRILL'));
+  assert.ok(library.some(row=>row.kind==='VERIFIED_ASSET_USAGE_FEEDBACK_DRILL'));
+  assert.ok(library.some(row=>row.kind==='GENRE_WORLD_GRAMMAR_DRILL'));
   assert.ok(library.some(row=>row.kind==='MATERIAL_LIBRARY_DRILL'));
   assert.ok(library.some(row=>row.kind==='AUDIO_VARIATION_LIBRARY_DRILL'));
   assert.ok(library.some(row=>row.kind==='SKILL_PRESENTATION_LIBRARY_DRILL'));
