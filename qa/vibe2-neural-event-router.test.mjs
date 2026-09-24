@@ -145,3 +145,30 @@ test('verified root cause can fire only the central-policy gated scheduler actio
   assert.ok(markers.some(value=>value.startsWith('neural-event-gated:')));
   assert.ok(markers.some(value=>value.startsWith('neural-work-graph-gated:')));
 });
+
+
+test('successful CI result never mutates queue even when historical root cause is verified',()=>{
+  const route=simulateNeuralEventRoute({
+    event:{id:'ci-pass',type:'CI_RESULT',outcome:'PASS'},
+    diagnosis,
+    rootCause:{state:'ROOT_CAUSE_VERIFIED',rootCauseVerified:true,responsibleSystem:'GAME_INPUT'},
+    gatedExecutionEnabled:true
+  });
+  assert.equal(route.proposedAction.kind,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
+  assert.equal(route.fireAllowed,false);
+  assert.equal(route.authorityMode,'SHADOW');
+  assert.equal(route.queueMutationAllowed,false);
+});
+
+test('verified supervisor revise may use gated existing-scheduler mutation',()=>{
+  const route=simulateNeuralEventRoute({
+    event:{id:'supervisor-revise',type:'SUPERVISOR_RESULT',outcome:'REVISE'},
+    diagnosis,
+    rootCause:{state:'ROOT_CAUSE_VERIFIED',rootCauseVerified:true,responsibleSystem:'GAME_INPUT'},
+    gatedExecutionEnabled:true
+  });
+  assert.equal(route.fireAllowed,true);
+  assert.equal(route.authorityMode,'GATED');
+  assert.equal(route.queueMutationAllowed,true);
+  assert.equal(route.policyMutationAllowed,false);
+});
