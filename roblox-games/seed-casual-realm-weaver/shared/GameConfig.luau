@@ -83,4 +83,4 @@ local Config = {
   },
 }
 
-return table.freeze(Config)
+return table.freeze(Config) /no_replace
