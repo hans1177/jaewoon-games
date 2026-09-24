@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -380,6 +380,21 @@
       "priorityOnlyChangesSchedulingOrder": true,
       "lowPrioritySignalsRemainLive": true,
       "executionWindowDoesNotLimitTotalWorkUniverse": true
+    },
+    "studioQualityLoop": {
+      "enabled": true,
+      "terminalStateForbidden": true,
+      "sequence": [
+        "BUILD_UP",
+        "ERROR_REPAIR_IF_PRESENT",
+        "OPTIMIZE",
+        "QUALITY_COMPARE",
+        "BUILD_UP"
+      ],
+      "verifiedCheckpointFeedsNextBuildUp": true,
+      "independentGamesParallel": true,
+      "independentNonOverlappingPackagesParallel": true,
+      "waitingRuntimeDoesNotConsumeGeneralDevelopmentCapacity": true
     }
   },
   "adaptiveBackpressure": {
@@ -551,7 +566,15 @@
     "fanInQa": "single-node-test-process",
     "fanInTestConcurrency": 4,
     "fullCoreRegressionOnceAtFanIn": true,
-    "incrementalPassNeverReplacesFinalVerification": true
+    "incrementalPassNeverReplacesFinalVerification": true,
+    "minimumSufficientVerification": true,
+    "reuseUnchangedVerifiedEvidence": true,
+    "affectedEvidenceOnlyInvalidation": true,
+    "duplicateExpensiveQaForbidden": true,
+    "parallelIndependentIncrementalQa": true,
+    "runtimeOnlyWhenChangedBehaviorRequiresObservation": true,
+    "repeatedUnchangedFailureRequiresChangedHypothesisBeforeExpensiveQa": true,
+    "fullCoreRegressionCountPerFanIn": 1
   },
   "parallelismTelemetry": {
     "enabled": true,
@@ -723,8 +746,8 @@
       "learningMayCopyGameplayNumbers": false
     },
     "visualAutonomy": {
-      "status": "PROPOSED",
-      "implementationState": "DOCUMENTED_NOT_IMPLEMENTED",
+      "status": "ACTIVE",
+      "implementationState": "ACTIVE_VIA_EXISTING_PRESENTATION_AND_STUDIO_QUALITY_EVOLUTION_PIPELINE",
       "purpose": "game-specific-identity-aware-visual-and-motion-improvement-with-safe-candidates-verification-learning",
       "principles": [
         "understand-game-before-change",
@@ -818,13 +841,7 @@
         "ab-tournament-polish-budget",
         "autopilot-scheduler"
       ],
-      "ownerDecisionsRequiredBeforeImplementation": [
-        "allowed-autonomy-level-L1-to-L5",
-        "safe-candidate-auto-apply-or-preapproval",
-        "preference-scope-game-only-or-global",
-        "learning-memory-persistence-location",
-        "daily-and-per-game-experiment-budget"
-      ]
+      "ownerDecisionsRequiredBeforeImplementation": []
     }
   },
   "assetDecision": {
@@ -956,7 +973,13 @@
       "performance-sanity-pass",
       "full-core-regression-once-at-fan-in",
       "fan-in-package-review-pass",
-      "machine-contract-and-central-doc-synced-when-architecture-changes"
+      "machine-contract-and-central-doc-synced-when-architecture-changes",
+      "studio-quality-baseline-or-explicit-gap-evidence",
+      "studio-quality-focus-implemented",
+      "verified-quality-gap-closure-or-delta",
+      "no-protected-semantics-regression",
+      "verified-learning-feedback-recorded",
+      "next-studio-build-cycle-remains-live"
     ],
     "preferredDeliveryUnit": "one-functional-pr-per-work-package-after-package-qa",
     "workloadTelemetry": {
@@ -992,7 +1015,63 @@
     "totalPackageLimit": null,
     "maxPackagesPerCycleMeaning": "PER_CYCLE_EXECUTION_WINDOW_ONLY_NOT_TOTAL_PACKAGE_LIMIT",
     "totalTaskLimit": null,
-    "verifiedPackageCheckpointGeneratesNextCausalWork": true
+    "verifiedPackageCheckpointGeneratesNextCausalWork": true,
+    "studioQualityEvolution": {
+      "enabled": true,
+      "policySource": "company-learning/platform-release-roadmap.json#studioQualityEvolution",
+      "implementationBreadth": "VIBE_MAY_IMPLEMENT_MORE_COMPLETENESS_POLISH_ERROR_RECOVERY_OPTIMIZATION_AND_PRESENTATION_THAN_THE_DESIGN_TEXT_EXPLICITLY_ENUMERATES_WHEN_IT_PRESERVES_APPROVED_GAME_MEANING",
+      "requireVerifiedBaselineWhenAvailable": true,
+      "requireQualityFocus": true,
+      "requireVerifiedGapClosureOrDelta": true,
+      "noProtectedRegression": true,
+      "verifiedLearningBeforeImplementation": true,
+      "verifiedLearningFeedbackAfterFanIn": true,
+      "playtestFeedbackBecomesCausalWork": true,
+      "perpetualLoop": [
+        "BUILD_UP",
+        "REPAIR_WHEN_EVIDENCE_EXISTS",
+        "OPTIMIZE",
+        "COMPARE",
+        "BUILD_UP"
+      ],
+      "noTerminalQualityState": true,
+      "nextCycleAfterVerifiedCheckpoint": true,
+      "safeAutonomousExpansion": [
+        "implementation-completeness",
+        "error-recovery",
+        "feedback-polish",
+        "presentation-polish",
+        "mobile-usability",
+        "performance-optimization",
+        "code-responsibility-cleanup",
+        "regression-hardening"
+      ],
+      "forbiddenWithoutApprovedDesignOrOwner": [
+        "new-core-game-rule",
+        "balance-number-change",
+        "economy-meaning-change",
+        "progression-meaning-change",
+        "save-schema-break",
+        "network-authority-change"
+      ],
+      "maturityStages": [
+        "CONCEPT",
+        "PRE_PRODUCTION",
+        "VERTICAL_SLICE",
+        "PRODUCTION",
+        "ALPHA",
+        "BETA",
+        "RELEASE_CANDIDATE",
+        "LIVE"
+      ],
+      "qualityPillars": [
+        "CORE_FUN",
+        "PROGRESSION",
+        "PRESENTATION",
+        "USABILITY",
+        "STABILITY"
+      ]
+    }
   },
   "learningMotor": {
     "enabled": true,
