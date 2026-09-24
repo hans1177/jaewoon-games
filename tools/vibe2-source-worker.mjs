@@ -1941,6 +1941,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
     specializedVerificationRequest:buildSpecializedVerificationRequest(order),
+    assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
     fullFileRewriteAllowed:allowFullRewrite,
     protectedGameplayMutationAutomatic:false,
