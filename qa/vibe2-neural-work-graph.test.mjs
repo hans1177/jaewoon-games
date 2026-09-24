@@ -161,3 +161,37 @@ test('same input produces deterministic graph state',()=>{
   };
   assert.deepEqual(buildNeuralWorkGraph(input),buildNeuralWorkGraph(input));
 });
+
+
+test('gated work graph exposes only existing-scheduler execution bits',()=>{
+  const graph=buildNeuralWorkGraph({
+    event:{id:'gated-graph|run-1|WORKER_RESULT',type:'WORKER_RESULT'},
+    diagnosis,
+    rootCause:{state:'ROOT_CAUSE_VERIFIED',rootCauseVerified:true,responsibleSystem:'GAME_INPUT'},
+    route:{
+      inhibitors:[],
+      proposedAction:{kind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR',reason:'VERIFIED_ROOT_CAUSE_AVAILABLE'},
+      wouldFireWithoutPhase2Authority:true,
+      authorityMode:'GATED',
+      fireAllowed:true,
+      workerCreationAllowed:true,
+      queueMutationAllowed:true,
+      waveReorderAllowed:true,
+      automaticTuningAllowed:true
+    }
+  });
+  assert.equal(graph.mode,'PHASE2_GATED_NEURAL_WORK_GRAPH');
+  assert.equal(graph.authority.executionAllowed,true);
+  assert.equal(graph.authority.workerCreationAllowed,true);
+  assert.equal(graph.authority.queueMutationAllowed,true);
+  assert.equal(graph.authority.waveReorderAllowed,true);
+  assert.equal(graph.authority.automaticTuningAllowed,true);
+  assert.equal(graph.authority.policyMutationAllowed,false);
+  assert.equal(graph.authority.automaticLearningAllowed,false);
+  const marker=neuralWorkGraphEvidence(graph)[0];
+  assert.ok(marker.startsWith('neural-work-graph-gated:'));
+  const summary=summarizeNeuralWorkGraphEvidence([marker]);
+  assert.equal(summary.gatedGraphs,1);
+  assert.equal(summary.unauthorizedAuthorityBitCount,0);
+  assert.equal(summary.safetyInvariantPass,true);
+});
