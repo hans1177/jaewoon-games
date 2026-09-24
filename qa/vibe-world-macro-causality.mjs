@@ -2,7 +2,7 @@
 // 역할: World LOD/Macro/Fate-Order-Chaos 결정성과 엔진 권한 격리를 회귀 검사
 import assert from 'node:assert/strict';
 import {resolveVibeWorldLod,createVibeWorldForces,createVibeMacroEventCandidate,createVibeMacroResolutionRequest,resolveVibeMacroCandidate,runVibeMacroResolutionLoop} from '../assets/vibe-orchestrator.js';
-import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan} from '../assets/vibe-environment-director.js';
+import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan} from '../assets/vibe-environment-director.js';
 
 assert.equal(resolveVibeWorldLod({distance:0}).level,'micro');
 assert.equal(resolveVibeWorldLod({distance:3,relevance:.4}).level,'meso');
@@ -48,6 +48,38 @@ const poisonedRequest=createVibeMacroResolutionRequest(poisoned);
 assert.equal(poisonedRequest.valid,false);
 assert.deepEqual(poisonedRequest.forbiddenFields,['damage']);
 assert.throws(()=>resolveVibeMacroCandidate(poisonedRequest,{accepted:true}),/authoritative mutation in macro candidate/);
+
+const imageStudy=createVibeReferenceImageStudyRequest({
+  sourceId:'owned-map-ref-1',
+  sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+  imageRef:'references/owned-map.png',
+  rights:{owned:true}
+});
+assert.equal(imageStudy.ready,true);
+assert.equal(imageStudy.rawImagePersistentLearningAllowed,false);
+assert.equal(imageStudy.directMapLayoutCopyAllowed,false);
+const observed=bindVibeReferenceImageObservation({
+  request:imageStudy,
+  verifiedAgainstSource:true,
+  observation:{
+    RIDGE_AND_VALLEY_FLOW:'two ridges with a central valley',
+    ROAD_AND_PATH_GRAPH:'main switchback with one reconnecting branch',
+    OPEN_SPACE_DENSITY:'sparse-open-sparse',
+    LANDMARK_HIERARCHY:'temple dominant over village',
+    SIGHTLINE_AND_REVEAL:'temple revealed after ridge turn'
+  }
+});
+assert.equal(observed.valid,true);
+assert.equal(observed.verifiedAgainstSource,true);
+assert.equal(observed.positiveLearningEligible,true);
+assert.equal(observed.rawImageStored,false);
+const blockedImageStudy=createVibeReferenceImageStudyRequest({
+  sourceId:'unverified-ref',
+  sourceType:'CLEARLY_LICENSED_REFERENCE',
+  imageRef:'references/unverified.png',
+  rights:{licenseVerified:false}
+});
+assert.equal(blockedImageStudy.ready,false);
 
 const reference=createVibeReferenceMapAbstraction({
   sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
@@ -120,12 +152,29 @@ const adaptive=createVibeAdaptiveWorldGenerationPlan({
   reference:{sourceType:'PUBLIC_DOMAIN_IMAGE',features:{roadPathGraph:'switchback'}},
   mobile:true,
   genre:'ACTION_RPG',
-  learningEvents:[{type:'ROUTE_USAGE',verifiedRuntimePass:true,count:2}]
+  learningEvents:[{type:'ROUTE_USAGE',verifiedRuntimePass:true,count:2}],
+  referenceImage:{
+    sourceId:'owned-map-ref-2',
+    sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+    imageRef:'references/owned-map-2.png',
+    rights:{owned:true},
+    verifiedAgainstSource:true,
+    observation:{
+      RIDGE_AND_VALLEY_FLOW:'stepped ridge',
+      ROAD_AND_PATH_GRAPH:'branch-return',
+      OPEN_SPACE_DENSITY:'mixed',
+      LANDMARK_HIERARCHY:'tower-over-road'
+    }
+  }
 });
 assert.equal(adaptive.policy.directReferenceLayoutCopyForbidden,true);
 assert.equal(adaptive.policy.gameplayRuleMutation,false);
 assert.equal(adaptive.streaming.perceivedSeamlessStreamingTarget,true);
 assert.equal(adaptive.genreGrammar.family,'ACTION_RPG');
 assert.equal(adaptive.learning.stats.routeUsage,2);
+assert.equal(adaptive.referenceImageStudy.request.ready,true);
+assert.equal(adaptive.referenceImageStudy.observation.verifiedAgainstSource,true);
+assert.equal(adaptive.reference.verifiedAgainstSource,true);
+assert.equal(adaptive.policy.rawReferencePersistentLearningForbidden,true);
 
 console.log('vibe-world-macro-causality: ok');
