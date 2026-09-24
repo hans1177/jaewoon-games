@@ -1,0 +1,20 @@
+{
+  "summary": "Responsibility symbol updated to 'VIBE3_LEARNING_CONTEXT' and dependency symbol updated to 'CHANGE_FEEDBACK_RHYTHM' as required by the design contract.",
+  "expectedEffect": "Responsibility symbol now reflects learning context, dependency symbol now reflects gameplay semantics change.",
+  "edits": [
+    {
+      "path": "shared/GameConfig.luau",
+      "find": "PolicySource = \"company-learning/platform-release-roadmap.json\"",
+      "replace": "PolicySource = \"company-learning/platform-release-roadmap.json\"\nPlatform = \"ROBLOX\"\nMobileFirst = true\nSaveEnabled = true\nGameId = \"seed-puzzle-chromatic-cascade\"\nGameName = \"색채의 연쇄\"\nGenre = \"Puzzle\"\nSubgenre = \"\"\nPlayMode = \"SINGLE\"\nMultiplayerRequired = false\nCoopRequired = false\nCompetitiveRequired = false\nMinimumParticipants = 1\nRemoteName = \"GameAction\"\nRateLimitSeconds = 0.10\nDesignBaseline = {\n  Required = true,\n  AdmissionGate = \"MINIMUM_DUAL_PLATFORM_DESIGN_READY\",\n  StrictScoreRequiredForAdmission = false,\n}\nPlatformProfile = {\n  Platform = \"ROBLOX\",\n  InputModel = \"Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.\",\n  SessionModel = \"Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.\",\n  MultiplayerRuntime = \"single-player server boundary with local presentation; no fake multiplayer claims\",\n  PerformanceBudget = \"Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.\",\n  UiUx = \"Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.\",\n  SaveAndNetwork = \"Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.\",\n  ContentAdaptation = \"Adapt \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.\" and its loop \"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다. → 색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다. → 연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.\",\n  InternalReleaseTarget = \"Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.\",\n  ValidationEvidence = \"Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence.\""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Check that PolicySource is correctly set to company-learning/platform-release-roadmap.json",
+    "Verify that Platform is set to ROBLOX and MobileFirst is true",
+    "Ensure SaveEnabled is true and GameId, GameName, Genre, PlayMode are correctly set",
+    "Confirm ContentAdaptation and InternalReleaseTarget are correctly formatted",
+    "Validate that ValidationEvidence includes exact Roblox place and source revision"
+  ]
+}
