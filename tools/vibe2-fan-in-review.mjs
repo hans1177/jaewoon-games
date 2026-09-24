@@ -44,6 +44,22 @@ function candidateIdentityFailures(task={},row={},candidateBranch=null){
   if(!clean(row?.baseMainSha)||clean(identity.baseMainSha)!==clean(row?.baseMainSha))failures.push('candidate-identity-base-main');
   return failures;
 }
+function studioQualityImplementationFailures(task={},row={}){
+  const contract=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:null;
+  if(!contract||contract.realSourceDeltaRequired!==true)return[];
+  const delta=row?.studioQualityCandidateDelta&&typeof row.studioQualityCandidateDelta==='object'
+    ?row.studioQualityCandidateDelta
+    :row?.codingMethod?.semanticDiffEnforcement?.studioQualityDelta&&typeof row.codingMethod.semanticDiffEnforcement.studioQualityDelta==='object'
+      ?row.codingMethod.semanticDiffEnforcement.studioQualityDelta
+      :null;
+  if(!delta||delta.pass!==true)return['studio-quality-implementation-delta'];
+  const phase=clean(contract.phase).toUpperCase();
+  const minimum=phase==='BUILD_UP'?Math.max(1,Math.floor(Number(contract?.requiredConnectedImprovements?.min||3)||3)):1;
+  if(Number(delta.sourceDeltaUnits||0)<minimum)return['studio-quality-connected-improvements'];
+  if(clean(contract.focusPillar).toUpperCase()==='PRESENTATION'&&Number(delta.visualUnits||0)<2)return['studio-quality-presentation-delta'];
+  return[];
+}
+
 function gameRepairEvidenceFailures(row={}){
   const repair=row?.gameRepairQa&&typeof row.gameRepairQa==='object'?row.gameRepairQa:null;
   if(!repair||repair.required!==true)return[];
@@ -215,6 +231,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       if(!selectedResult)missing.push('candidate-identity-result');
       else {
         missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
+        missing.push(...studioQualityImplementationFailures(task,selectedResult));
         missing.push(...gameRepairEvidenceFailures(selectedResult));
         presentationRuntimeVisual=presentationRuntimeVisualDecision(task,selectedResult);
         if(presentationRuntimeVisual.required){
@@ -243,6 +260,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      if(task?.studioQualityEvolution?.realSourceDeltaRequired===true)evidence.add('studio-quality-implementation-delta:PASS');
       if(selectedResult?.gameRepairQa?.required===true){
         evidence.add('game-repair-source-evidence:PASS');
         evidence.add('game-repair-impact-regression:PASS');
