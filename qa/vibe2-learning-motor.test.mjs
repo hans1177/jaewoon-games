@@ -1386,3 +1386,67 @@ test('focused-QA trace tokens and unproven exact markers cannot self-promote int
   assert.equal(accepted.positive,1);
   assert.equal(accepted.records.length,1);
 });
+
+
+test('native specialized positive ingress requires matching authoritative target-engine QA proof',()=>{
+  const baseEvidence=[
+    'VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',
+    'specialized-final-verification:PASS',
+    'specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION',
+    'actions-run:9101'
+  ];
+  const robloxMissing=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'native-roblox-missing',gameId:'native-rbx',target:'roblox',status:'verified',goal:'world generation route',
+    evidence:[...baseEvidence,'roblox qa pass']
+  }]});
+  assert.equal(robloxMissing.positive,0);
+
+  const robloxPass=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'native-roblox-pass',gameId:'native-rbx',target:'roblox',status:'verified',goal:'world generation route',
+    evidence:[...baseEvidence,'roblox-verification-run:99101']
+  }]});
+  assert.equal(robloxPass.positive,1);
+  assert.ok(robloxPass.records[0].evidence.includes('roblox-verification-run:99101'));
+  assert.ok(robloxPass.records[0].evidence.includes('target-engine-qa-ref:roblox-verification-run:99101'));
+
+  const unityMissing=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'native-unity-missing',gameId:'native-unity',target:'unity',status:'done',goal:'world generation route',
+    evidence:[...baseEvidence,'unity runtime qa pass']
+  }]});
+  assert.equal(unityMissing.positive,0);
+
+  const unityPass=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'native-unity-pass',gameId:'native-unity',target:'unity',status:'done',goal:'world generation route',
+    evidence:[...baseEvidence,'unity-verification-run:99201']
+  }]});
+  assert.equal(unityPass.positive,1);
+  assert.ok(unityPass.records[0].evidence.includes('target-engine-qa-ref:unity-verification-run:99201'));
+});
+
+test('UEFN specialized positive ingress stays blocked until authoritative executor evidence contract exists',()=>{
+  const extracted=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'native-uefn-blocked',gameId:'native-uefn',target:'fortnite_uefn',status:'verified',goal:'world generation route',
+    evidence:[
+      'VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',
+      'specialized-final-verification:PASS',
+      'specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION',
+      'uefn-verification-run:99301',
+      'actions-run:9102'
+    ]
+  }]});
+  assert.equal(extracted.positive,0);
+  assert.equal(extracted.records.length,0);
+});
+
+test('web specialized positive ingress remains independent from native engine QA',()=>{
+  const extracted=collectVerifiedSpecializedQueueExperience({tasks:[{
+    id:'web-specialized-pass',gameId:'web-game',target:'web',status:'verified',goal:'quest graph narrative',
+    evidence:[
+      'VERIFIED_QUEST_GRAPH_PASS',
+      'specialized-final-verification:PASS',
+      'specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION',
+      'actions-run:9103'
+    ]
+  }]});
+  assert.equal(extracted.positive,1);
+});
