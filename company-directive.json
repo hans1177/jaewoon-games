@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 58,
+  "revision": 59,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1051,7 +1051,10 @@
     "companyLibraryRequiredForNativeGameDevelopment": true,
     "externalGapFillBeforeNewAuthoring": true,
     "studioMotionProgramRequired": true,
-    "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION"
+    "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
+    "versusActionReadyUnarmedCombatMotion": true,
+    "unarmedStyleResearchHasNoArtificialCap": true,
+    "wuxiaUnarmedFantasyMotionResearch": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1078,7 +1081,20 @@
       "repositoryThenExternalGapFillBeforeNewAuthoring": true,
       "platformNativeVariantRequired": true,
       "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
-      "rawExternalAssetRequiresRuntimeVerificationBeforeCompanyPromotion": true
+      "rawExternalAssetRequiresRuntimeVerificationBeforeCompanyPromotion": true,
+      "unarmedCombatTarget": "VERSUS_ACTION_READY_STUDIO_GRADE_UNARMED_COMBAT",
+      "unarmedMotionFamiliesRequired": [
+        "STANCE_AND_GUARD",
+        "FOOTWORK",
+        "STRIKES",
+        "KICKS",
+        "DEFENSE_COUNTER",
+        "GRAPPLE_THROW",
+        "GROUND_RECOVERY",
+        "WUXIA_FANTASY",
+        "VERSUS_ACTION_REACTIONS"
+      ],
+      "animationMarkersMayNotOwnGameplayRules": true
     }
   },
   "centralDocumentation": {
