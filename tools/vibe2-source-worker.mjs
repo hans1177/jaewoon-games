@@ -1330,7 +1330,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
           'Every edits[].find MUST be copied character-for-character from the matching EDITABLE FILE block and occur exactly once.',
           studioExpansion?'STUDIO_QUALITY_EVOLUTION BUILD_UP: return 3-6 connected edits with at least 3 actual source deltas. Keep each replacement concise and directly related so the package finishes within the model budget.':'',
-          (presentationDelta||studioExpansion&&/focus=PRESENTATION/i.test(rawPrompt))?'PRESENTATION focus: change actual render/material/color/lighting/motion/camera/VFX/UI source so the rendered result visibly differs; marker-only metadata and gameplay-only edits do not count.':'',
+          (presentationDelta||studioExpansion&&/focus=PRESENTATION/i.test(rawPrompt))?'PRESENTATION focus: at least 2 edits must change real visual/render/motion/camera/VFX/UI source so the rendered result can visibly differ; marker-only metadata and gameplay-only edits do not count.':'',
           'Do not expand unrelated code.'
         ].filter(Boolean).join('\n'):prefix;
         retryBase=[compactRetryPrefix,...editable].join('\n\n');
