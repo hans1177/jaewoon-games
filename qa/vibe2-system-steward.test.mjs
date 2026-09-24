@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { runSystemStewardState } from '../tools/vibe2-system-steward.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { runSystemStewardState, runSystemStewardFiles } from '../tools/vibe2-system-steward.mjs';
 
 test('steward continues through stale lease retry cemetery stale telemetry and queue-cap repairs',()=>{
   const result=runSystemStewardState({
@@ -44,18 +47,18 @@ test('steward expires stale valid backpressure to pressure floor while keeping 2
   assert.equal(result.queue.maxConcurrentTasks,256);
 });
 
-test('steward immediately repairs invalid v3 parallelism and requeues stale machine blockers in the same pass',()=>{
+test('steward immediately repairs invalid v4 parallelism and requeues stale machine blockers in the same pass',()=>{
   const result=runSystemStewardState({
     now:'2026-09-19T12:00:00Z',
     queueInput:{maxConcurrentTasks:30,tasks:[
       {id:'blocked-dev',gameId:'bug-defense',target:'web',goal:'continue game development',status:'blocked',blocker:'MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS'}
     ]},
-    controlInput:{version:3,currentMax:12,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+    controlInput:{version:4,currentMax:12,lastUpdatedAt:'2026-09-19T11:59:00Z'}
   });
   const task=result.queue.tasks[0];
   assert.equal(result.queue.maxConcurrentTasks,256);
   assert.equal(result.control.currentMax,20);
-  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET_TO_20');
+  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V4_PARALLELISM_STATE_RESET_TO_20');
   assert.equal(task.status,'queued');
   assert.equal(task.blocker,null);
   assert(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
@@ -65,11 +68,11 @@ test('steward immediately repairs invalid v3 parallelism and requeues stale mach
   assert.equal(result.changedQueue,true);
 });
 
-test('steward accepts owner-requested 20 as a valid v3 adaptive step',()=>{
+test('steward accepts owner-requested 20 as a valid v4 adaptive step',()=>{
   const result=runSystemStewardState({
     now:'2026-09-19T12:00:00Z',
     queueInput:{maxConcurrentTasks:256,tasks:[{id:'dev',gameId:'g',target:'web',goal:'x',status:'queued'}]},
-    controlInput:{version:3,currentMax:20,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+    controlInput:{version:4,currentMax:20,lastUpdatedAt:'2026-09-19T11:59:00Z'}
   });
   assert.equal(result.control.currentMax,20);
   assert.equal(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'),false);
@@ -87,14 +90,14 @@ test('steward requeues stale machine-state blockers only after raw state is norm
     queueInput:{maxConcurrentTasks:256,tasks:[
       {id:'stale-machine',gameId:'g',target:'web',goal:'x',status:'blocked',blocker:'MACHINE_STATE_INCONSISTENT:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED'}
     ]},
-    controlInput:{version:3,currentMax:256,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+    controlInput:{version:4,currentMax:256,lastUpdatedAt:'2026-09-19T11:59:00Z'}
   });
   const recovered=healthy.queue.tasks[0];
   assert.equal(healthy.action,'RECOVER_STALE_MACHINE_STATE_BLOCKER');
   assert.equal(recovered.status,'queued');
   assert.equal(recovered.blocker,null);
   assert.equal(recovered.lastOutcome,'SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED');
-  assert(recovered.evidence.includes('system-steward:machine-state-revalidated:v3-external-boundary-256'));
+  assert(recovered.evidence.includes('system-steward:machine-state-revalidated:v4-external-boundary-256'));
 
   const unhealthy=runSystemStewardState({
     now:'2026-09-19T12:00:00Z',
@@ -121,4 +124,33 @@ test('steward never reopens bounded QA or protected failures as unlimited causal
   assert.equal(result.actions.includes('RESUME_UNLIMITED_CAUSAL_REPAIR'),false);
   assert.equal(result.queue.tasks.find(t=>t.id==='qa-fail').status,'failed');
   assert.equal(result.queue.tasks.find(t=>t.id==='protected-dev').status,'failed');
+});
+
+
+test('steward repairs an actual zero-byte queue file before handoff preflight',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-steward-blank-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'parallelism.json');
+  fs.writeFileSync(queueFile,'','utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'}),'utf8');
+  const result=runSystemStewardFiles({queueFile,controlFile,now:'2026-09-25T00:00:00Z'});
+  assert.equal(result.recoveredBlankQueue,true);
+  assert.equal(result.changedQueue,true);
+  const repaired=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  assert.equal(repaired.version,5);
+  assert.equal(repaired.maxConcurrentTasks,256);
+  assert.deepEqual(repaired.tasks,[]);
+  assert.equal(JSON.parse(fs.readFileSync(controlFile,'utf8')).version,4);
+});
+
+test('steward migrates explicit legacy v3 parallelism state to v4',()=>{
+  const result=runSystemStewardState({
+    now:'2026-09-25T00:00:00Z',
+    queueInput:{maxConcurrentTasks:256,tasks:[]},
+    controlInput:{version:3,currentMax:20,lastDecision:'HOLD'}
+  });
+  assert.equal(result.control.version,4);
+  assert.equal(result.control.currentMax,20);
+  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V4_PARALLELISM_STATE_RESET_TO_20');
+  assert.ok(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
 });
