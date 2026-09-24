@@ -1,4 +1,19 @@
 local Players = game:GetService("Players")
+local ContextActionService = game:GetService("ContextActionService")
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+local gui = Instance.new("ScreenGui")
+local root = Instance.new("Frame")
+local title = Instance.new("TextLabel")
+local status = Instance.new("TextLabel")
+local list = Instance.new("ScrollingFrame")
+local layout = Instance.new("UIListLayout")
+local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore"}
+local render = function() ... end
+local function render() ... end
+for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
+render()
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")

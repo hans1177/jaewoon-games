@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local Players = game:GetService(\"Players\")",
+      "replace": "local Players = game:GetService(\"Players\")\nlocal ContextActionService = game:GetService(\"ContextActionService\")\nlocal UserInputService = game:GetService(\"UserInputService\")\nlocal ReplicatedStorage = game:GetService(\"ReplicatedStorage\")\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\nlocal gui = Instance.new(\"ScreenGui\")\nlocal root = Instance.new(\"Frame\")\nlocal title = Instance.new(\"TextLabel\")\nlocal status = Instance.new(\"TextLabel\")\nlocal list = Instance.new(\"ScrollingFrame\")\nlocal layout = Instance.new(\"UIListLayout\")\nlocal watched = {\"Score\",\"Coins\",\"Level\",\"Progress\",\"Health\",\"Wave\",\"Position\",\"Objective\",\"Combo\",\"EnemyHealth\",\"PuzzleChain\",\"Towers\",\"BaseHealth\",\"SocialBond\",\"SharedObjective\",\"RoundScore\"}\nlocal render = function() ... end\nlocal function render() ... end\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
