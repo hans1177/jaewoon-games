@@ -675,6 +675,8 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(arch.retryStrategyMutationRequiresVerifiedRootCause,true);
   assert.equal(arch.successfulResultMutationForbidden,true);
   assert.equal(arch.verifiedSupervisorReviseRequeue,true);
+  assert.equal(architecture.neuralWorkGraphTopology.activation.eventRoutingExecutionAuthority,'GATED_EXISTING_SCHEDULER_ONLY');
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.authorityChange,'GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING');
   assert.equal(arch.protectedAuthority.policyMutation,false);
   assert.equal(arch.protectedAuthority.qaBypass,false);
   assert.equal(arch.protectedAuthority.releaseSelfApproval,false);
