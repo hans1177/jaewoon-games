@@ -187,6 +187,41 @@ test('Roblox presentation recovery ranks a real visual anchor above a nonvisual 
   assert.match(focused.prompt,/even when the previous failure was timeout/i);
 });
 
+test('presentation delta recovery uses remaining attempt budget and rotates visual anchors',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'camera.FieldOfView = 70',
+    'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',
+    'title.TextColor3 = Color3.fromRGB(245, 248, 255)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-presentation-delta-budget-recovery'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve real visible Roblox presentation without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const first=path.join(cwd,'presentation-budget-first.json');
+  const second=path.join(cwd,'presentation-budget-second.json');
+  const third=path.join(cwd,'presentation-budget-third.json');
+  const fourth=path.join(cwd,'presentation-budget-fourth.json');
+  write(first,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
+  write(second,JSON.stringify({replace:'local presentationMarker = 2'}));
+  write(third,JSON.stringify({replace:'local presentationMarker = 3'}));
+  write(fourth,JSON.stringify({replace:'root.BackgroundColor3 = Color3.fromRGB(70, 95, 130)'}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[first,second,third,fourth]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.ok(result.generation.focusedReplaceAnchorRotations>=2);
+  assert.equal(result.presentationCandidateDelta.pass,true);
+  assert.equal(result.presentationCandidateDelta.presentationPass,'ASSET_ADAPTATION');
+});
+
 test('studio build-up rejects micro patches and requires the configured connected source delta count',()=>{
   const contract={
     phase:'BUILD_UP',
