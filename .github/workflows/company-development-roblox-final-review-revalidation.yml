@@ -309,7 +309,7 @@ jobs:
           for attempt in 1 2 3; do
             git -C /tmp/vibe2-f9-control fetch origin vibe2-unreal-core --quiet
             git -C /tmp/vibe2-f9-control reset --hard origin/vibe2-unreal-core >/dev/null
-            while IFS=
+            while IFS=$'\t' read -r game_id studio_required source_revision version_number; do
               [ -n "$game_id" ] || continue
               mapfile -t task_ids < <(GAME_ID="$game_id" node --input-type=module <<'NODE'
               import fs from 'node:fs';
