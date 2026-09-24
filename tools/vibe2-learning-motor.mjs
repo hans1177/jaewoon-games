@@ -1671,19 +1671,34 @@ function buildWebBaselineState(item={},verifiedSemantic={}){
 }
 function derivedProjectPhase(item={},platform='',genre=null){
   if(releasedRobloxProject(item))return'POST_RELEASE_FOCUSED_DEVELOPMENT';
-  const explicit=upper(get(item,'PROJECT_PHASE','projectPhase','developmentStage'));
+  const explicit=upper(get(item,'PROJECT_PHASE','projectPhase','developmentStage','currentStep'));
   if(PROJECT_MACHINE_STAGES.has(explicit))return explicit;
+
+  // Downstream machine evidence is monotonic authority. Missing descriptive metadata
+  // must never project an already-built/runtime-tested project back to initial locking.
+  const execution=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
+  if(platform==='ROBLOX'){
+    const sourceRevision=clean(item.robloxSourceCommit||execution.sourceRevision);
+    const runtimePassed=item.robloxRuntimePassed===true||execution.runtimePassed===true;
+    const independentQaPassed=item.robloxIndependentQaPassed===true||execution.independentQaPassed===true;
+    const regressionPassed=item.robloxRegressionPassed===true||execution.regressionPassed===true;
+    if(regressionPassed&&item.robloxExactRevisionPassed===true)return'RELEASE_PROMOTION';
+    if(independentQaPassed)return'TARGET_PLATFORM_REGRESSION';
+    if(runtimePassed)return'TARGET_PLATFORM_INDEPENDENT_QA';
+    if(sourceRevision)return'TARGET_PLATFORM_RUNTIME';
+    const currentStep=upper(get(item,'currentStep','resumeStage'));
+    if(currentStep==='TARGET_PLATFORM_SOURCE_BIND'||currentStep==='TARGET_PLATFORM_TECHNICAL_VALIDATION'||currentStep==='TARGET_PLATFORM_RUNTIME_FOUNDATION'){
+      return'TARGET_PLATFORM_SOURCE_BIND';
+    }
+  }
+
   if(!platform||!genre)return'AWAITING_PLATFORM_AND_GENRE_LOCK';
   if(!webBaselinePassed(item)){
     if(item.webRuntimeValidationStartedAt||item.webValidationStartedAt)return'WEB_RUNTIME_VALIDATION';
     return'WEB_BASE_IMPLEMENTATION';
   }
   if(platform!=='ROBLOX')return'TARGET_PLATFORM_SOURCE_BIND';
-  if(!clean(item.robloxSourceCommit))return'TARGET_PLATFORM_SOURCE_BIND';
-  if(item.robloxRuntimePassed!==true)return'TARGET_PLATFORM_RUNTIME';
-  if(item.robloxIndependentQaPassed!==true)return'TARGET_PLATFORM_INDEPENDENT_QA';
-  if(item.robloxRegressionPassed!==true||item.robloxExactRevisionPassed!==true)return'TARGET_PLATFORM_REGRESSION';
-  return'RELEASE_PROMOTION';
+  return'TARGET_PLATFORM_SOURCE_BIND';
 }
 function nextMachineAction(item={},phase='',handoff=null){
   if(phase==='AWAITING_PLATFORM_AND_GENRE_LOCK')return'LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION';
