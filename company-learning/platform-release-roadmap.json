@@ -1,5 +1,5 @@
 {
-  "version": 341,
+  "version": 343,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -6514,7 +6514,42 @@
       "gateThresholdsUnchanged": true,
       "implementationBreadthAdded": true,
       "perpetualLoopAdded": true,
-      "transientWorkLockRequeueAdded": true
+      "transientWorkLockRequeueAdded": true,
+      "runtimeVisualFanIn": {
+        "version": 1,
+        "actualBeforeAfterRuntimeComparisonRequiredForPresentationPackages": true,
+        "webComparisonAuthority": "CANONICAL_WEB_PLAYWRIGHT_PRESENTATION_BEFORE_AFTER",
+        "robloxComparisonAuthority": "ROBLOX_POST_NATIVE_F9_PRESENTATION_BEFORE_AFTER",
+        "unityComparisonAuthority": "UNITY_NATIVE_RUNTIME_PRESENTATION_BEFORE_AFTER",
+        "staticOnlyOrMarkerOnlyComparisonForbidden": true,
+        "genericSourceFanInCannotClaimNativeRuntimeComparison": true,
+        "nativePresentationTaskMayProceedToTargetRuntimeQaButCannotBecomeVerifiedUntilPostNativeComparisonPass": true,
+        "comparisonEvidenceMustBindExactCandidateRevision": true,
+        "comparisonMustShowActualRuntimeObservation": true,
+        "visibleRenderDeltaRequiredWhenStudioPresentationFocus": true,
+        "protectedPresentationRegressionForbidden": true,
+        "studioPackageClass": "STUDIO_QUALITY_PACKAGE",
+        "studioPackageMustMeetLongWorkThreshold": true,
+        "verifiedCheckpointMustLeaveNextStudioCyclePlannable": true,
+        "noTerminalQualityState": true,
+        "implementationBindings": [
+          "tools/company-development-web-gameplay-validation.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          "tools/vibe2-work-package.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "nativeFirstPresentationCycle": {
+          "whenNoPriorVerifiedActualRuntimeBaseline": true,
+          "action": "ESTABLISH_ACTUAL_RUNTIME_BASELINE_AT_POST_NATIVE_FAN_IN",
+          "mayClaimBeforeAfterPass": false,
+          "baselineEstablishmentIsVerifiedCheckpoint": true,
+          "nextPresentationCycleRequiresPriorBaselineAndCurrentRuntime": true,
+          "fabricatedBeforeEvidenceForbidden": true
+        }
+      }
     }
   },
   "vibeExecutionLaneContract": {
@@ -12380,7 +12415,14 @@
         "graphicsCheckpointOnly": true,
         "highEndDeficitDoesNotCreateStandaloneReleaseBlocker": true,
         "actualBrokenPresentationStillRoutesToExistingRepairState": true,
-        "releaseAuthorityExpansion": false
+        "releaseAuthorityExpansion": false,
+        "runtimeComparisonFanInApprovalRequired": true,
+        "staticOrMarkerOnlyCannotSatisfyBeforeAfterComparison": true,
+        "exactCandidateRevisionBindingRequired": true,
+        "webPresentationComparisonAtCandidateFanIn": true,
+        "nativePresentationComparisonAtPostNativeFanIn": true,
+        "nativeFirstPresentationCycleMayEstablishRuntimeBaseline": true,
+        "subsequentNativePresentationCyclesRequireBeforeAfterComparison": true
       },
       "preservation": {
         "gameplayBalanceSaveProgressionEconomyAndHitSemanticsImmutableForPresentationOnlyWork": true,
@@ -12785,7 +12827,12 @@
         "ownerRequestSemanticTextDeduplicationForbidden": true,
         "automaticSignalDeduplicationPreserved": true,
         "qualityOpportunityMayCreateEvolutionSignal": true,
-        "highImpactAlternativeComparisonRequired": true
+        "highImpactAlternativeComparisonRequired": true,
+        "studioQualityPackageClass": "STUDIO_QUALITY_PACKAGE",
+        "studioQualityPackageMustMeetLongWorkThreshold": true,
+        "studioQualityPackageCannotDegradeToMicroPatch": true,
+        "verifiedStudioCheckpointMustAllowNextCyclePlanning": true,
+        "presentationStudioPackageRequiresRuntimeBeforeAfterFanIn": true
       },
       "authorityBoundaries": {
         "graphicsDepartmentOwnsVisualProductionDirection": true,

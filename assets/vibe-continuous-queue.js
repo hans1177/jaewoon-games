@@ -114,6 +114,8 @@ function normalizeStudioQualityEvolution(input=null){
     requiredConnectedImprovements:connected,
     realSourceDeltaRequired:input.realSourceDeltaRequired!==false,
     visibleRenderDeltaRequired:input.visibleRenderDeltaRequired===true,
+    runtimeBeforeAfterComparisonRequired:input.runtimeBeforeAfterComparisonRequired===true,
+    finalFanInComparisonRequired:input.finalFanInComparisonRequired===true,
     protectedRegressionForbidden:input.protectedRegressionForbidden!==false,
     nextCycleRequired:input.nextCycleRequired!==false
   });
@@ -261,6 +263,8 @@ function normalizeTask(input = {}, index = 0) {
     atomicCompletionRequired: atomicPresentation || input.atomicCompletionRequired === true,
     taskWorkUnits: clampInt(input.taskWorkUnits || input.workUnits || 0, 0, 8),
     packageId: clean(input.packageId) || null,
+    packageClass: clean(input.packageClass) || null,
+    studioQualityPackage: input.studioQualityPackage === true,
     packageGoal: clean(input.packageGoal) || null,
     packageRole: clean(input.packageRole) || null,
     packageOwner: clean(input.packageOwner) || null,

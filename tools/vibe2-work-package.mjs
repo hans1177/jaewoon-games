@@ -231,10 +231,15 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
   const packageWorkUnits=baseTaskWorkUnits+scopes.length;
   const substantial=taskUnits.some(v=>v>=Number(resolved.substantialSingleTaskWorkUnits||3));
   const owner=list.some(t=>t.ownerDirective===true);
+  const studioContracts=list.map(t=>t?.studioQualityEvolution).filter(value=>value&&typeof value==='object');
+  const studioQualityEvolution=studioContracts[0]?Object.freeze({...studioContracts[0]}):null;
+  const packageClass=studioQualityEvolution?'STUDIO_QUALITY_PACKAGE':'FEATURE_WORK_PACKAGE';
+  const studioMinimumWorkUnits=Math.max(Number(resolved.minWorkUnitsPerPackage||3),Number(resolved.substantialSingleTaskWorkUnits||3),Number(resolved.longWorkUnits||5));
   const relatedImprovementGoalMet=scopes.length>=Number(resolved.minRelatedImprovementsPerPackage||3);
   const multiTaskGoalMet=list.length>=Number(resolved.minTasksPerPackage||2);
-  const minimumWorkloadMet=packageWorkUnits>=Number(resolved.minWorkUnitsPerPackage||3);
-  const quantityGoal=owner||substantial?'FEATURE_COMPLETION':relatedImprovementGoalMet?'RELATED_IMPROVEMENTS':multiTaskGoalMet?'MULTI_TASK_FEATURE':null;
+  const minimumWorkloadMet=packageWorkUnits>=Number(resolved.minWorkUnitsPerPackage||3)
+    &&(!studioQualityEvolution||packageWorkUnits>=studioMinimumWorkUnits);
+  const quantityGoal=studioQualityEvolution?'STUDIO_QUALITY_PACKAGE':owner||substantial?'FEATURE_COMPLETION':relatedImprovementGoalMet?'RELATED_IMPROVEMENTS':multiTaskGoalMet?'MULTI_TASK_FEATURE':null;
   const accepted=list.length>0&&minimumWorkloadMet&&Boolean(quantityGoal);
   const gameId=clean(project.gameId||list[0]?.gameId)||'global';
   const sourceRoot=posix(project.projectPath||list[0]?.sourceRoot);
@@ -242,8 +247,6 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
   const packageId=`${gameId}-wp-${hashText(fingerprint||`${gameId}-${sequence}`)}`;
   const responsibleFiles=unique(list.flatMap(t=>t.responsibleFiles||[]));
   const diagnosticEvidence=unique(list.flatMap(t=>t.evidence||[]).filter(x=>/^diagnostic:|^repair-mode:|^maintenance-file:/.test(clean(x))));
-  const studioContracts=list.map(t=>t?.studioQualityEvolution).filter(value=>value&&typeof value==='object');
-  const studioQualityEvolution=studioContracts[0]?Object.freeze({...studioContracts[0]}):null;
   const completionCriteria=unique(resolved.completionCriteria||[
     'exploration-handoff-produced-and-reused',
     'functional-scope-implemented',
@@ -260,6 +263,7 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
       'studio-quality-focus-implemented',
       'verified-quality-gap-closure-or-delta',
       'no-protected-semantics-regression',
+      ...(studioQualityEvolution.visibleRenderDeltaRequired===true?['runtime-before-after-comparison-fan-in-pass']:[]),
       'next-studio-build-cycle-remains-live'
     );
   }
@@ -289,6 +293,8 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
     ...task,
     taskWorkUnits:taskUnits[index],
     packageId,
+    packageClass,
+    studioQualityPackage:studioQualityEvolution!==null,
     packageGoal,
     packageRole:index===0?'implementation-owner':'implementation',
     packageOwner:`feature-owner:${gameId}`,
@@ -307,6 +313,8 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
       `package-related-improvements:${scopes.length}`,
       'package-role-separation:exploration|implementation|test|performance|regression|review',
       studioQualityEvolution&&'studio-quality-loop:v1',
+      studioQualityEvolution&&'studio-quality-package:STUDIO_QUALITY_PACKAGE',
+      studioQualityEvolution&&'studio-quality-large-package:yes',
       studioQualityEvolution&&`studio-quality-phase:${clean(studioQualityEvolution.phase)||'BUILD_UP'}`,
       studioQualityEvolution&&`studio-quality-focus:${clean(studioQualityEvolution.focusPillar)||'STABILITY'}`,
       studioQualityEvolution&&`studio-quality-baseline:${clean(studioQualityEvolution.baselineId)||'CURRENT_VERIFIED_BASELINE'}`,
@@ -317,8 +325,11 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
   return{
     accepted,
     packageId,
+    packageClass,
+    studioQualityPackage:studioQualityEvolution!==null,
     packageGoal,
     packageWorkUnits,
+    studioMinimumWorkUnits,
     baseTaskWorkUnits,
     relatedImprovementCount:scopes.length,
     relatedImprovementScopes:scopes,
@@ -341,7 +352,7 @@ export function computeWorkloadTelemetry(queue={},plannedPackages=[]){
   const plannedWorkUnits=packages.reduce((n,p)=>n+Number(p.packageWorkUnits||0),0);
   const plannedTaskCount=packages.reduce((n,p)=>n+Number(p.taskCount||p.tasks?.length||0),0);
   const plannedRelatedImprovementCount=packages.reduce((n,p)=>n+Number(p.relatedImprovementCount||0),0);
-  const plannedFeaturePackageCount=packages.filter(p=>['FEATURE_COMPLETION','MULTI_TASK_FEATURE'].includes(clean(p.quantityGoal))).length;
+  const plannedFeaturePackageCount=packages.filter(p=>['FEATURE_COMPLETION','MULTI_TASK_FEATURE','STUDIO_QUALITY_PACKAGE'].includes(clean(p.quantityGoal))).length;
   return{
     version:3,
     plannedPackageCount:packages.length,

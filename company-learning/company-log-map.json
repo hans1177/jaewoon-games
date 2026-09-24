@@ -1,5 +1,5 @@
 {
-  "version": 52,
+  "version": 54,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -421,7 +421,7 @@
   },
   "updatedAt": "2026-09-24",
   "graphicsProductionEvidenceContract": {
-    "version": 4,
+    "version": 6,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
     "recordKind": "graphics-production-evidence",
     "rootScope": "ONE_PER_GAME_CANDIDATE_REVISION",
@@ -494,7 +494,40 @@
     "ownerRepeatedIdenticalRequestRequiresNewSignalEventId": true,
     "ownerSemanticTextDeduplicationForbidden": true,
     "automaticSignalFingerprintDeduplicationRequired": true,
-    "verifiedPositiveAndNegativeEvolutionOutcomesReturnToLearning": true
+    "verifiedPositiveAndNegativeEvolutionOutcomesReturnToLearning": true,
+    "runtimeBeforeAfterFanIn": {
+      "requiredForPresentationPackage": true,
+      "requiredFields": [
+        "PLATFORM",
+        "BASELINE_REVISION",
+        "CANDIDATE_REVISION",
+        "OBSERVATION_AUTHORITY",
+        "ACTUAL_RUNTIME_OBSERVED",
+        "BEFORE_RUNTIME_SUMMARY",
+        "AFTER_RUNTIME_SUMMARY",
+        "VISIBLE_RENDER_DELTA",
+        "PROTECTED_REGRESSION_RESULT",
+        "FAN_IN_DECISION"
+      ],
+      "exactCandidateRevisionRequired": true,
+      "staticOrMarkerOnlyForbidden": true,
+      "webAuthority": "CANONICAL_WEB_PLAYWRIGHT_PRESENTATION_BEFORE_AFTER",
+      "robloxAuthority": "ROBLOX_POST_NATIVE_F9_PRESENTATION_BEFORE_AFTER",
+      "unityAuthority": "UNITY_NATIVE_RUNTIME_PRESENTATION_BEFORE_AFTER",
+      "failClosedAtFinalPlatformFanIn": true,
+      "nativeBaselineLifecycle": {
+        "firstWithoutPriorBaseline": "BASELINE_ESTABLISHED",
+        "subsequent": "BEFORE_AFTER_PASS_REQUIRED",
+        "priorBaselineMustReferenceVerifiedQueueTask": true,
+        "fabricatedBeforeEvidenceForbidden": true
+      }
+    },
+    "studioPackageEvidence": {
+      "packageClass": "STUDIO_QUALITY_PACKAGE",
+      "longWorkThresholdRequired": true,
+      "microPatchFallbackForbidden": true,
+      "nextCyclePlannableAfterVerifiedCheckpoint": true
+    }
   },
   "centralPolicyExecutionEvidence": {
     "humanReadablePolicyDocsRequired": false,

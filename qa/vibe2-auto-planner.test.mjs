@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask } from '../tools/vibe2-auto-planner.mjs';
+import { buildWorkPackage } from '../tools/vibe2-work-package.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -1496,4 +1497,49 @@ test('existing Roblox games automatically receive a Studio asset selection hando
 
   fs.writeFileSync(path.join(shared,'GameConfig.luau'),'local STUDIO_ASSET_BINDING_VERSION = 1\nreturn { StudioAssets = { BindingVersion = 1 } }\n','utf8');
   assert.equal(findRobloxStudioAssetBackfillTask(project,root,{tasks:[]}),null);
+});
+
+
+test('studio quality evolution stays a protected large package and repeats after verified checkpoints',()=>{
+  const root=tempRepo();
+  const gameId='studio-repeat-package';
+  const dir=path.join(root,'web-games',gameId);
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Studio Repeat Package',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const policy={minWorkUnitsPerPackage:6,substantialSingleTaskWorkUnits:6,longWorkUnits:5,minTasksPerPackage:2,minRelatedImprovementsPerPackage:3};
+
+  const v1=findStudioContinuousImprovementTask(project,root,{tasks:[]});
+  assert.ok(v1);
+  assert.equal(v1.id,`${gameId}-studio-evolution-v1`);
+  assert.equal(v1.studioQualityEvolution.cycle,1);
+  assert.equal(v1.studioQualityEvolution.phase,'BUILD_UP');
+  assert.equal(v1.studioQualityEvolution.focusPillar,'PRESENTATION');
+  assert.equal(v1.studioQualityEvolution.runtimeBeforeAfterComparisonRequired,true);
+  assert.equal(v1.packageClass,'STUDIO_QUALITY_PACKAGE');
+  assert.equal(v1.studioQualityPackage,true);
+  assert.equal(v1.workUnits,8);
+
+  const p1=buildWorkPackage({tasks:[v1],project,sequence:1,policy});
+  assert.equal(p1.accepted,true);
+  assert.equal(p1.packageClass,'STUDIO_QUALITY_PACKAGE');
+  assert.equal(p1.studioQualityPackage,true);
+  assert.ok(p1.packageWorkUnits>=p1.studioMinimumWorkUnits);
+  assert.equal(p1.tasks[0].packageLongWorkProtected,true);
+  assert.ok(p1.tasks[0].evidence.includes('studio-quality-package:STUDIO_QUALITY_PACKAGE'));
+  assert.ok(p1.tasks[0].completionCriteria.includes('runtime-before-after-comparison-fan-in-pass'));
+
+  const verifiedV1={...p1.tasks[0],status:'verified'};
+  const v2=findStudioContinuousImprovementTask(project,root,{tasks:[verifiedV1]});
+  assert.ok(v2);
+  assert.equal(v2.id,`${gameId}-studio-evolution-v2`);
+  assert.equal(v2.studioQualityEvolution.cycle,2);
+  assert.equal(v2.studioQualityEvolution.phase,'OPTIMIZE');
+
+  const verifiedV2={...v2,status:'verified'};
+  const v3=findStudioContinuousImprovementTask(project,root,{tasks:[verifiedV1,verifiedV2]});
+  assert.ok(v3);
+  assert.equal(v3.id,`${gameId}-studio-evolution-v3`);
+  assert.equal(v3.studioQualityEvolution.cycle,3);
+  assert.equal(v3.studioQualityEvolution.phase,'BUILD_UP');
 });

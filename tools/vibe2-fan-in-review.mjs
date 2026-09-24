@@ -57,6 +57,30 @@ function gameRepairEvidenceFailures(row={}){
   if(repair.readyForFanIn!==true)failures.push('game-repair-ready-for-fan-in');
   return[...new Set(failures)];
 }
+function presentationRuntimeFanInContract(task={}){
+  const evidence=(task.evidence||[]).map(clean);
+  const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
+  const required=studio.finalFanInComparisonRequired===true
+    ||studio.runtimeBeforeAfterComparisonRequired===true
+    ||evidence.includes('graphics-evolution-before-after-comparison-required');
+  return{
+    required,
+    target:clean(task.target).toLowerCase(),
+    visibleRenderDeltaRequired:studio.visibleRenderDeltaRequired===true||evidence.includes('graphics-evolution-before-after-comparison-required')
+  };
+}
+function presentationSourceDeltaFailures(task={},row={}){
+  const contract=presentationRuntimeFanInContract(task);
+  if(!contract.required)return[];
+  const delta=row?.presentationCandidateDelta&&typeof row.presentationCandidateDelta==='object'?row.presentationCandidateDelta:null;
+  const failures=[];
+  if(!delta||delta.required!==true)failures.push('presentation-source-delta-evidence');
+  else{
+    if(delta.pass!==true)failures.push('presentation-source-delta-pass');
+    if(contract.visibleRenderDeltaRequired&&Number(delta.changedVisualUnits||0)<1)failures.push('presentation-source-visible-delta');
+  }
+  return failures;
+}
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
 function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa|awaiting.*supervised-review/i.test(clean(task.blocker));}
 function releaseCandidateFromEvidence(evidence=new Set()){
@@ -202,6 +226,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       else {
         missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
         missing.push(...gameRepairEvidenceFailures(selectedResult));
+        missing.push(...presentationSourceDeltaFailures(task,selectedResult));
       }
     }
     const uniqueMissing=[...new Set(missing)];
@@ -213,6 +238,12 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      const presentationFanIn=presentationRuntimeFanInContract(task);
+      if(presentationFanIn.required){
+        evidence.add('presentation-source-delta:PASS');
+        evidence.add(`presentation-runtime-final-fanin-required:${presentationFanIn.target||'unknown'}`);
+        evidence.add('presentation-runtime-fan-in:TARGET_STAGE_REQUIRED');
+      }
       if(selectedResult?.gameRepairQa?.required===true){
         evidence.add('game-repair-source-evidence:PASS');
         evidence.add('game-repair-impact-regression:PASS');

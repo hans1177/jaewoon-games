@@ -302,9 +302,54 @@ jobs:
           echo 'VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS'
           echo 'VIBE2_WEB_STATIC_QA=PASS'
 
+      - name: Compare actual Web presentation runtime before and after
+        id: presentation_compare
+        if: steps.webqa.outcome == 'success'
+        continue-on-error: true
+        env:
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin vibe2-unreal-core --quiet
+          git show origin/vibe2-unreal-core:.vibe2/queue.json > /tmp/vibe2-presentation-queue.json
+          required="$(node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/vibe2-presentation-queue.json','utf8'));
+          const task=(q.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
+          const evidence=(task?.evidence||[]).map(value=>String(value||'').trim());
+          const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
+          const required=studio.finalFanInComparisonRequired===true
+            ||studio.runtimeBeforeAfterComparisonRequired===true
+            ||evidence.includes('graphics-evolution-before-after-comparison-required');
+          process.stdout.write(required?'YES':'NO');
+          NODE
+          )"
+          echo "required=$([ "$required" = YES ] && printf true || printf false)" >> "$GITHUB_OUTPUT"
+          if [ "$required" != YES ]; then
+            echo 'pass=true' >> "$GITHUB_OUTPUT"
+            echo 'VIBE2_WEB_PRESENTATION_RUNTIME_COMPARE=NOT_REQUIRED'
+            exit 0
+          fi
+
+          browser_bin="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser_bin"
+          npm install --no-save --no-package-lock playwright-core@1.55.0 >/tmp/vibe2-playwright-core-install.log 2>&1
+
+          rm -rf /tmp/vibe2-web-before
+          git worktree prune
+          git worktree add --detach /tmp/vibe2-web-before "$BASE_SHA" >/dev/null
+          VIBE2_BROWSER_EXECUTABLE="$browser_bin" node tools/company-development-web-gameplay-validation.mjs             --mode=presentation-compare             --source="$SOURCE_ROOT"             --before-root=/tmp/vibe2-web-before             --after-root="$GITHUB_WORKSPACE"             --base-revision="$BASE_SHA"             --candidate-revision="$CANDIDATE_SHA"             --port=4291             --output=/tmp/vibe2-web-presentation-compare.json
+          node -e "const r=require('/tmp/vibe2-web-presentation-compare.json');if(r.pass!==true||r.actualRuntimeObserved!==true||r.visibleRenderDelta!==true||r.protectedRegression?.pass!==true)process.exit(2)"
+          echo 'pass=true' >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_WEB_PRESENTATION_RUNTIME_COMPARE=PASS'
+
       - name: Promote approved web source root through reviewed PR
         id: promote
-        if: steps.webqa.outcome == 'success'
+        if: steps.webqa.outcome == 'success' && steps.presentation_compare.outcome == 'success'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -377,12 +422,14 @@ jobs:
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           GAME_ID: ${{ needs.inspect.outputs.game_id }}
           QA_OUTCOME: ${{ steps.webqa.outcome }}
+          PRESENTATION_COMPARE_OUTCOME: ${{ steps.presentation_compare.outcome }}
+          PRESENTATION_COMPARE_REQUIRED: ${{ steps.presentation_compare.outputs.required }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$QA_OUTCOME" = success ] && [ "$PRESENTATION_COMPARE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
               gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN"
@@ -409,9 +456,11 @@ jobs:
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-pr-merged,actions-run-${GITHUB_RUN_ID}"
+              compare_evidence="web-runtime-presentation-compare:NOT_REQUIRED"
+              if [ "$PRESENTATION_COMPARE_REQUIRED" = true ]; then compare_evidence="web-runtime-presentation-before-after:PASS"; fi
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,${compare_evidence},main-pr-merged,actions-run-${GITHUB_RUN_ID}"
             else
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-presentation-runtime-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},presentation-compare-${PRESENTATION_COMPARE_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
             git add .vibe2/queue.json
             if git diff --cached --quiet; then

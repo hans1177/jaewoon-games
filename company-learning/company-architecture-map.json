@@ -1,5 +1,5 @@
 {
-  "version": 160,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2875,7 +2875,11 @@
       "flat2DFinalGameplayForbidden": true,
       "ui2DOverlayAllowed": true,
       "existing2DGamesRequireSpatialPresentationRebuild": true,
-      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+      "runtimeBeforeAfterFanInApprovalRequired": true,
+      "webRuntimeComparisonAuthority": "CANONICAL_WEB_PLAYWRIGHT_PRESENTATION_BEFORE_AFTER",
+      "nativeRuntimeComparisonOccursAfterTargetEngineExecution": true,
+      "staticOrMarkerOnlyRuntimeComparisonForbidden": true
     }
   },
   "recordsGovernance": {
@@ -3768,7 +3772,7 @@
     "positiveAssetMasteryRequiresRuntimeBindingMarker": true
   },
   "studioQualityEvolutionTopology": {
-    "version": 1,
+    "version": 2,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyPath": "company-learning/platform-release-roadmap.json#studioQualityEvolution",
     "status": "ACTIVE_TOPOLOGY_BINDING",
@@ -3831,6 +3835,28 @@
       "protectedSemanticsPreserved": true,
       "gateThresholdsUnchanged": true,
       "learningDoesNotExpandAuthority": true
+    },
+    "runtimeVisualFanIn": {
+      "presentationPackageRequiresBeforeAfterRuntimeComparison": true,
+      "webStage": "CANDIDATE_FAN_IN",
+      "robloxStage": "POST_NATIVE_F9_FAN_IN",
+      "unityStage": "POST_NATIVE_RUNTIME_FAN_IN",
+      "exactCandidateRevisionRequired": true,
+      "actualRuntimeObservationRequired": true,
+      "visibleRenderDeltaRequiredForPresentationFocus": true,
+      "protectedRegressionForbidden": true,
+      "genericSourceFanInCannotPretendNativeRuntimePassed": true,
+      "nativeBaselineLifecycle": {
+        "firstObservedPresentationCycle": "ESTABLISH_ACTUAL_RUNTIME_BASELINE",
+        "laterPresentationCycles": "COMPARE_PRIOR_VERIFIED_RUNTIME_TO_CURRENT_RUNTIME",
+        "fabricatedBeforeEvidenceForbidden": true
+      }
+    },
+    "packageContract": {
+      "class": "STUDIO_QUALITY_PACKAGE",
+      "longWorkThresholdRequired": true,
+      "microPatchFallbackForbidden": true,
+      "verifiedCheckpointMustLeaveNextCyclePlannable": true
     }
   }
 }

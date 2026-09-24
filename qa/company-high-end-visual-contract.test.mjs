@@ -8,6 +8,7 @@ import {MOTION_DIRECTOR_TARGET,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOT
 import {STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeHighEndPresentationStack} from '../assets/vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
+import {comparePresentationRuntimeObservations} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
@@ -56,6 +57,13 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.cohesion.antiKitbashGateRequired,true);
   assert.equal(c.visualTargetFrames.roles.length,7);
   assert.equal(c.runtimeQa.beforeAfterVisualRegressionRequired,true);
+  assert.equal(c.runtimeQa.runtimeComparisonFanInApprovalRequired,true);
+  assert.equal(c.runtimeQa.staticOrMarkerOnlyCannotSatisfyBeforeAfterComparison,true);
+  assert.equal(c.runtimeQa.exactCandidateRevisionBindingRequired,true);
+  assert.equal(c.runtimeQa.webPresentationComparisonAtCandidateFanIn,true);
+  assert.equal(c.runtimeQa.nativePresentationComparisonAtPostNativeFanIn,true);
+  assert.equal(c.runtimeQa.nativeFirstPresentationCycleMayEstablishRuntimeBaseline,true);
+  assert.equal(c.runtimeQa.subsequentNativePresentationCyclesRequireBeforeAfterComparison,true);
   const spatial=roadmap.livingMotionVisualQualityContract.minimumSpatialPresentation;
   assert.equal(spatial.status,'ACTIVE_EXECUTABLE_CONTRACT');
   assert.equal(spatial.minimumFinalGameplayDimension,'2.5D');
@@ -563,4 +571,52 @@ test('owner presentation changes replace conflicting same-scope intent instead o
   assert.equal(stability.directResponsibleSystemModificationPreferred,true);
   assert.equal(stability.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden,true);
   assert.deepEqual([...stability.affectedScopes],['bear.attack.motion']);
+});
+
+
+test('Web presentation fan-in comparison requires actual runtime delta and preserves protected presentation contracts',()=>{
+  const runtime={pass:true,livingMotionObserved:true,frameTiming:{pass:true,p95Ms:20}};
+  const view={styleLockId:'forest-v1',styleLockRevision:'1',horizontalOverflow:false,genreUiProfile:'survival',uiMotionLanguage:'soft',enemyTypes:['wolf'],enemyPresentationSignatures:['wolf-mesh'],environmentVisualDetailCount:2,enemyVisualDetailCount:1,canvasRenderSurfaceCount:1,characterEntityCount:2,gameplayScreenRatio:.7};
+  const before={observed:true,presentationSourceSha256:'a'.repeat(64),screenshotSha256:'b'.repeat(64),runtime,view,runtimeErrorCount:0};
+  const after={observed:true,presentationSourceSha256:'c'.repeat(64),screenshotSha256:'d'.repeat(64),runtime:{...runtime,frameTiming:{pass:true,p95Ms:24}},view:{...view,environmentVisualDetailCount:3},runtimeErrorCount:0};
+  const pass=comparePresentationRuntimeObservations({before,after,baseRevision:'1'.repeat(40),candidateRevision:'2'.repeat(40)});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.actualRuntimeObserved,true);
+  assert.equal(pass.visibleRenderDelta,true);
+  assert.equal(pass.protectedRegression.pass,true);
+  assert.equal(pass.fanInDecision,'PASS');
+
+  const noVisibleDelta=comparePresentationRuntimeObservations({
+    before,
+    after:{...before,presentationSourceSha256:'c'.repeat(64)},
+    baseRevision:'1'.repeat(40),
+    candidateRevision:'2'.repeat(40)
+  });
+  assert.equal(noVisibleDelta.pass,false);
+  assert.equal(noVisibleDelta.visibleRenderDelta,false);
+
+  const styleRegression=comparePresentationRuntimeObservations({
+    before,
+    after:{...after,view:{...after.view,styleLockId:'different-style'}},
+    baseRevision:'1'.repeat(40),
+    candidateRevision:'2'.repeat(40)
+  });
+  assert.equal(styleRegression.pass,false);
+  assert.equal(styleRegression.protectedRegression.checks.styleLockIdPreserved,false);
+});
+
+test('central graphics contract binds studio packages and native baseline lifecycle to final fan-in',()=>{
+  const studio=roadmap.changeRecord.studioQualityEvolution20260924.runtimeVisualFanIn;
+  assert.equal(studio.actualBeforeAfterRuntimeComparisonRequiredForPresentationPackages,true);
+  assert.equal(studio.staticOnlyOrMarkerOnlyComparisonForbidden,true);
+  assert.equal(studio.studioPackageClass,'STUDIO_QUALITY_PACKAGE');
+  assert.equal(studio.studioPackageMustMeetLongWorkThreshold,true);
+  assert.equal(studio.verifiedCheckpointMustLeaveNextStudioCyclePlannable,true);
+  assert.equal(studio.nativeFirstPresentationCycle.whenNoPriorVerifiedActualRuntimeBaseline,true);
+  assert.equal(studio.nativeFirstPresentationCycle.mayClaimBeforeAfterPass,false);
+  assert.equal(studio.nativeFirstPresentationCycle.nextPresentationCycleRequiresPriorBaselineAndCurrentRuntime,true);
+  assert.equal(architecture.studioQualityEvolutionTopology.packageContract.class,'STUDIO_QUALITY_PACKAGE');
+  assert.equal(architecture.studioQualityEvolutionTopology.runtimeVisualFanIn.actualRuntimeObservationRequired,true);
+  assert.equal(logMap.graphicsProductionEvidenceContract.runtimeBeforeAfterFanIn.failClosedAtFinalPlatformFanIn,true);
+  assert.equal(logMap.graphicsProductionEvidenceContract.runtimeBeforeAfterFanIn.nativeBaselineLifecycle.priorBaselineMustReferenceVerifiedQueueTask,true);
 });
