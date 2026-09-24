@@ -1256,7 +1256,7 @@ jobs:
           if(fs.existsSync('/tmp/vibe2-work-order.json'))workOrder=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const explorationFile=clean(process.env.EXPLORATION_FILE);
           const exploration=manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)?JSON.parse(fs.readFileSync(explorationFile,'utf8')):null);
-          const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker';
+          const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker' && workLockAcquired;
           const capabilityApplicationIds=[...new Set((workOrder?.capabilityApplicationContract?.exactInjectedCapabilityIds||[]).map(clean).filter(Boolean))].slice(0,8);
           const capabilityApplication={
             version:1,
