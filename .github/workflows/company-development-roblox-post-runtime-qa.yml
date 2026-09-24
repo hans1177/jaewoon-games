@@ -312,6 +312,27 @@ jobs:
             item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
             item.robloxMobileControlUiPassed=result.f5InputCameraUiPassed===true;
             item.robloxMultiplayerQaPassed=result.f7MultiplayerFoundationPassed===true;
+            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+            const studioAssetRuntimeBindingPassed=studioAssetBindingRequired
+              &&result.runtimeAcceptancePassed===true
+              &&result.f5InputCameraUiPassed===true
+              &&result.f8GameplaySystemsPassed===true;
+            item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
+            item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
+              version:1,
+              gameId:item.gameId,
+              sourceRevision,
+              artifactIdentity,
+              candidateVersionNumber:Number(candidate.versionNumber),
+              uiAndInputRuntimePassed:result.f5InputCameraUiPassed===true,
+              coreLoopRuntimePassed:result.f8GameplaySystemsPassed===true,
+              runtimeAcceptancePassed:result.runtimeAcceptancePassed===true,
+              exactRevision:true,
+              actualPlatformRuntime:true,
+              marker:studioAssetRuntimeBindingPassed?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING',
+              authority:'roblox-exact-runtime-studio-asset-binding-v1',
+              verifiedAt:studioAssetRuntimeBindingPassed?stamp:null,
+            }:null;
             item.robloxRuntimeEvidence={
               ...evidence,
               runtimePassed:result.runtimeAcceptancePassed===true,
@@ -319,6 +340,9 @@ jobs:
               datastoreRejoinPassed:result.f6CoreServicesPassed===true,
               mobileControlUiPassed:result.f5InputCameraUiPassed===true,
               multiplayerQaPassed:result.f7MultiplayerFoundationPassed===true,
+              studioAssetBindingRequired,
+              studioAssetRuntimeBindingPassed,
+              studioAssetRuntimeBindingMarker:studioAssetRuntimeBindingPassed?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':studioAssetBindingRequired?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING':'NOT_REQUIRED',
               actualPlatformRuntime:true,
               authority:'roblox-actual-runtime-foundation-and-core-acceptance',
             };
@@ -342,6 +366,9 @@ jobs:
                 independentQaPassed:true,
                 regressionPassed:true,
                 actualRuntimeEvidence:true,
+                studioAssetBindingRequired,
+                studioAssetRuntimeBindingPassed,
+                studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
                 deterministicQa:[
                   'qa/company-development-roblox-runtime-foundation.test.mjs',
                   'qa/company-development-roblox-headless-fast-mvp.test.mjs',
@@ -356,6 +383,10 @@ jobs:
               item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
               item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
               item.routingBlockers=['roblox-final-review-pending'];
+              if(studioAssetBindingRequired&&!studioAssetRuntimeBindingPassed){
+                throw new Error('ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_EXPECTED_AFTER_ACCEPTANCE:'+item.gameId);
+              }
+              if(studioAssetRuntimeBindingPassed)console.log('ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS='+item.gameId+':'+sourceRevision+':'+candidate.versionNumber);
               if(item.executionEvidence){
                 item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
                 item.executionEvidence.runtimePassed=true;
