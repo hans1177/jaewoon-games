@@ -292,6 +292,8 @@ jobs:
           const promoted=generated&&process.env.MERGE_OUTCOME==='success';
           const candidateReady=generated&&Boolean(String(process.env.SOURCE_BRANCH||'').trim());
           const failure=!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          const bootstrapEvidencePath=path.join('/tmp',`roblox-source-bootstrap-${safe}.json`);
+          const bootstrapEvidence=fs.existsSync(bootstrapEvidencePath)?JSON.parse(fs.readFileSync(bootstrapEvidencePath,'utf8')):{};
           const result={
             gameId:id,
             pass:promoted,
@@ -300,6 +302,10 @@ jobs:
             sourcePath:process.env.TARGET_SOURCE,
             sourceRevision:/^[0-9a-f]{40}$/i.test(String(process.env.SOURCE_REVISION||''))?String(process.env.SOURCE_REVISION):null,
             pr:process.env.PR_URL||null,
+            studioAssetBindingApplied:bootstrapEvidence.studioAssetBindingApplied===true,
+            studioAssetBinding:bootstrapEvidence.studioAssetBinding||null,
+            studioAssetRuntimeVerified:false,
+            studioAssetPromotionEligible:false,
             failure,
           };
           fs.writeFileSync(path.join('/tmp/roblox-worker/results',`${safe}.json`),JSON.stringify(result,null,2)+'\n');
@@ -396,6 +402,7 @@ jobs:
                 robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
                 robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
                 robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxStudioAssetRuntimeBindingPassed:false,robloxStudioAssetRuntimeBindingEvidence:null,
                 robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
                 robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,robloxMultiplayerQaPassed:false,
                 robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
@@ -446,6 +453,10 @@ jobs:
                   ownerFocusRobloxSourceCandidateBranch:null,
                   ownerFocusRobloxSourceCandidateReadyAt:null,
                   ownerFocusRobloxAssetPipelineState:'SOURCE_READY',
+                  ownerFocusRobloxStudioAssetBindingApplied:result.studioAssetBindingApplied===true,
+                  ownerFocusRobloxStudioAssetBinding:result.studioAssetBinding||null,
+                  ownerFocusRobloxStudioAssetRuntimeBindingPassed:false,
+                  ownerFocusRobloxStudioAssetRuntimeBindingEvidence:null,
                   updatedAt:stamp,
                 });
                 passCount++;
@@ -475,6 +486,10 @@ jobs:
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
+                robloxStudioAssetBindingApplied:result.studioAssetBindingApplied===true,
+                robloxStudioAssetBinding:result.studioAssetBinding||null,
+                robloxStudioAssetRuntimeBindingPassed:false,
+                robloxStudioAssetRuntimeBindingEvidence:null,
                 robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
               });
               passCount++;
