@@ -663,7 +663,7 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:15'));
+  assert(resultStep.includes('version:16'));
   assert(resultStep.includes('workLock'));
   assert(resultStep.includes('phase4BenchmarkVerification'));
   assert(resultStep.includes('knowledgeApplication'));
