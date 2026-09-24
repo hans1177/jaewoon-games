@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -628,7 +628,7 @@
         "GENERAL_PLAYBOOK"
       ]
     },
-    "version": 2,
+    "version": 3,
     "verifiedFailurePatterns": [
       "SOFTLOCK",
       "KNOWLEDGE_LEAK",
@@ -637,7 +637,9 @@
       "QUEST_REPETITION",
       "RELATIONSHIP_INCONSISTENCY",
       "BEHAVIOR_PERSONA_MISMATCH",
-      "WORLD_STATE_CONTRADICTION"
+      "WORLD_STATE_CONTRADICTION",
+      "FACTION_RELATIONSHIP_INCONSISTENCY",
+      "STORY_TRANSITION_CAUSALITY_FAILURE"
     ],
     "rawGeneratedNarrativeMayIncreaseMastery": false,
     "failureSignals": [
@@ -646,7 +648,9 @@
       "VOICE_COLLAPSE",
       "QUEST_REPETITION",
       "RELATIONSHIP_INCONSISTENCY",
-      "WORLD_STATE_CONTRADICTION"
+      "WORLD_STATE_CONTRADICTION",
+      "FACTION_RELATIONSHIP_INCONSISTENCY",
+      "STORY_TRANSITION_CAUSALITY_FAILURE"
     ],
     "practiceDrills": [
       "NARRATIVE_STRUCTURE_DRILL",
@@ -658,7 +662,24 @@
       "RELATIONSHIP_MEMORY_DRILL",
       "CHARACTER_BEHAVIOR_DRILL",
       "WORLD_NARRATIVE_BINDING_DRILL"
-    ]
+    ],
+    "verifiedSignals": [
+      "STORY_TRANSITION_CAUSALITY",
+      "FACTION_RELATIONSHIP_CAUSALITY",
+      "FACTION_WORLD_STATE_CONSISTENCY"
+    ],
+    "domainRouting": {
+      "storyTransitionCausality": [
+        "NARRATIVE_STRUCTURE",
+        "MAIN_STORY_GENERATION"
+      ],
+      "factionRelationshipCausality": [
+        "CHARACTER_RELATIONSHIP_MEMORY",
+        "RELATIONSHIP_MEMORY",
+        "WORLD_NARRATIVE_BINDING",
+        "WORLD_NARRATIVE"
+      ]
+    }
   },
   "presentationLearning": {
     "enabled": true,
