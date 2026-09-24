@@ -16639,7 +16639,21 @@
           "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true,
           "negativeMarkerAloneForbidden": true,
           "negativeFailureProvenanceRequiredAtCanonicalIngress": true,
-          "focusedStaticNotVerifiedIsNotRuntimeFailure": true
+          "focusedStaticNotVerifiedIsNotRuntimeFailure": true,
+          "nativeTwoStageFanInReview": true,
+          "preNativeFanInMayApproveGameCandidateButMustNotEmitNativePositiveMarkerWithoutEngineQa": true,
+          "postNativeFinalReviewImplementation": "tools/vibe2-fan-in-review.mjs",
+          "postNativeFinalReviewTriggers": [
+            ".github/workflows/vibe2-roblox-candidate-result.yml",
+            ".github/workflows/vibe2-unity-candidate-result.yml"
+          ],
+          "postNativeFinalReviewInput": "PERSISTED_CONTROL_QUEUE_EVIDENCE_PLUS_AUTHORITATIVE_TARGET_ENGINE_QA",
+          "postNativeFinalReviewMustPreserveTaskStatusAndReleaseDecision": true,
+          "candidateResultWorkflowMayInvokeFanInReviewButMayNotMintVerifiedMarkerItself": true,
+          "postNativeFinalReviewRequiresExistingPreNativeRegressionAndReviewPass": true,
+          "postNativeFinalReviewRequiresFocusedQaPassTraceForEachMarker": true,
+          "postNativeFinalReviewNoopWhenNoSpecializedRequestOrFocusedPass": true,
+          "specializedLearningFailureMustNotConvertEngineQaPassIntoGameReleaseFailure": true
         },
         "finalMarkerMustBeExactEvidenceToken": true,
         "prefixedOrSuffixedFocusedQaTokenCannotMatchFinalMarker": true,
