@@ -23,7 +23,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 28,
+  "phase4GeneralizationDrills": 26,
   "drills": [
     {
       "id": "review-fail_1agpu1k",
@@ -49,7 +49,10 @@
         "LIVING_MOTION",
         "AI",
         "ASSET_PRODUCTION",
-        "VFX"
+        "VFX",
+        "SAVE",
+        "VISUAL_IDENTITY",
+        "ROBLOX_STUDIO"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -90,7 +93,9 @@
         "COMBAT",
         "RECOVERY",
         "SECURITY",
-        "ANIMATION_FEEL"
+        "ANIMATION_FEEL",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -152,7 +157,10 @@
         "LIVING_MOTION",
         "AI",
         "ASSET_PRODUCTION",
-        "VFX"
+        "VFX",
+        "SAVE",
+        "VISUAL_IDENTITY",
+        "ROBLOX_STUDIO"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -193,7 +201,9 @@
         "COMBAT",
         "RECOVERY",
         "SECURITY",
-        "ANIMATION_FEEL"
+        "ANIMATION_FEEL",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -651,44 +661,6 @@
       "holdoutGameId": "bug-defense",
       "targetEngine": "web",
       "unseenProblemFingerprint": "phase4-unseen-iw0qx7",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289-control",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_694d98ebd713acfd3b0a9289",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289",
-      "phase4PairId": "phase4-pair-14k4xov",
-      "phase4Role": "CONTROL",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "roblox",
-      "unseenProblemFingerprint": "phase4-unseen-8ya7wp",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289-challenger",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_694d98ebd713acfd3b0a9289",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_694d98ebd713acfd3b0a9289",
-      "phase4PairId": "phase4-pair-14k4xov",
-      "phase4Role": "CHALLENGER",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "roblox",
-      "unseenProblemFingerprint": "phase4-unseen-8ya7wp",
       "mayPromoteGeneralization": false
     },
     {
@@ -1558,33 +1530,23 @@
       ]
     },
     {
-      "id": "hypothesis-asset_adaptation",
+      "id": "hypothesis-audio_feel",
       "kind": "HYPOTHESIS_FALSIFICATION_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ASSET_ADAPTATION"
+        "AUDIO_FEEL"
       ]
     },
     {
-      "id": "compare-asset_adaptation",
+      "id": "compare-audio_feel",
       "kind": "PREVIOUS_RESULT_COMPARISON_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ASSET_ADAPTATION"
-      ]
-    },
-    {
-      "id": "gap-asset_adaptation-l1",
-      "kind": "ASSET_ADAPTATION_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ASSET_ADAPTATION"
+        "AUDIO_FEEL"
       ]
     },
     {
@@ -1838,16 +1800,6 @@
       ]
     },
     {
-      "id": "gap-roblox_studio-l1",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ROBLOX_STUDIO"
-      ]
-    },
-    {
       "id": "gap-route_design-l1",
       "kind": "ROUTE_DESIGN_DRILL",
       "priority": "low",
@@ -1958,26 +1910,6 @@
       ]
     },
     {
-      "id": "gap-vfx-l1",
-      "kind": "VFX_READABILITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "VFX"
-      ]
-    },
-    {
-      "id": "gap-visual_identity-l1",
-      "kind": "GAME_VISUAL_DNA_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "VISUAL_IDENTITY"
-      ]
-    },
-    {
       "id": "gap-world_generation-l1",
       "kind": "WORLD_GENERATION_DRILL",
       "priority": "low",
@@ -2008,6 +1940,46 @@
       ]
     },
     {
+      "id": "gap-asset_adaptation-l2",
+      "kind": "ASSET_ADAPTATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "gap-roblox_studio-l2",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_STUDIO"
+      ]
+    },
+    {
+      "id": "gap-vfx-l2",
+      "kind": "VFX_READABILITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VFX"
+      ]
+    },
+    {
+      "id": "gap-visual_identity-l2",
+      "kind": "GAME_VISUAL_DNA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VISUAL_IDENTITY"
+      ]
+    },
+    {
       "id": "gap-character_arc-l3",
       "kind": "CHARACTER_ARC_DRILL",
       "priority": "low",
@@ -2018,7 +1990,17 @@
       ]
     },
     {
-      "id": "gap-security-l4",
+      "id": "gap-asset_production-l5",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "gap-security-l5",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -2028,23 +2010,13 @@
       ]
     },
     {
-      "id": "gap-ui_state-l4",
+      "id": "gap-ui_state-l5",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
         "UI_STATE"
-      ]
-    },
-    {
-      "id": "gap-asset_production-l5",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ASSET_PRODUCTION"
       ]
     },
     {
@@ -2068,23 +2040,13 @@
       ]
     },
     {
-      "id": "gap-mobile_input-l10",
+      "id": "gap-mobile_input-l11",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
         "MOBILE_INPUT"
-      ]
-    },
-    {
-      "id": "gap-core_loop-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CORE_LOOP"
       ]
     },
     {
@@ -2095,6 +2057,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "gap-core_loop-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP"
       ]
     },
     {
@@ -2148,7 +2120,17 @@
       ]
     },
     {
-      "id": "gap-debugging-l16",
+      "id": "gap-web_runtime-l16",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-debugging-l17",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -2158,23 +2140,13 @@
       ]
     },
     {
-      "id": "gap-state_machine-l16",
+      "id": "gap-state_machine-l17",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
         "STATE_MACHINE"
-      ]
-    },
-    {
-      "id": "gap-web_runtime-l16",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "WEB_RUNTIME"
       ]
     }
   ]
