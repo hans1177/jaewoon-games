@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 62,
+  "revision": 63,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1069,7 +1069,11 @@
     "reactionMatcherRequired": true,
     "pairMotionRequired": true,
     "variationMemoryRequired": true,
-    "motionDirectorRegisteredInsideGraphicsProduction": true
+    "motionDirectorRegisteredInsideGraphicsProduction": true,
+    "automaticMotionCoverageGapDetection": true,
+    "compatibleMotionAutoBinding": true,
+    "usagePriorityMotionGapFill": true,
+    "motionDuplicateSuppression": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1130,6 +1134,16 @@
         "SKILL_MOTION_LIBRARY",
         "REACTION_MOTION_LIBRARY",
         "PAIR_MOTION_LIBRARY"
+      ],
+      "autoMotionCoverageGapFill": true,
+      "preparedSemanticNeverVerified": true,
+      "autoFillOrder": [
+        "VERIFIED_REUSE",
+        "SAFE_DERIVATION",
+        "REPOSITORY",
+        "EXTERNAL",
+        "SEMANTIC_SEED",
+        "NATIVE_AUTHORING"
       ]
     },
     "internalModules": [
