@@ -418,7 +418,7 @@ test('specialized focused QA verifies structural evidence but never emits final 
   assert.equal(result.specializedVerificationQa.fullRegressionStillRequired,true);
 });
 
-test('specialized focused QA fails closed when requested structural evidence is missing',()=>{
+test('missing specialized structural evidence blocks learning promotion without failing game incremental QA',()=>{
   const root=repo();
   const sourceRoot=path.join(root,'web-games/missing-world-evidence');
   fs.mkdirSync(sourceRoot,{recursive:true});
@@ -433,8 +433,11 @@ test('specialized focused QA fails closed when requested structural evidence is 
       requestedMarkers:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS']
     }
   },null,2));
-  assert.throws(
-    ()=>runIncrementalQa({root,manifest,namespace:'web:missing-world-evidence'}),
-    /SPECIALIZED_FOCUSED_QA_FAILED:VERIFIED_WORLD_ROUTE_NAVIGATION_PASS/
-  );
+  const result=runIncrementalQa({root,manifest,namespace:'web:missing-world-evidence'});
+  assert.equal(result.outcome,'PASS');
+  assert.equal(result.specializedVerificationQa.status,'FOCUSED_STATIC_NOT_VERIFIED');
+  assert.deepEqual(result.specializedVerificationQa.failedMarkers,['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS']);
+  assert.equal(result.specializedVerificationQa.learningPromotionBlocked,true);
+  assert.equal(result.specializedVerificationQa.gameReleaseBlockedBySpecializedQa,false);
+  assert.deepEqual(result.specializedVerificationQa.finalVerifiedMarkers,[]);
 });
