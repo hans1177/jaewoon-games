@@ -1703,21 +1703,26 @@ const SPECIALIZED_VERIFICATION_REQUEST_RULES=Object.freeze([
   ['VERIFIED_WORLD_NARRATIVE_STATE_PASS',/(?:world.?narrative|faction.?state|faction.?relationship|world.?state|environmental.?story|월드.?서사|세력.?상태|세력.?관계|월드.?상태|환경.?스토리)/i]
 ]);
 export function buildSpecializedVerificationRequest(order={}){
+  const target=clean(order?.target).toLowerCase();
+  const gameTargetEligible=['web','unity','roblox','uefn','fortnite','fortnite_uefn','fortnite-uefn'].includes(target);
   const text=[
     clean(order?.goal),
     ...(Array.isArray(order?.acceptanceCriteria)?order.acceptanceCriteria:[]),
     ...(Array.isArray(order?.evidence)?order.evidence:[]),
     ...(Array.isArray(order?.responsibleFiles)?order.responsibleFiles:[])
   ].map(clean).filter(Boolean).join(' ');
-  const requestedMarkers=SPECIALIZED_VERIFICATION_REQUEST_RULES.filter(([,re])=>re.test(text)).map(([marker])=>marker);
-  const target=clean(order?.target).toLowerCase();
+  const requestedMarkers=gameTargetEligible
+    ?SPECIALIZED_VERIFICATION_REQUEST_RULES.filter(([,re])=>re.test(text)).map(([marker])=>marker)
+    :[];
   return Object.freeze({
-    version:1,
-    required:requestedMarkers.length>0,
+    version:2,
+    required:gameTargetEligible&&requestedMarkers.length>0,
     requestedMarkers:Object.freeze([...new Set(requestedMarkers)]),
     target:target||null,
-    nativeRuntimeRequired:['unity','roblox','uefn','fortnite','fortnite_uefn','fortnite-uefn'].includes(target),
-    focusedQaRequired:requestedMarkers.length>0,
+    gameTargetEligible,
+    blockedReason:gameTargetEligible?null:'NON_GAME_TARGET',
+    nativeRuntimeRequired:gameTargetEligible&&['unity','roblox','uefn','fortnite','fortnite_uefn','fortnite-uefn'].includes(target),
+    focusedQaRequired:gameTargetEligible&&requestedMarkers.length>0,
     markerOnlyPassForbidden:true,
     requestAuthority:'VERIFICATION_REQUEST_ONLY_NOT_PASS'
   });
