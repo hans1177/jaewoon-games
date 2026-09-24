@@ -1400,3 +1400,53 @@ test('24H plan uses optimistic writes while reserve stays serialized and fan-in 
   assert.match(fanInHeader,/cancel-in-progress: false/);
   assert.doesNotMatch(fanInHeader,/group: vibe2-control-state-vibe2-unreal-core/);
 });
+
+
+test('verified neural root cause alone may mutate retry strategy and queue priority',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'gated-retry',gameId:'g',target:'web',department:'development',type:'implementation',
+    goal:'repair source generation',status:'running',priority:'normal',sourceRoot:'web-games/g',
+    responsibleFiles:['index.html'],reservationId:'run:1'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'gated-retry',reservationId:'run:1',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EDIT_MATCH',message:'anchor mismatch'},
+    neuralDiagnosis:{responsibility:{system:'SOURCE_GENERATION'},inhibitors:[],actionRecommendation:{failureStage:'SOURCE_CANDIDATE_GENERATION'}},
+    evidence:[
+      'causal-replay-prepatch-reproduced:YES',
+      'causal-replay-executed:YES',
+      'causal-replay-status:EXECUTED_PASS',
+      'role-result:regression:PASS',
+      'role-result:review:PASS',
+      'verified-responsible-system:SOURCE_GENERATION'
+    ]
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='gated-retry');
+  assert.equal(task.status,'queued');
+  assert.equal(task.priority,'high');
+  assert.ok(task.evidence.includes('neural-gated-retry-strategy:EDIT_MATCH'));
+  assert.ok(task.evidence.includes('neural-gated-worker-refill-eligible'));
+  assert.equal(merged.applied[0].retryStrategy,'EDIT_MATCH');
+});
+
+test('unverified failure may retry but cannot receive neural gated mutation markers',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'plain-retry',gameId:'g2',target:'web',department:'development',type:'implementation',
+    goal:'repair source generation',status:'running',priority:'normal',sourceRoot:'web-games/g2',
+    responsibleFiles:['index.html'],reservationId:'run:2'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'plain-retry',reservationId:'run:2',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EDIT_MATCH',message:'anchor mismatch'},
+    neuralDiagnosis:{responsibility:{system:'SOURCE_GENERATION'},inhibitors:[],actionRecommendation:{failureStage:'SOURCE_CANDIDATE_GENERATION'}},
+    evidence:[]
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='plain-retry');
+  assert.equal(task.status,'queued');
+  assert.equal(task.priority,'normal');
+  assert.equal(task.evidence.some(value=>value.startsWith('neural-gated-retry-strategy:')),false);
+  assert.equal(task.evidence.some(value=>value.startsWith('neural-gated-execution:')),false);
+  assert.equal(merged.applied[0].retryStrategy,null);
+});
