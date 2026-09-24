@@ -1,5 +1,5 @@
 {
-  "version": 341,
+  "version": 342,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -578,7 +578,11 @@
       "heavyStageGlobalWorkflowSerializationForbidden": true,
       "runtimeHarnessVersion": "9",
       "checkoutThroughPromotionPolicy": "EACH_GAME_ADVANCES_IMMEDIATELY_WHEN_ITS_OWN_PREDECESSOR_GATE_PASSES",
-      "sharedWriterException": "ONLY_SHORT_COMPANY_RUNTIME_SHARED_STATE_COMMIT_CRITICAL_SECTION_MAY_SERIALIZE"
+      "sharedWriterException": "ONLY_SHORT_COMPANY_RUNTIME_SHARED_STATE_COMMIT_CRITICAL_SECTION_MAY_SERIALIZE",
+      "orchestratorDispatchMode": "PER_GAME_EXACT_PARALLEL",
+      "topLevelRobloxBatchHeavyExecutionForbidden": true,
+      "perGameWorkflowStartsWithoutWaitingForOtherGames": true,
+      "crossGameFanInMayNotGateNextHeavyStage": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
