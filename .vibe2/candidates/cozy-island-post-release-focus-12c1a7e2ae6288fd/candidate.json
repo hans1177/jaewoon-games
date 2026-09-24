@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "server/Game.server.luau",
+      "find": "local function bindPlayer(p)",
+      "replace": "local function bindPlayer(p)\n load(p)\n p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)\n if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

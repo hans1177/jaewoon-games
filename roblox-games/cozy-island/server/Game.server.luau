@@ -426,6 +426,10 @@ local function bindPlayer(p)
  load(p)
  p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)
  if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end
+ end
+ load(p)
+ p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)
+ if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
