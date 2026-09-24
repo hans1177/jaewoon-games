@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -313,7 +313,21 @@
       "MOTION_CONTACT_QA_DRILL",
       "MOTION_REPETITION_REDUCTION_DRILL",
       "MOTION_PAIR_ALIGNMENT_DRILL",
-      "MOTION_LOD_PERFORMANCE_DRILL"
+      "MOTION_LOD_PERFORMANCE_DRILL",
+      "CREATURE_UNIVERSE_DRILL",
+      "CLOTHING_ARMOR_LIBRARY_DRILL",
+      "BUILDING_MODULAR_LIBRARY_DRILL",
+      "INTERIOR_KIT_LIBRARY_DRILL",
+      "BIOME_DNA_LIBRARY_DRILL",
+      "PROP_LIBRARY_DRILL",
+      "MATERIAL_LIBRARY_DRILL",
+      "AUDIO_VARIATION_LIBRARY_DRILL",
+      "SKILL_PRESENTATION_LIBRARY_DRILL",
+      "DAMAGE_PRESENTATION_LIBRARY_DRILL",
+      "DESTRUCTION_LIBRARY_DRILL",
+      "ASSET_IDENTITY_QA_DRILL",
+      "STYLE_BIBLE_LIBRARY_DRILL",
+      "UNIVERSAL_ASSET_COVERAGE_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -612,6 +626,44 @@
       "canonicalTrainingPipeline": "company-learning/canonical-learning-pipeline.json",
       "trainingThresholdsUnchanged": true,
       "platformRuntimeEvidenceIndependent": true
+    },
+    "studioAssetUniverse": {
+      "enabled": true,
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse",
+      "existingLearningMotorOnly": true,
+      "separateTrainerForbidden": true,
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE",
+        "ENVIRONMENT_COMPOSITION"
+      ],
+      "signals": [
+        "ASSET_FAMILY_USAGE",
+        "COVERAGE_GAP",
+        "IDENTITY_QA_FAILURE",
+        "STYLE_BIBLE_DEVIATION",
+        "CLOTHING_CLIPPING_FAILURE",
+        "BUILDING_GRAMMAR_FAILURE",
+        "NAVIGATION_FAILURE",
+        "BIOME_DNA_GAP",
+        "WEAPON_MOTION_MISMATCH",
+        "SKILL_PRESENTATION_GAP",
+        "AUDIO_REPEAT_DEFECT",
+        "MATERIAL_STYLE_MISMATCH",
+        "RUNTIME_ASSET_FAILURE",
+        "MOBILE_ASSET_BUDGET_FAILURE"
+      ],
+      "positiveMasteryRequiresVerifiedNativeRuntimePass": true,
+      "preparedSemanticMayIncreaseMastery": false,
+      "rawCoverageOrTelemetryDirectTraining": false,
+      "verifiedFailureMayTeachAvoidPattern": true,
+      "canonicalPipeline": "company-learning/canonical-learning-pipeline.json"
     }
   },
   "closedLoop": {
