@@ -117,6 +117,36 @@ test('studio quality delta failure is retryable source generation work',()=>{
   assert.equal(shouldRetryGenerationError(error),true);
 });
 
+test('studio quality delta retry stays compact while requiring the full connected package breadth',()=>{
+  const prompt=[
+    '[STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=PRESENTATION',
+    'Engine: roblox',
+    'Goal: improve the current presentation package without changing gameplay semantics',
+    'Allowed edit paths: client/Game.client.luau, shared/VisualStyle.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local camera = workspace.CurrentCamera',
+    'local impact = 1',
+    'local motion = 1',
+    '=== FILE shared/VisualStyle.luau [EDITABLE] ===',
+    'local palette = Color3.fromRGB(20,20,20)',
+    'local outline = 1',
+    'local lighting = 1',
+    '=== FILE server/Unrelated.server.luau [READ-ONLY] ===',
+    'UNRELATED_READ_ONLY_CONTEXT_SHOULD_BE_DROPPED'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('STUDIO_QUALITY_DELTA_REQUIRED:BUILD_UP:1/3:VISUAL:1/2:INSUFFICIENT_CONNECTED_SOURCE_DELTAS'),
+    responsibleFiles:['client/Game.client.luau','shared/VisualStyle.luau'],
+    attempt:3
+  });
+  assert.match(retry,/STUDIO_QUALITY_EVOLUTION BUILD_UP: return 3-6 connected edits/i);
+  assert.match(retry,/at least 3 actual source deltas/i);
+  assert.match(retry,/at least 2 edits must change real visual/i);
+  assert.doesNotMatch(retry,/exactly one edit/i);
+  assert.doesNotMatch(retry,/UNRELATED_READ_ONLY_CONTEXT_SHOULD_BE_DROPPED/);
+});
+
 test('repeated identical failure signature escalates to root cause mode instead of counting unrelated failures',()=>{
   const result=classifyVibePatchSaturation({
     responsibleFiles:['web-games/demo/index.html'],
