@@ -91,6 +91,69 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   assert.match(candidate,/local score = 0/);
 });
 
+test('presentation delta uses the configured fourth recovery attempt instead of stopping after attempt three',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-presentation-fourth-retry'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve real visible Roblox presentation without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const r1=path.join(cwd,'presentation-r1.json');
+  const r2=path.join(cwd,'presentation-r2.json');
+  const r3=path.join(cwd,'presentation-r3.json');
+  const r4=path.join(cwd,'presentation-r4.json');
+  write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
+  write(r2,JSON.stringify({replace:'local score = 2'}));
+  write(r3,JSON.stringify({replace:'local score = 3'}));
+  write(r4,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.presentationCandidateDelta.pass,true);
+  assert.deepEqual(result.changedFiles,[relative]);
+});
+
+test('presentation recovery keeps the fourth slot after malformed focused output',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-presentation-malformed-fourth-retry'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve real visible Roblox presentation without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const r1=path.join(cwd,'presentation-malformed-r1.json');
+  const r2=path.join(cwd,'presentation-malformed-r2.json');
+  const r3=path.join(cwd,'presentation-malformed-r3.json');
+  const r4=path.join(cwd,'presentation-malformed-r4.json');
+  write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
+  write(r2,JSON.stringify({replace:'local score = 2'}));
+  write(r3,'{"replace":');
+  write(r4,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(82,110,148)'}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.presentationCandidateDelta.pass,true);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8'),/82,110,148/);
+});
+
 test('presentation focused recovery prioritizes visual anchors and forbids marker-only repair',()=>{
   const prompt=[
     '[PRESENTATION_PASS:ASSET_ADAPTATION]',
