@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets} from '../tools/vibe2-asset-production-plan.mjs';
-import {findPresentationQualityTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
+import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
@@ -482,6 +482,40 @@ test('development-confirmed Unity non-pilot receives presentation work without i
     assert.equal(result.planned,true);
     assert.ok(result.tasks.some(row=>row.id==='other-game-unity-presentation-asset-adaptation-v1'));
     assert.equal(result.tasks.some(row=>row.id==='other-game-unity-weather-presentation-v1'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('existing Roblox games receive one Studio asset backfill task until real binding exists',()=>{
+  const root=tempRoot();
+  try{
+    writePolicy(root);
+    const gameRoot=path.join(root,'roblox-games','demo');
+    fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return { GameId = "demo" }\n');
+    fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local root = Instance.new("Frame")\nroot.BackgroundColor3 = Color3.fromRGB(20,20,20)\n');
+    const project={gameId:'demo',name:'Demo',engine:'roblox',releaseState:'development-confirmed',projectPath:'roblox-games/demo'};
+    const first=findRobloxStudioAssetBackfillTask(project,root,{tasks:[]});
+    assert.ok(first);
+    assert.equal(first.id,'demo-roblox-studio-asset-backfill-v1');
+    assert.equal(first.studioAssetBackfill,true);
+    assert.equal(first.assetProductionLane,true);
+    assert.ok(first.evidence.includes('roblox-studio-asset-selection-handoff:required'));
+    assert.ok(first.evidence.includes('roblox-studio-asset-target-engine-selection-match:required'));
+    assert.match(first.goal,/플래너는 선택·전달만/);
+    assert.match(first.goal,/실제 Roblox 런타임 PASS 전에는/);
+
+    const duplicate=findRobloxStudioAssetBackfillTask(project,root,{tasks:[first]});
+    assert.equal(duplicate,null);
+
+    fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),[
+      'local STUDIO_ASSET_BINDING_VERSION = 1',
+      'local root = Instance.new("Frame")',
+      'root:SetAttribute("StudioAssetAtoms", "FRAME_PANEL,BUTTON_PRIMARY")',
+      'root.BackgroundColor3 = Color3.fromRGB(20,20,20)'
+    ].join('\n'));
+    const alreadyBound=findRobloxStudioAssetBackfillTask(project,root,{tasks:[]});
+    assert.equal(alreadyBound,null);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
