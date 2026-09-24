@@ -10,6 +10,7 @@ import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { diagnoseGame, microTaskFromIssue, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
 import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
+import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-context.mjs';
 
@@ -197,6 +198,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
     const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
     const executionEvidence=item?.executionEvidence&&typeof item.executionEvidence==='object'?item.executionEvidence:{};
+    const runtimeObserved=Object.hasOwn(executionEvidence,'runtimePassed')||item?.robloxRuntimePassed===true;
     const queuePatch={
       queueCurrentStep:clean(item?.currentStep),
       queueCanonicalState:clean(item?.canonicalState),
@@ -205,7 +207,10 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxFailureSignature:clean(item?.robloxFailureSignature||executionEvidence.failureSignature),
       queueRobloxSourceCommit:clean(item?.robloxSourceCommit||executionEvidence.sourceRevision),
       queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||executionEvidence.artifactIdentity),
+      queueRobloxRuntimeObserved:runtimeObserved,
       queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||executionEvidence.runtimePassed===true,
+      queueRobloxRootCauseVerified:executionEvidence.rootCauseVerified===true,
+      queueRobloxResponsibleSystem:clean(executionEvidence.responsibleSystem||executionEvidence.rootCauseSystem),
       queueRobloxIndependentQaPassed:item?.robloxIndependentQaPassed===true||executionEvidence.independentQaPassed===true,
       queueRobloxRegressionPassed:item?.robloxRegressionPassed===true||executionEvidence.regressionPassed===true,
       queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
@@ -400,6 +405,10 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
     evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
+  const runtimeNeural=compileRuntimeNeuralEvent(project,plannedTask.neuralDiagnosis);
+  if(runtimeNeural){
+    plannedTask.evidence=[...new Set([...plannedTask.evidence,...runtimeNeural.evidence])];
+  }
   return plannedTask;
 }
 
@@ -466,6 +475,62 @@ function compactRuntimeFailureEvidence({requestedStage='',implementationReason='
     clean(lastValidationAt)?`last-validation-at=${clean(lastValidationAt)}`:''
   ].filter(Boolean);
 }
+
+export function compileRuntimeNeuralEvent(project={},diagnosis=null){
+  const observed=project?.queueRobloxRuntimeObserved===true;
+  if(!observed)return null;
+  const passed=project?.queueRobloxRuntimePassed===true;
+  const rawStage=clean(project?.queueRobloxFailureStage).toUpperCase();
+  const runtimeFailure=!passed&&/(?:^|_)(?:TARGET_PLATFORM_)?RUNTIME(?:_|$)|SERVER_BOOT|PLAYTEST|\bF[09]\b/.test(rawStage);
+  if(!passed&&!runtimeFailure)return null;
+  const stage=passed?'TARGET_PLATFORM_RUNTIME':(rawStage||'TARGET_PLATFORM_RUNTIME');
+  const signature=clean(project?.queueRobloxFailureSignature)||clean(project?.queueRobloxSourceCommit)||null;
+  const responsibleSystem=clean(project?.queueRobloxResponsibleSystem);
+  const rootCauseVerified=project?.queueRobloxRootCauseVerified===true&&Boolean(responsibleSystem);
+  const rootCause=rootCauseVerified?{
+    state:'ROOT_CAUSE_VERIFIED',
+    rootCauseVerified:true,
+    responsibleSystem
+  }:null;
+  const event={
+    id:[clean(project?.gameId)||'unknown','RUNTIME_RESULT',clean(project?.queueRobloxSourceCommit)||stage,passed?'PASS':'FAIL'].join('|'),
+    type:'RUNTIME_RESULT',
+    gameId:clean(project?.gameId)||null,
+    taskId:null,
+    outcome:passed?'PASS':'FAIL',
+    stage,
+    signature,
+    evidence:[
+      'runtime-result-source:company-runtime',
+      clean(project?.queueRobloxSourceCommit)?`runtime-source-revision:${clean(project.queueRobloxSourceCommit)}`:'',
+      rawStage?`runtime-observed-stage:${rawStage}`:'',
+      signature?`runtime-signature:${signature}`:''
+    ].filter(Boolean)
+  };
+  const route=simulateNeuralEventRoute({
+    event,
+    diagnosis,
+    rootCause,
+    policyFresh:true,
+    lockConflict:false,
+    securityBlocked:false,
+    gatedExecutionEnabled:true
+  });
+  return{
+    version:1,
+    event,
+    route,
+    rootCauseVerified,
+    evidence:[
+      'runtime-neural-event:compiled',
+      `runtime-neural-event-outcome:${event.outcome}`,
+      `runtime-neural-event-authority:${route.authorityMode}`,
+      `runtime-neural-event-action:${clean(route?.proposedAction?.kind)||'OBSERVE_ONLY'}`,
+      ...neuralEventRouteEvidence(route)
+    ]
+  };
+}
+
 function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
   if(clean(project.engine).toLowerCase()!=='web')return{pass:true,blockers:[],relative:null};
   const relative=`${posix(project.projectPath)}/index.html`;
