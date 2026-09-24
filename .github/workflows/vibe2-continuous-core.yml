@@ -82,7 +82,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: vibe2-unreal-core
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: actions/setup-node@v4
         with:
