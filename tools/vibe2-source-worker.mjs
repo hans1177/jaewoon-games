@@ -1058,16 +1058,11 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     }
   }
   const ordered=rows.sort((a,b)=>b.score-a.score||a.length-b.length);
-  const presentationVisual=publicationSafeVisualRows(ordered,presentationTask);
+  const presentationVisual=presentationTask?ordered.filter(row=>row?.visual===true):[];
   return (presentationVisual.length?presentationVisual:ordered)
     .map(row=>row.value)
     .filter((value,index,array)=>array.indexOf(value)===index)
     .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
-}
-
-function publicationSafeVisualRows(rows=[],presentationTask=false){
-  if(!presentationTask)return[];
-  return rows.filter(row=>row?.visual===true);
 }
 
 export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[]}={}){
