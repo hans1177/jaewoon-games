@@ -586,6 +586,17 @@ panel.BackgroundColor3 = Color3.fromRGB(22,34,58)
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('Roblox Vibe candidate publish waits for target runtime QA instead of final PASS',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+  const settle=workflow.slice(workflow.indexOf('Settle Roblox result and continue canonical queue'),workflow.indexOf('\n  reject:',workflow.indexOf('Settle Roblox result and continue canonical queue')));
+  assert.match(settle,/candidate-awaiting-roblox-runtime-qa/);
+  assert.match(settle,/roblox-runtime-await-game:/);
+  assert.match(settle,/roblox-studio-asset-runtime-proof-required/);
+  assert.match(settle,/company-development-roblox-runtime\.yml[^\n]*-f game_id="\$GAME_ID"/);
+  assert.match(settle,/VIBE2_ROBLOX_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING/);
+  assert.doesNotMatch(settle,/queue-control\.mjs pass --id="\$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published/);
+});
+
 test('native asset adaptation rejects a single primitive character placeholder',()=>{
   const root=tempRoot();
   try{
