@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-queue-control.mjs
-// 역할: Vibe2 병렬 DAG 큐의 추가·batch 예약·QA대기·완료·실패 상태를 영속화한다.
-// 원칙: 서로 다른 source root만 병렬 예약하고 동일 root/file은 잠근다. 상태 쓰기는 fan-in에서 한 번에 합친다.
+// 역할: Vibe2 병렬 DAG 큐의 추가·예약·원자 뉴런 결과·QA대기·완료·실패·gated 재계획 상태를 영속화한다.
+// 원칙: 기존 scheduler와 lock을 유지하고, 검증된 neural gated 실행은 재큐·재우선순위·refill 힌트만 직접 반영한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -456,7 +456,7 @@ function workloadEvidence(row = {}) {
   if(cycleMs>0)evidence.push(`workload:cycle-ms:${cycleMs}`);
   return evidence;
 }
-const CODING_METHOD_FAILURE_CLASSES=new Set(['NO_OP','EDIT_MATCH','MALFORMED_OUTPUT','INVALID_PATH','FULL_REWRITE_SIZE','SEMANTIC_DIFF_BUDGET']);
+const CODING_METHOD_FAILURE_CLASSES=new Set(['NO_OP','EDIT_MATCH','MALFORMED_OUTPUT','INVALID_PATH','FULL_REWRITE_SIZE','SEMANTIC_DIFF_BUDGET','TIMEOUT','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX']);
 function codingStrategyFailureEvidence(row = {}) {
   if(clean(row?.outcome).toUpperCase()!=='FAIL')return[];
   const coding=row?.codingMethod&&typeof row.codingMethod==='object'?row.codingMethod:{};
@@ -530,7 +530,8 @@ export function buildNeuralWorkerTransaction(row = {}) {
     rootCause,
     policyFresh:true,
     lockConflict:false,
-    securityBlocked:rowEvidence.map(clean).includes('SECURITY_POLICY_BLOCK')
+    securityBlocked:rowEvidence.map(clean).includes('SECURITY_POLICY_BLOCK'),
+    gatedExecutionEnabled:true
   });
   const evidence=[
     ...neuralFeedbackEvidence(feedback),
@@ -672,15 +673,40 @@ export function applyVibeFanInResults(queueInput, results = []) {
     const blocked = variants.every((row) => clean(row.outcome).toUpperCase() === 'BLOCKED');
     const outcome = blocked ? 'BLOCKED' : 'FAIL';
     const blocker=clean(winner.blocker) || (blocked ? 'worker-route-blocked' : 'parallel-candidate-generation-failed');
+    const failureClass=clean(winner?.candidateFailure?.class).toUpperCase()||'UNCLASSIFIED';
+    const gatedTransaction=variants.map(row=>neuralTransactions.get(row)).find(transaction=>transaction?.eventRoute?.fireAllowed===true)||null;
+    const gatedAction=clean(gatedTransaction?.eventRoute?.proposedAction?.kind);
+    const retryStrategyEvidence=outcome==='FAIL'
+      ?[`neural-gated-retry-strategy:${failureClass}`,`retry-strategy-must-change-after:${failureClass}`]
+      :[];
+    const gatedExecutionEvidence=gatedTransaction
+      ?[
+        `neural-gated-execution:${gatedAction||'ACTION'}`,
+        'neural-gated-queue-mutation:REQUEUE_REPRIORITIZE',
+        'neural-gated-worker-refill-eligible'
+      ]
+      :[];
     const settled = settleVibeTask(queue, {
       taskId,
       outcome,
       blocker,
-      evidence: [...allEvidence, `failure-cause:${blocker}`],
+      evidence: [...allEvidence, ...retryStrategyEvidence, ...gatedExecutionEvidence, `failure-cause:${blocker}`],
       retryable: outcome === 'FAIL'
     });
     queue = settled.queue;
-    applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback });
+    if(outcome==='FAIL'&&gatedTransaction){
+      queue=createVibeContinuousQueue({
+        maxConcurrentTasks:queue.maxConcurrentTasks,
+        tasks:queue.tasks.map(task=>task.id===taskId&&task.status==='queued'
+          ?{
+            ...task,
+            priority:task.priority==='owner-immediate'?'owner-immediate':'high',
+            evidence:[...new Set([...(task.evidence||[]),'neural-gated-queue-reprioritized:HIGH'])]
+          }
+          :task)
+      });
+    }
+    applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback, gatedAction:gatedAction||null, retryStrategy:outcome==='FAIL'?failureClass:null });
   }
   const acceptedTaskIds=new Set(applied.filter(row=>clean(row?.outcome)!=='STALE_RESULT_SKIPPED').map(row=>clean(row?.taskId)).filter(Boolean));
   if(acceptedTaskIds.size){
