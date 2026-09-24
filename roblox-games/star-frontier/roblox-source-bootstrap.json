@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "gameId": "star-frontier",
+  "gameName": "별길 개척자",
+  "platform": "ROBLOX",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "stage": "TARGET_PLATFORM_SOURCE_BIND",
+  "sourcePath": "roblox-games/star-frontier",
+  "sourceValidationPassed": true,
+  "runtimePassed": false,
+  "independentQaPassed": false,
+  "regressionPassed": false,
+  "releaseClaim": false,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": true,
+  "serverSourceChanged": true,
+  "generatedFiles": [
+    "default.project.json",
+    "shared/GameConfig.luau",
+    "server/Game.server.luau",
+    "client/Game.client.luau",
+    "launch-mvp.json"
+  ],
+  "generationMode": "OWNER_REQUESTED_VIBE_CANDIDATE",
+  "modelUsed": true,
+  "implementationNotes": [
+    "original space exploration game inspired by the broad mining-exploration-combat loop, without copying external code or assets",
+    "server-authoritative movement, mining, combat, economy and warp progression",
+    "mobile-first ship controls and station actions",
+    "runtime, independent QA, regression and release stay unclaimed until exact Roblox evidence exists",
+    "local deterministic static source checks passed: JSON parse, Luau block/bracket structure, required server authority paths, mobile controls, no external asset/code dependency"
+  ],
+  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
+  "createdAt": "2026-09-24T17:41:00+09:00"
+}

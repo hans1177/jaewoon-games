@@ -1,0 +1,23 @@
+{
+  "name": "별길 개척자",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "shared"
+      }
+    },
+    "ServerScriptService": {
+      "GameServer": {
+        "$path": "server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "GameClient": {
+          "$path": "client"
+        }
+      }
+    }
+  }
+}
