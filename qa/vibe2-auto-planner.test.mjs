@@ -950,6 +950,35 @@ test('first studio build-up cycle establishes presentation baseline even when no
   assert.ok(task.evidence.includes('graphics-evolution-before-after-comparison-required'));
 });
 
+test('verified studio quality packages keep generating large follow-up cycles',()=>{
+  const root=tempRepo();
+  const gameId='studio-repeat-cycle';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Studio Repeat Cycle',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]});
+  assert.ok(first);
+  assert.equal(first.id,`${gameId}-studio-evolution-v1`);
+  assert.equal(first.workUnits,7);
+  assert.equal(first.studioQualityEvolution.requiredConnectedImprovements.min,3);
+  assert.equal(first.studioQualityEvolution.requiredConnectedImprovements.max,6);
+  const second=findStudioContinuousImprovementTask(project,root,{tasks:[{...first,status:'verified'}]});
+  assert.ok(second);
+  assert.equal(second.id,`${gameId}-studio-evolution-v2`);
+  assert.equal(second.studioQualityEvolution.cycle,2);
+  assert.equal(second.studioQualityEvolution.phase,'OPTIMIZE');
+  assert.equal(second.studioQualityEvolution.baselineId,first.id);
+  assert.equal(second.workUnits,7);
+  const third=findStudioContinuousImprovementTask(project,root,{tasks:[{...first,status:'verified'},{...second,status:'verified'}]});
+  assert.ok(third);
+  assert.equal(third.id,`${gameId}-studio-evolution-v3`);
+  assert.equal(third.studioQualityEvolution.cycle,3);
+  assert.equal(third.studioQualityEvolution.phase,'BUILD_UP');
+  assert.equal(third.studioQualityEvolution.baselineId,second.id);
+  assert.ok(third.evidence.includes('studio-quality-next-cycle-required:YES'));
+});
+
 test('web presentation planner discovers a real non-index game entry file',()=>{
   const root=tempRepo();
   const gameId='legacy-entry-web';
