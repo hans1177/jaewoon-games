@@ -1529,7 +1529,7 @@ jobs:
           retention-days: 1
 
       - name: Dispatch atomic neuron completion
-        if: steps.result.outputs.file != ''
+        if: steps.result.outputs.file != '' && env.VIBE2_EXECUTION_LANE != 'learning-idle'
         env:
           GH_TOKEN: ${{ github.token }}
           VIBE2_NEURON_ARTIFACT: vibe2-result-${{ matrix.safeTask }}-${{ matrix.variant }}
