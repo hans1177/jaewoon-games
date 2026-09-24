@@ -1756,5 +1756,63 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
   assert.ok(studio.evidence.includes('runtime-neural-event:compiled'));
   assert.ok(studio.evidence.includes('runtime-neural-event-outcome:PASS'));
   assert.ok(studio.evidence.includes('runtime-neural-event-authority:SHADOW'));
+  assert.ok(studio.evidence.includes('runtime-neural-event:compiled'));
+  assert.ok(studio.evidence.includes('runtime-neural-event-outcome:PASS'));
+  assert.ok(studio.evidence.includes('runtime-neural-event-authority:SHADOW'));
   assert.ok(studio.evidence.some(value=>value.startsWith('neural-event-shadow:')));
+});
+
+
+test('runtime neural event keeps successful runtime evidence observational only',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-pass',
+    queueRobloxRuntimeObserved:true,
+    queueRobloxRuntimePassed:true,
+    queueRobloxSourceCommit:'a'.repeat(40),
+    queueRobloxFailureStage:'TARGET_PLATFORM_RUNTIME'
+  },{inhibitors:[],responsibility:{system:'GAME_INPUT'}});
+  assert.ok(compiled);
+  assert.equal(compiled.event.type,'RUNTIME_RESULT');
+  assert.equal(compiled.event.outcome,'PASS');
+  assert.equal(compiled.route.authorityMode,'SHADOW');
+  assert.equal(compiled.route.fireAllowed,false);
+  assert.equal(compiled.route.queueMutationAllowed,false);
+  assert.ok(compiled.evidence.includes('runtime-neural-event-authority:SHADOW'));
+});
+
+test('runtime failure without verified root cause stays shadow and cannot mutate queue',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-fail-shadow',
+    queueRobloxRuntimeObserved:true,
+    queueRobloxRuntimePassed:false,
+    queueRobloxFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRobloxFailureSignature:'server-boot-timeout',
+    queueRobloxSourceCommit:'b'.repeat(40)
+  },{inhibitors:[],responsibility:{system:'GAME_RUNTIME'}});
+  assert.ok(compiled);
+  assert.equal(compiled.event.outcome,'FAIL');
+  assert.equal(compiled.rootCauseVerified,false);
+  assert.equal(compiled.route.authorityMode,'SHADOW');
+  assert.equal(compiled.route.fireAllowed,false);
+  assert.ok(compiled.route.inhibitors.includes('ROOT_CAUSE_NOT_VERIFIED'));
+});
+
+test('verified runtime failure may use gated existing-scheduler repair authority',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-fail-gated',
+    queueRobloxRuntimeObserved:true,
+    queueRobloxRuntimePassed:false,
+    queueRobloxFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRobloxFailureSignature:'runtime-input-sync-mismatch',
+    queueRobloxSourceCommit:'c'.repeat(40),
+    queueRobloxRootCauseVerified:true,
+    queueRobloxResponsibleSystem:'GAME_INPUT'
+  },{inhibitors:[],responsibility:{system:'GAME_INPUT'}});
+  assert.ok(compiled);
+  assert.equal(compiled.rootCauseVerified,true);
+  assert.equal(compiled.route.authorityMode,'GATED');
+  assert.equal(compiled.route.fireAllowed,true);
+  assert.equal(compiled.route.queueMutationAllowed,true);
+  assert.equal(compiled.route.policyMutationAllowed,false);
+  assert.ok(compiled.evidence.includes('runtime-neural-event-authority:GATED'));
 });
