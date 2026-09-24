@@ -1,5 +1,5 @@
 {
-  "version": 167,
+  "version": 168,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -67,7 +67,16 @@
     "administrativeChecksConsumeGamePrimarySlots": false,
     "atomicRefillContinuesDuringUnrelatedChecks": true,
     "fullRegressionEscalationRequiresRelevantEvidence": true,
-    "releaseAndConfirmedSecurityFindingsRemainFailClosed": true
+    "releaseAndConfirmedSecurityFindingsRemainFailClosed": true,
+    "impactScopedWorkflowTriggersImplemented": true,
+    "impactScopedWorkflowFiles": [
+      ".github/workflows/vibe-qa.yml",
+      ".github/workflows/vibe-regression.yml",
+      ".github/workflows/company-evolution-qa.yml",
+      ".github/workflows/vibe3-engine-contract.yml"
+    ],
+    "unrelatedWorkflowStartupForbidden": true,
+    "scopeExpansionRequiresRelevantEvidence": true
   },
   "executionTopology": {
     "design": [
