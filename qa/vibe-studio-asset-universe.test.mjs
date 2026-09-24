@@ -51,6 +51,9 @@ test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.equal(CLOTHING_LAYER_SLOTS.length,15);
   assert.ok(BIOME_FAMILIES.length>=18);
   assert.ok(BUILDING_THEMES.length>=12);
+  for(const style of ['INK_WASH','WATERCOLOR','NOIR','TOON_NOIR','SOLARPUNK','BIOPUNK','RETRO_FUTURISM','COZY','PAPER_CRAFT','VOXEL','DREAMCORE','HISTORICAL_EAST_ASIAN','SPACE_OPERA','UNDERWATER_FANTASY','DESERT_FANTASY','MYTHIC_NORDIC']){
+    assert.ok(createStudioAssetUniversePlan({styleFamily:style}).styleFamilies.includes(style),style);
+  }
 });
 
 test('concept director supports weighted mixed concepts without flattening style identity',()=>{
@@ -402,7 +405,7 @@ test('asset production planner consumes the studio universe contract',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
   const plan=buildVibeAssetProductionPlan({
-    task:{gameId:'studio-universe-test',goal:'카툰 무협 다크 판타지 몬스터 의복 건물 숲 배경 스킬 VFX 추가'},
+    task:{gameId:'studio-universe-test',goal:'수묵 무협 다크 판타지 스페이스 오페라 몬스터 의복 건물 숲 배경 스킬 VFX 추가'},
     target:'unity',
     repoRoot:path.resolve(here,'..')
   });
@@ -422,6 +425,11 @@ test('asset production planner consumes the studio universe contract',async()=>{
   assert.equal(plan.policy.adaptiveWorldGenerationRequired,true);
   assert.equal(plan.policy.mapDnaRequired,true);
   assert.equal(plan.policy.seamlessStreamingPlanRequired,true);
-  assert.ok(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested.weightedStyles.length>=3);
+  assert.ok(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested.weightedStyles.length>=4);
+  const requestedStyles=plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested.weightedStyles.map(row=>row.family);
+  assert.ok(requestedStyles.includes('INK_WASH'));
+  assert.ok(requestedStyles.includes('WUXIA'));
+  assert.ok(requestedStyles.includes('DARK_FANTASY'));
+  assert.ok(requestedStyles.includes('SPACE_OPERA'));
   assert.equal(plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.directLayoutCopyForbidden,true);
 });
