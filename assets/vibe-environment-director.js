@@ -68,7 +68,7 @@ export function createVibeGenreWorldGrammar({genre='ADAPTIVE'}={}){
     HORROR:['SAFE_ENTRY','LIMITED_SIGHTLINE','FALSE_BRANCH','KEY_GATE','ESCAPE_LOOP','REVEAL_SPACE','SAFE_RETURN'],
     SIMULATION:['FUNCTIONAL_ZONE','SERVICE_ROUTE','WORKFLOW_LOOP','EXPANSION_ZONE','OBSERVATION_SPACE']
   };
-  const matched=Object.keys(profiles).find(key=>g.includes(key))||'RPG';
+  const matched=Object.keys(profiles).sort((a,b)=>b.length-a.length).find(key=>g===key||g.includes(key))||'RPG';
   return Object.freeze({
     genre:g,
     family:matched,
