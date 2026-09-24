@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -3773,5 +3773,26 @@
     "masteredMaterialRemainsProductionReusable": true,
     "masteredMaterialCreatesNewDiversityRefillSlot": true,
     "maxGraduatePerFamilyPerCycle": 2
+  },
+  "robloxSelectionHandoff": {
+    "version": 1,
+    "status": "ACTIVE",
+    "plannerSelects": true,
+    "plannerMutatesGameSource": false,
+    "handoffCarries": [
+      "GAME_BASE_MATERIAL_LOADOUT",
+      "VARIANT_RECIPE",
+      "VERIFIED_REUSE_CANDIDATES",
+      "SAME_GAME_SOURCE_BOUND_CANDIDATES"
+    ],
+    "implementationOwner": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION",
+    "verifyOnlyAfterApplication": true,
+    "stages": [
+      "STATIC_BINDING_QA",
+      "ROBLOX_RUNTIME_QA",
+      "REGRESSION_SECURITY_FAN_IN",
+      "PROMOTION_OR_REPAIR"
+    ],
+    "runtimePassRequiredForVerifiedPromotion": true
   }
 }
