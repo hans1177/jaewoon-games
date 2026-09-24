@@ -1209,7 +1209,7 @@ test('verified specialized queue evidence enters canonical mastery once and igno
     {
       id:'world-pass',gameId:'world-g1',target:'web',status:'verified',
       goal:'월드 길과 스트리밍 검증',
-      evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','VERIFIED_STREAMING_MOBILE_BUDGET_PASS','actions-run:7001']
+      evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','VERIFIED_STREAMING_MOBILE_BUDGET_PASS','actions-run:7001','raw-telemetry:player-path=12,44,98','blocker-stack:very-long-runtime-log']
     },
     {
       id:'narrative-pass',gameId:'story-g1',target:'web',status:'done',
@@ -1240,6 +1240,9 @@ test('verified specialized queue evidence enters canonical mastery once and igno
   assert.equal(worldRecord.outcome,'PASS');
   assert.equal(worldRecord.verifiedEvidenceMarkers.length,2);
   assert.ok(worldRecord.evidence.includes('source-run:actions-run:7001'));
+  assert.ok(worldRecord.evidence.includes('verified-marker:VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'));
+  assert.equal(worldRecord.evidence.some(value=>value.startsWith('raw-telemetry:')),false);
+  assert.equal(worldRecord.evidence.some(value=>value.startsWith('blocker-stack:')),false);
   assert.equal(extracted.records.some(row=>row.sourceTaskId==='infra-fail'),false);
   assert.equal(extracted.records.some(row=>row.sourceTaskId==='not-terminal'),false);
 
@@ -1295,6 +1298,7 @@ test('specialized verified outcomes persist once and become same-game retrieval 
   assert.equal(record.verified,true);
   assert.equal(record.reusable,true);
   assert.ok(record.evidence.some(value=>value.startsWith('specialized-outcome-id:')));
+  assert.ok(record.evidence.includes('verified-marker:VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'));
 
   const retrieval=retrieveUnifiedLearning({
     task:{gameId:'persistent-g1',target:'web',goal:'world generation route navigation'},
