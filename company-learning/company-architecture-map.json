@@ -1,5 +1,5 @@
 {
-  "version": 135,
+  "version": 137,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2091,7 +2091,7 @@
     "ownerControlledFinancialActions": true
   },
   "assetProductionParallelism": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "codeAndAssetWorkMayRunConcurrently": true,
@@ -2150,7 +2150,51 @@
       "ownerVisualInspectionRoute": "/asset-library.html",
       "registry": "company-asset-library.json",
       "homepageEntry": "GAME_DEVELOPMENT",
-      "inspectionSurfaceDoesNotGrantProductionPass": true
+      "inspectionSurfaceDoesNotGrantProductionPass": true,
+      "mandatoryConsumers": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "companyLibraryLookupRequiredBeforeAssetChoice": true,
+      "repositoryInventoryBeforeExternalGapFill": true,
+      "externalGapFillBeforeNewAuthoring": true,
+      "externalSourceCatalog": "company-asset-library.json#externalSources",
+      "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
+      "studioMotionPriorityBootstrap": [
+        "HUMANOID_STUDIO_LOCOMOTION",
+        "UNARMED_VERSUS_ACTION_COMBAT",
+        "HUMANOID_COMBAT_BASE",
+        "QUADRUPED_STUDIO_MOTION",
+        "CREATURE_FAMILY_MOTION",
+        "BOSS_ACTING_MOTION"
+      ],
+      "speciesMotionResearchRequired": true,
+      "platformNativeRetargetAndRuntimeEvidenceRequired": true,
+      "unarmedCombatStudio": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.unarmedCombatStudio",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "target": "VERSUS_ACTION_READY_STUDIO_GRADE_UNARMED_COMBAT",
+        "platforms": [
+          "UNITY",
+          "ROBLOX"
+        ],
+        "noArtificialStyleOrMotionCap": true,
+        "externalLicensedMotionGapFillBeforeNewAuthoring": true,
+        "motionFamilies": [
+          "STANCE_AND_GUARD",
+          "FOOTWORK",
+          "HAND_STRIKES",
+          "CLOSE_RANGE_STRIKES",
+          "KICKS",
+          "DEFENSE_AND_COUNTER",
+          "CLINCH_GRAPPLE_AND_THROW",
+          "GROUND_RECOVERY_AND_MOBILITY",
+          "WUXIA_FANTASY",
+          "VERSUS_ACTION_SLOTS"
+        ],
+        "gameplayAuthorityExpansionForbidden": true,
+        "platformNativeRuntimeVerificationRequired": true
+      }
     }
   },
   "platformPresentationSeparation": {

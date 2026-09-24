@@ -1,8 +1,20 @@
 {
   "version": 4,
   "policy": {
-    "licensePriority": ["CC0", "public-domain", "MIT", "commercial-no-attribution", "CC-BY"],
-    "blocked": ["NC", "unknown", "unclear-redistribution", "unknown-modification-rights", "lost-provenance"],
+    "licensePriority": [
+      "CC0",
+      "public-domain",
+      "MIT",
+      "commercial-no-attribution",
+      "CC-BY"
+    ],
+    "blocked": [
+      "NC",
+      "unknown",
+      "unclear-redistribution",
+      "unknown-modification-rights",
+      "lost-provenance"
+    ],
     "maxSingleAssetBytes": 104857600,
     "preferExistingAssets": true,
     "downloadOnDemand": true,
@@ -13,341 +25,1239 @@
     "allowStaticBoss": false,
     "allowGeometricActor": false,
     "allowStaticActorWithMotionEngine": true,
-    "staticActorMotionRequirements": ["motion-engine-profile", "runtime-motion-evidence", "PIXEL-CORE-CHECK-review", "mobile-performance-pass"],
+    "staticActorMotionRequirements": [
+      "motion-engine-profile",
+      "runtime-motion-evidence",
+      "PIXEL-CORE-CHECK-review",
+      "mobile-performance-pass"
+    ],
     "motionEnginePath": "assets/jaewoon-motion-engine.js",
-    "assetStrategies": ["KEEP", "ENHANCE", "COMBINE", "REPLACE"],
+    "assetStrategies": [
+      "KEEP",
+      "ENHANCE",
+      "COMBINE",
+      "REPLACE"
+    ],
     "licenseLedgerRequired": true,
-    "licenseLedgerFields": ["source", "creator", "license", "commercialUse", "modificationUse", "attribution", "verifiedAt", "targetGame", "purpose", "modified"],
-    "styleGuideRequired": ["resolution", "palette", "outline", "shadow", "proportion", "uiShape", "vfxTone", "contrast"],
-    "prototypePresetCatalog": "assets/prototype-asset-presets.json"
+    "licenseLedgerFields": [
+      "source",
+      "creator",
+      "license",
+      "commercialUse",
+      "modificationUse",
+      "attribution",
+      "verifiedAt",
+      "targetGame",
+      "purpose",
+      "modified"
+    ],
+    "styleGuideRequired": [
+      "resolution",
+      "palette",
+      "outline",
+      "shadow",
+      "proportion",
+      "uiShape",
+      "vfxTone",
+      "contrast"
+    ],
+    "prototypePresetCatalog": "assets/prototype-asset-presets.json",
+    "companyLibraryLookupBeforeExternal": true,
+    "repositoryInventoryBeforeExternal": true,
+    "externalGapFillBeforeNewAuthoring": true,
+    "externalCandidateRequiresLicenseAndSourceEvidence": true,
+    "studioMotionRetargetCleanupRequired": true
   },
   "approvedSources": [
-    {"name":"Kenney","categories":["2d","3d","ui","icons","sfx"],"priority":1},
-    {"name":"Poly Haven","categories":["3d","textures","hdri"],"priority":1},
-    {"name":"ambientCG","categories":["textures","materials"],"priority":1},
-    {"name":"OpenGameArt","categories":["2d","animation","vfx"],"priority":1},
-    {"name":"GitHub","categories":["2d","animation","tools"],"priority":2,"licenseReviewRequired":true}
+    {
+      "name": "Kenney",
+      "categories": [
+        "2d",
+        "3d",
+        "ui",
+        "icons",
+        "sfx"
+      ],
+      "priority": 1
+    },
+    {
+      "name": "Poly Haven",
+      "categories": [
+        "3d",
+        "textures",
+        "hdri"
+      ],
+      "priority": 1
+    },
+    {
+      "name": "ambientCG",
+      "categories": [
+        "textures",
+        "materials"
+      ],
+      "priority": 1
+    },
+    {
+      "name": "OpenGameArt",
+      "categories": [
+        "2d",
+        "animation",
+        "vfx"
+      ],
+      "priority": 1
+    },
+    {
+      "name": "GitHub",
+      "categories": [
+        "2d",
+        "animation",
+        "tools"
+      ],
+      "priority": 2,
+      "licenseReviewRequired": true
+    },
+    {
+      "name": "KayKit",
+      "categories": [
+        "3d",
+        "character",
+        "animation",
+        "motion"
+      ],
+      "priority": 1
+    },
+    {
+      "name": "Quaternius",
+      "categories": [
+        "3d",
+        "character",
+        "creature",
+        "animation",
+        "motion",
+        "environment"
+      ],
+      "priority": 1,
+      "licenseReviewPerPack": true
+    },
+    {
+      "name": "Adobe Mixamo",
+      "categories": [
+        "humanoid-rig",
+        "animation",
+        "motion"
+      ],
+      "priority": 2,
+      "manualAcquisitionOnly": true,
+      "licenseReviewRequired": true
+    }
   ],
   "assets": [
     {
-      "id":"survival2-atlas",
-      "path":"web-games/survival2/assets/survival-atlas.svg",
-      "types":["background","item","prop","effect","ui"],
-      "tags":["배경","아이템","사물","이펙트","UI"],
-      "game":"survival2",
-      "license":"project-original",
-      "blockedForActorUse":true,
-      "verifiedAnimation":false,
-      "reason":"정지 SVG 도형 기반 캐릭터/몬스터 포함. 공용 캐릭터/적/보스 후보에서 제외"
-    },
-    {"id":"survival2-tree","path":"web-games/survival2/assets/tree.png","types":["prop"],"tags":["사물","나무"],"game":"survival2","license":"CC0"},
-    {"id":"survival2-rock","path":"web-games/survival2/assets/rock.png","types":["prop"],"tags":["사물","바위"],"game":"survival2","license":"CC0"},
-    {"id":"survival2-plant","path":"web-games/survival2/assets/plant.png","types":["prop"],"tags":["사물","풀","식물"],"game":"survival2","license":"CC0"},
-    {"id":"survival2-mushroom","path":"web-games/survival2/assets/mushroom.png","types":["prop","item"],"tags":["사물","아이템","버섯"],"game":"survival2","license":"CC0"},
-    {
-      "id":"oga-animated-monsters",
-      "name":"Animated Monsters",
-      "path":"",
-      "types":["enemy","boss","animation"],
-      "tags":["적","몬스터","보스","좀비","해골","마녀","애니메이션"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/animated-monsters",
-      "license":"CC0",
-      "downloaded":false,
-      "verifiedAnimation":true,
-      "animationEvidence":["documented-animation-list","transparent-spritesheet"],
-      "animations":["idle","walk","attack","hit","death"],
-      "characters":["zombie","skeleton","witch"]
+      "id": "survival2-atlas",
+      "path": "web-games/survival2/assets/survival-atlas.svg",
+      "types": [
+        "background",
+        "item",
+        "prop",
+        "effect",
+        "ui"
+      ],
+      "tags": [
+        "배경",
+        "아이템",
+        "사물",
+        "이펙트",
+        "UI"
+      ],
+      "game": "survival2",
+      "license": "project-original",
+      "blockedForActorUse": true,
+      "verifiedAnimation": false,
+      "reason": "정지 SVG 도형 기반 캐릭터/몬스터 포함. 공용 캐릭터/적/보스 후보에서 제외"
     },
     {
-      "id":"oga-adventurer-slime",
-      "name":"Adventurer and Slime game Sprites",
-      "path":"",
-      "types":["character","enemy","animation"],
-      "tags":["주인공","캐릭터","영웅","적","몬스터","슬라임","애니메이션"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/adventurer-and-slime-game-sprites",
-      "license":"CC0",
-      "downloaded":false,
-      "verifiedAnimation":true,
-      "animationEvidence":["documented-animation-list","frame-files"],
-      "animations":["idle","run","move","attack","jump","fall","air-attack","hurt","death"],
-      "characters":["hero","slime"]
+      "id": "survival2-tree",
+      "path": "web-games/survival2/assets/tree.png",
+      "types": [
+        "prop"
+      ],
+      "tags": [
+        "사물",
+        "나무"
+      ],
+      "game": "survival2",
+      "license": "CC0"
     },
     {
-      "id":"oga-basic-pixel-spells",
-      "name":"Basic Pixel Animated Spells",
-      "path":"",
-      "types":["effect","animation"],
-      "tags":["이펙트","마법","스킬 효과","애니메이션"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/basic-pixel-animated-spells",
-      "license":"CC0",
-      "downloaded":false,
-      "verifiedAnimation":true,
-      "animationEvidence":["6-to-10-frame-effects"],
-      "animations":["spell-1","spell-2","spell-3","spell-4"]
+      "id": "survival2-rock",
+      "path": "web-games/survival2/assets/rock.png",
+      "types": [
+        "prop"
+      ],
+      "tags": [
+        "사물",
+        "바위"
+      ],
+      "game": "survival2",
+      "license": "CC0"
     },
     {
-      "id":"oga-unity-slime-12",
-      "name":"2D Slime Animated 12 Different Colors Unity Ready Prefab",
-      "path":"",
-      "types":["enemy","boss","animation"],
-      "tags":["적","몬스터","보스","슬라임","애니메이션","Unity"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/2d-slime-animated-12-different-colors-unity-ready-prefab",
-      "license":"CC0",
-      "downloaded":false,
-      "verifiedAnimation":true,
-      "animationEvidence":["unity-prefab","animation-clips"],
-      "animations":["idle","jump","move","attack","hurt","death"]
+      "id": "survival2-plant",
+      "path": "web-games/survival2/assets/plant.png",
+      "types": [
+        "prop"
+      ],
+      "tags": [
+        "사물",
+        "풀",
+        "식물"
+      ],
+      "game": "survival2",
+      "license": "CC0"
     },
     {
-      "id":"github-pixel-snapped-pirate-skeleton",
-      "name":"AI Pixel Snapped Game Sprites",
-      "path":"",
-      "types":["character","enemy","boss","animation"],
-      "tags":["주인공","캐릭터","적","몬스터","보스","해적","해골","애니메이션"],
-      "source":"GitHub",
-      "sourceUrl":"https://github.com/chongdashu/ai-pixel-snapped-game-sprites",
-      "license":"MIT",
-      "downloaded":false,
-      "verifiedAnimation":true,
-      "animationEvidence":["preview.gif","manifest.json","spritesheet.png","runtime-preview"],
-      "animations":["idle","walk","move","attack","hurt","jump","death"],
-      "characters":["pirate","skeleton"]
+      "id": "survival2-mushroom",
+      "path": "web-games/survival2/assets/mushroom.png",
+      "types": [
+        "prop",
+        "item"
+      ],
+      "tags": [
+        "사물",
+        "아이템",
+        "버섯"
+      ],
+      "game": "survival2",
+      "license": "CC0"
     },
     {
-      "id":"kenney-ui-pack",
-      "name":"Kenney UI Pack",
-      "path":"",
-      "types":["ui","ux","button","panel","slider","slot"],
-      "tags":["공용 UI","버튼","패널","슬라이더","창","슬롯","메뉴"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/ui-pack",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":430,
-      "platforms":["web","unity"],
-      "preferredUse":["공용 메뉴","설정창","팝업","버튼","슬롯 프레임","게이지 배경"]
+      "id": "oga-animated-monsters",
+      "name": "Animated Monsters",
+      "path": "",
+      "types": [
+        "enemy",
+        "boss",
+        "animation"
+      ],
+      "tags": [
+        "적",
+        "몬스터",
+        "보스",
+        "좀비",
+        "해골",
+        "마녀",
+        "애니메이션"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/animated-monsters",
+      "license": "CC0",
+      "downloaded": false,
+      "verifiedAnimation": true,
+      "animationEvidence": [
+        "documented-animation-list",
+        "transparent-spritesheet"
+      ],
+      "animations": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "characters": [
+        "zombie",
+        "skeleton",
+        "witch"
+      ]
     },
     {
-      "id":"kenney-ui-pack-rpg-expansion",
-      "name":"Kenney UI Pack RPG Expansion",
-      "path":"",
-      "types":["ui","ux","rpg","button","panel","slider","slot"],
-      "tags":["RPG UI","캐릭터창","스킬창","인벤토리","장비창","버튼","패널"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/ui-pack-rpg-expansion",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":85,
-      "platforms":["web","unity"],
-      "preferredUse":["캐릭터창","스킬창","장비창","인벤토리","RPG 팝업","상태 패널"]
+      "id": "oga-adventurer-slime",
+      "name": "Adventurer and Slime game Sprites",
+      "path": "",
+      "types": [
+        "character",
+        "enemy",
+        "animation"
+      ],
+      "tags": [
+        "주인공",
+        "캐릭터",
+        "영웅",
+        "적",
+        "몬스터",
+        "슬라임",
+        "애니메이션"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/adventurer-and-slime-game-sprites",
+      "license": "CC0",
+      "downloaded": false,
+      "verifiedAnimation": true,
+      "animationEvidence": [
+        "documented-animation-list",
+        "frame-files"
+      ],
+      "animations": [
+        "idle",
+        "run",
+        "move",
+        "attack",
+        "jump",
+        "fall",
+        "air-attack",
+        "hurt",
+        "death"
+      ],
+      "characters": [
+        "hero",
+        "slime"
+      ]
     },
     {
-      "id":"kenney-ui-pack-adventure",
-      "name":"Kenney UI Pack Adventure",
-      "path":"",
-      "types":["ui","ux","button","panel","slider","adventure"],
-      "tags":["어드벤처 UI","판타지 UI","버튼","패널","메뉴","HUD"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/ui-pack-adventure",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":130,
-      "platforms":["web","unity"],
-      "preferredUse":["판타지 HUD","퀘스트창","상점창","선택창","모바일 메뉴"]
+      "id": "oga-basic-pixel-spells",
+      "name": "Basic Pixel Animated Spells",
+      "path": "",
+      "types": [
+        "effect",
+        "animation"
+      ],
+      "tags": [
+        "이펙트",
+        "마법",
+        "스킬 효과",
+        "애니메이션"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/basic-pixel-animated-spells",
+      "license": "CC0",
+      "downloaded": false,
+      "verifiedAnimation": true,
+      "animationEvidence": [
+        "6-to-10-frame-effects"
+      ],
+      "animations": [
+        "spell-1",
+        "spell-2",
+        "spell-3",
+        "spell-4"
+      ]
     },
     {
-      "id":"kenney-ui-pack-pixel-adventure",
-      "name":"Kenney UI Pack Pixel Adventure",
-      "path":"",
-      "types":["ui","ux","pixel","button","panel","slider","slot"],
-      "tags":["픽셀 UI","스킬 슬롯","인벤토리","버튼","패널","게이지"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/ui-pack-pixel-adventure",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":500,
-      "platforms":["web","unity"],
-      "preferredUse":["픽셀 RPG","스킬바","퀵슬롯","인벤토리","체력바","모바일 HUD"]
+      "id": "oga-unity-slime-12",
+      "name": "2D Slime Animated 12 Different Colors Unity Ready Prefab",
+      "path": "",
+      "types": [
+        "enemy",
+        "boss",
+        "animation"
+      ],
+      "tags": [
+        "적",
+        "몬스터",
+        "보스",
+        "슬라임",
+        "애니메이션",
+        "Unity"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/2d-slime-animated-12-different-colors-unity-ready-prefab",
+      "license": "CC0",
+      "downloaded": false,
+      "verifiedAnimation": true,
+      "animationEvidence": [
+        "unity-prefab",
+        "animation-clips"
+      ],
+      "animations": [
+        "idle",
+        "jump",
+        "move",
+        "attack",
+        "hurt",
+        "death"
+      ]
     },
     {
-      "id":"kenney-game-icons",
-      "name":"Kenney Game Icons",
-      "path":"",
-      "types":["ui","icon","input","prompt"],
-      "tags":["아이콘","입력","조작","버튼 표시","UX"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/game-icons",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":105,
-      "platforms":["web","unity"],
-      "preferredUse":["조작 안내","버튼 아이콘","튜토리얼","상호작용 표시"]
+      "id": "github-pixel-snapped-pirate-skeleton",
+      "name": "AI Pixel Snapped Game Sprites",
+      "path": "",
+      "types": [
+        "character",
+        "enemy",
+        "boss",
+        "animation"
+      ],
+      "tags": [
+        "주인공",
+        "캐릭터",
+        "적",
+        "몬스터",
+        "보스",
+        "해적",
+        "해골",
+        "애니메이션"
+      ],
+      "source": "GitHub",
+      "sourceUrl": "https://github.com/chongdashu/ai-pixel-snapped-game-sprites",
+      "license": "MIT",
+      "downloaded": false,
+      "verifiedAnimation": true,
+      "animationEvidence": [
+        "preview.gif",
+        "manifest.json",
+        "spritesheet.png",
+        "runtime-preview"
+      ],
+      "animations": [
+        "idle",
+        "walk",
+        "move",
+        "attack",
+        "hurt",
+        "jump",
+        "death"
+      ],
+      "characters": [
+        "pirate",
+        "skeleton"
+      ]
     },
     {
-      "id":"kenney-ui-audio",
-      "name":"Kenney UI Audio",
-      "path":"",
-      "types":["audio","ui","ux","sfx"],
-      "tags":["UI 사운드","버튼","클릭","스위치","선택음"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/ui-audio",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":50,
-      "platforms":["web","unity"],
-      "preferredUse":["버튼 클릭","탭 전환","선택","취소","토글"]
+      "id": "kenney-ui-pack",
+      "name": "Kenney UI Pack",
+      "path": "",
+      "types": [
+        "ui",
+        "ux",
+        "button",
+        "panel",
+        "slider",
+        "slot"
+      ],
+      "tags": [
+        "공용 UI",
+        "버튼",
+        "패널",
+        "슬라이더",
+        "창",
+        "슬롯",
+        "메뉴"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/ui-pack",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 430,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "공용 메뉴",
+        "설정창",
+        "팝업",
+        "버튼",
+        "슬롯 프레임",
+        "게이지 배경"
+      ]
     },
     {
-      "id":"oga-rpg-inventory-character-sheet",
-      "name":"RPG Inventory / Character Sheet",
-      "path":"",
-      "types":["ui","ux","inventory","character-sheet","equipment","slot"],
-      "tags":["캐릭터창","인벤토리","장비창","장비 슬롯","희귀도 테두리"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/rpg-inventory",
-      "license":"CC0",
-      "creator":"itsmars",
-      "downloaded":false,
-      "pack":true,
-      "platforms":["web","unity"],
-      "preferredUse":["캐릭터 정보창","장비창","인벤토리","아이템 슬롯","희귀도 프레임"]
+      "id": "kenney-ui-pack-rpg-expansion",
+      "name": "Kenney UI Pack RPG Expansion",
+      "path": "",
+      "types": [
+        "ui",
+        "ux",
+        "rpg",
+        "button",
+        "panel",
+        "slider",
+        "slot"
+      ],
+      "tags": [
+        "RPG UI",
+        "캐릭터창",
+        "스킬창",
+        "인벤토리",
+        "장비창",
+        "버튼",
+        "패널"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/ui-pack-rpg-expansion",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 85,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "캐릭터창",
+        "스킬창",
+        "장비창",
+        "인벤토리",
+        "RPG 팝업",
+        "상태 패널"
+      ]
     },
     {
-      "id":"oga-rpg-ui-icons-owlishmedia",
-      "name":"RPG UI Icons",
-      "path":"",
-      "types":["ui","icon","skill","status","item","equipment"],
-      "tags":["스킬 아이콘","상태이상","속성","무기","방어구","아이템","치료"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/rpg-ui-icons",
-      "license":"CC0",
-      "creator":"OwlishMedia",
-      "downloaded":false,
-      "pack":true,
-      "resolutions":["16x16","32x32"],
-      "platforms":["web","unity"],
-      "preferredUse":["스킬 슬롯","버프/디버프","속성 표시","장비 분류","아이템 분류"]
+      "id": "kenney-ui-pack-adventure",
+      "name": "Kenney UI Pack Adventure",
+      "path": "",
+      "types": [
+        "ui",
+        "ux",
+        "button",
+        "panel",
+        "slider",
+        "adventure"
+      ],
+      "tags": [
+        "어드벤처 UI",
+        "판타지 UI",
+        "버튼",
+        "패널",
+        "메뉴",
+        "HUD"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/ui-pack-adventure",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 130,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "판타지 HUD",
+        "퀘스트창",
+        "상점창",
+        "선택창",
+        "모바일 메뉴"
+      ]
     },
     {
-      "id":"oga-tiny-rpg-dragon-regalia-gui",
-      "name":"Tiny RPG Dragon Regalia GUI",
-      "path":"",
-      "types":["ui","ux","rpg","button","equipment","bar","minimap","portrait","slot","cursor"],
-      "tags":["RPG UI 세트","장비 프레임","체력바","마나바","경험치바","미니맵","초상화","아이템 슬롯","버튼 상태"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/tiny-rpg-dragon-regalia-gui",
-      "license":"CC0",
-      "creator":"tiopalada",
-      "downloaded":false,
-      "pack":true,
-      "platforms":["web","unity"],
-      "preferredUse":["캐릭터창","장비창","HUD","미니맵","초상화","스킬/아이템 슬롯","9-slice 패널"]
+      "id": "kenney-ui-pack-pixel-adventure",
+      "name": "Kenney UI Pack Pixel Adventure",
+      "path": "",
+      "types": [
+        "ui",
+        "ux",
+        "pixel",
+        "button",
+        "panel",
+        "slider",
+        "slot"
+      ],
+      "tags": [
+        "픽셀 UI",
+        "스킬 슬롯",
+        "인벤토리",
+        "버튼",
+        "패널",
+        "게이지"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/ui-pack-pixel-adventure",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 500,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "픽셀 RPG",
+        "스킬바",
+        "퀵슬롯",
+        "인벤토리",
+        "체력바",
+        "모바일 HUD"
+      ]
     },
     {
-      "id":"oga-fantasy-rpg-icons-drummyfish",
-      "name":"Fantasy RPG Icons",
-      "path":"",
-      "types":["icon","skill","spell","item","equipment","currency"],
-      "tags":["스킬 아이콘","마법","무기","방어구","물약","가방","골드","판타지"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/content/fantasy-rpg-icons-0",
-      "license":"CC0",
-      "creator":"Drummyfish",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":32,
-      "resolutions":["128x128"],
-      "platforms":["web","unity"],
-      "preferredUse":["고해상도 스킬 아이콘","장비 아이콘","소모품","재화","모바일 스킬바"]
+      "id": "kenney-game-icons",
+      "name": "Kenney Game Icons",
+      "path": "",
+      "types": [
+        "ui",
+        "icon",
+        "input",
+        "prompt"
+      ],
+      "tags": [
+        "아이콘",
+        "입력",
+        "조작",
+        "버튼 표시",
+        "UX"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/game-icons",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 105,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "조작 안내",
+        "버튼 아이콘",
+        "튜토리얼",
+        "상호작용 표시"
+      ]
     },
     {
-      "id":"kenney-mobile-controls",
-      "name":"Kenney Mobile Controls",
-      "path":"",
-      "types":["ui","ux","control","joystick","touch","button","hud","icon"],
-      "tags":["모바일","터치","가상 조이스틱","이동패드","공격 버튼","스킬 버튼","HUD","터치 아이콘"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/mobile-controls",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":900,
-      "styleCount":8,
-      "platforms":["web","unity"],
-      "devices":["mobile"],
-      "mobilePriority":1,
-      "preferredUse":["가상 조이스틱","이동 방향","공격/스킬 버튼","버튼 눌림 하이라이트","터치 HUD","상호작용 버튼"]
+      "id": "kenney-ui-audio",
+      "name": "Kenney UI Audio",
+      "path": "",
+      "types": [
+        "audio",
+        "ui",
+        "ux",
+        "sfx"
+      ],
+      "tags": [
+        "UI 사운드",
+        "버튼",
+        "클릭",
+        "스위치",
+        "선택음"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/ui-audio",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 50,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "버튼 클릭",
+        "탭 전환",
+        "선택",
+        "취소",
+        "토글"
+      ]
     },
     {
-      "id":"kenney-particle-pack",
-      "name":"Kenney Particle Pack",
-      "path":"",
-      "types":["effect","vfx","particle","skill"],
-      "tags":["모바일 VFX","스킬 효과","타격","폭발","마법","파티클"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/particle-pack",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":80,
-      "resolutions":["512x512"],
-      "platforms":["web","unity"],
-      "devices":["mobile"],
-      "mobilePriority":2,
-      "preferredUse":["스킬 발동","피격","레벨업","폭발","버프/디버프","마법 효과"]
+      "id": "oga-rpg-inventory-character-sheet",
+      "name": "RPG Inventory / Character Sheet",
+      "path": "",
+      "types": [
+        "ui",
+        "ux",
+        "inventory",
+        "character-sheet",
+        "equipment",
+        "slot"
+      ],
+      "tags": [
+        "캐릭터창",
+        "인벤토리",
+        "장비창",
+        "장비 슬롯",
+        "희귀도 테두리"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/rpg-inventory",
+      "license": "CC0",
+      "creator": "itsmars",
+      "downloaded": false,
+      "pack": true,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "캐릭터 정보창",
+        "장비창",
+        "인벤토리",
+        "아이템 슬롯",
+        "희귀도 프레임"
+      ]
     },
     {
-      "id":"kenney-interface-sounds",
-      "name":"Kenney Interface Sounds",
-      "path":"",
-      "types":["audio","ui","ux","sfx"],
-      "tags":["모바일 UI 사운드","터치","클릭","선택","확인","취소"],
-      "source":"Kenney",
-      "sourceUrl":"https://kenney.nl/assets/interface-sounds",
-      "license":"CC0",
-      "creator":"Kenney",
-      "downloaded":false,
-      "pack":true,
-      "fileCount":100,
-      "platforms":["web","unity"],
-      "devices":["mobile"],
-      "mobilePriority":3,
-      "preferredUse":["터치 버튼","창 열기/닫기","스킬 선택","인벤토리 이동","확인/취소"]
+      "id": "oga-rpg-ui-icons-owlishmedia",
+      "name": "RPG UI Icons",
+      "path": "",
+      "types": [
+        "ui",
+        "icon",
+        "skill",
+        "status",
+        "item",
+        "equipment"
+      ],
+      "tags": [
+        "스킬 아이콘",
+        "상태이상",
+        "속성",
+        "무기",
+        "방어구",
+        "아이템",
+        "치료"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/rpg-ui-icons",
+      "license": "CC0",
+      "creator": "OwlishMedia",
+      "downloaded": false,
+      "pack": true,
+      "resolutions": [
+        "16x16",
+        "32x32"
+      ],
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "스킬 슬롯",
+        "버프/디버프",
+        "속성 표시",
+        "장비 분류",
+        "아이템 분류"
+      ]
     },
     {
-      "id":"oga-powers-icons",
-      "name":"Powers Icons",
-      "path":"",
-      "types":["ui","icon","skill","power","rpg"],
-      "tags":["모바일 스킬 아이콘","능력","특수 공격","액티브 스킬","RPG"],
-      "source":"OpenGameArt",
-      "sourceUrl":"https://opengameart.org/node/3229",
-      "license":"CC0",
-      "creator":"Clint Bellanger",
-      "downloaded":false,
-      "pack":true,
-      "platforms":["web","unity"],
-      "devices":["mobile"],
-      "mobilePriority":2,
-      "preferredUse":["큰 스킬 버튼","액티브 스킬","특수 능력","스킬 선택창"]
+      "id": "oga-tiny-rpg-dragon-regalia-gui",
+      "name": "Tiny RPG Dragon Regalia GUI",
+      "path": "",
+      "types": [
+        "ui",
+        "ux",
+        "rpg",
+        "button",
+        "equipment",
+        "bar",
+        "minimap",
+        "portrait",
+        "slot",
+        "cursor"
+      ],
+      "tags": [
+        "RPG UI 세트",
+        "장비 프레임",
+        "체력바",
+        "마나바",
+        "경험치바",
+        "미니맵",
+        "초상화",
+        "아이템 슬롯",
+        "버튼 상태"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/tiny-rpg-dragon-regalia-gui",
+      "license": "CC0",
+      "creator": "tiopalada",
+      "downloaded": false,
+      "pack": true,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "캐릭터창",
+        "장비창",
+        "HUD",
+        "미니맵",
+        "초상화",
+        "스킬/아이템 슬롯",
+        "9-slice 패널"
+      ]
+    },
+    {
+      "id": "oga-fantasy-rpg-icons-drummyfish",
+      "name": "Fantasy RPG Icons",
+      "path": "",
+      "types": [
+        "icon",
+        "skill",
+        "spell",
+        "item",
+        "equipment",
+        "currency"
+      ],
+      "tags": [
+        "스킬 아이콘",
+        "마법",
+        "무기",
+        "방어구",
+        "물약",
+        "가방",
+        "골드",
+        "판타지"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/fantasy-rpg-icons-0",
+      "license": "CC0",
+      "creator": "Drummyfish",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 32,
+      "resolutions": [
+        "128x128"
+      ],
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "preferredUse": [
+        "고해상도 스킬 아이콘",
+        "장비 아이콘",
+        "소모품",
+        "재화",
+        "모바일 스킬바"
+      ]
+    },
+    {
+      "id": "kenney-mobile-controls",
+      "name": "Kenney Mobile Controls",
+      "path": "",
+      "types": [
+        "ui",
+        "ux",
+        "control",
+        "joystick",
+        "touch",
+        "button",
+        "hud",
+        "icon"
+      ],
+      "tags": [
+        "모바일",
+        "터치",
+        "가상 조이스틱",
+        "이동패드",
+        "공격 버튼",
+        "스킬 버튼",
+        "HUD",
+        "터치 아이콘"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/mobile-controls",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 900,
+      "styleCount": 8,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "devices": [
+        "mobile"
+      ],
+      "mobilePriority": 1,
+      "preferredUse": [
+        "가상 조이스틱",
+        "이동 방향",
+        "공격/스킬 버튼",
+        "버튼 눌림 하이라이트",
+        "터치 HUD",
+        "상호작용 버튼"
+      ]
+    },
+    {
+      "id": "kenney-particle-pack",
+      "name": "Kenney Particle Pack",
+      "path": "",
+      "types": [
+        "effect",
+        "vfx",
+        "particle",
+        "skill"
+      ],
+      "tags": [
+        "모바일 VFX",
+        "스킬 효과",
+        "타격",
+        "폭발",
+        "마법",
+        "파티클"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/particle-pack",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 80,
+      "resolutions": [
+        "512x512"
+      ],
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "devices": [
+        "mobile"
+      ],
+      "mobilePriority": 2,
+      "preferredUse": [
+        "스킬 발동",
+        "피격",
+        "레벨업",
+        "폭발",
+        "버프/디버프",
+        "마법 효과"
+      ]
+    },
+    {
+      "id": "kenney-interface-sounds",
+      "name": "Kenney Interface Sounds",
+      "path": "",
+      "types": [
+        "audio",
+        "ui",
+        "ux",
+        "sfx"
+      ],
+      "tags": [
+        "모바일 UI 사운드",
+        "터치",
+        "클릭",
+        "선택",
+        "확인",
+        "취소"
+      ],
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0",
+      "creator": "Kenney",
+      "downloaded": false,
+      "pack": true,
+      "fileCount": 100,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "devices": [
+        "mobile"
+      ],
+      "mobilePriority": 3,
+      "preferredUse": [
+        "터치 버튼",
+        "창 열기/닫기",
+        "스킬 선택",
+        "인벤토리 이동",
+        "확인/취소"
+      ]
+    },
+    {
+      "id": "oga-powers-icons",
+      "name": "Powers Icons",
+      "path": "",
+      "types": [
+        "ui",
+        "icon",
+        "skill",
+        "power",
+        "rpg"
+      ],
+      "tags": [
+        "모바일 스킬 아이콘",
+        "능력",
+        "특수 공격",
+        "액티브 스킬",
+        "RPG"
+      ],
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/node/3229",
+      "license": "CC0",
+      "creator": "Clint Bellanger",
+      "downloaded": false,
+      "pack": true,
+      "platforms": [
+        "web",
+        "unity"
+      ],
+      "devices": [
+        "mobile"
+      ],
+      "mobilePriority": 2,
+      "preferredUse": [
+        "큰 스킬 버튼",
+        "액티브 스킬",
+        "특수 능력",
+        "스킬 선택창"
+      ]
+    },
+    {
+      "id": "kaykit-character-animations-1-1",
+      "name": "KayKit Character Animations 1.1",
+      "path": "",
+      "types": [
+        "animation"
+      ],
+      "tags": [
+        "애니메이션",
+        "모션",
+        "휴머노이드",
+        "걷기",
+        "달리기",
+        "점프",
+        "공격",
+        "피격",
+        "사망",
+        "도구"
+      ],
+      "source": "KayKit",
+      "sourceUrl": "https://kaylousberg.itch.io/kaykit-character-animations",
+      "license": "CC0",
+      "creator": "Kay Lousberg",
+      "downloaded": false,
+      "platforms": [
+        "unity",
+        "roblox"
+      ],
+      "verifiedAnimation": true,
+      "retargetable": true,
+      "studioMotionCandidate": true,
+      "animationEvidence": [
+        "161-humanoid-animations",
+        "fbx-gltf",
+        "retargeting-supported"
+      ],
+      "animations": [
+        "idle",
+        "walk",
+        "run",
+        "move",
+        "jump",
+        "attack",
+        "hit",
+        "death",
+        "tool",
+        "emote"
+      ]
+    },
+    {
+      "id": "kaykit-adventurers",
+      "name": "KayKit Character Pack: Adventurers",
+      "path": "",
+      "types": [
+        "character"
+      ],
+      "tags": [
+        "캐릭터",
+        "휴머노이드",
+        "모험가",
+        "전사",
+        "리그",
+        "3D"
+      ],
+      "source": "KayKit",
+      "sourceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "license": "CC0",
+      "creator": "Kay Lousberg",
+      "downloaded": false,
+      "platforms": [
+        "unity",
+        "roblox"
+      ],
+      "rigged": true,
+      "retargetable": true,
+      "verifiedAnimation": false,
+      "compatibleMotionSourceIds": [
+        "kaykit-character-animations-1-1"
+      ],
+      "studioMotionCandidate": true
+    },
+    {
+      "id": "quaternius-universal-animation-library",
+      "name": "Quaternius Universal Animation Library",
+      "path": "",
+      "types": [
+        "animation"
+      ],
+      "tags": [
+        "애니메이션",
+        "모션",
+        "휴머노이드",
+        "8방향",
+        "걷기",
+        "달리기",
+        "전투",
+        "총",
+        "리타겟"
+      ],
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalanimationlibrary.html",
+      "license": "CC0",
+      "downloaded": false,
+      "platforms": [
+        "unity"
+      ],
+      "platformResearchTargets": [
+        "roblox"
+      ],
+      "verifiedAnimation": true,
+      "retargetable": true,
+      "studioMotionCandidate": true,
+      "animationEvidence": [
+        "120-plus-animations",
+        "8-direction-locomotion",
+        "fbx-glb",
+        "retargetable-humanoid"
+      ],
+      "animations": [
+        "idle",
+        "walk",
+        "jog",
+        "run",
+        "sprint",
+        "move",
+        "combat",
+        "crawl",
+        "swim",
+        "death"
+      ]
+    },
+    {
+      "id": "quaternius-universal-animation-library-2",
+      "name": "Quaternius Universal Animation Library 2",
+      "path": "",
+      "types": [
+        "animation"
+      ],
+      "tags": [
+        "애니메이션",
+        "모션",
+        "휴머노이드",
+        "콤보",
+        "파쿠르",
+        "좀비",
+        "리타겟"
+      ],
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "license": "CC0",
+      "downloaded": false,
+      "platforms": [
+        "unity"
+      ],
+      "platformResearchTargets": [
+        "roblox"
+      ],
+      "verifiedAnimation": true,
+      "retargetable": true,
+      "studioMotionCandidate": true,
+      "animationEvidence": [
+        "130-plus-animations",
+        "combo-animations",
+        "fbx-glb",
+        "retargetable-humanoid"
+      ],
+      "animations": [
+        "idle",
+        "walk",
+        "run",
+        "move",
+        "attack",
+        "combo",
+        "parkour",
+        "zombie",
+        "death"
+      ]
+    },
+    {
+      "id": "quaternius-universal-base-characters",
+      "name": "Quaternius Universal Base Characters",
+      "path": "",
+      "types": [
+        "character"
+      ],
+      "tags": [
+        "캐릭터",
+        "휴머노이드",
+        "리그",
+        "3D",
+        "리타겟"
+      ],
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalbasecharacters.html",
+      "license": "CC0",
+      "downloaded": false,
+      "platforms": [
+        "unity"
+      ],
+      "platformResearchTargets": [
+        "roblox"
+      ],
+      "rigged": true,
+      "retargetable": true,
+      "verifiedAnimation": false,
+      "compatibleMotionSourceIds": [
+        "quaternius-universal-animation-library",
+        "quaternius-universal-animation-library-2"
+      ],
+      "studioMotionCandidate": true
+    },
+    {
+      "id": "quaternius-ultimate-animated-animals",
+      "name": "Quaternius Ultimate Animated Animal Pack",
+      "path": "",
+      "types": [
+        "enemy",
+        "animation"
+      ],
+      "tags": [
+        "동물",
+        "네발",
+        "몹",
+        "몬스터",
+        "애니메이션",
+        "걷기",
+        "공격",
+        "사망",
+        "점프"
+      ],
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "license": "CC0",
+      "downloaded": false,
+      "platforms": [
+        "unity"
+      ],
+      "platformResearchTargets": [
+        "roblox"
+      ],
+      "verifiedAnimation": true,
+      "studioMotionCandidate": true,
+      "creatureFamily": "QUADRUPED",
+      "animationEvidence": [
+        "12-animals",
+        "12-plus-animations-each",
+        "fbx-gltf"
+      ],
+      "animations": [
+        "walk",
+        "move",
+        "attack",
+        "death",
+        "jump",
+        "gallop",
+        "kick"
+      ]
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 3,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -9,7 +9,19 @@
     "verifiedOnlyMayClaimCompanyReusable": true,
     "preparedOrResearchItemsMustBeLabeled": true,
     "unityRobloxNativeVariantsSeparated": true,
-    "gameStyleLockOverridesGenericLook": true
+    "gameStyleLockOverridesGenericLook": true,
+    "mandatoryConsumerPlatforms": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "lookupBeforeNativeAssetChoice": true,
+    "existingRepositoryInventoryBeforeExternal": true,
+    "externalGapFillBeforeNewAuthoring": true,
+    "rawExternalAssetNotVerifiedCompanyAsset": true,
+    "nativeRuntimeVerificationBeforePromotion": true,
+    "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
+    "versusActionReadyUnarmedCombat": true,
+    "unarmedStyleResearchNoArtificialCap": true
   },
   "platformPacks": [
     {
@@ -37,7 +49,34 @@
     "directionalHitReactions": 4,
     "hitStrengthLevels": 3,
     "deathVariants": 3,
-    "skillOrCastVariants": 3
+    "skillOrCastVariants": 3,
+    "humanoidFoundation": [
+      "IDLE",
+      "WALK",
+      "JOG",
+      "RUN",
+      "SPRINT",
+      "START",
+      "STOP",
+      "STRAFE_LEFT",
+      "STRAFE_RIGHT",
+      "BACKWARD",
+      "TURN_45",
+      "TURN_90",
+      "TURN_180",
+      "JUMP_START",
+      "JUMP_AIR",
+      "LAND",
+      "CROUCH"
+    ],
+    "creatureFamilies": [
+      "HUMANOID",
+      "QUADRUPED",
+      "INSECT",
+      "REPTILE_OR_SERPENT",
+      "FLYING",
+      "HEAVY_GOLEM_OR_BOSS"
+    ]
   },
   "weaponPacks": [
     "UNARMED",
@@ -170,6 +209,46 @@
       "path": "/assets/logo-sprite-dragonfly.svg",
       "license": "project-original",
       "note": "비행형 실루엣 참고"
+    },
+    {
+      "id": "survival2-tree",
+      "title": "Survival2 Tree",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/tree.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 네이티브 직접 재사용 금지, 형태/재질 참고 및 권리 확인 파생 후보"
+    },
+    {
+      "id": "survival2-rock",
+      "title": "Survival2 Rock",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/rock.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 네이티브 변환 시 플랫폼별 재authoring"
+    },
+    {
+      "id": "survival2-plant",
+      "title": "Survival2 Plant",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/plant.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 식생 참고/파생 후보"
+    },
+    {
+      "id": "survival2-mushroom",
+      "title": "Survival2 Mushroom",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/mushroom.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 환경/아이템 참고 후보"
     }
   ],
   "research": [
@@ -236,6 +315,548 @@
       "platform": "UNITY_ROBLOX_SPLIT",
       "status": "RESEARCH_ACTIVE",
       "note": "HUD·인벤토리·상점·옵션·체력바·모바일 조작"
+    },
+    {
+      "id": "studio-humanoid-locomotion",
+      "title": "Studio Humanoid Locomotion",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Idle/Walk/Jog/Run/Sprint/Start/Stop/Strafe/Backward/45·90·180 Turn/Jump/Land/Crouch를 외부 모션+리타겟 클린업으로 우선 구축"
+    },
+    {
+      "id": "studio-humanoid-combat",
+      "title": "Studio Humanoid Combat",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "약/강공격·가드·회피·방향 피격·넉백·스턴·다운·기상·사망과 무기 접촉/타격 이벤트 동기화"
+    },
+    {
+      "id": "studio-quadruped-motion",
+      "title": "Studio Quadruped Motion",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "실제 네발동물 체중 이동·보행 위상·회전·공격·피격·사망 연구 후 늑대/곰/멧돼지 등 공용 기반 구축"
+    },
+    {
+      "id": "studio-creature-family-motion",
+      "title": "Studio Creature Families",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "곤충·뱀/파충·비행·골렘/거대 보스는 신체구조별 별도 모션 연구. 사람 모션 단순 재사용 금지"
+    },
+    {
+      "id": "external-gap-fill",
+      "title": "외부 에셋/모션 Gap Fill",
+      "category": "CHARACTER",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "회사/저장소에 없는 캐릭터·몹·모션·환경은 라이선스 검증 외부 소스로 먼저 보충하고 실게임 검증 후 승격"
+    },
+    {
+      "id": "unarmed-versus-core",
+      "title": "맨손 대전 액션 코어",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "잽·훅·어퍼·킥·엘보·니·가드·회피·카운터·잡기·던지기·다운/기상·공중연계까지 대전 액션용 맨손 모션 연구"
+    },
+    {
+      "id": "unarmed-martial-arts-styles",
+      "title": "무술 스타일 모션 연구",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "복싱·킥복싱·무에타이·가라테·태권도·산타·우슈/쿵푸·그래플링 등 스타일별 체중·리듬·가드·보법 차이 연구"
+    },
+    {
+      "id": "wuxia-unarmed-motion",
+      "title": "무협 맨손 모션",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "장법·지법·조법·보법·공중장법·연속회피·대시타격·런처/공중추격 등 무협 판타지용 모션 연구"
+    },
+    {
+      "id": "paired-grapple-throw-motion",
+      "title": "2인 잡기/던지기 모션",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "공격자/피격자 위치 동기화, 잡기·던지기·잡기풀기·낙법을 플랫폼별로 재authoring하고 런타임 검증"
     }
-  ]
+  ],
+  "studioMotion": {
+    "target": "STUDIO_GRADE_GAME_MOTION",
+    "priorityBootstrap": [
+      "HUMANOID_STUDIO_LOCOMOTION",
+      "HUMANOID_COMBAT_BASE",
+      "QUADRUPED_STUDIO_MOTION",
+      "CREATURE_FAMILY_MOTION",
+      "BOSS_ACTING_MOTION"
+    ],
+    "sourceOrder": [
+      "VERIFIED_COMPANY_MOTION",
+      "LICENSE_VERIFIED_REPOSITORY_MOTION",
+      "LICENSE_VERIFIED_EXTERNAL_MOCAP_OR_ANIMATION",
+      "RETARGET_AND_CLEANUP",
+      "AUTHOR_NEW_MOTION_WHEN_REQUIRED"
+    ],
+    "retargetCleanup": [
+      "FOOT_PLANT",
+      "FOOT_SLIDE_CONTROL",
+      "ROOT_PELVIS_TRAJECTORY",
+      "WEIGHT_TRANSFER",
+      "START_STOP_ACCELERATION",
+      "TURN_FOOT_PLANT",
+      "HAND_WEAPON_CONTACT",
+      "GROUND_SLOPE_CONTACT",
+      "LOOP_CONTINUITY",
+      "JOINT_AND_MESH_SANITY",
+      "IMPACT_EVENT_SYNC",
+      "SECONDARY_MOTION"
+    ],
+    "promotionQa": [
+      "NATURAL_START_STOP",
+      "NATURAL_TURNS",
+      "NO_VISIBLE_FOOT_SLIDE",
+      "NO_HARD_BLEND_POP",
+      "WEIGHT_READABILITY",
+      "DIRECTIONAL_HIT_RESPONSE",
+      "SPECIES_SPECIFIC_MOTION",
+      "MOBILE_FRAME_STABILITY",
+      "ACTUAL_RUNTIME_CAPTURE",
+      "BEFORE_AFTER_COMPARISON"
+    ]
+  },
+  "externalSources": [
+    {
+      "id": "kaykit-character-animations-1-1",
+      "name": "KayKit Character Animations 1.1",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "KayKit",
+      "creator": "Kay Lousberg",
+      "sourceUrl": "https://kaylousberg.itch.io/kaykit-character-animations",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kaylousberg.itch.io/kaykit-character-animations",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "161_HUMANOID_ANIMATIONS",
+        "FBX",
+        "GLTF",
+        "RETARGETABLE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "kaykit-adventurers",
+      "name": "KayKit Character Pack: Adventurers",
+      "category": "CHARACTER",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "KayKit",
+      "creator": "Kay Lousberg",
+      "sourceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "GAME_READY_CHARACTER",
+        "FBX",
+        "GLTF",
+        "KAYKIT_MOTION_COMPATIBLE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-universal-animation-library",
+      "name": "Quaternius Universal Animation Library",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalanimationlibrary.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/universalanimationlibrary.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "120_PLUS_ANIMATIONS",
+        "8_DIRECTION_LOCOMOTION",
+        "COMBAT",
+        "FBX",
+        "GLB",
+        "RETARGETABLE_HUMANOID"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-universal-animation-library-2",
+      "name": "Quaternius Universal Animation Library 2",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "130_PLUS_ANIMATIONS",
+        "MELEE_COMBOS",
+        "PARKOUR",
+        "ZOMBIE_LOCOMOTION",
+        "FBX",
+        "GLB",
+        "RETARGETABLE_HUMANOID"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-universal-base-characters",
+      "name": "Quaternius Universal Base Characters",
+      "category": "CHARACTER",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalbasecharacters.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/universalbasecharacters.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "HUMANOID_RIG",
+        "RETARGETABLE",
+        "FBX",
+        "GLTF",
+        "ANIMATION_FRIENDLY_TOPOLOGY"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-ultimate-animated-animals",
+      "name": "Quaternius Ultimate Animated Animal Pack",
+      "category": "CREATURE",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "12_ANIMATED_ANIMALS",
+        "12_PLUS_ANIMATIONS_EACH",
+        "FBX",
+        "GLTF",
+        "QUADRUPED_REFERENCE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-bestiary-dungeon-monsters",
+      "name": "Quaternius Bestiary - Dungeon Monsters Kit",
+      "category": "CREATURE",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/bestiarydungeonmonsterskit.html",
+      "license": "QUATERNIUS_ASSET_LICENSE_V1",
+      "licenseEvidenceUrl": "https://quaternius.com/license.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "7_GAME_READY_MONSTERS",
+        "HUMANOID_RIG",
+        "RETARGETABLE",
+        "UNIVERSAL_ANIMATION_LIBRARY_COMPATIBLE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "rawRedistributionAllowed": false,
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "adobe-mixamo",
+      "name": "Adobe Mixamo",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_RESEARCH_SOURCE",
+      "source": "Adobe",
+      "sourceUrl": "https://www.mixamo.com/",
+      "license": "ROYALTY_FREE_PERSONAL_COMMERCIAL_NONPROFIT_PROJECT_USE",
+      "licenseEvidenceUrl": "https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "BIPED_HUMANOID_AUTO_RIG",
+        "HUMANOID_ANIMATION_LIBRARY",
+        "FBX_DOWNLOAD"
+      ],
+      "acquisition": "MANUAL_ACCOUNT_REQUIRED",
+      "rawRedistributionAllowed": false,
+      "promotionRequiresRuntimeConsumer": true
+    }
+  ],
+  "unarmedCombat": {
+    "target": "VERSUS_ACTION_READY_STUDIO_GRADE_UNARMED_COMBAT",
+    "styleFamilies": [
+      "BOXING",
+      "KICKBOXING",
+      "MUAY_THAI",
+      "KARATE",
+      "TAEKWONDO",
+      "SANDA",
+      "WUSHU_KUNG_FU",
+      "WING_CHUN_REFERENCE",
+      "CAPOEIRA_REFERENCE",
+      "WRESTLING",
+      "JUDO_THROWING",
+      "JIU_JITSU_GRAPPLING",
+      "MMA_HYBRID",
+      "STREET_BRAWLER",
+      "HEAVY_BRUISER",
+      "ACROBATIC_FANTASY",
+      "WUXIA_UNARMED_FANTASY"
+    ],
+    "motionFamilies": {
+      "stanceAndGuard": [
+        "RELAXED_IDLE",
+        "FIGHT_IDLE",
+        "ORTHODOX_GUARD",
+        "SOUTHPAW_GUARD",
+        "HIGH_GUARD",
+        "LOW_GUARD",
+        "OPEN_HAND_GUARD",
+        "STANCE_SWITCH"
+      ],
+      "footwork": [
+        "STEP_FORWARD",
+        "STEP_BACK",
+        "SHUFFLE_FORWARD",
+        "SHUFFLE_BACK",
+        "PIVOT_LEFT",
+        "PIVOT_RIGHT",
+        "CIRCLE_LEFT",
+        "CIRCLE_RIGHT",
+        "SIDESTEP_LEFT",
+        "SIDESTEP_RIGHT",
+        "DASH_FORWARD",
+        "DASH_BACK",
+        "BURST_STEP",
+        "WUXIA_GLIDE_STEP"
+      ],
+      "handStrikes": [
+        "JAB",
+        "CROSS",
+        "HOOK",
+        "UPPERCUT",
+        "OVERHAND",
+        "BACKFIST",
+        "SPINNING_BACKFIST",
+        "HAMMERFIST",
+        "PALM_HEEL",
+        "DOUBLE_PALM",
+        "KNIFE_HAND",
+        "RIDGE_HAND",
+        "SPEAR_HAND",
+        "FINGER_STRIKE_FANTASY",
+        "CLAW_STRIKE_FANTASY"
+      ],
+      "closeRange": [
+        "ELBOW",
+        "SPINNING_ELBOW",
+        "KNEE",
+        "CLINCH_KNEE",
+        "SHOULDER_CHECK",
+        "BODY_CHECK"
+      ],
+      "kicks": [
+        "FRONT_KICK",
+        "PUSH_KICK",
+        "SIDE_KICK",
+        "LOW_ROUND_KICK",
+        "MID_ROUND_KICK",
+        "HIGH_ROUND_KICK",
+        "HOOK_KICK",
+        "AXE_KICK",
+        "BACK_KICK",
+        "SPINNING_BACK_KICK",
+        "CRESCENT_KICK",
+        "SPINNING_HOOK_KICK",
+        "SWEEP_KICK",
+        "JUMP_FRONT_KICK",
+        "FLYING_KNEE",
+        "JUMP_ROUND_KICK",
+        "ACROBATIC_SPIN_KICK"
+      ],
+      "defenseCounter": [
+        "HIGH_BLOCK",
+        "LOW_BLOCK",
+        "INSIDE_PARRY",
+        "OUTSIDE_PARRY",
+        "PALM_DEFLECT",
+        "SLIP_LEFT",
+        "SLIP_RIGHT",
+        "WEAVE_LEFT",
+        "WEAVE_RIGHT",
+        "SWAY_BACK",
+        "DUCK",
+        "LEG_CHECK",
+        "CATCH_KICK",
+        "COUNTER_JAB",
+        "COUNTER_CROSS",
+        "COUNTER_HOOK",
+        "PARRY_COUNTER",
+        "REVERSAL_STRIKE"
+      ],
+      "grappleThrow": [
+        "CLINCH_ENTRY",
+        "UNDERHOOK",
+        "OVERHOOK",
+        "BODY_LOCK",
+        "SINGLE_LEG_ENTRY",
+        "DOUBLE_LEG_ENTRY",
+        "TRIP",
+        "FOOT_SWEEP",
+        "HIP_THROW",
+        "SHOULDER_THROW",
+        "REAP_THROW",
+        "LEG_HOOK_THROW",
+        "GAME_SUPLEX",
+        "PUSH_THROW",
+        "THROW_BREAK",
+        "GRAB_ESCAPE"
+      ],
+      "recovery": [
+        "BREAKFALL_BACK",
+        "BREAKFALL_SIDE",
+        "FORWARD_ROLL",
+        "BACKWARD_ROLL",
+        "TECH_ROLL_LEFT",
+        "TECH_ROLL_RIGHT",
+        "GROUND_GET_UP",
+        "COMBAT_GET_UP",
+        "KIP_UP",
+        "WALL_RECOVERY"
+      ],
+      "wuxia": [
+        "WUXIA_PALM_CHAIN",
+        "WUXIA_FINGER_CHAIN",
+        "WUXIA_CLAW_CHAIN",
+        "WUXIA_SHOULDER_STRIKE",
+        "WUXIA_SWEEP_CHAIN",
+        "WUXIA_SPIN_EVADE",
+        "WUXIA_AERIAL_PALM",
+        "WUXIA_AERIAL_KICK",
+        "WUXIA_DASH_STRIKE",
+        "WUXIA_AFTERIMAGE_STEP",
+        "WUXIA_COUNTER_PALM",
+        "WUXIA_LAUNCH_STRIKE",
+        "WUXIA_AIR_CHASE",
+        "WUXIA_LANDING_POSE"
+      ],
+      "versusAction": [
+        "NEUTRAL",
+        "STARTUP",
+        "ACTIVE_CONTACT",
+        "RECOVERY",
+        "BLOCK_REACTION",
+        "HIT_REACTION",
+        "COUNTER_HIT_REACTION",
+        "GUARD_BREAK_REACTION",
+        "LAUNCH_REACTION",
+        "AIR_HIT_REACTION",
+        "WALL_HIT_REACTION",
+        "WALL_BOUNCE_MOTION",
+        "GROUND_BOUNCE_MOTION",
+        "KNOCKDOWN",
+        "WAKEUP",
+        "TECH_RECOVERY",
+        "GRAB",
+        "THROW",
+        "THROW_BREAK",
+        "PARRY",
+        "REVERSAL",
+        "COMBO_LINK",
+        "COMBO_ENDER",
+        "AERIAL_CHAIN",
+        "FINISHER",
+        "SUPER_OR_ULTIMATE_PRESENTATION"
+      ]
+    },
+    "comboRoles": [
+      "OPENER",
+      "LINKER",
+      "PRESSURE",
+      "COUNTER",
+      "LAUNCHER",
+      "AIR_FOLLOWUP",
+      "ENDER",
+      "THROW",
+      "REVERSAL",
+      "FINISHER"
+    ],
+    "quality": [
+      "FOOT_PLANT",
+      "HIP_SHOULDER_KINETIC_CHAIN",
+      "WEIGHT_TRANSFER",
+      "CONTACT_ALIGNMENT",
+      "GUARD_RETURN",
+      "HIT_EVENT_SYNC",
+      "TWO_ACTOR_THROW_ALIGNMENT",
+      "NO_FOOT_SLIDE",
+      "NO_HARD_POSE_POP",
+      "NATURAL_COMBO_TRANSITION",
+      "DIRECTIONAL_HIT_BLOCK_REACTION",
+      "MOBILE_READABILITY",
+      "RUNTIME_CAPTURE"
+    ],
+    "platforms": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "rawExternalMotionRequiresRetargetCleanup": true,
+    "nativeRuntimeVerificationRequired": true
+  }
 }

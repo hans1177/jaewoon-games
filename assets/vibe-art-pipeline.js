@@ -72,6 +72,24 @@ export const VIBE_CINEMATIC_DIRECTION_AXES=Object.freeze([
   'CAMERA_LIGHTING_AUDIO_VISUAL_SYNCHRONIZATION'
 ]);
 export const VIBE_MOTION_LAYERS=Object.freeze(['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
+export const VIBE_STUDIO_HUMANOID_LOCOMOTION=Object.freeze(['IDLE','WALK','JOG','RUN','SPRINT','START','STOP','STRAFE_LEFT','STRAFE_RIGHT','BACKWARD','TURN_45','TURN_90','TURN_180','JUMP_START','JUMP_AIR','LAND','CROUCH']);
+export const VIBE_STUDIO_HUMANOID_COMBAT=Object.freeze(['LIGHT_ATTACK','HEAVY_ATTACK','GUARD','DODGE','DIRECTIONAL_HIT','KNOCKBACK','STUN','KNOCKDOWN','GET_UP','DEATH']);
+export const VIBE_UNARMED_STYLE_FAMILIES=Object.freeze(['BOXING','KICKBOXING','MUAY_THAI','KARATE','TAEKWONDO','SANDA','WUSHU_KUNG_FU','WING_CHUN_REFERENCE','CAPOEIRA_REFERENCE','WRESTLING','JUDO_THROWING','JIU_JITSU_GRAPPLING','MMA_HYBRID','STREET_BRAWLER','HEAVY_BRUISER','ACROBATIC_FANTASY','WUXIA_UNARMED_FANTASY']);
+export const VIBE_UNARMED_STANCE_GUARD=Object.freeze(['RELAXED_IDLE','FIGHT_IDLE','ORTHODOX_GUARD','SOUTHPAW_GUARD','HIGH_GUARD','LOW_GUARD','SIDE_ON_GUARD','OPEN_HAND_GUARD','CROUCH_GUARD','STANCE_SWITCH','READY_TAUNT']);
+export const VIBE_UNARMED_FOOTWORK=Object.freeze(['STEP_FORWARD','STEP_BACK','SHUFFLE_FORWARD','SHUFFLE_BACK','PIVOT_LEFT','PIVOT_RIGHT','CIRCLE_LEFT','CIRCLE_RIGHT','SIDESTEP_LEFT','SIDESTEP_RIGHT','DASH_FORWARD','DASH_BACK','BURST_STEP','CROSS_STEP','STANCE_SWITCH_STEP','WUXIA_GLIDE_STEP','WUXIA_LIGHTNESS_DASH']);
+export const VIBE_UNARMED_STRIKES=Object.freeze(['JAB','CROSS','LEAD_HOOK','REAR_HOOK','LEAD_UPPERCUT','REAR_UPPERCUT','OVERHAND','BACKFIST','SPINNING_BACKFIST','HAMMERFIST','PALM_HEEL','DOUBLE_PALM','KNIFE_HAND','RIDGE_HAND','SPEAR_HAND','FINGER_STRIKE_FANTASY','CLAW_STRIKE_FANTASY','LEAD_ELBOW','REAR_ELBOW','HORIZONTAL_ELBOW','UPWARD_ELBOW','SPINNING_ELBOW','LEAD_KNEE','REAR_KNEE','CLINCH_KNEE','SHOULDER_CHECK','BODY_CHECK']);
+export const VIBE_UNARMED_KICKS=Object.freeze(['FRONT_KICK','PUSH_KICK','SIDE_KICK','LOW_ROUND_KICK','MID_ROUND_KICK','HIGH_ROUND_KICK','HOOK_KICK','AXE_KICK','BACK_KICK','SPINNING_BACK_KICK','CRESCENT_KICK','SPINNING_HOOK_KICK','SWEEP_KICK','JUMP_FRONT_KICK','FLYING_KNEE','JUMP_ROUND_KICK','ACROBATIC_SPIN_KICK']);
+export const VIBE_UNARMED_DEFENSE_COUNTER=Object.freeze(['HIGH_BLOCK','LOW_BLOCK','BODY_BLOCK','INSIDE_PARRY','OUTSIDE_PARRY','PALM_DEFLECT','SLIP_LEFT','SLIP_RIGHT','WEAVE_LEFT','WEAVE_RIGHT','SWAY_BACK','DUCK','LEG_CHECK','CATCH_KICK','COUNTER_JAB','COUNTER_CROSS','COUNTER_HOOK','PARRY_COUNTER','REVERSAL_STRIKE']);
+export const VIBE_UNARMED_GRAPPLE_THROW=Object.freeze(['CLINCH_ENTRY','DOUBLE_COLLAR_TIE','UNDERHOOK','OVERHOOK','BODY_LOCK','GRAB_FRONT','GRAB_SIDE','SINGLE_LEG_ENTRY','DOUBLE_LEG_ENTRY','TRIP','FOOT_SWEEP','HIP_THROW','SHOULDER_THROW','REAP_THROW','LEG_HOOK_THROW','SUPLEX_STYLE_GAME_THROW','PUSH_THROW','THROW_BREAK','GRAB_ESCAPE']);
+export const VIBE_UNARMED_RECOVERY=Object.freeze(['BREAKFALL_BACK','BREAKFALL_SIDE','FORWARD_ROLL','BACKWARD_ROLL','TECH_ROLL_LEFT','TECH_ROLL_RIGHT','GROUND_GET_UP','COMBAT_GET_UP','KIP_UP','WALL_RECOVERY','KNOCKDOWN_IDLE','DOWNED_HIT_REACTION']);
+export const VIBE_UNARMED_WUXIA=Object.freeze(['WUXIA_PALM_CHAIN','WUXIA_FINGER_CHAIN','WUXIA_CLAW_CHAIN','WUXIA_SHOULDER_STRIKE','WUXIA_SWEEP_CHAIN','WUXIA_SPIN_EVADE','WUXIA_AERIAL_PALM','WUXIA_AERIAL_KICK','WUXIA_DASH_STRIKE','WUXIA_AFTERIMAGE_STEP','WUXIA_COUNTER_PALM','WUXIA_LAUNCH_STRIKE','WUXIA_AIR_CHASE','WUXIA_LANDING_POSE','WUXIA_CHARGE_OR_FOCUS_POSE']);
+export const VIBE_UNARMED_VERSUS_ACTION=Object.freeze(['NEUTRAL','STARTUP','ACTIVE_CONTACT','RECOVERY','BLOCK_REACTION','HIT_REACTION','COUNTER_HIT_REACTION','GUARD_BREAK_REACTION','LAUNCH_REACTION','AIR_HIT_REACTION','WALL_HIT_REACTION','WALL_BOUNCE_MOTION','GROUND_BOUNCE_MOTION','KNOCKDOWN','WAKEUP','TECH_RECOVERY','GRAB','THROW','THROW_BREAK','PARRY','REVERSAL','COMBO_LINK','COMBO_ENDER','AERIAL_CHAIN','FINISHER','SUPER_OR_ULTIMATE_PRESENTATION']);
+export const VIBE_UNARMED_COMBO_ROLES=Object.freeze(['OPENER','LINKER','PRESSURE','COUNTER','LAUNCHER','AIR_FOLLOWUP','ENDER','THROW','REVERSAL','FINISHER']);
+export const VIBE_UNARMED_MOTION_METADATA=Object.freeze(['STANCE','LEAD_SIDE','STARTUP_CLASS','CONTACT_PHASE','RECOVERY_CLASS','TRAVEL_VECTOR','HEIGHT_CLASS','DIRECTION','COMBO_ROLE','COUNTER_ROLE','LAUNCH_ROLE','AIR_ROLE','KNOCKDOWN_ROLE','CONTACT_LIMB','ROOT_MOTION_MODE','MIRROR_SAFE','LOOPABLE']);
+
+export const VIBE_STUDIO_CREATURE_FAMILIES=Object.freeze(['HUMANOID','QUADRUPED','INSECT','REPTILE_OR_SERPENT','FLYING','HEAVY_GOLEM_OR_BOSS']);
+export const VIBE_STUDIO_MOTION_SOURCE_ORDER=Object.freeze(['VERIFIED_COMPANY_MOTION','LICENSE_VERIFIED_REPOSITORY_MOTION','LICENSE_VERIFIED_EXTERNAL_MOCAP_OR_ANIMATION','RETARGET_AND_CLEANUP','AUTHOR_NEW_MOTION_WHEN_REQUIRED']);
+export const VIBE_STUDIO_RETARGET_CLEANUP=Object.freeze(['FOOT_PLANT_AND_FOOT_SLIDE_CONTROL','ROOT_AND_PELVIS_TRAJECTORY_CLEANUP','WEIGHT_TRANSFER','ARM_LEG_COUNTERSWING_WHEN_HUMANOID','START_STOP_ACCELERATION_DECELERATION','TURN_FOOT_PLANT_AND_BODY_FOLLOW','HAND_WEAPON_CONTACT','GROUND_AND_SLOPE_CONTACT_WHEN_SUPPORTED','LOOP_CONTINUITY','JOINT_LIMIT_AND_MESH_INTERSECTION_SANITY','IMPACT_EVENT_SYNC','UPPER_LOWER_BODY_LAYERING_WHEN_SUPPORTED','SECONDARY_MOTION_AND_PROCEDURAL_RESPONSE']);
 export const VIBE_OWNER_CHANGE_REQUEST_SEQUENCE=Object.freeze([
   'READ_CURRENT_IMPLEMENTATION_AND_CURRENT_CENTRAL_POLICY',
   'RESOLVE_LATEST_EXPLICIT_OWNER_INTENT',
@@ -285,7 +303,8 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (needsArt) steps.push('원본 에셋 라이선스와 파생저작물 허용 여부를 변형 전에 검사');
   if (needsArt) steps.push('허용 에셋은 원본을 보존한 채 V3 변형 후보를 최소 3개 독립 생성하고 각각 별도 derived 경로에 저장');
   if (needsArt) steps.push('변형 후보를 스타일 일관성·실루엣 가독성·시각 품질·애니메이션 준비도·모바일 성능으로 실제 화면 비교 후 1개만 채택');
-  if (needsArt) steps.push('허용 에셋 재사용·재가공·신규 제작 중 가장 일관된 방법을 개발 에이전트가 선택');
+  if (needsArt) steps.push('모든 Unity/Roblox 네이티브 게임은 회사 라이브러리를 먼저 조회하고, 같은 게임/회사 검증 자산 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 → 리타겟/클린업 → 신규 제작 순서로 부족한 부분을 채운다');
+  if (needsArt) steps.push('외부 에셋·모션은 다운로드만으로 회사 자산이 되지 않는다. 출처·라이선스·변형 이력을 보존하고 플랫폼 네이티브 적용과 실제 런타임·모바일 QA를 통과한 뒤에만 승격한다');
   if (artLevel) steps.push(`${artLevel >= 3 ? '고품질' : artLevel === 2 ? '상세' : '기본'} 캐릭터·적·보스·배경 에셋 구성`);
   if (artLevel >= 2) steps.push('허용 에셋을 분해하고 크롭/스케일/회전/색/명암/재질/실루엣을 재가공');
   if (artLevel >= 2) steps.push('분리 파츠를 재조합하고 지역종·변이종·보스 파생 디자인을 구성');
@@ -295,6 +314,13 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (animationLevel) steps.push(`분리 파츠 기반 ${states.join('/')} 애니메이션 구성`);
   if (animationLevel) steps.push('공격 시작/명중/종료 타이밍을 실제 판정과 동기화');
   if (animationLevel) steps.push('PRIMARY_MOTION + SECONDARY_MOTION + PROCEDURAL_RESPONSE를 겹쳐 가감속·회전보간·체중이동·상태 블렌딩·시선/피격 방향 반응을 캐릭터와 종별로 차별화');
+  if (animationLevel || needsArt) steps.push('사람형은 Idle/Walk/Jog/Run/Sprint/Start/Stop/Strafe/Backward/45·90·180도 Turn/Jump/Land/Crouch를 스튜디오 기본 이동 세트로 구축하고 약·강공격/가드/회피/방향 피격/넉백/스턴/다운/기상/사망을 전투 기본 세트로 연결');
+  if (animationLevel || needsArt) steps.push('맨손 전투는 복싱·킥복싱·무에타이·가라테·태권도·산타·우슈/쿵푸·그래플링·MMA·무협 판타지까지 스타일군을 계속 연구하고, 가드/보법/주먹/팔꿈치/무릎/킥/방어/카운터/잡기/던지기/낙법/다운/기상/공중연계/피니셔 모션을 대전 액션용으로 확장한다');
+  if (animationLevel || needsArt) steps.push('맨손 대전 모션은 STARTUP/CONTACT/RECOVERY/COUNTER/LAUNCH/AIR/WALL/KNOCKDOWN/TECH/THROW/PARRY/REVERSAL/FINISHER 역할 메타데이터를 제공하되 데미지·히트박스·쿨다운·콤보 규칙 자체는 게임 로직이 소유한다');
+  if (animationLevel || needsArt) steps.push('2인 잡기/던지기는 공격자와 피격자 리그 위치·접촉·낙법을 쌍으로 맞추고 Unity/Roblox 각각에서 재리타겟·런타임 검증한다');
+  if (animationLevel || needsArt) steps.push('무협 맨손은 장법·지법·조법·보법·회전회피·공중장법·대시타격·런처·공중추격을 판타지 표현층으로 연구하되 실제 게임 판정 의미는 바꾸지 않는다');
+  if (animationLevel || needsArt) steps.push('모션 원본이 외부 모캡/애니메이션이면 발접지·발미끄러짐·루트/골반 궤적·체중 이동·회전 발디딤·손/무기 접촉·루프·관절/메시·타격 이벤트를 클린업한 뒤 사용');
+  if (animationLevel || needsArt) steps.push('네발·곤충·뱀/파충·비행·골렘/거대 보스는 실제 신체구조와 종별 움직임을 연구해 별도 이동/회전/공격/피격/사망 언어를 만들며 비휴머노이드에 사람 모션을 단순 재사용하지 않는다');
   if (vfxLevel) steps.push(`${vfxLevel >= 3 ? '고급' : vfxLevel === 2 ? '상세' : '기본'} 히트·폭발·스킬·사망 VFX 구성`);
   if (vfxLevel) steps.push('게임 고유 VFX 언어를 유지하고 ambient/normal/heavy/critical-signature/boss-ultimate 강도 계층을 분리');
   if (audioLevel) steps.push('BGM과 전투/UI 효과음의 이벤트 연결');
@@ -307,12 +333,12 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   const web = target === 'web' || /웹|브라우저|html|javascript/i.test(prompt);
   const implementation = godot ? ['Node3D/CharacterBody3D','MeshInstance3D 또는 적절한 2.5D Billboard/Quad','AnimationTree/AnimationPlayer','GPUParticles3D','AudioStreamPlayer3D'] : web ? ['WebGL/Three/Babylon 또는 Canvas 2.5D 등각·원근 렌더러','깊이 정렬 캐릭터/월드 레이어','전경·중경·후경 parallax','접지 그림자·높이·깊이 대응 VFX','Web Audio API','2D UI 오버레이'] : ['플랫폼 네이티브 3D/2.5D 월드 렌더러','리그/애니메이터','깊이 대응 VFX·조명·카메라','2D UI 오버레이','오디오 이벤트'];
   return Object.freeze({
-    version: 7,
+    version: 9,
     generation:'V3',
     target: godot ? 'godot' : web ? 'web' : target,
     quality: Object.freeze({ art: artLevel, animation: animationLevel, vfx: vfxLevel, audio: audioLevel }),
     style: style || '프로젝트 기존 스타일 분석 후 일관된 스타일로 확정',
-    assetAcquisition: Object.freeze({ order: VIBE_ASSET_ACQUISITION_ORDER, preferVerifiedCompanyAssets:true, rightsVerifiedRepositoryOrExternalBeforeUse:true, reconstructWhenRightsAllow:true, createWhenNoVerifiedCandidate:true, primitiveFallbackPrototypeOnly:true, fallbackCreatesVisualDebt:true }),
+    assetAcquisition: Object.freeze({ order: VIBE_ASSET_ACQUISITION_ORDER, preferVerifiedCompanyAssets:true, companyLibraryLookupRequiredForNative:true, existingRepositoryBeforeExternal:true, externalGapFillBeforeNewAuthoring:true, rightsVerifiedRepositoryOrExternalBeforeUse:true, externalMotionIsInputMaterialUntilRuntimeVerified:true, reconstructWhenRightsAllow:true, createWhenNoVerifiedCandidate:true, primitiveFallbackPrototypeOnly:true, fallbackCreatesVisualDebt:true }),
     minimumSpatialPresentation: Object.freeze({ required:needsArt, minimumFinalGameplayDimension:'2.5D', preferred:'3D', flat2DFinalGameplayForbidden:true, ui2DOverlayAllowed:true, acceptedTechniques:Object.freeze(['ISOMETRIC_OR_OBLIQUE_PROJECTION','PERSPECTIVE_OR_ORTHOGRAPHIC_DEPTH_CAMERA','FOREGROUND_MIDGROUND_BACKGROUND_PARALLAX','DEPTH_SORTED_WORLD_ENTITIES','HEIGHT_OR_VERTICALITY','DIRECTIONAL_LIGHT_AND_CONTACT_SHADOWS','DEPTH_AWARE_VFX','CAMERA_PAN_ZOOM_ORBIT_WITH_WORLD_DEPTH']), actualRuntimeEvidenceRequired:true, markerOnlyPassForbidden:true, existing2DAction:'SPATIAL_PRESENTATION_REBUILD_REQUIRED' }),
     runtimeVisualAcceptance: Object.freeze({ required:needsArt, goldenSceneRoles:VIBE_GOLDEN_SCENE_ROLES, highEndTargetFrameRoles:VIBE_HIGH_END_TARGET_FRAME_ROLES, actualRuntimeCaptureRequired:needsArt, compareAgainstLastPassingPresentation:true, beforeAfterVisualRegressionRequired:true, markerOnlyPassForbidden:true, primaryActorPrimitivePlaceholderForbiddenAfterPrototype:true, environmentCoverageRequired:true, platformPerformanceEvidenceRequired:true, graphicsCheckpointOnly:true, graphicsPassIsTerminal:false, releaseAuthority:false }),
     highEndVisual: Object.freeze({
@@ -337,14 +363,54 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
       presentationCompletionIsTerminal:false
     }),
     art: Object.freeze({ required: needsArt, layers: Object.freeze(layers), replaceableAssets: true, silhouetteRequired: true, reconstructionSupported: true, transforms: ASSET_TRANSFORMS, derivativeGateRequired: true, artBibleNormalization: true, variantGeneration: true, selfTransformExistingAssets:true, nonDestructiveVariants:true, variantTournament:true, defaultVariantCount:3, originalOverwriteForbidden:true }),
-    animation: Object.freeze({ required: animationLevel > 0 || needsArt, states: Object.freeze(states), partSeparated: animationLevel >= 2, motionSyncRequired: true, motionLayers:VIBE_MOTION_LAYERS, characterAndCreatureActing:true, accelerationDeceleration:true, turnInterpolation:true, stateBlend:true, weightTransfer:true, directionalHitResponse:true, nonMechanicalIdleVariation:true }),
+    animation: Object.freeze({
+      required: animationLevel > 0 || needsArt,
+      target:'STUDIO_GRADE_GAME_MOTION',
+      states:Object.freeze(states),
+      partSeparated:animationLevel >= 2,
+      motionSyncRequired:true,
+      motionLayers:VIBE_MOTION_LAYERS,
+      motionSourceOrder:VIBE_STUDIO_MOTION_SOURCE_ORDER,
+      humanoidLocomotion:VIBE_STUDIO_HUMANOID_LOCOMOTION,
+      humanoidCombat:VIBE_STUDIO_HUMANOID_COMBAT,
+      unarmedCombat:Object.freeze({
+        target:'VERSUS_ACTION_READY_STUDIO_GRADE_UNARMED_COMBAT',
+        noArtificialStyleOrMotionCap:true,
+        styleFamilies:VIBE_UNARMED_STYLE_FAMILIES,
+        stanceAndGuard:VIBE_UNARMED_STANCE_GUARD,
+        footwork:VIBE_UNARMED_FOOTWORK,
+        strikes:VIBE_UNARMED_STRIKES,
+        kicks:VIBE_UNARMED_KICKS,
+        defenseAndCounter:VIBE_UNARMED_DEFENSE_COUNTER,
+        grappleAndThrow:VIBE_UNARMED_GRAPPLE_THROW,
+        recovery:VIBE_UNARMED_RECOVERY,
+        wuxiaFantasy:VIBE_UNARMED_WUXIA,
+        versusActionSlots:VIBE_UNARMED_VERSUS_ACTION,
+        comboRoles:VIBE_UNARMED_COMBO_ROLES,
+        motionMetadata:VIBE_UNARMED_MOTION_METADATA,
+        pairedActorAlignmentRequiredForThrows:true,
+        animationTimingMarkersMayNotOwnGameplayRules:true
+      }),
+      creatureFamilies:VIBE_STUDIO_CREATURE_FAMILIES,
+      retargetCleanup:VIBE_STUDIO_RETARGET_CLEANUP,
+      characterAndCreatureActing:true,
+      speciesReferenceStudyRequired:true,
+      blindHumanoidMotionReuseForNonHumanoidForbidden:true,
+      platformNativeRetargetAndRuntimeEvidenceRequired:true,
+      accelerationDeceleration:true,
+      turnInterpolation:true,
+      stateBlend:true,
+      weightTransfer:true,
+      directionalHitResponse:true,
+      nonMechanicalIdleVariation:true
+    }),
     vfx: Object.freeze({ required: vfxLevel > 0 || animationLevel >= 2, hit: true, skill: true, death: true, screenFeedback: true, gameSpecificLanguage:true, intensityHierarchy:Object.freeze(['AMBIENT','NORMAL','HEAVY','CRITICAL_OR_SIGNATURE','BOSS_OR_ULTIMATE']), gameplayReadabilityFirst:true, mobileDensityScaling:true }),
     audio: Object.freeze({ required: audioLevel > 0, bgm: audioLevel >= 2, sfx: true, eventDriven: true, mobileSafe: true, authoringOwner:'audio', conceptFit:true, stateAdaptive:true, states:Object.freeze(['EXPLORATION','DISCOVERY_OR_TENSION','COMBAT','DANGER','BOSS','VICTORY','REST_OR_HUB','SPECIAL_EVENT']) }),
-    agentRole: Object.freeze({ mode:'active-art-direction-v3', inspectWithoutPrompting:true, identifyMissingAssets:true, chooseReuseReconstructOrCreate:true, preferVerifiedCompanyAssetLibrary:true, followAssetAcquisitionOrder:true, createVisualDebtForFallback:true, requireGoldenSceneRuntimeEvidence:true, selfTransformExistingAssets:true, generateIndependentVariants:true, compareVariantsInActualPresentation:true, keepOriginalImmutable:true, prepareAnimationParts:true, connectAnimationAndVfx:true, compareActualPresentation:true, iteratePresentationDefects:true, resolveLatestOwnerIntentBeforeMutation:true, affectedScopeOnly:true, replaceConflictingSameScopeBehavior:true, preserveUnaffectedBehavior:true, gameplayAuthority:false, saveAuthority:false }),
+    agentRole: Object.freeze({ mode:'active-art-direction-v3', inspectWithoutPrompting:true, identifyMissingAssets:true, chooseReuseReconstructOrCreate:true, preferVerifiedCompanyAssetLibrary:true, requireCompanyLibraryLookupForNative:true, fillLibraryGapsFromLicenseVerifiedExternalSources:true, externalGapFillBeforeNewAuthoring:true, followAssetAcquisitionOrder:true, createVisualDebtForFallback:true, requireGoldenSceneRuntimeEvidence:true, selfTransformExistingAssets:true, generateIndependentVariants:true, compareVariantsInActualPresentation:true, keepOriginalImmutable:true, prepareAnimationParts:true, studioMotionRetargetCleanup:true, unarmedVersusActionResearch:true, unarmedMartialArtsStyleResearch:true, wuxiaUnarmedMotionResearch:true, pairedGrappleThrowResearch:true, speciesMotionResearch:true, connectAnimationAndVfx:true, compareActualPresentation:true, iteratePresentationDefects:true, resolveLatestOwnerIntentBeforeMutation:true, affectedScopeOnly:true, replaceConflictingSameScopeBehavior:true, preserveUnaffectedBehavior:true, gameplayAuthority:false, saveAuthority:false }),
     implementation: Object.freeze(implementation),
     steps: Object.freeze(unique(steps)),
-    qa: Object.freeze(['최종 게임플레이 최소 2.5D 공간 표현/실제 깊이 단서','Art Bible/Style Lock/Visual Target Frame 바인딩','Hero Quality 대상 완성도','안티-kitbash 스타일 통일','전경/중경/배경 환경 구성','랜드마크/set dressing/환경 스토리텔링','에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','Golden Scene 5종 런타임 캡처','주요 캐릭터/몹 primitive placeholder 제거','Visual Debt 해소','성능/메모리']),
-    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true, assetAcquisitionOrderEnforced:true, primitiveFallbackPrototypeOnly:true, visualDebtForFallbackRequired:true, goldenSceneRuntimeEvidenceRequired:true, markerOnlyPresentationPassForbidden:true, minimumFinalGameplayDimension:'2.5D', flat2DFinalGameplayForbidden:true, ui2DOverlayAllowed:true, highEndVisualProduction:true, purposefulAssetDefault:true, environmentAndBackgroundFirstClass:true, antiKitbashGateRequired:true, beforeAfterVisualRegressionRequired:true, platformSpecificReauthoringExpected:true, continuousPresentationEvolution:true, graphicsPassIsCheckpointNotTerminal:true, highEndPresentationCompletionIsReleaseGate:false, ownerChangeRequestStabilityRequired:true, wrapperOrShadowPresentationAccumulationForbidden:true }),
+    qa: Object.freeze(['최종 게임플레이 최소 2.5D 공간 표현/실제 깊이 단서','회사 라이브러리 우선 조회/기존 저장소→외부 검증→신규 제작 순서','사람형 Studio Locomotion 기본 세트','맨손 대전 액션: 가드/보법/타격/킥/카운터/잡기/던지기/낙법/기상/공중연계','무협 맨손 장법/지법/조법/보법/공중연계','2인 잡기/던지기 리그 정렬','종별 몹 모션 연구','발접지/발미끄러짐/루트·골반/체중이동','출발/정지/회전 발디딤','손/무기 접촉과 타격 이벤트 동기화','비휴머노이드 사람 모션 단순 재사용 금지','Art Bible/Style Lock/Visual Target Frame 바인딩','Hero Quality 대상 완성도','안티-kitbash 스타일 통일','전경/중경/배경 환경 구성','랜드마크/set dressing/환경 스토리텔링','에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','Golden Scene 5종 런타임 캡처','주요 캐릭터/몹 primitive placeholder 제거','Visual Debt 해소','성능/메모리']),
+    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, companyLibraryRequiredForUnityRoblox:true, companyLibraryLookupBeforeAssetChoice:true, existingRepositoryBeforeExternalGapFill:true, externalGapFillBeforeNewAuthoring:true, externalMotionRequiresRetargetCleanup:true, studioGradeMotionRequired:true, unarmedVersusActionMotionRequired:true, unarmedStyleResearchNoArtificialCap:true, wuxiaUnarmedMotionResearch:true, animationTimingMarkersCannotOwnGameplayRules:true, speciesMotionStudyRequired:true, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true, assetAcquisitionOrderEnforced:true, primitiveFallbackPrototypeOnly:true, visualDebtForFallbackRequired:true, goldenSceneRuntimeEvidenceRequired:true, markerOnlyPresentationPassForbidden:true, minimumFinalGameplayDimension:'2.5D', flat2DFinalGameplayForbidden:true, ui2DOverlayAllowed:true, highEndVisualProduction:true, purposefulAssetDefault:true, environmentAndBackgroundFirstClass:true, antiKitbashGateRequired:true, beforeAfterVisualRegressionRequired:true, platformSpecificReauthoringExpected:true, continuousPresentationEvolution:true, graphicsPassIsCheckpointNotTerminal:true, highEndPresentationCompletionIsReleaseGate:false, ownerChangeRequestStabilityRequired:true, wrapperOrShadowPresentationAccumulationForbidden:true }),
   });
 }
 

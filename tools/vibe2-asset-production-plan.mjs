@@ -14,6 +14,7 @@ const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
 const readJson=(file,fallback={})=>fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
 const highEndVisualContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.highEndVisualProductionContract||{};
 const companyGraphicsLibraryContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.companyGraphicsLibrary24h||{};
+const companyAssetLibraryRegistry=repoRoot=>readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
 
 const WEB_DIRECT_AUTHORING=freeze([
   'svg-final-art',
@@ -47,22 +48,70 @@ const ROBLOX_DIRECT_AUTHORING=freeze([
   'luau-ui-presentation'
 ]);
 
+const COMPANY_CATEGORY_TYPES=freeze({
+  CHARACTER:freeze(['character']),
+  CREATURE:freeze(['enemy','boss']),
+  MOTION:freeze(['animation']),
+  ENVIRONMENT:freeze(['background','prop']),
+  VFX:freeze(['effect']),
+  UI:freeze(['ui']),
+  WEAPON:freeze(['item'])
+});
+
+function verifiedCompanyManifestAssets(registry={}){
+  return (Array.isArray(registry?.assets)?registry.assets:[])
+    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()))
+    .map(asset=>({
+      ...asset,
+      id:clean(asset.id),
+      path:clean(asset.path).replace(/^\//,''),
+      types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category).toUpperCase()]||[]),
+      tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
+      platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
+      downloaded:true,
+      companyVerified:true,
+      source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
+    }))
+    .filter(asset=>asset.id);
+}
+
+function mergeManifestWithCompanyLibrary(manifest={},registry={}){
+  const rows=[...(Array.isArray(manifest?.assets)?manifest.assets:[])];
+  const byId=new Map(rows.map(asset=>[clean(asset?.id),asset]));
+  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
+  return {...manifest,assets:[...byId.values()]};
+}
+
+function sourceTierFor(asset={}){
+  if(asset?.companyVerified===true)return 'VERIFIED_COMPANY_ASSET';
+  const assetPath=clean(asset.path);
+  const sourceUrl=clean(asset.sourceUrl);
+  if(asset?.downloaded!==false&&!sourceUrl)return 'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET';
+  if(assetPath&&asset?.downloaded!==false)return 'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET';
+  return 'LICENSE_VERIFIED_EXTERNAL_ASSET';
+}
+
 function assetTargetCompatible(asset={},target=''){
   const resolvedTarget=clean(target).toLowerCase();
   const assetPath=clean(asset.path).replaceAll('\\\\','/');
   const platforms=(Array.isArray(asset.platforms)?asset.platforms:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
+  const researchTargets=(Array.isArray(asset.platformResearchTargets)?asset.platformResearchTargets:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   if(resolvedTarget==='web'){
     if(assetPath.startsWith('unity-games/')||assetPath.startsWith('roblox-games/'))return false;
     return !platforms.length||platforms.includes('web');
   }
   if(resolvedTarget==='unity'){
     if(assetPath.startsWith('web-games/')||assetPath.startsWith('roblox-games/'))return false;
-    if(platforms.length)return platforms.includes('unity');
+    if(platforms.length&&platforms.includes('unity'))return true;
+    if(!assetPath&&researchTargets.includes('unity'))return true;
+    if(platforms.length)return false;
     return !assetPath||assetPath.startsWith('unity-games/');
   }
   if(resolvedTarget==='roblox'){
     if(assetPath.startsWith('web-games/')||assetPath.startsWith('unity-games/'))return false;
-    if(platforms.length)return platforms.includes('roblox');
+    if(platforms.length&&platforms.includes('roblox'))return true;
+    if(!assetPath&&researchTargets.includes('roblox'))return true;
+    if(platforms.length)return false;
     return !assetPath||assetPath.startsWith('roblox-games/');
   }
   return false;
@@ -73,16 +122,26 @@ function matchedForType(selector={},type='',manifest={},target=''){
   return freezeList((selector.matched||[])
     .filter(row=>clean(row.type)===clean(type))
     .filter(row=>assetTargetCompatible(byId.get(clean(row.id))||row,target))
-    .map(row=>freeze({
-      id:clean(row.id),
-      path:clean(row.path)||null,
-      license:clean(row.license)||null,
-      source:clean(row.source)||null,
-      downloaded:row.downloaded!==false,
-      animated:row.animated===true,
-      motionMode:clean(row.motionMode)||null,
-      targetCompatible:true
-    })));
+    .map(row=>{
+      const asset=byId.get(clean(row.id))||row;
+      return freeze({
+        id:clean(row.id),
+        path:clean(row.path)||null,
+        license:clean(row.license)||null,
+        source:clean(row.source)||null,
+        sourceUrl:clean(asset.sourceUrl)||null,
+        downloaded:asset.downloaded!==false,
+        animated:row.animated===true,
+        motionMode:clean(row.motionMode)||null,
+        sourceTier:sourceTierFor(asset),
+        companyVerified:asset.companyVerified===true,
+        retargetable:asset.retargetable===true,
+        studioMotionCandidate:asset.studioMotionCandidate===true,
+        creatureFamily:clean(asset.creatureFamily)||null,
+        compatibleMotionSourceIds:freezeList(asset.compatibleMotionSourceIds||[]),
+        targetCompatible:true
+      });
+    }));
 }
 
 function directAuthoringFor(target='',type=''){
@@ -107,10 +166,16 @@ function directAuthoringFor(target='',type=''){
 
 function decisionFor(selector={},target='',binding={},manifest={}){
   const type=clean(binding.type);
-  const reuseCandidates=matchedForType(selector,type,manifest,target);
+  const matched=matchedForType(selector,type,manifest,target);
+  const companyCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='VERIFIED_COMPANY_ASSET'));
+  const repositoryCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'));
+  const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
+  const reuseCandidates=freezeList([...companyCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type);
   const decisionOrder=unique([
-    reuseCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
+    companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
+    repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
+    externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
     directAuthoring.length?'VIBE_DIRECT_AUTHOR':'',
     'AUTHORING_GENERATOR_REQUEST'
   ]);
@@ -118,13 +183,16 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     type,
     required:binding.required!==false,
     targetStates:freezeList(binding.targetStates||[]),
+    companyCandidates,
+    repositoryCandidates,
+    externalCandidates,
     reuseCandidates,
     directAuthoring,
     decisionOrder:freezeList(decisionOrder),
     generatorFallback:freeze({
       route:'AUTHORING_GENERATOR_REQUEST',
       requestedKinds:BINARY_AUTHORING_KINDS,
-      onlyWhenReuseAndDirectAuthoringCannotMeetQuality:true,
+      onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality:true,
       directBinaryTextEditForbidden:true,
       paidToolAutoInstallForbidden:true
     })
@@ -139,7 +207,9 @@ export function buildVibeAssetProductionPlan({
   presetCatalog=null
 }={}){
   const resolvedTarget=clean(target||task.target).toLowerCase()||'web';
-  const manifestInput=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
+  const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
+  const companyRegistry=companyAssetLibraryRegistry(repoRoot);
+  const manifestInput=mergeManifestWithCompanyLibrary(manifestBase,companyRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const selector=planAssetApplication({
@@ -155,6 +225,9 @@ export function buildVibeAssetProductionPlan({
   const companyLibraryActive=companyLibrary?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const directCount=decisions.filter(row=>row.directAuthoring.length>0).length;
   const reuseCount=decisions.filter(row=>row.reuseCandidates.length>0).length;
+  const companyCount=decisions.filter(row=>row.companyCandidates.length>0).length;
+  const repositoryCount=decisions.filter(row=>row.repositoryCandidates.length>0).length;
+  const externalCount=decisions.filter(row=>row.externalCandidates.length>0).length;
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
@@ -184,7 +257,32 @@ export function buildVibeAssetProductionPlan({
       reusableLibraries:freezeList(companyLibrary?.reusableLibraries||[]),
       preparedArtifactMayNotClaimProductionPass:companyLibrary?.promotionRules?.preparedArtifactMayNotClaimProductionPass===true,
       runtimeVerifiedConsumerRequiredBeforePromotion:companyLibrary?.promotionRules?.runtimeVerifiedConsumerRequiredBeforeCompanyAssetPromotion===true,
-      platformSpecificReauthoringRequired:companyLibrary?.promotionRules?.platformSpecificReauthoringRequired===true
+      platformSpecificReauthoringRequired:companyLibrary?.promotionRules?.platformSpecificReauthoringRequired===true,
+      mandatoryConsumer:companyLibrary?.consumption?.requiredForEveryNativeGameDevelopment===true&&['unity','roblox'].includes(resolvedTarget),
+      lookupBeforeAssetChoice:companyLibrary?.consumption?.lookupBeforeAssetChoice===true,
+      externalGapFillBeforeNewAuthoring:companyLibrary?.gapFill?.enabled===true,
+      gapFillOrder:freezeList(companyLibrary?.gapFill?.order||[]),
+      studioMotionTarget:clean(companyLibrary?.studioMotionProgram?.target)||null,
+      studioMotionPriority:freezeList(companyLibrary?.studioMotionProgram?.priorityBootstrap||[]),
+      humanoidFoundation:freeze(companyLibrary?.studioMotionProgram?.humanoidFoundation||{}),
+      creatureFamilies:freezeList(companyLibrary?.studioMotionProgram?.creatureFamilies||[]),
+      retargetCleanupRequirements:freezeList(companyLibrary?.studioMotionProgram?.retargetCleanupRequirements||[]),
+      unarmedCombat:freeze({
+        enabled:companyLibrary?.unarmedCombatStudio?.status==='ACTIVE_EXECUTABLE_CONTRACT',
+        target:clean(companyLibrary?.unarmedCombatStudio?.target)||null,
+        noArtificialStyleOrMotionCap:companyLibrary?.unarmedCombatStudio?.noArtificialStyleOrMotionCap===true,
+        styleFamilies:freezeList(companyLibrary?.unarmedCombatStudio?.supportedStyleFamilies||[]),
+        motionFamilies:freeze(companyLibrary?.unarmedCombatStudio?.motionFamilies||{}),
+        comboRoles:freezeList(companyLibrary?.unarmedCombatStudio?.comboMotionGrammar?.roles||[]),
+        motionMetadata:freezeList(companyLibrary?.unarmedCombatStudio?.comboMotionGrammar?.motionMetadata||[]),
+        qualityRequirements:freezeList(companyLibrary?.unarmedCombatStudio?.qualityRequirements||[]),
+        timingMarkersCannotOwnGameplayRules:companyLibrary?.unarmedCombatStudio?.comboMotionGrammar?.animationMayExposeTimingMarkersButAuthoritativeHitboxDamageCooldownAndComboRulesRemainGameplayOwned===true,
+        externalLicensedMotionGapFill:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.searchExternalLicensedMotionBeforeAuthoringMissingCoverage===true,
+        platformNativeRuntimeVerificationRequired:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.retargetCleanupAndPlatformNativeRuntimeValidationRequired===true
+      }),
+      verifiedCompanyAssetCount:verifiedCompanyManifestAssets(companyRegistry).length,
+      externalSourceCount:Array.isArray(companyRegistry?.externalSources)?companyRegistry.externalSources.length:0,
+      externalSourceIds:freezeList((companyRegistry?.externalSources||[]).map(row=>clean(row.id)).filter(Boolean))
     }),
     highEndVisual:freeze({
       enabled:highEndActive,
@@ -215,6 +313,9 @@ export function buildVibeAssetProductionPlan({
     summary:freeze({
       decisionCount:decisions.length,
       reuseCandidateTypes:reuseCount,
+      companyCandidateTypes:companyCount,
+      repositoryCandidateTypes:repositoryCount,
+      externalCandidateTypes:externalCount,
       directAuthorableTypes:directCount,
       missingSelectorTypes:(selector.missingTypes||[]).length
     }),
@@ -259,8 +360,19 @@ export function buildVibeAssetProductionPlan({
       highEndPresentationCompletionIsReleaseGate:false,
       ownerChangeRequestStabilityRequired:highEnd?.ownerChangeRequestStability?.enabled===true,
       companyGraphicsLibrary24h:companyLibraryActive,
+      companyLibraryLookupRequiredBeforeNativeAssetChoice:companyLibrary?.consumption?.lookupBeforeAssetChoice===true,
+      existingRepositoryInventoryBeforeExternal:companyLibrary?.gapFill?.order?.[0]==='INVENTORY_EXISTING_REPOSITORY_ASSETS',
+      externalGapFillBeforeNewAuthoring:companyLibrary?.gapFill?.enabled===true,
       unityRobloxLibraryVariantsSeparated:companyLibrary?.promotionRules?.platformSpecificReauthoringRequired===true,
       actionReadyMotionVarietyRequired:companyLibraryActive,
+      studioGradeMotionRequired:companyLibrary?.studioMotionProgram?.target==='STUDIO_GRADE_GAME_MOTION',
+      unarmedVersusActionMotionRequired:companyLibrary?.unarmedCombatStudio?.status==='ACTIVE_EXECUTABLE_CONTRACT',
+      unarmedStyleResearchNoArtificialCap:companyLibrary?.unarmedCombatStudio?.noArtificialStyleOrMotionCap===true,
+      wuxiaUnarmedMotionResearch:companyLibrary?.unarmedCombatStudio?.supportedStyleFamilies?.includes('WUXIA_UNARMED_FANTASY')===true,
+      unarmedAnimationMarkersCannotOwnGameplayRules:companyLibrary?.unarmedCombatStudio?.comboMotionGrammar?.animationMayExposeTimingMarkersButAuthoritativeHitboxDamageCooldownAndComboRulesRemainGameplayOwned===true,
+      pairedThrowPlatformRuntimeVerificationRequired:companyLibrary?.unarmedCombatStudio?.platformAdaptation?.pairedTwoActorThrowAlignmentMustBeReauthoredAndRuntimeVerifiedPerPlatform===true,
+      retargetAndCleanupRequiredForExternalMotion:companyLibrary?.studioMotionProgram?.externalMotionUse?.retargetAndCleanupRequired===true,
+      speciesMotionStudyRequired:companyLibrary?.studioMotionProgram?.creatureRules?.speciesReferenceStudyRequired===true,
       latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
       wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
     }),
@@ -285,7 +397,10 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.enabled?'회사 공용 그래픽 라이브러리는 24시간 idle 준비를 계속하지만 연습 산출물은 바로 production asset이 아니다. 실제 게임의 Unity/Roblox 네이티브 적용과 runtime 시각·모션·모바일 QA를 통과한 것만 검증 공용 자산으로 승격한다.':'',
     plan.companyGraphicsLibrary?.enabled?`캐릭터 플랫폼 프로필=${plan.companyGraphicsLibrary.platformProfile}; Unity/Roblox 바이너리·리그는 직접 공유하지 않고 공통 실루엣/체형/장비 의미만 공유한 뒤 네이티브 재authoring한다.`:'',
     plan.companyGraphicsLibrary?.enabled?`액션 모션 최소 커버리지=${JSON.stringify(plan.companyGraphicsLibrary.motionMinimums)}; weaponPacks=${plan.companyGraphicsLibrary.weaponPacks.join('|')}`:'',
-    '선택 순서 후보: 검증된 회사 에셋 재사용 / Vibe 직접 제작 / 별도 authoring generator 요청. 기존 에셋 재사용은 강제가 아니다.',
+    plan.companyGraphicsLibrary?.enabled?`스튜디오 모션=${plan.companyGraphicsLibrary.studioMotionTarget}; 우선 구축=${plan.companyGraphicsLibrary.studioMotionPriority.join('→')}; 리타겟 클린업=${plan.companyGraphicsLibrary.retargetCleanupRequirements.join('|')}`:'',
+    plan.companyGraphicsLibrary?.unarmedCombat?.enabled?`맨손 대전 액션=${plan.companyGraphicsLibrary.unarmedCombat.target}; 스타일=${plan.companyGraphicsLibrary.unarmedCombat.styleFamilies.join('|')}; comboRoles=${plan.companyGraphicsLibrary.unarmedCombat.comboRoles.join('|')}; 모션 메타데이터=${plan.companyGraphicsLibrary.unarmedCombat.motionMetadata.join('|')}`:'',
+    plan.companyGraphicsLibrary?.unarmedCombat?.enabled?'맨손 모션은 가드/보법/주먹/팔꿈치/무릎/킥/방어·카운터/잡기·던지기/낙법·기상/무협 판타지/대전 리액션을 계속 확장한다. 애니메이션 타이밍 마커는 표현·동기화 정보이며 데미지·히트박스·쿨다운·콤보 판정 권한을 갖지 않는다.':'',
+    '선택 순서: 같은 게임/검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
     'PNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.',
@@ -294,8 +409,9 @@ export function assetProductionGuidance(plan={}){
   ];
   for(const row of (plan.decisions||[]).slice(0,12)){
     const reuse=(row.reuseCandidates||[]).slice(0,4).map(x=>x.id).join('|')||'none';
+    const external=(row.externalCandidates||[]).slice(0,4).map(x=>x.id).join('|')||'none';
     const direct=(row.directAuthoring||[]).join('|')||'none';
-    lines.push(`- type=${row.type}; reuse=${reuse}; direct=${direct}; fallback=AUTHORING_GENERATOR_REQUEST`);
+    lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
   }
   return lines.join('\n');
 }
