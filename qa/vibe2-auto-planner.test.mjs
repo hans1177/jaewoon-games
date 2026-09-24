@@ -1074,9 +1074,9 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.ok(first,'full planner must eventually queue the first studio-quality package');
   assert.equal(first.workUnits,7);
   assert.equal(first.studioQualityEvolution?.cycle,1);
-  assert.equal(first.studioQualityEvolution?.minConnectedImprovements,3);
-  assert.equal(first.studioQualityEvolution?.maxConnectedImprovements,6);
-  assert.ok(first.evidence.includes('studio-quality-package:large'));
+  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
+  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,6);
+  assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
   working={...working,tasks:working.tasks.map(row=>
     row.id===first.id?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}:row
@@ -1107,7 +1107,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.equal(second.studioQualityEvolution?.cycle,2);
   assert.equal(second.studioQualityEvolution?.baselineId,first.id);
   assert.equal(second.studioQualityEvolution?.nextCycleRequired,true);
-  assert.ok(second.evidence.includes('studio-quality-package:large'));
+  assert.ok(second.evidence.includes('studio-quality-loop:v1'));
 });
 
 test('web presentation planner discovers a real non-index game entry file',()=>{
