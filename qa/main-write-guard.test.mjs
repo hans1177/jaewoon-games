@@ -32,3 +32,9 @@ test('main write guard workflow uses shallow partial checkout and exact base fet
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
   assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$base_sha"/);
 });
+
+test('main write guard falls back to two-point diff when shallow history has no merge base',()=>{
+  const source=fs.readFileSync(new URL('../tools/main-write-guard.mjs',import.meta.url),'utf8');
+  assert.match(source,/\${baseRef}\.\.\.\${headRef}/);
+  assert.match(source,/\['diff','--name-only',baseRef,headRef\]/);
+});
