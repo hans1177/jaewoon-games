@@ -40,7 +40,6 @@ jobs:
     if: github.event_name != 'pull_request'
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
         include:
           - gameId: cozy-island
