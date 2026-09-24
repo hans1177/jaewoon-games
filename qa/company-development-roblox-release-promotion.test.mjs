@@ -283,3 +283,12 @@ test('private runtime candidate deployment serializes only the same game, not th
   assert.match(workflow,/group: company-development-roblox-release-promotion-\$\{\{ inputs\.game_id \|\| 'workflow-change' \}\}/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-release-promotion\s*\n/);
 });
+
+test('private candidate runtime state uses latest-branch field patch replay instead of JSON rebase',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(workflow,/roblox-release-runtime-patch\.json/);
+  assert.match(workflow,/patchItems/);
+  assert.match(workflow,/Object\.assign\(item,row\.changes\|\|\{\}\)/);
+  assert.match(workflow,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
