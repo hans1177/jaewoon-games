@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -1025,6 +1025,16 @@
       "roblox-verification-run:",
       "unity-verification-run:"
     ],
-    "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
+    "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true,
+    "negativeVerifiedFailureProvenanceRequired": true,
+    "negativeMarkerAloneMustNotPenalizeMastery": true,
+    "negativeProvenanceTokens": {
+      "verification": "specialized-negative-verification:FAIL",
+      "allowedAuthorities": [
+        "specialized-negative-authority:FOCUSED_QA",
+        "specialized-negative-authority:RUNTIME_QA",
+        "specialized-negative-authority:FAN_IN_RUNTIME_FAILURE"
+      ]
+    }
   }
 }
