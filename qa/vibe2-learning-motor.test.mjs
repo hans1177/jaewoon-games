@@ -1493,7 +1493,7 @@ test('specialized negative markers require explicit verified failure provenance 
   assert.equal(valid.negative,1);
   assert.equal(valid.records.length,1);
   assert.ok(valid.records[0].evidence.includes('specialized-negative-verification:FAIL'));
-  assert.ok(valid.records[0].evidence.includes('specialized-negative-authority:focused_qa'));
+  assert.ok(valid.records[0].evidence.includes('specialized-negative-authority:FOCUSED_QA'));
 
   const nonGame=collectVerifiedSpecializedQueueExperience({tasks:[{
     id:'negative-system',gameId:'system',target:'system',status:'failed',goal:'world route system test',
