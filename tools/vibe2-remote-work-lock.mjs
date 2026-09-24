@@ -100,7 +100,21 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
     if (result.reused) return { ...result, attempt, remoteUpdated: false };
     const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: acquire ${request.worker} ${request.taskId}`, fetchImpl);
     if (write.updated) return { ...result, attempt, remoteUpdated: true, commitSha: write.commitSha };
-    if (!write.retryable || attempt === maxAttempts) throw new Error(`work-lock acquire update race exhausted after ${attempt} attempts`);
+    if (!write.retryable) throw new Error(`work-lock acquire state update failed after ${attempt} attempts`);
+    if (attempt === maxAttempts) {
+      return {
+        acquired: false,
+        reused: false,
+        reason: 'transient-state-update-race',
+        transient: true,
+        contention: true,
+        attempt,
+        remoteUpdated: false,
+        retryStatus: write.status,
+        lock: null,
+        conflicts: []
+      };
+    }
     await delay(attempt * 500);
   }
   throw new Error('work-lock acquire unreachable');
@@ -118,7 +132,19 @@ export async function releaseRemoteVibeWorkLock(args = {}, options = {}) {
     if (!result.released) return { ...result, attempt, remoteUpdated: false };
     const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: release ${worker} ${lockId}`, fetchImpl);
     if (write.updated) return { ...result, attempt, remoteUpdated: true, commitSha: write.commitSha };
-    if (!write.retryable || attempt === maxAttempts) throw new Error(`work-lock release update race exhausted after ${attempt} attempts`);
+    if (!write.retryable) throw new Error(`work-lock release state update failed after ${attempt} attempts`);
+    if (attempt === maxAttempts) {
+      return {
+        released: false,
+        reason: 'transient-state-update-race',
+        transient: true,
+        contention: true,
+        attempt,
+        remoteUpdated: false,
+        retryStatus: write.status,
+        lockId
+      };
+    }
     await delay(attempt * 500);
   }
   throw new Error('work-lock release unreachable');
