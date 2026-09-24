@@ -1204,17 +1204,17 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
-        "roblox-f0-source-preflight-pending"
+        "roblox-f0-source-preflight-failed"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-24T07:12:00.899Z",
+      "updatedAt": "2026-09-24T07:13:15.475Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "5976a851850e662dc7734303c432a6af5b13c8aa",
@@ -1225,7 +1225,7 @@
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
-      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "5976a851850e662dc7734303c432a6af5b13c8aa",
@@ -5305,7 +5305,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-24T07:12:00.899Z",
+  "updatedAt": "2026-09-24T07:13:15.475Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
