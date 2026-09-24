@@ -375,3 +375,31 @@ test('specialized verified experience persistence keeps only sanitized trace evi
   assert.equal(s.protections.positiveMasteryWithoutVerifiedMarkerForbidden,true);
   assert.equal(s.protections.experienceMemoryCannotExpandGameplayOrCodeExecutionAuthority,true);
 });
+
+
+test('specialized verification security allows only final fan-in to mint canonical verified markers',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  const sec=policy.verifiedSpecializedQueueEvidenceSecurity;
+  assert.equal(sec.protections.sourceWorkerMayOnlyRequestVerification,true);
+  assert.equal(sec.protections.incrementalQaMayOnlyEmitFocusedQaStatus,true);
+  assert.equal(sec.protections.finalVerifiedMarkerFanInOnly,true);
+  assert.equal(sec.protections.finalMarkerWhitelistRequired,true);
+  assert.equal(sec.protections.fullRegressionPassRequired,true);
+  assert.equal(sec.protections.fanInReviewPassRequired,true);
+  assert.equal(sec.protections.nativePositiveMarkerRequiresAuthoritativeTargetEngineQaEvidence,true);
+  assert.equal(sec.protections.uefnPositiveMarkerBlockedUntilAuthoritativeExecutorEvidenceContractExists,true);
+  assert.equal(sec.protections.rawTelemetryDirectTrainingForbidden,true);
+  assert.equal(sec.protections.infrastructureFailureNegativeLearningForbidden,true);
+  assert.equal(sec.protections.authorityExpansionForbidden,true);
+
+  const evidence=logMap.specializedVerifiedQueueEvidenceContract;
+  assert.equal(evidence.producers.request,'tools/vibe2-source-worker.mjs');
+  assert.equal(evidence.producers.focusedQa,'tools/vibe2-incremental-qa.mjs');
+  assert.equal(evidence.producers.finalVerifiedMarker,'tools/vibe2-fan-in-review.mjs');
+  assert.equal(evidence.producers.canonicalIngress,'tools/vibe2-learning-motor.mjs');
+  assert.equal(evidence.requestIsNotPassEvidence,true);
+  assert.equal(evidence.focusedQaIsNotFinalPassEvidence,true);
+  assert.equal(evidence.finalVerifiedMarkerFanInOnly,true);
+  assert.equal(evidence.nativePositiveRequiresAuthoritativeTargetEngineQa,true);
+});
