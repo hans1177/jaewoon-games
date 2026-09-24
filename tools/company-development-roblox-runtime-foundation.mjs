@@ -76,7 +76,7 @@ export async function fetchRobloxRuntimeFoundationEvidence({universeId='',apiKey
 }
 
 export async function probeRobloxOpenCloudEngine({
-  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,
+  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,
 }={}){
   const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
   if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
@@ -84,8 +84,22 @@ export async function probeRobloxOpenCloudEngine({
   if(!Number.isInteger(version)||version<=0)throw new Error('valid versionNumber required');
   if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
   if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const expectedStudioAssetAtoms=[...new Set(Object.values(expectedStudioAssetBinding?.families||{}).flat().map(clean).filter(Boolean))].sort();
+  const studioAssetBindingRequired=expectedStudioAssetBinding?.applied===true;
+  const expectedStudioAssetAtomCsv=expectedStudioAssetAtoms.join(',');
   const script=[
     'local Players=game:GetService("Players")',
+    'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+    'local studioAssetApplied=false',
+    'local studioAssetBindingVersion=0',
+    'local studioAssetAtoms={}',
+    'local shared=ReplicatedStorage:FindFirstChild("Shared")',
+    'local configModule=shared and shared:FindFirstChild("GameConfig")',
+    'if configModule and configModule:IsA("ModuleScript") then local ok,config=pcall(require,configModule); if ok and type(config)=="table" and type(config.StudioAssets)=="table" then studioAssetApplied=config.StudioAssets.Applied==true; studioAssetBindingVersion=tonumber(config.StudioAssets.BindingVersion) or 0; if type(config.StudioAssets.Families)=="table" then for _,family in pairs(config.StudioAssets.Families) do if type(family)=="table" then for _,atom in ipairs(family) do if type(atom)=="string" and atom~="" then table.insert(studioAssetAtoms,atom) end end end end end end end',
+    'table.sort(studioAssetAtoms)',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED="..tostring(studioAssetApplied))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION="..tostring(studioAssetBindingVersion))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS="..table.concat(studioAssetAtoms,","))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLACE="..tostring(game.PlaceId))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_VERSION="..tostring(game.PlaceVersion))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
@@ -141,9 +155,18 @@ export async function probeRobloxOpenCloudEngine({
   const exactPlace=joined.includes(`JAEWOON_OPEN_CLOUD_ENGINE_PLACE=${place}`);
   const exactVersion=joined.includes(`JAEWOON_OPEN_CLOUD_ENGINE_VERSION=${version}`);
   const serverBootObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
+  const studioAssetApplied=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true');
+  const studioAssetBindingVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=(\d+)/)?.[1]||0);
+  const observedStudioAssetAtomCsv=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=([^\n]*)/)?.[1]||'');
+  const observedStudioAssetAtoms=[...new Set(observedStudioAssetAtomCsv.split(',').map(clean).filter(Boolean))].sort();
+  const observedAtomSet=new Set(observedStudioAssetAtoms);
+  const studioAssetSelectionMatched=!studioAssetBindingRequired||(expectedStudioAssetAtoms.length>0&&studioAssetApplied&&studioAssetBindingVersion===1&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom)));
   return Object.freeze({
     available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,serverBootObserved,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
+    studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,
+    expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
+    expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetSelectionMatched,
     state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),
   });
 }
