@@ -1443,7 +1443,7 @@ function findSafeTasks(project,repoRoot,queue){
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair)return[startupSpatialRepair];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
@@ -1459,6 +1459,38 @@ function selectPackageCandidates(candidates,queue,remaining,policy){
   return selected;
 }
 function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.target==='unity'&&item.releaseState==='release-confirmed');}
+
+function legacyMicroTaskSupersedeEligible(task={}){
+  const status=clean(task.status).toLowerCase();
+  const priority=clean(task.priority).toLowerCase();
+  const evidence=(task.evidence||[]).map(clean);
+  if(status!=='queued'||task.ownerDirective===true||['critical','high','owner-immediate'].includes(priority))return false;
+  if(clean(task.department).toLowerCase()!=='development'||clean(task.type||'implementation').toLowerCase()!=='implementation')return false;
+  if(evidence.some(value=>/^company-runtime-state:|^recovery-exact-stage:|^runtime-failure:|^internal-playtest-co-development:yes$/i.test(value)))return false;
+  const text=[clean(task.id),clean(task.goal),...evidence].join(' ');
+  return evidence.some(value=>/^diagnostic:|^maintenance-file:/i.test(value))
+    ||/(?:TOUCH_ACTION_UNSPECIFIED|\[MAINTENANCE_BUNDLE\]|TODO|FIXME|NotImplementedException|대형 파일 전체를 다시 쓰지 말고|항목 1개를 직접 구현)/i.test(text);
+}
+function supersedeLegacyMicroTasksForStudioQuality(queueInput){
+  const queue=createVibeContinuousQueue(queueInput);
+  let count=0;
+  const tasks=queue.tasks.map(task=>{
+    if(!legacyMicroTaskSupersedeEligible(task))return task;
+    count+=1;
+    return{
+      ...task,
+      status:'cancelled',
+      blocker:'superseded-by:STUDIO_QUALITY_PACKAGE',
+      reservationId:null,
+      reservationRunId:null,
+      reservationRunAttempt:0,
+      reservedAt:null,
+      lastOutcome:'SUPERSEDED_BY_STUDIO_QUALITY_PACKAGE',
+      evidence:[...new Set([...(task.evidence||[]),'superseded-by:STUDIO_QUALITY_PACKAGE','studio-quality-micro-task-consolidation:v1'])]
+    };
+  });
+  return{count,queue:count?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
+}
 
 export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={}}={}){
   const executionWaveMax=parallelLimit(maxConcurrentTasks);
@@ -1548,12 +1580,15 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     });
     queue=createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks});
   }
+  const microSupersede=supersedeLegacyMicroTasksForStudioQuality(queue);
+  queue=microSupersede.queue;
   const active=activeTasks(queue);
   const ownerActive=active.filter(item=>item.ownerDirective);
   const developmentPool=developmentPlanningPool(queue);
   const capacity=Math.max(0,backlogTarget-developmentPool.length);
   const planningBacklog={
     target:backlogTarget,
+    supersededLegacyMicroTasks:microSupersede.count,
     minimum:backlogMinimum,
     current:developmentPool.length,
     queued:developmentPool.filter(item=>clean(item.status).toLowerCase()==='queued').length,
