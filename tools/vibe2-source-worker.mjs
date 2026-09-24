@@ -782,6 +782,7 @@ export function generationFailureClass(error){
   if(/SYSTEM_CAUSAL_TEST_REQUIRED/i.test(message))return'SYSTEM_CAUSAL_TEST_REQUIRED';
   if(/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(message))return'SYSTEM_CANDIDATE_SYNTAX';
   if(/DIAGNOSTIC_POSTCONDITION_MISSING/i.test(message))return'DIAGNOSTIC_POSTCONDITION';
+  if(/ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)/i.test(message))return'ROBLOX_STUDIO_ASSET_APPLICATION';
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
   if(/전체 교체 파일 크기 오류/i.test(message))return'FULL_REWRITE_SIZE';
@@ -789,11 +790,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','DIAGNOSTIC_POSTCONDITION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|DIAGNOSTIC_POSTCONDITION_MISSING|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -1781,12 +1782,36 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     &&systemRegressionFiles.length>0
     &&systemSourceFiles.length>0
     &&(order?.selectedTask?.completionCriteria||[]).some(value=>/BEFORE_AFTER|CAUSAL_PROOF|STRUCTURAL_CAUSE/i.test(clean(value)));
+  const robloxStudioAssetBackfillRequired=target==='roblox'&&order?.selectedTask?.studioAssetBackfill===true;
+  const robloxStudioAssetVisualOwners=robloxStudioAssetBackfillRequired?responsibleFiles.filter(file=>
+    /(?:^|\/)client\/|VisualStyle\.luau$|BattleVisual\.luau$/i.test(clean(file))
+  ):[];
   const candidateValidator=candidate=>{
     const touched=new Set([
       ...(candidate.edits||[]).map(row=>row.path),
       ...(candidate.newFiles||[]).map(row=>row.path),
       ...(candidate.replaceFiles||[]).map(row=>row.path)
     ]);
+    if(robloxStudioAssetBackfillRequired){
+      if(!robloxStudioAssetVisualOwners.length)throw new Error('ROBLOX_STUDIO_ASSET_VISUAL_OWNER_REQUIRED:NO_VISUAL_OWNER_IN_RESPONSIBLE_FILES');
+      const touchedVisual=robloxStudioAssetVisualOwners.filter(file=>touched.has(file));
+      if(!touchedVisual.length)throw new Error('ROBLOX_STUDIO_ASSET_VISUAL_OWNER_REQUIRED:'+robloxStudioAssetVisualOwners.join('|'));
+      const visualChangeText=[
+        ...(candidate.edits||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.replace||'')),
+        ...(candidate.newFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||'')),
+        ...(candidate.replaceFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||''))
+      ].join('\n');
+      const required=[
+        /\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*1\b/,
+        /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
+        /StudioAssetBindingVersion/,
+        /StudioAssetAtoms/,
+        /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
+      ];
+      if(required.some(pattern=>!pattern.test(visualChangeText))){
+        throw new Error('ROBLOX_STUDIO_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+      }
+    }
     if(bootstrap&&target==='unity'){
       for(const relative of responsibleFiles)if(!touched.has(relative))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:'+relative);
       if((candidate.newFiles||[]).length||(candidate.replaceFiles||[]).length)throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_EDITS_ONLY');
