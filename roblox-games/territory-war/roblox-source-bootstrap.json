@@ -1,26 +1,99 @@
 {
-  "version": 3,
+  "version": 5,
   "gameId": "territory-war",
   "gameName": "영토전쟁",
   "platform": "ROBLOX",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "stage": "TARGET_PLATFORM_SOURCE_BIND",
-  "authority": "OWNER_DIRECT_DEVELOPMENT",
-  "designBaselineSource": "design/territory-war/2026-09-22/design-revised.json",
   "sourcePath": "roblox-games/territory-war",
   "sourceValidationPassed": true,
   "runtimePassed": false,
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "ownerDirectDevelopment": true,
-  "webPlatformHandoffRequired": false,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "default.project.json"
+    "client/Game.client.luau"
   ],
-  "nextRequiredStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-  "createdAt": "2026-09-22T00:48:00+09:00"
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "modelUsed": false,
+  "modelAttempts": 0,
+  "modelContractFailures": [],
+  "vibe3LearningApplied": false,
+  "recombinationRecipeId": null,
+  "studioAssetBinding": {
+    "version": 1,
+    "applied": true,
+    "source": "company-asset-library.json#baseMaterialLibrary",
+    "libraryVersion": 16,
+    "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    "selectedAtomCount": 29,
+    "families": {
+      "UI": [
+        "FRAME_PANEL",
+        "BUTTON_PRIMARY",
+        "BAR_HEALTH"
+      ],
+      "ENVIRONMENT": [
+        "TREE_TRUNK_THICK",
+        "TREE_CROWN_ROUND",
+        "ROCK_MEDIUM",
+        "ROAD_DIRT"
+      ],
+      "BUILDING": [
+        "FOUNDATION_RECT",
+        "WALL_SOLID",
+        "DOOR_SINGLE",
+        "ROOF_GABLE"
+      ],
+      "PROP": [
+        "CHEST",
+        "CRATE",
+        "LAMP"
+      ],
+      "MATERIAL": [
+        "WOOD",
+        "STONE",
+        "METAL"
+      ],
+      "VFX": [
+        "IMPACT_FLASH",
+        "TRAIL_SHORT",
+        "SHAPE_BURST"
+      ],
+      "WEAPON": [
+        "BLADE_LONG",
+        "GUARD_CROSS",
+        "GRIP_LONG"
+      ],
+      "CHARACTER": [
+        "TORSO_CLOTH",
+        "SHOULDER_LIGHT",
+        "BACK_CAPE"
+      ],
+      "CREATURE": [
+        "HEAD_CANINE",
+        "JAW_LONG",
+        "CLAW"
+      ]
+    },
+    "recipeId": "NORMAL_VARIANT",
+    "productionVerified": false,
+    "runtimeVerificationRequired": true,
+    "verifiedPromotionAllowed": false,
+    "gameplayAuthority": false
+  },
+  "studioAssetBindingApplied": true,
+  "studioAssetRuntimeVerified": false,
+  "studioAssetPromotionEligible": false,
+  "implementationNotes": [
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
+    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
+  ],
+  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
+  "createdAt": "2026-09-24T06:13:30.425Z"
 }
