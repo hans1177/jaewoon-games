@@ -576,13 +576,12 @@ jobs:
           mkdir -p /tmp/roblox-runtime-tools
           git show "origin/main:tools/company-selected-platform-router.mjs" > /tmp/roblox-runtime-tools/company-selected-platform-router.mjs
           git show "origin/main:tools/company-web-validation-evidence-contract.mjs" > /tmp/roblox-runtime-tools/company-web-validation-evidence-contract.mjs
-          remaining="$(node --input-type=module <<'NODE'
+          node --input-type=module <<'NODE' > /tmp/roblox-next-source-ids
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
           import {platformDevelopmentEligible} from 'file:///tmp/roblox-runtime-tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-queue.json','utf8'));
           const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
-          let count=0;
           for(const item of q.items||[]){
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -591,18 +590,25 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')continue;
             if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
             try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});if(!item.robloxSourceBootstrapFailedAt)continue;}catch{}
-            count++;
+            console.log(item.gameId);
           }
-          process.stdout.write(String(count));
           NODE
-          )"
-          echo "ROBLOX_REMAINING_OTHER_TARGETS=$remaining"
-          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          mapfile -t remaining_ids < /tmp/roblox-next-source-ids
+          echo "ROBLOX_REMAINING_OTHER_TARGETS=${#remaining_ids[@]}"
+          pids=()
+          for id in "${remaining_ids[@]}"; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" &
+            pids+=("$!")
+            echo "ROBLOX_NEXT_SOURCE_DISPATCH_GAME=$id"
+          done
+          for pid in "${pids[@]}"; do wait "$pid"; done
+          if [ "${#pids[@]}" -gt 0 ]; then
             echo 'ROBLOX_NEXT_BATCH_DISPATCH=YES'
           else
             echo 'ROBLOX_NEXT_BATCH_DISPATCH=NO'
           fi
+          echo 'ROBLOX_NEXT_SOURCE_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL'
 
       - name: Empty queue summary
         if: needs.source-plan.outputs.count == '0'
@@ -978,13 +984,12 @@ jobs:
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git checkout --detach origin/main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
-          remaining="$(node --input-type=module <<'NODE'
+          node --input-type=module <<'NODE' > /tmp/roblox-next-technical-ids
           import fs from 'node:fs';
           import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-technical-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
-          let count=0;
           for(const item of q.items||[]){
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -1003,18 +1008,25 @@ jobs:
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
             if(exactBuild)continue;
             if(secondaryOwnerFocus&&!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))continue;
-            count++;
+            console.log(item.gameId);
           }
-          process.stdout.write(String(count));
           NODE
-          )"
-          echo "ROBLOX_REMAINING_TECHNICAL_TARGETS=$remaining"
-          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          mapfile -t remaining_ids < /tmp/roblox-next-technical-ids
+          echo "ROBLOX_REMAINING_TECHNICAL_TARGETS=${#remaining_ids[@]}"
+          pids=()
+          for id in "${remaining_ids[@]}"; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" &
+            pids+=("$!")
+            echo "ROBLOX_NEXT_TECHNICAL_DISPATCH_GAME=$id"
+          done
+          for pid in "${pids[@]}"; do wait "$pid"; done
+          if [ "${#pids[@]}" -gt 0 ]; then
             echo 'ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=YES'
           else
             echo 'ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=NO'
           fi
+          echo 'ROBLOX_NEXT_TECHNICAL_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL'
       - name: Technical queue summary
         if: needs.technical-plan.outputs.count == '0'
         run: |
