@@ -95,6 +95,55 @@ test('fan-in regression and review confirm causal repair but do not invent respo
   assert.equal(result.neuralPhase2Readiness.automaticPromotionAllowed,false);
 });
 
+
+test('fan-in blocks studio build-up results that do not prove the required implementation breadth',()=>{
+  const task=baseTask();
+  task.studioQualityEvolution={
+    phase:'BUILD_UP',
+    focusPillar:'STABILITY',
+    realSourceDeltaRequired:true,
+    requiredConnectedImprovements:{min:3,max:6}
+  };
+  const result=finalizeVibe2FanInReview({
+    queue:{tasks:[task]},
+    results:[baseResult()],
+    taskIds:['neural-root-task']
+  });
+  assert.equal(result.reviewed[0].pass,false);
+  assert.ok(result.reviewed[0].missing.includes('studio-quality-implementation-delta'));
+  assert.equal(result.releaseCandidates.length,0);
+  assert.ok(result.queue.tasks[0].evidence.some(value=>value.includes('studio-quality-implementation-delta')));
+});
+
+test('fan-in accepts studio build-up breadth evidence only when the configured delta count is met',()=>{
+  const task=baseTask();
+  task.studioQualityEvolution={
+    phase:'BUILD_UP',
+    focusPillar:'PRESENTATION',
+    realSourceDeltaRequired:true,
+    requiredConnectedImprovements:{min:3,max:6}
+  };
+  const candidate=baseResult();
+  candidate.studioQualityCandidateDelta={
+    required:true,
+    pass:true,
+    phase:'BUILD_UP',
+    focusPillar:'PRESENTATION',
+    requiredSourceDeltaUnits:3,
+    sourceDeltaUnits:3,
+    requiredVisualUnits:2,
+    visualUnits:2
+  };
+  const result=finalizeVibe2FanInReview({
+    queue:{tasks:[task]},
+    results:[candidate],
+    taskIds:['neural-root-task']
+  });
+  assert.equal(result.reviewed[0].pass,true);
+  assert.equal(result.releaseCandidates.length,1);
+  assert.ok(result.queue.tasks[0].evidence.includes('studio-quality-implementation-delta:PASS'));
+});
+
 test('explicit independently verified responsible system can verify root cause without granting neural execution authority',()=>{
   const marker='independent-qa-verified-responsible-system:GAME_RUNTIME';
   const result=finalizeVibe2FanInReview({
