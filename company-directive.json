@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 68,
+  "revision": 69,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1106,7 +1106,11 @@
     "platformVariantOptimizer": true,
     "studioTestbed": true,
     "verifiedUsageFeedback": true,
-    "genreWorldGrammar": true
+    "genreWorldGrammar": true,
+    "referenceImageObservationSupported": true,
+    "referenceObservationMustBeSourceBound": true,
+    "referenceObservationProposalUntilVerifiedAgainstSource": true,
+    "rawProtectedReferenceImagePersistentLearningForbidden": true
   },
   "graphicsProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1205,7 +1209,10 @@
       "platformVariantOptimizer": true,
       "studioTestbed": true,
       "verifiedUsageFeedback": true,
-      "genreWorldGrammar": true
+      "genreWorldGrammar": true,
+      "referenceImageWorldObservation": true,
+      "directReferenceSceneOrMapCopyForbidden": true,
+      "rawProtectedReferenceImagePersistentLearningForbidden": true
     },
     "internalModules": [
       "assets/vibe-motion-director.js",
