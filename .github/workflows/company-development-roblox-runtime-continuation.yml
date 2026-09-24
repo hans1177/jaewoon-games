@@ -24,6 +24,7 @@ jobs:
       count: ${{ steps.targets.outputs.count }}
       matrix: ${{ steps.targets.outputs.matrix }}
       targets_json: ${{ steps.targets.outputs.targets_json }}
+      f0_ready_count: ${{ steps.targets.outputs.f0_ready_count }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -78,10 +79,25 @@ jobs:
             if(preflightFailedValue&&!stalePreflightFailure)continue;
             rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity,secondaryOwnerFocus});
           }
+          const f0Ready=(q.items||[]).filter(item=>{
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
+            if(item.robloxValidationMode!=='HEADLESS_FAST_MVP')return false;
+            const revision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            return item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxFoundationF0Passed!==true
+              &&item.robloxBuildSourceRevision===revision
+              &&/^[0-9a-f]{40}$/i.test(revision)
+              &&/^sha256:[0-9a-f]{64}$/i.test(artifactIdentity);
+          });
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`f0_ready_count=${f0Ready.length}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
+          console.log(`ROBLOX_EXISTING_F0_READY_COUNT=${f0Ready.length}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_EXECUTION_WIP_MAX=EXTERNAL_PROVIDER_CAPACITY_ONLY');
           console.log('ROBLOX_PREFLIGHT_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL');
@@ -270,8 +286,8 @@ jobs:
 
   dispatch-headless:
     name: dispatch Roblox F0 source preflight
-    needs: preflight-persist
-    if: always() && needs.preflight-persist.result == 'success' && needs.preflight-persist.outputs.pass_count != '0'
+    needs: [preflight-plan, preflight-persist]
+    if: always() && needs.preflight-persist.result == 'success' && (needs.preflight-plan.outputs.f0_ready_count != '0' || needs.preflight-persist.outputs.pass_count != '0')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
