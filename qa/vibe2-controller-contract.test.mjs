@@ -391,7 +391,9 @@ test('24H safety-net refills free game slots while preserving queue-level confli
   assert(safetyNetWorkflow.includes("lane_max: '256'"));
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0'"));
+  assert(safetyNetWorkflow.includes("VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'"));
+  assert(safetyNetWorkflow.includes("VIBE2_LEARNING_ALWAYS_ON: 'true'"));
   assert(safetyNetWorkflow.includes('needs: [plan, recovery_fast, continuous, learning_idle, game_study]'));
   assert(safetyNetWorkflow.includes('if: ${{ always() }}'));
   assert(safetyNetWorkflow.includes('name: Dispatch next cycle unconditionally'));
@@ -403,10 +405,11 @@ test('24H safety-net refills free game slots while preserving queue-level confli
   assert(workflow.includes('vibe2-queue-control.mjs reserve-batch'));
 });
 
-test('free-slot refill keeps learning-idle and game-study gated by an actually idle game wave',()=>{
+test('free-slot refill keeps game-study idle-gated while learning-idle remains active beside production',()=>{
   assert(safetyNetWorkflow.includes("const waveReady=activeGame===0?'YES':'NO'"));
   assert(safetyNetWorkflow.includes("const gameRefillReady=freeWorkerSlots>0?'YES':'NO'"));
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0'"));
+  assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
 });
 
