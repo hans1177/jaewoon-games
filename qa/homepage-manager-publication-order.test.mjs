@@ -170,6 +170,16 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
   assert.match(manager,/HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1/);
 });
 
+test('homepage asset library contract accepts forward versioned inspection surfaces',()=>{
+  const libraryHtml=fs.readFileSync('asset-library.html','utf8');
+  const match=libraryHtml.match(/data-asset-library-version="(\d+)"/);
+  assert.ok(match,'asset library version marker missing');
+  assert.ok(Number(match[1])>=1,'asset library version must be positive');
+  assert.match(manager,/const assetLibraryVersion=Number\(assetLibrary\.match/);
+  assert.match(manager,/assetLibraryVersion>=1/);
+  assert.doesNotMatch(manager,/assetLibrary\.includes\('data-asset-library-version="1"'\)/);
+});
+
 test('homepage front door matches approved sample on desktop and mobile',()=>{
   const index=fs.readFileSync('index.html','utf8');
   const front=roadmap.homepagePresentation?.frontDoor||{};
