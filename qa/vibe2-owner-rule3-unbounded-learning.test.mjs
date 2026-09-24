@@ -77,6 +77,13 @@ test('practice generator emits hypothesis falsification previous-result comparis
   assert.ok(practice.drills.some(row=>row.kind==='HYPOTHESIS_FALSIFICATION_DRILL'));
   assert.ok(practice.drills.some(row=>row.kind==='PREVIOUS_RESULT_COMPARISON_DRILL'));
   assert.ok(practice.drills.some(row=>row.kind==='RELEARNING_REPLAY_DRILL'));
+  assert.ok(practice.drills.some(row=>row.kind==='UNIVERSAL_ASSET_COVERAGE_DRILL'));
+  assert.ok(practice.drills.some(row=>row.kind==='CREATURE_UNIVERSE_DRILL'));
+  assert.ok(practice.drills.some(row=>row.kind==='CLOTHING_ARMOR_LIBRARY_DRILL'));
+  assert.ok(practice.drills.some(row=>row.kind==='BUILDING_MODULAR_LIBRARY_DRILL'));
+  assert.equal(practice.companyGraphicsLibrary24h.studioAssetUniverse,true);
+  assert.equal(practice.companyGraphicsLibrary24h.autonomousGapFill24h,true);
+  assert.equal(practice.companyGraphicsLibrary24h.learningLaneConcurrentWithProduction,true);
 });
 
 test('completed practice generation deterministically creates a later generation instead of terminating',()=>{
