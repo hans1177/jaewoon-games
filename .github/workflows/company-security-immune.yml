@@ -3,6 +3,22 @@ name: Company Security Immune System
 on:
   pull_request:
     branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/company-log-map.json'
+      - 'tools/company-security-*.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/*release*.mjs'
+      - 'tools/*publish*.mjs'
+      - 'tools/*promotion*.mjs'
+      - 'qa/company-security-*.test.mjs'
+      - 'qa/company-shared-context.test.mjs'
+      - 'roblox-games/**/server/**'
   push:
     branches: [main]
     paths:
