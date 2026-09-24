@@ -1371,7 +1371,7 @@ test('higher-value owner signal outranks automatic presentation issue',()=>{
   assert.equal(next.ownerDirective,true);
 });
 
-test('flat or unstartable Web games are routed to startup and 2.5D repair before normal assessment',()=>{
+test('flat or unstartable Web games enter 2.5D repair after canonical existing-Web assessment',()=>{
   const root=tempRepo();
   const gameId='flat-start-game';
   const dir=path.join(root,'web-games',gameId);
@@ -1379,18 +1379,25 @@ test('flat or unstartable Web games are routed to startup and 2.5D repair before
   fs.writeFileSync(path.join(dir,'index.html'),`<!doctype html><html><body><button id="startBtn">게임 시작</button><script>
   const startBtn=document.getElementById('startBtn'); startBtn.onclick=()=>{document.body.dataset.state='playing'};
   </script></body></html>`,'utf8');
+  const assessment={
+    id:`${gameId}-existing-web-assessment-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'canonical existing web assessment completed',releaseState:'development-confirmed',
+    status:'verified',retries:0,maxRetries:2,blocker:null,evidence:['existing-web-assessment-required']
+  };
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:gameId,name:'Flat Start Game',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
     developmentQueue:{items:[]},
-    queue:{maxConcurrentTasks:4,tasks:[]},
+    queue:{maxConcurrentTasks:4,tasks:[assessment]},
     repoRoot:root,
     maxConcurrentTasks:4
   });
   assert.equal(result.planned,true);
-  const task=result.tasks.find(row=>row.gameId===gameId);
+  const task=result.tasks.find(row=>row.gameId===gameId&&/web-startup-spatial-repair-v1$/.test(row.id));
   assert.ok(task);
-  assert.match(task.id,/web-startup-spatial-repair-v1$/);
+  assert.equal(task.productionMode,'SUPERVISED_VIBE_COAUTHORING');
+  assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
   assert.ok(task.evidence.includes('owner-directive:minimum-2.5d-final-gameplay'));
   assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
