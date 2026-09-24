@@ -1372,6 +1372,20 @@ ${phaseInstruction}${visualInstruction}
   out.workUnits=7;
   out.maxRetries=null;
   out.retryPolicy='UNLIMITED_CAUSAL_REPAIR';
+  if(focusPillar==='PRESENTATION'){
+    out.assetProductionLane=true;
+    out.estimatedRisk='high';
+    out.speculativeEligible=true;
+    out.evidence=[...new Set([...(out.evidence||[]),
+      'presentation-quality-pipeline:v1',
+      'presentation-pass:ASSET_ADAPTATION',
+      'presentation-runtime-qa-required',
+      'graphics-pass-real-asset-binding-runtime-required',
+      'graphics-evolution-before-after-comparison-required',
+      'presentation-marker-only-pass:forbidden',
+      'presentation-placeholder-primitives:forbidden'
+    ])];
+  }
   out.studioQualityEvolution={
     version:1,cycle,phase,focusPillar,baselineId,
     baselineSource:previous?.id?'VERIFIED_QUEUE_TASK':'CURRENT_SOURCE',
@@ -1391,9 +1405,9 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='roblox')return uniqueTaskCandidates([
     findRobloxInternalPlaytestTask(project,repoRoot,queue),
     findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
-    findStudioContinuousImprovementTask(project,repoRoot,queue),
     findWeatherPresentationTask(project,repoRoot,queue),
     findPresentationQualityTask(project,repoRoot,queue),
+    findStudioContinuousImprovementTask(project,repoRoot,queue),
     scanExplicitMarkerTask(project,repoRoot,queue)
   ]);
   if(project.engine==='unity'){
@@ -1401,20 +1415,20 @@ function findSafeTasks(project,repoRoot,queue){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
       if(firstStage)return[firstStage];
       return uniqueTaskCandidates([
-        findStudioContinuousImprovementTask(project,repoRoot,queue),
         findPresentationQualityTask(project,repoRoot,queue),
+        findStudioContinuousImprovementTask(project,repoRoot,queue),
         scanExplicitMarkerTask(project,repoRoot,queue)
       ]);
     }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
-      findStudioContinuousImprovementTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
+      findStudioContinuousImprovementTask(project,repoRoot,queue),
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
     return uniqueTaskCandidates([
-      findStudioContinuousImprovementTask(project,repoRoot,queue),
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
+      findStudioContinuousImprovementTask(project,repoRoot,queue),
       findUnityTask(project,repoRoot,queue),
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
@@ -1422,14 +1436,14 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='web'){
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-      return uniqueTaskCandidates([findWebDiagnosticTask(project,repoRoot,queue),startupSpatialRepair,findStudioContinuousImprovementTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+      return uniqueTaskCandidates([findWebDiagnosticTask(project,repoRoot,queue),startupSpatialRepair,findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     }
     // Preserve canonical Web responsibility order for bootstrap and exact repair.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair)return[startupSpatialRepair];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
