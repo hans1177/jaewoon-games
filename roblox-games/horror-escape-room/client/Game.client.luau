@@ -13,6 +13,16 @@ local RunService=game:GetService("RunService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 1
+local studioAssetConfig = C.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioUi = studioAssetFamilies.UI or {}
+local function hasStudioAssetAtom(atom)
+  return table.find(studioUi, atom) ~= nil
+end
+-- STUDIO_ASSET_BINDING_CLIENT_END
+
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 
@@ -63,6 +73,17 @@ local function makeButton(parent,text,color)
 end
 
 local chaseTint=Instance.new("Frame")
+if hasStudioAssetAtom("FRAME_PANEL") then
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = chaseTint
+end
+chaseTint:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+chaseTint:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+
 chaseTint.Size=UDim2.fromScale(1,1)
 chaseTint.BackgroundColor3=Color3.fromRGB(120,8,18)
 chaseTint.BackgroundTransparency=1
