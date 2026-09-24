@@ -37,6 +37,8 @@ jobs:
             node --input-type=module --check < "$file"
           done
           node --input-type=module --check < qa/vibe-regression.mjs
+          node --check tools/vibe2-artbook-story-core.mjs
+          node --check tools/vibe2-artbook-story-engine.mjs
           echo 'PASS JavaScript syntax'
 
       - name: Test art asset rights gate
