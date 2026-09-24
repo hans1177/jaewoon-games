@@ -1,5 +1,5 @@
 {
-  "version": 168,
+  "version": 169,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1034,7 +1034,16 @@
       },
       "fortniteUefnChange": false,
       "shadowFallbackPreserved": true,
-      "minimumProcedurePolicyRespected": true
+      "minimumProcedurePolicyRespected": true,
+      "sourceCandidateRecovery": {
+        "owner": "tools/vibe2-source-worker.mjs",
+        "missingEditPath": "UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES",
+        "deterministicBeforeModelRetry": true,
+        "ambiguousOrUnmatchedPath": "INVALID_PATH_BOUNDED_RETRY",
+        "writableScopeExpansionAllowed": false,
+        "telemetry": "codingMethod.missingPathRecoveries",
+        "triggerRun": 36057026213
+      }
     },
     "activation": {
       "mainCommit": "92e2628e5b1ace38587121126663064783d5ade2",

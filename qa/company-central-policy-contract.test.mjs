@@ -664,6 +664,15 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(gated.sourceCandidateGeneration.strategyMutationRequiresVerifiedRootCause,true);
   assert.equal(gated.sourceCandidateGeneration.successfulResultMutationForbidden,true);
   assert.equal(gated.sourceCandidateGeneration.verifiedSupervisorReviseRequeuesExistingTask,true);
+  assert.equal(gated.sourceCandidateGeneration.omittedEditPathExactResponsibleFileRecovery,true);
+  assert.equal(gated.sourceCandidateGeneration.omittedEditPathRecoveryMode,'UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES');
+  assert.equal(gated.sourceCandidateGeneration.ambiguousMissingPathMustFailClosed,true);
+  assert.equal(gated.sourceCandidateGeneration.invalidRelativePathFailureClass,'INVALID_PATH');
+  assert.equal(gated.sourceCandidateGeneration.invalidPathBoundedRetry,true);
+  assert.equal(gated.sourceCandidateGeneration.deterministicRecoveryBeforeAdditionalModelInvocation,true);
+  assert.equal(gated.sourceCandidateGeneration.missingPathRecoveryTelemetry,'codingMethod.missingPathRecoveries');
+  assert.equal(gated.sourceCandidateGeneration.latestObservedMissingPathIncident.runId,36057026213);
+  assert.equal(gated.sourceCandidateGeneration.latestObservedMissingPathIncident.affectedRobloxTasks,13);
   assert.equal(gated.runtimeSynchronization.syncBeforeEveryNonNeuronReserveIngress,true);
   assert.equal(gated.runtimeSynchronization.staleVibeControlStateMayNotOverrideNewerCompanyRuntime,true);
   assert.equal(gated.runtimeSynchronization.lifecycleProjectionMustBeMonotonic,true);
@@ -717,6 +726,11 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(arch.shadowFallbackPreserved,true);
   assert.equal(arch.minimumProcedurePolicyRespected,true);
   assert.equal(arch.runtimeResultIngress.liveCodeMerged,true);
+  assert.equal(arch.sourceCandidateRecovery.missingEditPath,'UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES');
+  assert.equal(arch.sourceCandidateRecovery.deterministicBeforeModelRetry,true);
+  assert.equal(arch.sourceCandidateRecovery.ambiguousOrUnmatchedPath,'INVALID_PATH_BOUNDED_RETRY');
+  assert.equal(arch.sourceCandidateRecovery.writableScopeExpansionAllowed,false);
+  assert.equal(arch.sourceCandidateRecovery.telemetry,'codingMethod.missingPathRecoveries');
   assert.equal(arch.allowedWorkerAuthority,'EXISTING_QUEUED_TASK_DISPATCH_ONLY');
   assert.equal(arch.retryStrategyMutationRequiresVerifiedRootCause,true);
   assert.equal(arch.successfulResultMutationForbidden,true);

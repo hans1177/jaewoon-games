@@ -509,6 +509,35 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
+
+test('missing edit path is recovered from the unique responsible source match without another model call', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'missing-path.json');
+  const root='roblox-games/demo';
+  const client='client/Game.client.luau';
+  const config='shared/GameConfig.luau';
+  const workOrder=order({
+    target:'roblox',
+    root,
+    responsibleFiles:[`${root}/${client}`,`${root}/${config}`],
+    taskId:'missing-edit-path-recovery'
+  });
+  write(path.join(cwd,root,client),'local visualState = 1\nreturn visualState\n');
+  write(path.join(cwd,root,config),'local configState = 1\nreturn configState\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({
+    edits:[{path:'',find:'local visualState = 1',replace:'local visualState = 2'}],
+    newFiles:[]
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.generation.missingPathRecoveries,1);
+  assert.equal(result.codingMethod.missingPathRecoveries,1);
+  assert.deepEqual(result.changedFiles,[client]);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',client),'utf8'),/visualState = 2/);
+  assert.match(fs.readFileSync(path.join(cwd,root,client),'utf8'),/visualState = 1/);
+});
+
 test('system architecture worker filters control metadata from source context without widening writes', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
@@ -1396,6 +1425,8 @@ test('generation failure classification keeps causal retry reasons distinct',()=
   assert.equal(generationFailureClass(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),'SEMANTIC_DIFF_BUDGET');
   assert.equal(shouldRetryGenerationError(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),true);
   assert.equal(generationFailureClass(new Error('책임 파일 범위 밖 수정 금지: config.js')),'INVALID_PATH');
+  assert.equal(generationFailureClass(new Error('잘못된 상대 경로:')),'INVALID_PATH');
+  assert.equal(shouldRetryGenerationError(new Error('잘못된 상대 경로:')),true);
   assert.equal(generationFailureClass(new Error('전체 교체 파일 크기 오류: index.html')),'FULL_REWRITE_SIZE');
   assert.equal(generationFailureClass(new Error('모델 JSON 파싱 실패')),'MALFORMED_OUTPUT');
   assert.equal(generationFailureClass(new Error('같은 파일에 edit/new/replace 중복 작업 금지')),'MALFORMED_OUTPUT');

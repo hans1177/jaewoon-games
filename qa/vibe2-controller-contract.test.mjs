@@ -121,8 +121,8 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
     '.github/workflows/company-evolution-qa.yml',
     '.github/workflows/vibe3-engine-contract.yml'
   ]);
-  assert.equal(runtime.version>=27,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,27);
+  assert.equal(runtime.version>=28,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,28);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
   assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
@@ -136,6 +136,13 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.atomicNeuronStream.runtimeResultIngress,true);
   assert.equal(runtime.continuous.atomicNeuronStream.runtimeResultPassIsObserveOnly,true);
   assert.equal(runtime.continuous.atomicNeuronStream.runtimeResultFailureRequiresVerifiedRootCauseForGatedMutation,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.missingEditPathRecovery,'UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES');
+  assert.equal(runtime.continuous.sourceCandidateGeneration.deterministicRecoveryBeforeModelRetry,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.invalidRelativePathFailureClass,'INVALID_PATH');
+  assert.equal(runtime.continuous.sourceCandidateGeneration.invalidPathBoundedRetry,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.ambiguousMissingPathFailClosed,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.writableScopeExpansionAllowed,false);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.missingPathRecoveryTelemetry,'codingMethod.missingPathRecoveries');
   assert.equal(runtime.projectLifecycle.runtimeResultNeuralEventCompilation,true);
   assert.equal(runtime.projectLifecycle.runtimeResultNeuralEventCompiler,'tools/vibe2-auto-planner.mjs::compileRuntimeNeuralEvent');
   assert.equal(runtime.projectLifecycle.reserveIngressCompanyRuntimeSyncRequired,true);
