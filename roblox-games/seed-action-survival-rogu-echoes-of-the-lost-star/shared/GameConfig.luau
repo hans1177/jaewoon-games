@@ -82,4 +82,4 @@ local Config = {
   },
 }
 
-return table.freeze(Config)
+return table.freeze(Config + { el = 1, Progress = 0, Health = 100, Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100, PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0 })
