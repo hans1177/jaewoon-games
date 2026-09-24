@@ -8,6 +8,7 @@ import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES} from '../assets/vibe-studio-asset-universe.js';
+import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation} from '../assets/vibe-environment-director.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -260,6 +261,20 @@ export function buildVibeAssetProductionPlan({
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const requestedConcept=inferRequestedConcept(task,request);
+  const referenceImages=Array.isArray(task.referenceImages)?task.referenceImages:Array.isArray(task.references?.images)?task.references.images:[];
+  const referenceImageStudies=freezeList(referenceImages.map((row,index)=>{
+    const request=createVibeReferenceImageStudyRequest({
+      sourceId:row?.sourceId||row?.id||`reference-${index+1}`,
+      sourceType:row?.sourceType||'ABSTRACTED_MULTI_REFERENCE_ANALYSIS',
+      imageRef:row?.imageRef||row?.path||row?.url||'',
+      rights:row?.rights||{},
+      purpose:row?.purpose||'MAP_STRUCTURE'
+    });
+    const observation=row?.observation?bindVibeReferenceImageObservation({
+      request,observation:row.observation,verifiedAgainstSource:row.verifiedAgainstSource===true
+    }):null;
+    return freeze({request,observation});
+  }));
   const selector=planAssetApplication({
     prompt:request,
     manifest:manifestInput,
@@ -547,7 +562,11 @@ export function buildVibeAssetProductionPlan({
           generationPipeline:freezeList(universeContract?.worldGenerationStudio?.generationPipeline||[]),
           routeGrammar:freeze(universeContract?.worldGenerationStudio?.routeGrammar||{}),
           streaming:freeze(universeContract?.worldGenerationStudio?.runtimeStreaming||{}),
-          learning:freeze(universeContract?.worldGenerationStudio?.learning||{})
+          learning:freeze(universeContract?.worldGenerationStudio?.learning||{}),
+          visionObservationContract:freeze(universeContract?.worldGenerationStudio?.referenceAbstraction?.visionObservationContract||{}),
+          referenceImageStudies,
+          readyObservationCount:referenceImageStudies.filter(row=>row.request?.ready&&row.observation?.valid).length,
+          verifiedObservationCount:referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).length
         })
       }),
       retargetCleanupRequirements:freezeList(companyLibrary?.studioMotionProgram?.retargetCleanupRequirements||[]),
@@ -712,6 +731,9 @@ export function buildVibeAssetProductionPlan({
       directReferenceMapCopyForbidden:universeContract?.worldGenerationStudio?.referenceAbstraction?.directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden===true,
       mapDnaRequired:Array.isArray(universeContract?.worldGenerationStudio?.mapDnaFields)&&universeContract.worldGenerationStudio.mapDnaFields.length>0,
       seamlessStreamingPlanRequired:universeContract?.worldGenerationStudio?.runtimeStreaming?.perceivedSeamlessStreamingTarget===true,
+      referenceImageObservationSupported:universeContract?.worldGenerationStudio?.referenceAbstraction?.visionObservationContract?.enabled===true,
+      rawProtectedReferenceImagePersistentLearningForbidden:universeContract?.worldGenerationStudio?.referenceAbstraction?.visionObservationContract?.rawImagePersistentLearningForbidden===true,
+      referenceObservationMustBeSourceBound:universeContract?.worldGenerationStudio?.referenceAbstraction?.visionObservationContract?.observationMustBeBoundToSourceId===true,
       gameVisualDnaRequired:universeContract?.gameVisualDna?.enabled===true,
       assetLoadoutSelectorRequired:universeContract?.assetLoadoutSelector?.enabled===true,
       futureDemandForecastEnabled:universeContract?.futureDemandForecast?.enabled===true,
@@ -770,7 +792,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.gameVisualDna?.fingerprint?`Game Visual DNA=${plan.companyGraphicsLibrary.studioAssetUniverse.gameVisualDna.fingerprint}; 이후 업데이트는 이 게임 고유 스타일/월드 언어를 먼저 읽고 유지한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.loadout?`Asset Loadout unresolved=${plan.companyGraphicsLibrary.studioAssetUniverse.loadout.unresolved?.length||0}; 검증 회사 자산과 호환/사용 이력 우선으로 자동 선택하고 잠금 선택은 보존한다.`:'',
-    plan.companyGraphicsLibrary?.studioAssetUniverse?.worldGenerationStudio?.enabled?'World Generation Studio는 허용된 이미지/내부 게임/다중 레퍼런스에서 지형·길·밀도·시야·랜드마크 위계 같은 추상 구조만 학습한다. 특정 보호 작품의 맵/랜드마크/장면을 그대로 복제하지 않는다. Map DNA→macro terrain→route graph→zone→micro props→initial prewarm→chunk/LOD streaming→reachability/mobile QA 순으로 연결한다.':'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.worldGenerationStudio?.enabled?`World Generation Studio는 허용된 이미지/내부 게임/다중 레퍼런스에서 지형·길·밀도·시야·랜드마크 위계 같은 추상 구조만 학습한다. 특정 보호 작품의 맵/랜드마크/장면을 그대로 복제하지 않는다. Map DNA→macro terrain→route graph→zone→micro props→initial prewarm→chunk/LOD streaming→reachability/mobile QA 순으로 연결한다. referenceImages=${plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.referenceImageStudies?.length||0}, verifiedObservations=${plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.verifiedObservationCount||0}.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
     '선택 순서: 같은 게임/검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
