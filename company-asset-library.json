@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -34,7 +34,11 @@
     "clothingLayerCompatibility": true,
     "buildingGrammar": true,
     "biomeDna": true,
-    "autonomousUniversalGapFill24h": true
+    "autonomousUniversalGapFill24h": true,
+    "styleBibleGenerator": true,
+    "libraryHeatmap": true,
+    "autonomousGapFill24h": true,
+    "semanticTemplateSpaceNotVerifiedAssets": true
   },
   "platformPacks": [
     {
@@ -544,6 +548,38 @@
       "platform": "UNITY_ROBLOX_SPLIT",
       "status": "RESEARCH_ACTIVE",
       "note": "모든 에셋군의 verified/prepared/required/demand/style/platform coverage와 gap priority 계산"
+    },
+    {
+      "id": "studio-prop-library",
+      "title": "Studio Prop Library",
+      "category": "PROP",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Furniture/Container/Crafting/Decoration/Resource/Interactive/Destruction 소품과 Biome/Room/Interaction 연결"
+    },
+    {
+      "id": "studio-style-bible-generator",
+      "title": "Studio Style Bible Generator",
+      "category": "SYSTEM",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Shape/Proportion/Silhouette/Palette/Material/Lighting/VFX/Animation/UI/Building/Creature 언어를 게임 Style Lock으로 통합"
+    },
+    {
+      "id": "studio-cross-asset-compatibility",
+      "title": "Cross Asset Compatibility Graph",
+      "category": "SYSTEM",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Character/Creature/Rig/Clothing/Armor/Weapon/Motion/Skill/VFX/Audio/Material/Building/Biome/UI/Platform 관계 검증"
+    },
+    {
+      "id": "studio-library-heatmap",
+      "title": "Studio Library Heatmap",
+      "category": "SYSTEM",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "실게임 수요·런타임 결손·재사용성·스타일/플랫폼 gap 기반 24H 채움 우선순위"
     }
   ],
   "studioMotion": {
@@ -2606,7 +2642,59 @@
       "UNITY_OR_ROBLOX_NATIVE_VARIANT",
       "ACTUAL_TARGET_GAME_RUNTIME_CAPTURE",
       "MOBILE_QA"
-    ]
+    ],
+    "semanticTemplateSpace": {
+      "state": "PREPARED_SEMANTIC_TEMPLATE_SPACE",
+      "productionVerified": false,
+      "description": "COMBINATORIAL_AUTHORING_SPACE_NOT_ACTUAL_VERIFIED_BINARY_ASSETS",
+      "creature": {
+        "bodyPlans": 40,
+        "species": 68,
+        "mutationAxes": 17
+      },
+      "clothing": {
+        "layerSlots": 15,
+        "themes": 15,
+        "themeLayerCombinations": 225
+      },
+      "building": {
+        "moduleTypes": 13,
+        "themes": 12,
+        "themedModuleCombinations": 156,
+        "roomKits": 11
+      },
+      "biome": {
+        "biomes": 18,
+        "channels": 15,
+        "biomeChannelSlots": 270
+      },
+      "weapon": {
+        "families": 15
+      },
+      "skillPresentation": {
+        "components": 7
+      },
+      "material": {
+        "surfaces": 13,
+        "styles": 5,
+        "surfaceStyleCombinations": 65
+      },
+      "audio": {
+        "families": 11,
+        "targetVariantsPerFamily": 8,
+        "targetVariantSlots": 88
+      },
+      "damagePresentation": {
+        "families": 12,
+        "components": 4,
+        "totalComponentSlots": 48
+      },
+      "destruction": {
+        "families": 7,
+        "lodModes": 3,
+        "totalLodSlots": 21
+      }
+    }
   },
   "universalCoverage": {
     "status": "ACTIVE",
@@ -2635,6 +2723,65 @@
       "ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET",
       "PREPARE_SEMANTIC_ASSET_SEED",
       "AUTHOR_NEW_PLATFORM_NATIVE_ASSET"
-    ]
+    ],
+    "scannerImplementation": "assets/vibe-studio-asset-universe.js#scanUniversalAssetCoverage",
+    "heatmapImplementation": "assets/vibe-studio-asset-universe.js#buildLibraryHeatmap",
+    "gapFillImplementation": "assets/vibe-studio-asset-universe.js#buildAutonomousAssetGapFillPlan",
+    "semanticTemplateSpace": {
+      "state": "PREPARED_SEMANTIC_TEMPLATE_SPACE",
+      "productionVerified": false,
+      "description": "COMBINATORIAL_AUTHORING_SPACE_NOT_ACTUAL_VERIFIED_BINARY_ASSETS",
+      "creature": {
+        "bodyPlans": 40,
+        "species": 68,
+        "mutationAxes": 17
+      },
+      "clothing": {
+        "layerSlots": 15,
+        "themes": 15,
+        "themeLayerCombinations": 225
+      },
+      "building": {
+        "moduleTypes": 13,
+        "themes": 12,
+        "themedModuleCombinations": 156,
+        "roomKits": 11
+      },
+      "biome": {
+        "biomes": 18,
+        "channels": 15,
+        "biomeChannelSlots": 270
+      },
+      "weapon": {
+        "families": 15
+      },
+      "skillPresentation": {
+        "components": 7
+      },
+      "material": {
+        "surfaces": 13,
+        "styles": 5,
+        "surfaceStyleCombinations": 65
+      },
+      "audio": {
+        "families": 11,
+        "targetVariantsPerFamily": 8,
+        "targetVariantSlots": 88
+      },
+      "damagePresentation": {
+        "families": 12,
+        "components": 4,
+        "totalComponentSlots": 48
+      },
+      "destruction": {
+        "families": 7,
+        "lodModes": 3,
+        "totalLodSlots": 21
+      }
+    },
+    "baselineSource": "assets/vibe-studio-asset-universe.js#DEFAULT_COVERAGE_BASELINES",
+    "learningLaneConcurrentWithProduction": true,
+    "actualNativeRuntimeConsumerRequiredForPromotion": true,
+    "directCrossPlatformBinaryReuseForbidden": true
   }
 }
