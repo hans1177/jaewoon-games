@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -141,7 +141,7 @@
     "scheduleBecomesActiveOnDefaultBranchIntegration": true,
     "maxTaskRetries": 2,
     "maxWorkMinutes": 22,
-    "maxModelCallsPerWorker": 1,
+    "maxModelCallsPerWorker": 4,
     "dispatchNextWhenCapacityOpens": true,
     "refillMode": "task-micro-fanin-repository-dispatch-with-hourly-safety-net",
     "refillRef": "vibe2-unreal-core",
@@ -386,7 +386,7 @@
       "terminalStateForbidden": true,
       "sequence": [
         "BUILD_UP",
-        "ERROR_REPAIR_IF_PRESENT",
+        "REPAIR_WHEN_EVIDENCE_EXISTS",
         "OPTIMIZE",
         "QUALITY_COMPARE",
         "BUILD_UP"
@@ -394,7 +394,12 @@
       "verifiedCheckpointFeedsNextBuildUp": true,
       "independentGamesParallel": true,
       "independentNonOverlappingPackagesParallel": true,
-      "waitingRuntimeDoesNotConsumeGeneralDevelopmentCapacity": true
+      "waitingRuntimeDoesNotConsumeGeneralDevelopmentCapacity": true,
+      "minimumMeaningfulImprovementPerVerifiedCycle": 1,
+      "foundationPresentationPassesBeforeGenericVisualEvolution": true,
+      "designTextIsNotImplementationCeiling": true,
+      "sameResponsibleFileConcurrentWrite": false,
+      "fullRegressionOnceAtFanIn": true
     }
   },
   "adaptiveBackpressure": {
@@ -932,23 +937,25 @@
   "workPackages": {
     "enabled": true,
     "scheduler": "feature-boundary-work-package",
-    "minWorkUnitsPerPackage": 3,
+    "minWorkUnitsPerPackage": 6,
     "minTasksPerPackage": 2,
-    "substantialSingleTaskWorkUnits": 3,
+    "substantialSingleTaskWorkUnits": 6,
     "minRelatedImprovementsPerPackage": 3,
-    "targetWorkUnitsPerCycle": 12,
+    "targetWorkUnitsPerCycle": 24,
     "targetPackagesPerCycle": 4,
-    "targetFeaturePackagesPerCycle": 1,
+    "targetFeaturePackagesPerCycle": 2,
     "maxPackagesPerCycle": 256,
-    "maxTasksPerPackage": 5,
-    "smallTaskAction": "auto-expand-or-defer",
+    "maxTasksPerPackage": 8,
+    "smallTaskAction": "merge-into-coherent-studio-package-or-defer",
     "automaticExpansionMode": "real-disjoint-candidates-first-explicit-related-scopes-fallback",
     "automaticExpansion": [
-      "related-diagnostics",
-      "adjacent-safe-maintenance",
-      "ux-readability",
-      "qa-hardening",
-      "performance-sanity"
+      "implementation-completeness",
+      "system-connection",
+      "error-recovery",
+      "visual-and-feedback-polish",
+      "ux-mobile-readability",
+      "performance-sanity",
+      "regression-hardening"
     ],
     "sameFileParallelWrite": false,
     "explorationMode": "task-local-exploration-handoff",
@@ -981,7 +988,7 @@
       "verified-learning-feedback-recorded",
       "next-studio-build-cycle-remains-live"
     ],
-    "preferredDeliveryUnit": "one-functional-pr-per-work-package-after-package-qa",
+    "preferredDeliveryUnit": "one-substantial-functional-quality-package-per-independent-source-responsibility",
     "workloadTelemetry": {
       "enabled": true,
       "tool": "tools/vibe2-work-package.mjs",
@@ -1008,8 +1015,9 @@
       "lowEfficiencyAction": "increase-minimum-work-units-progressively",
       "lowEfficiencyStreakThreshold": 2,
       "maxAdaptiveBoost": 3,
-      "maxMinWorkUnitsPerPackage": 6,
-      "neverReduceSafetyOrQa": true
+      "maxMinWorkUnitsPerPackage": 8,
+      "neverReduceSafetyOrQa": true,
+      "neverShrinkStudioQualityPackageToMicroPatch": true
     },
     "capacityPolicy": "UNBOUNDED_BY_POLICY_FILL_EXTERNAL_PROVIDER_CAPACITY_IN_IMMEDIATE_WAVES",
     "totalPackageLimit": null,
