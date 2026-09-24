@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 67,
+  "revision": 68,
   "updatedAt": "2026-09-24",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1241,5 +1241,31 @@
     "reuseExistingQuestDialogueState": true,
     "gameplayAuthorityExpansion": false,
     "canonicalLearningOnly": true
+  },
+  "specializedGameDevelopmentLearning": {
+    "source": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery",
+    "status": "MIRROR_ONLY",
+    "existingCanonicalLearningMotorOnly": true,
+    "domains": [
+      "CONCEPT_DIRECTION",
+      "WORLD_GENERATION",
+      "LEVEL_DESIGN",
+      "ROUTE_DESIGN",
+      "STREAMING_OPTIMIZATION",
+      "MAIN_STORY_GENERATION",
+      "QUEST_GRAPH",
+      "FORESHADOWING_PAYOFF",
+      "TWIST_EVIDENCE_CHAIN",
+      "CHARACTER_VOICE",
+      "CHARACTER_RELATIONSHIP_MEMORY",
+      "CHARACTER_BEHAVIOR",
+      "COMPANION_BEHAVIOR",
+      "NPC_BEHAVIOR",
+      "MONSTER_BEHAVIOR_PERSONALITY",
+      "WORLD_NARRATIVE_BINDING"
+    ],
+    "positiveMasteryRequiresVerifiedProjectOutcome": true,
+    "rawReferenceOrGeneratedContentDirectMastery": false,
+    "authorityExpansion": false
   }
 }
