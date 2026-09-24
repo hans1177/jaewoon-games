@@ -1,5 +1,5 @@
 {
-  "version": 332,
+  "version": 333,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16630,8 +16630,19 @@
             "roblox-verification-run:",
             "unity-verification-run:"
           ],
-          "authorityExpansion": false
-        }
+          "authorityExpansion": false,
+          "finalMarkerMustBeExactEvidenceToken": true,
+          "focusedQaTraceCannotSatisfyFinalMarker": true,
+          "fanInProvenanceRequiredForPositiveIngress": true
+        },
+        "finalMarkerMustBeExactEvidenceToken": true,
+        "prefixedOrSuffixedFocusedQaTokenCannotMatchFinalMarker": true,
+        "positiveProvenanceRequired": [
+          "specialized-final-verification:PASS",
+          "specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION"
+        ],
+        "positiveWithoutFanInProvenanceMustBeIgnored": true,
+        "focusedQaTraceTokenIsNeverCanonicalVerifiedMarker": true
       }
     },
     "worldAndConceptLearning": {
