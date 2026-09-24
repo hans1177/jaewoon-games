@@ -1183,7 +1183,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false}={}){
   const rawPrompt=String(prompt??'');
-  const studioExpansion=/\[STUDIO_QUALITY_EVOLUTION\]/i.test(rawPrompt);
+  const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
     ? allowedLine.slice(allowedLine.indexOf(':')+1).split(',').map(clean).filter(Boolean)
