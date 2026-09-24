@@ -50,24 +50,52 @@ function inferRequestedConcept(task={},request=''){
   };
   const text=clean(request).toUpperCase(),found=[];
   const rules=[
-    ['CARTOON',/CARTOON|카툰|만화/],['SEMI_CARTOON',/SEMI.?CARTOON|세미.?카툰/],['ANIME_OR_CEL_SHADED',/ANIME|CEL.?SHADE|애니|셀.?셰이/],
-    ['DARK_FANTASY',/DARK.?FANTASY|다크.?판타지/],['HIGH_FANTASY',/HIGH.?FANTASY|하이.?판타지/],['WUXIA',/WUXIA|무협/],['XIANXIA',/XIANXIA|선협/],
-    ['GOTHIC',/GOTHIC|고딕/],['HORROR',/HORROR|공포|호러/],['COSMIC_HORROR',/COSMIC.?HORROR|코스믹/],['CUTE_CASUAL',/CUTE|CASUAL|귀여|캐주얼/],
-    ['LOW_POLY',/LOW.?POLY|로우.?폴리/],['REALISTIC',/REALISTIC|실사/],['SCI_FI',/SCI.?FI|SF|공상과학/],['CYBERPUNK',/CYBERPUNK|사이버펑크/],
-    ['STEAMPUNK',/STEAMPUNK|스팀펑크/],['POST_APOCALYPSE',/POST.?APOC|아포칼립스|폐허세계/],['PRIMITIVE',/PRIMITIVE|원시/],
-    ['ANCIENT_CIVILIZATION',/ANCIENT|고대.?문명/],['MODERN_URBAN',/MODERN.?URBAN|현대.?도시/],['OCEANIC',/OCEAN|해양/],['SKY_WORLD',/SKY.?WORLD|천공/],
-    ['DESERT_CIVILIZATION',/DESERT.?CIVIL|사막.?문명/],['SNOW_KINGDOM',/SNOW.?KINGDOM|설원.?왕국/],['JUNGLE_RUINS',/JUNGLE.?RUIN|밀림.?유적/],
-    ['UNDERGROUND',/UNDERGROUND|지하.?세계/],['UNDEAD',/UNDEAD|언데드/],['MECHANICAL_CIVILIZATION',/MECHANICAL.?CIVIL|기계.?문명/],
-    ['INK_WASH',/INK.?WASH|수묵|먹화/],['WATERCOLOR',/WATERCOLOR|수채화/],['TOON_NOIR',/TOON.?NOIR|카툰.?누아르/],['NOIR',/NOIR|누아르/],
-    ['SOLARPUNK',/SOLARPUNK|솔라펑크/],['BIOPUNK',/BIOPUNK|바이오펑크/],['RETRO_FUTURISM',/RETRO.?FUTUR|레트로.?퓨처|복고.?미래/],
-    ['COZY',/COZY|코지|아늑/],['PAPER_CRAFT',/PAPER.?CRAFT|페이퍼.?크래프트|종이.?공예/],['VOXEL',/VOXEL|복셀/],['DREAMCORE',/DREAMCORE|드림코어/],
-    ['HISTORICAL_EAST_ASIAN',/HISTORICAL.?EAST.?ASIAN|동아시아.?역사|사극/],['SPACE_OPERA',/SPACE.?OPERA|스페이스.?오페라/],
-    ['UNDERWATER_FANTASY',/UNDERWATER.?FANTASY|수중.?판타지|해저.?판타지/],['DESERT_FANTASY',/DESERT.?FANTASY|사막.?판타지/],
-    ['MYTHIC_NORDIC',/MYTHIC.?NORDIC|노르드|북유럽.?신화/]
+    ['SEMI_CARTOON',/SEMI.?CARTOON|세미.?카툰/],['CARTOON',/CARTOON|카툰|만화풍?/],['ANIME_OR_CEL_SHADED',/ANIME|CEL.?SHADE|애니풍?|셀.?셰이/],
+    ['STYLIZED_REALISM',/STYLIZED.?REAL|스타일라이즈드.?실사|세미.?실사/],['STYLIZED_FANTASY',/STYLIZED.?FANTASY|스타일라이즈드.?판타지/],
+    ['DARK_FANTASY',/DARK.?FANTASY|다크.?판타지|\bDARK\b|다크풍?/],['HIGH_FANTASY',/HIGH.?FANTASY|하이.?판타지/],['LOW_FANTASY',/LOW.?FANTASY|로우.?판타지/],
+    ['WUXIA',/WUXIA|무협/],['XIANXIA',/XIANXIA|선협/],['EAST_ASIAN_FANTASY',/EAST.?ASIAN.?FANTASY|동양.?판타지|오리엔탈.?판타지/],
+    ['MYTHIC_NORDIC',/MYTHIC.?NORDIC|NORDIC|NORSE|노르드|북유럽.?신화/],['MYTHIC',/MYTHIC|신화풍?|신화적/],['FAIRYTALE',/FAIRY.?TALE|동화풍?|동화적/],
+    ['DREAMCORE',/DREAMCORE|드림코어/],['DREAMLIKE',/DREAMLIKE|몽환풍?|몽환적/],['GOTHIC',/GOTHIC|고딕/],
+    ['COSMIC_HORROR',/COSMIC.?HORROR|코스믹.?호러|우주적.?공포/],['HORROR',/HORROR|공포|호러/],['CUTE_CASUAL',/CUTE|CASUAL|귀여|캐주얼/],['CHIBI',/CHIBI|치비|SD.?캐릭터/],
+    ['LOW_POLY',/LOW.?POLY|로우.?폴리/],['REALISTIC',/REALISTIC|실사풍?|리얼리스틱/],['MILITARY_SCI_FI',/MILITARY.?SCI.?FI|밀리터리.?SF|군사.?SF/],['SCI_FI',/SCI.?FI|\bSF\b|공상과학/],
+    ['CYBERPUNK',/CYBERPUNK|사이버펑크/],['SOLARPUNK',/SOLARPUNK|솔라펑크/],['BIOPUNK',/BIOPUNK|바이오펑크/],['STEAMPUNK',/STEAMPUNK|스팀펑크/],['DIESELPUNK',/DIESELPUNK|디젤펑크/],
+    ['RETRO_FUTURISM',/RETRO.?FUTUR|레트로.?퓨처|복고.?미래/],['POST_APOCALYPSE',/POST.?APOC|아포칼립스|포스트.?아포칼립스|폐허.?세계/],['PRIMITIVE',/PRIMITIVE|원시/],
+    ['ANCIENT_CIVILIZATION',/ANCIENT.?CIVIL|고대.?문명/],['HISTORICAL_EAST_ASIAN',/HISTORICAL.?EAST.?ASIAN|동아시아.?역사|동양.?사극|사극/],
+    ['MODERN_URBAN',/MODERN.?URBAN|현대.?도시/],['INDUSTRIAL',/INDUSTRIAL|산업풍?|공업풍?/],['OCEANIC',/OCEANIC|OCEAN|해양/],['SKY_WORLD',/SKY.?WORLD|천공.?세계|공중.?도시/],
+    ['DESERT_CIVILIZATION',/DESERT.?CIVIL|사막.?문명/],['DESERT_FANTASY',/DESERT.?FANTASY|사막.?판타지/],['SNOW_KINGDOM',/SNOW.?KINGDOM|설원.?왕국/],['JUNGLE_RUINS',/JUNGLE.?RUIN|밀림.?유적/],
+    ['UNDERWATER_FANTASY',/UNDERWATER.?FANTASY|수중.?판타지|해저.?판타지/],['UNDERGROUND',/UNDERGROUND|지하.?세계/],['UNDEAD',/UNDEAD|언데드/],['MECHANICAL_CIVILIZATION',/MECHANICAL.?CIVIL|기계.?문명/],
+    ['INK_WASH',/INK.?WASH|SUMI|수묵|먹화|먹선/],['WATERCOLOR',/WATERCOLOR|수채화?|수채풍?/],['TOON_NOIR',/TOON.?NOIR|카툰.?누아르/],['NOIR',/NOIR|누아르/],
+    ['COZY',/COZY|코지|아늑/],['PAPER_CRAFT',/PAPER.?CRAFT|PAPER.?CUT|페이퍼.?크래프트|종이.?공예|종이.?컷/],['VOXEL',/VOXEL|복셀/],
+    ['SPACE_OPERA',/SPACE.?OPERA|스페이스.?오페라/]
   ];
-  for(const [family,re] of rules)if(re.test(text))found.push({family,weight:1});
+  for(const [family,re] of rules)if(re.test(text)&&!found.some(row=>row.family===family))found.push({family,weight:1});
   if(!found.length)found.push({family:clean(task.styleFamily||task.style)||'STYLIZED_FANTASY',weight:1});
-  return{styles:found,artTone:[],worldEra:[],combatFeel:[],presentation:[],customTags:[]};
+  const artTone=[
+    /CUTE|귀여/.test(text)?'CUTE':'',/BRIGHT|밝|경쾌/.test(text)?'BRIGHT':'',/MYSTER|신비/.test(text)?'MYSTERIOUS':'',
+    /DARK|다크|음산/.test(text)?'DARK':'',/GRIT|거칠|황량/.test(text)?'GRITTY':'',/ELEGANT|우아/.test(text)?'ELEGANT':'',
+    /EPIC|웅장|영웅/.test(text)?'EPIC':'',/SURREAL|몽환|초현실/.test(text)?'SURREAL':'',/HORROR|공포|호러/.test(text)?'HORROR':'',
+    /COMED|코믹|유쾌/.test(text)?'COMEDIC':''
+  ].filter(Boolean);
+  const worldEra=[
+    /PRIMITIVE|원시/.test(text)?'PRIMITIVE':'',/ANCIENT|고대/.test(text)?'ANCIENT':'',/MEDIEVAL|중세/.test(text)?'MEDIEVAL':'',
+    /WUXIA|무협|선협/.test(text)?'WUXIA':'',/INDUSTRIAL|산업|스팀펑크|디젤펑크/.test(text)?'INDUSTRIAL':'',
+    /MODERN|현대/.test(text)?'MODERN':'',/NEAR.?FUTURE|근미래/.test(text)?'NEAR_FUTURE':'',
+    /FUTURE|미래|SCI.?FI|\bSF\b|스페이스.?오페라/.test(text)?'FUTURE':'',/POST.?APOC|아포칼립스/.test(text)?'POST_APOCALYPSE':'',
+    /FANTASY|판타지|신화|동화/.test(text)?'TIMELESS_FANTASY':''
+  ].filter(Boolean);
+  const combatFeel=[
+    /FAST.?COMBO|연타|콤보/.test(text)?'FAST_COMBO':'',/WEIGHT|묵직/.test(text)?'WEIGHTY':'',/DODGE|회피/.test(text)?'DODGE':'',
+    /PARRY|패링/.test(text)?'PARRY':'',/WUXIA|무협|경공|검기/.test(text)?'WUXIA_FLOW':'',/PROJECTILE|원거리|투사체/.test(text)?'PROJECTILE':'',
+    /SKILL.?BURST|스킬.?폭발/.test(text)?'SKILL_BURST':'',/SURVIVAL|생존/.test(text)?'SURVIVAL':'',/CROWD.?CONTROL|군중.?제어/.test(text)?'CROWD_CONTROL':'',
+    /BOSS.?DUEL|보스.?전|결투/.test(text)?'BOSS_DUEL':''
+  ].filter(Boolean);
+  const presentation=[
+    /MINIMAL|미니멀/.test(text)?'MINIMAL':'',/ARCADE|아케이드|읽기.?쉬/.test(text)?'READABLE_ARCADE':'',
+    /CINEMATIC|시네마틱|영화/.test(text)?'CINEMATIC':'',/ATMOSPHERIC|분위기|몰입/.test(text)?'ATMOSPHERIC':'',
+    /HAND.?PAINT|수채|수묵|손그림/.test(text)?'HAND_PAINTED':'',/CEL.?SHADE|셀.?셰이|애니풍?/.test(text)?'CEL_SHADED':'',
+    /MATERIAL.?RICH|재질.?풍부|고재질/.test(text)?'MATERIAL_RICH':''
+  ].filter(Boolean);
+  return{styles:found,artTone:[...new Set(artTone)],worldEra:[...new Set(worldEra)],combatFeel:[...new Set(combatFeel)],presentation:[...new Set(presentation)],customTags:[]};
 }
 
 const WEB_DIRECT_AUTHORING=freeze([
