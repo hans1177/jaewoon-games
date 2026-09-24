@@ -542,7 +542,12 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   const checks=[],issues=[];
   const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
   const atoms=Object.values(loadout.families||{}).flat().map(clean).filter(Boolean);
-  const atomBound=atoms.some(atom=>text.includes(atom));
+  const selectionBody=text.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const selectedAtoms=[...selectionBody.matchAll(/["']([A-Z][A-Z0-9_]{2,})["']/g)].map(match=>clean(match[1])).filter(Boolean);
+  const selectedSet=new Set(selectedAtoms);
+  const atomBound=atoms.length>0&&atoms.every(atom=>selectedSet.has(atom));
+  const runtimeObservable=/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']\s*,\s*STUDIO_ASSET_BINDING_VERSION\s*\)/.test(text)
+    &&/SetAttribute\s*\(\s*["']StudioAssetAtoms["']\s*,\s*table\.concat\s*\(\s*STUDIO_ASSET_SELECTION\s*,\s*["'],["']\s*\)\s*\)/.test(text);
   const nativeSignals=patternHits(text,[
     /Instance\.new\s*\(/i,
     /\b(?:MeshPart|SpecialMesh|SurfaceAppearance|ParticleEmitter|Trail|Beam|Attachment|WeldConstraint|Motor6D|ScreenGui|Frame|TextButton|ImageButton)\b/i,
@@ -550,9 +555,11 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     /Color3\.(?:fromRGB|new)\s*\(/i
   ]);
   require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*1\b/.test(text));
+  require('ROBLOX_STUDIO_ASSET_SELECTION_MANIFEST',selectedAtoms.length>0);
   require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
+  require('ROBLOX_RUNTIME_OBSERVABLE_SELECTION',runtimeObservable);
   require('ROBLOX_NATIVE_VISUAL_BINDING',nativeSignals>=2);
-  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound);
+  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound&&runtimeObservable);
   if(issues.length)throw new Error(`ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:${issues.join('|')}`);
   return{
     status:'STATIC_PASS',checks,selectedAtomCount:atoms.length,runtimeStillRequired:true,
