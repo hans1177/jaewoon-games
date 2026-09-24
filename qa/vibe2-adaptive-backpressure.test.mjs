@@ -36,6 +36,7 @@ const healthyTelemetry = (overrides = {}) => ({
   bottleneck: 'NONE',
   queueWait: { p95Ms: 1000 },
   checkout: { p95Ms: 1000 },
+  throughput: { firstCandidatePassRatePct: 100, verifiedCandidatesPerMinute: 4, changedLinesPerMinute: 40 },
   ...overrides
 });
 
@@ -286,4 +287,35 @@ test('game-primary expands above 20 but pressure never drives it below 20', () =
 
   assert.equal(adaptiveRequestedMax(createParallelismControl({currentMax:4}),256,{minimumMax:4}),20);
   assert.equal(adaptiveRequestedMax(createParallelismControl({currentMax:256}),256,{minimumMax:4}),256);
+});
+
+
+test('verified throughput regression blocks scale-up and applies one pressure step',()=>{
+  const control=createParallelismControl({
+    currentMax:64,
+    lastTelemetry:{verifiedCandidatesPerMinute:8}
+  });
+  const next=decideAdaptiveBackpressure(control,healthyTelemetry({
+    runId:'throughput-regression',
+    workerCount:64,
+    effectiveMax:64,
+    actualPeakConcurrency:64,
+    throughput:{firstCandidatePassRatePct:90,verifiedCandidatesPerMinute:4,changedLinesPerMinute:30}
+  }));
+  assert.equal(next.currentMax,32);
+  assert.equal(next.lastDecision,'DOWN');
+  assert.match(next.lastReason,/VERIFIED_THROUGHPUT_REGRESSION/);
+});
+
+test('poor first-candidate pass rate prevents blind parallel expansion',()=>{
+  const next=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:32}),
+    healthyTelemetry({
+      runId:'poor-first-pass',
+      throughput:{firstCandidatePassRatePct:50,verifiedCandidatesPerMinute:5,changedLinesPerMinute:30}
+    })
+  );
+  assert.equal(next.currentMax,20);
+  assert.equal(next.lastDecision,'DOWN');
+  assert.match(next.lastReason,/FIRST_CANDIDATE_PASS_RATE/);
 });
