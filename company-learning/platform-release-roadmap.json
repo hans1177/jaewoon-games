@@ -1,5 +1,5 @@
 {
-  "version": 330,
+  "version": 331,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16598,7 +16598,13 @@
         "existingSeenExperienceDedupeRequired": true,
         "rawTelemetryOrPreparedSemanticMayNotEnterPositiveMastery": true,
         "existingCanonicalLearningMotorOnly": true,
-        "authorityExpansion": false
+        "authorityExpansion": false,
+        "persistAcceptedSyntheticExperienceToCanonicalExperienceMemory": true,
+        "canonicalExperienceStore": ".vibe2/experience.json",
+        "sameCycleRetrievalAndHandoffUseMergedExperienceMemory": true,
+        "duplicatePersistenceMustUseOutcomeIdEvidenceToken": true,
+        "repeatedIndependentVerificationMayReinforceConfidenceOncePerDistinctOutcomeId": true,
+        "persistenceMayNotCreatePositiveMasteryWithoutVerifiedEvidence": true
       }
     },
     "worldAndConceptLearning": {
