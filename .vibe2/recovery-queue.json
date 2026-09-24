@@ -7229,9 +7229,9 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "portfolio:6",
-      "checkpoint": "2026-09-24T14:29:26Z",
+      "checkpoint": "2026-09-24T15:19:55Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-09-24T14:29:26Z",
+      "sourceMutationBaseline": "2026-09-24T15:19:55Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -10995,7 +10995,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-24T14:57:40.754Z"
+      "updatedAt": "2026-09-24T15:28:09.172Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -16825,7 +16825,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-24T14:57:40.778Z"
+      "updatedAt": "2026-09-24T15:28:09.188Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -19883,7 +19883,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-24T14:57:40.789Z"
+      "updatedAt": "2026-09-24T15:28:09.195Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118677,10 +118677,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-24T14:57:41.112Z",
+      "updatedAt": "2026-09-24T15:28:09.394Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T14:57:41.112Z"
+        "recovery-dispatched-at:2026-09-24T15:28:09.394Z"
       ]
     },
     {
@@ -144177,10 +144177,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-24T14:57:41.112Z",
+      "updatedAt": "2026-09-24T15:28:09.394Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T14:57:41.112Z"
+        "recovery-dispatched-at:2026-09-24T15:28:09.394Z"
       ]
     },
     {
@@ -144268,7 +144268,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.521Z",
-      "updatedAt": "2026-09-24T14:57:40.739Z"
+      "updatedAt": "2026-09-24T15:28:09.162Z"
     },
     {
       "id": "recovery-828f178e7d13218d39e5",
@@ -144340,7 +144340,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:05:52.548Z",
-      "updatedAt": "2026-09-24T14:57:40.765Z"
+      "updatedAt": "2026-09-24T15:28:09.180Z"
     },
     {
       "id": "recovery-ticket-bug-97439712d416497ffce0",
@@ -144383,7 +144383,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-24T14:57:40.267Z"
+      "updatedAt": "2026-09-24T15:28:08.867Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144426,7 +144426,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-24T14:57:40.278Z"
+      "updatedAt": "2026-09-24T15:28:08.874Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144465,7 +144465,8 @@
         "tester-debug-occurrence-count:11",
         "tester-debug-occurrence-count:12",
         "tester-debug-occurrence-count:13",
-        "tester-debug-occurrence-count:14"
+        "tester-debug-occurrence-count:14",
+        "tester-debug-occurrence-count:15"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144478,15 +144479,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 14,
+      "recurrenceCount": 15,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-24T14:57:41.112Z",
+      "updatedAt": "2026-09-24T15:28:09.394Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T14:57:41.112Z"
+        "recovery-dispatched-at:2026-09-24T15:28:09.394Z"
       ]
     },
     {
@@ -144532,10 +144533,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-09-24T14:57:41.112Z",
+      "updatedAt": "2026-09-24T15:28:09.394Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-24T14:57:41.112Z"
+        "recovery-dispatched-at:2026-09-24T15:28:09.394Z"
       ]
     }
   ]
