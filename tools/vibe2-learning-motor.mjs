@@ -1946,7 +1946,16 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
     const positiveMarkers=gameTargetEligible&&fanInProvenance&&nativeProof.pass
       ?Object.keys(SPECIALIZED_QUEUE_POSITIVE_EVIDENCE).filter(exactMarker)
       :[];
-    const negativeMarkers=Object.keys(SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE).filter(exactMarker);
+    const negativeVerification=normalized.has('SPECIALIZED-NEGATIVE-VERIFICATION:FAIL');
+    const negativeAuthority=[
+      'SPECIALIZED-NEGATIVE-AUTHORITY:FOCUSED_QA',
+      'SPECIALIZED-NEGATIVE-AUTHORITY:RUNTIME_QA',
+      'SPECIALIZED-NEGATIVE-AUTHORITY:FAN_IN_RUNTIME_FAILURE'
+    ].find(token=>normalized.has(token))||null;
+    const negativeProvenance=gameTargetEligible&&negativeVerification&&Boolean(negativeAuthority);
+    const negativeMarkers=negativeProvenance
+      ?Object.keys(SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE).filter(exactMarker)
+      :[];
     const infrastructureFailure=task?.infrastructureFailure===true||evidence.some(value=>/infrastructure[ _-]?failure\s*[:=]\s*(?:true|yes|1)|infra[ _-]?failure\s*[:=]\s*(?:true|yes|1)/i.test(value));
     const runIdentity=evidence.find(value=>value.startsWith('actions-run:'))||evidence.find(value=>value.startsWith('qa-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task?.id)||'unknown-run';
     const traceEvidence=evidence.filter(value=>/^(?:actions-run:|qa-run:|vibe2\/candidate\/|candidate-sha:|source-revision:|artifact-id:|runtime-evidence-ref:|qa-evidence-ref:|roblox-verification-run:|unity-verification-run:|specialized-native-runtime-evidence:(?:roblox-verification-run:|unity-verification-run:))/i.test(value)).slice(-20);
@@ -1980,7 +1989,7 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
       records.push({
         ...base,
         id,
-        evidence:[...base.evidence,...negativeMarkers.map(marker=>'verified-marker:'+marker),'specialized-outcome-id:'+id],
+        evidence:[...base.evidence,...negativeMarkers.map(marker=>'verified-marker:'+marker),'specialized-negative-verification:FAIL',negativeAuthority.toLowerCase(),'specialized-outcome-id:'+id],
         outcome:'FAIL',
         failureCause:negativeMarkers.join(' | '),
         avoidPatterns:patterns,
