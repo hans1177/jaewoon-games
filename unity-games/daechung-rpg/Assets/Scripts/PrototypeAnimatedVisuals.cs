@@ -47,6 +47,12 @@ namespace JaewoonGames.DaechungRpg
             }
 
             return new GameObject("PrototypeAnimatedVisuals").AddComponent<PrototypeAnimatedVisuals>();
+            {
+                Instance = existing;
+                return existing;
+            }
+
+            return new GameObject("PrototypeAnimatedVisuals").AddComponent<PrototypeAnimatedVisuals>();
         }
 
         private void Awake()

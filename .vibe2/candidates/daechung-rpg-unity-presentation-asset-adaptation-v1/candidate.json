@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "            if (existing != null)",
+      "replace": "            if (existing != null)\n            {\n                Instance = existing;\n                return existing;\n            }\n\n            return new GameObject(\"PrototypeAnimatedVisuals\").AddComponent<PrototypeAnimatedVisuals>();"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
