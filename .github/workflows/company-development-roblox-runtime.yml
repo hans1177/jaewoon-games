@@ -694,7 +694,7 @@ jobs:
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=6');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED');
           NODE
 
   technical-worker:
@@ -1094,7 +1094,7 @@ jobs:
           echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
           echo 'ROBLOX_HEADLESS_FAST_MVP_AUTODISPATCH=ENABLED'
           echo 'ROBLOX_STUDIO_RUNTIME_REQUIRED=NO'
-          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
+          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=EXTERNAL_PROVIDER_MANAGED'
           active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
           echo 'ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'
