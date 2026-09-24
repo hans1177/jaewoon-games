@@ -82,7 +82,10 @@ export function buildFallbackSeed({gameName,genreText='',minimumPages=16}={}){
     finalBoss:{boss:'최종 위협의 핵심 개체',trigger:'후반 목표를 완료해 최종 지역이 열린다',whyNow:'누적된 갈등이 더 이상 미룰 수 없는 상태가 된다',winConsequence:'핵심 갈등이 해소되고 엔딩 선택이 열린다'},
     ending:'플레이어의 행동으로 핵심 갈등이 정리되고 세계의 다음 상태가 제시된다.',
     postgame:'본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다.',
-    npcSeeds:[]
+    npcSeeds:[
+      {name:'길잡이',goal:'플레이어가 핵심 갈등의 원인을 이해하도록 돕는다',conflict:'안전을 위해 모든 사실을 한 번에 말하지 않는다',relationshipToPlayer:'도움을 주지만 선택을 대신하지 않는다',voice:'차분하고 신중한 말투',fear:'자신의 판단 때문에 또 피해가 생기는 것',secret:'초반 사건의 단서를 이전부터 일부 알고 있었다'},
+      {name:'경쟁자',goal:'플레이어와 다른 방식으로 같은 문제를 해결한다',conflict:'목표는 비슷하지만 수단과 우선순위가 충돌한다',relationshipToPlayer:'경쟁과 협력을 오가며 관계가 변한다',voice:'짧고 직설적인 말투',fear:'결정적인 순간에 뒤처지는 것',secret:'후반 갈등과 연결된 개인적 이해관계가 있다'}
+    ]
   };
 }
 function normalizedPhases(seed,fallback){
@@ -180,5 +183,5 @@ export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPa
 }
 export function validExpandedDraft(d){
   const s=d?.storySpine||{},phases=Array.isArray(d?.phasePlans)?d.phasePlans:[],quests=Array.isArray(d?.mainQuestChain)?d.mainQuestChain:[],phaseSet=new Set(phases.map(x=>stageKey(x.stage)));
-  return Boolean(d&&['opening','early','mid','late','finalBoss','ending'].every(k=>clean(s[k]))&&REQUIRED_STAGES.every(x=>phaseSet.has(x))&&phases.length===6&&phases.every(p=>['region','quest','cause','playerAction','result','nextHook'].every(k=>clean(p[k])))&&quests.length>=6&&Array.isArray(d.bossCausality)&&d.bossCausality.length>=1&&Array.isArray(d.foreshadowingGraph)&&d.foreshadowingGraph.length>=2&&d.questGraph?.nodes?.length>=6&&Array.isArray(d.characterProfiles)&&clean(d.causalitySummary)&&clean(d.endgame)&&Number(d.recommendedPages)>=12&&Number(d.recommendedPages)<=30);
+  return Boolean(d&&['opening','early','mid','late','finalBoss','ending'].every(k=>clean(s[k]))&&REQUIRED_STAGES.every(x=>phaseSet.has(x))&&phases.length===6&&phases.every(p=>['region','quest','cause','playerAction','result','nextHook'].every(k=>clean(p[k])))&&quests.length>=6&&Array.isArray(d.bossCausality)&&d.bossCausality.length>=1&&Array.isArray(d.foreshadowingGraph)&&d.foreshadowingGraph.length>=2&&d.questGraph?.nodes?.length>=6&&Array.isArray(d.characterProfiles)&&d.characterProfiles.length===(d.npcMotivations||[]).length&&clean(d.causalitySummary)&&clean(d.endgame)&&Number(d.recommendedPages)>=12&&Number(d.recommendedPages)<=30);
 }
