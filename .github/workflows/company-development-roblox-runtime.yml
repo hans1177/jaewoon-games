@@ -335,9 +335,6 @@ jobs:
     name: persist Roblox source-bind results
     needs: [source-plan, source-worker]
     if: always() && needs.source-plan.result == 'success'
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -376,6 +373,7 @@ jobs:
           const path=require('path');
           const {execFileSync}=require('child_process');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const beforeById=new Map((queue.items||[]).map(row=>[row.gameId,JSON.parse(JSON.stringify(row))]));
           const currentMainRevision=execFileSync('git',['rev-parse','origin/main'],{encoding:'utf8'}).trim();
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
           const expectedById=new Map(expected.map(target=>[target.gameId,target]));
@@ -520,10 +518,27 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxSourceParallelism=6;
+          queue.robloxSourceParallelism=256;
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          const touchedIds=new Set([...expected.map(x=>x.gameId),...reconciliation.map(x=>x.gameId)]);
+          const patchItems=[];
+          for(const gameId of touchedIds){
+            const row=(queue.items||[]).find(item=>item.gameId===gameId);
+            if(!row)continue;
+            const before=beforeById.get(gameId)||{};
+            const target=expectedById.get(gameId)||{};
+            const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+            const priorSourceRevision=String(secondaryOwnerFocus?before.ownerFocusRobloxSourceCommit:before.robloxSourceCommit||'').trim();
+            const nextSourceRevision=String(secondaryOwnerFocus?row.ownerFocusRobloxSourceCommit:row.robloxSourceCommit||'').trim();
+            const changes={};
+            for(const key of new Set([...Object.keys(before),...Object.keys(row)])){
+              if(JSON.stringify(before[key])!==JSON.stringify(row[key]))changes[key]=row[key];
+            }
+            if(Object.keys(changes).length)patchItems.push({gameId,secondaryOwnerFocus,priorSourceRevision,nextSourceRevision,changes});
+          }
+          fs.writeFileSync('/tmp/roblox-source-runtime-patch.json',JSON.stringify({mainRevision:currentMainRevision,items:patchItems},null,2)+'\n');
           console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
           console.log(`ROBLOX_SOURCE_RECONCILIATION_FAIL=${reconciliationFail}`);
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
@@ -539,19 +554,54 @@ jobs:
           git show "origin/main:tools/company-homepage-platform-exposure-sync.mjs" > /tmp/roblox-homepage-sync/tools/company-homepage-platform-exposure-sync.mjs
           git show "origin/main:tools/company-shared-context.mjs" > /tmp/roblox-homepage-sync/tools/company-shared-context.mjs
           git show "origin/main:company-learning/platform-release-roadmap.json" > /tmp/roblox-homepage-sync/company-learning/platform-release-roadmap.json
-          node /tmp/roblox-homepage-sync/tools/company-homepage-platform-exposure-sync.mjs \
-            "$PWD/development-queue.json" \
-            "$PWD/game-catalog.json" \
-            "$PWD/homepage-platform-exposure.json" \
-            /tmp/roblox-homepage-sync/company-learning/platform-release-roadmap.json
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json homepage-platform-exposure.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          patch=/tmp/roblox-source-runtime-patch.json
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node --input-type=module - "$patch" <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          for(const row of patch.items||[]){
+            const item=(q.items||[]).find(current=>current.gameId===row.gameId);
+            if(!item)continue;
+            const currentSource=String(row.secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const prior=String(row.priorSourceRevision||'').trim();
+            const next=String(row.nextSourceRevision||'').trim();
+            if(currentSource!==prior&&currentSource!==next){
+              console.log('ROBLOX_SOURCE_PATCH_STALE_IGNORED='+row.gameId+':current='+currentSource+':prior='+prior+':next='+next);
+              continue;
+            }
+            Object.assign(item,row.changes||{});
+          }
+          q.robloxSourceParallelism=256;
+          q.developmentGameWipMax=null;
+          q.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            node /tmp/roblox-homepage-sync/tools/company-homepage-platform-exposure-sync.mjs \
+              "$PWD/development-queue.json" \
+              "$PWD/game-catalog.json" \
+              "$PWD/homepage-platform-exposure.json" \
+              /tmp/roblox-homepage-sync/company-learning/platform-release-roadmap.json
+            git add development-queue.json homepage-platform-exposure.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              pushed=1
+              echo 'ROBLOX_SOURCE_BIND_RUNTIME_STATE_ALREADY_APPLIED=YES'
+              break
+            fi
             git commit -m 'runtime: reconcile and bind Roblox DEVELOPMENT source [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              pushed=1
+              break
+            fi
+            sleep "$attempt"
+          done
+          test "$pushed" = '1'
           echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
@@ -695,7 +745,7 @@ jobs:
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=6');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=256');
           NODE
 
   technical-worker:
@@ -825,9 +875,6 @@ jobs:
     name: persist Roblox package checkpoints
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -858,6 +905,7 @@ jobs:
           const fs=require('fs');
           const path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const beforeById=new Map((queue.items||[]).map(row=>[row.gameId,JSON.parse(JSON.stringify(row))]));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
           const root='/tmp/roblox-technical-batch/results';
           const results=[];
@@ -938,10 +986,27 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxTechnicalParallelism=6;
+          queue.robloxTechnicalParallelism=256;
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          const patchItems=[];
+          for(const target of expected){
+            const row=(queue.items||[]).find(item=>item.gameId===target.gameId);
+            if(!row)continue;
+            const before=beforeById.get(row.gameId)||{};
+            const changes={};
+            for(const key of new Set([...Object.keys(before),...Object.keys(row)])){
+              if(JSON.stringify(before[key])!==JSON.stringify(row[key]))changes[key]=row[key];
+            }
+            if(Object.keys(changes).length)patchItems.push({
+              gameId:row.gameId,
+              secondaryOwnerFocus:target.secondaryOwnerFocus===true,
+              sourceRevision:String(target.sourceRevision||''),
+              changes
+            });
+          }
+          fs.writeFileSync('/tmp/roblox-technical-runtime-patch.json',JSON.stringify({items:patchItems},null,2)+'\n');
           console.log(`ROBLOX_BUILD_PACKAGE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_BUILD_PACKAGE_FAIL_COUNT=${failCount}`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
@@ -956,12 +1021,46 @@ jobs:
           NODE
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          patch=/tmp/roblox-technical-runtime-patch.json
+          [ -s "$patch" ] || exit 0
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node --input-type=module - "$patch" <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          for(const row of patch.items||[]){
+            const item=(q.items||[]).find(current=>current.gameId===row.gameId);
+            if(!item)continue;
+            const currentSource=String(row.secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            if(currentSource!==String(row.sourceRevision||'')){
+              console.log('ROBLOX_PACKAGE_PATCH_STALE_IGNORED='+row.gameId);
+              continue;
+            }
+            Object.assign(item,row.changes||{});
+          }
+          q.robloxTechnicalParallelism=256;
+          q.developmentGameWipMax=null;
+          q.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              pushed=1
+              echo 'ROBLOX_PACKAGE_RUNTIME_STATE_ALREADY_APPLIED=YES'
+              break
+            fi
             git commit -m 'runtime: persist Roblox package checkpoint [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              pushed=1
+              break
+            fi
+            sleep "$attempt"
+          done
+          test "$pushed" = '1'
       - name: Record isolated package failures without blocking other games
         if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result != 'success'
         run: |
@@ -1021,7 +1120,7 @@ jobs:
         run: |
           echo 'ROBLOX_TECHNICAL_TARGETS=NONE'
           echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
-          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=6'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=256'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
