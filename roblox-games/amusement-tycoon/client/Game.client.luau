@@ -6,6 +6,16 @@ local ContextActionService = game:GetService("ContextActionService")
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 1
+local studioAssetConfig = Config.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioUi = studioAssetFamilies.UI or {}
+local function hasStudioAssetAtom(atom)
+  return table.find(studioUi, atom) ~= nil
+end
+-- STUDIO_ASSET_BINDING_CLIENT_END
+
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
 local gui = Instance.new("ScreenGui")
@@ -13,6 +23,17 @@ gui.Name = "ApprovedScopeHud"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 local root = Instance.new("Frame")
+if hasStudioAssetAtom("FRAME_PANEL") then
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = root
+end
+root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+
 root.Name = "Root"
 root.AnchorPoint = Vector2.new(0.5, 1)
 root.Position = UDim2.fromScale(0.5, 0.98)
