@@ -1,5 +1,5 @@
 {
-  "version": 340,
+  "version": 341,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -20301,7 +20301,7 @@
       "crossGameStageBarrierForbidden": true,
       "independentChecksWithinGameMayRunInParallel": true,
       "sameGameCausalDependenciesMustRemainOrdered": true,
-      "statePersistenceSerializationOnly": true,
+      "statePersistenceSerializationOnly": false,
       "statePersistenceSerializationReason": "COMPANY_RUNTIME_JSON_CONFLICT_AVOIDANCE_NOT_EXECUTION_SERIALIZATION",
       "exactEvidenceReuse": {
         "enabled": true,
@@ -20316,7 +20316,11 @@
         "invalidateOnServerAuthorityRemoteSaveEconomyRewardOrDamageChange": true
       },
       "fallbackSharedPublicationTargetMaySerializeOnlyWhenTargetIdentityConflicts": true,
-      "externalExecutionCapacityIsOnlyParallelismLimit": true
+      "externalExecutionCapacityIsOnlyParallelismLimit": true,
+      "statePersistenceConflictSafeReplayRequired": true,
+      "statePersistenceMode": "PARALLEL_GAME_RESULTS_WITH_LATEST_RUNTIME_FIELD_PATCH_REPLAY",
+      "sameGameCausalWriteOrderPreserved": true,
+      "crossGameRuntimeJsonRebaseForbidden": true
     }
   },
   "centralDocumentation": {
