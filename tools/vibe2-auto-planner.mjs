@@ -1328,6 +1328,8 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue){
   if(phase==='REPAIR')focusPillar=signalFocus||'STABILITY';
   else if(signalFocus==='PRESENTATION')focusPillar='PRESENTATION';
   else if(cycle>1&&signalFocus&&cycle%2===0)focusPillar=signalFocus;
+  const hasVerifiedPresentation=verified.some(item=>clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()==='PRESENTATION');
+  if(phase!=='REPAIR'&&!hasVerifiedPresentation)focusPillar='PRESENTATION';
 
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
