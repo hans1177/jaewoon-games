@@ -38,9 +38,19 @@ export const CLOTHING_LAYER_SLOTS=Object.freeze([
 ]);
 
 export const ASSET_STYLE_FAMILIES=Object.freeze([
-  'CARTOON','ANIME_OR_CEL_SHADED','STYLIZED_FANTASY','DARK_FANTASY','LOW_POLY','REALISTIC','CHIBI',
-  'HORROR','WUXIA_FANTASY','MODERN','SCI_FI','POST_APOCALYPSE','CYBERPUNK','STEAMPUNK'
+  'CARTOON','SEMI_CARTOON','ANIME_OR_CEL_SHADED','STYLIZED_FANTASY','STYLIZED_REALISM','DARK_FANTASY','HIGH_FANTASY','LOW_FANTASY',
+  'WUXIA','XIANXIA','EAST_ASIAN_FANTASY','MYTHIC','FAIRYTALE','DREAMLIKE','GOTHIC','HORROR','COSMIC_HORROR','CUTE_CASUAL',
+  'LOW_POLY','REALISTIC','SCI_FI','MILITARY_SCI_FI','CYBERPUNK','STEAMPUNK','DIESELPUNK','POST_APOCALYPSE','PRIMITIVE',
+  'ANCIENT_CIVILIZATION','MODERN_URBAN','INDUSTRIAL','OCEANIC','SKY_WORLD','DESERT_CIVILIZATION','SNOW_KINGDOM',
+  'JUNGLE_RUINS','UNDERGROUND','UNDEAD','MECHANICAL_CIVILIZATION','CHIBI'
 ]);
+
+export const CONCEPT_AXES=Object.freeze({
+  ART_TONE:Object.freeze(['CUTE','BRIGHT','MYSTERIOUS','DARK','GRITTY','ELEGANT','EPIC','SURREAL','HORROR','COMEDIC']),
+  WORLD_ERA:Object.freeze(['PRIMITIVE','ANCIENT','MEDIEVAL','WUXIA','INDUSTRIAL','MODERN','NEAR_FUTURE','FUTURE','POST_APOCALYPSE','TIMELESS_FANTASY']),
+  COMBAT_FEEL:Object.freeze(['FAST_COMBO','WEIGHTY','DODGE','PARRY','WUXIA_FLOW','PROJECTILE','SKILL_BURST','SURVIVAL','CROWD_CONTROL','BOSS_DUEL']),
+  PRESENTATION:Object.freeze(['MINIMAL','READABLE_ARCADE','CINEMATIC','ATMOSPHERIC','HAND_PAINTED','CEL_SHADED','MATERIAL_RICH'])
+});
 
 export const BIOME_FAMILIES=Object.freeze([
   'FOREST','MAGICAL_FOREST','JUNGLE','SWAMP','DESERT','SNOW','VOLCANO','MOUNTAIN','PLAINS','BEACH',
@@ -121,6 +131,58 @@ export function createStyleBible(input={}){
     creatureLanguage:text(input.creatureLanguage||'BODY_PLAN_AND_SPECIES_IDENTITY_FIRST')
   };
   return Object.freeze(bible);
+}
+
+function normalizeConceptWeights(rows=[]){
+  const cleanRows=(rows||[]).map((row,index)=>({
+    family:upper(row.family||row.styleFamily||row.id||row.name),
+    weight:Math.max(0,Number(row.weight??row.ratio??(index===0?1:0))||0)
+  })).filter(row=>row.family);
+  if(!cleanRows.length)cleanRows.push({family:'STYLIZED_FANTASY',weight:1});
+  const total=cleanRows.reduce((sum,row)=>sum+row.weight,0)||cleanRows.length;
+  return Object.freeze(cleanRows.map(row=>Object.freeze({family:row.family,weight:Number((row.weight/total).toFixed(4))})));
+}
+
+export function createConceptProfile({
+  styles=[],styleFamily='',artTone=[],worldEra=[],combatFeel=[],presentation=[],customTags=[]
+}={}){
+  const source=styles.length?styles:[{family:styleFamily||'STYLIZED_FANTASY',weight:1}];
+  const weightedStyles=normalizeConceptWeights(source);
+  const dominantStyle=[...weightedStyles].sort((a,b)=>b.weight-a.weight||a.family.localeCompare(b.family))[0]?.family||'STYLIZED_FANTASY';
+  return Object.freeze({
+    weightedStyles,
+    dominantStyle,
+    axes:Object.freeze({
+      ART_TONE:freezeList(uniq(artTone).map(upper)),
+      WORLD_ERA:freezeList(uniq(worldEra).map(upper)),
+      COMBAT_FEEL:freezeList(uniq(combatFeel).map(upper)),
+      PRESENTATION:freezeList(uniq(presentation).map(upper))
+    }),
+    customTags:freezeList(uniq(customTags).map(upper)),
+    freeMixing:true,
+    styleLockWins:true,
+    gameplayAuthority:false
+  });
+}
+
+export function evaluateConceptCompatibility({asset={},concept={}}={}){
+  const dna=asset.dna||asset;
+  const profile=concept.weightedStyles?concept:createConceptProfile(concept);
+  const actual=upper(dna.STYLE_FAMILY||dna.styleFamily);
+  const allowed=new Set(profile.weightedStyles.map(row=>row.family));
+  const warnings=[];
+  if(actual&&!allowed.has(actual))warnings.push('CONCEPT_STYLE_MISMATCH');
+  const tags=(dna.COMPATIBILITY_TAGS||dna.compatibilityTags||[]).map(upper);
+  for(const required of profile.customTags||[]){
+    if(required&&actual&&required!==actual&&!tags.includes(required))warnings.push('CONCEPT_TAG_MISMATCH:'+required);
+  }
+  return Object.freeze({
+    pass:warnings.length===0,
+    dominantStyle:profile.dominantStyle,
+    acceptedStyles:freezeList(profile.weightedStyles.map(row=>row.family)),
+    warnings:Object.freeze(warnings),
+    gameplayAuthority:false
+  });
 }
 
 export function evaluateStyleBible(asset={},bible={}){
@@ -456,18 +518,23 @@ export function createAssetLineage({
 
 export function createStudioAssetUniversePlan({
   assets=[],repositoryAssets=[],externalSources=[],activeDemand={},signalsByKey={},platform='UNITY',
-  styleFamily='STYLIZED_FANTASY',styleBible={}
+  styleFamily='STYLIZED_FANTASY',styleBible={},concept={}
 }={}){
-  const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily});
+  const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
+  const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
+  const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily:resolvedStyle});
   const verified=assets.filter(asset=>normalizeRegistryAsset(asset).verified);
   const gapFill=buildAutonomousAssetGapFillPlan({
     coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey
   });
   return Object.freeze({
-    version:1,
+    version:2,
     target:STUDIO_ASSET_UNIVERSE_TARGET,
     platform:upper(platform),
-    styleBible:createStyleBible({styleFamily,...styleBible}),
+    concept:conceptProfile,
+    conceptAxes:CONCEPT_AXES,
+    styleFamilies:ASSET_STYLE_FAMILIES,
+    styleBible:createStyleBible({styleFamily:resolvedStyle,...styleBible}),
     coverage,
     heatmap:gapFill.heatmap,
     gapFill,
