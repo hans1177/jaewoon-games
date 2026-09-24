@@ -489,6 +489,7 @@ QACamera.install(C,gui,function()
  if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
  if id=="HOSPITAL"then
+  chaseTint.BackgroundTransparency=.72
   return{
    {label="horror-hospital-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)},
    {label="horror-hospital-emergency",position=Vector3.new(-155,25,-45),lookAt=Vector3.new(-118,4,-82)},

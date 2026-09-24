@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": " if id==\"HOSPITAL\"then",
+      "replace": " if id==\"HOSPITAL\"then\n  chaseTint.BackgroundTransparency=.72"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
