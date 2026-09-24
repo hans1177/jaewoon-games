@@ -1,5 +1,5 @@
 {
-  "version": 335,
+  "version": 336,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -16278,6 +16278,90 @@
           "negativeLearningRequiresVerifiedFailureCause": true,
           "rawTelemetryDirectTrainingForbidden": true,
           "existingCanonicalLearningChainOnly": true
+        }
+      },
+      "composableBaseMaterialLibrary": {
+        "version": 1,
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "implementationRegistry": "company-asset-library.json#baseMaterialLibrary",
+        "purpose": "BUILD_MANY_GAME_SPECIFIC_NATIVE_ASSETS_FROM_SMALL_REUSABLE_SEMANTIC_ATOMS_AND_VERIFIED_PLATFORM_VARIANTS",
+        "families": [
+          "CHARACTER",
+          "CREATURE",
+          "BUILDING",
+          "ENVIRONMENT",
+          "WEAPON",
+          "SKILL",
+          "MATERIAL",
+          "AUDIO",
+          "VFX",
+          "UI",
+          "MOTION",
+          "PROP"
+        ],
+        "minimumPreparedAtomCount": 350,
+        "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+        "atomIsNotVerifiedAsset": true,
+        "composition": {
+          "gameVisualDnaAndStyleLockFirst": true,
+          "crossAssetCompatibilityGraphRequired": true,
+          "semanticRoleReadabilityRequired": true,
+          "colorOnlyVariantDoesNotCount": true,
+          "duplicateSuppressionRequired": true,
+          "usageWeightedVariationRequired": true,
+          "existingGameLockedChoiceWins": true
+        },
+        "mutationAxes": [
+          "SCALE",
+          "PROPORTION",
+          "LENGTH",
+          "THICKNESS",
+          "CURVATURE",
+          "ASYMMETRY",
+          "DAMAGE",
+          "WEAR",
+          "MATERIAL",
+          "ORNAMENT",
+          "ELEMENT",
+          "GLOW",
+          "FACTION",
+          "REGION",
+          "RARITY",
+          "AGE",
+          "WEATHERING"
+        ],
+        "recipeClasses": [
+          "NORMAL_VARIANT",
+          "REGION_VARIANT",
+          "FACTION_VARIANT",
+          "ELITE_VARIANT",
+          "BOSS_VARIANT",
+          "HERO_VARIANT",
+          "DAMAGED_VARIANT",
+          "ELEMENTAL_VARIANT",
+          "ANCIENT_VARIANT",
+          "MOBILE_VARIANT"
+        ],
+        "identityBudget": {
+          "COMMON": 2,
+          "REGION_OR_FACTION": 3,
+          "ELITE": 5,
+          "BOSS": 7,
+          "HERO": 7,
+          "bossDistinctSilhouetteMotionAndAudioRequired": true,
+          "heroDistinctSilhouetteAndMotionRequired": true
+        },
+        "platformRules": {
+          "unityRobloxNativeVariantRequired": true,
+          "platformBudgetMayChangePresentationCostOnly": true,
+          "gameplaySpeedHitboxDamageCooldownSaveProgressionAndNetworkAuthorityImmutable": true,
+          "targetGameNativeRuntimeQaRequiredBeforeVerifiedPromotion": true
+        },
+        "populationStrategy": {
+          "preferReusableAtomsOverOneOffFinishedAssetSpam": true,
+          "heroBossLandmarkMayRequireNewUniqueAuthoring": true,
+          "generalProductionTarget": "70_TO_80_PERCENT_LIBRARY_COMPOSITION_WHEN_COMPATIBLE",
+          "uniqueHeroContentTarget": "20_TO_30_PERCENT_GAME_SPECIFIC_AUTHORING_WHEN_NEEDED"
         }
       }
     }
