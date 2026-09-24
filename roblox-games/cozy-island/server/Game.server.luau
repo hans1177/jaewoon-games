@@ -422,7 +422,7 @@ local function validateCharacterFoundation(p,c)
   p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
  end)
 end
-local function bindPlayer(p)
+p.RespawnLocation=foundationSpawn;c:PivotTo(foundationSpawn.CFrame*CFrame.new(0,4,0))
  load(p)
  p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)
  if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end
