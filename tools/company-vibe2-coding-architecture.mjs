@@ -76,7 +76,7 @@ function activeSystems({gameplaySketch={},sourceAnalysis={}}={}){
 
 function stateOwnership(systems=[]){
   const map={
-    CORE_STATE:['runState','clock','rngSeed','phase'],INPUT:['inputState','pointerState','keyState'],PRESENTATION:['viewState','feedbackState'],WORLD:['worldEntities','regions','routes','collisionState'],PLAYER:['playerPosition','playerVitals','playerInventory'],COMBAT:['damageResolution','combatCooldowns','targetState'],AI:['enemyIntent','enemyNavigation','enemyState'],INTERACTION:['interactionTargets','interactionState'],ECONOMY:['currency','prices','resourceLedger'],PROGRESSION:['objectives','unlocks','progressionState'],NARRATIVE:['storyStage','questGraphState','characterKnowledge','relationships','memories','foreshadowingThreads'],PLACEMENT:['placementSlots','placedEntities'],SAVE:['saveSchemaVersion','serializedProgress'],GOAL_STATE:['victoryState','failureState','retryState'],
+    CORE_STATE:['runState','clock','rngSeed','phase'],INPUT:['inputState','pointerState','keyState'],PRESENTATION:['viewState','feedbackState'],WORLD:['worldEntities','regions','routes','collisionState'],PLAYER:['playerPosition','playerVitals','playerInventory'],COMBAT:['damageResolution','combatCooldowns','targetState'],AI:['enemyIntent','enemyNavigation','enemyState'],INTERACTION:['interactionTargets','interactionState'],ECONOMY:['currency','prices','resourceLedger'],PROGRESSION:['objectives','unlocks','progressionState'],NARRATIVE:['storyStage','storyTransitionHistory','questGraphState','characterKnowledge','relationships','memories','factions','factionRelationships','foreshadowingThreads'],PLACEMENT:['placementSlots','placedEntities'],SAVE:['saveSchemaVersion','serializedProgress'],GOAL_STATE:['victoryState','failureState','retryState'],
   };
   return systems.map(system=>({system,owns:map[system]||[`${system.toLowerCase()}State`],writeRule:`ONLY_${system}_OR_DECLARED_API_MAY_MUTATE_OWNED_STATE`}));
 }
@@ -102,7 +102,7 @@ function apiContracts(systems=[]){
 }
 
 function eventContracts(systems=[]){
-  const events=['PLAYER_INTENT','WORLD_ENTERED','ENTITY_INTERACTED','DAMAGE_APPLIED','ENTITY_DEFEATED','RESOURCE_CHANGED','OBJECTIVE_ADVANCED','STORY_FACT_LEARNED','RELATIONSHIP_CHANGED','FORESHADOW_CLUE_REVEALED','STORY_THREAD_RESOLVED','AREA_UNLOCKED','PLACEMENT_COMPLETED','RUN_WON','RUN_FAILED','SAVE_COMMITTED','SAVE_RESTORED'];
+  const events=['PLAYER_INTENT','WORLD_ENTERED','ENTITY_INTERACTED','DAMAGE_APPLIED','ENTITY_DEFEATED','RESOURCE_CHANGED','OBJECTIVE_ADVANCED','STORY_FACT_LEARNED','STORY_STAGE_TRANSITIONED','RELATIONSHIP_CHANGED','FACTION_RELATIONSHIP_CHANGED','FORESHADOW_CLUE_REVEALED','STORY_THREAD_RESOLVED','AREA_UNLOCKED','PLACEMENT_COMPLETED','RUN_WON','RUN_FAILED','SAVE_COMMITTED','SAVE_RESTORED'];
   return events.map(name=>({name,delivery:'ONCE_PER_CAUSAL_ACTION',idempotency:'DUPLICATE_CAUSAL_EVENT_MUST_NOT_DUPLICATE_REWARD_DAMAGE_PURCHASE_OR_PROGRESS',observedBy:systems.slice(0,8)}));
 }
 
@@ -121,9 +121,11 @@ function invariants({systems=[],gameplaySketch={}}={}){
   if(systems.includes('PLACEMENT'))rows.push(['PLACEMENT_OCCUPANCY_CONSISTENT','A non-stackable placement slot cannot contain multiple mutually exclusive entities.']);
   if(gameplaySketch?.progressionModel?.required)rows.push(['PROGRESSION_REWARD_IDEMPOTENT','Objective completion/unlock rewards must be idempotent.']);
   if(systems.includes('NARRATIVE')){
-    rows.push(['NARRATIVE_KNOWLEDGE_CAUSAL','Characters may only know facts learned through declared sources or approved initial knowledge.']);
+    rows.push(['NARRATIVE_KNOWLEDGE_CAUSAL','Characters may only know facts learned through declared sources, public/faction-shared knowledge, witnessed events or approved initial knowledge.']);
+    rows.push(['NARRATIVE_STORY_TRANSITION_CAUSAL','Story stage transitions require a source event and declared prerequisites; duplicate source events must be idempotent and backward transitions require an explicit rule.']);
+    rows.push(['NARRATIVE_FACTION_RELATIONSHIP_CAUSAL','Faction relationship changes require a source event, remain bounded, and duplicate source events may not apply the same delta twice.']);
     rows.push(['NARRATIVE_PAYOFF_TRACKED','Foreshadowing threads must resolve, remain intentionally open, or stay explicitly tracked as debt.']);
-    rows.push(['NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY','Persona dialogue or narrative presentation may not directly mutate damage reward economy or undeclared progress.']);
+    rows.push(['NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY','Persona dialogue narrative faction state or relationship state may not directly mutate target selection movement damage reward economy networking or undeclared progress.']);
   }
   return rows.map(([id,contract])=>({id,contract,severity:'HARD_INTERNAL_CORRECTNESS'}));
 }
@@ -141,7 +143,7 @@ function implementationUnits(systems=[]){
 
 function microRuntimeTests(systems=[]){
   const specs={
-    CORE_STATE:'exercise legal and illegal run-state transitions',INPUT:'inject normalized input and verify one causal intent',WORLD:'move/query across region route or collision boundary',PLAYER:'apply bounded movement/vital delta',INTERACTION:'target -> input -> target state change -> gameplay result',ECONOMY:'earn/spend/reject invalid transaction and verify ledger',PROGRESSION:'advance objective once and reject duplicate reward',NARRATIVE:'advance quest story relationship clue and character knowledge state; reject knowledge leaks duplicate payoff and direct gameplay-authority writes',PLACEMENT:'select real position -> materialize entity -> verify occupancy/world effect',COMBAT:'attack -> damage/cooldown -> terminal target behavior',AI:'advance enemy intent against changing world/player state',GOAL_STATE:'drive win/fail/retry transitions without impossible mixed terminal state',SAVE:'save -> reload/restore -> compare meaningful critical state',PRESENTATION:'render state changes without mutating gameplay ownership',
+    CORE_STATE:'exercise legal and illegal run-state transitions',INPUT:'inject normalized input and verify one causal intent',WORLD:'move/query across region route or collision boundary',PLAYER:'apply bounded movement/vital delta',INTERACTION:'target -> input -> target state change -> gameplay result',ECONOMY:'earn/spend/reject invalid transaction and verify ledger',PROGRESSION:'advance objective once and reject duplicate reward',NARRATIVE:'advance quest story transition relationship faction relationship clue and character knowledge state; require causal source events, reject knowledge leaks duplicate faction/story events duplicate payoff and direct gameplay-authority writes',PLACEMENT:'select real position -> materialize entity -> verify occupancy/world effect',COMBAT:'attack -> damage/cooldown -> terminal target behavior',AI:'advance enemy intent against changing world/player state',GOAL_STATE:'drive win/fail/retry transitions without impossible mixed terminal state',SAVE:'save -> reload/restore -> compare meaningful critical state',PRESENTATION:'render state changes without mutating gameplay ownership',
   };
   return systems.map(system=>({system,scope:'TARGETED_REPAIR_ITERATION_ONLY',spec:specs[system]||`exercise ${system} state transition`,cannotSubstituteFor:'FULL_CANONICAL_PROMOTION_VALIDATION'}));
 }
