@@ -406,6 +406,15 @@ test('central development orchestrator dispatches both native lanes without Web 
   assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
+test('central orchestrator launches each Roblox game as an exact parallel workflow instead of one batch barrier',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/IFS=',' read -ra native_ids <<< "\$ELIGIBLE_IDS"/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id="\$id" &/);
+  assert.match(workflow,/ROBLOX_RUNTIME_DISPATCH_MODE=PER_GAME_EXACT_PARALLEL/);
+  assert.match(workflow,/ROBLOX_RUNTIME_DISPATCH_COUNT=/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main\s*$/m);
+});
+
 test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
