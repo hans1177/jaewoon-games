@@ -186,11 +186,15 @@ export class JaewoonQuestDialogue {
     return clone(current);
   }
 
-  setFact(state, key, value = true, sourceEvent = '') {
+  setFact(state, key, value = true, sourceEvent = '', visibility = {}) {
     this.ensureExtendedState(state);
     const id = String(key || '').trim();
     if (!id) throw new Error('fact key is required');
-    state.facts[id] = { value: clone(value), sourceEvent: String(sourceEvent || ''), updatedAtEvent: String(sourceEvent || '') };
+    const row = { value: clone(value), sourceEvent: String(sourceEvent || ''), updatedAtEvent: String(sourceEvent || '') };
+    if (visibility?.public === true) row.public = true;
+    if (Array.isArray(visibility?.audience)) row.audience = clone(visibility.audience.map(String));
+    if (Array.isArray(visibility?.factionIds)) row.factionIds = clone(visibility.factionIds.map(String));
+    state.facts[id] = row;
     return clone(state.facts[id]);
   }
 
@@ -205,6 +209,7 @@ export class JaewoonQuestDialogue {
       eventId,
       type: String(memory.type || 'WITNESSED_EVENT'),
       factId: memory.factId ? String(memory.factId) : null,
+      clueId: memory.clueId ? String(memory.clueId) : null,
       subjectId: memory.subjectId ? String(memory.subjectId) : null,
       valence: int(memory.valence, 0),
       detail: String(memory.detail || ''),
@@ -280,28 +285,29 @@ export class JaewoonQuestDialogue {
     const memories = state.memories[id] || [];
     const factions = Object.values(state.factions).filter((row) => (row?.memberIds || []).includes(id));
     const factionIds = factions.map((row) => row.id);
-    const witnessedEvents = new Set(memories.map((row) => String(row?.eventId || '')).filter(Boolean));
     const knownFactIds = new Set([
       ...memories.map((row) => row?.factId).filter(Boolean),
-      ...(npcState.knownFactIds || []),
-      ...(profile.knownFactIds || []),
-      ...factions.flatMap((row) => row?.knownFactIds || []),
+      ...(Array.isArray(npcState.knownFactIds) ? npcState.knownFactIds : []),
+      ...(Array.isArray(profile.knownFactIds) ? profile.knownFactIds : []),
+      ...factions.flatMap((row) => Array.isArray(row?.knownFactIds) ? row.knownFactIds : []),
     ].map(String));
     for (const [factId, row] of Object.entries(state.facts)) {
-      const sourceEvent = String(row?.sourceEvent || row?.updatedAtEvent || '');
       const audience = Array.isArray(row?.audience) ? row.audience.map(String) : [];
       const factionAudience = Array.isArray(row?.factionIds) ? row.factionIds.map(String) : [];
-      if (row?.public === true || audience.includes(id) || factionAudience.some((factionId) => factionIds.includes(factionId)) || (sourceEvent && witnessedEvents.has(sourceEvent))) knownFactIds.add(factId);
+      if (row?.public === true || audience.includes(id) || factionAudience.some((factionId) => factionIds.includes(factionId))) knownFactIds.add(factId);
     }
     const knownFacts = Object.fromEntries([...knownFactIds].filter((factId) => state.facts[factId]?.value !== undefined).map((factId) => [factId, state.facts[factId]]));
-    const explicitKnownClues = new Set([...(npcState.knownClueIds || []), ...(profile.knownClueIds || [])].map(String));
+    const explicitKnownClues = new Set([
+      ...memories.map((row) => row?.clueId).filter(Boolean),
+      ...(Array.isArray(npcState.knownClueIds) ? npcState.knownClueIds : []),
+      ...(Array.isArray(profile.knownClueIds) ? profile.knownClueIds : []),
+    ].map(String));
     const revealedClues = Object.values(state.clues).filter((row) => {
       if (row?.revealed !== true) return false;
       const clueId = String(row.id || '');
-      const sourceEvent = String(row.sourceEvent || '');
       const audience = Array.isArray(row?.meta?.audience) ? row.meta.audience.map(String) : [];
       const factionAudience = Array.isArray(row?.meta?.factionIds) ? row.meta.factionIds.map(String) : [];
-      return explicitKnownClues.has(clueId) || row?.meta?.public === true || audience.includes(id) || factionAudience.some((factionId) => factionIds.includes(factionId)) || (sourceEvent && witnessedEvents.has(sourceEvent));
+      return explicitKnownClues.has(clueId) || row?.meta?.public === true || audience.includes(id) || factionAudience.some((factionId) => factionIds.includes(factionId));
     });
     return clone({
       npcId: id,
