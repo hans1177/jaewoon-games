@@ -90,7 +90,7 @@ test('homepage exposes Unity Web only as an optional same-project validation sur
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
   assert.equal(web.requiredForDevelopmentAdmission,false);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'OUTPUT_INDEX_EXISTS_ONLY');
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST');
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkQaPassRequired,false);
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkEvidenceFilesRequired,false);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
