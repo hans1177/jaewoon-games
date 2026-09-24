@@ -8,7 +8,7 @@
     "studioAssetUniverse": true,
     "universalCoverageScanner": true,
     "autonomousGapFill24h": true,
-    "drillCount": 42,
+    "drillCount": 62,
     "platformProfiles": [
       "UNITY",
       "ROBLOX"
@@ -1010,6 +1010,140 @@
       ]
     },
     {
+      "id": "company-graphics-unity-concept-direction",
+      "kind": "CONCEPT_DIRECTION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "CONCEPT_DIRECTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-world-generation",
+      "kind": "WORLD_GENERATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-world-streaming",
+      "kind": "STREAMING_OPTIMIZATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "STREAMING_OPTIMIZATION",
+        "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-game-visual-dna",
+      "kind": "GAME_VISUAL_DNA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-asset-loadout",
+      "kind": "ASSET_LOADOUT_SELECTION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VISUAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-future-demand",
+      "kind": "FUTURE_ASSET_DEMAND_FORECAST_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "CONCEPT_DIRECTION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-platform-variant",
+      "kind": "PLATFORM_VARIANT_OPTIMIZATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-studio-testbed",
+      "kind": "STUDIO_TESTBED_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-verified-usage",
+      "kind": "VERIFIED_ASSET_USAGE_FEEDBACK_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-unity-genre-world-grammar",
+      "kind": "GENRE_WORLD_GRAMMAR_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "UNITY",
+      "domains": [
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
+      ]
+    },
+    {
       "id": "company-graphics-roblox-character-archetype",
       "kind": "CHARACTER_ARCHETYPE_LIBRARY_DRILL",
       "priority": "low",
@@ -1290,6 +1424,140 @@
       ]
     },
     {
+      "id": "company-graphics-roblox-concept-direction",
+      "kind": "CONCEPT_DIRECTION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "CONCEPT_DIRECTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-world-generation",
+      "kind": "WORLD_GENERATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-world-streaming",
+      "kind": "STREAMING_OPTIMIZATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "STREAMING_OPTIMIZATION",
+        "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-game-visual-dna",
+      "kind": "GAME_VISUAL_DNA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-asset-loadout",
+      "kind": "ASSET_LOADOUT_SELECTION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VISUAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-future-demand",
+      "kind": "FUTURE_ASSET_DEMAND_FORECAST_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "CONCEPT_DIRECTION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-platform-variant",
+      "kind": "PLATFORM_VARIANT_OPTIMIZATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-studio-testbed",
+      "kind": "STUDIO_TESTBED_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-verified-usage",
+      "kind": "VERIFIED_ASSET_USAGE_FEEDBACK_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "company-graphics-roblox-genre-world-grammar",
+      "kind": "GENRE_WORLD_GRAMMAR_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "companyGraphicsLibrary": true,
+      "platformProfile": "ROBLOX",
+      "domains": [
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
+      ]
+    },
+    {
       "id": "hypothesis-asset_adaptation",
       "kind": "HYPOTHESIS_FALSIFICATION_DRILL",
       "priority": "low",
@@ -1340,6 +1608,66 @@
       ]
     },
     {
+      "id": "gap-character_behavior-l1",
+      "kind": "CHARACTER_BEHAVIOR_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CHARACTER_BEHAVIOR"
+      ]
+    },
+    {
+      "id": "gap-character_persona-l1",
+      "kind": "CHARACTER_BEHAVIOR_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CHARACTER_PERSONA"
+      ]
+    },
+    {
+      "id": "gap-character_relationship_memory-l1",
+      "kind": "RELATIONSHIP_MEMORY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CHARACTER_RELATIONSHIP_MEMORY"
+      ]
+    },
+    {
+      "id": "gap-character_voice-l1",
+      "kind": "CHARACTER_VOICE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CHARACTER_VOICE"
+      ]
+    },
+    {
+      "id": "gap-companion_behavior-l1",
+      "kind": "CHARACTER_BEHAVIOR_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "COMPANION_BEHAVIOR"
+      ]
+    },
+    {
+      "id": "gap-concept_direction-l1",
+      "kind": "CONCEPT_DIRECTION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CONCEPT_DIRECTION"
+      ]
+    },
+    {
       "id": "gap-dialogue-l1",
       "kind": "DIALOGUE_SCENE_DRILL",
       "priority": "low",
@@ -1347,6 +1675,36 @@
       "countsAsProductionPass": false,
       "domains": [
         "DIALOGUE"
+      ]
+    },
+    {
+      "id": "gap-environment_composition-l1",
+      "kind": "WORLD_GENERATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ENVIRONMENT_COMPOSITION"
+      ]
+    },
+    {
+      "id": "gap-foreshadowing_payoff-l1",
+      "kind": "FORESHADOWING_PAYOFF_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "FORESHADOWING_PAYOFF"
+      ]
+    },
+    {
+      "id": "gap-level_design-l1",
+      "kind": "LEVEL_DESIGN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "LEVEL_DESIGN"
       ]
     },
     {
@@ -1360,6 +1718,26 @@
       ]
     },
     {
+      "id": "gap-main_story_generation-l1",
+      "kind": "MAIN_STORY_GENERATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MAIN_STORY_GENERATION"
+      ]
+    },
+    {
+      "id": "gap-monster_behavior_personality-l1",
+      "kind": "CHARACTER_BEHAVIOR_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MONSTER_BEHAVIOR_PERSONALITY"
+      ]
+    },
+    {
       "id": "gap-narrative_structure-l1",
       "kind": "NARRATIVE_STRUCTURE_DRILL",
       "priority": "low",
@@ -1370,6 +1748,26 @@
       ]
     },
     {
+      "id": "gap-navigation-l1",
+      "kind": "ROUTE_DESIGN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "NAVIGATION"
+      ]
+    },
+    {
+      "id": "gap-npc_behavior-l1",
+      "kind": "CHARACTER_BEHAVIOR_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "NPC_BEHAVIOR"
+      ]
+    },
+    {
       "id": "gap-performance-l1",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1377,6 +1775,26 @@
       "countsAsProductionPass": false,
       "domains": [
         "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "gap-quest_graph-l1",
+      "kind": "QUEST_CAUSALITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "QUEST_GRAPH"
+      ]
+    },
+    {
+      "id": "gap-relationship_memory-l1",
+      "kind": "RELATIONSHIP_MEMORY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "RELATIONSHIP_MEMORY"
       ]
     },
     {
@@ -1430,6 +1848,16 @@
       ]
     },
     {
+      "id": "gap-route_design-l1",
+      "kind": "ROUTE_DESIGN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROUTE_DESIGN"
+      ]
+    },
+    {
       "id": "gap-storytelling-l1",
       "kind": "NARRATIVE_STRUCTURE_DRILL",
       "priority": "low",
@@ -1437,6 +1865,36 @@
       "countsAsProductionPass": false,
       "domains": [
         "STORYTELLING"
+      ]
+    },
+    {
+      "id": "gap-streaming-l1",
+      "kind": "STREAMING_OPTIMIZATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STREAMING"
+      ]
+    },
+    {
+      "id": "gap-streaming_optimization-l1",
+      "kind": "STREAMING_OPTIMIZATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STREAMING_OPTIMIZATION"
+      ]
+    },
+    {
+      "id": "gap-twist_evidence_chain-l1",
+      "kind": "TWIST_EVIDENCE_CHAIN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "TWIST_EVIDENCE_CHAIN"
       ]
     },
     {
@@ -1507,6 +1965,46 @@
       "countsAsProductionPass": false,
       "domains": [
         "VFX"
+      ]
+    },
+    {
+      "id": "gap-visual_identity-l1",
+      "kind": "GAME_VISUAL_DNA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VISUAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "gap-world_generation-l1",
+      "kind": "WORLD_GENERATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WORLD_GENERATION"
+      ]
+    },
+    {
+      "id": "gap-world_narrative-l1",
+      "kind": "WORLD_NARRATIVE_BINDING_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WORLD_NARRATIVE"
+      ]
+    },
+    {
+      "id": "gap-world_narrative_binding-l1",
+      "kind": "WORLD_NARRATIVE_BINDING_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WORLD_NARRATIVE_BINDING"
       ]
     },
     {

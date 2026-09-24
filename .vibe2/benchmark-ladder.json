@@ -258,10 +258,10 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-quest_design-l12-g3",
+      "id": "mastery-quest_design-l7-g1",
       "track": "QUEST_DESIGN",
-      "level": 12,
-      "difficultyGeneration": 3,
+      "level": 7,
+      "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -290,6 +290,96 @@
     {
       "id": "mastery-dialogue-l1-g1",
       "track": "DIALOGUE",
+      "level": 1,
+      "difficultyGeneration": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-concept_direction-l1-g1",
+      "track": "CONCEPT_DIRECTION",
+      "level": 1,
+      "difficultyGeneration": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-world_generation-l1-g1",
+      "track": "WORLD_GENERATION",
+      "level": 1,
+      "difficultyGeneration": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-streaming_optimization-l1-g1",
+      "track": "STREAMING_OPTIMIZATION",
+      "level": 1,
+      "difficultyGeneration": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-foreshadowing_payoff-l1-g1",
+      "track": "FORESHADOWING_PAYOFF",
+      "level": 1,
+      "difficultyGeneration": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-character_behavior-l1-g1",
+      "track": "CHARACTER_BEHAVIOR",
+      "level": 1,
+      "difficultyGeneration": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-relationship_memory-l1-g1",
+      "track": "RELATIONSHIP_MEMORY",
       "level": 1,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
