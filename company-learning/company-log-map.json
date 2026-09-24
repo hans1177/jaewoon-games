@@ -1,5 +1,5 @@
 {
-  "version": 52,
+  "version": 53,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -421,7 +421,7 @@
   },
   "updatedAt": "2026-09-24",
   "graphicsProductionEvidenceContract": {
-    "version": 4,
+    "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
     "recordKind": "graphics-production-evidence",
     "rootScope": "ONE_PER_GAME_CANDIDATE_REVISION",
@@ -494,7 +494,19 @@
     "ownerRepeatedIdenticalRequestRequiresNewSignalEventId": true,
     "ownerSemanticTextDeduplicationForbidden": true,
     "automaticSignalFingerprintDeduplicationRequired": true,
-    "verifiedPositiveAndNegativeEvolutionOutcomesReturnToLearning": true
+    "verifiedPositiveAndNegativeEvolutionOutcomesReturnToLearning": true,
+    "presentationFanInRequirementMarker": "presentation-runtime-before-after-fan-in:REQUIRED",
+    "presentationPendingMarker": "graphics-runtime-before-after-comparison:PENDING_RELEASE_GATE",
+    "verifiedPresentationSettlementMarker": "graphics-runtime-before-after-comparison:PASS",
+    "webRuntimeComparisonEvidenceFields": [
+      "BASE_REVISION",
+      "CANDIDATE_REVISION",
+      "BEFORE_CAPTURE_SHA256",
+      "AFTER_CAPTURE_SHA256",
+      "VISIBLE_DELTA_OBSERVED"
+    ],
+    "sourceDiffOrMarkerOnlyCannotSatisfyRuntimeComparison": true,
+    "studioVerifiedCycleReplanEvidenceRequired": true
   },
   "centralPolicyExecutionEvidence": {
     "humanReadablePolicyDocsRequired": false,
