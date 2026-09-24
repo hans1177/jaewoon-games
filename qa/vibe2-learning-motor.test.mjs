@@ -1171,3 +1171,31 @@ test('specialized benchmark ladder includes world concept narrative tracks',()=>
     assert.ok(ladder.cases.some(row=>row.track===track),track);
   }
 });
+
+
+test('verified faction relationship and story transition experience routes into existing narrative mastery domains',()=>{
+  const learned=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'faction-story-exp-1',
+    gameId:'sect-war',
+    engine:'web',
+    verified:true,
+    reusable:true,
+    outcome:'PASS',
+    goal:'story transition and faction relationship state',
+    change:'causal story transition source event faction relationship trust debt faction state world state',
+    reusablePatterns:['story transition causality','faction relationship source event idempotency','faction state world narrative binding']
+  }]});
+  assert.equal(learned.added,1);
+  for(const domain of ['NARRATIVE_STRUCTURE','MAIN_STORY_GENERATION','CHARACTER_RELATIONSHIP_MEMORY','RELATIONSHIP_MEMORY','WORLD_NARRATIVE_BINDING']){
+    assert.ok(learned.state.domains[domain].xp>0,domain);
+  }
+});
+
+test('narrative learning policy knows faction relationship and story transition failure signals',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  assert.ok(policy.narrativeLearning.verifiedFailurePatterns.includes('FACTION_RELATIONSHIP_INCONSISTENCY'));
+  assert.ok(policy.narrativeLearning.verifiedFailurePatterns.includes('STORY_TRANSITION_CAUSALITY_FAILURE'));
+  assert.ok(policy.narrativeLearning.verifiedSignals.includes('FACTION_RELATIONSHIP_CAUSALITY'));
+  assert.deepEqual(policy.narrativeLearning.domainRouting.storyTransitionCausality,['NARRATIVE_STRUCTURE','MAIN_STORY_GENERATION']);
+  assert.ok(policy.narrativeLearning.domainRouting.factionRelationshipCausality.includes('WORLD_NARRATIVE_BINDING'));
+});
