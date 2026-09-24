@@ -993,6 +993,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
   }
   const rows=[];
   const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationAnchorPattern=/(?:Color3|BackgroundColor3|TextColor3|Material|Texture|Mesh|Instance\.new|Camera|FieldOfView|Particle|Trail|Beam|Tween|Animation|Animator|Motor6D|CFrame|\.Size\b|\.Position\b|Lighting|Frame|ImageLabel|ImageButton)/i;
   const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
   if(fullSource&&preferred.length){
     for(const symbol of preferred.slice(0,12)){
@@ -1006,7 +1007,8 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
         if(!match)continue;
         const original=match[0];
         if(fullSource.split(original).length-1!==1)continue;
-        rows.push({value:original,score:100,length:original.length});
+        const visual=presentationTask&&presentationAnchorPattern.test(original);
+        rows.push({value:original,score:visual?140:(presentationTask?8:100),length:original.length,visual});
         break;
       }
     }
@@ -1030,10 +1032,11 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
       let score=0;
       if(/\b(?:function|const|let|var|if|for|while|return|addEventListener|querySelector|getElementById|classList|dataset|localStorage)\b|<(?:button|canvas|div|section|main)\b|\bid=|\bdata-/i.test(trimmed))score+=4;
       if(/\b(?:assert(?:\.|\()|test\s*\(|describe\s*\(|it\s*\()/i.test(trimmed))score+=8;
-      if(presentationTask&&/(?:Color3|BackgroundColor3|Material|Texture|Mesh|Instance\.new|Camera|FieldOfView|Particle|Trail|Beam|Tween|Animation|Animator|Motor6D|CFrame|\.Size\b|\.Position\b|Lighting|render|visual|motion|vfx|effect|Frame|ImageLabel|ImageButton)/i.test(trimmed))score+=20;
+      const visual=presentationTask&&presentationAnchorPattern.test(trimmed);
+      if(visual)score+=120;
       if(trimmed.length>=20&&trimmed.length<=120)score+=2;
       if(/[=(){}<>]/.test(trimmed))score+=1;
-      rows.push({value:original,score,length:trimmed.length});
+      rows.push({value:original,score,length:trimmed.length,visual});
     }
   }
   if(fullSource&&rows.length<Math.max(1,Number(max)||3)){
@@ -1041,7 +1044,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
       const original=String(value??''),trimmed=original.trim();
       if(trimmed.length<10||trimmed.length>700)return;
       if(fullSource.split(original).length-1!==1)return;
-      rows.push({value:original,score,length:trimmed.length});
+      rows.push({value:original,score,length:trimmed.length,visual:presentationTask&&presentationAnchorPattern.test(trimmed)});
     };
     const fallbackPatterns=[
       /window\.GAME_CONFIG\s*=\s*\{[^<]{20,700}?\}(?=<\/script>|;|$)/g,
@@ -1054,11 +1057,17 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
       if(rows.length>=Math.max(3,Number(max)||3))break;
     }
   }
-  return rows
-    .sort((a,b)=>b.score-a.score||a.length-b.length)
+  const ordered=rows.sort((a,b)=>b.score-a.score||a.length-b.length);
+  const presentationVisual=publicationSafeVisualRows(ordered,presentationTask);
+  return (presentationVisual.length?presentationVisual:ordered)
     .map(row=>row.value)
     .filter((value,index,array)=>array.indexOf(value)===index)
     .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
+}
+
+function publicationSafeVisualRows(rows=[],presentationTask=false){
+  if(!presentationTask)return[];
+  return rows.filter(row=>row?.visual===true);
 }
 
 export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[]}={}){
@@ -1127,7 +1136,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
       presentationDeltaFailure?'This recovery is for a PRESENTATION_PATCH_DELTA failure. replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
-      robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: the worker has prioritized a client/visual owner anchor. Make the replacement visibly affect native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI. Preserve gameplay numbers and save/progression semantics.':'',
+      robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: the worker has prioritized a client/visual owner anchor. Make the replacement visibly affect native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI. Preserve gameplay numbers and save/progression semantics. Do not copy the fixed visual anchor unchanged inside replace; at least one visual token or value from that anchor must materially change.':'',
       'Returning the exact find anchor unchanged is invalid. Change at least one behaviorally meaningful source token while preserving unrelated behavior.',
       'Preserve save keys, gameplay values, existing behavior, and unrelated systems unless the Goal explicitly requires changing them.',
       'No markdown, prose, comments outside source, extra keys, placeholders, ellipsis, or unchanged copy.',
@@ -1604,6 +1613,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         }
       }
       let focusedNoOpCreditRetry=false;
+      if(focusedReplaceOnly&&failureClass==='PRESENTATION_PATCH_DELTA'){
+        focusedReplaceAnchorCursor+=1;
+        focusedReplaceAnchorRotations+=1;
+        console.log('VIBE2_PRESENTATION_PATCH_DELTA_ANCHOR_ROTATE='+attempt+':anchor='+(focusedReplaceAnchorCursor+1));
+      }
       if(focusedReplaceOnly&&failureClass==='NO_OP'){
         focusedReplaceAnchorCursor+=1;
         focusedReplaceAnchorRotations+=1;
@@ -1741,9 +1755,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       if(repeatedIntermediateOutputs)console.log(`VIBE2_FULL_WEB_REPEATED_INTERMEDIATE=${attempt}:${repeatedIntermediateOutputs}`);
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
+      const presentationPatchDeltaRetry=!allowFullRewrite&&failureClass==='PRESENTATION_PATCH_DELTA'&&attempt<maxAttempts;
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||presentationPatchDeltaRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
