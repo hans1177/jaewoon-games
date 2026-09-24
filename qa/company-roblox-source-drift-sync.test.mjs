@@ -157,11 +157,9 @@ test('source drift persist recomputes derived runtime state after push conflicts
 });
 
 
-test('merged Roblox source PRs wake exact source drift synchronization even when push chaining is unavailable',()=>{
+test('Roblox source drift has one canonical main-push wakeup path',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/pull_request:\s*\n\s*branches: \[main\]\s*\n\s*types: \[closed\]/);
-  assert.match(workflow,/github\.event\.pull_request\.merged == true/);
-  assert.match(workflow,/pull-requests: read/);
-  assert.match(workflow,/pulls\/\$PR_NUMBER\/files\?per_page=100/);
-  assert.match(workflow,/ROBLOX_MERGED_PR_SOURCE_FILES=/);
+  assert.match(workflow,/push:\s*\n\s*branches: \[main\][\s\S]*roblox-games\/\*\*/);
+  assert.doesNotMatch(workflow,/pull_request:/);
+  assert.doesNotMatch(workflow,/ROBLOX_MERGED_PR_SOURCE_FILES/);
 });
