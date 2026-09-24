@@ -48,6 +48,7 @@ list.AutomaticCanvasSize = Enum.AutomaticSize.Y
 list.CanvasSize = UDim2.new()
 list.ScrollBarThickness = 6
 list.Parent = root
+list.CanvasSize = UDim2.new(1, 0, 0, 100)
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0, 8)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
