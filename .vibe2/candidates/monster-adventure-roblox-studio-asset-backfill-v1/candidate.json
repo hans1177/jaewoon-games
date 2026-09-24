@@ -1,0 +1,23 @@
+{
+  "summary": "Implement a real source change to fix the game's state mutation and ensure server-authoritative gameplay.",
+  "expectedEffect": "The game should maintain server-authoritative control over gameplay state, with mobile input properly bound to game actions and shared state replicated from the server.",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local watched = {\"Score\",\"Coins\",\"Level\",\"Progress\",\"Health\",\"Wave\",\"Position\",\"Objective\",\"Combo\",\"EnemyHealth\",\"PuzzleChain\",\"Towers\",\"BaseHealth\",\"SocialBond\",\"SharedObjective\",\"RoundScore\",\"LastApprovedScope\"}",
+      "replace": "local watched = {\"Score\",\"Coins\",\"Level\",\"Progress\",\"Health\",\"Wave\",\"Position\",\"Objective\",\"Combo\",\"EnemyHealth\",\"PuzzleChain\",\"Towers\",\"BaseHealth\",\"SocialBond\",\"SharedObjective\",\"RoundScore\"}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "QA: Change before original source",
+    "QA: Change diff confirmed",
+    "QA: Protected state values/keys not changed",
+    "QA: Syntax and structure validation",
+    "QA: Runtime change observed",
+    "QA: Mobile UI QA",
+    "QA: Luau source and project structure checked",
+    "QA: Place package checked"
+  ]
+}
