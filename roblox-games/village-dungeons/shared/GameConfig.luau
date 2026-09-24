@@ -81,6 +81,29 @@ local Config = {
     { Id = "scope-coreloop-4-d2fe2a4ec6", Label = "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다.", Kind = "ECONOMY", Order = 6, LearningPattern = "commercial-idle-runtime-architecture" },
     { Id = "scope-mobileux-a3fe13f59a", Label = "모바일 화면 하단 30% 영역을 입력 안전 구역으로 설정하여 화면 어느 곳을 터치해도 가상 조이스틱이 즉시 생성되도록 지원한다. 중요한 던전 보스 체력바와 남은 시간, 배낭 용량은 화면 상단 중앙에 고대비 폰트로 고정 배치하여 엄지손가락 조작에 시야가 가려지지 않도록 설계한다.", Kind = "SURVIVAL", Order = 7, LearningPattern = "board-state" },
   },
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 
 return table.freeze(Config)
