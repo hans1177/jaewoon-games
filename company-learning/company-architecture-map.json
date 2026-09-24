@@ -1,5 +1,5 @@
 {
-  "version": 164,
+  "version": 165,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1042,7 +1042,17 @@
         ],
         "appliesToEveryNonNeuronReserveIngress": true,
         "neuronCompletionStaysLightweightUntilMicroFanIn": true,
-        "staleControlQueueMayNotSuppressCanonicalRuntimeWork": true
+        "staleControlQueueMayNotSuppressCanonicalRuntimeWork": true,
+        "blankControlQueueRecovery": {
+          "enabled": true,
+          "canonicalQueueVersion": 5,
+          "preflightOwner": "tools/vibe2-system-steward.mjs",
+          "commandFallbackOwner": "tools/vibe2-queue-control.mjs",
+          "replanSource": "company-runtime:development-queue.json",
+          "missingOrZeroByteQueueBecomesCanonicalEmptyQueue": true,
+          "nonEmptyMalformedJsonFailClosed": true,
+          "gameplayPolicyMutation": false
+        }
       },
       "projectLifecycleMonotonicity": {
         "producer": "tools/vibe2-learning-motor.mjs",
