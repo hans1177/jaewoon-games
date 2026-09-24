@@ -13,6 +13,7 @@ import {
   applyVerifiedKnowledgeOutcomes,
   collectVerifiedSpecializedQueueExperience,
   applyVerifiedSpecializedQueueOutcomes,
+  mergeVerifiedSpecializedQueueExperienceMemory,
   applyVerifiedGraphicsEvolutionOutcomes,
   architectureDriftRiskForTask,
   architectureDriftGuidance,
@@ -1272,4 +1273,62 @@ test('specialized queue ingress policy accepts only verified markers and reuses 
   assert.equal(ingress.infrastructureFailureNegativeLearningForbidden,true);
   assert.equal(ingress.existingSeenExperienceDedupeRequired,true);
   assert.equal(ingress.rawTelemetryDirectTraining,false);
+});
+
+
+test('specialized verified outcomes persist once and become same-game retrieval memory',()=>{
+  const queue={tasks:[{
+    id:'persistent-world-pass',
+    gameId:'persistent-g1',
+    target:'web',
+    status:'verified',
+    goal:'world generation route navigation',
+    evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8101']
+  }]};
+  const first=mergeVerifiedSpecializedQueueExperienceMemory({records:[]},queue);
+  assert.equal(first.changed,true);
+  assert.equal(first.added,1);
+  assert.equal(first.positive,1);
+  assert.equal(first.memory.records.length,1);
+  const record=first.memory.records[0];
+  assert.equal(record.gameId,'persistent-g1');
+  assert.equal(record.verified,true);
+  assert.equal(record.reusable,true);
+  assert.ok(record.evidence.some(value=>value.startsWith('specialized-outcome-id:')));
+
+  const retrieval=retrieveUnifiedLearning({
+    task:{gameId:'persistent-g1',target:'web',goal:'world generation route navigation'},
+    experienceInput:first.memory
+  });
+  assert.equal(retrieval.experience[0].id,record.id);
+  assert.ok(retrieval.experience[0].reasons.includes('same-game'));
+
+  const second=mergeVerifiedSpecializedQueueExperienceMemory(first.memory,queue);
+  assert.equal(second.changed,false);
+  assert.equal(second.added,0);
+  assert.equal(second.memory.records.length,1);
+  assert.equal(second.memory.records[0].confirmations,1);
+});
+
+test('distinct verified runs may reinforce one reusable specialized experience exactly once per outcome id',()=>{
+  const baseTask={
+    id:'repeat-world-pass',
+    gameId:'repeat-g1',
+    target:'web',
+    status:'verified',
+    goal:'world generation route navigation'
+  };
+  const first=mergeVerifiedSpecializedQueueExperienceMemory({records:[]},{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8201']}]});
+  const second=mergeVerifiedSpecializedQueueExperienceMemory(first.memory,{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8202']}]});
+  assert.equal(second.changed,true);
+  assert.equal(second.added,1);
+  assert.equal(second.memory.records.length,1);
+  assert.equal(second.memory.records[0].confirmations,2);
+  assert.ok(second.memory.records[0].evidence.includes('source-run:actions-run:8201'));
+  assert.ok(second.memory.records[0].evidence.includes('source-run:actions-run:8202'));
+
+  const duplicate=mergeVerifiedSpecializedQueueExperienceMemory(second.memory,{tasks:[{...baseTask,evidence:['VERIFIED_WORLD_ROUTE_NAVIGATION_PASS','actions-run:8202']}]});
+  assert.equal(duplicate.changed,false);
+  assert.equal(duplicate.added,0);
+  assert.equal(duplicate.memory.records[0].confirmations,2);
 });
