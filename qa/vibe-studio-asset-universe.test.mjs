@@ -6,12 +6,15 @@ import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
   STUDIO_ASSET_FAMILIES,
+  CONCEPT_AXES,
   CREATURE_BODY_PLANS,
   CREATURE_SPECIES,
   CLOTHING_LAYER_SLOTS,
   BIOME_FAMILIES,
   BUILDING_THEMES,
   createAssetDNA,
+  createConceptProfile,
+  evaluateConceptCompatibility,
   createStyleBible,
   evaluateStyleBible,
   evaluateAssetIdentity,
@@ -39,6 +42,25 @@ test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.equal(CLOTHING_LAYER_SLOTS.length,15);
   assert.ok(BIOME_FAMILIES.length>=18);
   assert.ok(BUILDING_THEMES.length>=12);
+});
+
+test('concept director supports weighted mixed concepts without flattening style identity',()=>{
+  const concept=createConceptProfile({
+    styles:[{family:'WUXIA',weight:6},{family:'DARK_FANTASY',weight:3},{family:'CARTOON',weight:1}],
+    artTone:['MYSTERIOUS','DARK'],
+    combatFeel:['WUXIA_FLOW']
+  });
+  assert.equal(concept.weightedStyles.length,3);
+  assert.equal(concept.dominantStyle,'WUXIA');
+  assert.ok(Math.abs(concept.weightedStyles.reduce((n,row)=>n+row.weight,0)-1)<0.001);
+  assert.ok(CONCEPT_AXES.COMBAT_FEEL.includes('WUXIA_FLOW'));
+  const compatible=evaluateConceptCompatibility({
+    asset:{STYLE_FAMILY:'WUXIA',COMPATIBILITY_TAGS:['DARK_FANTASY']},
+    concept
+  });
+  assert.equal(compatible.pass,true);
+  const mismatch=evaluateConceptCompatibility({asset:{STYLE_FAMILY:'SCI_FI'},concept});
+  assert.equal(mismatch.pass,false);
 });
 
 test('asset DNA and style bible preserve semantic identity',()=>{
@@ -257,6 +279,8 @@ test('full studio asset universe plan exposes coverage heatmap and 24h gap fill'
   assert.equal(plan.continuous24h,true);
   assert.equal(plan.existingCanonicalLearningChainOnly,true);
   assert.equal(plan.preparedSemanticMayClaimVerified,false);
+  assert.equal(plan.concept.dominantStyle,'CARTOON');
+  assert.ok(plan.styleFamilies.includes('WUXIA'));
   assert.ok(plan.coverage.missingSlotCount>0);
   assert.ok(plan.heatmap.highestPriorityGap);
   assert.ok(plan.gapFill.actions.length>0);
@@ -266,7 +290,7 @@ test('asset production planner consumes the studio universe contract',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
   const plan=buildVibeAssetProductionPlan({
-    task:{gameId:'studio-universe-test',goal:'카툰 판타지 몬스터 의복 건물 숲 배경 스킬 VFX 추가'},
+    task:{gameId:'studio-universe-test',goal:'카툰 무협 다크 판타지 몬스터 의복 건물 숲 배경 스킬 VFX 추가'},
     target:'unity',
     repoRoot:path.resolve(here,'..')
   });
@@ -281,4 +305,11 @@ test('asset production planner consumes the studio universe contract',async()=>{
   assert.equal(plan.policy.assetIdentityQaRequired,true);
   assert.equal(plan.policy.autonomousLibraryPopulation24h,true);
   assert.equal(plan.policy.semanticAssetSeedCannotSelfPromote,true);
+  assert.equal(plan.policy.conceptDirectorRequired,true);
+  assert.equal(plan.policy.weightedConceptBlendAllowed,true);
+  assert.equal(plan.policy.adaptiveWorldGenerationRequired,true);
+  assert.equal(plan.policy.mapDnaRequired,true);
+  assert.equal(plan.policy.seamlessStreamingPlanRequired,true);
+  assert.ok(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested.weightedStyles.length>=3);
+  assert.equal(plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.directLayoutCopyForbidden,true);
 });
