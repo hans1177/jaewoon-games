@@ -35,6 +35,7 @@ local Config = {
 
     Ship = {
         BaseSpeed = 92,
+        TurnDegreesPerSecond = 105,
         BoostMultiplier = 1.75,
         BoostDrainPerSecond = 24,
         EnergyRechargePerSecond = 16,
