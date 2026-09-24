@@ -86,7 +86,7 @@ jobs:
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {probeRobloxOpenCloudEngine} from './tools/company-development-roblox-runtime-foundation.mjs';
+          import {probeRobloxOpenCloudEngine,reusableRobloxEngineProbe} from './tools/company-development-roblox-runtime-foundation.mjs';
           let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(!requested&&process.env.EVENT_NAME==='push'){
             const triggerPath='roblox-games/.company-runtime-trigger';
@@ -98,18 +98,18 @@ jobs:
             const c=item.robloxRuntimeCandidateEvidence||{};
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           });
-          const probes=[];
-          for(const item of candidates.slice(0,4)){
+          const probes=await Promise.all(candidates.map(async item=>{
             const c=item.robloxRuntimeCandidateEvidence;
-            const result=await probeRobloxOpenCloudEngine({
+            const reused=reusableRobloxEngineProbe({item,candidate:c});
+            const result=reused||await probeRobloxOpenCloudEngine({
               universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
               apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
               expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
             });
             const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result};
-            probes.push(probe);
-            console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
-          }
+            console.log((reused?'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_REUSED=':'ROBLOX_OPEN_CLOUD_ENGINE_PROBE=')+JSON.stringify(probe));
+            return probe;
+          }));
           fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json',JSON.stringify(probes,null,2)+'\n');
           NODE
 
