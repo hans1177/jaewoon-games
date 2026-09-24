@@ -7,6 +7,9 @@ local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("GameConfig"))
+local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "ApprovedScopeHud"
