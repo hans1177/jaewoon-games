@@ -103,6 +103,16 @@ jobs:
               &&item.robloxMultiplayerQaPassed===true;
             const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance;
             const publicRuntimeAcceptance=sharedReleaseRuntimeAcceptance;
+            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+            const studioAssetRuntimeBindingExact=!studioAssetBindingRequired||(
+              item.robloxStudioAssetRuntimeBindingPassed===true
+              &&post.studioAssetBindingRequired===true
+              &&post.studioAssetRuntimeBindingPassed===true
+              &&post.studioAssetRuntimeBindingEvidence?.marker==='ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS'
+              &&post.studioAssetRuntimeBindingEvidence?.sourceRevision===sourceRevision
+              &&post.studioAssetRuntimeBindingEvidence?.artifactIdentity===artifactIdentity
+              &&Number(post.studioAssetRuntimeBindingEvidence?.candidateVersionNumber)===Number(candidate.versionNumber)
+            );
             const exact=
               item.robloxFoundationF0Passed===true
               &&item.robloxRuntimeFoundationPassed===true
@@ -128,7 +138,8 @@ jobs:
               &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber)
               &&post.actualRuntimeEvidence===true
               &&post.independentQaPassed===true
-              &&post.regressionPassed===true;
+              &&post.regressionPassed===true
+              &&studioAssetRuntimeBindingExact===true;
             const tickets=currentBlockingTickets.get(item.gameId)||[];
             if(!exact||tickets.length){
               item.robloxFinalReviewPassed=false;
@@ -152,6 +163,9 @@ jobs:
               runtimeFoundationEvidenceAuthority:runtime.authority,
               postRuntimeQaAuthority:post.authority,
               noCurrentCriticalOrHighTesterFailure:true,
+              studioAssetBindingRequired,
+              studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
+              studioAssetRuntimeBindingEvidence:studioAssetBindingRequired?post.studioAssetRuntimeBindingEvidence:null,
               exactCandidateReusedWithoutRepublish:true,
               deterministicRegression:[
                 'qa/company-development-roblox-runtime-foundation.test.mjs',
@@ -175,6 +189,9 @@ jobs:
               published:true,
               actualRuntimeFoundationPassed:true,
               runtimeAcceptancePassed:sharedReleaseRuntimeAcceptance,
+              studioAssetBindingRequired,
+              studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
+              studioAssetRuntimeBindingMarker:studioAssetBindingRequired?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':'NOT_REQUIRED',
               internalReleaseRuntimeAccepted:true,
               publicReleaseRuntimeAccepted:publicRuntimeAcceptance,
               multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC',
