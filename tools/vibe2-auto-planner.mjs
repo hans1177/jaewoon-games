@@ -462,12 +462,76 @@ function compactRuntimeFailureEvidence({requestedStage='',implementationReason='
     clean(lastValidationAt)?`last-validation-at=${clean(lastValidationAt)}`:''
   ].filter(Boolean);
 }
+function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
+  if(clean(project.engine).toLowerCase()!=='web')return{pass:true,blockers:[],relative:null};
+  const relative=`${posix(project.projectPath)}/index.html`;
+  const file=sourceFile(repoRoot,relative);
+  const text=readText(file);
+  const blockers=[];
+  if(!fs.existsSync(file)||!text.trim())blockers.push('EMPTY_OR_MISSING_WEB_ENTRYPOINT');
+  if(text){
+    for(const match of text.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)){
+      const src=clean(match[1]);
+      if(!src||/^(?:https?:|\/\/|data:|blob:)/i.test(src))continue;
+      const resolved=src.startsWith('/')?sourceFile(repoRoot,src.replace(/^\/+/,'')):path.resolve(path.dirname(file),src.split(/[?#]/)[0]);
+      if(!fs.existsSync(resolved))blockers.push(`LOCAL_RUNTIME_DEPENDENCY_MISSING:${src}`);
+    }
+    const validationProxy=/<button\b[^>]*(?:data-session-stage|data-content-depth-stage|data-validation-stage|data-test-stage)|\bid=["']scope-control-/i.test(text);
+    const realGameplay=/data-web-artifact-type=["']REAL_PLAYABLE_GAME["']|data-gameplay-action=|data-playable-cycle-contract=|<canvas\b/i.test(text);
+    if(validationProxy&&!realGameplay)blockers.push('VALIDATION_PROXY_NOT_REAL_GAMEPLAY');
+    const startMatch=text.match(/<button\b([^>]*)>([\s\S]{0,160}?)<\/button>/gi)||[];
+    const startButtons=startMatch.filter(value=>/(?:게임\s*시작|시작하기|start\s*game|play\s*now|놀이공원\s*열기)/i.test(value));
+    if(startButtons.length){
+      const ids=startButtons.map(value=>clean(value.match(/\bid=["']([^"']+)["']/i)?.[1])).filter(Boolean);
+      const direct=startButtons.some(value=>/\bonclick\s*=/i.test(value));
+      const wired=direct||ids.some(id=>new RegExp(`(?:getElementById\\s*\\(\\s*['"]${id}['"]|querySelector\\s*\\(\\s*['"]#${id}['"]|\\b${id}\\s*\\.\\s*(?:onclick|addEventListener))`,'i').test(text));
+      if(!wired)blockers.push('START_CONTROL_NOT_WIRED');
+    }
+    const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
+    const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
+    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
+    if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
+    if(text.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
+  }
+  return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative};
+}
+function findWebStartupSpatialRepairTask(project,repoRoot,queue){
+  if(clean(project.engine).toLowerCase()!=='web')return null;
+  const audit=webStartupSpatialAudit(project,repoRoot);
+  if(audit.pass)return null;
+  const id=nextCausalGenerationId(queue,`${project.gameId}-web-startup-spatial-repair`);if(!id)return null;
+  const blockers=audit.blockers.join(' | ');
+  const goal=`[WEB_REPAIR] [STARTABILITY_AND_2_5D] 게임: ${project.name||project.gameId}
+현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이 표현을 최소 2.5D 이상으로 올린다.
+확인된 실패: ${blockers}
+빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.
+평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 등각/원근 카메라, 깊이 정렬, 전경/중경/후경 parallax, 높이·접지 그림자, 깊이 대응 VFX를 조합하거나 실제 3D를 사용한다. UI 오버레이만 2D를 유지할 수 있다.
+기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+  const out=task(id,project,goal,[audit.relative],'owner-immediate','high',[
+    'owner-directive:all-web-games-must-start',
+    'owner-directive:minimum-2.5d-final-gameplay',
+    'web-stage:WEB_REPAIR',
+    'startup-spatial-audit:FAIL',
+    ...audit.blockers.map(value=>`startup-spatial-blocker:${value}`)
+  ]);
+  out.ownerDirective=true;
+  out.speculativeEligible=false;
+  out.maxRetries=null;
+  out.retryPolicy='UNLIMITED_CAUSAL_REPAIR';
+  return out;
+}
+
 function webRepairImplementationHints(evidence=[]){
   const text=(evidence||[]).map(clean).filter(Boolean).join('|').toUpperCase();
   const hints=[];
   const add=(pattern,hint)=>{if(pattern.test(text))hints.push(hint);};
   add(/APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED/,'실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.');
   add(/MOBILE_TOUCH_ACTION_NOT_CONNECTED/,'모바일 touch/pointer 입력을 실제 게임 액션 함수와 상태 변화에 직접 연결한다.');
+  add(/EMPTY_OR_MISSING_WEB_ENTRYPOINT/,'빈 index.html을 실제 게임 진입 화면과 런타임으로 복구한다.');
+  add(/LOCAL_RUNTIME_DEPENDENCY_MISSING/,'누락된 로컬 script/asset 의존을 실제 파일과 경로에 맞게 복구한다.');
+  add(/VALIDATION_PROXY_NOT_REAL_GAMEPLAY/,'검증 단계·scope 버튼을 실제 gameplay UI로 사용하지 말고 진짜 게임 시작/입력/상태 진행 화면으로 교체한다.');
+  add(/START_CONTROL_NOT_WIRED/,'시작 버튼을 실제 게임 초기화·입력 활성화·게임 상태 전환 함수에 직접 연결한다.');
+  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED/,'평면 2D 최종 표현을 최소 2.5D로 재구성한다. 등각/원근 카메라·깊이 정렬·전경/중경/후경 parallax·높이/접지 그림자·깊이 대응 VFX 중 실제 공간 단서를 결합하고 UI만 2D overlay로 남긴다.');
   add(/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/,'카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.');
   add(/APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED/,'실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.');
   add(/REAL_GAME_MECHANIC_COUNT_TOO_LOW/,'누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.');
@@ -510,7 +574,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
   if(missing){
     const id=nextCausalGenerationId(queue,`${project.gameId}-web-base-implementation`);if(!id)return null;
-    const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 장르와 실제 규칙에서 UI/애니메이션을 별도로 만들고 첫 10분·오디오·모바일 성능·접근성·저장 안정성·콘텐츠 구조까지 Commercial Readiness를 기존 검증 파이프 안에서 만족해야 한다. 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+    const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 최종 게임플레이 공간은 최소 2.5D 이상으로 제작하며 평면 2D 단독 월드·이모지 그리드·검증 카드 화면은 완성 상태로 인정하지 않는다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 장르와 실제 규칙에서 UI/애니메이션을 별도로 만들고 첫 10분·오디오·모바일 성능·접근성·저장 안정성·콘텐츠 구조까지 Commercial Readiness를 기존 검증 파이프 안에서 만족해야 한다. 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
     const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','existing-web-source:MISSING']);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const queueState=clean(project.queueCanonicalState).toUpperCase(),queueStep=clean(project.queueCurrentStep).toUpperCase();
@@ -1177,6 +1241,8 @@ function findSafeTasks(project,repoRoot,queue){
     ]);
   }
   if(project.engine==='web'){
+    const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
+    if(startupSpatialRepair)return[startupSpatialRepair];
     if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
