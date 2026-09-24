@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3845,7 +3845,12 @@
       "actualRuntimeObservationRequired": true,
       "visibleRenderDeltaRequiredForPresentationFocus": true,
       "protectedRegressionForbidden": true,
-      "genericSourceFanInCannotPretendNativeRuntimePassed": true
+      "genericSourceFanInCannotPretendNativeRuntimePassed": true,
+      "nativeBaselineLifecycle": {
+        "firstObservedPresentationCycle": "ESTABLISH_ACTUAL_RUNTIME_BASELINE",
+        "laterPresentationCycles": "COMPARE_PRIOR_VERIFIED_RUNTIME_TO_CURRENT_RUNTIME",
+        "fabricatedBeforeEvidenceForbidden": true
+      }
     },
     "packageContract": {
       "class": "STUDIO_QUALITY_PACKAGE",
