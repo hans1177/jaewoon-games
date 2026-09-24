@@ -519,6 +519,34 @@ test('existing Roblox games receive one Studio asset backfill task until real bi
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('autonomous planner queues Studio asset backfill for an existing confirmed Roblox game',()=>{
+  const root=tempRoot();
+  try{
+    writePolicy(root);
+    const gameRoot=path.join(root,'roblox-games','demo');
+    fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return { GameId = "demo" }\n');
+    fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local root = Instance.new("Frame")\nroot.BackgroundColor3 = Color3.fromRGB(18,28,48)\n');
+    const result=planVibe2AutonomousTasks({
+      status:{projects:[{
+        gameId:'demo',name:'Demo',ownerDecision:'PASS',
+        target:'roblox',selectedPlatform:'roblox',projectPath:'roblox-games/demo',progress:20
+      }]},
+      catalog:{games:[{id:'demo',name:'Demo',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+      developmentQueue:{items:[]},
+      queue:{maxConcurrentTasks:4,tasks:[]},
+      repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
+    });
+    assert.equal(result.planned,true);
+    const backfill=result.tasks.find(row=>row.id==='demo-roblox-studio-asset-backfill-v1');
+    assert.ok(backfill);
+    assert.equal(backfill.target,'roblox');
+    assert.equal(backfill.studioAssetBackfill,true);
+    assert.ok(backfill.evidence.includes('roblox-studio-asset-vibe-application:required'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('Roblox Studio asset auto apply requires selected atom trace and real native binding',()=>{
   const root=tempRoot();
   try{
