@@ -15,7 +15,6 @@ on:
   workflow_run:
     workflows:
       - Company DESIGN_ONLY Promotion Sync
-      - Company Status Sync
       - Company Seed DESIGN_ONLY Runtime
     types: [completed]
 
@@ -34,9 +33,9 @@ jobs:
   game-primary-gate:
     runs-on: ubuntu-latest
     outputs:
-      defer: ${{ steps.gate.outputs.defer }}
+      dispatch_allowed: ${{ steps.gate.outputs.dispatch_allowed }}
     steps:
-      - name: Defer queue reconcile while Vibe2 game primary is active
+      - name: Resolve development runtime dispatch safety without blocking reconciliation
         id: gate
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,14 +43,14 @@ jobs:
         run: |
           set -euo pipefail
           if ! queue_response="$(gh api "repos/${GITHUB_REPOSITORY}/contents/.vibe2/queue.json?ref=vibe2-unreal-core" 2>/dev/null)"; then
-            echo 'defer=true' >> "$GITHUB_OUTPUT"
-            echo 'GAME_PRIMARY_GATE=DEFER_QUEUE_UNAVAILABLE'
+            echo 'dispatch_allowed=false' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=RECONCILE_ALLOWED_DISPATCH_SUPPRESSED_QUEUE_UNAVAILABLE'
             exit 0
           fi
           queue_json="$(jq -r '.content // empty' <<<"$queue_response" | tr -d '\n' | base64 -d 2>/dev/null || true)"
           if [ -z "$queue_json" ] || ! jq -e . >/dev/null 2>&1 <<<"$queue_json"; then
-            echo 'defer=true' >> "$GITHUB_OUTPUT"
-            echo 'GAME_PRIMARY_GATE=DEFER_QUEUE_INVALID'
+            echo 'dispatch_allowed=false' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=RECONCILE_ALLOWED_DISPATCH_SUPPRESSED_QUEUE_INVALID'
             exit 0
           fi
           active_game_work="$(jq '[.tasks[]? | select(
@@ -60,16 +59,16 @@ jobs:
             and (((.type // "") | ascii_downcase) == "implementation"))
           ] | length' <<<"$queue_json")"
           if [ "$active_game_work" -gt 0 ]; then
-            echo 'defer=true' >> "$GITHUB_OUTPUT"
-            echo "GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK:$active_game_work"
+            echo 'dispatch_allowed=false' >> "$GITHUB_OUTPUT"
+            echo "GAME_PRIMARY_GATE=RECONCILE_ALLOWED_DISPATCH_SUPPRESSED_ACTIVE_GAME_WORK:$active_game_work"
           else
-            echo 'defer=false' >> "$GITHUB_OUTPUT"
-            echo 'GAME_PRIMARY_GATE=RUN'
+            echo 'dispatch_allowed=true' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=RECONCILE_AND_DISPATCH_ALLOWED'
           fi
 
   reconcile:
     needs: game-primary-gate
-    if: needs.game-primary-gate.outputs.defer != 'true' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -153,7 +152,7 @@ jobs:
           echo "DEVELOPMENT_QUEUE_RUNTIME_COUNT=$queue_count"
 
       - name: Dispatch development runtime
-        if: ${{ success() && steps.queue_state.outputs.queue_count != '0' }}
+        if: ${{ success() && steps.queue_state.outputs.queue_count != '0' && needs.game-primary-gate.outputs.dispatch_allowed == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -161,3 +160,10 @@ jobs:
           set -euo pipefail
           gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'DEVELOPMENT_RUNTIME_DISPATCHED=YES'
+
+      - name: Record suppressed runtime dispatch
+        if: ${{ success() && steps.queue_state.outputs.queue_count != '0' && needs.game-primary-gate.outputs.dispatch_allowed != 'true' }}
+        run: |
+          echo 'DEVELOPMENT_RUNTIME_DISPATCHED=NO'
+          echo 'DEVELOPMENT_RUNTIME_DISPATCH_REASON=VIBE_GAME_PRIMARY_SAFETY'
+          echo 'DEVELOPMENT_QUEUE_RECONCILIATION_PERSISTED=YES'
