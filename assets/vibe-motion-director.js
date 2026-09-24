@@ -324,6 +324,90 @@ export function createVariationMemory({history=[],maxSize=8}={}){
   });
 }
 
+export function createCreatureMotionSetProfile({
+  id='',archetype='',bodyPlan='HUMANOID',rigProfile='HUMANOID',weightClass='STANDARD',
+  locomotion=[],attacks=[],defense=[],reactions=[],acting=[],deaths=[],skill=[],signature=[],compatibleStyles=[],
+  verificationState='PREPARED_SEMANTIC'
+}={}){
+  const groups={
+    locomotion:unique(locomotion),attacks:unique(attacks),defense:unique(defense),reactions:unique(reactions),
+    acting:unique(acting),deaths:unique(deaths),skill:unique(skill),signature:unique(signature)
+  };
+  const all=unique(Object.values(groups).flat());
+  return Object.freeze({
+    id:text(id),
+    archetype:upper(archetype),
+    bodyPlan:upper(bodyPlan),
+    rigProfile:upper(rigProfile),
+    weightClass:upper(weightClass),
+    groups:Object.freeze(Object.fromEntries(Object.entries(groups).map(([k,v])=>[k,Object.freeze(v)]))),
+    motionIds:Object.freeze(all),
+    compatibleStyles:Object.freeze(unique(compatibleStyles).map(upper)),
+    verificationState:upper(verificationState),
+    productionVerified:upper(verificationState)==='VERIFIED_RUNTIME',
+    gameplayAuthority:false
+  });
+}
+
+export function motionSetToCandidates(profile={},platform='UNITY',styleFamily='STYLIZED_FANTASY'){
+  const p=profile.groups?profile:createCreatureMotionSetProfile(profile);
+  const rows=[];
+  const roleMap={
+    locomotion:['TRAVERSAL_ROLE','LOCOMOTION'],
+    attacks:['COMBAT_ROLE','ATTACK'],
+    defense:['DEFENSE_ROLE','DEFENSE'],
+    reactions:['REACTION_ROLE','REACTION'],
+    acting:['INTERACTION_ROLE','ACTING'],
+    deaths:['REACTION_ROLE','DEATH'],
+    skill:['SKILL_ROLE','SKILL'],
+    signature:['COMBAT_ROLE','SIGNATURE']
+  };
+  for(const [group,ids] of Object.entries(p.groups||{})){
+    const [field,value]=roleMap[group]||['COMBAT_ROLE',upper(group)];
+    for(const id of ids){
+      const dnaInput={
+        motionId:id,
+        bodyPlan:p.bodyPlan,
+        rigProfile:p.rigProfile,
+        speciesOrArchetype:p.archetype,
+        styleFamily,
+        weightClass:p.weightClass,
+        platformVariant:platform,
+        runtimeVerificationState:p.verificationState
+      };
+      dnaInput[field]=value;
+      rows.push(Object.freeze({
+        id,
+        family:group,
+        signature:(p.groups.signature||[]).includes(id),
+        dna:createMotionDNA(dnaInput),
+        preparedSemanticOnly:p.productionVerified!==true
+      }));
+    }
+  }
+  const dedup=new Map(rows.map(row=>[row.id,row]));
+  return Object.freeze([...dedup.values()]);
+}
+
+export function estimateMotionCombinationSpace({layers={},styleVariants=[],skillPhases=[],reactionVariants=[],pairVariants=[]}={}){
+  const counts=[];
+  for(const value of Object.values(layers||{})){
+    const count=Array.isArray(value)?value.length:(value?1:0);
+    if(count>0)counts.push(count);
+  }
+  if((styleVariants||[]).length)counts.push(styleVariants.length);
+  if((skillPhases||[]).length)counts.push(skillPhases.length);
+  if((reactionVariants||[]).length)counts.push(reactionVariants.length);
+  if((pairVariants||[]).length)counts.push(pairVariants.length);
+  const theoretical=counts.length?counts.reduce((a,b)=>a*b,1):0;
+  return Object.freeze({
+    theoreticalCombinationCount:theoretical,
+    dimensionCounts:Object.freeze(counts),
+    artificialCapApplied:false,
+    note:'THEORETICAL_SPACE_ONLY_REAL_RUNTIME_SELECTION_STILL_REQUIRES_COMPATIBILITY_CONTEXT_AND_QA'
+  });
+}
+
 export function createSpeciesSignature({archetype='',idle='',locomotion='',attack='',defense='',hit='',death='',specialBodyPart=''}={}){
   return Object.freeze({
     archetype:upper(archetype),
