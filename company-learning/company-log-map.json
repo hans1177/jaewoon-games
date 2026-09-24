@@ -1,5 +1,5 @@
 {
-  "version": 46,
+  "version": 47,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -916,6 +916,12 @@
     "arbitraryUnrecognizedVerifiedMarkerForbidden": true,
     "rawTelemetryDirectTrainingForbidden": true,
     "infrastructureFailureNegativeLearningForbidden": true,
-    "duplicateOutcomePersistenceForbidden": true
+    "duplicateOutcomePersistenceForbidden": true,
+    "finalMarkerMustBeExactEvidenceToken": true,
+    "prefixedFocusedQaTokenCannotMatchFinalMarker": true,
+    "positiveProvenanceTokensRequired": [
+      "specialized-final-verification:PASS",
+      "specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION"
+    ]
   }
 }
