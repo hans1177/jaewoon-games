@@ -179,6 +179,76 @@
       "verifiedFailureLessons": 0,
       "lastEvidence": null
     },
+    "CHARACTER_PERSONA": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "RELATIONSHIP_MEMORY": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "WORLD_NARRATIVE": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "VISUAL_IDENTITY": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "CONCEPT_DIRECTION": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "ENVIRONMENT_COMPOSITION": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "WORLD_GENERATION": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "LEVEL_DESIGN": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "NAVIGATION": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "STREAMING": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
     "WEB_RUNTIME": {
       "xp": 1954,
       "level": 16,
@@ -9743,7 +9813,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-24T02:53:40.051Z",
+    "lastBuiltAt": "2026-09-24T02:59:28.565Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10256,6 +10326,146 @@
         "lastUpdatedAt": "2026-09-24T02:49:26.324Z"
       },
       "DIALOGUE": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "CHARACTER_PERSONA": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "RELATIONSHIP_MEMORY": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "WORLD_NARRATIVE": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "VISUAL_IDENTITY": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "CONCEPT_DIRECTION": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "ENVIRONMENT_COMPOSITION": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "WORLD_GENERATION": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "LEVEL_DESIGN": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "NAVIGATION": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "STREAMING": {
         "verifiedApplications": 0,
         "verifiedFailures": 0,
         "firstPasses": 0,
@@ -14255,5 +14465,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-24T02:53:40.051Z"
+  "updatedAt": "2026-09-24T02:59:28.565Z"
 }
