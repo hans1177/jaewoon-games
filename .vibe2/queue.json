@@ -8866,6 +8866,45 @@
         "PRODUCTION_PASS_NO"
       ],
       "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-company-graphics-unity-ui-presentation-g1",
+      "gameId": null,
+      "target": "web",
+      "department": "learning",
+      "type": "research",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=UI_PRESENTATION_LIBRARY_DRILL\ndomains=ASSET_ADAPTATION,VFX\npracticeGeneration=1\npracticeMode=WEB_ARTIFACT\ncompanyGraphicsLibrary=YES\nplatformProfile=UNITY\n소스 파일을 수정하지 않는다. 모바일 우선 HUD·인벤토리·상점·설정·체력바·슬롯·버튼·상호작용 피드백을 장르별로 변형 가능한 공용 표현 규격으로 준비한다. 하나의 전역 UI가 모든 게임 정체성을 평준화하지 않게 한다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "sourceRoot": "learning-practice:company-graphics-unity-ui-presentation",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:UI_PRESENTATION_LIBRARY_DRILL",
+        "practice-generation:1",
+        "learning-web-artifact-practice",
+        "company-graphics-library-24h",
+        "company-graphics-library-prepared-not-promoted",
+        "company-graphics-platform:UNITY",
+        "practice-domain:ASSET_ADAPTATION",
+        "practice-domain:VFX"
+      ],
+      "completionCriteria": [
+        "PRACTICE_WEB_ARTIFACT_VERIFIED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO"
+      ]
     }
   ]
 }
