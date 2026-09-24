@@ -97,7 +97,7 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
   assert.equal(snapshot.generatedFrom.runtimeVersion, repositoryRuntime.version);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
-  assert.equal(snapshot.generatedFrom.parallelismVersion, 3);
+  assert.equal(snapshot.generatedFrom.parallelismVersion, 4);
   assert.equal(snapshot.generatedFrom.experienceVersion, 3);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
   assert.equal(snapshot.parallelism.configuredMax, 256);
@@ -149,7 +149,7 @@ test('planner and worker work-order consume generated machine handoff instead of
   const statusFile = path.join(tempRoot, 'status.json');
   const catalogFile = path.join(tempRoot, 'catalog.json');
   fs.writeFileSync(queueFile, JSON.stringify({ version:5, maxConcurrentTasks:256, tasks:[] }));
-  fs.writeFileSync(controlFile, JSON.stringify({ version:3, currentMax:8, healthyStreak:0, pressureStreak:0 }));
+  fs.writeFileSync(controlFile, JSON.stringify({ version:4, currentMax:8, healthyStreak:0, pressureStreak:0 }));
   fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }));
   fs.writeFileSync(statusFile, JSON.stringify({ projects:[] }));
   fs.writeFileSync(catalogFile, JSON.stringify({ games:[] }));
@@ -181,7 +181,7 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
     return { id:`e2e-${n}`, gameId, target:'web', department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', goal:analysisOnly?'inspect existing web source':'existing web text maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };
   });
   fs.writeFileSync(queueFile, JSON.stringify({ version:5, mode:'hierarchical-dag-sharded-work-stealing-queue', maxConcurrentTasks:256, tasks }, null, 2));
-  fs.writeFileSync(controlFile, JSON.stringify({ version:3, currentMax:32, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'CANONICAL_STEP_32', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
+  fs.writeFileSync(controlFile, JSON.stringify({ version:4, currentMax:32, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'CANONICAL_STEP_32', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
   fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }, null, 2));
 
   const before = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
