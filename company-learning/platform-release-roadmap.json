@@ -1,5 +1,5 @@
 {
-  "version": 325,
+  "version": 326,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-24",
@@ -15692,7 +15692,23 @@
             "JUNGLE_RUINS",
             "UNDERGROUND",
             "UNDEAD",
-            "MECHANICAL_CIVILIZATION"
+            "MECHANICAL_CIVILIZATION",
+            "INK_WASH",
+            "WATERCOLOR",
+            "NOIR",
+            "TOON_NOIR",
+            "SOLARPUNK",
+            "BIOPUNK",
+            "RETRO_FUTURISM",
+            "COZY",
+            "PAPER_CRAFT",
+            "VOXEL",
+            "DREAMCORE",
+            "HISTORICAL_EAST_ASIAN",
+            "SPACE_OPERA",
+            "UNDERWATER_FANTASY",
+            "DESERT_FANTASY",
+            "MYTHIC_NORDIC"
           ],
           "axes": {
             "artTone": [
@@ -15799,7 +15815,30 @@
               "CHOKE_AND_RELEASE",
               "SAFE_DANGER_ZONE_RELATION",
               "SIGHTLINE_AND_REVEAL"
-            ]
+            ],
+            "visionObservationContract": {
+              "enabled": true,
+              "owner": "GRAPHICS_PRODUCTION_EXISTING_PIPELINE",
+              "input": "RIGHTS_VERIFIED_REFERENCE_IMAGE_OR_INTERNAL_RUNTIME_CAPTURE",
+              "output": "STRUCTURAL_OBSERVATION_ONLY",
+              "outputFields": [
+                "RIDGE_AND_VALLEY_FLOW",
+                "ROAD_AND_PATH_GRAPH",
+                "OPEN_SPACE_DENSITY",
+                "OBSTACLE_CLUSTERING",
+                "LANDMARK_HIERARCHY",
+                "VEGETATION_DENSITY",
+                "URBAN_BLOCK_RHYTHM",
+                "CHOKE_AND_RELEASE",
+                "SAFE_DANGER_ZONE_RELATION",
+                "SIGHTLINE_AND_REVEAL"
+              ],
+              "rawImagePersistentLearningForbidden": true,
+              "rawProtectedSceneTemplateReuseForbidden": true,
+              "sourceRightsAndProvenanceRequired": true,
+              "observationMustBeBoundToSourceId": true,
+              "modelObservationIsProposalUntilVerifiedAgainstSource": true
+            }
           },
           "mapDnaFields": [
             "BIOME",
@@ -15821,6 +15860,7 @@
           ],
           "generationPipeline": [
             "LOAD_GAME_CONCEPT_STYLE_WORLD_AND_LOCKED_GAMEPLAY_CONSTRAINTS",
+            "REQUEST_OR_LOAD_VERIFIED_REFERENCE_STRUCTURE_OBSERVATION",
             "ABSTRACT_ALLOWED_REFERENCE_STRUCTURE",
             "GENERATE_MAP_DNA",
             "GENERATE_MACRO_TERRAIN_REGIONS_AND_LANDMARKS",
@@ -15928,6 +15968,12 @@
             ],
             "genreGrammarGuidesGenerationButLockedGameRulesWin": true,
             "sameMacroPatternAcrossAllGenresForbidden": true
+          },
+          "version": 2,
+          "implementationBindings": {
+            "environmentDirector": "assets/vibe-environment-director.js",
+            "assetProductionPlanner": "tools/vibe2-asset-production-plan.mjs",
+            "graphicsCoordinator": "assets/vibe-art-pipeline.js"
           }
         },
         "systems": [
@@ -16349,7 +16395,8 @@
         "COMPANION_BEHAVIOR",
         "NPC_BEHAVIOR",
         "MONSTER_BEHAVIOR_PERSONALITY",
-        "WORLD_NARRATIVE_BINDING"
+        "WORLD_NARRATIVE_BINDING",
+        "CHARACTER_BEHAVIOR"
       ],
       "existingCanonicalLearningMotorOnly": true,
       "positiveMasteryRequiresVerifiedProjectOutcome": true,
