@@ -63,6 +63,47 @@ function releaseCandidateFromEvidence(evidence=new Set()){
   const branches=[...evidence].map(clean).filter(value=>value.startsWith('vibe2/candidate/'));
   return branches.at(-1)||null;
 }
+const SPECIALIZED_FINAL_MARKERS=Object.freeze(new Set([
+  'VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS',
+  'VERIFIED_WORLD_ROUTE_NAVIGATION_PASS',
+  'VERIFIED_STREAMING_MOBILE_BUDGET_PASS',
+  'VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS',
+  'VERIFIED_QUEST_GRAPH_PASS',
+  'VERIFIED_CHARACTER_PERSONA_VOICE_MEMORY_PASS',
+  'VERIFIED_WORLD_NARRATIVE_STATE_PASS'
+]));
+function specializedNativeRuntimeEvidence(request={},combinedEvidence=[]){
+  if(request?.nativeRuntimeRequired!==true)return{pass:true,evidence:null};
+  const target=clean(request?.target).toLowerCase();
+  const patterns=target==='roblox'?[/^roblox-verification-run:/i]
+    :target==='unity'?[/^unity-verification-run:/i]
+    :[];
+  const hit=combinedEvidence.find(value=>patterns.some(re=>re.test(clean(value))))||null;
+  return{pass:Boolean(hit),evidence:hit};
+}
+function resolveSpecializedFinalVerification({task={},row={},evidence=new Set()}={}){
+  const request=row?.specializedVerificationRequest&&typeof row.specializedVerificationRequest==='object'?row.specializedVerificationRequest:null;
+  if(!request||request.required!==true)return{markers:[],trace:[],blocked:[]};
+  const qa=row?.specializedVerificationQa&&typeof row.specializedVerificationQa==='object'?row.specializedVerificationQa:null;
+  const requested=[...new Set((request.requestedMarkers||[]).map(clean).filter(Boolean))];
+  const blocked=[];
+  const trace=[];
+  if(clean(qa?.status)!=='FOCUSED_STATIC_PASS')blocked.push('FOCUSED_QA_NOT_PASS');
+  if(clean(qa?.finalMarkerAuthority)!=='FAN_IN_ONLY')blocked.push('FINAL_MARKER_AUTHORITY_INVALID');
+  const unknown=requested.filter(marker=>!SPECIALIZED_FINAL_MARKERS.has(marker));
+  if(unknown.length)blocked.push('UNKNOWN_MARKER:'+unknown.join(','));
+  const notFocused=requested.filter(marker=>qa?.results?.[marker]?.pass!==true);
+  if(notFocused.length)blocked.push('FOCUSED_MARKER_NOT_PASS:'+notFocused.join(','));
+  if(!evidence.has('role-result:regression:PASS'))blocked.push('FULL_REGRESSION_NOT_PASS');
+  if(!evidence.has('role-result:review:PASS'))blocked.push('FAN_IN_REVIEW_NOT_PASS');
+  const combined=[...evidence,...((row?.evidence||[]).map(clean).filter(Boolean))];
+  const native=specializedNativeRuntimeEvidence(request,combined);
+  if(!native.pass)blocked.push('AUTHORITATIVE_TARGET_ENGINE_QA_MISSING');
+  if(blocked.length)return{markers:[],trace:['specialized-final-verification:BLOCKED',...blocked.map(value=>'specialized-final-blocker:'+value)],blocked};
+  if(native.evidence)trace.push('specialized-native-runtime-evidence:'+native.evidence);
+  trace.push('specialized-final-verification:PASS','specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION');
+  return{markers:requested.filter(marker=>SPECIALIZED_FINAL_MARKERS.has(marker)),trace,blocked:[]};
+}
 
 export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const resultRows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
@@ -182,6 +223,9 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
+      const specializedFinal=resolveSpecializedFinalVerification({task,row:selectedResult,evidence});
+      for(const marker of specializedFinal.markers)evidence.add(marker);
+      for(const marker of specializedFinal.trace)evidence.add(marker);
       const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
       if(capabilityReview)experienceReviews.push(capabilityReview);
       reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute});
