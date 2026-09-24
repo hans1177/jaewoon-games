@@ -66,7 +66,7 @@ test('legacy retryable failed development work revives under unlimited causal re
   const task=queue.tasks[0];
   assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.equal(task.status,'queued');
-  assert.equal(task.blocker,'source-candidate-generation-failed');
+  assert.equal(task.blocker,null);
   assert.ok(task.evidence.includes('recovery:legacy-failed-unlimited-requeue-v1'));
 });
 
