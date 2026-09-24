@@ -265,7 +265,7 @@ test('Roblox package completion follows F0 then private runtime candidate then e
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(preflight.includes('Vibe plus shared-model build preflight'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
-  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
+  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=EXACT:')||preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=BATCH'));
   assert.ok(f0.includes('Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight'));
   assert.ok(f0.includes('company-development-roblox-headless-fast-mvp.mjs'));
   assert.ok(f0.includes('HEADLESS_SOURCE_PREFLIGHT_F0')||f0.includes('robloxFoundationF0Passed'));
@@ -430,7 +430,7 @@ test('owner-focused Roblox package completion dispatches the existing continuati
   assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed/);
   assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
   assert.match(workflow,/company-development-roblox-runtime-continuation\.yml/);
-  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=EXACT:/);
 });
 
 
