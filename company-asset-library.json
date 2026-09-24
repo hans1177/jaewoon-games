@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -9,7 +9,17 @@
     "verifiedOnlyMayClaimCompanyReusable": true,
     "preparedOrResearchItemsMustBeLabeled": true,
     "unityRobloxNativeVariantsSeparated": true,
-    "gameStyleLockOverridesGenericLook": true
+    "gameStyleLockOverridesGenericLook": true,
+    "mandatoryConsumerPlatforms": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "lookupBeforeNativeAssetChoice": true,
+    "existingRepositoryInventoryBeforeExternal": true,
+    "externalGapFillBeforeNewAuthoring": true,
+    "rawExternalAssetNotVerifiedCompanyAsset": true,
+    "nativeRuntimeVerificationBeforePromotion": true,
+    "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION"
   },
   "platformPacks": [
     {
@@ -37,7 +47,34 @@
     "directionalHitReactions": 4,
     "hitStrengthLevels": 3,
     "deathVariants": 3,
-    "skillOrCastVariants": 3
+    "skillOrCastVariants": 3,
+    "humanoidFoundation": [
+      "IDLE",
+      "WALK",
+      "JOG",
+      "RUN",
+      "SPRINT",
+      "START",
+      "STOP",
+      "STRAFE_LEFT",
+      "STRAFE_RIGHT",
+      "BACKWARD",
+      "TURN_45",
+      "TURN_90",
+      "TURN_180",
+      "JUMP_START",
+      "JUMP_AIR",
+      "LAND",
+      "CROUCH"
+    ],
+    "creatureFamilies": [
+      "HUMANOID",
+      "QUADRUPED",
+      "INSECT",
+      "REPTILE_OR_SERPENT",
+      "FLYING",
+      "HEAVY_GOLEM_OR_BOSS"
+    ]
   },
   "weaponPacks": [
     "UNARMED",
@@ -170,6 +207,46 @@
       "path": "/assets/logo-sprite-dragonfly.svg",
       "license": "project-original",
       "note": "비행형 실루엣 참고"
+    },
+    {
+      "id": "survival2-tree",
+      "title": "Survival2 Tree",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/tree.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 네이티브 직접 재사용 금지, 형태/재질 참고 및 권리 확인 파생 후보"
+    },
+    {
+      "id": "survival2-rock",
+      "title": "Survival2 Rock",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/rock.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 네이티브 변환 시 플랫폼별 재authoring"
+    },
+    {
+      "id": "survival2-plant",
+      "title": "Survival2 Plant",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/plant.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 식생 참고/파생 후보"
+    },
+    {
+      "id": "survival2-mushroom",
+      "title": "Survival2 Mushroom",
+      "category": "ENVIRONMENT",
+      "platform": "WEB_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/web-games/survival2/assets/mushroom.png",
+      "license": "CC0",
+      "note": "기존 저장소 실자산 · 환경/아이템 참고 후보"
     }
   ],
   "research": [
@@ -236,6 +313,295 @@
       "platform": "UNITY_ROBLOX_SPLIT",
       "status": "RESEARCH_ACTIVE",
       "note": "HUD·인벤토리·상점·옵션·체력바·모바일 조작"
+    },
+    {
+      "id": "studio-humanoid-locomotion",
+      "title": "Studio Humanoid Locomotion",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "Idle/Walk/Jog/Run/Sprint/Start/Stop/Strafe/Backward/45·90·180 Turn/Jump/Land/Crouch를 외부 모션+리타겟 클린업으로 우선 구축"
+    },
+    {
+      "id": "studio-humanoid-combat",
+      "title": "Studio Humanoid Combat",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "약/강공격·가드·회피·방향 피격·넉백·스턴·다운·기상·사망과 무기 접촉/타격 이벤트 동기화"
+    },
+    {
+      "id": "studio-quadruped-motion",
+      "title": "Studio Quadruped Motion",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "실제 네발동물 체중 이동·보행 위상·회전·공격·피격·사망 연구 후 늑대/곰/멧돼지 등 공용 기반 구축"
+    },
+    {
+      "id": "studio-creature-family-motion",
+      "title": "Studio Creature Families",
+      "category": "MOTION",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "곤충·뱀/파충·비행·골렘/거대 보스는 신체구조별 별도 모션 연구. 사람 모션 단순 재사용 금지"
+    },
+    {
+      "id": "external-gap-fill",
+      "title": "외부 에셋/모션 Gap Fill",
+      "category": "CHARACTER",
+      "platform": "UNITY_ROBLOX_SPLIT",
+      "status": "RESEARCH_ACTIVE",
+      "note": "회사/저장소에 없는 캐릭터·몹·모션·환경은 라이선스 검증 외부 소스로 먼저 보충하고 실게임 검증 후 승격"
+    }
+  ],
+  "studioMotion": {
+    "target": "STUDIO_GRADE_GAME_MOTION",
+    "priorityBootstrap": [
+      "HUMANOID_STUDIO_LOCOMOTION",
+      "HUMANOID_COMBAT_BASE",
+      "QUADRUPED_STUDIO_MOTION",
+      "CREATURE_FAMILY_MOTION",
+      "BOSS_ACTING_MOTION"
+    ],
+    "sourceOrder": [
+      "VERIFIED_COMPANY_MOTION",
+      "LICENSE_VERIFIED_REPOSITORY_MOTION",
+      "LICENSE_VERIFIED_EXTERNAL_MOCAP_OR_ANIMATION",
+      "RETARGET_AND_CLEANUP",
+      "AUTHOR_NEW_MOTION_WHEN_REQUIRED"
+    ],
+    "retargetCleanup": [
+      "FOOT_PLANT",
+      "FOOT_SLIDE_CONTROL",
+      "ROOT_PELVIS_TRAJECTORY",
+      "WEIGHT_TRANSFER",
+      "START_STOP_ACCELERATION",
+      "TURN_FOOT_PLANT",
+      "HAND_WEAPON_CONTACT",
+      "GROUND_SLOPE_CONTACT",
+      "LOOP_CONTINUITY",
+      "JOINT_AND_MESH_SANITY",
+      "IMPACT_EVENT_SYNC",
+      "SECONDARY_MOTION"
+    ],
+    "promotionQa": [
+      "NATURAL_START_STOP",
+      "NATURAL_TURNS",
+      "NO_VISIBLE_FOOT_SLIDE",
+      "NO_HARD_BLEND_POP",
+      "WEIGHT_READABILITY",
+      "DIRECTIONAL_HIT_RESPONSE",
+      "SPECIES_SPECIFIC_MOTION",
+      "MOBILE_FRAME_STABILITY",
+      "ACTUAL_RUNTIME_CAPTURE",
+      "BEFORE_AFTER_COMPARISON"
+    ]
+  },
+  "externalSources": [
+    {
+      "id": "kaykit-character-animations-1-1",
+      "name": "KayKit Character Animations 1.1",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "KayKit",
+      "creator": "Kay Lousberg",
+      "sourceUrl": "https://kaylousberg.itch.io/kaykit-character-animations",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kaylousberg.itch.io/kaykit-character-animations",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "161_HUMANOID_ANIMATIONS",
+        "FBX",
+        "GLTF",
+        "RETARGETABLE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "kaykit-adventurers",
+      "name": "KayKit Character Pack: Adventurers",
+      "category": "CHARACTER",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "KayKit",
+      "creator": "Kay Lousberg",
+      "sourceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "GAME_READY_CHARACTER",
+        "FBX",
+        "GLTF",
+        "KAYKIT_MOTION_COMPATIBLE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-universal-animation-library",
+      "name": "Quaternius Universal Animation Library",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalanimationlibrary.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/universalanimationlibrary.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "120_PLUS_ANIMATIONS",
+        "8_DIRECTION_LOCOMOTION",
+        "COMBAT",
+        "FBX",
+        "GLB",
+        "RETARGETABLE_HUMANOID"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-universal-animation-library-2",
+      "name": "Quaternius Universal Animation Library 2",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "130_PLUS_ANIMATIONS",
+        "MELEE_COMBOS",
+        "PARKOUR",
+        "ZOMBIE_LOCOMOTION",
+        "FBX",
+        "GLB",
+        "RETARGETABLE_HUMANOID"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-universal-base-characters",
+      "name": "Quaternius Universal Base Characters",
+      "category": "CHARACTER",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/universalbasecharacters.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/universalbasecharacters.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "HUMANOID_RIG",
+        "RETARGETABLE",
+        "FBX",
+        "GLTF",
+        "ANIMATION_FRIENDLY_TOPOLOGY"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-ultimate-animated-animals",
+      "name": "Quaternius Ultimate Animated Animal Pack",
+      "category": "CREATURE",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "12_ANIMATED_ANIMALS",
+        "12_PLUS_ANIMATIONS_EACH",
+        "FBX",
+        "GLTF",
+        "QUADRUPED_REFERENCE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "quaternius-bestiary-dungeon-monsters",
+      "name": "Quaternius Bestiary - Dungeon Monsters Kit",
+      "category": "CREATURE",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/bestiarydungeonmonsterskit.html",
+      "license": "QUATERNIUS_ASSET_LICENSE_V1",
+      "licenseEvidenceUrl": "https://quaternius.com/license.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "7_GAME_READY_MONSTERS",
+        "HUMANOID_RIG",
+        "RETARGETABLE",
+        "UNIVERSAL_ANIMATION_LIBRARY_COMPATIBLE"
+      ],
+      "acquisition": "ON_DEMAND",
+      "rawRedistributionAllowed": false,
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "adobe-mixamo",
+      "name": "Adobe Mixamo",
+      "category": "MOTION",
+      "status": "LICENSE_VERIFIED_EXTERNAL_RESEARCH_SOURCE",
+      "source": "Adobe",
+      "sourceUrl": "https://www.mixamo.com/",
+      "license": "ROYALTY_FREE_PERSONAL_COMMERCIAL_NONPROFIT_PROJECT_USE",
+      "licenseEvidenceUrl": "https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html",
+      "verifiedAt": "2026-09-24",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "BIPED_HUMANOID_AUTO_RIG",
+        "HUMANOID_ANIMATION_LIBRARY",
+        "FBX_DOWNLOAD"
+      ],
+      "acquisition": "MANUAL_ACCOUNT_REQUIRED",
+      "rawRedistributionAllowed": false,
+      "promotionRequiresRuntimeConsumer": true
     }
   ]
 }
