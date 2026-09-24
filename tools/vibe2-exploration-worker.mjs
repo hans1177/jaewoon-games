@@ -284,7 +284,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
       testTargets:causalReplay.nodeTestTargets||[]
     },
     invariants:{
-      required:failures.length>0,
+      required:repairRequired,
       ids:(codingArchitecture?.invariants||[]).map(row=>row.id).filter(Boolean),
       testTargets:classifiedTargets.filter(value=>/(?:invariant|state|progress|quest|wave|combat|scenario|integration)/i.test(value)).slice(0,8)
     },
