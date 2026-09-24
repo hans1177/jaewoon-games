@@ -175,7 +175,7 @@ jobs:
     outputs:
       pass_count: ${{ steps.persist.outputs.pass_count }}
     concurrency:
-      group: company-runtime-writer
+      group: roblox-runtime-preflight-writer
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4

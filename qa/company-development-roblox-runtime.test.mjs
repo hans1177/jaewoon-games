@@ -505,3 +505,16 @@ test('territory-war exact source honors approved competitive multiplayer profile
   assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
   assert.match(client,/OnClientEvent/);
 });
+
+
+test('Roblox shared preflight persistence is isolated from unrelated company-runtime pending writers',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  const persistStart=workflow.indexOf('\n  preflight-persist:');
+  const dispatchStart=workflow.indexOf('\n  dispatch-headless:',persistStart);
+  assert.ok(persistStart>=0&&dispatchStart>persistStart);
+  const persist=workflow.slice(persistStart,dispatchStart);
+  assert.match(persist,/group: roblox-runtime-preflight-writer/);
+  assert.doesNotMatch(persist,/group: company-runtime-writer/);
+  assert.match(workflow,/group: company-development-roblox-runtime-continuation/);
+  assert.match(workflow,/cancel-in-progress: false/);
+});
