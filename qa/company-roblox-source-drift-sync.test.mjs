@@ -155,3 +155,13 @@ test('source drift persist recomputes derived runtime state after push conflicts
  assert.doesNotMatch(persist,/git rebase/);
  assert.match(persist,/ROBLOX_SOURCE_SYNC_RUNTIME_PERSIST=PASS/);
 });
+
+
+test('merged Roblox source PRs wake exact source drift synchronization even when push chaining is unavailable',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/pull_request:\s*\n\s*branches: \[main\]\s*\n\s*types: \[closed\]/);
+  assert.match(workflow,/github\.event\.pull_request\.merged == true/);
+  assert.match(workflow,/pull-requests: read/);
+  assert.match(workflow,/pulls\/\$PR_NUMBER\/files\?per_page=100/);
+  assert.match(workflow,/ROBLOX_MERGED_PR_SOURCE_FILES=/);
+});
