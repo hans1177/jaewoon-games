@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-i4le3v",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
+      ],
+      "baseSha": "a3ee1462252d172ba6dcb55c34a64ae8982661e2",
+      "acquiredAt": "2026-09-24T23:44:56.488Z",
+      "expiresAt": "2026-09-25T00:29:56.488Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
