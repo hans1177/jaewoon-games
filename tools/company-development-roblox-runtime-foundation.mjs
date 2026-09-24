@@ -7,7 +7,25 @@ const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READ
 const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'];
 export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-session:write';
 
-export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',placeId='',versionNumber=0}={}){
+export function canReuseExactRobloxFoundationEvidence({evidence={},gameId='',sourceRevision='',artifactIdentity='',universeId='',placeId='',versionNumber=0}={}){
+  const exactVersion=Number(evidence?.candidateVersionNumber||evidence?.placeVersion)===Number(versionNumber)&&Number(versionNumber)>0;
+  return Boolean(
+    evidence?.actualRuntimeEvidence===true
+    &&evidence?.runtimeFoundationPassed===true
+    &&evidence?.f1ServerBootPassed===true
+    &&evidence?.f2WorldFoundationPassed===true
+    &&evidence?.f3CharacterFoundationPassed===true
+    &&evidence?.f4PhysicsAndMovementPassed===true
+    &&clean(evidence?.gameId)===clean(gameId)
+    &&clean(evidence?.sourceRevision)===clean(sourceRevision)
+    &&clean(evidence?.artifactIdentity)===clean(artifactIdentity)
+    &&clean(evidence?.universeId)===clean(universeId)
+    &&clean(evidence?.placeId)===clean(placeId)
+    &&exactVersion
+  );
+}
+
+export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',placeId='',versionNumber=0,reusableFoundationEvidence=null,sourceRevision='',artifactIdentity='',universeId=''}={}){
   const checkpoints=sentinel&&typeof sentinel.checkpoints==='object'&&sentinel.checkpoints?sentinel.checkpoints:{};
   const requirements=sentinel&&typeof sentinel.requirements==='object'&&sentinel.requirements?sentinel.requirements:{};
   const saveEnabled=requirements.saveEnabled===true;
@@ -16,6 +34,10 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   const exactGame=!clean(gameId)||clean(sentinel.gameId)===clean(gameId);
   const exactPlace=clean(sentinel.placeId)===clean(placeId);
   const exactVersion=Number(sentinel.placeVersion)===Number(versionNumber)&&Number(versionNumber)>0;
+  const reusableFoundation=canReuseExactRobloxFoundationEvidence({
+    evidence:reusableFoundationEvidence||{},gameId,sourceRevision,artifactIdentity,universeId,placeId,versionNumber,
+  });
+  const reusableFoundationCheckpoints=new Set(foundationCausalOrder);
   const checkpointPass=Object.fromEntries(required.map(name=>{
     const row=checkpoints[name];
     const exactRuntimeRow=Boolean(
@@ -26,15 +48,17 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
       &&Number(row.placeVersion)===Number(versionNumber)
     );
     const multiplayerObservation=name!=='MULTIPLAYER_SYNC'||Number(row?.participantCount)>=2;
-    return[name,exactRuntimeRow&&multiplayerObservation];
+    const priorExactPass=reusableFoundation&&reusableFoundationCheckpoints.has(name)&&reusableFoundationEvidence?.checkpointPass?.[name]===true;
+    return[name,(exactRuntimeRow&&multiplayerObservation)||priorExactPass];
   }));
-  const checkpointOrderPassed=foundationCausalOrder.every((name,index)=>{
+  const liveCheckpointOrderPassed=foundationCausalOrder.every((name,index)=>{
     const sequence=Number(checkpoints[name]?.sequence);
     if(!checkpointPass[name]||!Number.isInteger(sequence)||sequence<=0)return false;
     if(index===0)return true;
     const previous=Number(checkpoints[foundationCausalOrder[index-1]]?.sequence);
     return Number.isInteger(previous)&&previous<sequence;
   });
+  const checkpointOrderPassed=liveCheckpointOrderPassed||(reusableFoundation&&reusableFoundationEvidence?.checkpointOrderPassed===true);
   const f1=checkpointPass.SERVER_BOOT&&checkpointPass.MODULE_GRAPH_READY;
   const f2=checkpointPass.WORLD_READY&&checkpointPass.SPAWN_READY;
   const f3=checkpointPass.CHARACTER_READY;
@@ -49,7 +73,7 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   return Object.freeze({
     version:3,platform:'ROBLOX',gameId:clean(gameId)||clean(sentinel.gameId),placeId:clean(placeId),placeVersion:Number(versionNumber)||0,
     exactGame,exactPlace,exactVersion,requirements:Object.freeze({saveEnabled,multiplayerRequired}),
-    requiredCheckpoints:Object.freeze(required),checkpointPass:Object.freeze(checkpointPass),checkpointOrderPassed,foundationCausalOrder:Object.freeze([...foundationCausalOrder]),
+    requiredCheckpoints:Object.freeze(required),checkpointPass:Object.freeze(checkpointPass),checkpointOrderPassed,foundationCausalOrder:Object.freeze([...foundationCausalOrder]),reusedExactFoundationEvidence:reusableFoundation,
     f1ServerBootPassed:f1,f2WorldFoundationPassed:f2,f3CharacterFoundationPassed:f3,f4PhysicsAndMovementPassed:f4,
     f5InputCameraUiPassed:f5,f6CoreServicesPassed:f6,f7MultiplayerFoundationPassed:f7,f8GameplaySystemsPassed:f8,
     runtimeFoundationPassed:foundation,developmentContinuationPassed:developmentContinuation,runtimeAcceptancePassed:acceptance,multiplayerPromotionPending:multiplayerRequired&&!f7,actualRuntimeEvidence:true,state:acceptance?'PASS':developmentContinuation?'DEVELOPMENT_CONTINUES_MULTIPLAYER_PENDING':foundation?'FOUNDATION_PASS_ACCEPTANCE_PENDING':'BLOCKED',
