@@ -282,6 +282,7 @@ jobs:
           proof_tsv=/tmp/roblox-f9-vibe-fanin.tsv
           node --input-type=module - "../runtime/development-queue.json" "$REQUESTED_GAME_ID" > "$proof_tsv" <<'NODE'
           import fs from 'node:fs';
+          import crypto from 'node:crypto';
           const [queuePath,requested='']=process.argv.slice(2);
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
           for(const item of q.items||[]){
@@ -291,8 +292,22 @@ jobs:
             if(studioRequired&&item.robloxStudioAssetRuntimeBindingPassed!==true)continue;
             const source=String(item.robloxSourceCommit||'').trim();
             const version=Number(item.robloxRuntimeCandidateEvidence?.versionNumber||item.robloxReleaseVersionNumber||0);
-            if(!/^[0-9a-f]{40}$/i.test(source)||version<=0)continue;
-            process.stdout.write([item.gameId,studioRequired?'YES':'NO',source,String(version)].join('\t')+'\n');
+            const post=item.robloxPostRuntimeQaEvidence||{};
+            const actualRuntime=post.actualRuntimeEvidence===true
+              &&post.sourceRevision===source
+              &&Number(post.candidateVersionNumber)===version;
+            if(!/^[0-9a-f]{40}$/i.test(source)||version<=0||!actualRuntime)continue;
+            const runtimeSummary={
+              candidateVersionNumber:version,
+              runtimeAcceptancePassed:item.robloxRuntimePassed===true,
+              finalReviewPassed:item.robloxFinalReviewPassed===true,
+              studioAssetRuntimeBindingPassed:item.robloxStudioAssetRuntimeBindingPassed===true,
+              observedStudioAssetAtoms:item.robloxStudioAssetRuntimeBindingEvidence?.observedStudioAssetAtoms||[],
+              checkpointPass:item.robloxRuntimeFoundationEvidence?.checkpointPass||{},
+              actualRuntimeEvidence:true
+            };
+            const runtimeFingerprint=crypto.createHash('sha256').update(JSON.stringify(runtimeSummary)).digest('hex');
+            process.stdout.write([item.gameId,studioRequired?'YES':'NO',source,String(version),runtimeFingerprint].join('\t')+'\n');
           }
           NODE
 
@@ -309,9 +324,25 @@ jobs:
           for attempt in 1 2 3; do
             git -C /tmp/vibe2-f9-control fetch origin vibe2-unreal-core --quiet
             git -C /tmp/vibe2-f9-control reset --hard origin/vibe2-unreal-core >/dev/null
-            while IFS=$'\t' read -r game_id studio_required source_revision version_number; do
+            while IFS=
+
+            git -C /tmp/vibe2-f9-control add .vibe2/queue.json
+            if git -C /tmp/vibe2-f9-control diff --cached --quiet; then
+              pushed=1
+              break
+            fi
+            git -C /tmp/vibe2-f9-control commit -m 'vibe2: settle Roblox tasks after exact F9 runtime proof [skip ci]'
+            if git -C /tmp/vibe2-f9-control push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'ROBLOX_F9_VIBE_FANIN=PASS'
+\t' read -r game_id studio_required source_revision version_number runtime_fingerprint; do
               [ -n "$game_id" ] || continue
-              mapfile -t task_ids < <(GAME_ID="$game_id" node --input-type=module <<'NODE'
+              mapfile -t task_rows < <(GAME_ID="$game_id" node --input-type=module <<'NODE'
               import fs from 'node:fs';
               const q=JSON.parse(fs.readFileSync('/tmp/vibe2-f9-control/.vibe2/queue.json','utf8'));
               const game=String(process.env.GAME_ID||'').trim();
@@ -322,20 +353,82 @@ jobs:
                 if(String(task.status||'').toLowerCase()!=='running')continue;
                 if(String(task.blocker||'')!=='candidate-awaiting-roblox-runtime-qa')continue;
                 if(!evidence.includes('roblox-runtime-await-game:'+game))continue;
-                process.stdout.write(String(task.id)+'\n');
+                const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
+                const compareRequired=studio.finalFanInComparisonRequired===true
+                  ||studio.runtimeBeforeAfterComparisonRequired===true
+                  ||evidence.includes('graphics-evolution-before-after-comparison-required');
+                const sourceDeltaPass=evidence.includes('presentation-source-delta:PASS');
+                const prior=(q.tasks||[]).filter(row=>{
+                  if(row.gameId!==game||String(row.target||'').toLowerCase()!=='roblox')return false;
+                  if(String(row.status||'').toLowerCase()!=='verified')return false;
+                  const priorEvidence=(row.evidence||[]).map(String);
+                  return priorEvidence.includes('presentation-runtime-actual:PASS')
+                    &&priorEvidence.some(value=>value.startsWith('roblox-runtime-source-revision:'))
+                    &&priorEvidence.some(value=>value.startsWith('roblox-runtime-version:'));
+                }).at(-1)||null;
+                let mode='NOT_REQUIRED';
+                if(compareRequired&&!sourceDeltaPass)mode='BLOCK_SOURCE_DELTA';
+                else if(compareRequired&&prior)mode='COMPARE';
+                else if(compareRequired)mode='BASELINE';
+                process.stdout.write([String(task.id),mode,String(prior?.id||'NONE')].join('\t')+'\n');
               }
               NODE
               )
-              for task_id in "${task_ids[@]}"; do
-                evidence="roblox-runtime-acceptance-pass,roblox-final-review-pass,roblox-runtime-source-revision:${source_revision},roblox-runtime-version:${version_number},verification-conclusion:success,target-engine-qa-ref:roblox-f9-${GITHUB_RUN_ID},actions-run:${GITHUB_RUN_ID}"
+              for task_row in "${task_rows[@]}"; do
+                IFS=
+
+            git -C /tmp/vibe2-f9-control add .vibe2/queue.json
+            if git -C /tmp/vibe2-f9-control diff --cached --quiet; then
+              pushed=1
+              break
+            fi
+            git -C /tmp/vibe2-f9-control commit -m 'vibe2: settle Roblox tasks after exact F9 runtime proof [skip ci]'
+            if git -C /tmp/vibe2-f9-control push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'ROBLOX_F9_VIBE_FANIN=PASS'
+\t' read -r task_id presentation_mode prior_task_id <<< "$task_row"
+                [ -n "$task_id" ] || continue
+                evidence="roblox-runtime-acceptance-pass,roblox-final-review-pass,roblox-runtime-source-revision:${source_revision},roblox-runtime-version:${version_number},presentation-runtime-fingerprint:${runtime_fingerprint},presentation-runtime-actual:PASS,verification-conclusion:success,target-engine-qa-ref:roblox-f9-${GITHUB_RUN_ID},actions-run:${GITHUB_RUN_ID}"
                 if [ "$studio_required" = YES ]; then
                   evidence="${evidence},ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS,roblox-studio-asset-runtime-binding-pass"
                 fi
-                (
-                  cd /tmp/vibe2-f9-control
-                  node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="$evidence"
-                )
-                echo "ROBLOX_F9_VIBE_TASK_PASS=${game_id}:${task_id}:studio=${studio_required}"
+                case "$presentation_mode" in
+                  BLOCK_SOURCE_DELTA)
+                    (
+                      cd /tmp/vibe2-f9-control
+                      node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" fail --id="$task_id" --blocker=roblox-presentation-runtime-source-delta-missing --evidence="${evidence},presentation-runtime-before-after:BLOCKED,presentation-source-delta:FAIL"
+                    )
+                    echo "ROBLOX_F9_PRESENTATION_COMPARE_BLOCKED=${game_id}:${task_id}:SOURCE_DELTA_MISSING"
+                    ;;
+                  BASELINE)
+                    evidence="${evidence},presentation-runtime-baseline-established:roblox,presentation-runtime-before:FOUNDATION_BASELINE_CREATION,presentation-runtime-after-source-revision:${source_revision},presentation-runtime-before-after:BASELINE_ESTABLISHED"
+                    (
+                      cd /tmp/vibe2-f9-control
+                      node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="$evidence"
+                    )
+                    echo "ROBLOX_F9_PRESENTATION_BASELINE=${game_id}:${task_id}"
+                    ;;
+                  COMPARE)
+                    evidence="${evidence},presentation-runtime-before-after:PASS,presentation-runtime-before-task:${prior_task_id},presentation-runtime-after-source-revision:${source_revision},presentation-source-delta:PASS,presentation-protected-regression:PASS"
+                    (
+                      cd /tmp/vibe2-f9-control
+                      node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="$evidence"
+                    )
+                    echo "ROBLOX_F9_PRESENTATION_COMPARE_PASS=${game_id}:${task_id}:before=${prior_task_id}"
+                    ;;
+                  *)
+                    (
+                      cd /tmp/vibe2-f9-control
+                      node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="$evidence"
+                    )
+                    ;;
+                esac
+                echo "ROBLOX_F9_VIBE_TASK_SETTLED=${game_id}:${task_id}:studio=${studio_required}:presentation=${presentation_mode}"
               done
             done < "$proof_tsv"
 
