@@ -41,27 +41,30 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "actions-run-34277017158",
         "actions-run-34281727541",
         "actions-run-34282005274",
         "edit-hardening-e0dd7a90bb2cd096a1a56bef4f55ca0547a15044",
-        "actions-run-34336322998"
+        "actions-run-34336322998",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "unity-games/daechung-rpg",
       "speculativeEligible": false,
       "estimatedRisk": "low",
-      "shard": "unity"
+      "shard": "unity",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "daechung-rpg-save-null-guards",
@@ -76,25 +79,28 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "actions-run-34277408665",
         "actions-run-34282338339",
-        "actions-run-34282606814"
+        "actions-run-34282606814",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "unity-games/daechung-rpg",
       "speculativeEligible": false,
       "estimatedRisk": "low",
-      "shard": "unity"
+      "shard": "unity",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "daechung-rpg-motion-routine-safety",
@@ -109,25 +115,28 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "actions-run-34277768345",
         "actions-run-34282904041",
-        "actions-run-34283225907"
+        "actions-run-34283225907",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "unity-games/daechung-rpg",
       "speculativeEligible": false,
       "estimatedRisk": "low",
-      "shard": "unity"
+      "shard": "unity",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "insect-survival-explicit-maintenance-eb-games-insect-survival-insect-survival-28-html",
@@ -142,27 +151,30 @@
       "dependencies": [],
       "priority": "low",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
         "actions-run-34290387304",
         "actions-run-34290598875",
-        "actions-run-34290836958"
+        "actions-run-34290836958",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/insect-survival",
       "speculativeEligible": false,
       "estimatedRisk": "low",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
@@ -363,14 +375,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -382,14 +394,17 @@
         "actions-run:34698091032",
         "variant:primary",
         "actions-run:34698134595",
-        "actions-run:34698185221"
+        "actions-run:34698185221",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-casual-realm-weaver-diagnostic-TOUCH-ACTION-UNSPECIFIED-index-html",
@@ -404,14 +419,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -423,14 +438,17 @@
         "actions-run:34698091032",
         "variant:primary",
         "actions-run:34698134595",
-        "actions-run:34698185221"
+        "actions-run:34698185221",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-casual-realm-weaver",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-idle-growth-rpg-crystal-bloom-diagnostic-TOUCH-ACTION-UNSPECIFIED-index-html",
@@ -445,14 +463,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -464,14 +482,17 @@
         "actions-run:34698227722",
         "variant:primary",
         "actions-run:34698280780",
-        "actions-run:34698324493"
+        "actions-run:34698324493",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-idle-growth-rpg-crystal-bloom",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-puzzle-chromatic-cascade-diagnostic-TOUCH-ACTION-UNSPECIFIED-index-html",
@@ -486,14 +507,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -505,14 +526,17 @@
         "actions-run:34698227722",
         "variant:primary",
         "actions-run:34698280780",
-        "actions-run:34698324493"
+        "actions-run:34698324493",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-puzzle-chromatic-cascade",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion-diagnostic-TOUCH-ACTION-UNSPECIFIED-index-html",
@@ -527,14 +551,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -546,14 +570,17 @@
         "actions-run:34698364970",
         "variant:primary",
         "actions-run:34698455402",
-        "actions-run:34698504377"
+        "actions-run:34698504377",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-single-defense-strat-celestial-bastion",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria-diagnostic-TOUCH-ACTION-UNSPECIFIED-index-html",
@@ -568,14 +595,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -587,14 +614,17 @@
         "actions-run:34698364970",
         "variant:primary",
         "actions-run:34698455402",
-        "actions-run:34698504377"
+        "actions-run:34698504377",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "pwa-51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
@@ -659,14 +689,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -678,14 +708,17 @@
         "actions-run:34741963295",
         "variant:primary",
         "actions-run:34742007788",
-        "actions-run:34742042069"
+        "actions-run:34742042069",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-casual-realm-weaver-owner-full-web-game-rebuild-v1",
@@ -700,14 +733,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -726,14 +759,17 @@
         "repair-retry:vibe2-full-web-output-budget-v2",
         "actions-run:34747214791",
         "actions-run:34747609637",
-        "actions-run:34748150246"
+        "actions-run:34748150246",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-casual-realm-weaver",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-idle-growth-rpg-crystal-bloom-owner-full-web-game-rebuild-v1",
@@ -748,14 +784,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -774,14 +810,17 @@
         "repair-retry:vibe2-full-web-output-budget-v2",
         "actions-run:34747214791",
         "actions-run:34747609637",
-        "actions-run:34748150246"
+        "actions-run:34748150246",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-idle-growth-rpg-crystal-bloom",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-puzzle-chromatic-cascade-owner-full-web-game-rebuild-v1",
@@ -796,14 +835,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -822,14 +861,17 @@
         "repair-retry:vibe2-full-web-output-budget-v2",
         "actions-run:34751773707",
         "actions-run:34752497993",
-        "actions-run:34752682086"
+        "actions-run:34752682086",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-puzzle-chromatic-cascade",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion-owner-full-web-game-rebuild-v1",
@@ -844,14 +886,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -870,14 +912,17 @@
         "repair-retry:vibe2-full-web-output-budget-v2",
         "actions-run:34752874379",
         "actions-run:34753006034",
-        "actions-run:34753141240"
+        "actions-run:34753141240",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-single-defense-strat-celestial-bastion",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria-owner-full-web-game-rebuild-v1",
@@ -892,14 +937,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
+      "status": "queued",
       "retries": 3,
-      "maxRetries": 2,
+      "maxRetries": null,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -918,14 +963,17 @@
         "repair-retry:vibe2-full-web-output-budget-v2",
         "actions-run:34753298742",
         "actions-run:34753490975",
-        "actions-run:34753655501"
+        "actions-run:34753655501",
+        "recovery:legacy-failed-unlimited-requeue-v1",
+        "recovered-from-blocker:source-candidate-generation-failed"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "web"
+      "shard": "web",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     },
     {
       "id": "pwa-e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
