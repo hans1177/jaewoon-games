@@ -1,5 +1,5 @@
 {
-  "version": 163,
+  "version": 164,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1042,6 +1042,9 @@
         "missingGenreMayNotRegressStartedNativeWork": true,
         "runtimeEvidenceOverridesStaleTopLevelFlags": true,
         "canonicalNativeExecutionEvidenceField": "executionEvidence",
+        "executionEvidencePlatformMatchRequired": true,
+        "crossPlatformEvidenceAuthority": "HISTORICAL_CONTEXT_ONLY",
+        "crossPlatformEvidenceMayNotAdvanceLifecycleOrOverrideCurrentFailure": true,
         "plannerPreservesFailureStageSignatureAndSourceRevision": true
       },
       "ownerUnlimitedConcurrencyDirective": "2026-09-20",
