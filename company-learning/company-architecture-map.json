@@ -1,5 +1,5 @@
 {
-  "version": 157,
+  "version": 158,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -107,7 +107,13 @@
       "RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION",
       "PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN",
       "GRAPHICS_PASS_OR_ASSET_REPAIR_REQUIRED",
-      "COMPANY_GRAPHICS_LIBRARY_IDLE_PREPARATION_AND_VERIFIED_PROMOTION"
+      "COMPANY_GRAPHICS_LIBRARY_IDLE_PREPARATION_AND_VERIFIED_PROMOTION",
+      "STUDIO_ASSET_LIBRARY_SELECTION_AND_GAME_SPECIFIC_LOADOUT",
+      "SELECTION_HANDOFF_TO_VIBE2_VIBE3_SOURCE_IMPLEMENTATION",
+      "ROBLOX_NATIVE_SOURCE_APPLICATION",
+      "POST_APPLICATION_STATIC_BINDING_QA",
+      "EXACT_ROBLOX_RUNTIME_SELECTION_MATCH_QA",
+      "VERIFIED_PROMOTION_OR_ASSET_REPAIR"
     ],
     "planningGrowthMarketing": [
       "EXISTING_PLANNING_ROLE",
@@ -3727,5 +3733,26 @@
       "characterContextMayConsumeMembershipAndRelations": true,
       "gameOwnedSavePersistenceRequiredWhenPersistent": true
     }
+  },
+  "robloxStudioAssetSelectionHandoff": {
+    "version": 1,
+    "topologyRoot": "GRAPHICS_PRODUCTION",
+    "newTopLevelPipeline": false,
+    "planner": "tools/vibe2-asset-production-plan.mjs",
+    "implementationOwner": "VIBE2_VIBE3",
+    "staticQa": "tools/vibe2-incremental-qa.mjs",
+    "runtimeProbe": "tools/company-development-roblox-runtime-foundation.mjs",
+    "runtimeQa": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+    "order": [
+      "SELECT",
+      "HANDOFF",
+      "APPLY",
+      "STATIC_QA",
+      "TARGET_ENGINE_EXACT_SELECTION_QA",
+      "FAN_IN",
+      "PROMOTE_OR_REPAIR"
+    ],
+    "plannerSourceMutationForbidden": true,
+    "runtimePromotionMarker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS"
   }
 }
