@@ -106,7 +106,7 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.match(snapshot.nextWorkerContinuation.freshnessRule, /FETCH_FRESH_MAIN_HEAD/);
   assert.ok(snapshot.nextWorkerContinuation.verifiedState.includes('FIXED_GLOBAL_WAVE_BARRIER_FALSE'));
   assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P1_CAPTURE_LIVE_RUNTIME_RESULT_NEURAL_EVIDENCE:')));
-  assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P2_SELF_EVOLUTION_FEEDBACK:')));
+  assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P2_VERIFIED_THROUGHPUT_OPTIMIZATION:')));
   assert.equal(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P0_FIX_')),false);
   assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('PRESSURE_MUST_NOT_LOWER_GAME_PRIMARY_BELOW_20'));
   assert.ok(snapshot.nextWorkerContinuation.successEvidence.includes('FINAL_VARIANT_REPORTS_TASK_MICRO_FANIN_COMPLETE_AND_SLOT_RELEASE'));
