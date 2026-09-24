@@ -124,7 +124,7 @@ test('randomized source without replay seed contract becomes a targeted repair t
   assert.equal(sourceAnalysis.capabilities.randomness,true);
   assert.equal(sourceAnalysis.capabilities.replaySeedContract,false);
   const plan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory});
-  assert.equal(plan.version,3);
+  assert.equal(plan.version,4);
   assert.ok(plan.tasks.some(row=>row.id==='IMPLEMENT_REPLAY_SEED_CONTRACT'));
 });
 
@@ -133,7 +133,7 @@ test('patch plan implements macro flow diversity before dependent gameplay syste
   const sourceAnalysis=analyzeExistingGameSource(`<main><script>function saveGame(){} localStorage.setItem('save-key','1')</script></main>`);
   const plan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers:['ENTITY_INTERACTION_RESULT_REQUIRED']});
   const ids=plan.tasks.map(x=>x.id);
-  assert.equal(plan.version,3);
+  assert.equal(plan.version,4);
   assert.ok(ids.includes('PRESERVE_EXISTING_BEHAVIOR'));
   assert.ok(ids.includes('PRESERVE_SAVE_CONTRACT'));
   assert.ok(ids.includes('IMPLEMENT_GAME_FLOW_ARCHITECTURE'));
