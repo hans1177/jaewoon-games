@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -45,6 +45,76 @@ test('presentation candidate delta rejects marker-only edits and accepts actual 
   assert.equal(visible.presentationPass,'ASSET_ADAPTATION');
   assert.deepEqual(visible.files,['client/Game.client.luau']);
   assert.equal(visible.changedVisualUnits,1);
+});
+
+
+test('studio build-up rejects micro patches and requires the configured connected source delta count',()=>{
+  const contract={
+    phase:'BUILD_UP',
+    focusPillar:'STABILITY',
+    realSourceDeltaRequired:true,
+    requiredConnectedImprovements:{min:3,max:6}
+  };
+  const micro=evaluateStudioQualityCandidateDelta({
+    contract,
+    candidate:{edits:[{path:'Game.client.luau',find:'local a=1',replace:'local a=2'}]}
+  });
+  assert.equal(micro.required,true);
+  assert.equal(micro.pass,false);
+  assert.equal(micro.sourceDeltaUnits,1);
+  assert.equal(micro.requiredSourceDeltaUnits,3);
+  assert.equal(micro.reason,'INSUFFICIENT_CONNECTED_SOURCE_DELTAS');
+
+  const packageDelta=evaluateStudioQualityCandidateDelta({
+    contract,
+    candidate:{edits:[
+      {path:'Game.client.luau',find:'local a=1',replace:'local a=2'},
+      {path:'Game.client.luau',find:'local b=1',replace:'local b=2'},
+      {path:'Game.server.luau',find:'local c=1',replace:'local c=2'}
+    ]}
+  });
+  assert.equal(packageDelta.pass,true);
+  assert.equal(packageDelta.sourceDeltaUnits,3);
+  assert.deepEqual(packageDelta.files,['Game.client.luau','Game.server.luau']);
+});
+
+test('studio presentation build-up requires at least two real visual source deltas',()=>{
+  const contract={
+    phase:'BUILD_UP',
+    focusPillar:'PRESENTATION',
+    realSourceDeltaRequired:true,
+    requiredConnectedImprovements:{min:3,max:6}
+  };
+  const weak=evaluateStudioQualityCandidateDelta({
+    contract,
+    candidate:{edits:[
+      {path:'Game.client.luau',find:'part.Color = Color3.fromRGB(20,20,20)',replace:'part.Color = Color3.fromRGB(70,95,130)'},
+      {path:'Game.client.luau',find:'local a=1',replace:'local a=2'},
+      {path:'Game.server.luau',find:'local b=1',replace:'local b=2'}
+    ]}
+  });
+  assert.equal(weak.pass,false);
+  assert.equal(weak.sourceDeltaUnits,3);
+  assert.equal(weak.visualUnits,1);
+  assert.equal(weak.requiredVisualUnits,2);
+  assert.equal(weak.reason,'INSUFFICIENT_PRESENTATION_DELTAS');
+
+  const strong=evaluateStudioQualityCandidateDelta({
+    contract,
+    candidate:{edits:[
+      {path:'Game.client.luau',find:'part.Color = Color3.fromRGB(20,20,20)',replace:'part.Color = Color3.fromRGB(70,95,130)'},
+      {path:'Game.client.luau',find:'camera.FieldOfView = 70',replace:'camera.FieldOfView = 76'},
+      {path:'Game.server.luau',find:'local b=1',replace:'local b=2'}
+    ]}
+  });
+  assert.equal(strong.pass,true);
+  assert.equal(strong.visualUnits,2);
+});
+
+test('studio quality delta failure is retryable source generation work',()=>{
+  const error=new Error('STUDIO_QUALITY_DELTA_REQUIRED:BUILD_UP:1/3:VISUAL:0/0:INSUFFICIENT_CONNECTED_SOURCE_DELTAS');
+  assert.equal(generationFailureClass(error),'STUDIO_QUALITY_DELTA');
+  assert.equal(shouldRetryGenerationError(error),true);
 });
 
 test('repeated identical failure signature escalates to root cause mode instead of counting unrelated failures',()=>{
