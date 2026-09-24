@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -1409,7 +1409,7 @@
     "gameplayAuthority": false
   },
   "libraryGraph": {
-    "version": 1,
+    "version": 2,
     "nodes": [
       "CHARACTER_ARCHETYPE_LIBRARY",
       "CREATURE_RIG_LIBRARY",
@@ -1436,6 +1436,580 @@
       "USES_STYLE_VARIANT",
       "HAS_PLATFORM_VARIANT"
     ],
-    "unresolvedRequiredEdgeBlocksVerifiedPromotion": true
+    "unresolvedRequiredEdgeBlocksVerifiedPromotion": true,
+    "bootstrapSetIds": [
+      "goblin-small-biped",
+      "minotaur-heavy-biped",
+      "wolf-quadruped",
+      "bear-heavy-quadruped",
+      "spider-arachnid",
+      "snake-serpent",
+      "flying-predator",
+      "golem-heavy"
+    ],
+    "requiredEdgesPerSet": [
+      "USES_RIG",
+      "USES_MOTION",
+      "USES_REACTION",
+      "USES_STYLE_VARIANT",
+      "HAS_PLATFORM_VARIANT"
+    ]
+  },
+  "motionBootstrap": {
+    "version": 1,
+    "status": "PREPARED_SEMANTIC_LIBRARY",
+    "productionVerified": false,
+    "purpose": "SEED_REUSABLE_CREATURE_MOTION_SETS_FOR_MOTION_DIRECTOR_COMPOSITION_WITHOUT_FALSELY_CLAIMING_RUNTIME_VERIFIED_CLIPS",
+    "platformTargets": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "verificationRule": "EACH_REAL_CLIP_OR_PLATFORM_VARIANT_MUST_BIND_SOURCE_PROVENANCE_RETARGET_CLEANUP_AND_ACTUAL_TARGET_GAME_RUNTIME_EVIDENCE_BEFORE_VERIFIED_PROMOTION",
+    "sets": [
+      {
+        "id": "goblin-small-biped",
+        "archetype": "GOBLIN",
+        "bodyPlan": "SMALL_HUMANOID_BIPED",
+        "rigProfile": "HUMANOID",
+        "weightClass": "LIGHT_FAST",
+        "locomotion": [
+          "GOBLIN_IDLE_SHIFT",
+          "GOBLIN_SCAMPER_WALK",
+          "GOBLIN_SCAMPER_RUN",
+          "GOBLIN_FAST_PIVOT_L",
+          "GOBLIN_FAST_PIVOT_R",
+          "GOBLIN_PANIC_BACKSTEP",
+          "GOBLIN_SIDESTEP_EVADE"
+        ],
+        "attacks": [
+          "GOBLIN_QUICK_SLASH_L",
+          "GOBLIN_QUICK_SLASH_R",
+          "GOBLIN_CLUB_SWING",
+          "GOBLIN_LOW_STAB",
+          "GOBLIN_JUMPING_CHOP",
+          "GOBLIN_DIRTY_KICK"
+        ],
+        "defense": [
+          "GOBLIN_DUCK",
+          "GOBLIN_SIDESTEP_EVADE",
+          "GOBLIN_DESPERATE_BLOCK",
+          "GOBLIN_COUNTER_STAB"
+        ],
+        "reactions": [
+          "GOBLIN_LIGHT_HIT",
+          "GOBLIN_HEAVY_HIT",
+          "GOBLIN_KNOCKBACK",
+          "GOBLIN_KNOCKDOWN",
+          "GOBLIN_PANIC_RECOVERY"
+        ],
+        "acting": [
+          "GOBLIN_SNEER",
+          "GOBLIN_TAUNT",
+          "GOBLIN_LOOK_AROUND",
+          "GOBLIN_COWARDLY_FLINCH"
+        ],
+        "deaths": [
+          "GOBLIN_FAST_FALL_DEATH",
+          "GOBLIN_SPIN_FALL_DEATH",
+          "GOBLIN_HEAVY_KNOCKDOWN_DEATH"
+        ],
+        "skill": [
+          "GOBLIN_THROW_PREPARE",
+          "GOBLIN_THROW_RELEASE",
+          "GOBLIN_RALLY_SHOUT"
+        ],
+        "signature": [
+          "GOBLIN_SCAMPER_RUN",
+          "GOBLIN_PANIC_BACKSTEP",
+          "GOBLIN_QUICK_SLASH_R",
+          "GOBLIN_FAST_FALL_DEATH"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "LOW_POLY",
+          "CHIBI"
+        ]
+      },
+      {
+        "id": "minotaur-heavy-biped",
+        "archetype": "MINOTAUR",
+        "bodyPlan": "HEAVY_BIPED",
+        "rigProfile": "GENERIC_OR_EXTENDED_HUMANOID",
+        "weightClass": "HEAVY_POWER",
+        "locomotion": [
+          "MINOTAUR_HEAVY_IDLE",
+          "MINOTAUR_WALK",
+          "MINOTAUR_RUN",
+          "MINOTAUR_CHARGE_RUN",
+          "MINOTAUR_HEAVY_PIVOT_L",
+          "MINOTAUR_HEAVY_PIVOT_R",
+          "MINOTAUR_BRAKE_RECOVERY"
+        ],
+        "attacks": [
+          "MINOTAUR_HORN_GORE",
+          "MINOTAUR_HORN_UPPERCUT",
+          "MINOTAUR_SHOULDER_RAM",
+          "MINOTAUR_HEAVY_PUNCH",
+          "MINOTAUR_STOMP",
+          "MINOTAUR_GROUND_SLAM",
+          "MINOTAUR_TWO_HAND_SMASH"
+        ],
+        "defense": [
+          "MINOTAUR_FOREARM_GUARD",
+          "MINOTAUR_BRACE",
+          "MINOTAUR_SHOULDER_COUNTER",
+          "MINOTAUR_GUARD_BREAK"
+        ],
+        "reactions": [
+          "MINOTAUR_LIGHT_HIT",
+          "MINOTAUR_HEAVY_HIT",
+          "MINOTAUR_STAGGER",
+          "MINOTAUR_WALL_IMPACT",
+          "MINOTAUR_KNOCKDOWN"
+        ],
+        "acting": [
+          "MINOTAUR_RAGE_SNORT",
+          "MINOTAUR_THREAT_DISPLAY",
+          "MINOTAUR_GROUND_SCRAPE",
+          "MINOTAUR_ENRAGE"
+        ],
+        "deaths": [
+          "MINOTAUR_HEAVY_COLLAPSE",
+          "MINOTAUR_KNEE_DROP_DEATH",
+          "MINOTAUR_BOSS_DEATH"
+        ],
+        "skill": [
+          "MINOTAUR_CHARGE_PREPARE",
+          "MINOTAUR_HORN_CHARGE",
+          "MINOTAUR_CHARGE_RECOVERY",
+          "MINOTAUR_RAGE_BUFF"
+        ],
+        "signature": [
+          "MINOTAUR_HORN_CHARGE",
+          "MINOTAUR_HORN_GORE",
+          "MINOTAUR_RAGE_SNORT",
+          "MINOTAUR_HEAVY_COLLAPSE"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "REALISTIC",
+          "LOW_POLY"
+        ]
+      },
+      {
+        "id": "wolf-quadruped",
+        "archetype": "WOLF",
+        "bodyPlan": "QUADRUPED_CANINE",
+        "rigProfile": "GENERIC_QUADRUPED",
+        "weightClass": "STANDARD",
+        "locomotion": [
+          "WOLF_IDLE",
+          "WOLF_WALK",
+          "WOLF_TROT",
+          "WOLF_RUN",
+          "WOLF_SPRINT",
+          "WOLF_TURN_L",
+          "WOLF_TURN_R",
+          "WOLF_STOP",
+          "WOLF_STALK"
+        ],
+        "attacks": [
+          "WOLF_BITE",
+          "WOLF_LUNGE_BITE",
+          "WOLF_SIDE_BITE",
+          "WOLF_CLAW_SWIPE",
+          "WOLF_POUNCE"
+        ],
+        "defense": [
+          "WOLF_DODGE_L",
+          "WOLF_DODGE_R",
+          "WOLF_BACKSTEP",
+          "WOLF_CIRCLE_EVADE"
+        ],
+        "reactions": [
+          "WOLF_HEAD_HIT",
+          "WOLF_SIDE_HIT",
+          "WOLF_HEAVY_HIT",
+          "WOLF_KNOCKDOWN",
+          "WOLF_GET_UP"
+        ],
+        "acting": [
+          "WOLF_GROWL",
+          "WOLF_SNIFF",
+          "WOLF_ALERT",
+          "WOLF_HOWL"
+        ],
+        "deaths": [
+          "WOLF_COLLAPSE_FRONT",
+          "WOLF_COLLAPSE_SIDE",
+          "WOLF_HEAVY_ROLL_DEATH"
+        ],
+        "skill": [
+          "WOLF_HOWL_BUFF",
+          "WOLF_PACK_LUNGE"
+        ],
+        "signature": [
+          "WOLF_TROT",
+          "WOLF_LUNGE_BITE",
+          "WOLF_HOWL",
+          "WOLF_COLLAPSE_SIDE"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "REALISTIC",
+          "LOW_POLY"
+        ]
+      },
+      {
+        "id": "bear-heavy-quadruped",
+        "archetype": "BEAR",
+        "bodyPlan": "QUADRUPED_HEAVY",
+        "rigProfile": "GENERIC_QUADRUPED",
+        "weightClass": "HEAVY_POWER",
+        "locomotion": [
+          "BEAR_IDLE",
+          "BEAR_HEAVY_WALK",
+          "BEAR_RUN",
+          "BEAR_CHARGE",
+          "BEAR_PIVOT_L",
+          "BEAR_PIVOT_R",
+          "BEAR_REAR_UP",
+          "BEAR_DROP_TO_FOUR"
+        ],
+        "attacks": [
+          "BEAR_BITE",
+          "BEAR_MAUL",
+          "BEAR_FOREPAW_SWIPE_L",
+          "BEAR_FOREPAW_SWIPE_R",
+          "BEAR_DOUBLE_SLAM",
+          "BEAR_CHARGE_RAM"
+        ],
+        "defense": [
+          "BEAR_BRACE",
+          "BEAR_HEAD_GUARD",
+          "BEAR_SHOVE_COUNTER"
+        ],
+        "reactions": [
+          "BEAR_LIGHT_HIT",
+          "BEAR_HEAVY_HIT",
+          "BEAR_STAGGER",
+          "BEAR_KNOCKDOWN",
+          "BEAR_RECOVER"
+        ],
+        "acting": [
+          "BEAR_ROAR",
+          "BEAR_SNIFF",
+          "BEAR_THREAT_STAND",
+          "BEAR_GROUND_PAW"
+        ],
+        "deaths": [
+          "BEAR_HEAVY_COLLAPSE",
+          "BEAR_SIDE_FALL_DEATH",
+          "BEAR_FORWARD_CRASH_DEATH"
+        ],
+        "skill": [
+          "BEAR_ROAR_DEBUFF",
+          "BEAR_ENRAGED_MAUL"
+        ],
+        "signature": [
+          "BEAR_HEAVY_WALK",
+          "BEAR_MAUL",
+          "BEAR_THREAT_STAND",
+          "BEAR_HEAVY_COLLAPSE"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "REALISTIC",
+          "LOW_POLY"
+        ]
+      },
+      {
+        "id": "spider-arachnid",
+        "archetype": "SPIDER",
+        "bodyPlan": "ARACHNID",
+        "rigProfile": "GENERIC_8_LEG",
+        "weightClass": "LIGHT_FAST",
+        "locomotion": [
+          "SPIDER_IDLE_LEG_SHIFT",
+          "SPIDER_CRAWL",
+          "SPIDER_RUN",
+          "SPIDER_STRAFE_L",
+          "SPIDER_STRAFE_R",
+          "SPIDER_TURN",
+          "SPIDER_WALL_CRAWL",
+          "SPIDER_CEILING_CRAWL"
+        ],
+        "attacks": [
+          "SPIDER_BITE",
+          "SPIDER_POUNCE",
+          "SPIDER_FORELEG_STAB",
+          "SPIDER_WEB_SPIT",
+          "SPIDER_WEB_TRAP_CAST"
+        ],
+        "defense": [
+          "SPIDER_SCUTTLE_EVADE_L",
+          "SPIDER_SCUTTLE_EVADE_R",
+          "SPIDER_DROP_EVADE",
+          "SPIDER_WALL_ESCAPE"
+        ],
+        "reactions": [
+          "SPIDER_FRONT_HIT",
+          "SPIDER_SIDE_HIT",
+          "SPIDER_LEG_HIT",
+          "SPIDER_STAGGER",
+          "SPIDER_FLIP_RECOVERY"
+        ],
+        "acting": [
+          "SPIDER_MANDIBLE_CLICK",
+          "SPIDER_LEG_RAISE_THREAT",
+          "SPIDER_WEB_IDLE"
+        ],
+        "deaths": [
+          "SPIDER_LEGS_CURL_DEATH",
+          "SPIDER_FLIP_DEATH",
+          "SPIDER_BURN_DEATH"
+        ],
+        "skill": [
+          "SPIDER_WEB_PREPARE",
+          "SPIDER_WEB_RELEASE",
+          "SPIDER_CEILING_DROP"
+        ],
+        "signature": [
+          "SPIDER_SCUTTLE_EVADE_L",
+          "SPIDER_WEB_SPIT",
+          "SPIDER_CEILING_DROP",
+          "SPIDER_LEGS_CURL_DEATH"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "HORROR",
+          "LOW_POLY"
+        ]
+      },
+      {
+        "id": "snake-serpent",
+        "archetype": "SNAKE",
+        "bodyPlan": "REPTILE_OR_SERPENT",
+        "rigProfile": "GENERIC_SERPENT",
+        "weightClass": "STANDARD",
+        "locomotion": [
+          "SNAKE_IDLE_COIL",
+          "SNAKE_SLITHER_SLOW",
+          "SNAKE_SLITHER_FAST",
+          "SNAKE_TURN_COIL",
+          "SNAKE_RAISE_HEAD",
+          "SNAKE_LOWER_HEAD"
+        ],
+        "attacks": [
+          "SNAKE_BITE",
+          "SNAKE_LUNGE_BITE",
+          "SNAKE_DOUBLE_STRIKE",
+          "SNAKE_TAIL_WHIP",
+          "SNAKE_COIL_GRAB",
+          "SNAKE_SPIT"
+        ],
+        "defense": [
+          "SNAKE_RECOIL_EVADE",
+          "SNAKE_SIDE_SLIP",
+          "SNAKE_COIL_GUARD"
+        ],
+        "reactions": [
+          "SNAKE_HEAD_HIT",
+          "SNAKE_BODY_HIT",
+          "SNAKE_HEAVY_RECOIL",
+          "SNAKE_UNCOIL_KNOCKBACK"
+        ],
+        "acting": [
+          "SNAKE_HISS",
+          "SNAKE_TONGUE_FLICK",
+          "SNAKE_THREAT_COIL"
+        ],
+        "deaths": [
+          "SNAKE_THRASH_DEATH",
+          "SNAKE_COIL_COLLAPSE_DEATH",
+          "SNAKE_BURN_WRITHE_DEATH"
+        ],
+        "skill": [
+          "SNAKE_SPIT_PREPARE",
+          "SNAKE_SPIT_RELEASE",
+          "SNAKE_COIL_GRAB"
+        ],
+        "signature": [
+          "SNAKE_SLITHER_FAST",
+          "SNAKE_LUNGE_BITE",
+          "SNAKE_HISS",
+          "SNAKE_THRASH_DEATH"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "HORROR",
+          "LOW_POLY"
+        ]
+      },
+      {
+        "id": "flying-predator",
+        "archetype": "FLYING_PREDATOR",
+        "bodyPlan": "FLYING",
+        "rigProfile": "GENERIC_WINGED",
+        "weightClass": "STANDARD",
+        "locomotion": [
+          "FLYING_PERCH_IDLE",
+          "FLYING_TAKEOFF",
+          "FLYING_CRUISE",
+          "FLYING_FAST",
+          "FLYING_BANK_L",
+          "FLYING_BANK_R",
+          "FLYING_HOVER",
+          "FLYING_LAND"
+        ],
+        "attacks": [
+          "FLYING_DIVE_ATTACK",
+          "FLYING_CLAW_STRIKE",
+          "FLYING_BITE",
+          "FLYING_PROJECTILE",
+          "FLYING_BREATH_ATTACK"
+        ],
+        "defense": [
+          "FLYING_BANK_EVADE_L",
+          "FLYING_BANK_EVADE_R",
+          "FLYING_CLIMB_EVADE",
+          "FLYING_DIVE_EVADE"
+        ],
+        "reactions": [
+          "FLYING_LIGHT_HIT",
+          "FLYING_HEAVY_HIT",
+          "FLYING_SPIN_HIT",
+          "FLYING_FALL_RECOVERY"
+        ],
+        "acting": [
+          "FLYING_SCREECH",
+          "FLYING_WING_DISPLAY",
+          "FLYING_TARGET_LOCK"
+        ],
+        "deaths": [
+          "FLYING_SPIRAL_FALL_DEATH",
+          "FLYING_WING_FAIL_DEATH",
+          "FLYING_IMPACT_DEATH"
+        ],
+        "skill": [
+          "FLYING_DIVE_PREPARE",
+          "FLYING_BREATH_CHARGE",
+          "FLYING_BREATH_RELEASE"
+        ],
+        "signature": [
+          "FLYING_BANK_L",
+          "FLYING_DIVE_ATTACK",
+          "FLYING_SCREECH",
+          "FLYING_SPIRAL_FALL_DEATH"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "REALISTIC",
+          "LOW_POLY"
+        ]
+      },
+      {
+        "id": "golem-heavy",
+        "archetype": "GOLEM",
+        "bodyPlan": "HEAVY_GOLEM_OR_BOSS",
+        "rigProfile": "GENERIC_HEAVY",
+        "weightClass": "HEAVY_POWER",
+        "locomotion": [
+          "GOLEM_IDLE",
+          "GOLEM_HEAVY_WALK",
+          "GOLEM_START",
+          "GOLEM_STOP",
+          "GOLEM_TURN_L",
+          "GOLEM_TURN_R",
+          "GOLEM_MARCH"
+        ],
+        "attacks": [
+          "GOLEM_PUNCH",
+          "GOLEM_DOUBLE_FIST_SLAM",
+          "GOLEM_GROUND_SMASH",
+          "GOLEM_SWEEP",
+          "GOLEM_STOMP",
+          "GOLEM_BOULDER_THROW"
+        ],
+        "defense": [
+          "GOLEM_BRACE",
+          "GOLEM_ARM_BLOCK",
+          "GOLEM_COUNTER_SLAM"
+        ],
+        "reactions": [
+          "GOLEM_CHIP_HIT",
+          "GOLEM_HEAVY_HIT",
+          "GOLEM_STAGGER",
+          "GOLEM_CRACK_REACTION",
+          "GOLEM_KNEEL_RECOVERY"
+        ],
+        "acting": [
+          "GOLEM_WAKE",
+          "GOLEM_ROAR",
+          "GOLEM_CORE_PULSE",
+          "GOLEM_THREAT_POSE"
+        ],
+        "deaths": [
+          "GOLEM_KNEEL_COLLAPSE",
+          "GOLEM_CRUMBLE_DEATH",
+          "GOLEM_CORE_BREAK_DEATH"
+        ],
+        "skill": [
+          "GOLEM_CORE_CHARGE",
+          "GOLEM_AOE_SLAM",
+          "GOLEM_ENRAGE"
+        ],
+        "signature": [
+          "GOLEM_HEAVY_WALK",
+          "GOLEM_DOUBLE_FIST_SLAM",
+          "GOLEM_CORE_PULSE",
+          "GOLEM_CRUMBLE_DEATH"
+        ],
+        "compatibleStyles": [
+          "CARTOON",
+          "STYLIZED_FANTASY",
+          "DARK_FANTASY",
+          "LOW_POLY",
+          "REALISTIC"
+        ]
+      }
+    ],
+    "compositionRules": {
+      "requiredChannels": [
+        "LOCOMOTION",
+        "UPPER_BODY_OR_PRIMARY_ATTACK",
+        "HEAD_GAZE_WHEN_AVAILABLE"
+      ],
+      "optionalChannels": [
+        "LEFT_ARM",
+        "RIGHT_ARM",
+        "TAIL",
+        "WINGS",
+        "EXTRA_LIMBS",
+        "SECONDARY_MOTION",
+        "PROCEDURAL_CORRECTION",
+        "VFX_PRESENTATION",
+        "AUDIO_PRESENTATION",
+        "CAMERA_PRESENTATION"
+      ],
+      "sameSemanticMotionMayDeriveStyleVariants": true,
+      "signatureMotionPreferredForHeroBossAndKeyCreature": true,
+      "randomSelectionWithoutContextForbidden": true,
+      "contextSelectorAndVariationMemoryRequiredForRepeatedCombat": true
+    }
   }
 }
