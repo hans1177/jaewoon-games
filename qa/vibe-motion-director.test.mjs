@@ -31,6 +31,17 @@ import {
   scoreMotionGapPriority,
   buildAutomaticMotionGapFillPlan,
   applySemanticGapPreparation,
+  evaluateMotionTransition,
+  auditMotionContact,
+  bindGameplayEventToMotion,
+  createProceduralMotionProfile,
+  createGroupMotionPlan,
+  createMultiActorMotionContract,
+  createEmotionIntentLayer,
+  selectMotionLod,
+  createMotionLineage,
+  aggregateRuntimeMotionSignals,
+  buildRuntimeMotionLearningCandidate,
   createMotionDirectorPlan
 } from '../assets/vibe-motion-director.js';
 
@@ -347,4 +358,202 @@ test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
   assert.equal(plan.policy.automaticMotionCoverageGapFill,true);
   assert.equal(plan.policy.automaticMotionGapMayNotSelfPromote,true);
   assert.equal(plan.policy.motionGapDuplicateSuppressionRequired,true);
+});
+
+
+test('transition director scores smooth transitions and hard-fails event desync',()=>{
+  const good=evaluateMotionTransition({
+    from:{id:'walk'},to:{id:'run'},
+    metrics:{poseDiscontinuity:5,rootVelocityDelta:8,angularVelocityDelta:3,footContactBreak:4,handContactBreak:0,contactMarkerOffset:2,blendDurationPenalty:3,silhouettePop:4}
+  });
+  assert.equal(good.verdict,'PASS');
+  assert.ok(good.score>=85);
+  const bad=evaluateMotionTransition({
+    from:{id:'attack-a'},to:{id:'attack-b'},
+    metrics:{gameplayEventDesync:true}
+  });
+  assert.equal(bad.verdict,'FAIL');
+  assert.ok(bad.hardFailures.includes('GAMEPLAY_EVENT_DESYNC'));
+  assert.equal(bad.gameplayWindowAuthority,false);
+});
+
+test('automatic contact QA blocks promotion when foot or attack contact drifts',()=>{
+  const pass=auditMotionContact({
+    footSlideNormalized:0.01,
+    handWeaponOffsetNormalized:0.01,
+    attackContactOffsetNormalized:0.02,
+    pairContactOffsetNormalized:0.02,
+    impactEventNormalizedTimeOffset:0.01
+  });
+  assert.equal(pass.pass,true);
+  assert.equal(pass.blocksVerifiedPromotion,false);
+  const fail=auditMotionContact({
+    footSlideNormalized:0.08,
+    attackContactOffsetNormalized:0.09
+  });
+  assert.equal(fail.pass,false);
+  assert.ok(fail.failures.includes('FOOT_SLIDE_DISTANCE'));
+  assert.ok(fail.failures.includes('ATTACK_CONTACT_OFFSET'));
+  assert.equal(fail.blocksVerifiedPromotion,true);
+});
+
+test('gameplay event binding requests missing motion grammar without owning gameplay',()=>{
+  const bite=bindGameplayEventToMotion({
+    event:'BITE',
+    availableRoles:['ANTICIPATION','STARTUP','RECOVERY']
+  });
+  assert.equal(bite.complete,false);
+  assert.ok(bite.missingRoles.includes('ACTIVE_CONTACT'));
+  assert.ok(bite.preparedSemanticSeeds.includes('BITE_ACTIVE_CONTACT'));
+  assert.equal(bite.state,'PREPARED_SEMANTIC');
+  assert.equal(bite.gameplayEventAuthority,true);
+  assert.equal(bite.motionAuthority,false);
+});
+
+test('procedural motion profile stays visual-only and supports creature balance channels',()=>{
+  const profile=createProceduralMotionProfile({
+    tailBalance:true,
+    wingBalance:true,
+    platformBudget:'mobile'
+  });
+  assert.equal(profile.corrections.FOOT_IK,true);
+  assert.equal(profile.corrections.TAIL_BALANCE,true);
+  assert.equal(profile.corrections.WING_BALANCE,true);
+  assert.equal(profile.platformBudget,'MOBILE');
+  assert.equal(profile.visualOnly,true);
+  assert.equal(profile.gameplayColliderAndMovementAuthorityImmutable,true);
+});
+
+test('group motion staggers actors and preserves AI decision authority',()=>{
+  const group=createGroupMotionPlan({
+    pattern:'PACK_SURROUND',
+    actors:[{id:'wolf-a'},{id:'wolf-b'},{id:'wolf-c'}],
+    recentGroupActions:['wolf-a'],
+    spacing:2
+  });
+  assert.equal(group.pattern,'PACK_SURROUND');
+  assert.equal(group.actors.length,3);
+  assert.equal(group.staggered[0].attackSuppressed,true);
+  assert.equal(group.exactSynchronizedAttackSpamForbidden,true);
+  assert.equal(group.gameplayAiDecisionAuthorityImmutable,true);
+});
+
+test('multi actor motion enforces presentation actor budget',()=>{
+  const mobile=createMultiActorMotionContract({
+    id:'rescue',
+    pattern:'THREE_ACTOR_RESCUE',
+    platformProfile:'MOBILE',
+    actors:[{id:'a'},{id:'b'},{id:'c'}],
+    alignment:{contactPoints:['HAND_SHOULDER'],phaseMarkers:['LOCK','LIFT','RELEASE']}
+  });
+  assert.equal(mobile.actorCount,3);
+  assert.equal(mobile.requiresExplicitPerformanceEvidence,false);
+  const crowded=createMultiActorMotionContract({
+    id:'swarm',
+    pattern:'LARGE_TARGET_SWARM_GRAB',
+    platformProfile:'MOBILE',
+    actors:[{id:'a'},{id:'b'},{id:'c'},{id:'d'},{id:'e'}]
+  });
+  assert.equal(crowded.requiresExplicitPerformanceEvidence,true);
+  assert.equal(crowded.gameplayAuthority,false);
+});
+
+test('emotion intent layer is additive presentation and cannot change stats',()=>{
+  const emotion=createEmotionIntentLayer({intent:'ENRAGED',intensity:1.5});
+  assert.equal(emotion.intent,'ENRAGED');
+  assert.equal(emotion.intensity,1.5);
+  assert.equal(emotion.channels.HEAD_GAZE,true);
+  assert.equal(emotion.emotionMayNotChangeGameplayStats,true);
+});
+
+test('motion LOD reduces presentation layers but preserves hit semantics',()=>{
+  const near=selectMotionLod({cameraDistance:5,deviceClass:'MOBILE',actorImportance:'BOSS'});
+  const far=selectMotionLod({cameraDistance:100,deviceClass:'MOBILE',actorImportance:'STANDARD',combatRelevant:false});
+  assert.equal(near.tier,'NEAR');
+  assert.ok(near.features.includes('IK_CONTACT'));
+  assert.equal(far.tier,'FAR');
+  assert.ok(far.features.includes('PRIMARY_ACTION'));
+  assert.equal(far.gameplayHitAndCollisionUnaffected,true);
+});
+
+test('motion lineage tracks parent source and verification evidence',()=>{
+  const lineage=createMotionLineage({
+    assetId:'goblin-slash-cartoon-roblox',
+    parentId:'goblin-slash',
+    sourceId:'mocap-001',
+    sourceHash:'abc',
+    derivedHash:'def',
+    transformHistory:['cleanup','retarget','cartoon-style'],
+    licenseEvidence:'license-001',
+    rigProfile:'R15',
+    styleFamily:'CARTOON',
+    platform:'ROBLOX',
+    gameId:'demo',
+    verificationSha:'sha-1',
+    runtimeEvidenceId:'evidence-1'
+  });
+  assert.equal(lineage.complete,true);
+  assert.equal(lineage.platform,'ROBLOX');
+  assert.equal(lineage.originalImmutable,true);
+  assert.equal(lineage.revalidateDerivedWhenParentImproves,true);
+});
+
+test('runtime motion learning accepts verified pass/failure only and raw telemetry cannot train',()=>{
+  const samples=[
+    {motionId:'run',runtimeVerified:true,pass:true,transitionQualityScore:92,contactQaScore:96,pairAlignmentScore:100,frameStabilityScore:95,mobileReadabilityScore:90},
+    {motionId:'attack',runtimeVerified:true,pass:false,failureReason:'FOOT_SLIDE',transitionQualityScore:70,contactQaScore:50,pairAlignmentScore:100,frameStabilityScore:92,mobileReadabilityScore:88},
+    {motionId:'semantic-only',runtimeVerified:false,pass:true,transitionQualityScore:100,contactQaScore:100}
+  ];
+  const signals=aggregateRuntimeMotionSignals(samples);
+  assert.equal(signals.sampleCount,3);
+  assert.equal(signals.verifiedPassCount,1);
+  assert.equal(signals.verifiedFailureCount,1);
+  assert.equal(signals.rawTelemetryAuthority,false);
+  const candidate=buildRuntimeMotionLearningCandidate({gameId:'demo',platform:'UNITY',signals,samples});
+  assert.equal(candidate.positiveMasteryEligible,true);
+  assert.equal(candidate.negativeAvoidPatternEligible,true);
+  assert.ok(candidate.verifiedFailureLessons.includes('FOOT_SLIDE'));
+  assert.equal(candidate.preparedSemanticEligible,false);
+  assert.equal(candidate.rawTelemetryDirectTraining,false);
+  assert.equal(candidate.feedsExistingCanonicalLearningChain,true);
+  assert.equal(candidate.requiresExistingDistillationThresholdHoldoutAndCanary,true);
+});
+
+test('unverified runtime samples cannot become positive learning',()=>{
+  const samples=[
+    {motionId:'prepared',runtimeVerified:false,pass:true,transitionQualityScore:100,contactQaScore:100}
+  ];
+  const candidate=buildRuntimeMotionLearningCandidate({gameId:'demo',platform:'ROBLOX',samples});
+  assert.equal(candidate.positiveMasteryEligible,false);
+  assert.equal(candidate.negativeAvoidPatternEligible,false);
+  assert.equal(candidate.feedsExistingCanonicalLearningChain,false);
+  assert.equal(candidate.preparedSemanticEligible,false);
+});
+
+test('full motion director plan exposes advanced quality and learning systems',()=>{
+  const plan=createMotionDirectorPlan({
+    platform:'UNITY',
+    bodyPlan:'HUMANOID',
+    rigProfile:'HUMANOID',
+    styleFamily:'STYLIZED_FANTASY',
+    transition:{from:{id:'idle'},to:{id:'walk'},metrics:{}},
+    contactQa:{footSlideNormalized:0.01},
+    gameplayEvent:{event:'MELEE_ATTACK',availableRoles:['ANTICIPATION','STARTUP','ACTIVE_CONTACT','RECOIL','RECOVERY']},
+    procedural:{headGaze:true,handGrip:true},
+    group:{actors:[{id:'a'},{id:'b'}]},
+    multiActor:{actors:[{id:'a'},{id:'b'}]},
+    emotion:{intent:'ALERT'},
+    lod:{cameraDistance:10,actorImportance:'HERO'},
+    lineage:{assetId:'motion-a',sourceId:'source-a',derivedHash:'hash-a',platform:'UNITY'},
+    runtimeSignals:[{motionId:'motion-a',runtimeVerified:true,pass:true,transitionQualityScore:90,contactQaScore:95}]
+  });
+  for(const system of ['TRANSITION_DIRECTOR','AUTOMATIC_CONTACT_QA','GAMEPLAY_EVENT_MOTION_BINDING','PROCEDURAL_MOTION_LAYER','GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING']){
+    assert.ok(plan.systems.includes(system));
+  }
+  assert.equal(plan.transition.verdict,'PASS');
+  assert.equal(plan.contactQa.pass,true);
+  assert.equal(plan.gameplayEventBinding.complete,true);
+  assert.equal(plan.emotionIntent.intent,'ALERT');
+  assert.equal(plan.motionLod.tier,'NEAR');
+  assert.equal(plan.runtimeLearning.positiveMasteryEligible,true);
 });
