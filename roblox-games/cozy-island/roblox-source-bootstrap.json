@@ -1,40 +1,99 @@
 {
-  "version": 4,
+  "version": 5,
   "gameId": "cozy-island",
   "gameName": "포근섬",
   "platform": "ROBLOX",
-  "stage": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
-  "authority": "OWNER_DIRECT_DEVELOPMENT",
-  "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "stage": "TARGET_PLATFORM_SOURCE_BIND",
   "sourcePath": "roblox-games/cozy-island",
   "sourceValidationPassed": true,
   "runtimePassed": false,
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "ownerDirectDevelopment": true,
-  "webPlatformHandoffRequired": false,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "shared/VisualStyle.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "default.project.json",
-    "launch-mvp.json"
+    "client/Game.client.luau"
   ],
-  "nextRequiredStage": "ROBLOX_MVP_RELEASE_CANDIDATE",
-  "updatedAt": "2026-09-22T02:43:00+09:00",
-  "visualArtPass": "STYLIZED_ROBLOX_V1",
-  "releaseStrategy": "FAST_MVP",
-  "releasePrimaryPlatform": "ROBLOX",
-  "unityParallelNotBlockingRobloxMvp": true,
-  "newFeatureExpansionFrozenUntilRobloxMvp": true,
-  "robloxMvpMustPass": [
-    "solo core loop",
-    "2+ player support semantics",
-    "mobile controls",
-    "save/rejoin",
-    "no fishing remnants",
-    "five-base completion regression"
-  ]
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "modelUsed": false,
+  "modelAttempts": 0,
+  "modelContractFailures": [],
+  "vibe3LearningApplied": false,
+  "recombinationRecipeId": null,
+  "studioAssetBinding": {
+    "version": 1,
+    "applied": true,
+    "source": "company-asset-library.json#baseMaterialLibrary",
+    "libraryVersion": 16,
+    "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    "selectedAtomCount": 29,
+    "families": {
+      "UI": [
+        "FRAME_PANEL",
+        "BUTTON_PRIMARY",
+        "BAR_HEALTH"
+      ],
+      "ENVIRONMENT": [
+        "TREE_TRUNK_THICK",
+        "TREE_CROWN_ROUND",
+        "ROCK_MEDIUM",
+        "ROAD_DIRT"
+      ],
+      "BUILDING": [
+        "FOUNDATION_RECT",
+        "WALL_SOLID",
+        "DOOR_SINGLE",
+        "ROOF_GABLE"
+      ],
+      "PROP": [
+        "CHEST",
+        "CRATE",
+        "LAMP"
+      ],
+      "MATERIAL": [
+        "WOOD",
+        "STONE",
+        "METAL"
+      ],
+      "VFX": [
+        "IMPACT_FLASH",
+        "TRAIL_SHORT",
+        "SHAPE_BURST"
+      ],
+      "WEAPON": [
+        "BLADE_LONG",
+        "GUARD_CROSS",
+        "GRIP_LONG"
+      ],
+      "CHARACTER": [
+        "TORSO_CLOTH",
+        "SHOULDER_LIGHT",
+        "BACK_CAPE"
+      ],
+      "CREATURE": [
+        "HEAD_CANINE",
+        "JAW_LONG",
+        "CLAW"
+      ]
+    },
+    "recipeId": "NORMAL_VARIANT",
+    "productionVerified": false,
+    "runtimeVerificationRequired": true,
+    "verifiedPromotionAllowed": false,
+    "gameplayAuthority": false
+  },
+  "studioAssetBindingApplied": true,
+  "studioAssetRuntimeVerified": false,
+  "studioAssetPromotionEligible": false,
+  "implementationNotes": [
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
+    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
+  ],
+  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
+  "createdAt": "2026-09-24T06:54:41.133Z"
 }
