@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation} from '../assets/vibe-motion-director.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -228,6 +229,41 @@ export function buildVibeAssetProductionPlan({
   const companyCount=decisions.filter(row=>row.companyCandidates.length>0).length;
   const repositoryCount=decisions.filter(row=>row.repositoryCandidates.length>0).length;
   const externalCount=decisions.filter(row=>row.externalCandidates.length>0).length;
+  const bootstrapSets=(companyRegistry?.motionBootstrap?.sets||[]).map(row=>createCreatureMotionSetProfile({...row,verificationState:companyRegistry?.motionBootstrap?.productionVerified===true?'VERIFIED_RUNTIME':'PREPARED_SEMANTIC'}));
+  const motionAutoGapActive=companyLibrary?.autoMotionCoverageGapFill?.status==='ACTIVE_EXECUTABLE_CONTRACT';
+  const requestUpper=request.toUpperCase();
+  const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
+    const usage={
+      activeGameConsumer:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
+      heroOrBoss:/BOSS/.test(profile.bodyPlan)||requestUpper.includes('BOSS')||requestUpper.includes('보스'),
+      gameConsumerCount:Boolean(profile.archetype&&requestUpper.includes(profile.archetype))?1:0,
+      playerVisibleFrequencyHigh:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
+      combatCritical:true,
+      externalSourceReady:(companyRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase()))
+    };
+    const gapPlan=buildAutomaticMotionGapFillPlan({
+      profile,
+      librarySets:bootstrapSets,
+      externalSources:companyRegistry?.externalSources||[],
+      usage,
+      requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}
+    });
+    const prepared=applySemanticGapPreparation({profile,gapPlan});
+    return freeze({
+      id:profile.id,
+      archetype:profile.archetype,
+      complete:gapPlan.audit.complete,
+      verifiedComplete:gapPlan.audit.verifiedComplete,
+      gapCount:gapPlan.audit.gaps.length+gapPlan.audit.requiredRoleGaps.length,
+      missingSlots:gapPlan.audit.gaps.reduce((n,row)=>n+row.missing,0)+gapPlan.audit.requiredRoleGaps.length,
+      topPriority:gapPlan.actions[0]?.priority||0,
+      actionRoutes:freezeList(unique(gapPlan.actions.map(row=>row.route))),
+      semanticSeeds:freezeList(gapPlan.actions.flatMap(row=>row.semanticSeeds||[])),
+      preparedMotionCount:prepared.profile.motionIds.length,
+      productionVerified:prepared.productionVerified===true
+    });
+  }):[];
+  const prioritizedMotionAutoFillPlans=[...motionAutoFillPlans].sort((a,b)=>b.topPriority-a.topPriority||b.missingSlots-a.missingSlots||a.id.localeCompare(b.id));
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
@@ -325,6 +361,23 @@ export function buildVibeAssetProductionPlan({
         bodyPlans:freezeList([...new Set((companyRegistry?.motionBootstrap?.sets||[]).map(row=>clean(row.bodyPlan)).filter(Boolean))]),
         platformTargets:freezeList(companyRegistry?.motionBootstrap?.platformTargets||[]),
         verificationRule:clean(companyRegistry?.motionBootstrap?.verificationRule)||null
+      }),
+      motionAutoGapFill:freeze({
+        enabled:motionAutoGapActive,
+        target:'AUTOMATIC_MOTION_COVERAGE_GAP_FILL',
+        scanTriggers:freezeList(companyLibrary?.autoMotionCoverageGapFill?.scanTriggers||[]),
+        requiredCoverageGroups:freezeList(companyLibrary?.autoMotionCoverageGapFill?.requiredCoverageGroups||[]),
+        fillOrder:freezeList(companyLibrary?.autoMotionCoverageGapFill?.fillOrder||[]),
+        baselineMinimums:freeze(companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}),
+        bodyPlanAdjustments:freeze(companyLibrary?.autoMotionCoverageGapFill?.bodyPlanAdjustments||{}),
+        preparedSemanticNeverVerified:companyLibrary?.autoMotionCoverageGapFill?.promotionGate?.preparedSemanticNeverEqualsRuntimeVerified===true,
+        usagePriorityEnabled:companyLibrary?.autoMotionCoverageGapFill?.usagePriority?.enabled===true,
+        duplicateControlEnabled:companyLibrary?.autoMotionCoverageGapFill?.duplicateControl?.enabled===true,
+        auditedSetCount:motionAutoFillPlans.length,
+        incompleteSetCount:motionAutoFillPlans.filter(row=>!row.complete).length,
+        verifiedCompleteSetCount:motionAutoFillPlans.filter(row=>row.verifiedComplete).length,
+        plannedSemanticSeedCount:motionAutoFillPlans.reduce((n,row)=>n+row.semanticSeeds.length,0),
+        plans:freezeList(prioritizedMotionAutoFillPlans)
       }),
       retargetCleanupRequirements:freezeList(companyLibrary?.studioMotionProgram?.retargetCleanupRequirements||[]),
       unarmedCombat:freeze({
@@ -450,6 +503,11 @@ export function buildVibeAssetProductionPlan({
       pairMotionRequired:companyLibrary?.motionDirectorSystem?.pairMotion?.enabled===true,
       variationMemoryRequired:companyLibrary?.motionDirectorSystem?.variationMemory?.enabled===true,
       preparedSemanticMotionSetsDoNotCountAsVerified:companyRegistry?.motionBootstrap?.status==='PREPARED_SEMANTIC_LIBRARY'&&companyRegistry?.motionBootstrap?.productionVerified!==true,
+      automaticMotionCoverageGapFill:motionAutoGapActive,
+      automaticMotionGapSemanticPreparationAllowed:companyLibrary?.autoMotionCoverageGapFill?.semanticGapPreparation?.enabled===true,
+      automaticMotionGapMayNotSelfPromote:companyLibrary?.autoMotionCoverageGapFill?.semanticGapPreparation?.mayNotPromoteCompanyAsset===true,
+      motionGapUsagePriorityRequired:companyLibrary?.autoMotionCoverageGapFill?.usagePriority?.enabled===true,
+      motionGapDuplicateSuppressionRequired:companyLibrary?.autoMotionCoverageGapFill?.duplicateControl?.enabled===true,
       motionBootstrapAvailable:Array.isArray(companyRegistry?.motionBootstrap?.sets)&&companyRegistry.motionBootstrap.sets.length>0,
       latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
       wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
@@ -487,6 +545,8 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.motionDirector?.enabled?'스킬은 PREPARE→CHARGE/CHANNEL→AIM→RELEASE→IMPACT_RESPONSE→RECOVERY 문법을 사용하고, 피격은 방향/높이/강도/현재자세/벽/공중상태로 Reaction Matcher가 표현을 고른다. Pair Motion은 잡기·던지기·피니셔 등 2인 정렬을 플랫폼별로 검증한다.':'',
     plan.companyGraphicsLibrary?.motionDirector?.enabled?'Motion Mutation과 Variation Memory로 Mirror/stance/pose/anticipation/style 파생과 반복 억제를 수행하되 데미지·히트박스·쿨다운·콤보/캔슬·이동 권한은 게임플레이가 유지한다.':'',
     plan.companyGraphicsLibrary?.motionBootstrap?.setCount?`모션 시드 세트=${plan.companyGraphicsLibrary.motionBootstrap.setCount}개; archetypes=${plan.companyGraphicsLibrary.motionBootstrap.archetypes.join('|')}; 상태=${plan.companyGraphicsLibrary.motionBootstrap.status}. PREPARED_SEMANTIC은 실제 네이티브 클립 PASS가 아니며 실게임 런타임 검증 후에만 승격한다.`:'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?`자동 모션 Gap Fill: auditSets=${plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount}; incomplete=${plan.companyGraphicsLibrary.motionAutoGapFill.incompleteSetCount}; semanticSeeds=${plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount}; fillOrder=${plan.companyGraphicsLibrary.motionAutoGapFill.fillOrder.join('→')}`:'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?'빈칸은 호환 검증 모션 재사용→안전한 파생→저장소/외부 검증 후보→PREPARED_SEMANTIC 시드→네이티브 신규 제작 순으로 자동 계획한다. 의미 시드는 자동 생성해도 VERIFIED로 승격하지 않는다.':'',
     '선택 순서: 같은 게임/검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
