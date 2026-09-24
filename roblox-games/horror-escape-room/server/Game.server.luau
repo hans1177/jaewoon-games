@@ -627,7 +627,7 @@ local function bot(role,pos)
  local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0}
  table.insert(bots,b);return b
 end
-local function weightPick(list)local function weightPick(list)
+local function weightPick(list)
  local total=0;for _,p in ipairs(list)do total+=math.max(1,(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
  local r=math.random()*total
  for _,p in ipairs(list)do r-=math.max(1,(p:GetAttribute("RoundsSinceMonster")or 0)+1);if r<=0 then return p end end
@@ -647,7 +647,7 @@ local function selectStartingMonsters(h)
  end
  return selected
 end
-local function clearRoleVisual(p)local function clearRoleVisual(p)
+local function clearRoleVisual(p)
  local c=p.Character;if not c then return end
  for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual"or d:GetAttribute("MonsterCostume")==true then d:Destroy()end end
  local old=c:FindFirstChild("RoleHighlight");if old then old:Destroy()end
@@ -781,7 +781,7 @@ local function startRound()
  end
  configure(h);state="RUNNING";timeLeft=C.RoundSeconds;return true
 end
-local function endRound(winner)local function endRound(winner)
+local function endRound(winner)
  if state~="RUNNING"then return end;state="RESULT"
  for _,p in ipairs(Players:GetPlayers())do
   local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
@@ -821,7 +821,7 @@ local function purify(p)
  if targetPlayer then eliminateMonsterPlayer(targetPlayer);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))
  elseif targetBot then removeBot(targetBot);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
 end
-local function survivorDash(p)local function survivorDash(p)
+local function survivorDash(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
  local hf=humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
  if now-(dashCooldown[p]or 0)<cd then return end;dashCooldown[p]=now
@@ -866,7 +866,7 @@ local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers();local hc,mc=teamCounts()
  remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft)),RoundScore=actor and(actor:GetAttribute("RoundScore")or 0)or 0})
 end
-remote.OnServerEvent:Connect(function(p,a)remote.OnServerEvent:Connect(function(p,a)
+remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
  if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
   p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");if #Players:GetPlayers()==1 then soloStartRequested=true end

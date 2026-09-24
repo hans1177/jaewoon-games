@@ -61,3 +61,9 @@ test('경쟁 라운드 점수는 서버가 승패 기준으로 관리한다',()=
  assert.match(server,/SetAttribute\("RoundScore",win and 1 or 0\)/);
  assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
 });
+
+
+test('horror 서버에는 중복 Luau 함수 선언이 없다',()=>{
+ assert.doesNotMatch(server,/local function\s+([A-Za-z_][A-Za-z0-9_]*)\([^)]*\)local function\s+\1\([^)]*\)/);
+ assert.doesNotMatch(server,/remote\.OnServerEvent:Connect\(function\([^)]*\)remote\.OnServerEvent:Connect\(function\([^)]*\)/);
+});
