@@ -139,7 +139,7 @@ jobs:
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           });
           const probes=[];
-          for(const item of candidates.slice(0,4)){
+          for(const item of candidates){
             const c=item.robloxRuntimeCandidateEvidence;
             const result=await probeRobloxOpenCloudEngine({
               universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
