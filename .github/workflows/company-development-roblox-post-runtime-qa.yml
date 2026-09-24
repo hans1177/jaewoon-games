@@ -251,6 +251,10 @@ jobs:
               gameId:item.gameId,
               placeId:String(candidate.placeId),
               versionNumber:Number(candidate.versionNumber),
+              reusableFoundationEvidence:item.robloxRuntimeFoundationEvidence||null,
+              sourceRevision,
+              artifactIdentity,
+              universeId:String(candidate.universeId),
             });
             console.log('ROBLOX_FOUNDATION_RESULT='+JSON.stringify({
               gameId:item.gameId,
@@ -260,6 +264,7 @@ jobs:
               requiredCheckpoints:result.requiredCheckpoints,
               checkpointPass:result.checkpointPass,
               checkpointOrderPassed:result.checkpointOrderPassed,
+              reusedExactFoundationEvidence:result.reusedExactFoundationEvidence===true,
               runtimeFoundationPassed:result.runtimeFoundationPassed,
               developmentContinuationPassed:result.developmentContinuationPassed,
               runtimeAcceptancePassed:result.runtimeAcceptancePassed,
