@@ -996,6 +996,33 @@ test('verified studio quality package advances to a new large studio cycle inste
   assert.notEqual(second.id,first.id);
 });
 
+test('older studio failure does not pin later verified cycles in repair',()=>{
+  const root=tempRepo();
+  const gameId='studio-repair-recovery';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Studio Repair Recovery',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const failed={
+    id:`${gameId}-studio-evolution-v1`,gameId,target:'web',sourceRoot:`web-games/${gameId}`,
+    status:'failed',evidence:['studio-quality-loop:v1'],
+    studioQualityEvolution:{version:1,cycle:1,phase:'BUILD_UP',focusPillar:'PRESENTATION',nextCycleRequired:true}
+  };
+  const verified={
+    id:`${gameId}-studio-evolution-v2`,gameId,target:'web',sourceRoot:`web-games/${gameId}`,
+    status:'verified',lastOutcome:'PASS',evidence:['studio-quality-loop:v1'],
+    studioQualityEvolution:{version:1,cycle:2,phase:'BUILD_UP',focusPillar:'CORE_FUN',nextCycleRequired:true}
+  };
+  const next=findStudioContinuousImprovementTask(project,root,{tasks:[failed,verified]});
+  assert.ok(next);
+  assert.equal(next.id,`${gameId}-studio-evolution-v3`);
+  assert.equal(next.studioQualityEvolution.cycle,2);
+  assert.equal(next.studioQualityEvolution.phase,'OPTIMIZE');
+  assert.equal(next.workUnits,7);
+  assert.equal(next.maxRetries,null);
+  assert.ok(next.evidence.includes('studio-quality-next-cycle-required:YES'));
+});
+
 test('web presentation planner discovers a real non-index game entry file',()=>{
   const root=tempRepo();
   const gameId='legacy-entry-web';
