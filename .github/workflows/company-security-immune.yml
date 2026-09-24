@@ -23,18 +23,23 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/**'
-      - 'tools/**'
-      - 'qa/**'
-      - 'company-learning/**'
-      - 'assets/**'
-      - 'web-games/**'
-      - 'roblox-games/**'
-      - 'unity-games/**'
-      - 'unreal-games/**'
-      - 'godot-games/**'
+      - '.github/actions/**'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/company-log-map.json'
+      - 'tools/company-security-*.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/*release*.mjs'
+      - 'tools/*publish*.mjs'
+      - 'tools/*promotion*.mjs'
+      - 'qa/company-security-*.test.mjs'
+      - 'qa/company-shared-context.test.mjs'
+      - 'roblox-games/**/server/**'
+      - 'package.json'
+      - 'package-lock.json'
   workflow_dispatch:
-  schedule:
-    - cron: '13,33,53 * * * *'
 
 jobs:
   scan:
