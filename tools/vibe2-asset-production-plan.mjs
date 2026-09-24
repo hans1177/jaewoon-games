@@ -7,6 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation} from '../assets/vibe-motion-director.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES} from '../assets/vibe-studio-asset-universe.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -16,6 +17,24 @@ const readJson=(file,fallback={})=>fs.existsSync(file)?JSON.parse(fs.readFileSyn
 const highEndVisualContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.highEndVisualProductionContract||{};
 const companyGraphicsLibraryContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.companyGraphicsLibrary24h||{};
 const companyAssetLibraryRegistry=repoRoot=>readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
+const inferUniverseFamily=row=>{
+  const explicit=clean(row?.family||row?.category).toUpperCase();
+  if(explicit)return explicit;
+  const hay=[...(row?.types||[]),...(row?.tags||[]),row?.type,row?.id,row?.path].map(clean).join(' ').toUpperCase();
+  if(/CHARACTER|PLAYER|HERO/.test(hay))return'CHARACTER';
+  if(/CREATURE|MONSTER|ENEMY|BEAST|INSECT/.test(hay))return'CREATURE';
+  if(/BUILDING|HOUSE|TEMPLE|CASTLE|DUNGEON|INTERIOR/.test(hay))return'BUILDING';
+  if(/ENVIRONMENT|BACKGROUND|TERRAIN|FOREST|BIOME|TREE|ROCK/.test(hay))return'ENVIRONMENT';
+  if(/WEAPON|SWORD|AXE|HAMMER|BOW|GUN|SPEAR/.test(hay))return'WEAPON';
+  if(/SKILL|SPELL|ABILITY/.test(hay))return'SKILL';
+  if(/MATERIAL|TEXTURE|SURFACE/.test(hay))return'MATERIAL';
+  if(/AUDIO|SFX|BGM|SOUND/.test(hay))return'AUDIO';
+  if(/VFX|EFFECT|PARTICLE/.test(hay))return'VFX';
+  if(/UI|HUD|ICON|BUTTON/.test(hay))return'UI';
+  if(/MOTION|ANIMATION/.test(hay))return'MOTION';
+  if(/PROP|FURNITURE|CONTAINER|DECOR/.test(hay))return'PROP';
+  return'';
+};
 
 const WEB_DIRECT_AUTHORING=freeze([
   'svg-final-art',
@@ -232,6 +251,57 @@ export function buildVibeAssetProductionPlan({
   const bootstrapSets=(companyRegistry?.motionBootstrap?.sets||[]).map(row=>createCreatureMotionSetProfile({...row,verificationState:companyRegistry?.motionBootstrap?.productionVerified===true?'VERIFIED_RUNTIME':'PREPARED_SEMANTIC'}));
   const motionAutoGapActive=companyLibrary?.autoMotionCoverageGapFill?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const requestUpper=request.toUpperCase();
+  const universeContract=companyLibrary?.studioAssetUniverse||{};
+  const universeActive=universeContract?.status==='ACTIVE_EXECUTABLE_CONTRACT';
+  const familyRegex={
+    CHARACTER:/CHARACTER|캐릭터|의상|복장|옷|갑옷|ARMOR|CLOTHING|HAIR|머리/i,
+    CREATURE:/CREATURE|MONSTER|몬스터|몹|적|BOSS|보스|곤충|늑대|곰|거미|뱀|드래곤/i,
+    BUILDING:/BUILDING|건물|집|마을|성|탑|신전|던전|실내|INTERIOR|ROOM/i,
+    ENVIRONMENT:/ENVIRONMENT|배경|환경|숲|정글|사막|설원|눈|화산|늪|바이옴|BIOME/i,
+    WEAPON:/WEAPON|무기|검|창|도끼|망치|활|총|지팡이/i,
+    SKILL:/SKILL|스킬|마법|주문|CAST|PROJECTILE|BEAM|AOE/i,
+    MATERIAL:/MATERIAL|재질|표면|금속|나무|돌|천|가죽/i,
+    AUDIO:/AUDIO|SOUND|BGM|음악|소리|효과음/i,
+    VFX:/VFX|이펙트|파티클|폭발|피격효과/i,
+    UI:/UI|HUD|인벤토리|아이콘|버튼|맵/i,
+    MOTION:/MOTION|ANIMATION|모션|동작|애니메이션/i,
+    PROP:/PROP|소품|가구|상자|배럴|장식|작업대/i
+  };
+  const activeDemand=Object.fromEntries(Object.entries(DEFAULT_COVERAGE_BASELINES).map(([family,subs])=>[
+    family,Object.fromEntries(Object.keys(subs).map(sub=>[sub,familyRegex[family]?.test(request)?1:0]))
+  ]));
+  const universeRepositoryAssets=[
+    ...(companyRegistry?.assets||[]).filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
+    ...(manifestBase?.assets||[]).map(row=>({...row,family:inferUniverseFamily(row),subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),status:'REPO_ASSET'}))
+  ].filter(row=>clean(row.family||row.category));
+  const universeSignals={};
+  for(const [family,subs] of Object.entries(DEFAULT_COVERAGE_BASELINES)){
+    for(const subfamily of Object.keys(subs)){
+      const key=family+':'+subfamily;
+      const externalReady=(companyRegistry?.externalSources||[]).some(row=>{
+        const cat=clean(row.category).toUpperCase();
+        return /LICENSE_VERIFIED/.test(clean(row.status).toUpperCase())&&(cat===family||(family==='BUILDING'&&['ENVIRONMENT','PROP'].includes(cat))||(family==='MATERIAL'&&['VFX','ENVIRONMENT'].includes(cat)));
+      });
+      const verifiedReuse=(companyRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
+      universeSignals[key]={
+        activeGameDemand:activeDemand[family]?.[subfamily]>0,
+        gameConsumerCount:activeDemand[family]?.[subfamily]>0?1:0,
+        playerVisibleFrequencyHigh:['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','VFX','UI'].includes(family)&&activeDemand[family]?.[subfamily]>0,
+        heroBossLandmark:/보스|BOSS|주인공|HERO|랜드마크|LANDMARK/i.test(request)&&['CHARACTER','CREATURE','BUILDING','ENVIRONMENT'].includes(family),
+        externalSourceReady:externalReady,
+        verifiedReuseAvailable:verifiedReuse
+      };
+    }
+  }
+  const studioUniversePlan=universeActive?createStudioAssetUniversePlan({
+    assets:companyRegistry?.assets||[],
+    repositoryAssets:universeRepositoryAssets,
+    externalSources:companyRegistry?.externalSources||[],
+    activeDemand,
+    signalsByKey:universeSignals,
+    platform:resolvedTarget==='roblox'?'ROBLOX':resolvedTarget==='unity'?'UNITY':'UNITY',
+    styleFamily:clean(task.styleFamily||task.style)||'STYLIZED_FANTASY'
+  }):null;
   const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
     const usage={
       activeGameConsumer:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
@@ -389,6 +459,34 @@ export function buildVibeAssetProductionPlan({
         plannedSemanticSeedCount:motionAutoFillPlans.reduce((n,row)=>n+row.semanticSeeds.length,0),
         plans:freezeList(prioritizedMotionAutoFillPlans)
       }),
+      studioAssetUniverse:freeze({
+        enabled:universeActive,
+        target:clean(universeContract?.target)||null,
+        implementation:clean(universeContract?.implementation)||null,
+        internalModuleOnly:universeContract?.internalModuleOnly===true,
+        phases:freeze(universeContract?.phases||{}),
+        families:freeze(Object.keys(universeContract?.families||{})),
+        creatureBodyPlanTargetMinimum:Number(universeContract?.creatureUniverse?.bodyPlanTargetMinimum||0),
+        creatureSpeciesTargetMinimum:Number(universeContract?.creatureUniverse?.speciesTargetMinimum||0),
+        creatureBodyPlans:freezeList(universeContract?.creatureUniverse?.bodyPlans||[]),
+        creatureSpecies:freezeList(universeContract?.creatureUniverse?.species||[]),
+        clothingLayerSlots:freezeList(universeContract?.clothingAndArmor?.layerSlots||[]),
+        clothingThemes:freezeList(universeContract?.clothingAndArmor?.themes||[]),
+        buildingThemes:freezeList(universeContract?.buildingGrammar?.themes||[]),
+        buildingRoomKits:freezeList(universeContract?.buildingGrammar?.roomKits||[]),
+        biomes:freezeList(universeContract?.biomeDna?.biomes||[]),
+        materialSurfaces:freezeList(universeContract?.materialLibrary?.surfaces||[]),
+        audioFamilies:freezeList(universeContract?.audioVariation?companyRegistry?.studioAssetUniverse?.audioCatalog?.families||[]:[]),
+        coverage:freeze(studioUniversePlan?.coverage||{}),
+        heatmap:freezeList(studioUniversePlan?.heatmap?.rows||[]),
+        highestPriorityGap:freeze(studioUniversePlan?.heatmap?.highestPriorityGap||null),
+        gapFill:freeze(studioUniversePlan?.gapFill||{}),
+        plannedSemanticSeedCount:Number(studioUniversePlan?.gapFill?.actions?.reduce((n,row)=>n+(row.semanticSeeds?.length||0),0)||0),
+        autonomous24h:universeContract?.autonomousGapFill24h?.enabled===true,
+        preparedSemanticMayNotClaimVerified:universeContract?.autonomousGapFill24h?.preparedSemanticMayNotClaimVerified===true,
+        actualRuntimeConsumerRequiredBeforePromotion:universeContract?.autonomousGapFill24h?.actualRuntimeConsumerRequiredBeforePromotion===true,
+        existingCanonicalLearningChainOnly:universeContract?.runtimeLearning?.existingCanonicalLearningChainOnly===true
+      }),
       retargetCleanupRequirements:freezeList(companyLibrary?.studioMotionProgram?.retargetCleanupRequirements||[]),
       unarmedCombat:freeze({
         enabled:companyLibrary?.unarmedCombatStudio?.status==='ACTIVE_EXECUTABLE_CONTRACT',
@@ -531,6 +629,18 @@ export function buildVibeAssetProductionPlan({
       motionGapUsagePriorityRequired:companyLibrary?.autoMotionCoverageGapFill?.usagePriority?.enabled===true,
       motionGapDuplicateSuppressionRequired:companyLibrary?.autoMotionCoverageGapFill?.duplicateControl?.enabled===true,
       motionBootstrapAvailable:Array.isArray(companyRegistry?.motionBootstrap?.sets)&&companyRegistry.motionBootstrap.sets.length>0,
+      studioAssetUniverseRequired:universeActive,
+      universalAssetCoverageScannerRequired:universeContract?.universalCoverageScanner?.enabled===true,
+      crossAssetCompatibilityRequired:universeContract?.crossAssetCompatibilityGraph?.enabled===true,
+      assetIdentityQaRequired:universeContract?.assetIdentityQa?.enabled===true,
+      styleBibleGeneratorRequired:universeContract?.styleBibleGenerator?.enabled===true,
+      clothingLayerCompatibilityRequired:universeContract?.clothingAndArmor?.layerCompatibilityRequired===true,
+      buildingGrammarRequired:Array.isArray(universeContract?.buildingGrammar?.hardRules)&&universeContract.buildingGrammar.hardRules.length>0,
+      biomeDnaRequired:Array.isArray(universeContract?.biomeDna?.biomes)&&universeContract.biomeDna.biomes.length>0,
+      libraryHeatmapRequired:universeContract?.libraryHeatmap?.enabled===true,
+      autonomousLibraryPopulation24h:universeContract?.autonomousGapFill24h?.enabled===true,
+      semanticAssetSeedCannotSelfPromote:universeContract?.autonomousGapFill24h?.preparedSemanticMayNotClaimVerified===true,
+      universalAssetLearningUsesExistingCanonicalChain:universeContract?.runtimeLearning?.existingCanonicalLearningChainOnly===true,
       latestExplicitOwnerIntentWinsWithinSameScope:highEnd?.ownerChangeRequestStability?.latestExplicitOwnerIntentWinsWithinSameScope===true,
       wrapperOrShadowPresentationAccumulationForbidden:highEnd?.ownerChangeRequestStability?.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden===true
     }),
@@ -578,6 +688,10 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.motionBootstrap?.setCount?`모션 시드 세트=${plan.companyGraphicsLibrary.motionBootstrap.setCount}개; archetypes=${plan.companyGraphicsLibrary.motionBootstrap.archetypes.join('|')}; 상태=${plan.companyGraphicsLibrary.motionBootstrap.status}. PREPARED_SEMANTIC은 실제 네이티브 클립 PASS가 아니며 실게임 런타임 검증 후에만 승격한다.`:'',
     plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?`자동 모션 Gap Fill: auditSets=${plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount}; incomplete=${plan.companyGraphicsLibrary.motionAutoGapFill.incompleteSetCount}; semanticSeeds=${plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount}; fillOrder=${plan.companyGraphicsLibrary.motionAutoGapFill.fillOrder.join('→')}`:'',
     plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?'빈칸은 호환 검증 모션 재사용→안전한 파생→저장소/외부 검증 후보→PREPARED_SEMANTIC 시드→네이티브 신규 제작 순으로 자동 계획한다. 의미 시드는 자동 생성해도 VERIFIED로 승격하지 않는다.':'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Studio Asset Universe=${plan.companyGraphicsLibrary.studioAssetUniverse.target}; families=${plan.companyGraphicsLibrary.studioAssetUniverse.families.join('|')}; creatureBodyPlans=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureBodyPlans.length}; species=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureSpecies.length}; biomes=${plan.companyGraphicsLibrary.studioAssetUniverse.biomes.length}`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
     '선택 순서: 같은 게임/검증 회사 에셋 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
