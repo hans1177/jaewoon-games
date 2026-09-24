@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import { isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
 
 const guardWorkflow=fs.readFileSync('.github/workflows/main-write-guard.yml','utf8');
+const guardSource=fs.readFileSync('tools/main-write-guard.mjs','utf8');
 
 test('workflow path detector only accepts workflow yaml files',()=>{
   assert.equal(isWorkflowPath('.github/workflows/build.yml'),true);
@@ -32,4 +33,9 @@ test('main write guard fetches only the exact comparison endpoint instead of ful
   assert.doesNotMatch(guardWorkflow,/fetch-depth: 0/);
   assert.match(guardWorkflow,/git fetch --depth=1 --no-tags origin "\$base_sha" --quiet/);
   assert.match(guardWorkflow,/git fetch --depth=1 --no-tags origin "\$before" --quiet/);
+});
+
+test('main write guard compares exact endpoints without requiring merge-base ancestry',()=>{
+  assert.match(guardSource,/\['diff','--name-only',baseRef,headRef\]/);
+  assert.doesNotMatch(guardSource,/baseRef\}\.\.\.\$\{headRef/);
 });
