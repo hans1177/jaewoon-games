@@ -1,5 +1,5 @@
 {
-  "version": 349,
+  "version": 350,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -18956,7 +18956,23 @@
       "FABRICATE_PASS",
       "REUSE_INVALIDATED_EVIDENCE",
       "LOWER_QUALITY_THRESHOLD"
-    ]
+    ],
+    "implementation": {
+      "impactScopedWorkflowTriggers": {
+        "enabled": true,
+        "pullRequestAndMainPush": true,
+        "workflows": [
+          ".github/workflows/vibe-qa.yml",
+          ".github/workflows/vibe-regression.yml",
+          ".github/workflows/company-evolution-qa.yml",
+          ".github/workflows/vibe3-engine-contract.yml"
+        ],
+        "unrelatedChangesDoNotStartWorkflow": true,
+        "scopeMayExpandOnlyWhenRelevantEvidenceRequiresIt": true,
+        "existingSecurityPathScopePreserved": true,
+        "existingHomepageAndRecordsPathScopesPreserved": true
+      }
+    }
   },
   "neuralGatedExecution": {
     "version": 1,
