@@ -1242,6 +1242,20 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
 });
 
+test('continuous core skips repeated security scans for non-security game changes',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflow,/VIBE2_SECURITY_IMMUNE_SCAN=SKIPPED_NON_SECURITY_CHANGE/);
+  assert.match(workflow,/security_required='NO'/);
+  assert.match(workflow,/candidate_target" = 'system'/);
+  assert.match(workflow,/server\|security\|auth\|remote\|datastore\|save\|economy\|reward\|purchase\|payment\|damage\|permission\|network/);
+});
+
+test('security immune workflow has no periodic full-repository schedule',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-security-immune.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(workflow,/cron:/);
+  assert.match(workflow,/roblox-games\/\*\*\/server\/\*\*/);
+});
+
 test('continuous core keeps pending neuron callbacks out of heavy reserve and refills once after task micro fan-in',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
