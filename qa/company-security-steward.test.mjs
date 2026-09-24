@@ -336,3 +336,26 @@ test('security steward owns game-level Roblox exploit boundaries without duplica
   assert.equal(post.securityStewardIntegration.platformAntiCheatDuplicated,false);
   assert.equal(post.securityStewardIntegration.confirmedSecurityBugRoute,'HOTFIX');
 });
+
+
+test('security contract protects reference image study and narrative state authority boundaries',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+  const ref=policy.referenceImageWorldObservationSecurity;
+  assert.equal(ref.protections.sourceIdRequired,true);
+  assert.equal(ref.protections.sourceRightsOrOwnershipVerificationRequired,true);
+  assert.equal(ref.protections.multiReferenceSourceSetVerificationRequired,true);
+  assert.equal(ref.protections.rawProtectedReferenceImagePersistentLearningForbidden,true);
+  assert.equal(ref.protections.rawReferenceImageBytesInLearningLogsForbidden,true);
+  assert.equal(ref.protections.directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden,true);
+  assert.equal(ref.protections.modelObservationProposalUntilVerifiedAgainstSource,true);
+  assert.equal(ref.protections.positiveLearningRequiresVerifiedSourceBindingAndVerifiedProjectOutcome,true);
+
+  const narrative=policy.narrativeStateSecurity;
+  assert.equal(narrative.protections.storyTransitionRequiresSourceEvent,true);
+  assert.equal(narrative.protections.factionRelationshipMutationRequiresSourceEvent,true);
+  assert.equal(narrative.protections.duplicateSourceEventMustBeIdempotent,true);
+  assert.equal(narrative.protections.generatedNarrativeAndPersonaGameplayAuthorityForbidden,true);
+  assert.equal(narrative.protections.undeclaredDamageRewardEconomyProgressMutationForbidden,true);
+  assert.equal(narrative.protections.multiplayerServerAuthorityPreserved,true);
+  assert.equal(narrative.protections.rawGeneratedStoryOrDialogueDirectMasteryForbidden,true);
+});
