@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-24",
@@ -2732,6 +2732,21 @@
       "worldGeneration": {
         "mapDnaFields": 16,
         "streamingRoles": 5
+      },
+      "visualDna": {
+        "gameSpecificLock": true
+      },
+      "loadout": {
+        "usageAwareSelection": true
+      },
+      "creatureBlueprint": {
+        "identityAxes": 9
+      },
+      "platformVariant": {
+        "platforms": 2
+      },
+      "studioTestbed": {
+        "scenarioCount": 10
       }
     },
     "conceptCatalog": {
@@ -2880,7 +2895,118 @@
         "OBJECT_POOLING",
         "BACKGROUND_GENERATION_BUDGET"
       ],
-      "authoritativeWorldAndSaveStateMustSurviveChunkUnload": true
+      "authoritativeWorldAndSaveStateMustSurviveChunkUnload": true,
+      "genreWorldGrammar": true,
+      "genreFamilies": [
+        "SURVIVAL",
+        "RPG",
+        "ACTION_RPG",
+        "ROGUELIKE",
+        "DEFENSE",
+        "TYCOON",
+        "OPEN_WORLD",
+        "DUNGEON",
+        "PUZZLE",
+        "CASUAL",
+        "HORROR",
+        "SIMULATION"
+      ]
+    },
+    "gameVisualDna": {
+      "status": "ACTIVE_SEMANTIC_CAPABILITY",
+      "productionVerified": false,
+      "fields": [
+        "GAME_ID",
+        "CONCEPT_BLEND",
+        "STYLE_BIBLE",
+        "WORLD_DNA",
+        "BIOME_LANGUAGE",
+        "CHARACTER_LANGUAGE",
+        "CREATURE_LANGUAGE",
+        "BUILDING_LANGUAGE",
+        "MOTION_LANGUAGE",
+        "VFX_LANGUAGE",
+        "AUDIO_LANGUAGE",
+        "UI_LANGUAGE",
+        "NARRATIVE_PRESENTATION_LANGUAGE"
+      ],
+      "gameStyleLockWins": true
+    },
+    "assetLoadoutSelector": {
+      "status": "ACTIVE_SEMANTIC_CAPABILITY",
+      "verifiedCompanyAssetFirst": true,
+      "usageHistoryAware": true,
+      "verifiedFailurePenalty": true,
+      "manualLockedChoiceWins": true
+    },
+    "futureDemandForecast": {
+      "status": "ACTIVE_PREPARATION_CAPABILITY",
+      "inputs": [
+        "ACTIVE_GAME_DEMAND",
+        "APPROVED_DESIGN_QUEUE",
+        "PLATFORM_TARGETS",
+        "COVERAGE",
+        "VERIFIED_FAILURE_GAPS"
+      ],
+      "mayPrepareSemanticWork": true,
+      "mayPromoteVerified": false
+    },
+    "creatureSpeciesBlueprint": {
+      "status": "ACTIVE_SEMANTIC_CAPABILITY",
+      "identityAxes": [
+        "BODY_PLAN",
+        "SPECIES",
+        "CONCEPT",
+        "SILHOUETTE",
+        "LOCOMOTION",
+        "ATTACK_LANGUAGE",
+        "SIGNATURE_SKILL",
+        "AUDIO_IDENTITY",
+        "HIT_DEATH_IDENTITY"
+      ],
+      "colorOnlyVariantForbidden": true,
+      "gameplayStatsAuthority": false
+    },
+    "platformVariantOptimizer": {
+      "status": "ACTIVE_SEMANTIC_CAPABILITY",
+      "platforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "adapts": [
+        "LOD",
+        "MESH_DENSITY",
+        "MATERIAL_COMPLEXITY",
+        "TEXTURE_BUDGET",
+        "PARTICLE_BUDGET",
+        "AUDIO_VARIANT_BUDGET",
+        "MOTION_LOD",
+        "LIGHTING_COMPLEXITY"
+      ],
+      "runtimeVerificationRequired": true
+    },
+    "studioTestbed": {
+      "status": "ACTIVE_SEMANTIC_CAPABILITY",
+      "scenarios": [
+        "DEFAULT_LIGHT",
+        "LOW_LIGHT",
+        "COMBAT_CLOSE",
+        "COMBAT_CROWD",
+        "RAIN_OR_WEATHER",
+        "MOBILE_LOW_BUDGET",
+        "LOD_DISTANCE",
+        "NAVIGATION_AND_COLLISION",
+        "MOTION_CONTACT",
+        "UI_READABILITY"
+      ],
+      "productionVerified": false,
+      "actualGameRuntimeStillRequired": true
+    },
+    "verifiedUsageFeedback": {
+      "status": "ACTIVE_EVIDENCE_CAPABILITY",
+      "positiveLearningRequiresVerifiedRuntimePass": true,
+      "negativeLearningRequiresVerifiedFailureCause": true,
+      "rawTelemetryDirectTraining": false
     }
   },
   "universalCoverage": {
