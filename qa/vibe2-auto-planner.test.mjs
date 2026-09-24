@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -930,6 +930,24 @@ test('preservation presentation task is restored instead of superseded by generi
   assert.equal(restored.blocker,null);
   assert.equal(restored.lastOutcome,'RESTORED_OWNER_PRESERVATION_PRESENTATION');
   assert.ok(restored.evidence.includes('owner-preservation-presentation-preempts-generic-web-repair'));
+});
+
+test('first studio build-up cycle establishes presentation baseline even when noisy nonvisual signals exist',()=>{
+  const root=tempRepo();
+  const gameId='studio-first-cycle';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const project={
+    gameId,name:'Studio First Cycle',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`,
+    developmentValidation:{blockers:['MOBILE_TOUCH_ACTION_NOT_CONNECTED'],nextAction:'repair input later'}
+  };
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]});
+  assert.ok(task);
+  assert.equal(task.studioQualityEvolution.phase,'BUILD_UP');
+  assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
+  assert.equal(task.studioQualityEvolution.visibleRenderDeltaRequired,true);
+  assert.ok(task.evidence.includes('graphics-evolution-before-after-comparison-required'));
 });
 
 test('web presentation planner discovers a real non-index game entry file',()=>{
