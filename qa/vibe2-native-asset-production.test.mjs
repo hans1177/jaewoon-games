@@ -92,9 +92,23 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     assert.ok(plan.decisions.some(row=>row.sameGameCandidates.some(asset=>asset.robloxAssetId==='6933438443')));
     assert.ok(plan.decisions.some(row=>row.decisionOrder[0]==='REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'));
     assert.equal(plan.policy.sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified,true);
+    assert.equal(plan.policy.unverifiedSameGameRobloxAssetDoesNotOutrankVerifiedCompanyAsset,true);
     const guidance=assetProductionGuidance(plan);
     assert.match(guidance,/REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET/);
     assert.match(guidance,/6933438443/);
+
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'roblox-games/shared/nature.luau',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
+    },null,2));
+    const withCompany=buildVibeAssetProductionPlan({
+      task:{gameId:'demo',goal:'Nature background improvement'},target:'roblox',repoRoot:root,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    });
+    const background=withCompany.decisions.find(row=>row.type==='background');
+    assert.ok(background);
+    assert.equal(background.decisionOrder[0],'REUSE_VERIFIED_COMPANY_ASSET');
+    assert.equal(background.reuseCandidates[0].id,'verified-company-nature');
 
     const other=buildVibeAssetProductionPlan({
       task:{gameId:'other-game',goal:'자연 환경 배경 개선'},target:'roblox',repoRoot:root,
