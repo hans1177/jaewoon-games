@@ -23,6 +23,14 @@ import {
   createCreatureMotionSetProfile,
   motionSetToCandidates,
   estimateMotionCombinationSpace,
+  resolveMotionCoverageRequirements,
+  auditMotionCoverage,
+  motionSemanticFingerprint,
+  findNearDuplicateMotionCandidates,
+  findCompatibleMotionDonors,
+  scoreMotionGapPriority,
+  buildAutomaticMotionGapFillPlan,
+  applySemanticGapPreparation,
   createMotionDirectorPlan
 } from '../assets/vibe-motion-director.js';
 
@@ -243,4 +251,100 @@ test('motion combination estimator reports theoretical space without artificial 
   });
   assert.equal(space.theoreticalCombinationCount,288);
   assert.equal(space.artificialCapApplied,false);
+});
+
+
+test('coverage audit detects missing motion groups by body plan',()=>{
+  const flying=createCreatureMotionSetProfile({
+    id:'bird',archetype:'BIRD',bodyPlan:'FLYING',rigProfile:'GENERIC_WINGED',
+    locomotion:['TAKEOFF','FLY'],attacks:['DIVE'],defense:[],reactions:['HIT'],acting:[],deaths:['DEATH'],skill:[],signature:['DIVE']
+  });
+  const req=resolveMotionCoverageRequirements(flying);
+  assert.equal(req.minimums.locomotion,8);
+  assert.ok(req.requiredRoles.includes('HOVER'));
+  const audit=auditMotionCoverage(flying);
+  assert.equal(audit.complete,false);
+  assert.ok(audit.gaps.some(row=>row.group==='locomotion'&&row.missing===6));
+  assert.ok(audit.requiredRoleGaps.includes('HOVER'));
+});
+
+test('compatible donor binder rejects different body plans and protects signature identity',()=>{
+  const target=createCreatureMotionSetProfile({
+    id:'goblin-new',archetype:'GOBLIN',bodyPlan:'SMALL_HUMANOID_BIPED',rigProfile:'HUMANOID',
+    locomotion:['GOBLIN_IDLE'],signature:['GOBLIN_ATTACK_SIGNATURE']
+  });
+  const sameBody=createCreatureMotionSetProfile({
+    id:'kobold',archetype:'KOBOLD',bodyPlan:'SMALL_HUMANOID_BIPED',rigProfile:'HUMANOID',
+    locomotion:['KOBOLD_RUN','KOBOLD_TURN'],signature:['KOBOLD_SIGNATURE'],verificationState:'VERIFIED_RUNTIME'
+  });
+  const wolf=createCreatureMotionSetProfile({
+    id:'wolf',archetype:'WOLF',bodyPlan:'QUADRUPED_CANINE',rigProfile:'GENERIC_QUADRUPED',
+    locomotion:['WOLF_RUN'],verificationState:'VERIFIED_RUNTIME'
+  });
+  const locomotion=findCompatibleMotionDonors({targetProfile:target,librarySets:[sameBody,wolf],group:'locomotion'});
+  assert.equal(locomotion.length,1);
+  assert.equal(locomotion[0].id,'kobold');
+  assert.equal(locomotion[0].productionVerified,true);
+  const signatures=findCompatibleMotionDonors({targetProfile:target,librarySets:[sameBody],group:'signature'});
+  assert.equal(signatures.length,0);
+});
+
+test('automatic gap fill plans safe routes and semantic seeds without false promotion',()=>{
+  const target=createCreatureMotionSetProfile({
+    id:'new-minotaur',archetype:'MINOTAUR',bodyPlan:'HEAVY_BIPED',rigProfile:'GENERIC_OR_EXTENDED_HUMANOID',
+    locomotion:['MINOTAUR_IDLE'],attacks:['MINOTAUR_PUNCH'],defense:[],reactions:['MINOTAUR_HIT'],acting:[],deaths:['MINOTAUR_DEATH'],skill:[],signature:['MINOTAUR_HORN_GORE']
+  });
+  const external=[{id:'licensed-motion-source',category:'MOTION',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE'}];
+  const plan=buildAutomaticMotionGapFillPlan({
+    profile:target,
+    librarySets:[],
+    externalSources:external,
+    usage:{activeGameConsumer:true,heroOrBoss:true,combatCritical:true}
+  });
+  assert.equal(plan.audit.complete,false);
+  assert.equal(plan.semanticPreparationCannotCreateVerifiedCoverage,true);
+  assert.equal(plan.runtimeVerificationRequired,true);
+  assert.ok(plan.actions.length>0);
+  assert.ok(plan.actions.every(row=>row.promotionBlockedUntilRuntimeQa===true));
+  assert.ok(plan.actions.some(row=>row.route==='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_MOTION'));
+  const prepared=applySemanticGapPreparation({profile:target,gapPlan:plan});
+  assert.equal(prepared.productionVerified,false);
+  assert.equal(prepared.state,'PREPARED_SEMANTIC');
+  assert.ok(prepared.added.length>0);
+});
+
+test('gap priority favors broken active boss combat motion',()=>{
+  const low=scoreMotionGapPriority({gap:{group:'acting',missing:1},usage:{}});
+  const high=scoreMotionGapPriority({
+    gap:{group:'attacks',missing:3},
+    usage:{brokenOrMissingRuntimeMotion:true,activeGameConsumer:true,heroOrBoss:true,combatCritical:true,gameConsumerCount:3}
+  });
+  assert.ok(high>low);
+  assert.ok(high>=100);
+});
+
+test('semantic fingerprints suppress redundant motion variants',()=>{
+  const candidate=createMotionDNA({id:'slash-new',bodyPlan:'HUMANOID',rigProfile:'HUMANOID',combatRole:'ATTACK',weaponFamily:'SWORD',stance:'COMBAT',styleFamily:'CARTOON',contactLimb:'RIGHT_HAND'});
+  const same=createMotionDNA({id:'slash-old',bodyPlan:'HUMANOID',rigProfile:'HUMANOID',combatRole:'ATTACK',weaponFamily:'SWORD',stance:'COMBAT',styleFamily:'CARTOON',contactLimb:'RIGHT_HAND',runtimeVerificationState:'VERIFIED_RUNTIME'});
+  assert.equal(motionSemanticFingerprint(candidate),motionSemanticFingerprint(same));
+  const dup=findNearDuplicateMotionCandidates({candidate,library:[{id:'slash-old',dna:same}]});
+  assert.equal(dup.length,1);
+  assert.equal(dup[0].verified,true);
+});
+
+test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'motion-auto-test',goal:'미노타우로스 보스 모션 강화'},
+    target:'unity',
+    repoRoot:path.resolve(here,'..')
+  });
+  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.enabled,true);
+  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount>=8,true);
+  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount>0,true);
+  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.preparedSemanticNeverVerified,true);
+  assert.equal(plan.policy.automaticMotionCoverageGapFill,true);
+  assert.equal(plan.policy.automaticMotionGapMayNotSelfPromote,true);
+  assert.equal(plan.policy.motionGapDuplicateSuppressionRequired,true);
 });
