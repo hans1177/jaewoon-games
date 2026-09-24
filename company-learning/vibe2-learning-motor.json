@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -75,7 +75,23 @@
       "UNITY_NETCODE",
       "UEFN_RUNTIME",
       "UEFN_VERSE",
-      "UEFN_REPLICATION"
+      "UEFN_REPLICATION",
+      "CONCEPT_DIRECTION",
+      "WORLD_GENERATION",
+      "LEVEL_DESIGN",
+      "ROUTE_DESIGN",
+      "STREAMING_OPTIMIZATION",
+      "MAIN_STORY_GENERATION",
+      "QUEST_GRAPH",
+      "FORESHADOWING_PAYOFF",
+      "TWIST_EVIDENCE_CHAIN",
+      "CHARACTER_VOICE",
+      "CHARACTER_RELATIONSHIP_MEMORY",
+      "CHARACTER_BEHAVIOR",
+      "COMPANION_BEHAVIOR",
+      "NPC_BEHAVIOR",
+      "MONSTER_BEHAVIOR_PERSONALITY",
+      "WORLD_NARRATIVE_BINDING"
     ],
     "verifiedSuccessXp": 12,
     "verifiedFailureLessonXp": 5,
@@ -103,7 +119,23 @@
         "ANIMATION_FEEL",
         "VFX",
         "AUDIO_FEEL",
-        "CAMERA_LANGUAGE"
+        "CAMERA_LANGUAGE",
+        "CONCEPT_DIRECTION",
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN",
+        "STREAMING_OPTIMIZATION",
+        "MAIN_STORY_GENERATION",
+        "QUEST_GRAPH",
+        "FORESHADOWING_PAYOFF",
+        "TWIST_EVIDENCE_CHAIN",
+        "CHARACTER_VOICE",
+        "CHARACTER_RELATIONSHIP_MEMORY",
+        "CHARACTER_BEHAVIOR",
+        "COMPANION_BEHAVIOR",
+        "NPC_BEHAVIOR",
+        "MONSTER_BEHAVIOR_PERSONALITY",
+        "WORLD_NARRATIVE_BINDING"
       ],
       "ROBLOX_NATIVE_ONLY": [
         "ROBLOX_STUDIO",
@@ -122,7 +154,25 @@
         "UEFN_VERSE",
         "UEFN_REPLICATION"
       ],
-      "NATIVE_RUNTIME_EVIDENCE_IS_PLATFORM_SCOPED": true
+      "NATIVE_RUNTIME_EVIDENCE_IS_PLATFORM_SCOPED": true,
+      "ABSTRACT_GAME_DEVELOPMENT_TECHNIQUE_TRANSFER": [
+        "CONCEPT_DIRECTION",
+        "WORLD_GENERATION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN",
+        "MAIN_STORY_GENERATION",
+        "QUEST_GRAPH",
+        "FORESHADOWING_PAYOFF",
+        "TWIST_EVIDENCE_CHAIN",
+        "CHARACTER_VOICE",
+        "CHARACTER_RELATIONSHIP_MEMORY",
+        "CHARACTER_BEHAVIOR",
+        "COMPANION_BEHAVIOR",
+        "NPC_BEHAVIOR",
+        "MONSTER_BEHAVIOR_PERSONALITY",
+        "WORLD_NARRATIVE_BINDING"
+      ],
+      "STREAMING_OPTIMIZATION_REQUIRES_TARGET_RUNTIME_EVIDENCE": true
     },
     "legacyDepartmentLevelCeilingAppliesOnlyToLegacyField": true,
     "domainMasteryLevelLimit": null,
@@ -255,7 +305,17 @@
       "AUDIO_FEEL",
       "CAMERA_LANGUAGE",
       "UNITY_NATIVE",
-      "FORTNITE_UEFN_NATIVE"
+      "FORTNITE_UEFN_NATIVE",
+      "CONCEPT_DIRECTION",
+      "WORLD_GENERATION",
+      "LEVEL_DESIGN",
+      "ROUTE_DESIGN",
+      "STREAMING_OPTIMIZATION",
+      "MAIN_STORY_GENERATION",
+      "QUEST_GRAPH",
+      "FORESHADOWING_PAYOFF",
+      "CHARACTER_BEHAVIOR",
+      "RELATIONSHIP_MEMORY"
     ],
     "levels": null,
     "runOn": [
@@ -327,7 +387,19 @@
       "DESTRUCTION_LIBRARY_DRILL",
       "ASSET_IDENTITY_QA_DRILL",
       "STYLE_BIBLE_LIBRARY_DRILL",
-      "UNIVERSAL_ASSET_COVERAGE_DRILL"
+      "UNIVERSAL_ASSET_COVERAGE_DRILL",
+      "CONCEPT_DIRECTION_DRILL",
+      "WORLD_GENERATION_DRILL",
+      "LEVEL_DESIGN_DRILL",
+      "ROUTE_DESIGN_DRILL",
+      "STREAMING_OPTIMIZATION_DRILL",
+      "MAIN_STORY_GENERATION_DRILL",
+      "FORESHADOWING_PAYOFF_DRILL",
+      "TWIST_EVIDENCE_CHAIN_DRILL",
+      "CHARACTER_VOICE_DRILL",
+      "RELATIONSHIP_MEMORY_DRILL",
+      "CHARACTER_BEHAVIOR_DRILL",
+      "WORLD_NARRATIVE_BINDING_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -488,7 +560,18 @@
       "NARRATIVE_STRUCTURE",
       "QUEST_DESIGN",
       "CHARACTER_ARC",
-      "DIALOGUE"
+      "DIALOGUE",
+      "MAIN_STORY_GENERATION",
+      "QUEST_GRAPH",
+      "FORESHADOWING_PAYOFF",
+      "TWIST_EVIDENCE_CHAIN",
+      "CHARACTER_VOICE",
+      "CHARACTER_RELATIONSHIP_MEMORY",
+      "CHARACTER_BEHAVIOR",
+      "COMPANION_BEHAVIOR",
+      "NPC_BEHAVIOR",
+      "MONSTER_BEHAVIOR_PERSONALITY",
+      "WORLD_NARRATIVE_BINDING"
     ],
     "existingLearningMotorOnly": true,
     "separateTrainerForbidden": true,
@@ -525,7 +608,19 @@
         "VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE",
         "GENERAL_PLAYBOOK"
       ]
-    }
+    },
+    "version": 2,
+    "verifiedFailurePatterns": [
+      "SOFTLOCK",
+      "KNOWLEDGE_LEAK",
+      "PAYOFF_MISS",
+      "VOICE_COLLAPSE",
+      "QUEST_REPETITION",
+      "RELATIONSHIP_INCONSISTENCY",
+      "BEHAVIOR_PERSONA_MISMATCH",
+      "WORLD_STATE_CONTRADICTION"
+    ],
+    "rawGeneratedNarrativeMayIncreaseMastery": false
   },
   "presentationLearning": {
     "enabled": true,
@@ -705,5 +800,49 @@
     "productionHasHigherPriorityButCannotSuppressLearning": true,
     "capacityPressureAction": "REDUCE_LEARNING_PARALLELISM_OR_QUEUE_WORK_NOT_PAUSE_LEARNING_STATE_MACHINE",
     "failureAction": "RETRY_AND_PRESERVE_QUEUED_LEARNING"
+  },
+  "worldConceptLearning": {
+    "enabled": true,
+    "policyRef": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.worldAndConceptLearning",
+    "domains": [
+      "CONCEPT_DIRECTION",
+      "WORLD_GENERATION",
+      "LEVEL_DESIGN",
+      "ROUTE_DESIGN",
+      "STREAMING_OPTIMIZATION"
+    ],
+    "existingLearningMotorOnly": true,
+    "shadowTrainerForbidden": true,
+    "positiveMasteryRequiresVerifiedProjectOutcome": true,
+    "verifiedFailureMayTeachAvoidPattern": true,
+    "sourcePolicy": {
+      "allowed": [
+        "USER_PROVIDED_OR_OWNED_IMAGE",
+        "PUBLIC_DOMAIN_IMAGE",
+        "CLEARLY_LICENSED_REFERENCE",
+        "VERIFIED_INTERNAL_GAME_RUNTIME",
+        "ABSTRACTED_MULTI_REFERENCE_ANALYSIS"
+      ],
+      "rawRestrictedReferencePersistentTrainingForbidden": true,
+      "directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden": true,
+      "techniqueAbstractionOnlyForProtectedReferences": true
+    },
+    "verifiedSignals": [
+      "CONCEPT_COHESION",
+      "CONCEPT_CONFLICT",
+      "PLAYER_ROUTE_USAGE",
+      "NAVIGATION_FAILURE",
+      "OBJECTIVE_REACHABILITY",
+      "CHOKE_OPEN_SPACE_RHYTHM",
+      "LANDMARK_REVEAL",
+      "ENCOUNTER_SPACE_OUTCOME",
+      "INITIAL_ZONE_PREWARM",
+      "CHUNK_STREAMING_STALL",
+      "LOD_POPPING",
+      "MOBILE_WORLD_PERFORMANCE",
+      "WORLD_STATE_PERSISTENCE_ACROSS_UNLOAD"
+    ],
+    "mapSpecificValuesDoNotGeneralizeWithoutRepeatedVerification": true,
+    "preparedSemanticMayIncreaseMastery": false
   }
 }
