@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateRobloxPresentationCandidateShape, evaluateStudioQualityCandidateDelta } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -48,6 +48,55 @@ test('presentation candidate delta rejects marker-only edits and accepts actual 
 });
 
 
+test('Roblox presentation patch shape requires all four visual domains plus mandatory motion and composite form',()=>{
+  const contract={required:true,pass:'ASSET_ADAPTATION'};
+  const noMotion=evaluateRobloxPresentationCandidateShape({
+    contract,
+    candidate:{edits:[{path:'client/Game.client.luau',find:'x',replace:[
+      'local character = player.Character',
+      'local weapon = character:FindFirstChildOfClass("Tool")',
+      'local environment = game:GetService("Lighting")',
+      'environment.Ambient = Color3.fromRGB(24,32,48)',
+      'local attachment = Instance.new("Attachment")',
+      'attachment.Parent = character',
+      'local clone = weapon and weapon:Clone()'
+    ].join('\n')}]}
+  });
+  assert.equal(noMotion.required,true);
+  assert.equal(noMotion.pass,false);
+  assert.equal(noMotion.domains.character,true);
+  assert.equal(noMotion.domains.equipment,true);
+  assert.equal(noMotion.domains.environment,true);
+  assert.equal(noMotion.domains.style,true);
+  assert.equal(noMotion.domains.motion,false);
+  assert.match(noMotion.reason,/motion/i);
+
+  const complete=evaluateRobloxPresentationCandidateShape({
+    contract,
+    candidate:{edits:[{path:'client/Game.client.luau',find:'x',replace:[
+      'local character = player.Character or player.CharacterAdded:Wait()',
+      'local weapon = character:FindFirstChildOfClass("Tool")',
+      'local environment = game:GetService("Lighting")',
+      'environment.Ambient = Color3.fromRGB(24,32,48)',
+      'local attachment = Instance.new("Attachment")',
+      'attachment.Parent = character:FindFirstChild("HumanoidRootPart") or character',
+      'local clone = weapon and weapon:Clone()',
+      'game:GetService("TweenService"):Create(character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(0.18), {CFrame = character:GetPivot()}):Play()'
+    ].join('\n')}]}
+  });
+  assert.equal(complete.pass,true);
+  assert.equal(complete.domainCount,5);
+  assert.equal(complete.domains.motion,true);
+  assert.ok(complete.nativeComposition>=3);
+  assert.equal(complete.compositeForm,true);
+});
+
+test('Roblox presentation patch shape failure is retryable source generation work',()=>{
+  const error=new Error('PRESENTATION_PATCH_SHAPE_REQUIRED:MISSING_CHANGED_DOMAINS:equipment,environment,motion');
+  assert.equal(generationFailureClass(error),'PRESENTATION_PATCH_SHAPE');
+  assert.equal(shouldRetryGenerationError(error),true);
+});
+
 test('presentation delta failure is retryable source generation work',()=>{
   const error=new Error('PRESENTATION_PATCH_DELTA_REQUIRED:ASSET_ADAPTATION');
   assert.equal(generationFailureClass(error),'PRESENTATION_PATCH_DELTA');
@@ -77,7 +126,17 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   const bad1=path.join(cwd,'presentation-bad-1.json');
   const good=path.join(cwd,'presentation-good-focused.json');
   write(bad1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(good,JSON.stringify({replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'}));
+  write(good,JSON.stringify({replace:[
+    'local character = player.Character or player.CharacterAdded:Wait()',
+    'local weapon = character:FindFirstChildOfClass("Tool")',
+    'local environment = game:GetService("Lighting")',
+    'environment.Ambient = Color3.fromRGB(70,95,130)',
+    'local visualAttachment = Instance.new("Attachment")',
+    'visualAttachment.Parent = character:FindFirstChild("HumanoidRootPart") or character',
+    'local weaponClone = weapon and weapon:Clone()',
+    'game:GetService("TweenService"):Create(character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(0.18), {CFrame = character:GetPivot()}):Play()',
+    'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'
+  ].join('\\n')}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,good]});
   assert.equal(result.generation.attempts,2);
@@ -85,6 +144,9 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.presentationCandidateDelta.pass,true);
   assert.equal(result.presentationCandidateDelta.presentationPass,'ASSET_ADAPTATION');
+  assert.equal(result.presentationCandidateShape.pass,true);
+  assert.equal(result.presentationCandidateShape.domainCount,5);
+  assert.equal(result.presentationCandidateShape.domains.motion,true);
   assert.deepEqual(result.changedFiles,[relative]);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
   assert.match(candidate,/Color3\.fromRGB\(70,95,130\)/);
