@@ -116,6 +116,65 @@ jobs:
           echo "VIBE2_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
 
+      - name: Resolve exact Unity Android presentation runtime evidence
+        id: presentation_runtime
+        if: github.event.workflow_run.conclusion == 'success' && steps.revalidate.outcome == 'success' && steps.promote.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ steps.manifest.outputs.task_id }}
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+          BUILD_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin vibe2-unreal-core --quiet
+          git show origin/vibe2-unreal-core:.vibe2/queue.json > /tmp/vibe2-unity-control-queue.json
+          required="$(node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/vibe2-unity-control-queue.json','utf8'));
+          const task=(q.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
+          const evidence=(task?.evidence||[]).map(String);
+          const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
+          const required=studio.finalFanInComparisonRequired===true
+            ||studio.runtimeBeforeAfterComparisonRequired===true
+            ||evidence.includes('graphics-evolution-before-after-comparison-required');
+          process.stdout.write(required?'YES':'NO');
+          NODE
+          )"
+          echo "required=$([ "$required" = YES ] && printf true || printf false)" >> "$GITHUB_OUTPUT"
+          if [ "$required" != YES ]; then
+            echo 'pass=true' >> "$GITHUB_OUTPUT"
+            echo 'UNITY_PRESENTATION_RUNTIME_COMPARE=NOT_REQUIRED'
+            exit 0
+          fi
+
+          rm -rf /tmp/vibe2-build-artifacts
+          mkdir -p /tmp/vibe2-build-artifacts
+          gh run download "$BUILD_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir /tmp/vibe2-build-artifacts
+          evidence_file="$(find /tmp/vibe2-build-artifacts -type f -path '*/android16-install-gate-*/evidence.json' -print -quit)"
+          screenshot_file="$(find /tmp/vibe2-build-artifacts -type f -path '*/android16-install-gate-*/screenshot.png' -size +0c -print -quit)"
+          test -n "$evidence_file"
+          test -n "$screenshot_file"
+          node - "$evidence_file" <<'NODE'
+          const fs=require('fs');
+          const row=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          if(row.target!=='unity-android')throw new Error('UNITY_RUNTIME_TARGET_INVALID');
+          if(row.runtimeSmokePassed!==true||row.qaPassEligibleRuntimeEvidence!==true)throw new Error('UNITY_RUNTIME_SMOKE_NOT_PASS');
+          if(row.runtimeAbiCompatible!==true||row.fatalRuntimeErrorDetected===true)throw new Error('UNITY_RUNTIME_EVIDENCE_INVALID');
+          if(row.processObservedAfterLaunch!==true||row.processAliveAfterInput!==true)throw new Error('UNITY_RUNTIME_PROCESS_NOT_OBSERVED');
+          NODE
+          screenshot_sha256="$(sha256sum "$screenshot_file" | awk '{print $1}')"
+          evidence_sha256="$(sha256sum "$evidence_file" | awk '{print $1}')"
+          test -n "$screenshot_sha256"
+          test -n "$evidence_sha256"
+          echo "screenshot_sha256=$screenshot_sha256" >> "$GITHUB_OUTPUT"
+          echo "runtime_evidence_sha256=$evidence_sha256" >> "$GITHUB_OUTPUT"
+          echo 'pass=true' >> "$GITHUB_OUTPUT"
+          echo "UNITY_PRESENTATION_RUNTIME_SCREENSHOT_SHA256=$screenshot_sha256"
+          echo "UNITY_PRESENTATION_RUNTIME_EVIDENCE_SHA256=$evidence_sha256"
+          echo 'UNITY_PRESENTATION_RUNTIME_COMPARE=ACTUAL_RUNTIME_OBSERVED'
+
       - name: Record current-source incremental Vibe2 and APK build evidence
         id: release_evidence
         if: github.event.workflow_run.conclusion == 'success' && steps.revalidate.outcome == 'success' && steps.promote.outcome == 'success' && steps.manifest.outputs.production_class == 'RELEASE_CONFIRMED'
@@ -135,9 +194,10 @@ jobs:
           source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
           test -n "$source_tree_sha"
 
-          rm -rf /tmp/vibe2-build-artifacts
-          mkdir -p /tmp/vibe2-build-artifacts
-          gh run download "$BUILD_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir /tmp/vibe2-build-artifacts
+          if [ ! -d /tmp/vibe2-build-artifacts ]; then
+            mkdir -p /tmp/vibe2-build-artifacts
+            gh run download "$BUILD_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir /tmp/vibe2-build-artifacts
+          fi
           mapfile -t apks < <(find /tmp/vibe2-build-artifacts -type f -name '*.apk' -size +0c | sort)
           test "${#apks[@]}" -gt 0
           mapfile -t apk_hashes < <(for apk in "${apks[@]}"; do sha256sum "$apk" | awk '{print $1}'; done | sort -u)
@@ -200,13 +260,17 @@ jobs:
           REVALIDATE_OUTCOME: ${{ steps.revalidate.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           EVIDENCE_OUTCOME: ${{ steps.release_evidence.outcome }}
+          PRESENTATION_RUNTIME_OUTCOME: ${{ steps.presentation_runtime.outcome }}
+          PRESENTATION_RUNTIME_REQUIRED: ${{ steps.presentation_runtime.outputs.required }}
+          PRESENTATION_RUNTIME_SCREENSHOT_SHA256: ${{ steps.presentation_runtime.outputs.screenshot_sha256 }}
+          PRESENTATION_RUNTIME_EVIDENCE_SHA256: ${{ steps.presentation_runtime.outputs.runtime_evidence_sha256 }}
           PRODUCTION_CLASS: ${{ steps.manifest.outputs.production_class }}
           CANDIDATE_ORIGIN: ${{ steps.manifest.outputs.origin }}
         shell: bash
         run: |
           set -euo pipefail
           test -n "$TASK_ID"
-          if [ "$BUILD_CONCLUSION" = success ] && [ "$REVALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$BUILD_CONCLUSION" = success ] && [ "$REVALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ] && [ "$PRESENTATION_RUNTIME_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
           if [ "$PRODUCTION_CLASS" = 'RELEASE_CONFIRMED' ] && [ "$result" = PASS ] && [ "$EVIDENCE_OUTCOME" != success ]; then result=FAIL; fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
@@ -233,9 +297,52 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           if [ "$result" = PASS ]; then
-            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            presentation_mode="$(TASK_ID="$TASK_ID" CURRENT_SCREENSHOT="$PRESENTATION_RUNTIME_SCREENSHOT_SHA256" node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+            const task=(q.tasks||[]).find(row=>String(row?.id||'')===String(process.env.TASK_ID||''))||{};
+            const evidence=(task.evidence||[]).map(String);
+            const studio=task?.studioQualityEvolution&&typeof task.studioQualityEvolution==='object'?task.studioQualityEvolution:{};
+            const required=studio.finalFanInComparisonRequired===true
+              ||studio.runtimeBeforeAfterComparisonRequired===true
+              ||evidence.includes('graphics-evolution-before-after-comparison-required');
+            if(!required){process.stdout.write('NOT_REQUIRED|NONE');process.exit(0);}
+            if(!evidence.includes('presentation-source-delta:PASS')){process.stdout.write('BLOCK_SOURCE_DELTA|NONE');process.exit(0);}
+            const prior=(q.tasks||[]).filter(row=>{
+              if(row.gameId!==task.gameId||String(row.target||'').toLowerCase()!=='unity')return false;
+              if(String(row.status||'').toLowerCase()!=='verified')return false;
+              const ev=(row.evidence||[]).map(String);
+              return ev.includes('presentation-runtime-actual:PASS')&&ev.some(value=>value.startsWith('unity-runtime-screenshot-sha256:'));
+            }).at(-1)||null;
+            if(!prior){process.stdout.write('BASELINE|NONE');process.exit(0);}
+            const priorHash=((prior.evidence||[]).map(String).find(value=>value.startsWith('unity-runtime-screenshot-sha256:'))||'').slice('unity-runtime-screenshot-sha256:'.length);
+            if(!priorHash||priorHash===String(process.env.CURRENT_SCREENSHOT||'')){process.stdout.write('BLOCK_NO_VISUAL_DELTA|'+String(prior.id||'NONE'));process.exit(0);}
+            process.stdout.write('COMPARE|'+String(prior.id||'NONE'));
+            NODE
+            )"
+            IFS='|' read -r presentation_mode_kind prior_task_id <<< "$presentation_mode"
+            runtime_evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},unity-runtime-actual:PASS,unity-runtime-screenshot-sha256:${PRESENTATION_RUNTIME_SCREENSHOT_SHA256},unity-runtime-evidence-sha256:${PRESENTATION_RUNTIME_EVIDENCE_SHA256},presentation-runtime-actual:PASS,main-pr-merged,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            case "$presentation_mode_kind" in
+              BLOCK_SOURCE_DELTA)
+                result=FAIL
+                node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-presentation-runtime-source-delta-missing --evidence="${runtime_evidence},presentation-runtime-before-after:BLOCKED,presentation-source-delta:FAIL"
+                ;;
+              BLOCK_NO_VISUAL_DELTA)
+                result=FAIL
+                node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-presentation-runtime-visible-delta-missing --evidence="${runtime_evidence},presentation-runtime-before-task:${prior_task_id},presentation-runtime-before-after:BLOCKED"
+                ;;
+              BASELINE)
+                node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="${runtime_evidence},presentation-runtime-baseline-established:unity,presentation-runtime-before:FOUNDATION_BASELINE_CREATION,presentation-runtime-before-after:BASELINE_ESTABLISHED"
+                ;;
+              COMPARE)
+                node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="${runtime_evidence},presentation-runtime-before-after:PASS,presentation-runtime-before-task:${prior_task_id},presentation-source-delta:PASS,presentation-protected-regression:PASS"
+                ;;
+              *)
+                node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="${runtime_evidence},unity-runtime-presentation-compare:NOT_REQUIRED"
+                ;;
+            esac
           else
-            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-presentation-runtime-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},presentation-runtime-${PRESENTATION_RUNTIME_OUTCOME},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
           fi
           git add .vibe2/queue.json
           git commit -m "vibe2: settle Unity task ${TASK_ID} ${result} [skip ci]"
