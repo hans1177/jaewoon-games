@@ -114,6 +114,72 @@ test('presentation focused recovery prioritizes visual anchors and forbids marke
   assert.match(focused.prompt,/marker-only constants, comments, metadata, or gameplay-only changes are invalid/i);
 });
 
+test('presentation recovery visual anchor outranks nonvisual preferred primary target',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'roblox-games/demo');
+  const relative='client/Game.client.luau';
+  const source=[
+    'local function render()',
+    '  local score = player:GetAttribute("Score") or 0',
+    'end',
+    'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',
+    'title.TextColor3 = Color3.fromRGB(245, 248, 255)'
+  ].join('\n')+'\n';
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve visible Roblox presentation without gameplay changes',
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    source
+  ].join('\n');
+  const spec=focusedReplaceOnlySpec(prompt,{
+    responsibleFiles:[relative],
+    sourceRoot,
+    preferredTargets:['render']
+  });
+  assert.ok(spec);
+  assert.equal(spec.path,relative);
+  assert.match(spec.find,/(?:BackgroundColor3|TextColor3|Color3)/);
+  assert.doesNotMatch(spec.find,/function render/);
+});
+
+test('presentation delta recovery keeps retrying remaining budget and rotates visual anchors',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',
+    'title.TextColor3 = Color3.fromRGB(245, 248, 255)',
+    'status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-presentation-delta-budget-recovery'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve real visible Roblox presentation without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const first=path.join(cwd,'presentation-budget-first.json');
+  const second=path.join(cwd,'presentation-budget-second.json');
+  const third=path.join(cwd,'presentation-budget-third.json');
+  const fourth=path.join(cwd,'presentation-budget-fourth.json');
+  write(first,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
+  write(second,JSON.stringify({replace:'local presentationMarker = 2'}));
+  write(third,JSON.stringify({replace:'local presentationMarker = 3'}));
+  write(fourth,JSON.stringify({replace:'root.BackgroundColor3 = Color3.fromRGB(70, 95, 130)'}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[first,second,third,fourth]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.ok(result.generation.focusedReplaceAnchorRotations>=2);
+  assert.equal(result.presentationCandidateDelta.pass,true);
+  assert.equal(result.presentationCandidateDelta.presentationPass,'ASSET_ADAPTATION');
+});
+
 test('Roblox presentation recovery prioritizes a client visual owner across multiple writable files',()=>{
   const prompt=[
     '[PRESENTATION_PASS:ASSET_ADAPTATION]',
