@@ -1923,13 +1923,15 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
     const negativeMarkers=Object.keys(SPECIALIZED_QUEUE_NEGATIVE_EVIDENCE).filter(matchesMarker);
     const infrastructureFailure=task?.infrastructureFailure===true||evidence.some(value=>/infrastructure[ _-]?failure\s*[:=]\s*(?:true|yes|1)|infra[ _-]?failure\s*[:=]\s*(?:true|yes|1)/i.test(value));
     const runIdentity=evidence.find(value=>value.startsWith('actions-run:'))||evidence.find(value=>value.startsWith('qa-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task?.id)||'unknown-run';
+    const traceEvidence=evidence.filter(value=>/^(?:actions-run:|qa-run:|vibe2\/candidate\/|candidate-sha:|source-revision:|artifact-id:|runtime-evidence-ref:|qa-evidence-ref:)/i.test(value)).slice(-20);
     const gameId=clean(task?.gameId)||'unknown';
     const engine=lower(task?.target||task?.engine);
     const base={
       gameId,engine,verified:true,reusable:true,
-      problem:clean(task?.blocker)||clean(task?.goal),
+      taskType:'specialized-game-development',
+      problem:clean(task?.goal),
       goal:clean(task?.goal),
-      evidence:[...evidence,'source-task:'+clean(task?.id),'source-run:'+runIdentity],
+      evidence:[...traceEvidence,'source-task:'+clean(task?.id),'source-run:'+runIdentity],
       syntheticVerifiedQueueEvidence:true,
       sourceTaskId:clean(task?.id)||null,
       sourceRun:runIdentity
@@ -1940,7 +1942,7 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
       records.push({
         ...base,
         id,
-        evidence:[...base.evidence,'specialized-outcome-id:'+id],
+        evidence:[...base.evidence,...positiveMarkers.map(marker=>'verified-marker:'+marker),'specialized-outcome-id:'+id],
         outcome:'PASS',
         change:patterns.join(' | '),
         reusablePatterns:patterns,
@@ -1953,7 +1955,7 @@ export function collectVerifiedSpecializedQueueExperience(queueInput={}){
       records.push({
         ...base,
         id,
-        evidence:[...base.evidence,'specialized-outcome-id:'+id],
+        evidence:[...base.evidence,...negativeMarkers.map(marker=>'verified-marker:'+marker),'specialized-outcome-id:'+id],
         outcome:'FAIL',
         failureCause:negativeMarkers.join(' | '),
         avoidPatterns:patterns,
