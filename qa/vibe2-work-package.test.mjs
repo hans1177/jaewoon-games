@@ -137,6 +137,14 @@ test('studio quality package cannot collapse below the long-work threshold and s
   assert.equal(pkg.tasks[0].packageLongWorkProtected,true);
   assert.ok(pkg.completionCriteria.includes('runtime-before-after-comparison-fan-in-pass'));
 
+  const legacyQueue=createVibeContinuousQueue({tasks:[{
+    ...studio,
+    packageClass:null,
+    studioQualityPackage:false
+  }],maxConcurrentTasks:20});
+  assert.equal(legacyQueue.tasks[0].packageClass,'STUDIO_QUALITY_PACKAGE');
+  assert.equal(legacyQueue.tasks[0].studioQualityPackage,true);
+
   const queue=createVibeContinuousQueue({tasks:pkg.tasks,maxConcurrentTasks:20});
   const normalized=queue.tasks[0];
   assert.equal(normalized.packageClass,'STUDIO_QUALITY_PACKAGE');
