@@ -89,3 +89,77 @@ test('quest dialogue extended state preserves causal memories relationships fact
   assert.equal(restored.relationships['yeonhwa->player'].respect,10);
   assert.equal(restored.clues['clue-1'].revealed,true);
 });
+
+
+test('story transitions require causal evidence, preserve order, and dedupe source events',()=>{
+  const q=new JaewoonQuestDialogue();
+  const state=q.createState();
+  q.registerStory(state,{id:'main',stage:'OPENING'});
+  const missing=q.advanceStory(state,'main',{nextStage:'EARLY'});
+  assert.equal(missing.ok,false);
+  assert.equal(missing.reason,'SOURCE_EVENT_REQUIRED');
+
+  const blocked=q.advanceStory(state,'main',{
+    eventId:'evt-open',
+    nextStage:'EARLY',
+    requirements:{flags:{gateOpen:true}}
+  });
+  assert.equal(blocked.ok,false);
+  assert.equal(blocked.reason,'FLAG_PREREQUISITE_FAILED');
+
+  q.setFlag(state,'gateOpen',true);
+  const advanced=q.advanceStory(state,'main',{
+    eventId:'evt-open',
+    nextStage:'EARLY',
+    requirements:{flags:{gateOpen:true}},
+    reason:'문이 열려 다음 지역으로 이동'
+  });
+  assert.equal(advanced.ok,true);
+  assert.equal(advanced.duplicate,false);
+  assert.equal(state.story.main.stage,'EARLY');
+  assert.equal(state.story.main.history.length,1);
+
+  const duplicate=q.advanceStory(state,'main',{eventId:'evt-open',nextStage:'MID'});
+  assert.equal(duplicate.ok,true);
+  assert.equal(duplicate.duplicate,true);
+  assert.equal(state.story.main.stage,'EARLY');
+  assert.equal(state.story.main.history.length,1);
+
+  const backward=q.advanceStory(state,'main',{eventId:'evt-back',nextStage:'OPENING'});
+  assert.equal(backward.ok,false);
+  assert.equal(backward.reason,'BACKWARD_TRANSITION_BLOCKED');
+});
+
+test('faction relationships are source-event bounded, idempotent, clamped, contextual, and save-safe',()=>{
+  const q=new JaewoonQuestDialogue();
+  const state=q.createState();
+  q.registerFaction(state,{id:'sect-a',name:'청운문',memberIds:['yeonhwa'],controlledRegionIds:['north']});
+  q.registerFaction(state,{id:'sect-b',name:'흑월회',memberIds:['mujin']});
+
+  const first=q.adjustFactionRelationship(state,'sect-a','sect-b',{trust:-30,hostile:40},'evt-faction-1');
+  assert.equal(first.trust,-30);
+  assert.equal(first.hostile,40);
+  assert.deepEqual(first.events,['evt-faction-1']);
+
+  const duplicate=q.adjustFactionRelationship(state,'sect-a','sect-b',{trust:-90,hostile:90},'evt-faction-1');
+  assert.equal(duplicate.trust,-30);
+  assert.equal(duplicate.hostile,40);
+  assert.deepEqual(duplicate.events,['evt-faction-1']);
+
+  const clamped=q.adjustFactionRelationship(state,'sect-a','sect-b',{trust:-100,hostile:100},'evt-faction-2');
+  assert.equal(clamped.trust,-100);
+  assert.equal(clamped.hostile,100);
+  assert.deepEqual(clamped.events,['evt-faction-1','evt-faction-2']);
+
+  assert.throws(()=>q.adjustFactionRelationship(state,'sect-a','sect-b',{trust:1}),/source event is required/);
+
+  const context=q.buildCharacterContext(state,'yeonhwa',{role:'companion'});
+  assert.equal(context.factions[0].id,'sect-a');
+  assert.equal(context.factionRelationships['sect-a->sect-b'].hostile,100);
+  assert.equal(context.gameplayAuthority,false);
+
+  const restored=q.createState(q.snapshot(state));
+  assert.equal(restored.factions['sect-a'].controlledRegionIds[0],'north');
+  assert.equal(restored.factionRelationships['sect-a->sect-b'].trust,-100);
+  assert.deepEqual(restored.factionRelationships['sect-a->sect-b'].events,['evt-faction-1','evt-faction-2']);
+});
