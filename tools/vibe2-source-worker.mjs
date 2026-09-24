@@ -2129,6 +2129,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     fullWebAdditiveAttemptCreditUsed:generation.fullWebAdditiveAttemptCreditUsed===true,
     fullWebProgressCreditCount:Number(generation.fullWebProgressCreditCount||0),
     fullWebProgressCreditUsed:generation.fullWebProgressCreditUsed===true,
+    missingPathRecoveries:Number(generation.missingPathRecoveries||0),
     baseAttemptBudget:Number(generation.baseAttemptBudget||generation.attemptBudget||0),
     effectiveAttemptBudget:Number(generation.effectiveAttemptBudget||generation.attemptBudget||0),
     fullWebRetryPromptCompacted:generation.fullWebRetryPromptCompacted===true,
