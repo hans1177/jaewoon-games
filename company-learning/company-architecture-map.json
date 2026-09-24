@@ -1,5 +1,5 @@
 {
-  "version": 158,
+  "version": 159,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3735,7 +3735,7 @@
     }
   },
   "robloxStudioAssetSelectionHandoff": {
-    "version": 1,
+    "version": 2,
     "topologyRoot": "GRAPHICS_PRODUCTION",
     "newTopLevelPipeline": false,
     "planner": "tools/vibe2-asset-production-plan.mjs",
@@ -3746,13 +3746,25 @@
     "order": [
       "SELECT",
       "HANDOFF",
-      "APPLY",
+      "VIBE2_VIBE3_APPLY",
       "STATIC_QA",
+      "PUBLISH_EXACT_CANDIDATE_WITHOUT_FINAL_PASS",
       "TARGET_ENGINE_EXACT_SELECTION_QA",
-      "FAN_IN",
+      "RUNTIME_FOUNDATION_AND_ACCEPTANCE",
+      "F9_EXACT_REVIEW",
+      "F9_TO_VIBE_QUEUE_FAN_IN",
       "PROMOTE_OR_REPAIR"
     ],
     "plannerSourceMutationForbidden": true,
-    "runtimePromotionMarker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS"
+    "runtimePromotionMarker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
+    "candidatePublishWorkflow": ".github/workflows/vibe2-candidate-release.yml",
+    "finalRuntimeReview": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+    "vibeQueue": "vibe2-unreal-core:.vibe2/queue.json",
+    "publishDoesNotCompleteVibeTask": true,
+    "publishPendingBlocker": "candidate-awaiting-roblox-runtime-qa",
+    "exactGameRuntimeDispatchAfterPublish": true,
+    "f9FanInRequiresExactSourceArtifactPlaceVersion": true,
+    "f9FanInCarriesRuntimeMarker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
+    "positiveAssetMasteryRequiresRuntimeBindingMarker": true
   }
 }
