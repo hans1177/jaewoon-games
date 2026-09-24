@@ -562,6 +562,84 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
     ]
   };
 }
+
+function runtimeEventSourceRevision(event={}){
+  const marker=(Array.isArray(event?.evidence)?event.evidence:[])
+    .map(clean)
+    .find(value=>value.startsWith('runtime-source-revision:'));
+  return marker?clean(marker.slice('runtime-source-revision:'.length)):'';
+}
+
+export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[]){
+  let queue=createVibeContinuousQueue(queueInput);
+  const applied=[];
+  const seen=new Set();
+  for(const compiled of Array.isArray(compiledEvents)?compiledEvents:[]){
+    const event=compiled?.event||{},route=compiled?.route||{};
+    const eventId=clean(event.id),gameId=clean(event.gameId),platform=clean(event.platform).toLowerCase();
+    if(!eventId||seen.has(eventId))continue;
+    seen.add(eventId);
+    const outcome=clean(event.outcome).toUpperCase();
+    if(clean(event.type).toUpperCase()!=='RUNTIME_RESULT'){applied.push({eventId,mutated:false,reason:'NOT_RUNTIME_RESULT'});continue;}
+    if(outcome!=='FAIL'){applied.push({eventId,mutated:false,reason:'SUCCESS_OBSERVE_ONLY'});continue;}
+    if(compiled?.platformMatchesProject===false){applied.push({eventId,mutated:false,reason:'PLATFORM_MISMATCH'});continue;}
+    if(compiled?.rootCauseVerified!==true){applied.push({eventId,mutated:false,reason:'ROOT_CAUSE_NOT_VERIFIED'});continue;}
+    if(route.fireAllowed!==true||route.queueMutationAllowed!==true){applied.push({eventId,mutated:false,reason:'GATED_QUEUE_MUTATION_NOT_ALLOWED'});continue;}
+    if(!gameId||!platform){applied.push({eventId,mutated:false,reason:'EVENT_IDENTITY_INCOMPLETE'});continue;}
+
+    const candidates=queue.tasks
+      .map((task,index)=>({task,index}))
+      .filter(({task})=>
+        clean(task.gameId)===gameId
+        &&clean(task.target).toLowerCase()===platform
+        &&clean(task.department).toLowerCase()==='development'
+        &&clean(task.type||'implementation').toLowerCase()==='implementation'
+        &&['queued','blocked','failed'].includes(clean(task.status).toLowerCase())
+        &&task.requiresOwnerDecision!==true
+        &&task.protectedChange!==true
+        &&task.paidResourceRequired!==true
+      );
+    const sourceRevision=runtimeEventSourceRevision(event);
+    const exact=candidates.filter(({task})=>sourceRevision&&(task.evidence||[]).map(clean).some(value=>value.includes(sourceRevision)));
+    const selected=exact.length===1?exact[0]:(exact.length===0&&candidates.length===1?candidates[0]:null);
+    if(!selected){
+      applied.push({
+        eventId,gameId,platform:platform.toUpperCase(),mutated:false,
+        reason:(exact.length>1||candidates.length>1)?'AMBIGUOUS_EXISTING_TASK':'NO_EXISTING_TASK'
+      });
+      continue;
+    }
+
+    const taskId=selected.task.id;
+    queue=createVibeContinuousQueue({
+      maxConcurrentTasks:queue.maxConcurrentTasks,
+      tasks:queue.tasks.map(task=>task.id===taskId?{
+        ...task,
+        status:'queued',
+        priority:task.priority==='owner-immediate'?'owner-immediate':'high',
+        blocker:null,
+        reservationId:null,
+        reservationRunId:null,
+        reservationRunAttempt:0,
+        reservedAt:null,
+        lastOutcome:'RUNTIME_RESULT_GATED_REQUEUE',
+        evidence:[...new Set([
+          ...(task.evidence||[]),
+          ...(compiled?.evidence||[]),
+          'runtime-neural-ingress:gated-existing-task-requeue',
+          'neural-gated-queue-mutation:REQUEUE_REPRIORITIZE',
+          'neural-gated-worker-refill-eligible'
+        ])]
+      }:task)
+    });
+    applied.push({
+      eventId,gameId,platform:platform.toUpperCase(),taskId,mutated:true,
+      action:'REQUEUE_REPRIORITIZE_EXISTING_TASK'
+    });
+  }
+  return{queue,applied,mutationCount:applied.filter(row=>row.mutated===true).length};
+}
+
 function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
   if(clean(project.engine).toLowerCase()!=='web')return{pass:true,blockers:[],relative:null};
   const relative=`${posix(project.projectPath)}/index.html`;
@@ -1717,6 +1795,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     .map(project=>compileRuntimeNeuralEvent(project,null))
     .filter(Boolean)
     .map(compiled=>[clean(compiled?.event?.id),compiled])).values()];
+  const runtimeNeuralIngress=applyRuntimeNeuralEventsToQueue(queue,runtimeNeuralEvents);
+  queue=runtimeNeuralIngress.queue;
   const developmentPool=developmentPlanningPool(queue);
   const capacity=Math.max(0,backlogTarget-developmentPool.length);
   const planningBacklog={
@@ -1731,10 +1811,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     executionWaveMax,
     persistentQueueMax
   };
-  if(!capacity)return{planned:false,count:0,reason:'DEVELOPMENT_BACKLOG_TARGET_REACHED',queue,tasks:[],packages:[],planningBacklog,runtimeNeuralEvents,workloadTelemetry:computeWorkloadTelemetry(queue,[])};
+  if(!capacity)return{planned:false,count:0,reason:'DEVELOPMENT_BACKLOG_TARGET_REACHED',queue,tasks:[],packages:[],planningBacklog,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workloadTelemetry:computeWorkloadTelemetry(queue,[])};
   const policy=resolveWorkPackagePolicy(workPackagePolicy,queue);
   const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
-  if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,runtimeNeuralEvents,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
+  if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   let unityReleaseFocusTaken=releaseUnityFocusBusy(queue);
   const planned=[],packages=[],deferredSmallPackages=[];
   let sequence=0;
@@ -1776,8 +1856,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     quantityTargetMet,
     met:quantityTargetMet
   };
-  if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'AWAITING_INDEPENDENT_CAUSAL_SIGNAL':'CAUSAL_REPLAN_REQUIRED',brainLive:true,causalReplanRequired:true,queue,tasks:[],packages:[],planningBacklog,projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
-  return{planned:true,count:planned.length,reason:ownerActive.length?'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES':'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,planningBacklog:{...planningBacklog,after:developmentPlanningPool(queue).length,remainingToTarget:Math.max(0,backlogTarget-developmentPlanningPool(queue).length)},task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,ownerDirectiveActiveCount:ownerActive.length,projectPriorityPolicy:'OWNER_DIRECTIVES_KEEP_PRIORITY_BUT_INDEPENDENT_FREE_SLOTS_REFILL;WEB_80_88_TO_89_THEN_SINGLE_BLOCKER_THEN_REWORK_THEN_REBUILD_THEN_NEW_DEVELOPMENT',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
+  if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'AWAITING_INDEPENDENT_CAUSAL_SIGNAL':'CAUSAL_REPLAN_REQUIRED',brainLive:true,causalReplanRequired:true,queue,tasks:[],packages:[],planningBacklog,projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
+  return{planned:true,count:planned.length,reason:ownerActive.length?'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES':'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,planningBacklog:{...planningBacklog,after:developmentPlanningPool(queue).length,remainingToTarget:Math.max(0,backlogTarget-developmentPlanningPool(queue).length)},task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,ownerDirectiveActiveCount:ownerActive.length,projectPriorityPolicy:'OWNER_DIRECTIVES_KEEP_PRIORITY_BUT_INDEPENDENT_FREE_SLOTS_REFILL;WEB_80_88_TO_89_THEN_SINGLE_BLOCKER_THEN_REWORK_THEN_REBUILD_THEN_NEW_DEVELOPMENT',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
 }
 
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
@@ -1830,6 +1910,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks||[]).map(t=>t.id).join(',')||'NONE'}`);
   console.log(`VIBE2_RUNTIME_NEURAL_EVENT_COUNT=${result.runtimeNeuralEvents?.length||0}`);
+  console.log(`VIBE2_RUNTIME_NEURAL_MUTATION_COUNT=${(result.runtimeNeuralMutations||[]).filter(row=>row?.mutated===true).length}`);
+  for(const mutation of result.runtimeNeuralMutations||[]){
+    console.log(`VIBE2_RUNTIME_NEURAL_MUTATION=${encodeURIComponent(JSON.stringify(mutation))}`);
+  }
   for(const compiled of result.runtimeNeuralEvents||[]){
     const event=compiled?.event||{},route=compiled?.route||{};
     const live={

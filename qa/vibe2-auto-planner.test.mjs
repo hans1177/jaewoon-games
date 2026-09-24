@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, compileRuntimeNeuralEvent } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -1725,6 +1725,106 @@ test('cross-platform runtime evidence stays platform-scoped and cannot gate a di
   assert.equal(payload.eventPlatform,'UNITY');
 });
 
+test('verified same-platform runtime failure requeues only the unambiguous existing task',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-gated-requeue',
+    engine:'roblox',
+    queueRuntimeObserved:true,
+    queueRuntimeEvidencePlatform:'ROBLOX',
+    queueRuntimePassed:false,
+    queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'server-boot-timeout',
+    queueRuntimeSourceRevision:'a'.repeat(40),
+    queueRuntimeRootCauseVerified:true,
+    queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME'
+  });
+  assert.ok(compiled);
+  assert.equal(compiled.route.authorityMode,'GATED');
+  assert.equal(compiled.route.fireAllowed,true);
+  assert.equal(compiled.route.queueMutationAllowed,true);
+
+  const result=applyRuntimeNeuralEventsToQueue({
+    maxConcurrentTasks:20,
+    tasks:[
+      {
+        id:'roblox-runtime-repair',
+        gameId:'runtime-gated-requeue',
+        target:'roblox',
+        department:'development',
+        type:'implementation',
+        goal:'repair runtime',
+        responsibleFiles:['roblox-games/runtime-gated-requeue/server/Game.server.luau'],
+        priority:'normal',
+        releaseState:'development-confirmed',
+        status:'blocked',
+        blocker:'runtime-failure',
+        sourceRoot:'roblox-games/runtime-gated-requeue'
+      },
+      {
+        id:'unity-unrelated',
+        gameId:'runtime-gated-requeue',
+        target:'unity',
+        department:'development',
+        type:'implementation',
+        goal:'unity work',
+        responsibleFiles:['unity-games/runtime-gated-requeue/Assets/Scripts/GameCore.cs'],
+        priority:'normal',
+        releaseState:'development-confirmed',
+        status:'blocked',
+        blocker:'unity-blocker',
+        sourceRoot:'unity-games/runtime-gated-requeue'
+      }
+    ]
+  },[compiled]);
+
+  assert.equal(result.mutationCount,1);
+  assert.equal(result.applied[0].taskId,'roblox-runtime-repair');
+  assert.equal(result.applied[0].action,'REQUEUE_REPRIORITIZE_EXISTING_TASK');
+  const repaired=result.queue.tasks.find(row=>row.id==='roblox-runtime-repair');
+  assert.equal(repaired.status,'queued');
+  assert.equal(repaired.priority,'high');
+  assert.equal(repaired.blocker,null);
+  assert.equal(repaired.lastOutcome,'RUNTIME_RESULT_GATED_REQUEUE');
+  assert.ok(repaired.evidence.includes('runtime-neural-ingress:gated-existing-task-requeue'));
+  assert.ok(repaired.evidence.includes('neural-gated-queue-mutation:REQUEUE_REPRIORITIZE'));
+  const unrelated=result.queue.tasks.find(row=>row.id==='unity-unrelated');
+  assert.equal(unrelated.status,'blocked');
+  assert.equal(unrelated.blocker,'unity-blocker');
+});
+
+test('runtime neural ingress refuses ambiguous existing task mutation',()=>{
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'runtime-ambiguous',
+    engine:'roblox',
+    queueRuntimeObserved:true,
+    queueRuntimeEvidencePlatform:'ROBLOX',
+    queueRuntimePassed:false,
+    queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'same-runtime-failure',
+    queueRuntimeSourceRevision:'b'.repeat(40),
+    queueRuntimeRootCauseVerified:true,
+    queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME'
+  });
+  const task=id=>({
+    id,
+    gameId:'runtime-ambiguous',
+    target:'roblox',
+    department:'development',
+    type:'implementation',
+    goal:'repair runtime',
+    responsibleFiles:[`roblox-games/runtime-ambiguous/${id}.luau`],
+    priority:'normal',
+    releaseState:'development-confirmed',
+    status:'blocked',
+    blocker:'runtime-failure',
+    sourceRoot:'roblox-games/runtime-ambiguous'
+  });
+  const result=applyRuntimeNeuralEventsToQueue({maxConcurrentTasks:20,tasks:[task('a'),task('b')]},[compiled]);
+  assert.equal(result.mutationCount,0);
+  assert.equal(result.applied[0].reason,'AMBIGUOUS_EXISTING_TASK');
+  assert.deepEqual(result.queue.tasks.map(row=>row.status),['blocked','blocked']);
+});
+
 test('unobserved runtime state does not invent a runtime neural event',()=>{
   assert.equal(compileRuntimeNeuralEvent({
     gameId:'runtime-pending',
@@ -1732,6 +1832,69 @@ test('unobserved runtime state does not invent a runtime neural event',()=>{
     queueRobloxRuntimePassed:false,
     queueRobloxFailureStage:'INDEPENDENT_QA'
   }),null);
+});
+
+test('verified company-runtime failure mutates an existing task even when planner capacity is full',()=>{
+  const root=tempRepo();
+  const gameId='runtime-gated-capacity';
+  const existingTask={
+    id:'runtime-gated-existing-task',
+    gameId,
+    target:'roblox',
+    department:'development',
+    type:'implementation',
+    goal:'existing runtime repair',
+    responsibleFiles:[`roblox-games/${gameId}/server/Game.server.luau`],
+    dependencies:[],
+    priority:'normal',
+    releaseState:'development-confirmed',
+    status:'blocked',
+    blocker:'prior-runtime-failure',
+    sourceRoot:`roblox-games/${gameId}`
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Runtime Gated Capacity',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE',
+      robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Runtime Gated Capacity',
+      status:'ACTIVE',
+      canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+      currentStep:'TARGET_PLATFORM_RUNTIME',
+      selectedPlatform:'ROBLOX',
+      robloxProjectPath:`roblox-games/${gameId}`,
+      executionEvidence:{
+        platform:'ROBLOX',
+        sourceRevision:'c'.repeat(40),
+        runtimePassed:false,
+        rootCauseVerified:true,
+        responsibleSystem:'ROBLOX_RUNTIME',
+        failureStage:'TARGET_PLATFORM_RUNTIME',
+        failureSignature:'roblox:runtime-failure'
+      }
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[existingTask]},
+    repoRoot:root,
+    maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:20,
+    planningBacklogTarget:1,
+    planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.runtimeNeuralEvents.length,1);
+  assert.equal(result.runtimeNeuralMutations.filter(row=>row.mutated).length,1);
+  const repaired=result.queue.tasks.find(row=>row.id===existingTask.id);
+  assert.equal(repaired.status,'queued');
+  assert.equal(repaired.priority,'high');
+  assert.equal(repaired.blocker,null);
+  assert.ok(repaired.evidence.includes('runtime-neural-ingress:gated-existing-task-requeue'));
+  assert.ok(repaired.evidence.some(value=>value.startsWith('neural-event-gated:')));
 });
 
 test('company-runtime runtime result ingress is observed even when planner creates no task',()=>{
