@@ -9,15 +9,18 @@ function inlineScripts(html){
   return [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 }
 
-test('daechung RPG Unity Web loader parses and binds the current build',()=>{
+test('daechung RPG Web entry parses and reaches the restored playable runtime',()=>{
   for(const script of inlineScripts(index))new Function(script);
-  assert.match(index,/id="unity-canvas"/);
-  assert.match(index,/var buildUrl = "Build"/);
-  assert.match(index,/loaderUrl = buildUrl \+ "\/daechung-rpg\.loader\.js"/);
-  assert.match(index,/dataUrl: buildUrl \+ "\/daechung-rpg\.data"/);
-  assert.match(index,/frameworkUrl: buildUrl \+ "\/daechung-rpg\.framework\.js"/);
-  assert.match(index,/codeUrl: buildUrl \+ "\/daechung-rpg\.wasm"/);
-  assert.match(index,/createUnityInstance\(canvas, config/);
+  assert.match(index,/id="game"/);
+  assert.match(index,/id="startBtn"/);
+  assert.match(index,/window\.__RPG_BASE_READY=true/);
+  assert.match(index,/requestAnimationFrame\(loop\)/);
+  for(const name of ['patch-v15.js','patch-v16.js','patch-v17.js','patch-core18.js','patch-v18.js']){
+    assert.match(index,new RegExp('src="\\.\\/'+name.replaceAll('.','\\.')+'"'));
+    const source=fs.readFileSync('web-games/daechung-rpg/'+name,'utf8');
+    assert.doesNotThrow(()=>new Function(source),name);
+  }
+  assert.doesNotMatch(index,/var buildUrl = "Build"/);
 });
 
 
