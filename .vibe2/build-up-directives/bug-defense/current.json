@@ -1,41 +1,42 @@
 {
   "version": 1,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g1-3a3351eb9a45",
-  "directiveFingerprint": "3a3351eb9a4516d2bbfded309bac9bb72d6a3a19a69bdbaa338e3bda79558669",
+  "directiveId": "bug-defense-build-up-g1-95ff066175ec",
+  "directiveFingerprint": "95ff066175ec83cbbd8d8f7a30fe0e63fbb907c2712c022f627500d5dc0226a7",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
-  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-  "gameName": "잃어버린 별의 메아리",
+  "gameId": "bug-defense",
+  "gameName": "곤충 디펜스",
   "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
   "previousDirectiveOutcome": null,
   "platform": "COMMON",
-  "sourceRoot": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star|roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star|web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "80e3ccaa27836afe50e6638cf3dd512aed0206aaf2725b211f69d3c265c98e3b",
-  "designFingerprint": "f82191ecfbaafd23f36b80b618d3a6262e90d6bf333e105b4a488bcbb0ac84eb",
+  "sourceRoot": "unity-games/bug-defense|roblox-games/bug-defense|web-games/bug-defense",
+  "sourceTreeFingerprint": "d68d590933a2c78bebadd082b1fb76d7d466fe15235b392b7c95fba6e729625e",
+  "designFingerprint": "b777a30851e67b1b07440b483d12aa7ca6d97f22da5a51fa1a648cdc58102545",
   "gameIdentityAndNonNegotiables": {
-    "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
-    "coreFun": "핵심 재미는 적을 처치하고 얻는 '메아리 파편'을 통해 실시간으로 자신의 전투 스타일을 진화시키는 과정에 있습니다. 플레이어는 적의 공격을 피하며 최적의 위치를 선점하고, 획득한 파편으로 즉각적인 빌드 변화를 선택하여 화면을 가득 채우는 적들을 쓸어버리는 즉각적인 쾌감을 느낍니다.",
+    "identity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
+    "coreFun": "곤충의 공격 속성(독, 물리, 범위)과 적의 방어 속성(갑각, 비행, 군집)을 실시간으로 관찰하고, 가장 효율적인 포식자를 배치하여 적을 무력화하는 즉각적인 전략적 쾌감을 제공합니다. 배치 후 적이 상성에 따라 녹아내리는 시각적 피드백이 핵심 재미입니다.",
     "coreLoop": [
-      "실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.",
-      "수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.",
-      "강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다."
+      "웨이브 시작 전 적의 침입 경로와 곤충 유형을 분석하여 방어 전략을 수립합니다.",
+      "보유한 자원을 사용하여 최적의 위치에 포식자 곤충을 배치하거나 기존 곤충을 진화시킵니다.",
+      "실시간 전투를 관찰하며 적의 돌파 시도에 대응해 스킬을 사용하거나 배치를 수정합니다.",
+      "웨이브 종료 후 획득한 자원으로 곤충의 생태적 특성을 강화하고 다음 웨이브를 준비합니다."
     ],
     "signatureSystems": [
       {
-        "name": "메아리 공명 시스템",
-        "purpose": "전투 중 실시간으로 플레이어의 공격 방식과 유틸리티 능력을 변화시켜 매번 다른 전투 경험을 제공하기 위함입니다.",
-        "playerChoice": "플레이어는 획득한 파편을 사용하여 공격 속도 증가, 투사체 분열, 광역 피해 등 다양한 메아리 효과 중 하나를 선택하여 자신의 빌드를 최적화합니다."
+        "name": "생태 상성 시스템",
+        "purpose": "곤충 간의 먹이사슬 관계를 게임 내 공격/방어 상성으로 구현하여 단순한 화력 집중이 아닌 전략적 배치를 유도합니다.",
+        "playerChoice": "플레이어는 적의 속성에 맞춰 특정 곤충을 배치할지, 아니면 범용적인 곤충을 다수 배치할지 결정해야 하며, 이 선택이 웨이브의 성공 여부를 결정합니다."
       },
       {
-        "name": "엔트로피 미터",
-        "purpose": "게임의 난이도를 동적으로 조절하고 플레이어에게 위험과 보상 사이의 전략적 선택을 강요하기 위한 시스템입니다.",
-        "playerChoice": "플레이어는 엔트로피가 높은 위험 지역으로 진입하여 더 많은 보상을 노릴지, 아니면 안전한 지역에서 파밍을 지속할지 결정해야 합니다."
+        "name": "서식지 적응 시스템",
+        "purpose": "배치된 위치의 환경(잎, 줄기, 꽃)에 따라 곤충의 공격력이나 사거리가 변화하는 시스템으로 지형 활용의 중요성을 극대화합니다.",
+        "playerChoice": "플레이어는 곤충의 고유 능력과 지형 보너스를 결합하여 최적의 효율을 내는 위치를 선정해야 하며, 이는 고정된 타워 배치를 방지합니다."
       }
     ],
-    "progressionDirection": "메타 진행은 각 런에서 획득한 '별의 가루'를 사용하여 영구적인 능력치 강화와 새로운 메아리 유형을 해금하는 방식으로 이루어집니다. 플레이어는 단순히 강해지는 것을 넘어, 자신의 플레이 스타일에 맞는 메아리 조합을 미리 설정하여 다음 런의 전략적 우위를 점할 수 있습니다. 이 과정은 반복적인 플레이가 지루하지 않도록 새로운 도전 과제와 보상을 지속적으로 제공하며, 플레이어가 자신의 성장을 체감할 수 있도록 설계되었습니다.",
+    "progressionDirection": "초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다.",
     "multiplayerMode": "SINGLE",
     "preserve": [
       "CORE_IDENTITY",
@@ -54,66 +55,67 @@
       "CURRENT_SOURCE_FILES=4",
       "MOTION_IMPLEMENTATION_SPARSE",
       "CURRENT_SOURCE_FILES=1",
-      "CAMERA_LANGUAGE_SPARSE"
+      "CAMERA_LANGUAGE_SPARSE",
+      "AI_BEHAVIOR_DEPTH_SPARSE"
     ],
     "signals": {
-      "combat": 114,
-      "progression": 140,
-      "ai": 25,
-      "save": 43,
+      "combat": 85,
+      "progression": 79,
+      "ai": 20,
+      "save": 46,
       "multiplayer": 11,
-      "animation": 6,
-      "vfx": 11,
+      "animation": 2,
+      "vfx": 4,
       "camera": 14,
-      "ui": 68,
-      "lighting": 24,
+      "ui": 39,
+      "lighting": 7,
       "primitive": 13,
       "todo": 0,
-      "errorRecovery": 9
+      "errorRecovery": 8
     },
     "topFiles": [
       {
-        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-        "score": 189
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "score": 229
       },
       {
-        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "score": 158
-      },
-      {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
+        "file": "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs",
         "score": 74
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
+        "file": "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
         "score": 48
       },
       {
-        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "file": "roblox-games/bug-defense/client/Game.client.luau",
         "score": 39
       },
       {
-        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
-        "score": 33
+        "file": "roblox-games/bug-defense/shared/GameConfig.luau",
+        "score": 38
       },
       {
-        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json",
+        "file": "roblox-games/bug-defense/default.project.json",
         "score": 2
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Art/unity-web-floor-domain.json",
+        "file": "unity-games/bug-defense/Assets/Art/unity-web-floor-domain.json",
         "score": 2
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Animations/unity-web-floor-domain.json",
+        "file": "unity-games/bug-defense/Assets/Animations/unity-web-floor-domain.json",
         "score": 0
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Materials/unity-web-floor-domain.json",
+        "file": "unity-games/bug-defense/Assets/Materials/unity-web-floor-domain.json",
         "score": 0
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Prefabs/unity-web-floor-domain.json",
+        "file": "unity-games/bug-defense/Assets/Prefabs/unity-web-floor-domain.json",
+        "score": 0
+      },
+      {
+        "file": "web-games/bug-defense/index.html",
         "score": 0
       }
     ]
@@ -125,7 +127,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [
-      "roblox-runtime-candidate-deploy-pending"
+      "roblox-dedicated-runtime-target-migration-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -275,8 +277,8 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "reason": "no NPC or social behavior signal in approved design"
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -395,7 +397,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "메아리 공명 시스템가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
+      "directive": "생태 상성 시스템가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -404,7 +406,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "메아리 공명 시스템의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
+      "directive": "생태 상성 시스템의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -422,7 +424,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 메아리 공명 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 생태 상성 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -431,7 +433,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 엔트로피 미터와 연결한다.",
+      "directive": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 서식지 적응 시스템와 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -440,7 +442,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "메타 진행은 각 런에서 획득한 '별의 가루'를 사용하여 영구적인 능력치 강화와 새로운 메아리 유형을 해금하는 방식으로 이루어집니다. 플레이어는 단순히 강해지는 것을 넘어, 자신의 플레이 스타일에 맞는 메아리 조합을 미리 설정하여 다음 런의 전략적 우위를 점할 수 있습니다. 이 과정은 반복적인 플레이가 지루하지 않도록 새로운 도전 과제와 보상을 지속적으로 제공하며, 플레이어가 자신의 성장을 체감할 수 있도록 설계되었습니다.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
+      "directive": "초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -449,7 +451,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 메아리 공명 시스템와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
+      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 생태 상성 시스템와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -530,7 +532,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 메타 진행은 각 런에서 획득한 '별의 가루'를 사용하여 영구적인 능력치 강화와 새로운 메아리 유형을 해금하는 방식으로 이루어집니다. 플레이어는 단순히 강해지는 것을 넘어, 자신의 플레이 스타일에 맞는 메아리 조합을 미리 설정하여 다음 런의 전략적 우위를 점할 수 있습니다. 이 과정은 반복적인 플레이가 지루하지 않도록 새로운 도전 과제와 보상을 지속적으로 제공하며, 플레이어가 자신의 성장을 체감할 수 있도록 설계되었습니다.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
+      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -602,7 +604,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "첫 플레이에서 메아리 공명 시스템의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
+      "directive": "첫 플레이에서 생태 상성 시스템의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -620,7 +622,7 @@
       "state": "EVALUATED",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 메아리 공명 시스템에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
+      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 생태 상성 시스템에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -644,12 +646,12 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no NPC or social behavior signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -683,7 +685,7 @@
       "state": "GAP",
       "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
+      "directive": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -719,7 +721,7 @@
       "state": "GAP",
       "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
+      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -878,32 +880,32 @@
     }
   ],
   "primaryFocus": "STABILITY",
-  "thisLoopPrimaryGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"메아리 공명 시스템\"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.",
+  "thisLoopPrimaryGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"생태 상성 시스템\"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.",
   "gameplayImplementationDirectives": [
-    "메아리 공명 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
-    "엔트로피 미터가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
-    "고유 시스템 메아리 공명 시스템, 엔트로피 미터 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
+    "생태 상성 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
+    "서식지 적응 시스템가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
+    "고유 시스템 생태 상성 시스템, 서식지 적응 시스템 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
     "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
   ],
   "progressionContentWorldDirectives": [
-    "메타 진행은 각 런에서 획득한 '별의 가루'를 사용하여 영구적인 능력치 강화와 새로운 메아리 유형을 해금하는 방식으로 이루어집니다. 플레이어는 단순히 강해지는 것을 넘어, 자신의 플레이 스타일에 맞는 메아리 조합을 미리 설정하여 다음 런의 전략적 우위를 점할 수 있습니다. 이 과정은 반복적인 플레이가 지루하지 않도록 새로운 도전 과제와 보상을 지속적으로 제공하며, 플레이어가 자신의 성장을 체감할 수 있도록 설계되었습니다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
+    "초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
     "새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.",
     "맵/지역이 있는 게임은 동선·위험/보상·랜드마크·조우/자원 역할이 서로 구별되도록 유지하거나 강화한다."
   ],
   "visualBuildUpDirective": {
     "artDirection": {
-      "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
-      "visualPurpose": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 플레이 판단과 메아리 공명 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
-      "distinctnessRule": "엔트로피 미터와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
+      "identity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
+      "visualPurpose": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 플레이 판단과 생태 상성 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
+      "distinctnessRule": "서식지 적응 시스템와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
       "placeholderDebt": "HIGH"
     },
     "domains": {
-      "CHARACTER": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
-      "ENEMY_CREATURE": "메아리 공명 시스템의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
+      "CHARACTER": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
+      "ENEMY_CREATURE": "생태 상성 시스템의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
       "WEAPON_EQUIPMENT": "장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.",
       "BUILDING_PROP": "상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.",
-      "ENVIRONMENT_TERRAIN": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
+      "ENVIRONMENT_TERRAIN": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
       "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
       "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
       "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
@@ -911,7 +913,7 @@
       "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
-      "UI_HUD": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
+      "UI_HUD": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
       "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
       "ENVIRONMENTAL_MOTION": "정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.",
       "SCENE_DENSITY": "빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.",
@@ -941,9 +943,9 @@
     "실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다."
   ],
   "platformAdaptationDirectives": {
-    "UNITY_WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 canonical unity-games 소스에 구현하고 WebGL/브라우저 터치/카메라/렌더 비용을 맞춘다. 별도 Web 게임 코드베이스를 만들지 않는다.",
-    "ROBLOX": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 번역한다. Unity/Web 구현을 그대로 복사하지 않는다.",
-    "UNITY_APP": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 앱 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Unity Web과 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다."
+    "UNITY_WEB": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.: 동일 공통 목표 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 canonical unity-games 소스에 구현하고 WebGL/브라우저 터치/카메라/렌더 비용을 맞춘다. 별도 Web 게임 코드베이스를 만들지 않는다.",
+    "ROBLOX": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.: 동일 공통 목표 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 번역한다. Unity/Web 구현을 그대로 복사하지 않는다.",
+    "UNITY_APP": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.: 동일 공통 목표 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 앱 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Unity Web과 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다."
   },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
@@ -953,17 +955,17 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Art/unity-web-floor-domain.json",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Animations/unity-web-floor-domain.json",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Materials/unity-web-floor-domain.json",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Prefabs/unity-web-floor-domain.json"
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
+      "roblox-games/bug-defense/client/Game.client.luau",
+      "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/default.project.json",
+      "unity-games/bug-defense/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/bug-defense/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/bug-defense/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/bug-defense/Assets/Prefabs/unity-web-floor-domain.json",
+      "web-games/bug-defense/index.html"
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST"
   },
@@ -1002,9 +1004,8 @@
       "QUESTS",
       "CRAFTING",
       "MULTIPLAYER_AND_SYNC",
-      "NPC_SOCIAL_BEHAVIOR",
       "NARRATIVE_STORY"
     ]
   },
-  "generatedAt": "2026-09-25T21:51:20.640Z"
+  "generatedAt": "2026-09-25T21:51:20.623Z"
 }
