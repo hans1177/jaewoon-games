@@ -1,5 +1,5 @@
 {
-  "version": 359,
+  "version": 360,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6584,6 +6584,18 @@
       "summary": "Gameplay evolution consumes company-runtime design evidence and authorizes CORE_FUN/PROGRESSION only from a fresh verified design baseline; safe non-gameplay lanes remain parallel while design is incomplete.",
       "strictPassMinimum": 80,
       "sourceRootWideLocksRemainForbidden": true
+    },
+    "nonblockingCoordinationTelemetry20260925": {
+      "id": "NONBLOCKING_COORDINATION_TELEMETRY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "STALE_OR_INVALID_VIBE_QUEUE_TELEMETRY_COULD_REPORT_WORKFLOW_SUCCESS_WHILE SKIPPING_RECONCILIATION_OR_DESIGN_RUNTIME",
+      "resolution": "QUEUE_TELEMETRY_IS_OBSERVATIONAL_ONLY; UNAVAILABLE_INVALID_OR_ACTIVE_GAME_WORK_RUNS_INDEPENDENT_RECONCILE_AND_DESIGN_IN_PARALLEL",
+      "staleBranchQueueReferenceForbidden": true,
+      "affectedWorkflows": [
+        ".github/workflows/company-development-queue-reconcile.yml",
+        ".github/workflows/company-seed-design-runtime.yml"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
@@ -18989,7 +19001,9 @@
       "wholeRepositoryRegressionIsNotDefault": true,
       "administrativeChecksMayNotConsumeGamePrimaryWorkerSlots": true,
       "asyncOrPosthocAuditPreferredWhenAcceptanceNeedNotBlock": true,
-      "immediateAtomicRefillMustContinueWhileUnrelatedChecksRun": true
+      "immediateAtomicRefillMustContinueWhileUnrelatedChecksRun": true,
+      "coordinationTelemetryFailureMayNotDeferDevelopmentOrReconciliation": true,
+      "activeGameWorkMayNotDeferIndependentDesignOrQueueReconciliation": true
     },
     "hardGateOnlyWhen": [
       "CENTRAL_POLICY_OR_AUTHORITY_MUTATION",
@@ -19027,7 +19041,12 @@
       "workerSlotPriority": "IMPLEMENTATION_AND_CAUSAL_REPAIR_BEFORE_NONBLOCKING_PROCEDURE",
       "nonblockingChecksUseSpareOrSeparateCapacity": true,
       "taskMicroFanInImmediateRefillPreserved": true,
-      "cohortFanInLimitedToRelevantIntegrationRegressionAndRelease": true
+      "cohortFanInLimitedToRelevantIntegrationRegressionAndRelease": true,
+      "coordinationTelemetryRole": "OBSERVATIONAL_ONLY_NOT_EXECUTION_GATE",
+      "queueTelemetryUnavailableAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
+      "queueTelemetryInvalidAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
+      "activeGameWorkActionForIndependentReconcileAndDesign": "RUN_PARALLEL",
+      "staleBranchQueueReferenceForbidden": true
     },
     "forbiddenInterpretations": [
       "SKIP_RELEVANT_SECURITY_FINDING",
@@ -21243,7 +21262,10 @@
         "game-seed-state.json"
       ],
       "usableButUnverifiedDesignDoesNotAuthorizeCoreFunOrProgressionMutation": true,
-      "unverifiedDesignAction": "CONTINUE_CANONICAL_DESIGN_CYCLE_WHILE_SAFE_PRESENTATION_USABILITY_STABILITY_WORK_MAY_CONTINUE"
+      "unverifiedDesignAction": "CONTINUE_CANONICAL_DESIGN_CYCLE_WHILE_SAFE_PRESENTATION_USABILITY_STABILITY_WORK_MAY_CONTINUE",
+      "designRuntimeTelemetryFailureAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
+      "activeGameWorkDoesNotDeferDesignGeneration": true,
+      "queueTelemetryIsNotDesignAuthority": true
     },
     "simultaneousLanes": {
       "required": [

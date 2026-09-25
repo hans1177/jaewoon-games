@@ -1,5 +1,5 @@
 {
-  "version": 175,
+  "version": 176,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4032,5 +4032,20 @@
       "USABILITY",
       "STABILITY"
     ]
+  },
+  "nonblockingCoordinationTelemetryTopology": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+    "workflows": [
+      ".github/workflows/company-development-queue-reconcile.yml",
+      ".github/workflows/company-seed-design-runtime.yml"
+    ],
+    "telemetrySource": "main:.vibe2/queue.json",
+    "telemetryRole": "OBSERVATIONAL_ONLY",
+    "onUnavailable": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
+    "onInvalid": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
+    "onActiveGameWork": "RUN_INDEPENDENT_RECONCILE_AND_DESIGN_PARALLEL",
+    "staleBranchReferenceForbidden": true,
+    "noGamePrimarySlotConsumption": true
   }
 }
