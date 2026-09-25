@@ -369,6 +369,7 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/protocolVersion:'2024-11-05'/);
   assert.match(helper,/async waitForTools\(requiredNames=\[\],\{attempts=24,delayMs=1500\}=\{\}\)/);
   assert.match(helper,/await client\.waitForTools\(requiredTools,\{/);
+  assert.match(helper,/const requiredTools=\['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation'\];/);
   assert.match(helper,/attempts:Math\.max\(1,Number\(toolAttempts\)\|\|5\)/);
   assert.match(helper,/delayMs:Math\.max\(100,Number\(toolDelayMs\)\|\|1000\)/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_TOOLS_WAIT=/);
