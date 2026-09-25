@@ -428,6 +428,98 @@ jobs:
           },null,2)+'\n');
           NODE
 
+      - name: Evaluate upper-platform development readiness
+        id: readiness
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+          SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
+          UNITY_SOURCE_TREE_SHA: ${{ steps.source.outputs.tree_sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin company-runtime
+          git show origin/company-runtime:development-queue.json > /tmp/company-runtime-development-queue.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          const gameId=process.env.GAME_ID;
+          const root='/tmp/unity-web/web-games/'+gameId;
+          const queue=JSON.parse(fs.readFileSync('/tmp/company-runtime-development-queue.json','utf8'));
+          const item=(queue.items||[]).find(row=>row.gameId===gameId);
+          if(!item)throw new Error('UPPER_PLATFORM_QUEUE_ITEM_MISSING:'+gameId);
+          const build=JSON.parse(fs.readFileSync(path.join(root,'unity-web-build.json'),'utf8'));
+          const play=JSON.parse(fs.readFileSync(path.join(root,'unity-web-gameplay-validation.json'),'utf8'));
+          const independent=JSON.parse(fs.readFileSync(path.join(root,'unity-web-independent-qa.json'),'utf8'));
+          const regression=JSON.parse(fs.readFileSync(path.join(root,'unity-web-regression.json'),'utf8'));
+          const project=path.join(process.cwd(),'unity-games',gameId);
+          const countFiles=dir=>{
+            const target=path.join(project,'Assets',dir);
+            if(!fs.existsSync(target))return 0;
+            let n=0;
+            const walk=p=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())walk(full);else if(e.isFile()&&!e.name.endsWith('.meta'))n++;}};
+            walk(target);return n;
+          };
+          const designPass=item.minimumDesignContract?.pass===true
+            &&Boolean(item.platformDesignProfiles?.ROBLOX?.source)
+            &&Boolean(item.platformDesignProfiles?.UNITY?.source);
+          const codePass=play.pass===true&&play.gameplay?.pass===true&&play.coreFun?.pass===true&&play.noCriticalRuntimeError===true;
+          const graphicsCounts={Art:countFiles('Art'),Prefabs:countFiles('Prefabs'),Materials:countFiles('Materials'),Animations:countFiles('Animations')};
+          const graphicsPass=Object.values(graphicsCounts).filter(v=>v>0).length>=3
+            &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png');
+          const webglPass=build.bootSmoke==='PASS'
+            &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
+            &&Boolean(build.buildTreeSha256)
+            &&fs.existsSync(path.join(root,'unity-web-deploy-manifest.json'));
+          const actualPlayPass=play.pass===true&&play.mobile?.pass===true&&play.coreFun?.pass===true;
+          const designSource=String(item.minimumDesignContract?.source||'');
+          let multiplayerRequired=false;
+          if(designSource){
+            try{
+              const raw=JSON.parse(execFileSync('git',['show','origin/company-runtime:'+designSource],{encoding:'utf8'}));
+              const mode=String(raw?.content?.multiplayerMode||'').toUpperCase();
+              multiplayerRequired=Boolean(mode&&mode!=='SINGLE'&&mode!=='SINGLE_PLAYER');
+            }catch{}
+          }
+          const multiplayerEvidence=item.unityWebMultiplayerQaEvidence||null;
+          const multiplayerPass=!multiplayerRequired
+            ||(multiplayerEvidence?.pass===true&&Number(multiplayerEvidence?.participantCount||0)>=2&&multiplayerEvidence?.authoritativeSync===true);
+          const qaPass=independent.pass===true&&regression.pass===true
+            &&independent.saveRestore?.pass===true&&regression.saveRestore?.pass===true
+            &&multiplayerPass;
+          const portabilityPass=designPass
+            &&build.canonicalSourceRoot==='unity-games/'+gameId
+            &&build.buildOutputRoot==='web-games/'+gameId;
+          const criteria={
+            design:{pass:designPass},
+            code:{pass:codePass},
+            graphics:{pass:graphicsPass,assetCounts:graphicsCounts},
+            webglBuild:{pass:Boolean(webglPass)},
+            actualPlay:{pass:actualPlayPass},
+            qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
+            portability:{pass:portabilityPass},
+          };
+          const pass=Object.values(criteria).every(row=>row.pass===true);
+          const evidence={
+            version:1,
+            gameId,
+            state:pass?'UPPER_PLATFORM_DEVELOPMENT_READY':'REPAIR_REQUIRED',
+            pass,
+            sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
+            unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
+            buildTreeSha256:build.buildTreeSha256,
+            criteria,
+            passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
+            failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
+            releaseOrDeploymentAuthority:false,
+            generatedAt:new Date().toISOString(),
+          };
+          fs.writeFileSync(path.join(root,'upper-platform-development-readiness.json'),JSON.stringify(evidence,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
+          console.log('UPPER_PLATFORM_DEVELOPMENT_READY='+(pass?'PASS':'NO'));
+          if(!pass)console.log('UPPER_PLATFORM_REPAIR_REQUIRED='+JSON.stringify(criteria));
+          NODE
+
       - name: Upload Unity Web artifact
         uses: actions/upload-artifact@v4
         with:
@@ -436,19 +528,15 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Fan verified Unity Web into exact Roblox and Unity development
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ steps.request.outputs.game_id }}
+      - name: Mark Unity Web floor repair requirement
+        if: steps.readiness.outputs.pass != 'true'
         shell: bash
         run: |
-          set -euo pipefail
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main             -f game_id="$GAME_ID"             -f trigger_source="UNITY_WEB_VERIFIED"
-          echo "UNITY_WEB_NATIVE_FANOUT=DISPATCHED:$GAME_ID"
-          echo 'UNITY_WEB_NATIVE_FANOUT_TARGETS=ROBLOX,UNITY'
+          echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
+          exit 42
 
-      - name: Create verified Unity Web build PR
-        if: github.event_name == 'push' || inputs.publish_to_main == true
+      - name: Create verified Unity Web readiness PR
+        if: steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -478,8 +566,8 @@ jobs:
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
             exit 0
           fi
-          git commit -m "build: publish $GAME_ID Unity Web validation"
+          git commit -m "build: publish $GAME_ID Unity Web readiness"
           git push --force-with-lease origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web validation"             --body "Verified Unity WebGL validation-surface build from workflow run $GITHUB_RUN_ID. This is a homepage test artifact only and does not satisfy Unity native release gates.")"
-          echo "UNITY_WEB_PUBLICATION_PR=$pr_url"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
+          echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
