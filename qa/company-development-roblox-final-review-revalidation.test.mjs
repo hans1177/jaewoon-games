@@ -89,6 +89,22 @@ test('F9 allows internal release when exact engine and official Studio MCP pass 
   assert.match(workflow,/item\.robloxPublicReleaseReady=false/);
 });
 
+test('F9 accepts truth-preserving exact runtime failure continuation for internal release only',()=>{
+  assert.match(workflow,/const internalRuntimeFindingDeferred=/);
+  assert.match(workflow,/item\.robloxRuntimeFailureExternalReleaseOnly===true/);
+  assert.match(workflow,/item\.robloxInternalQaContinuationAllowed===true/);
+  assert.match(workflow,/item\.robloxInternalRegressionContinuationAllowed===true/);
+  assert.match(workflow,/post\.runtimeFailureExternalReleaseOnly===true/);
+  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
+  assert.match(workflow,/item\.robloxRuntimeFoundationPassed===true\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
+  assert.match(workflow,/internalRuntimeFindingDeferred/);
+  assert.match(workflow,/runtimeFailureExternalReleaseOnly:internalRuntimeFindingDeferred/);
+  assert.match(workflow,/ticket\.internalFlowBlocking===false/);
+  assert.match(workflow,/ticket\.externalReleaseBlockingOnly===true/);
+  assert.match(workflow,/roblox-internal-release-after-f9-runtime-finding-external-only/);
+  assert.match(workflow,/item\.robloxPublicReleaseReady=false/);
+});
+
 test('F9 promotion stops at internal release and cannot self-approve external public readiness',()=>{
   assert.match(workflow,/const publicRuntimeAcceptance=false; \/\/ Internal F9 cannot satisfy the external public hard gate\./);
   assert.match(workflow,/item\.robloxPublicReleaseReady=false;/);

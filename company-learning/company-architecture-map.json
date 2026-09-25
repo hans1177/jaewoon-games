@@ -3388,6 +3388,9 @@
         "externalPublicReleaseBlocking": true,
         "internalReleaseUsesExplicitObservationDeferredEvidence": true,
         "runtimePassTruthRemainsFalseUntilRealServerBootEvidence": true,
+        "exactPrivateRuntimeFailureInternalFlowBlocking": false,
+        "exactPrivateRuntimeFailureExternalPublicReleaseBlocking": true,
+        "truthPreservingInternalContinuationFlagsRequired": true,
         "sameGameIndependentDevelopmentContinues": true,
         "playerAutomation": false,
         "publishedPlaceDirectStudioAutomation": false

@@ -340,6 +340,25 @@ test('runtime QA passes internal QA and regression while exact real-server boot 
  assert.match(workflow,/roblox-public-release-awaiting-real-server-boot/);
 });
 
+test('exact private Roblox runtime failures continue internal flow but remain external-release blockers',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const exactPrivateRuntimeFinding=/);
+ assert.match(workflow,/result\.exactGame===true/);
+ assert.match(workflow,/result\.exactPlace===true/);
+ assert.match(workflow,/result\.exactVersion===true/);
+ assert.match(workflow,/result\.actualRuntimeEvidence===true/);
+ assert.match(workflow,/item\.robloxRuntimeFailureExternalReleaseOnly=true/);
+ assert.match(workflow,/item\.robloxInternalQaContinuationAllowed=true/);
+ assert.match(workflow,/item\.robloxInternalRegressionContinuationAllowed=true/);
+ assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending=true/);
+ assert.match(workflow,/runtimeFailureExternalReleaseOnly:true/);
+ assert.match(workflow,/internalQaContinuationAllowed:true/);
+ assert.match(workflow,/internalRegressionContinuationAllowed:true/);
+ assert.match(workflow,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
+ assert.match(workflow,/ROBLOX_INTERNAL_FLOW_CONTINUES_RUNTIME_FINDING_EXTERNAL_ONLY=/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false/);
+});
+
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/roblox-open-cloud-engine-probes\.json/);

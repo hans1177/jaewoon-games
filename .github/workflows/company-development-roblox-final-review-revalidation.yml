@@ -82,7 +82,13 @@ jobs:
           const fresh=ingestTesterDebug({developmentQueue:q,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
           const currentBlockingTickets=new Map();
           for(const ticket of fresh.tickets.tickets||[]){
-            if(ticket.status!=='OPEN'||ticket.repairEligible===false||!['CRITICAL','HIGH'].includes(ticket.severity))continue;
+            if(
+              ticket.status!=='OPEN'
+              ||ticket.repairEligible===false
+              ||ticket.internalFlowBlocking===false
+              ||ticket.externalReleaseBlockingOnly===true
+              ||!['CRITICAL','HIGH'].includes(ticket.severity)
+            )continue;
             const rows=currentBlockingTickets.get(ticket.gameId)||[];rows.push(ticket);currentBlockingTickets.set(ticket.gameId,rows);
           }
           const stamp=new Date().toISOString();
@@ -121,8 +127,26 @@ jobs:
               &&studioPlay.artifactIdentity===artifactIdentity
               &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
               &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
-            const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance||internalRuntimeObservationDeferred;
-            const publicRuntimeAcceptance=false; // Real game-server boot is still required by the external public hard gate.
+            const internalRuntimeFindingDeferred=
+              item.robloxRuntimeFailureExternalReleaseOnly===true
+              &&item.robloxInternalQaContinuationAllowed===true
+              &&item.robloxInternalRegressionContinuationAllowed===true
+              &&post.runtimeFailureExternalReleaseOnly===true
+              &&post.internalQaContinuationAllowed===true
+              &&post.internalRegressionContinuationAllowed===true
+              &&post.actualRuntimeEvidence===true
+              &&post.officialStudioMcpActualPlayPassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&runtime.sourceRevision===sourceRevision
+              &&runtime.artifactIdentity===artifactIdentity
+              &&runtime.exactGame===true
+              &&runtime.exactPlace===true
+              &&runtime.exactVersion===true
+              &&Number(runtime.candidateVersionNumber)===Number(candidate.versionNumber);
+            const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance||internalRuntimeObservationDeferred||internalRuntimeFindingDeferred;
+            const publicRuntimeAcceptance=false; // Any deferred runtime finding remains external-public-release blocking.
             const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const studioAssetRuntimeBindingExact=!studioAssetBindingRequired||(
               item.robloxStudioAssetRuntimeBindingPassed===true
@@ -132,13 +156,18 @@ jobs:
               &&post.studioAssetRuntimeBindingEvidence?.sourceRevision===sourceRevision
               &&post.studioAssetRuntimeBindingEvidence?.artifactIdentity===artifactIdentity
               &&Number(post.studioAssetRuntimeBindingEvidence?.candidateVersionNumber)===Number(candidate.versionNumber)
-            )||(internalRuntimeObservationDeferred&&post.studioAssetEngineBindingMatched===true);
+            )
+              ||(internalRuntimeObservationDeferred&&post.studioAssetEngineBindingMatched===true)
+              ||(internalRuntimeFindingDeferred&&post.studioAssetBindingRequired!==true)
+              ||(internalRuntimeFindingDeferred&&post.studioAssetRuntimeBindingPassed===true);
             const exact=
               item.robloxFoundationF0Passed===true
-              &&(item.robloxRuntimeFoundationPassed===true||internalRuntimeObservationDeferred)
+              &&(item.robloxRuntimeFoundationPassed===true||internalRuntimeObservationDeferred||internalRuntimeFindingDeferred)
               &&internalRuntimeAcceptance===true
-              &&item.robloxIndependentQaPassed===true
-              &&item.robloxRegressionPassed===true
+              &&(
+                (item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true)
+                ||internalRuntimeFindingDeferred
+              )
               &&candidate.published===true
               &&candidate.releaseClaim===false
               &&candidate.sourceRevision===sourceRevision
@@ -161,8 +190,10 @@ jobs:
                 &&post.internalRuntimeObservationDeferred===true
                 &&post.publicReleaseRuntimeObservationPending===true
               ))
-              &&post.independentQaPassed===true
-              &&post.regressionPassed===true
+              &&(
+                (post.independentQaPassed===true&&post.regressionPassed===true)
+                ||internalRuntimeFindingDeferred
+              )
               &&studioAssetRuntimeBindingExact===true;
             const tickets=currentBlockingTickets.get(item.gameId)||[];
             if(!exact||tickets.length){
@@ -214,7 +245,10 @@ jobs:
               actualRuntimeFoundationPassed:item.robloxRuntimeFoundationPassed===true,
               runtimeAcceptancePassed:sharedReleaseRuntimeAcceptance,
               internalRuntimeObservationDeferred,
-              publicReleaseRuntimeObservationPending:internalRuntimeObservationDeferred,
+              internalRuntimeFindingDeferred,
+              runtimeFailureExternalReleaseOnly:internalRuntimeFindingDeferred,
+              runtimeFailureSignature:internalRuntimeFindingDeferred?String(post.runtimeFailureSignature||item.robloxPublicReleaseFailureSignature||'ROBLOX_RUNTIME_FINDING'):null,
+              publicReleaseRuntimeObservationPending:internalRuntimeObservationDeferred||internalRuntimeFindingDeferred,
               studioAssetBindingRequired,
               studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
               studioAssetRuntimeBindingMarker:studioAssetBindingRequired?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':'NOT_REQUIRED',
@@ -223,16 +257,22 @@ jobs:
               multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC',
               twoClientOneSyncPassed:sharedReleaseRuntimeAcceptance,
               fullMultiplayerQaPassed:item.robloxMultiplayerQaPassed===true,
-              simplifiedInternalMultiplayerPassed:internalRuntimeObservationDeferred,
-              publicReleaseMultiplayerVerificationPending:internalRuntimeObservationDeferred,
-              independentQaPassed:true,
-              regressionPassed:true,
+              simplifiedInternalMultiplayerPassed:internalRuntimeObservationDeferred||internalRuntimeFindingDeferred,
+              publicReleaseMultiplayerVerificationPending:internalRuntimeObservationDeferred||internalRuntimeFindingDeferred,
+              independentQaPassed:item.robloxIndependentQaPassed===true,
+              regressionPassed:item.robloxRegressionPassed===true,
+              independentQaContinuationAllowed:internalRuntimeFindingDeferred,
+              regressionContinuationAllowed:internalRuntimeFindingDeferred,
               finalReviewPassed:true,
               f9ReleaseRegressionPassed:true,
               promotedWithoutRepublish:true,
               releaseClaim:'INTERNAL_PLATFORM_RELEASE_ONLY',
               publicRelease:false,
-              authority:internalRuntimeObservationDeferred?'roblox-internal-release-after-f9-external-runtime-observation-deferred':'roblox-exact-runtime-candidate-promoted-after-f9',
+              authority:internalRuntimeObservationDeferred
+                ?'roblox-internal-release-after-f9-external-runtime-observation-deferred'
+                :internalRuntimeFindingDeferred
+                  ?'roblox-internal-release-after-f9-runtime-finding-external-only'
+                  :'roblox-exact-runtime-candidate-promoted-after-f9',
               promotedAt:stamp,
             };
             item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-internal-release-compatibility-after-f9'};
@@ -252,7 +292,9 @@ jobs:
             item.robloxPublicRelease=false;
             item.robloxPromotionBlockers=internalRuntimeObservationDeferred
               ?['roblox-public-release-awaiting-real-server-boot','roblox-perpetual-buildup-public-hard-gate-pending']
-              :['roblox-perpetual-buildup-public-hard-gate-pending'];
+              :internalRuntimeFindingDeferred
+                ?[...(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]),'roblox-perpetual-buildup-public-hard-gate-pending']
+                :['roblox-perpetual-buildup-public-hard-gate-pending'];
             item.robloxReleaseClaim=false;
             item.robloxReleasePublishedAt=null;
             item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
