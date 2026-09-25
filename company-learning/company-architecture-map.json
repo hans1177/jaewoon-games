@@ -3155,8 +3155,10 @@
         "X64",
         "roblox-studio-authenticated"
       ],
-      "actualPlayMechanism": "ROBLOX_PLAYER_DEEP_LINK_PLUS_REAL_KEY_INPUT_PLUS_SCREEN_CAPTURE",
-      "actualPlayFramesFeedStoreCreative": true
+      "actualPlayMechanism": "ROBLOX_STUDIO_CLI_RUNSCRIPT_PLUS_STUDIOTESTSERVICE_PLUS_VIRTUALINPUT",
+      "actualPlayFramesFeedStoreCreative": true,
+      "publishedPlayerAutomation": false,
+      "studioOnly": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -3190,7 +3192,11 @@
       "uploadOwner": ".github/workflows/company-development-roblox-internal-vibe-play.yml",
       "publicGateEvidence": "company-runtime:development-queue.json#robloxStorePresentationEvidence",
       "externalPublicReleaseBlocking": true,
-      "newRuntimeCandidateInvalidatesEvidence": true
+      "newRuntimeCandidateInvalidatesEvidence": true,
+      "sharedInternalTargetMutationForbidden": true,
+      "dedicatedGameTargetRequiredForUpload": true,
+      "thumbnailUploadApi": "ROBLOX_OPEN_CLOUD_GAME_THUMBNAIL",
+      "iconUploadApi": "ROBLOX_OPEN_CLOUD_GAME_ICON"
     }
   },
   "autonomousBottleneckRecovery": {
