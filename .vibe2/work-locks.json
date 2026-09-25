@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1b4tx4t",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+      ],
+      "baseSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+      "acquiredAt": "2026-09-25T02:15:17.074Z",
+      "expiresAt": "2026-09-25T03:00:17.074Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
