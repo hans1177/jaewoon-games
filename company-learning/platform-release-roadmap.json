@@ -1,5 +1,5 @@
 {
-  "version": 381,
+  "version": 382,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -7262,7 +7262,9 @@
       "summary": "Bind Unity Web REPAIR_REQUIRED and seven-domain readiness failures to the existing Vibe2/Vibe3 development engine. Bootstrap creates source skeleton only; Vibe performs actual code/graphics repair in canonical Unity source; existing runtime rebuilds and revalidates before upper-platform handoff.",
       "shadowPipelineCreated": false,
       "implementationOwner": "tools/vibe2-auto-planner.mjs",
-      "implementationState": "ACTIVE_VIBE_REPAIR_LOOP_BOUND"
+      "implementationState": "ACTIVE_VIBE_REPAIR_LOOP_BOUND",
+      "preReadinessFailurePersistence": true,
+      "runtimeEvidenceAuthority": "company-runtime:development-queue.json"
     }
   },
   "vibeExecutionLaneContract": {
@@ -21521,7 +21523,11 @@
         "INDEPENDENT_QA",
         "REGRESSION",
         "UPPER_PLATFORM_DEVELOPMENT_READINESS_REEVALUATION"
-      ]
+      ],
+      "preReadinessFailurePersistence": "company-runtime:development-queue.json#unityWebDevelopmentFloorEvidence",
+      "repairableFailureWake": ".github/workflows/vibe2-24h-runner.yml",
+      "infrastructureFailureState": "INFRASTRUCTURE_PENDING",
+      "infrastructureFailureDoesNotAuthorizeSourceRepair": true
     },
     "upperPlatformAdmission": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "upperPlatformDevelopmentReadinessGate": {
