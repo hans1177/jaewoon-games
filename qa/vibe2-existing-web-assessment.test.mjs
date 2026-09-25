@@ -101,7 +101,11 @@ test('development-confirmed Web entries have parseable startup code and no missi
     assert.equal(fs.existsSync(index),true,`${game.id}: DEVELOPMENT_CONFIRMED Web entry missing`);
     const html=fs.readFileSync(index,'utf8');
     assert.doesNotMatch(html,/task-local exploration handoff|placeholder for the actual implementation|Approved Web Bootstrap/i,game.id);
-    const staticDomIds=new Set([...html.matchAll(/\\bid\\s*=\\s*["']([^"']+)["']/gi)].map(match=>match[1]));
+    const markupWithoutScripts=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
+    const staticDomIdList=[...markupWithoutScripts.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi)].map(match=>match[1]);
+    const staticDomIds=new Set(staticDomIdList);
+    const duplicateStaticDomIds=[...staticDomIds].filter(id=>staticDomIdList.filter(candidate=>candidate===id).length>1);
+    assert.deepEqual(duplicateStaticDomIds,[],`${game.id}: duplicate static DOM ids ${duplicateStaticDomIds.join(',')}`);
     let startupSource='';
     const scriptTag=/<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
     for(const match of html.matchAll(scriptTag)){
