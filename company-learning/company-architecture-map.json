@@ -2841,15 +2841,15 @@
       }
     },
     "robloxStudioVerifiedRuntimeIngress": {
-      "version": 1,
+      "version": 2,
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.robloxStudioUsage",
       "sourceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
-      "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play",
+      "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
       "executionHost": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_AUTHENTICATED",
       "launchInput": "LOCAL_EXACT_BUILD_PLACE_FILE_ONLY",
       "onlinePlaceIdLaunchForbidden": true,
       "robloxPlayerAutomationForbidden": true,
-      "runtimeAuthority": "vibe2-roblox-studio-runtime",
+      "runtimeAuthority": "roblox-official-studio-mcp-runtime",
       "exactArtifactRequired": true,
       "exactArtifactFields": [
         "sourceRevision",
@@ -2861,12 +2861,14 @@
         "placeId",
         "versionNumber"
       ],
-      "publishedCandidateCrossCheckAuthority": "OPEN_CLOUD",
+      "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
       "runtimeRequirements": [
-        "StudioTestService",
-        "VirtualInput",
-        "required-checkpoint-pass",
-        "zero-runtime-errors"
+        "OFFICIAL_STUDIO_MCP",
+        "START_STOP_PLAY",
+        "MCP_PLAYER_INPUT",
+        "SCREEN_CAPTURE_BEFORE_AFTER_CHANGE",
+        "CONSOLE_OUTPUT_CAPTURE",
+        "REQUIRED_CHECKPOINT_PASS"
       ],
       "canonicalIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience",
       "canonicalExperienceStore": ".vibe2/experience.json",
@@ -2877,8 +2879,16 @@
       "separateTrainer": false,
       "separatePipeline": false,
       "authorityExpansion": false,
-      "supersededSharedTargetRejected": true,
-      "publishedCandidateMustBeCurrentWhenShared": true
+      "supersededSharedTargetRejected": false,
+      "publishedCandidateMustBeCurrentWhenShared": false,
+      "executionTransport": "OFFICIAL_STUDIO_MCP_STDIO",
+      "mcpServerWindows": "%LOCALAPPDATA%\\Roblox\\mcp.bat",
+      "externalGuiAutomationForbidden": true,
+      "undocumentedStudioCliAutomationForbidden": true,
+      "rawViewportDirectTraining": false,
+      "structuredQaFactsOnly": true,
+      "supersededSharedTargetLocalExactArtifactAllowed": true,
+      "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true
     }
   },
   "ownerRule2Topology": {
