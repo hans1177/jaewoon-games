@@ -170,10 +170,21 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     queueRuntimeIndependentQaPassed:executionEvidence.independentQaPassed===true,
     queueRuntimeRegressionPassed:executionEvidence.regressionPassed===true
   }:{};
-  const firstStagePolicy=centralPresentationPolicy(repoRoot)?.unityWebFirstStage||{};
-  const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY'&&firstStagePolicy?.appliesToAllGames===true;
+  const centralPolicy=centralPresentationPolicy(repoRoot)||{};
+  const firstStagePolicy=centralPolicy?.unityWebFirstStage||{};
+  const upperMigration=centralPolicy?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration||{};
+  const grandfatherIds=new Set((Array.isArray(upperMigration?.grandfatherGameIds)?upperMigration.grandfatherGameIds:[]).map(clean).filter(Boolean));
+  const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'
+    &&clean(firstStagePolicy?.scope)==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
+    &&firstStagePolicy?.developmentAdmissionAuthority===true
+    &&firstStagePolicy?.validationSurfaceOnly===false
+    &&!grandfatherIds.has(id);
   if(unityWebFirstStage){
     const root=`unity-games/${id}`;
+    const readinessPath=`web-games/${id}/upper-platform-development-readiness.json`;
+    const floorSourcePath=`${root}/unity-web-floor-source.json`;
+    const readiness=readJson(path.join(repoRoot,readinessPath),null);
+    const floorSource=readJson(path.join(repoRoot,floorSourcePath),null);
     const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
     const queuePatch={
       ...queueRuntimePatch,
@@ -185,6 +196,14 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueStrictImplementationHardFailures:(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,6),
       queueWebValidationLastAttemptAt:clean(item?.webValidationLastAttemptAt),
       queueWebFinalContentDepthLastAttemptAt:clean(item?.webFinalContentDepthLastAttemptAt),
+      queueUnityWebReadinessPath:readiness?readinessPath:null,
+      queueUnityWebReadinessPass:readiness?.pass===true,
+      queueUnityWebReadinessState:clean(readiness?.state).toUpperCase(),
+      queueUnityWebReadinessCriteria:readiness?.criteria&&typeof readiness.criteria==='object'?readiness.criteria:{},
+      queueUnityWebReadinessFailureAction:clean(readiness?.failureAction),
+      queueUnityWebFloorSourcePath:floorSource?floorSourcePath:null,
+      queueUnityWebFloorPresentationState:clean(floorSource?.presentationState).toUpperCase(),
+      queueUnityWebFloorUpperPlatformReady:floorSource?.upperPlatformReady===true,
       firstStageUnityWeb:true,
       firstStageEngine:'UNITY_WEB',
       postWebSelectedPlatform:clean(item?.selectedPlatform||item?.targetPlatform),
@@ -204,7 +223,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       existing:fs.existsSync(path.join(repoRoot,root,'ProjectSettings','ProjectVersion.txt')),
       releaseState:'development-confirmed',
       progress:Number(item?.progress||0),
-      source:'company-development-queue-unity-web-first-stage',
+      source:'company-development-queue-unity-web-development-floor',
       developmentBaseline:null,
       developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
       ...queuePatch
@@ -795,94 +814,117 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
   if(project.firstStageUnityWeb!==true||project.releaseState!=='development-confirmed')return null;
   const root=posix(project.projectPath);
   if(root!==`unity-games/${project.gameId}`)return null;
-  const coreRel=`${root}/Assets/Scripts/GameCore.cs`;
-  const runtimeRel=`${root}/Assets/Scripts/RuntimeBootstrap.cs`;
+
   const projectVersionRel=`${root}/ProjectSettings/ProjectVersion.txt`;
   const manifestRel=`${root}/Packages/manifest.json`;
+  const scriptsRoot=sourceFile(repoRoot,`${root}/Assets/Scripts`);
   const projectReady=fs.existsSync(sourceFile(repoRoot,projectVersionRel))
     &&fs.existsSync(sourceFile(repoRoot,manifestRel))
-    &&fs.existsSync(sourceFile(repoRoot,coreRel))
-    &&fs.existsSync(sourceFile(repoRoot,runtimeRel));
-  const runtime=readText(sourceFile(repoRoot,runtimeRel));
+    &&fs.existsSync(scriptsRoot);
+  // Canonical source skeleton creation belongs to the existing Unity Web bootstrap workflow.
+  // Vibe owns causal code/graphics development only after that source root exists.
+  if(!projectReady)return null;
+
+  const scriptFiles=[];
+  const scanScripts=dir=>{
+    if(!fs.existsSync(dir))return;
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())scanScripts(full);
+      else if(entry.isFile()&&entry.name.endsWith('.cs'))scriptFiles.push(path.relative(repoRoot,full).replaceAll('\\','/'));
+    }
+  };
+  scanScripts(scriptsRoot);
+  const sourceText=scriptFiles.map(relative=>readText(sourceFile(repoRoot,relative))).join('\n');
+  const floorSourceRel=`${root}/unity-web-floor-source.json`;
+  const floorSource=readJson(sourceFile(repoRoot,floorSourceRel),null);
+
   let buildWebReady=false;
+  const editorFiles=[];
   const editorRoot=sourceFile(repoRoot,`${root}/Assets/Editor`);
   if(fs.existsSync(editorRoot)){
     const stack=[editorRoot];
-    while(stack.length&&!buildWebReady){
+    while(stack.length){
       const current=stack.pop();
       for(const entry of fs.readdirSync(current,{withFileTypes:true})){
         const full=path.join(current,entry.name);
         if(entry.isDirectory()){stack.push(full);continue;}
-        if(entry.isFile()&&entry.name.endsWith('.cs')&&/\bBuildWeb\s*\(/.test(readText(full))){buildWebReady=true;break;}
+        if(entry.isFile()&&entry.name.endsWith('.cs')){
+          const relative=path.relative(repoRoot,full).replaceAll('\\','/');
+          editorFiles.push(relative);
+          if(/\bBuildWeb\s*\(/.test(readText(full)))buildWebReady=true;
+        }
       }
     }
   }
-  const qaReady=/JAEWOON_UNITY_WEB_QA\s+BOOT/.test(runtime)
-    &&/JAEWOON_UNITY_WEB_QA\s+STATE/.test(runtime)
-    &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_TARGET/.test(runtime)
-    &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_INPUT/.test(runtime)
-    &&/JAEWOON_UNITY_WEB_QA\s+CORE_FUN/.test(runtime)
-    &&/Application\.absoluteURL\.Contains\("qa=1"\)/.test(runtime);
-  const repairState=clean(project.queueCanonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'
-    ||clean(project.queueCurrentStep).toUpperCase()==='VIBE_WEB_REPAIR';
 
-  if(!projectReady){
-    const id=nextCausalGenerationId(queue,`${project.gameId}-unity-web-base-implementation`);if(!id)return null;
-    const goal=`[UNITY_WEB_BASE_IMPLEMENTATION] UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED
+  const runtimeMarkersReady=/JAEWOON_UNITY_WEB_QA\s+BOOT/.test(sourceText)
+    &&/JAEWOON_UNITY_WEB_QA\s+STATE/.test(sourceText)
+    &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_TARGET/.test(sourceText)
+    &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_INPUT/.test(sourceText)
+    &&/JAEWOON_UNITY_WEB_QA\s+CORE_FUN/.test(sourceText);
+  const criteria=project.queueUnityWebReadinessCriteria&&typeof project.queueUnityWebReadinessCriteria==='object'
+    ?project.queueUnityWebReadinessCriteria:{};
+  const failedDomains=Object.entries(criteria).filter(([,row])=>row?.pass!==true).map(([key])=>key);
+  const readinessPass=project.queueUnityWebReadinessPass===true
+    &&clean(project.queueUnityWebReadinessState).toUpperCase()==='UPPER_PLATFORM_DEVELOPMENT_READY'
+    &&failedDomains.length===0;
+  if(readinessPass)return null;
+
+  const bootstrapGraphicsBlocked=clean(project.queueUnityWebFloorPresentationState).toUpperCase()==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'
+    ||(floorSource&&floorSource.upperPlatformReady===false);
+  const readinessRepair=clean(project.queueUnityWebReadinessState).toUpperCase()==='REPAIR_REQUIRED'
+    ||failedDomains.length>0;
+  const sourceRepairRequired=bootstrapGraphicsBlocked||readinessRepair||!buildWebReady||!runtimeMarkersReady;
+  // When source contracts are ready but no runtime evidence exists yet, let the existing WebGL
+  // build/actual-play/QA workflow run first and produce causal evidence before editing source.
+  if(!sourceRepairRequired)return null;
+
+  const id=nextCausalGenerationId(queue,`${project.gameId}-unity-web-development-repair`);if(!id)return null;
+  const reasons=[
+    bootstrapGraphicsBlocked?'GRAPHICS:BOOTSTRAP_PLACEHOLDER_PRESENTATION':'',
+    ...failedDomains.map(domain=>`READINESS_DOMAIN:${domain}`),
+    !buildWebReady?'WEBGL_BUILD:BUILD_WEB_METHOD_MISSING':'',
+    !runtimeMarkersReady?'ACTUAL_PLAY:UNITY_WEB_RUNTIME_EVIDENCE_CONTRACT_MISSING':'',
+    clean(project.queueUnityWebReadinessFailureAction)?`FAILURE_ACTION:${clean(project.queueUnityWebReadinessFailureAction)}`:''
+  ].filter(Boolean);
+
+  const visualMarkerFiles=['Art','Prefabs','Materials','Animations']
+    .map(dir=>`${root}/Assets/${dir}/unity-web-floor-domain.json`)
+    .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+  const responsible=[...scriptFiles,...(!buildWebReady?editorFiles:[]),...(floorSource?[floorSourceRel]:[]),...visualMarkerFiles];
+  const uniqueResponsible=[...new Set(responsible)].slice(0,16);
+  if(!uniqueResponsible.length)return null;
+
+  const goal=`[UNITY_WEB_DEVELOPMENT_REPAIR]
 게임: ${project.name||project.gameId}
-1차 Web 게임 원본을 unity-games/${project.gameId}/ Unity 프로젝트로 제작한다. HTML/Canvas/PlayCanvas 신규 게임을 만들지 않는다.
-승인 설계의 핵심 게임 규칙·수치·맵·전투·퀘스트·아이템·멀티 규칙·저장 의미를 보존하고 실제 Unity C# 게임으로 구현한다.
-GameCore.cs에는 게임 상태/데이터/규칙 책임을 두고 RuntimeBootstrap.cs에는 실제 실행/입력/UI/씬 연결 책임을 둔다. 한 파일에 모든 책임을 몰아넣지 않는다.
-Unity Input System 기반 모바일 입력을 사용하고, ?qa=1에서는 Digit1=실제 첫 플레이 진입, Space=실제 핵심 행동, KeyR=실제 안전 복귀/리셋을 기존 게임 함수에 연결한다. QA 전용 가짜 보상/승리/상태 덮어쓰기는 금지한다.
-실제 화면의 모바일 핵심 액션 컨트롤 위치를 JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=<0..1> y=<0..1>로 내보내고, 그 실제 컨트롤이 Pointer/Touch 입력으로 작동했을 때만 MOBILE_INPUT role=action status=PASS를 남긴다. 키보드 QA 입력으로 MOBILE_INPUT을 찍으면 안 된다.
-JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 또는 ATTACK, PROGRESS 또는 REWARD 실제 런타임 증거를 남긴다.
-장르 핵심 루프가 실제 게임 상태로 완료된 순간에만 CORE_FUN status=PASS loop=<genre-specific-loop>를 남긴다. 단순 시작/버튼 클릭/문구 표시만으로 CORE_FUN을 찍지 않는다.
-실제 게임 화면은 placeholder primitive 중심으로 완료 처리하지 않고 기존 저장소 에셋과 권리 명확한 에셋을 우선 사용한다.
-시스템이 생성하는 Packages/ProjectSettings/WebBuild.cs는 빌드 뼈대일 뿐 게임 구현이 아니다. 게임플레이 소스는 Vibe가 직접 구현한다.
-Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 사이클을 만든 뒤에만 검증으로 넘긴다.`;
-    const out=task(id,{...project,engine:'unity',target:'unity'},goal,[coreRel,runtimeRel],'owner-immediate','high',[
-      'owner-directive:webgame-first',
-      'web-stage:WEB_BASE_IMPLEMENTATION',
-      'unity-web-first-stage',
-      'source-root-bootstrap-required',
-      'unity-web-source-root-bootstrap-required',
-      'canonical-source:unity-games',
-      'web-build-output:web-games',
-      'post-web-platform-pipeline:unchanged'
-    ]);
-    out.ownerDirective=true;
-    out.speculativeEligible=false;
-    out.workUnits=6;
-    return out;
-  }
+상태: REPAIR_REQUIRED → 코드/그래픽 실제 수정 → WebGL 재빌드 → 실제 브라우저 플레이 → 독립 QA → 회귀 → UPPER_PLATFORM_DEVELOPMENT_READY 재평가.
+현재 실패 근거: ${reasons.join(' | ')||'UNITY_WEB_DEVELOPMENT_FLOOR_REPAIR_REQUIRED'}.
 
-  if(repairState||!buildWebReady||!qaReady){
-    const id=nextCausalGenerationId(queue,`${project.gameId}-unity-web-repair`);if(!id)return null;
-    const reasons=[
-      repairState?'company-runtime:WEB_VIBE_REPAIR_REQUIRED':'',
-      !buildWebReady?'BUILD_WEB_METHOD_MISSING':'',
-      !qaReady?'UNITY_WEB_QA_CONTRACT_MISSING':''
-    ].filter(Boolean).join('|');
-    const goal=`[UNITY_WEB_REPAIR] 게임: ${project.name||project.gameId}
-기존 unity-games/${project.gameId}/ 프로젝트를 직접 읽고 1차 Unity Web 실패 원인만 수정한다. 기존 게임 규칙·수치·저장·핵심 루프를 임의로 바꾸지 않는다.
-필수 수리 근거: ${reasons||'runtime-validation-repair'}.
-RuntimeBootstrap의 실제 입력/게임 함수와 JAEWOON_UNITY_WEB_QA 증거를 일치시키고 Web Build가 실제 프로젝트를 빌드하도록 유지한다.
-MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 상태 변화와 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
-QA 마커만 추가하고 화면/상태가 변하지 않는 가짜 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const files=[coreRel,runtimeRel].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
-    if(!files.length)return null;
-    const out=task(id,{...project,engine:'unity',target:'unity'},goal,files,'owner-immediate','medium',[
-      'owner-directive:webgame-first',
-      'web-stage:WEB_REPAIR',
-      'unity-web-first-stage',
-      'company-runtime-state:'+clean(project.queueCanonicalState||'UNKNOWN'),
-      'preserve-existing-game'
-    ]);
-    out.ownerDirective=true;
-    out.speculativeEligible=false;
-    return out;
-  }
-  return null;
+unity-games/${project.gameId}/가 유일한 canonical Unity 원본이다. web-games/${project.gameId}/는 빌드/검증 산출물이며 직접 게임 로직을 따로 구현하지 않는다.
+승인 설계의 게임 정체성·핵심 루프·진행·수치·저장 의미·멀티 의미를 보존하면서 실패한 readiness 도메인의 실제 원인만 고친다.
+코드 실패면 시작→플레이→진행→종료/재시도와 실제 입력/저장/오류 복구를 구현한다.
+그래픽 또는 bootstrap placeholder 실패면 GameObject.CreatePrimitive 중심 임시 표현을 완성 상태로 인정하지 말고, 게임별 캐릭터/적/환경/장비 정체성, 재질, 실제 모션/애니메이션, VFX, 카메라 표현을 Unity 소스에 실질적으로 빌드업한다.
+MOBILE_TARGET/MOBILE_INPUT/CORE_FUN 마커는 실제 화면 컨트롤과 실제 상태 진행 뒤에만 발생해야 하며 마커만 추가해서 PASS를 만들면 안 된다.
+unity-web-floor-source.json이 있으면 presentationState/upperPlatformReady는 실제 코드·그래픽 소스 변경이 같은 변경세트에 존재하고 placeholder 지배 상태가 해소됐을 때만 갱신한다. 플래그만 바꾸는 수정은 금지한다.
+회사 정책·홈페이지·QA 임계값을 약화하지 않는다. 수정이 합쳐지면 기존 Company DEVELOPMENT_CONFIRMED Runtime이 동일 Unity 원본을 WebGL로 다시 빌드하고 실제 플레이/Independent QA/Regression을 다시 수행한다.
+7개 도메인이 모두 PASS하기 전에는 Roblox/Unity 상위 플랫폼 개발 진입을 주장하지 않는다.`;
+
+  const out=task(id,{...project,engine:'unity',target:'unity'},goal,uniqueResponsible,'owner-immediate','high',[
+    'unity-web-development-floor',
+    'unity-web-repair-required',
+    'upper-platform-readiness-gate:UPPER_PLATFORM_DEVELOPMENT_READY',
+    ...failedDomains.map(domain=>`unity-web-failed-domain:${domain}`),
+    bootstrapGraphicsBlocked?'unity-web-bootstrap-graphics-build-up:required':'',
+    'canonical-source:unity-games',
+    'web-build-output:web-games',
+    'release-authority:none',
+    'preserve-existing-game'
+  ].filter(Boolean));
+  out.ownerDirective=true;
+  out.speculativeEligible=false;
+  out.workUnits=Math.max(6,Number(out.workUnits||0));
+  return out;
 }
 
 function findUnityTask(project,repoRoot,queue){const projectPath=posix(project.projectPath),runtimeRel=`${projectPath}/Assets/Scripts/RuntimeBootstrap.cs`,coreRel=`${projectPath}/Assets/Scripts/GameCore.cs`,motionRel=`${projectPath}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,runtime=readText(sourceFile(repoRoot,runtimeRel)),core=readText(sourceFile(repoRoot,coreRel)),motion=readText(sourceFile(repoRoot,motionRel));if(runtime&&core&&core.includes('["field-4"]')&&!runtime.includes('FIELD 4')&&!hasTask(queue,`${project.gameId}-region-controls-4-7`))return task(`${project.gameId}-region-controls-4-7`,project,'GameCatalog에 이미 존재하는 field-4, field-5, field-6, jungle 지역을 RuntimeBootstrap 이동 UI에 연결한다. 기존 RegionDefinition.recommendedLevelMin을 사용하고 전투 수치·보상·세이브·지역 데이터는 변경하지 않는다.',[runtimeRel],'high');if(core&&core.includes('public List<string> ownedWeapons')&&!core.includes('Player.ownedWeapons ??=')&&!hasTask(queue,`${project.gameId}-save-null-guards`))return task(`${project.gameId}-save-null-guards`,project,'GameCore.Load 직후 오래되거나 불완전한 JSON 세이브에서 ownedWeapons, ownedArmors, completedHiddenQuests가 null이면 빈 목록으로 복구한다. SaveKey, 데이터 버전, 수치와 소유 의미는 변경하지 않는다.',[coreRel]);if(motion&&motion.includes('public void PlayTravelToBattle()')&&!/PlayTravelToBattle\(\)[\s\S]{0,500}StopCoroutine\(_combatRoutine\)/.test(motion)&&!hasTask(queue,`${project.gameId}-motion-routine-safety`))return task(`${project.gameId}-motion-routine-safety`,project,'PrototypeAnimatedVisuals에서 전투 코루틴 중 새 이동 모션을 시작할 때 이전 combat routine을 안전하게 중지해 애니메이션 상태 덮어쓰기를 막는다. 전투 판정 타이밍·데미지·보상·에셋은 변경하지 않는다.',[motionRel]);return null;}
