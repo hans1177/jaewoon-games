@@ -21334,22 +21334,25 @@
     "minimumDesignPromotionIsPerGame": true,
     "strictDesignReviewRunsInParallel": true,
     "unityWebNativeFanOut": {
+      "version": 2,
       "enabled": true,
-      "role": "UPSTREAM_ORCHESTRATION_TRIGGER_NOT_CANONICAL_SOURCE",
-      "trigger": "VERIFIED_UNITY_WEB_VALIDATION",
+      "role": "MAIN_BOUND_UPPER_PLATFORM_READINESS_HANDOFF",
+      "trigger": "UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN",
+      "readinessEvidence": "web-games/<gameId>/upper-platform-development-readiness.json",
       "targets": [
         "ROBLOX",
         "UNITY"
       ],
       "exactGameOnly": true,
       "requiresMinimumDesignContract": true,
-      "developmentAdmissionAuthority": false,
+      "developmentAdmissionAuthority": true,
       "releaseAuthority": false,
       "nativeEvidenceStillRequired": true,
       "orchestrationWorkflow": ".github/workflows/company-development-confirmed-runtime.yml",
-      "triggerSourceInput": "UNITY_WEB_VERIFIED",
+      "directDispatchFromUnityWebBuildForbidden": true,
+      "sourceTreeExactMatchRequired": true,
+      "staleReadinessEvidenceAction": "REBUILD_UNITY_WEB_FLOOR",
       "recursiveUnityWebRedispatchForbidden": true,
-      "missingOrFailedUnityWebDoesNotBlockNativeDevelopment": true,
       "authority": "OWNER_DIRECTIVE_2026-09-25"
     },
     "unityWebDevelopmentLane": {
