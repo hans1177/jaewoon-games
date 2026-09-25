@@ -118,6 +118,14 @@ test('uncopylocked Studio copies separate edit-time identity evidence from play-
   assert.doesNotMatch(liveSmokeWorkflow, /vibe2-roblox-authorized-download-runner/);
 });
 
+test('production Studio runtime can bind play evidence to the exact published place version', () => {
+  assert.match(studioCliSource, /normalizedPlaceVersion/);
+  assert.match(studioCliSource, /game\.PlaceVersion/);
+  assert.match(studioCliSource, /loaded unexpected place version/);
+  assert.match(studioCliSource, /args\['place-version'\]/);
+  assert.match(studioCliSource, /VIBE2_ROBLOX_STUDIO_PLACE_VERSION/);
+});
+
 test('official Studio CLI runner persists nonce-bound runtime and sanitized authorized source evidence', async () => {
   const root = temp();
   const fakeStudio = path.join(root, 'fake-studio');
