@@ -117,7 +117,8 @@ function classifyPreviousEffectiveness({previousDirective=null,previousOutcome='
   const runtimeObserved=runtimeEvidence?.runtimeObserved===true;
   const runtimePassed=runtimeEvidence?.runtimePassed===true;
   const failure=clean(runtimeEvidence?.failureSignature)||clean(runtimeEvidence?.failureStage);
-  if(failed||failure)return Object.freeze({classification:'REGRESSION',reason:failure||('previous generation outcome='+outcome),runtimeObserved});
+  const observedRuntimeFailure=runtimeObserved&&!runtimePassed&&Boolean(failure);
+  if(failed||observedRuntimeFailure)return Object.freeze({classification:'REGRESSION',reason:failure||('previous generation outcome='+outcome),runtimeObserved});
   if(verified&&!depthInfo?.sourceChangedSincePrevious)return Object.freeze({classification:'NO_MEANINGFUL_EFFECT',reason:'verified status without real game source delta',runtimeObserved});
   if(verified&&depthInfo?.sourceChangedSincePrevious&&runtimeObserved&&runtimePassed)return Object.freeze({classification:'EFFECT_CONFIRMED',reason:'verified generation changed game source and current runtime observation passed',runtimeObserved});
   if(verified&&depthInfo?.sourceChangedSincePrevious&&runtimeObserved)return Object.freeze({classification:'PARTIAL_EFFECT',reason:'game source changed but runtime evidence is not a full pass',runtimeObserved});
@@ -515,7 +516,9 @@ export function buildGameSpecificBuildUpDirective({
   const depthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint});
   const previousEffectiveness=classifyPreviousEffectiveness({previousDirective,previousOutcome:previousDirectiveOutcome,depthInfo,runtimeEvidence});
   const priorFocus=clean(previousDirective?.primaryFocus).toUpperCase();
-  const focus=previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
+  const previousEffectClass=clean(previousEffectiveness?.classification).toUpperCase();
+  const keepPriorFocus=Boolean(previousDirective&&priorFocus&&['NO_MEANINGFUL_EFFECT','PARTIAL_EFFECT','REGRESSION','UNKNOWN_RUNTIME_EFFECT'].includes(previousEffectClass));
+  const focus=keepPriorFocus?priorFocus:previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
   const anchor=primaryDesignAnchor(design),secondary=secondaryDesignAnchor(design);
   const identity=design.identity||clean(gameName)||id;
   const goalByFocus={
@@ -527,7 +530,7 @@ export function buildGameSpecificBuildUpDirective({
   };
   const goal=goalByFocus[focus]||goalByFocus.CORE_FUN;
   const previousFingerprint=clean(previousDirective?.directiveFingerprint);
-  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design}));
+  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence}));
   const states=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
   const gaps=states.filter(x=>x.state==='GAP');
   const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,focus,depthInfo});
