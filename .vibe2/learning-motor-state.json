@@ -4004,7 +4004,8 @@
       "coding_negative_12zb2d3",
       "coding_negative_1dee3wc",
       "coding_negative_viva32",
-      "coding_negative_j3rmi2"
+      "coding_negative_j3rmi2",
+      "coding_negative_k5xkgh"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -5209,7 +5210,7 @@
         "verifiedApplications": 216,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 477,
-        "verifiedFailures": 707,
+        "verifiedFailures": 708,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -7471,12 +7472,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_j3rmi2",
             "lastUpdatedAt": "2026-09-25T20:23:06.621Z"
+          },
+          "roblox|EDIT_MATCH": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "cozy-island": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_k5xkgh",
+            "lastUpdatedAt": "2026-09-25T20:36:38.933Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_nwrwl2",
-        "lastFailureEvidence": "coding_negative_j3rmi2",
-        "lastUpdatedAt": "2026-09-25T20:23:06.621Z"
+        "lastFailureEvidence": "coding_negative_k5xkgh",
+        "lastUpdatedAt": "2026-09-25T20:36:38.933Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 557,
@@ -11926,7 +11947,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-25T20:27:37.764Z",
+    "lastBuiltAt": "2026-09-25T20:36:38.949Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -17755,5 +17776,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-25T20:27:37.764Z"
+  "updatedAt": "2026-09-25T20:36:38.949Z"
 }
