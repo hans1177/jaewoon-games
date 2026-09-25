@@ -3183,7 +3183,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "updatedAt": "2026-09-25T06:46:31.308Z"
+      "updatedAt": "2026-09-25T07:08:31.257Z"
     },
     {
       "version": 2,
@@ -4070,7 +4070,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "updatedAt": "2026-09-25T06:46:31.308Z"
+      "updatedAt": "2026-09-25T07:08:31.257Z"
     },
     {
       "version": 2,
@@ -4530,7 +4530,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "promotion": {
         "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
@@ -7883,10 +7883,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7963,15 +7963,26 @@
         "passThreshold": 80
       },
       "strictDesignReviewUpdatedAt": "2026-09-25T03:28:09.140Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/daechung-rpg",
+          "UNITY": "unity-games/daechung-rpg"
+        },
+        "designBaselineSource": "design/daechung-rpg/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-09-25T04:08:42.290Z"
+        "promotedAt": "2026-09-25T07:08:31.257Z"
       },
       "pausedAt": "2026-09-21T21:45:21.827Z",
       "concurrentTargetPlatforms": [
@@ -7981,8 +7992,9 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/daechung-rpg/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
       },
       "strictDesignReviewRefreshRequired": true,
       "ownerDirectDevelopment": true,
@@ -7992,7 +8004,17 @@
       "ROBLOX_VALIDATION_MODE": "HEADLESS_FAST_MVP",
       "ROBLOX_STUDIO_ALLOWED": false,
       "DESIGN_BASELINE_SOURCE": "design/daechung-rpg/2026-09-22/design-revised.json",
-      "gameNameEnglish": "Whatever RPG"
+      "gameNameEnglish": "Whatever RPG",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -8338,7 +8360,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -8795,7 +8817,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9285,7 +9307,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9758,7 +9780,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10215,7 +10237,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10681,7 +10703,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -11154,7 +11176,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -11636,7 +11658,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -12118,7 +12140,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -12584,7 +12606,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -13954,7 +13976,7 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "createdAt": "2026-09-19T16:17:06.466Z",
-      "updatedAt": "2026-09-25T06:46:31.308Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -14463,10 +14485,10 @@
       "MOBILE_FIRST": true,
       "TRANSFORMATION_MODE": "NEW_ORIGINAL_IMPLEMENTATION",
       "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "productionTier": 3,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -14478,10 +14500,11 @@
       "ownerDirectDevelopmentRequestedAt": "2026-09-22T01:05:00+09:00",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
       },
-      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "updatedAt": "2026-09-25T07:08:31.257Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "MARKET_EVIDENCE_SUMMARY": {
@@ -14865,12 +14888,33 @@
       "DESIGN_BASELINE_SOURCE": "design/horror-escape-room/2026-09-22/design-revised.json",
       "pausedAt": "2026-09-21T21:45:21.827Z",
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/horror-escape-room",
+          "UNITY": "unity-games/horror-escape-room"
+        },
+        "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-09-25T04:08:42.290Z"
+        "promotedAt": "2026-09-25T07:08:31.257Z"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
       }
     }
   ],
@@ -19977,7 +20021,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-09-25T06:46:31.308Z",
+  "updatedAt": "2026-09-25T07:08:31.257Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
