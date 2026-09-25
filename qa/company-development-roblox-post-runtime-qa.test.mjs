@@ -78,12 +78,21 @@ test('stale published Roblox version preserves the exact failed stage and retrie
 });
 
 
-test('exact Roblox foundation QA is isolated per game and cannot globally serialize multiplayer verification',()=>{
+test('exact Roblox foundation QA is isolated per game and persists through latest-state reapply',()=>{
   assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id/);
   assert.match(workflow,/scheduled-scan/);
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-runtime-foundation-qa\s*\n/);
-  assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/roblox-foundation-state-patches\.json/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PERSIST_ATTEMPT=/);
+  assert.match(workflow,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PERSIST_CONFLICT_RETRY=/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
+
+test('foundation QA declares Studio asset binding requirement once per candidate scope',()=>{
+  const declarations=workflow.match(/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true;/g)||[];
+  assert.equal(declarations.length,1);
 });
 
 test('two-client one-sync is the shared internal and public release gate',()=>{
