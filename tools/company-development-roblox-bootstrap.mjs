@@ -335,7 +335,10 @@ task.defer(reportNativeFoundationReady)
   }
 
   if(!/StudioAssets\s*=\s*\{/.test(afterConfig)||!/BindingVersion\s*=\s*1/.test(afterConfig)||!afterConfig.includes(`LibraryVersion = ${Number(studioAssets.libraryVersion||0)}`))throw new Error('EXISTING_STUDIO_ASSET_CONFIG_VERIFY_FAILED');
-  if(!/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/.test(afterClient)||!/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(afterClient)||!/StudioAssetFramePanel/.test(afterClient))throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
+  const studioClientConfigBound=/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/.test(afterClient)&&/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(afterClient);
+  const studioClientVisibleBound=/StudioAssetFramePanel/.test(afterClient)
+    ||(/StudioAssetBindingVersion/.test(afterClient)&&/StudioAssetAtoms/.test(afterClient)&&/FRAME_PANEL/.test(afterClient)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(afterClient));
+  if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
     const combined=afterServer+'\n'+afterClient;
     for(const [token,re] of Object.entries({

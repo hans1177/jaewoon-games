@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope} from '../tools/company-development-roblox-bootstrap.mjs';
+import os from 'node:os';
+import path from 'node:path';
+import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 
 const platformProfile=()=>({
@@ -564,4 +566,32 @@ test('new Roblox compiler output contains the F0 foundation contract from first 
   assert.match(compiled.result.clientCode,/TouchEnabled/);
   assert.match(compiled.result.clientCode,/CameraSubject/);
   assert.match(compiled.result.clientCode,/RuntimeFoundationReport/);
+});
+
+
+test('line-defense existing visible Studio binding is accepted during F0 foundation repair',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-line-defense-'));
+  const root=path.join(tmp,'line-defense');
+  try{
+    fs.cpSync('roblox-games/line-defense',root,{recursive:true});
+    const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+    const result=applyRobloxStudioAssetBindingToExistingSource({
+      root,
+      gameId:'line-defense',
+      baseline,
+      assetLibrary,
+      foundationRepair:true,
+    });
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    const server=fs.readFileSync(path.join(root,'server','Game.server.luau'),'utf8');
+    assert.equal(result.foundationRepairApplied,true);
+    assert.equal(result.gameplayAuthorityChanged,false);
+    assert.match(client,/StudioAssetBindingVersion/);
+    assert.match(client,/StudioAssetAtoms/);
+    assert.match(client,/FRAME_PANEL/);
+    assert.match(server,/native-foundation-sentinel-v1/);
+    assert.match(server,/RuntimeFoundationReport/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
 });
