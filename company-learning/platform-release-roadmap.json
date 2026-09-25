@@ -1562,8 +1562,11 @@
         "verifiedEvidenceRequiredForCanonicalLearning": true,
         "unverifiedModelOutputMayPromoteDirectly": false,
         "robloxStudioAllowedFor24hLearning": true,
-        "robloxStudioLearningScope": "VERIFIED_LOCAL_EXACT_BUILD_PLAY_EVIDENCE_ONLY",
-        "robloxStudioRawSourceOrRawGameplayValuesDirectTraining": false
+        "robloxStudioLearningScope": "STRUCTURED_VERIFIED_OFFICIAL_STUDIO_MCP_QA_FACTS_ONLY",
+        "robloxStudioRawSourceOrRawGameplayValuesDirectTraining": false,
+        "robloxStudioRawViewportDirectTraining": false,
+        "robloxStudioMcpOfficialToolsOnly": true,
+        "robloxPlayerAutomationForLearning": false
       },
       "providerFailureSubstitution": {
         "version": 1,
