@@ -21,6 +21,7 @@ test('Studio binary override must exist', () => {
 });
 
 test('Vibe2 live smoke uses the dedicated isolated Roblox Studio runner', () => {
+  assert.match(liveSmokeWorkflow, /workflow_dispatch:/);
   assert.match(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
   assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'/);
   assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_DEDICATED_RUNNER_IDENTITY=PASS/);
