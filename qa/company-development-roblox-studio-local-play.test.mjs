@@ -457,6 +457,24 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES/);
 });
 
+test('Studio MCP warms the official Assistant runtime before opening the exact local Place and preserves that order on retries',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const warmStart=studioMcpBlock.indexOf("$warmStudioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -PassThru");
+  const exactPlaceOpen=studioMcpBlock.indexOf("$placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru");
+  assert.ok(warmStart>0);
+  assert.ok(exactPlaceOpen>warmStart);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ASSISTANT_WARM_GUI_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_SETTING_ENABLED=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_SETTING_MUTATION=NO/);
+  assert.match(studioMcpBlock,/VIBE2_STUDIO_PROCESS_IDS=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_ASSISTANT_WARM_GUI_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PLACE_LAUNCH_PROCESS_ID=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_OWNED_PROCESS_IDS=/);
+  assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
+  assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
+});
+
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
   assert.match(workflow,/studio-local-plan:[\s\S]*needs: runtime-foundation-qa[\s\S]*if: always\(\) && needs\.runtime-foundation-qa\.result != 'cancelled'/);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
