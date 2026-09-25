@@ -183,9 +183,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-vibe2-scheduler'
-          git config user.email 'vibe2-scheduler@users.noreply.github.com'
-          control_root="$PWD"
+          control_root="$GITHUB_WORKSPACE"
+          test -d "$control_root/.git"
+          git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
+          git -C "$control_root" config user.email 'vibe2-scheduler@users.noreply.github.com'
+          echo "VIBE2_CONTROL_ROOT=$control_root"
 
           callback_ref="${GITHUB_REF_NAME:-}"
           callback_kind='none'
@@ -211,8 +213,8 @@ jobs:
           neuron_refill=0
           for state_attempt in 1 2 3 4 5; do
             echo "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=$state_attempt/5"
-            git fetch origin vibe2-unreal-core --quiet
-            git reset --hard origin/vibe2-unreal-core
+            git -C "$control_root" fetch origin vibe2-unreal-core --quiet
+            git -C "$control_root" reset --hard origin/vibe2-unreal-core
 
             if [ "$callback_kind" = 'neuron' ]; then
               neuron_result_file="$(find /tmp/vibe2-neuron-result -type f -name '*.json' -print -quit)"
@@ -247,14 +249,14 @@ jobs:
                   ;;
               esac
 
-              git add .vibe2/queue.json .vibe2/parallelism-control.json
-              if git diff --cached --quiet; then
+              git -C "$control_root" add .vibe2/queue.json .vibe2/parallelism-control.json
+              if git -C "$control_root" diff --cached --quiet; then
                 state_persisted=1
                 state_write='NO'
                 break
               fi
-              git commit -m "vibe2: persist atomic neuron result [skip ci]"
-              if git push origin HEAD:vibe2-unreal-core; then
+              git -C "$control_root" commit -m "vibe2: persist atomic neuron result [skip ci]"
+              if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
                 state_persisted=1
                 state_write='YES'
                 break
@@ -273,8 +275,8 @@ jobs:
             # Every non-neuron reserve ingress must synchronize from the current company runtime
             # before planning or reserving. Otherwise an empty/stale control queue can remain idle
             # until a later fan-in callback even though company-runtime already has actionable work.
-            git fetch origin company-runtime --quiet
-            git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            git -C "$control_root" fetch origin company-runtime --quiet
+            git -C "$control_root" show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
             git -C /tmp/vibe2-main fetch origin company-runtime --quiet
             for runtime_design_path in design game-seed-state.json; do
               if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
@@ -367,15 +369,15 @@ jobs:
               .vibe2/idle-practice-queue.json
               .vibe2/web-roblox-handoffs.json
             )
-            if git diff --quiet -- "${state_paths[@]}"; then
+            if git -C "$control_root" diff --quiet -- "${state_paths[@]}"; then
               state_persisted=1
               state_write='NO'
               break
             fi
 
-            git add "${state_paths[@]}"
-            git commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
-            if git push origin HEAD:vibe2-unreal-core; then
+            git -C "$control_root" add "${state_paths[@]}"
+            git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
+            if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
               state_persisted=1
               state_write='YES'
               break
@@ -414,7 +416,7 @@ jobs:
           fi
 
           if [ "$callback_cleanup" = 'yes' ]; then
-            git push origin --delete "$callback_ref" >/dev/null 2>&1 || true
+            git -C "$control_root" push origin --delete "$callback_ref" >/dev/null 2>&1 || true
             echo "VIBE2_SLOT_CALLBACK_CLEANUP=$callback_ref"
           fi
 

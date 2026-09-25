@@ -41,3 +41,27 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
 });
+
+test('reserve batch persists control state only through the explicit Vibe2 control root',()=>{
+  const start=core.indexOf('      - name: Reserve conflict-free DAG batch');
+  const end=core.indexOf('\n  model_cache:',start);
+  assert.ok(start>=0&&end>start);
+  const reserve=core.slice(start,end);
+
+  assert.match(reserve,/control_root="\$GITHUB_WORKSPACE"/);
+  assert.match(reserve,/test -d "\$control_root\/\.git"/);
+  for(const command of [
+    'fetch origin vibe2-unreal-core --quiet',
+    'reset --hard origin/vibe2-unreal-core',
+    'fetch origin company-runtime --quiet',
+    'show origin/company-runtime:development-queue.json',
+    'diff --quiet -- "${state_paths[@]}"',
+    'add "${state_paths[@]}"',
+    'commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"',
+    'push origin HEAD:vibe2-unreal-core'
+  ]){
+    assert.ok(reserve.includes('git -C "$control_root" '+command),command);
+  }
+
+  assert.doesNotMatch(reserve,/(?:^|\n)\s*git (?:fetch origin vibe2-unreal-core|reset --hard origin\/vibe2-unreal-core|fetch origin company-runtime|show origin\/company-runtime:development-queue\.json|diff --quiet -- "\$\{state_paths\[@\]\}"|add "\$\{state_paths\[@\]\}"|commit -m "vibe2: repair state and reserve parallel DAG batch|push origin HEAD:vibe2-unreal-core)/);
+});
