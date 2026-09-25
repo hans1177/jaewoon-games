@@ -1354,7 +1354,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         }
       }
       if(editable.length){
-        const compactRetryPrefix=(timeoutFailure||presentationDelta||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
+        const compactRetryPrefix=(timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
           rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
