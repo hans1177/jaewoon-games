@@ -65,6 +65,11 @@ test('Director reviews and publishes the exact Homepage Manager candidate in one
   assert.doesNotMatch(workflow,/\\n  publish-after-director:/);
 });
 
+test('homepage workflow heredoc delimiters stay at the YAML block indentation',()=>{
+  assert.doesNotMatch(workflow,/^ {12}NODE$/m);
+  assert.match(workflow,/^ {10}NODE$/m);
+});
+
 test('verified runtime status and catalog join the same supervised publication candidate',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
   const director=section('  director-supervision:');
