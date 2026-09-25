@@ -74,9 +74,12 @@ test('verified runtime status and catalog join the same supervised publication c
   }
   assert.ok(manage.includes('Prepare verified runtime status/catalog candidate'));
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
+  assert.match(manage,/HOMEPAGE_STATUS_SYNC_TRIGGER=.*COMPANY_RUNTIME/);
+  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.onEverySuccessfulNonPrHomepageSync,true);
+  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.sourceIsAuthoritative,true);
 });
 
-test('homepage shows only Roblox and Unity app native release actions',()=>{
+test('homepage shows native, Unity Web, and server-catalog playable web actions',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
@@ -90,7 +93,9 @@ test('homepage shows only Roblox and Unity app native release actions',()=>{
   assert.match(homepage,/unityWebAction/);
   assert.match(homepage,/Unity Web · 개발중/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
-  assert.doesNotMatch(homepage,/Web 플레이|Fortnite 개발중|fortniteAction/);
+  assert.match(homepage,/웹 플레이/);
+  assert.match(homepage,/function playableWebHref\(row\)/);
+  assert.doesNotMatch(homepage,/Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
   assert.doesNotMatch(homepage,/homeTop30GameCenter|const TOP_LIMIT=/);
 });
@@ -123,7 +128,7 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
   assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|''/);
+  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
@@ -353,7 +358,9 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.match(runtime,/Unity Web · 개발중/);
-  assert.doesNotMatch(runtime,/Web 플레이|button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
+  assert.match(runtime,/웹 플레이/);
+  assert.match(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
 
@@ -390,6 +397,13 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(display.unityWebDevelopmentCardExposureRequiredWhenDeployable,true);
   assert.equal(display.unityWebMayBeCardDirectLaunchFallback,true);
   assert.equal(display.staleSharedRobloxTargetHomepageLinkForbidden,true);
+  assert.equal(display.playableWebCompanionButtonEnabled,true);
+  assert.equal(display.playableWebCompanionButtonLabel,'웹 플레이');
+  assert.equal(display.playableWebCompanionSource,'COMPANY_RUNTIME_GAME_CATALOG');
+  assert.equal(display.playableWebCompanionRequiresPlayableAndArchive,true);
+  assert.equal(display.playableWebCompanionRequiresExistingCanonicalIndex,true);
+  assert.equal(display.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
+  assert.equal(display.mainCatalogMayNotOverrideFresherCompanyRuntime,true);
   assert.equal(surface.developmentConfirmedHomepageExposureRequiredWhenDeployable,true);
   assert.equal(surface.cardDirectLaunchFallbackAllowed,true);
   const directiveDisplay=directive.homepageOperations?.developmentProgressDisplay||{};
@@ -397,6 +411,9 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(directiveDisplay.webAndPlatformTestButtonsMustBeSeparate,true);
   assert.equal(directiveDisplay.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
   assert.equal(directiveDisplay.unityWebLegacyBuildCompatibility,true);
+  assert.equal(directiveDisplay.playableWebCompanionButtonEnabled,true);
+  assert.equal(directiveDisplay.playableWebCompanionButtonLabel,'웹 플레이');
+  assert.equal(directiveDisplay.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
 });
 test('platform availability requires explicit internal release evidence from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
@@ -404,7 +421,8 @@ test('platform availability requires explicit internal release evidence from com
   assert.match(runtime,/internalReleaseReady===true\|\|unity\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);
   assert.match(runtime,/supportedPlatforms/);
-  assert.doesNotMatch(runtime,/fortniteAction|Web 플레이/);
+  assert.match(runtime,/웹 플레이/);
+  assert.doesNotMatch(runtime,/fortniteAction/);
 });
 
 
