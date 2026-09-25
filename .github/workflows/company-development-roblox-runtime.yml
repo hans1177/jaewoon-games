@@ -26,6 +26,11 @@ on:
       - 'qa/company-development-roblox-package.test.mjs'
       - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
+  workflow_call:
+    inputs:
+      game_id:
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
       game_id:
