@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-09-25T18:52:48.021Z",
+  "updatedAt": "2026-09-25T19:12:24.958Z",
   "games": [
     {
       "gameId": "cozy-island",
@@ -235,9 +235,9 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
-          "internalReleaseReady": false,
+          "internalReleaseReady": true,
           "internalReleasePublished": true,
           "internalPlaytestPassed": true,
           "externalExposureAllowed": false,
@@ -247,7 +247,7 @@
             "pass": false,
             "checks": {
               "technical": false,
-              "realServerBoot": true,
+              "realServerBoot": false,
               "exactRuntime": false,
               "actualVibePlay": true,
               "vibeScenarioCoverage": false,
@@ -265,6 +265,7 @@
             },
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
@@ -288,7 +289,8 @@
               "bug-c56861641c064996c2d1",
               "bug-6c53a36a6d111e2d487b",
               "bug-f83e541f135414abb820",
-              "bug-8b468210dc1ff863a00f"
+              "bug-8b468210dc1ff863a00f",
+              "bug-a3eadf254608ae413f00"
             ]
           },
           "publication": {
