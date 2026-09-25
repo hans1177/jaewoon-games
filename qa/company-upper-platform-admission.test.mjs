@@ -125,11 +125,12 @@ test('native-started games outside the explicit grandfather list still enter Uni
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('only the owner-scoped cozy-island and daechung-rpg examples may grandfather native progress',()=>{
+test('owner-scoped existing native games include the three already internally released Roblox games',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-owner-scope-'));
   try{
-    for(const gameId of ['cozy-island','daechung-rpg']){
-      const result=classifyUpperPlatformAdmission({...baseItem(gameId),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'},{repoRoot:root,grandfatherGameIds:['cozy-island','daechung-rpg']});
+    const ids=['cozy-island','daechung-rpg','horror-escape-room'];
+    for(const gameId of ids){
+      const result=classifyUpperPlatformAdmission({...baseItem(gameId),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'},{repoRoot:root,grandfatherGameIds:ids});
       assert.equal(result.state,'UPPER_PLATFORM');
       assert.equal(result.grandfathered,true);
     }
@@ -155,4 +156,17 @@ test('upper-platform orchestration uses reusable workflows instead of rate-limit
   assert.doesNotMatch(orchestration,/gh workflow run unity-web-(?:first-stage-build|floor-source-bootstrap)\.yml/);
 
   for(const workflow of [roblox,unity,web,bootstrap])assert.match(workflow,/workflow_call:/);
+});
+
+
+test('actual internal release evidence is preserved even if a game is missing from the explicit grandfather list',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-release-preserve-'));
+  try{
+    const item={...baseItem('released-game'),robloxInternalReleasePublished:true,currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'};
+    const result=classifyUpperPlatformAdmission(item,{repoRoot:root,grandfatherGameIds:[]});
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.reason,'EXISTING_NATIVE_RELEASE_PRESERVED');
+    assert.equal(result.grandfathered,true);
+    assert.equal(result.released,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
