@@ -826,12 +826,16 @@ jobs:
           $enabledCount = [int]$diag.enabledCount
           $disabledCount = [int]$diag.disabledCount
           $parseErrorCount = [int]$diag.parseErrorCount
+          $candidatePathCount = [int]$diag.candidatePathCount
+          $candidatePaths = @($diag.candidatePaths) -join ','
           "VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED=$settingState" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "ROBLOX_STUDIO_MCP_SETTING_ENABLED=$settingState"
           Write-Host "ROBLOX_STUDIO_MCP_SETTING_FILE_COUNT=$settingsFileCount"
           Write-Host "ROBLOX_STUDIO_MCP_SETTING_ENABLED_COUNT=$enabledCount"
           Write-Host "ROBLOX_STUDIO_MCP_SETTING_DISABLED_COUNT=$disabledCount"
           Write-Host "ROBLOX_STUDIO_MCP_SETTING_PARSE_ERROR_COUNT=$parseErrorCount"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_CANDIDATE_PATH_COUNT=$candidatePathCount"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_CANDIDATE_PATHS=$candidatePaths"
           Write-Host 'ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO'
 
           $settingConfirmed = $settingState -eq 'YES'
