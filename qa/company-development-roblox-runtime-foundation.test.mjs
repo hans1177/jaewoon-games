@@ -297,7 +297,7 @@ test('central policy and architecture preserve runtime truth while real server b
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
  const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
  const topology=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.runtimeFoundationObservation||{};
- const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack?.robloxContract||{};
+ const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack?.releaseGate||{};
  assert.equal(policy.exactEngineVersionWithoutRealServerBootState,'ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT');
  assert.equal(policy.exactEngineVersionDoesNotEqualRealGameServerBoot,true);
  assert.equal(policy.runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution,true);
@@ -397,7 +397,7 @@ test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after St
  assert.match(workflow,/Number\(studioPlay\.versionNumber\)===Number\(candidate\.versionNumber\)/);
  assert.match(workflow,/item\.robloxRuntimeFoundationPassed!==true/);
  assert.match(workflow,/item\.robloxRuntimePassed!==true/);
- assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\)/);
+ assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\)/);
 });
 
 test('post-runtime QA preserves independent and regression progress while shared two-client sync is pending',()=>{
