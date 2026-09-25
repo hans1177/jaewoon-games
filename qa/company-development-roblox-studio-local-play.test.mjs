@@ -246,7 +246,9 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
 test('Studio MCP client negotiates Roblox protocol and waits for the official tool inventory to become ready',()=>{
   assert.match(helper,/protocolVersion:'2024-11-05'/);
   assert.match(helper,/async waitForTools\(requiredNames=\[\],\{attempts=24,delayMs=1500\}=\{\}\)/);
-  assert.match(helper,/await client\.waitForTools\(requiredTools,\{attempts:24,delayMs:1500\}\)/);
+  assert.match(helper,/await client\.waitForTools\(requiredTools,\{/);
+  assert.match(helper,/attempts:Math\.max\(1,Number\(toolAttempts\)\|\|5\)/);
+  assert.match(helper,/delayMs:Math\.max\(100,Number\(toolDelayMs\)\|\|1000\)/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_TOOLS_WAIT=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=/);
   assert.match(helper,/:available=/);
