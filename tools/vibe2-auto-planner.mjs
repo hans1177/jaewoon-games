@@ -246,6 +246,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
       queueRobloxFailureStage:clean(item?.robloxFailureStage||(executionEvidenceMatchesRoblox?executionEvidence.failureStage:'')),
       queueRobloxFailureSignature:clean(item?.robloxFailureSignature||(executionEvidenceMatchesRoblox?executionEvidence.failureSignature:'')),
+      queueRobloxRuntimeObservationPending:clean(item?.robloxFailureSignature)==='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT',
+      queueRobloxDevelopmentBlockedByRuntimeObservation:false,
       queueRobloxSourceCommit:clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:'')),
       queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||(executionEvidenceMatchesRoblox?executionEvidence.artifactIdentity:'')),
       queueRobloxRuntimeObserved:runtimeObserved,
@@ -1652,7 +1654,11 @@ ${phaseInstruction}${visualInstruction}${designInstruction}
     `studio-quality-design-source:${designSource}`,
     `studio-quality-design-grounded:${focusPillar}`
   ]:[];
-  const out=task(id,project,goal,responsibleFiles,project.ownerFocusedCaretaker?'critical':'high','medium',[
+  const runtimeObservationPending=project.engine==='roblox'&&project.queueRobloxRuntimeObservationPending===true;
+  const developmentGoal=runtimeObservationPending
+    ?goal+'\n[RUNTIME_OBSERVATION_NONBLOCKING] Verified real-server boot observation is pending in parallel. This is not a source-code defect and must not stop independent source, gameplay, progression, presentation, usability, audio, or optimization work. Do not fabricate runtime evidence or mutate code merely to clear the observation state; continue the selected development focus and let canonical runtime QA reobserve separately.'
+    :goal;
+  const out=task(id,project,developmentGoal,responsibleFiles,project.ownerFocusedCaretaker?'critical':'high','medium',[
     'studio-quality-loop:v1',
     `studio-quality-cycle:${cycle}`,
     `studio-quality-phase:${phase}`,
@@ -1666,7 +1672,8 @@ ${phaseInstruction}${visualInstruction}${designInstruction}
     'work-package-scope:optimization',
     ...designEvidence,
     ...(focusPillar==='PRESENTATION'?['work-package-scope:visual-runtime-delta']:[]),
-    ...(gameplayDesignRequired?['work-package-scope:design-grounded-gameplay-evolution']:[])
+    ...(gameplayDesignRequired?['work-package-scope:design-grounded-gameplay-evolution']:[]),
+    ...(runtimeObservationPending?['runtime-observation-nonblocking-development:yes','runtime-observation-promotion-blocking-only:yes'] : [])
   ]);
   out.workUnits=7;
   out.maxRetries=null;
