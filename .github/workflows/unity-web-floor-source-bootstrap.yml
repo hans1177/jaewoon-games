@@ -59,17 +59,17 @@ jobs:
           import fs from 'node:fs';
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
+          import {nativeUpperPlatformAlreadyStarted} from './tools/company-upper-platform-admission.mjs';
           const ids=[...new Set(String(process.env.GAME_IDS||'').split(',').map(x=>x.trim()).filter(Boolean))];
           if(!ids.length)throw new Error('UNITY_WEB_BOOTSTRAP_IDS_REQUIRED');
-          const forbidden=new Set(['cozy-island','daechung-rpg']);
           const queue=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const generated=[];
           for(const gameId of ids){
             if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_ID_INVALID:'+gameId);
-            if(forbidden.has(gameId))throw new Error('UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN:'+gameId);
             const item=(queue.items||[]).find(row=>row.gameId===gameId);
             if(!item)throw new Error('UNITY_WEB_BOOTSTRAP_QUEUE_ITEM_MISSING:'+gameId);
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')throw new Error('UNITY_WEB_BOOTSTRAP_PRODUCTION_CLASS_INVALID:'+gameId);
+            if(nativeUpperPlatformAlreadyStarted(item))throw new Error('UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN:'+gameId);
             const designSource=String(item.designBaselineSource||item.minimumDesignContract?.source||'').trim();
             if(!designSource)throw new Error('UNITY_WEB_BOOTSTRAP_DESIGN_SOURCE_MISSING:'+gameId);
             const local=path.join('/tmp/unity-web-bootstrap-design',gameId,'design-revised.json');
@@ -111,6 +111,6 @@ jobs:
           fi
           git commit -m "dev: bootstrap Unity Web floor sources"
           git push origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources for: $IDS. After merge, Company DEVELOPMENT_CONFIRMED Runtime classifies every non-grandfathered game and dispatches the Unity Web floor build individually. Excludes cozy-island and daechung-rpg by contract. Generated sources still require WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources for: $IDS. After merge, Company DEVELOPMENT_CONFIRMED Runtime classifies games without durable native progress and dispatches the Unity Web floor build individually. Games with durable native progress are rejected by the canonical admission classifier. Generated sources still require WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
           echo "UNITY_WEB_BOOTSTRAP_PR=$pr_url"
           echo 'UNITY_WEB_BOOTSTRAP_DIRECT_MAIN_WRITE=NO'
