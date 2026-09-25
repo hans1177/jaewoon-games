@@ -508,6 +508,17 @@ test('Studio inventory parser accepts current id and studio instance id response
   assert.deepEqual(legacy,[{studioId:'studio-legacy',name:'legacy',placeId:''}]);
 });
 
+test('Studio MCP CLI fails closed when runtime checkpoints are not verified and prints structured checkpoint diagnostics',()=>{
+  assert.match(helper,/ROBLOX_STUDIO_MCP_CHECKPOINTS=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_ACTIONS=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_VIEWPORT_BEFORE_FRAMES=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_VIEWPORT_AFTER_FRAMES=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_VIEWPORT_CHANGED=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_CONSOLE_ERROR_COUNT=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_RUNTIME_NOT_VERIFIED:failed=/);
+  assert.match(helper,/if\(!result\.runtimeVerified\)/);
+});
+
 test('Studio MCP client negotiates Roblox protocol and waits for the official tool inventory to become ready',()=>{
   assert.match(helper,/protocolVersion:'2024-11-05'/);
   assert.match(helper,/async waitForTools\(requiredNames=\[\],\{attempts=24,delayMs=1500\}=\{\}\)/);
