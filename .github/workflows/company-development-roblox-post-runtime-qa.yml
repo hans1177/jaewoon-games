@@ -455,7 +455,6 @@ jobs:
             item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
             item.robloxMobileControlUiPassed=result.f5InputCameraUiPassed===true;
             item.robloxMultiplayerQaPassed=result.f7MultiplayerFoundationPassed===true;
-            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const studioAssetRuntimeBindingPassed=studioAssetBindingRequired
               &&result.runtimeAcceptancePassed===true
               &&result.f5InputCameraUiPassed===true
@@ -736,7 +735,7 @@ jobs:
   studio-local-auto-play:
     name: Studio local actual play ${{ matrix.gameId }}
     needs: studio-local-plan
-    if: needs.studio-local-plan.outputs.count != '0'
+    if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.studio-local-plan.outputs.matrix) }}
