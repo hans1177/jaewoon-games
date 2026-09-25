@@ -354,7 +354,8 @@ test('system AI workflow wires sensing, exact reservation identity, missing-resu
   assert.match(workflow,/assignment reservation changed:/);
   assert.match(workflow,/--command=handoff-missing/);
   assert.match(workflow,/continue-on-error: true[\s\S]*pattern: company-system-ai-result-\*/);
-  assert.match(workflow,/group: company-system-ai-reserve-control/);
+  assert.match(workflow,/group: \$\{\{ github\.event_name == 'push' && 'company-system-ai-push-qa-reserve' \|\| 'company-system-ai-reserve-control' \}\}/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
   assert.match(workflow,/group: company-system-ai-fanin-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_FANIN_OPTIMISTIC_RETRY=/);
   assert.match(workflow,/for attempt in 1 2 3 4 5; do/);
