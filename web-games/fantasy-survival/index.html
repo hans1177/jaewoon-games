@@ -1852,7 +1852,7 @@ function serializeWorld(){
   enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360,raidId:e.raidId||null,raidTargetId:e.raidTargetId||null,raidChase:!!e.raidChase})),
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,kind:q.kind||null,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0})),
   structures:sharedStructureSnapshot(),
-  crops:state.crops.map(c=>({...c})),snowChests:[...state.snowChests],raid:{count:state.raid.count,nextAt:state.raid.nextAt,active:state.raid.active?{...state.raid.active}:null},
+  crops:state.crops.map(c=>({...c})),flowerWebs:state.flowerWebs.map(w=>({id:w.id,x:w.x,y:w.y,r:w.r,hits:w.hits})),snowChests:[...state.snowChests],raid:{count:state.raid.count,nextAt:state.raid.nextAt,active:state.raid.active?{...state.raid.active}:null},
   weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},
   bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,crystalSealReleased:state.crystalSealReleased
  }
@@ -1878,6 +1878,7 @@ function applyWorldSnapshot(w){
   const netBuild=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=sharedStructurePos(b);return p?{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?{open:!!b.open}:{}),...(type==='chest'?{storage:b.storage&&typeof b.storage==='object'?{...b.storage}:{}}:{}),...(type==='wall'?{material:['wood','iron','gold'].includes(b.material)?b.material:'wood',refund:b.refund&&typeof b.refund==='object'?{...b.refund}:{wood:5}}:{})}:null}).filter(Boolean):[];
   state.chests=netBuild(w.structures.chests,'chest');state.walls=netBuild(w.structures.walls,'wall');state.doors=netBuild(w.structures.doors,'door');state.beds=netBuild(w.structures.beds,'bed')
  }
+ if(Array.isArray(w.flowerWebs))state.flowerWebs=w.flowerWebs.map(v=>({id:String(v.id),x:Number(v.x)||0,y:Number(v.y)||0,r:Number(v.r)||58,hits:Math.max(0,Number(v.hits)||0),lastAlertAt:0}));
  if(Array.isArray(w.crops))state.crops=w.crops.filter(c=>c&&['carrot','greens'].includes(c.type)&&Number.isFinite(Number(c.x))&&Number.isFinite(Number(c.y))).map(c=>({id:String(c.id),type:c.type,x:Number(c.x),y:Number(c.y),readyAt:Number(c.readyAt)||Date.now()}));
  if(Array.isArray(w.snowChests))state.snowChests=[!!w.snowChests[0],!!w.snowChests[1]];
  if(w.raid&&typeof w.raid==='object'){const count=Math.max(0,Math.floor(Number(w.raid.count)||0));state.raid={count,nextAt:Number(w.raid.nextAt)||Date.now()+raidSpawnDelayMs(count+1),active:w.raid.active?{...w.raid.active}:null}};
@@ -1951,6 +1952,7 @@ async function connectMultiplayer(rawRoom){
   .on('broadcast',{event:'raid-alert'},({payload})=>receiveRaidAlert(payload))
   .on('broadcast',{event:'raid-clear'},({payload})=>receiveRaidClear(payload))
   .on('broadcast',{event:'raid-fail'},({payload})=>receiveRaidFail(payload))
+  .on('broadcast',{event:'flower-web-hit'},({payload})=>hostFlowerWebHit(payload))
   .subscribe(async status=>{
     if(status==='SUBSCRIBED'){
       multiplayer.connected=true;ui.multiRoom.value=room;
@@ -2050,7 +2052,7 @@ function updatePet(dt,now){
 function attack(){
  const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
  p.attackAt=now;p.attackFx=now+150;
- const web=state.area==='surface'?state.flowerWebs.find(v=>v.hits>0&&dist(p.x,p.y,v.x,v.y)<=currentRange()+v.r):null;if(web){const dx=web.x-p.x,dy=web.y-p.y,d=Math.hypot(dx,dy),dot=(dx*p.faceX+dy*p.faceY)/(d||1);if(dot>=-.18){web.hits--;showNotice(web.hits>0?'거미줄 공격 · '+web.hits+'/3':'거미줄 절단 완료');state.dirty=true}}
+ const web=state.area==='surface'?state.flowerWebs.find(v=>v.hits>0&&dist(p.x,p.y,v.x,v.y)<=currentRange()+v.r):null;if(web){const dx=web.x-p.x,dy=web.y-p.y,d=Math.hypot(dx,dy),dot=(dx*p.faceX+dy*p.faceY)/(d||1);if(dot>=-.18){if(multiplayer.connected&&!multiIsHost())multiSend('flower-web-hit',{id:web.id});else damageFlowerWeb(web)}}
  const audioWeight=Math.max(0,Math.min(1,(Number(w?.power)||0)/180));playCombatAudio('swing',audioWeight);
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2'){
   let dmg=currentDamage();
@@ -2746,6 +2748,17 @@ function updateFlowerEnemySpecial(e,targetP,now){
   if(e.hostile&&now>=(e.nextBeeRoll||0)){e.nextBeeRoll=now+1000;if(Math.random()<.20){e.beeCharge={chargeAt:now+2000,endAt:now+5000,hit:false};showNotice('거대 꿀벌 · 2초 뒤 독침 돌진');return{vx:0,vy:0}}}
  }
  return null
+}
+function damageFlowerWeb(web){
+ if(!web||web.hits<=0)return;
+ web.hits=Math.max(0,web.hits-1);state.dirty=true;
+ showNotice(web.hits>0?'거미줄 공격 · '+web.hits+'/3':'거미줄 절단 완료');
+ if(multiplayer.connected&&multiIsHost())multiplayer.worldAt=0
+}
+function hostFlowerWebHit(payload){
+ if(!multiIsHost()||!payload)return;
+ const web=state.flowerWebs.find(v=>v.id===String(payload.id||''));
+ if(web)damageFlowerWeb(web)
 }
 function updateFlowerWebTrap(){const p=state.player;if(state.area!=='surface')return false;const w=flowerWebAt(p.x,p.y);if(!w)return false;for(const e of state.enemies)if(e.hp>0&&e.type.id==='giantspider'&&dist(e.x,e.y,w.x,w.y)<900)e.hostile=true;return true}
 function setBossBanner(text=''){ui.bossBanner.textContent=text;ui.bossBanner.classList.toggle('on',!!text)}
@@ -3864,7 +3877,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,beds:state.beds,crops:state.crops,snowChests:state.snowChests,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,beds:state.beds,crops:state.crops,flowerWebs:state.flowerWebs,snowChests:state.snowChests,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -3881,6 +3894,7 @@ function loadGame(){
   state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.jungleBench=loadPos(s.jungleBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);state.flags=Array.isArray(s.flags)?s.flags.map(loadPos).filter(Boolean):[];
   const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?{open:!!b.open}:{}),...(type==='chest'?{storage:b.storage&&typeof b.storage==='object'?{...b.storage}:{}}:{}),...(type==='wall'?{material:['wood','iron','gold'].includes(b.material)?b.material:'wood',refund:b.refund&&typeof b.refund==='object'?{...b.refund}:{wood:5}}:{})}}).filter(Boolean):[];
   state.chests=loadBuildList(s.chests,'chest');state.walls=loadBuildList(s.walls,'wall');state.doors=loadBuildList(s.doors,'door');state.beds=loadBuildList(s.beds,'bed');
+  state.flowerWebs=Array.isArray(s.flowerWebs)?s.flowerWebs.map(v=>({id:String(v.id),x:Number(v.x)||0,y:Number(v.y)||0,r:Number(v.r)||58,hits:Math.max(0,Number(v.hits)||0),lastAlertAt:0})):state.flowerWebs;
   state.crops=Array.isArray(s.crops)?s.crops.map(c=>{const p=loadPos(c);return p&&['carrot','greens'].includes(c.type)?{id:String(c.id||('c'+Math.random().toString(36).slice(2))),type:c.type,x:p.x,y:p.y,readyAt:Math.max(Date.now()-60000,Number(c.readyAt)||Date.now())}:null}).filter(Boolean):[];state.snowChests=Array.isArray(s.snowChests)?[!!s.snowChests[0],!!s.snowChests[1]]:[false,false];state.raid={count:Math.max(0,Math.floor(Number(s.raid?.count)||0)),nextAt:Math.max(Date.now()+1000,Number(s.raid?.nextAt)||Date.now()+raidSpawnDelayMs(Math.max(0,Math.floor(Number(s.raid?.count)||0))+1)),active:null};if(version<44)state.raid.nextAt=Date.now()+raidSpawnDelayMs(state.raid.count+1);
   state.respawnPos=s.respawnPos&&Number.isFinite(Number(s.respawnPos.x))?loadPos(s.respawnPos):null;resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),reviveClickUntil:Math.max(0,Number(s.pet.reviveClickUntil)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
   if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug','fish','hare','lizard','crystaldeer','greens','bird','goat','monopoly'].includes(x)):[]}}
