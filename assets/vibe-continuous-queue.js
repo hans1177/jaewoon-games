@@ -223,6 +223,12 @@ function normalizeNeuronResults(input = []) {
     catch { return freeze({}); }
   }));
 }
+function normalizeBuildUpDirective(input=null){
+  if(!input||typeof input!=='object'||Array.isArray(input))return null;
+  if(!clean(input.directiveId)||!clean(input.gameId))return null;
+  try{return freeze(JSON.parse(JSON.stringify(input)));}
+  catch{return null;}
+}
 function normalizeTask(input = {}, index = 0) {
   const rawStatus=clean(input.status).toLowerCase();
   const status = rawStatus==='done' ? 'verified' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
@@ -270,6 +276,12 @@ function normalizeTask(input = {}, index = 0) {
     reservedAt: clean(input.reservedAt) || null,
     neuronExpectedVariants: clampInt(input.neuronExpectedVariants || 0, 0, 5),
     neuronResults: normalizeNeuronResults(input.neuronResults),
+    buildUpDirective: normalizeBuildUpDirective(input.buildUpDirective),
+    buildUpDirectiveId: clean(input.buildUpDirectiveId||input.buildUpDirective?.directiveId) || null,
+    buildUpGeneration: clampInt(input.buildUpGeneration??input.buildUpDirective?.generation??0,0,1000000),
+    buildUpGoal: clean(input.buildUpGoal||input.buildUpDirective?.thisLoopPrimaryGoal) || null,
+    buildUpSourceTree: clean(input.buildUpSourceTree||input.buildUpDirective?.sourceTreeFingerprint) || null,
+    nextEscalationRequired: input.nextEscalationRequired === true,
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
     speculativeEligible: atomicPresentation || input.speculativeEligible === true,

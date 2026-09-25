@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
+import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -2416,4 +2417,103 @@ test('Roblox queue projection uses Roblox design genre instead of generic catalo
   assert.equal(project.subgenre,'Tower Defense');
   assert.equal(project.playMode,'SINGLE');
   assert.match(project.robloxDesignProfileSource,/design\/roblox-genre-source\/2026-09-25\/design-revised\.json$/);
+});
+
+
+test('backlog gate still binds one shared BUILD_UP directive to existing queued game work',()=>{
+  const root=tempRepo();
+  const gameId='backlog-build-up';
+  for(const [dir,file,body] of [
+    [`roblox-games/${gameId}/client`,'Visual.client.luau','local camera = workspace.CurrentCamera\n'],
+    [`roblox-games/${gameId}/server`,'Combat.server.luau','local combat = {}\n'],
+    [`roblox-games/${gameId}/shared`,'Save.luau','local save = {}\n'],
+    [`unity-games/${gameId}/Assets/Scripts`,'RuntimeBootstrap.cs','public class RuntimeBootstrap {}\n']
+  ]){
+    const folder=path.join(root,dir);
+    fs.mkdirSync(folder,{recursive:true});
+    fs.writeFileSync(path.join(folder,file),body,'utf8');
+  }
+  writeStudioDesign(root,gameId);
+  const queued=[
+    {
+      id:`${gameId}-roblox-existing-v1`,gameId,target:'roblox',department:'development',type:'implementation',
+      sourceRoot:`roblox-games/${gameId}`,responsibleFiles:[`roblox-games/${gameId}/server/Combat.server.luau`],
+      goal:'existing Roblox implementation work',releaseState:'development-confirmed',status:'queued'
+    },
+    {
+      id:`${gameId}-unity-existing-v1`,gameId,target:'unity',department:'development',type:'implementation',
+      sourceRoot:`unity-games/${gameId}`,responsibleFiles:[`unity-games/${gameId}/Assets/Scripts/RuntimeBootstrap.cs`],
+      goal:'existing Unity implementation work',releaseState:'development-confirmed',status:'queued'
+    }
+  ];
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:'Backlog Build Up',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:queued},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.buildUpDirectiveBackfillCount,2);
+  const rows=result.queue.tasks.filter(row=>row.gameId===gameId);
+  assert.equal(rows.length,2);
+  assert.equal(new Set(rows.map(row=>row.buildUpDirectiveId)).size,1);
+  assert.equal(rows[0].buildUpGeneration,1);
+  assert.equal(rows[1].buildUpGeneration,1);
+  assert.deepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
+  assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
+  assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-directive-backfill:queued-existing-work')));
+});
+
+
+test('queue normalization preserves BUILD_UP directive payload and aliases for workers',()=>{
+  const directive={
+    directiveId:'build-up-demo-g1',
+    gameId:'demo',
+    generation:1,
+    thisLoopPrimaryGoal:'실제 전투 피드백을 강화한다',
+    sourceTreeFingerprint:'sha256:demo',
+    developmentDepth:1,
+    allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}]
+  };
+  const normalized=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'demo-build-up',gameId:'demo',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Combat.server.luau'],
+    goal:'build up',status:'queued',buildUpDirective:directive,buildUpDirectiveId:directive.directiveId,
+    buildUpGeneration:1,buildUpGoal:directive.thisLoopPrimaryGoal,buildUpSourceTree:directive.sourceTreeFingerprint,
+    nextEscalationRequired:true
+  }]});
+  const task=normalized.tasks[0];
+  assert.deepEqual(task.buildUpDirective,directive);
+  assert.equal(task.buildUpDirectiveId,directive.directiveId);
+  assert.equal(task.buildUpGeneration,1);
+  assert.equal(task.buildUpGoal,directive.thisLoopPrimaryGoal);
+  assert.equal(task.buildUpSourceTree,directive.sourceTreeFingerprint);
+  assert.equal(task.nextEscalationRequired,true);
+});
+
+test('BUILD_UP backlog synchronization never rewrites already running work',()=>{
+  const root=tempRepo();
+  const gameId='running-build-up';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'local combat = {}\n','utf8');
+  writeStudioDesign(root,gameId);
+  const running={
+    id:`${gameId}-running-v1`,gameId,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:`roblox-games/${gameId}`,responsibleFiles:[`roblox-games/${gameId}/server/Combat.server.luau`],
+    goal:'already reserved work',releaseState:'development-confirmed',status:'running',reservationRunId:'run-1'
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:'Running Build Up',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[running]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.buildUpDirectiveBackfillCount,0);
+  assert.equal(result.queue.tasks[0].buildUpDirectiveId,null);
+  assert.equal(result.queue.tasks[0].buildUpDirective,null);
+  assert.equal(result.queue.tasks[0].goal,'already reserved work');
 });
