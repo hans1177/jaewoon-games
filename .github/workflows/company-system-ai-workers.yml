@@ -155,6 +155,7 @@ jobs:
             node tools/company-recovery-dispatch.mjs "${dispatch_args[@]}" | tee /tmp/system-ai-recovery-dispatch.log
 
             adaptive_max="$SYSTEM_AI_MAX_BATCH"
+            preferred_targets=''
             if [ -z "$SECURITY_RECOVERY_TASK_ID" ] && [ -z "$MARKETING_TASK_IDS" ]; then
               pending_runs="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name=="Company System AI Workers" and .event!="push" and (.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested"))] | length' 2>/dev/null || echo 0)"
               reservation_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now(),tasks=q.tasks||[],byId=new Map(tasks.map(x=>[String(x.id||''),x]));const terminal=s=>['done','completed','verified'].includes(String(s||'').toLowerCase());const waits=[];for(const x of tasks){if(String(x.status||'').toLowerCase()!=='queued')continue;const deps=(x.dependencies||[]).map(id=>byId.get(String(id)));if(deps.some(d=>!d||!terminal(d.status)))continue;const m=String(x.blocker||'').match(/^shared-signature-canary-pending:(.+)$/i);if(m&&!terminal(byId.get(m[1])?.status))continue;const stamps=[x.updatedAt||x.createdAt,...deps.map(d=>d?.updatedAt||d?.createdAt)].map(Date.parse).filter(Number.isFinite);if(stamps.length)waits.push(Math.max(0,now-Math.max(...stamps)));}console.log(waits.length?Math.max(...waits):0)")"
@@ -200,7 +201,9 @@ jobs:
                 --supervisor-review-wait-ms="$supervisor_review_wait_ms" \
                 --output=/tmp/system-ai-bottleneck.json | tee /tmp/system-ai-bottleneck.log
               adaptive_max="$(node -p "require('/tmp/system-ai-bottleneck.json').recommendedBatch")"
+              preferred_targets="$(node -p "(require('/tmp/system-ai-bottleneck.json').recommendedReserveTaskIds||[]).join(',')")"
               echo "SYSTEM_AI_ADAPTIVE_RESERVE_MAX=$adaptive_max"
+              echo "SYSTEM_AI_BOTTLENECK_RECOMMENDED_TARGETS=$preferred_targets"
             fi
 
             if [ -n "$SECURITY_RECOVERY_TASK_ID" ]; then
@@ -222,8 +225,14 @@ jobs:
                 --command=reserve \
                 --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
                 --max="$adaptive_max" \
+                --preferred="$preferred_targets" \
                 --reservation="$reservation" \
                 --output=/tmp/system-ai-reserved.json
+              if [ -n "$preferred_targets" ]; then
+                echo 'SYSTEM_AI_BOTTLENECK_RESERVATION_MODE=SENSOR_GUIDED_EXISTING_RESERVE'
+              else
+                echo 'SYSTEM_AI_BOTTLENECK_RESERVATION_MODE=EXISTING_RESERVE_NO_SENSOR_TARGET'
+              fi
             fi
 
             cd /tmp/system-ai-control
