@@ -1,5 +1,5 @@
 {
-  "version": 384,
+  "version": 385,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7300,6 +7300,20 @@
       "grandfatherGameIds": [],
       "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
       "releaseOrDeploymentAuthority": false
+    },
+    "buildUpExactEffectEvidenceBinding20260926": {
+      "id": "BUILD_UP_EXACT_EFFECT_EVIDENCE_BINDING_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "BUILD_UP effect confirmation now requires runtime or deterministic gameplay evidence bound to the current source revision or current source-tree fingerprint, plus matching artifact identity when an artifact exists. Stale PASS evidence cannot advance development depth.",
+      "policyPath": "continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.effectivenessMeasurement",
+      "codeBindings": [
+        "tools/company-build-up-directive.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        "qa/company-build-up-directive.test.mjs",
+        "qa/vibe2-auto-planner.test.mjs"
+      ],
+      "authorityChange": "NONE",
+      "shadowPipelineCreated": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -22613,7 +22627,9 @@
         "generationFanInRequiredBeforeNextDirective": true,
         "anyActiveTaskKeepsSameDirectiveGeneration": true,
         "anyFailedTaskKeepsDepthAndTriggersCausalRepair": true,
-        "allRequiredGenerationTasksMustBeVerifiedBeforeEscalation": true
+        "allRequiredGenerationTasksMustBeVerifiedBeforeEscalation": true,
+        "exactCurrentSourceEffectEvidenceRequiredForDepthIncrease": true,
+        "staleEffectEvidenceCannotIncreaseDepth": true
       },
       "platformHandoff": {
         "sharedCommonGoal": true,
@@ -22637,7 +22653,12 @@
         "noMeaningfulPlayerValueDeltaAction": "DO_NOT_COUNT_CYCLE_AS_BUILD_UP_AND_GENERATE_A_DIFFERENT_DIRECTIVE",
         "verifiedStatusWithoutSourceTreeDeltaAction": "KEEP_DEPTH_AND_REGENERATE_REAL_IMPLEMENTATION_DIRECTIVE",
         "sourceTreeFingerprintIncludesRealGameCodeScenesPrefabsMaterialsAnimationImagesAudio": true,
-        "generatedWorkflowQaBootstrapEvidenceMetadataExcludedFromEvolutionFingerprint": true
+        "generatedWorkflowQaBootstrapEvidenceMetadataExcludedFromEvolutionFingerprint": true,
+        "effectConfirmationRequiresExactCurrentSourceEvidence": true,
+        "staleRuntimeOrDeterministicEvidenceCannotConfirmCurrentBuildUpEffect": true,
+        "sourceRevisionOrSourceTreeFingerprintMatchRequired": true,
+        "runtimeArtifactIdentityMatchRequiredWhenArtifactIdentityExists": true,
+        "exactEvidenceMismatchAction": "CLASSIFY_UNKNOWN_RUNTIME_EFFECT_KEEP_DEPTH_AND_REQUEST_CURRENT_RUNTIME_OBSERVATION"
       },
       "effectivenessMeasurement": {
         "required": true,
@@ -22658,7 +22679,17 @@
         "partialEffectKeepsDepthUnlessRequiredGenerationAcceptanceIsFullyVerified": true,
         "regressionRoutesToCausalRepair": true,
         "unknownRuntimeEffectMayNotBePromotedToConfirmedEffect": true,
-        "effectComparisonMustReferenceSameDirectiveGoalAndResponsibleScope": true
+        "effectComparisonMustReferenceSameDirectiveGoalAndResponsibleScope": true,
+        "exactEvidenceBindingRequired": true,
+        "requiredExactBindings": [
+          "CURRENT_SOURCE_REVISION_OR_SOURCE_TREE_FINGERPRINT",
+          "RUNTIME_OR_DETERMINISTIC_EVIDENCE_SOURCE_REVISION_OR_SOURCE_TREE_FINGERPRINT",
+          "ARTIFACT_IDENTITY_WHEN_RUNTIME_ARTIFACT_EXISTS"
+        ],
+        "staleEvidenceMayNotConfirmEffect": true,
+        "missingExactBindingClassification": "UNKNOWN_RUNTIME_EFFECT",
+        "mismatchedExactBindingClassification": "UNKNOWN_RUNTIME_EFFECT",
+        "exactBindingPassRequiredForEffectConfirmed": true
       },
       "nextActionDecision": {
         "requiredAfterGenerationFanIn": true,
@@ -22691,7 +22722,8 @@
         "nextActionMustExplainWhyItHasHigherPlayerValueThanDeferredAlternatives": true,
         "sameFailedStrategyMayNotBeSelectedWithoutNewCausalEvidence": true,
         "protectedGameMeaningMayNotChangeWithoutExistingAuthority": true,
-        "qaSecurityReleaseAuthoritiesUnchanged": true
+        "qaSecurityReleaseAuthoritiesUnchanged": true,
+        "staleOrMismatchedEffectEvidenceAction": "REQUEST_REQUIRED_RUNTIME_OBSERVATION"
       },
       "runtimeStateProjection": {
         "queueStoresSummaryOnly": true,
