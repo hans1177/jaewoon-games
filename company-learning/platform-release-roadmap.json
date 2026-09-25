@@ -1159,6 +1159,12 @@
     "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
     "stages": [
       "MINIMUM_DESIGN_CONTRACT_READY",
+      "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
+      "UNITY_WEBGL_BUILD",
+      "UNITY_WEB_ACTUAL_BROWSER_PLAY",
+      "UNITY_WEB_INDEPENDENT_QA",
+      "UNITY_WEB_REGRESSION",
+      "UPPER_PLATFORM_DEVELOPMENT_READY",
       "ROBLOX_UNITY_NATIVE_SOURCE_BIND",
       "TARGET_PLATFORM_RUNTIME",
       "TARGET_PLATFORM_INDEPENDENT_QA",
@@ -2026,17 +2032,24 @@
       }
     },
     "machineWorkInstruction": {
-      "version": 2,
+      "version": 3,
       "authority": "MACHINE_EXECUTION_CONTRACT",
       "humanDocumentRequired": false,
       "sourceOfTruth": "company-learning/platform-release-roadmap.json",
-      "objective": "USE_VERIFIED_LEARNING_TO_CONTINUE_ONE_GAME_FROM_MINIMUM_SHARED_DESIGN_TO_ROBLOX_AND_UNITY_NATIVE_INTERNAL_RELEASE_PLAYTEST_AND_POST_RELEASE_COMPLETENESS",
+      "objective": "USE_VERIFIED_LEARNING_TO_ADVANCE_ONE_GAME_FROM_MINIMUM_SHARED_DESIGN_THROUGH_A_FULL_UNITY_WEB_DEVELOPMENT_FLOOR, THEN START_ROBLOX_AND_UNITY_UPPER_PLATFORM DEVELOPMENT ONLY AFTER UPPER_PLATFORM_DEVELOPMENT_READY",
       "executionOrder": [
         "LOAD_APPROVED_PLATFORM_GENRE_AND_MINIMUM_DESIGN_BASELINE",
-        "LOAD_CURRENT_PROJECT_STATE_AND_EXISTING_NATIVE_SOURCES",
+        "LOAD_CURRENT_PROJECT_STATE_AND_EXISTING_SOURCES",
         "LOAD_VERIFIED_LEARNING_CONTEXT",
-        "CREATE_OR_CONTINUE_ROBLOX_NATIVE_SOURCE",
-        "CREATE_OR_CONTINUE_UNITY_NATIVE_SOURCE",
+        "CREATE_OR_CONTINUE_CANONICAL_UNITY_SOURCE_FOR_WEB_FLOOR",
+        "BUILD_UNITY_WEBGL_FROM_CANONICAL_UNITY_SOURCE",
+        "VERIFY_ACTUAL_BROWSER_PLAY",
+        "RUN_UNITY_WEB_INDEPENDENT_QA",
+        "RUN_UNITY_WEB_REGRESSION",
+        "EVALUATE_UPPER_PLATFORM_DEVELOPMENT_READY",
+        "ON_NOT_READY_REPAIR_CAUSAL_UNITY_WEB_SCOPE_AND_REPEAT",
+        "ON_READY_CREATE_OR_CONTINUE_ROBLOX_NATIVE_SOURCE",
+        "ON_READY_CONTINUE_UNITY_NATIVE_APP_SOURCE",
         "VERIFY_EACH_PLATFORM_RUNTIME_INDEPENDENT_QA_AND_REGRESSION",
         "PROMOTE_EACH_PLATFORM_INTERNAL_RELEASE_ONLY_AFTER_OWN_GATES_PASS",
         "ENTER_INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
@@ -2061,7 +2074,10 @@
         "platformSpecificImplementationRequired": true,
         "platformSpecificRuntimeQaRegressionRequired": true,
         "competitiveQualityParityRequired": true,
-        "commonQualityContract": "tools/company-common-development-quality-contract.mjs"
+        "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
+        "admissionGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+        "newNativeStartRequiresUnityWebReadiness": true,
+        "existingNativeDevelopmentGrandfathered": true
       },
       "robloxWorker": {
         "bootstrap": "tools/company-development-roblox-bootstrap.mjs",
@@ -2132,7 +2148,24 @@
         "productionWorkPreemptsPractice": true,
         "ownerDirectiveAlwaysHighestPriority": true
       },
-      "completionRule": "NEVER_STOP_AT_SOURCE_BIND; NEVER_TREAT_INTERNAL_RELEASE_AS_COMPLETION; CONTINUE_INTERNAL_PLAYTEST_REPAIR_UNTIL_PLATFORM_ACCEPTANCE; NEVER_STOP_AT_PUBLIC_RELEASE_WHILE_SAFE_POST_RELEASE_GAPS_REMAIN"
+      "completionRule": "NEVER_STOP_AT_SOURCE_BIND; NEVER_TREAT_INTERNAL_RELEASE_AS_COMPLETION; CONTINUE_INTERNAL_PLAYTEST_REPAIR_UNTIL_PLATFORM_ACCEPTANCE; NEVER_STOP_AT_PUBLIC_RELEASE_WHILE_SAFE_POST_RELEASE_GAPS_REMAIN",
+      "unityWebWorker": {
+        "owner": "VIBE2_VIBE3",
+        "role": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
+        "canonicalSourceRoot": "unity-games/<gameId>/",
+        "buildOutputRoot": "web-games/<gameId>/",
+        "workflow": ".github/workflows/unity-web-first-stage-build.yml",
+        "codeGraphicsMotionAudioDevelopmentRequired": true,
+        "actualBrowserPlayRequired": true,
+        "independentQaRequired": true,
+        "regressionRequired": true,
+        "readinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+        "readinessEvidence": "web-games/<gameId>/upper-platform-development-readiness.json",
+        "sourceTreeExactMatchRequired": true,
+        "failureState": "REPAIR_REQUIRED",
+        "directNativeDispatchForbiddenUntilReady": true,
+        "deploymentOrReleaseAuthority": false
+      }
     },
     "selfRecoveryAndBottleneckRelief": {
       "version": 1,
