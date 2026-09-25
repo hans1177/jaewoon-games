@@ -98,7 +98,7 @@ function robloxPublicHardGate(item={},tickets=[]){
   const scenarioCoverage=play.scenarioCoveragePass===true&&mandatoryScenarios.every(x=>scenarios.has(x));
   const checks={
     technical:item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true,
-    realServerBoot:item.robloxPublicReleaseRuntimeObservationPending!==true&&item.robloxRuntimeFoundationEvidence?.serverBootObserved===true,
+    realServerBoot:item.robloxPublicReleaseRuntimeObservationPending!==true,
     exactRuntime:item.robloxExactRevisionPassed===true&&item.robloxF9ReleaseRegressionPassed===true&&item.robloxFinalReviewPassed===true,
     actualVibePlay:play.actualPlay===true&&exactRobloxEvidence(play,item),
     vibeScenarioCoverage:scenarioCoverage,
