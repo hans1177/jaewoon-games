@@ -92,6 +92,62 @@ function recoverExactPrivateRuntimeCheckpoint(item,design){
   if(!exact)return null;
   return{currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
 }
+function migrateSharedRobloxFallbackToDedicatedTarget(item){
+  const target=item?.robloxPublicationTarget||{};
+  const candidate=item?.robloxRuntimeCandidateEvidence||{};
+  const validId=value=>/^[1-9][0-9]*$/.test(clean(value));
+  const sharedFallback=target.verified===true
+    &&clean(target.source)==='owner-pinned-open-cloud-target'
+    &&target.dedicated!==true
+    &&validId(target.universeId)
+    &&validId(target.placeId);
+  const exactCandidate=candidate.published===true
+    &&clean(candidate.sourceRevision)===clean(item?.robloxSourceCommit)
+    &&clean(candidate.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+    &&String(candidate.universeId||'')===String(target.universeId||'')
+    &&String(candidate.placeId||'')===String(target.placeId||'')
+    &&Number(candidate.versionNumber)>0;
+  const reusableBuild=item?.robloxBuildOrPackagePassed===true
+    &&item?.robloxBuildPreflightPassed===true
+    &&item?.robloxFoundationF0Passed===true
+    &&clean(item?.robloxBuildSourceRevision)===clean(item?.robloxSourceCommit)
+    && /^sha256:[a-f0-9]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity));
+  if(!sharedFallback||!exactCandidate||!reusableBuild)return false;
+  item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+  item.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
+  item.robloxRuntimePassed=false;
+  item.robloxRuntimePassedAt=null;
+  item.robloxRuntimeFailedAt=null;
+  item.robloxRuntimeFoundationPassed=false;
+  item.robloxRuntimeFoundationEvidence=null;
+  item.robloxRuntimeEvidence=null;
+  item.robloxPostRuntimeQaEvidence=null;
+  item.robloxIndependentQaPassed=false;
+  item.robloxIndependentQaPassedAt=null;
+  item.robloxRegressionPassed=false;
+  item.robloxRegressionPassedAt=null;
+  item.robloxFinalReviewPassed=false;
+  item.robloxFinalReviewPassedAt=null;
+  item.robloxInternalReleaseReady=false;
+  item.robloxPublicReleaseReady=false;
+  item.robloxPublicRelease=false;
+  item.robloxReleaseClaim=false;
+  item.robloxInternalVibePlayEvidence=null;
+  item.robloxSharedTargetCurrent=false;
+  item.robloxFastMvpSupersededBy=null;
+  item.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+  item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
+  item.routingBlockers=['roblox-dedicated-runtime-target-migration-pending'];
+  item.robloxDedicatedTargetMigration={
+    version:1,
+    fromUniverseId:String(target.universeId),
+    fromPlaceId:String(target.placeId),
+    sourceRevision:clean(item.robloxSourceCommit),
+    artifactIdentity:clean(item.robloxBuildArtifactIdentity),
+    state:'PENDING_DEDICATED_PRIVATE_TARGET',
+  };
+  return true;
+}
 function progressMatchesDesign(item,design){
   return item?.minimumDesignContract?.pass===true
     &&clean(item?.minimumDesignContract?.source)===clean(design?.file)
@@ -156,6 +212,9 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,stamp}){
   });
   removeLegacy(item);
   bindSaveContract(item,roadmap);
+  if(migrateSharedRobloxFallbackToDedicatedTarget(item)){
+    item.updatedAt=stamp;
+  }
   return item;
 }
 
