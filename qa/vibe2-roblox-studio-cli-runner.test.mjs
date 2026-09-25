@@ -127,6 +127,23 @@ test('production Studio runtime can bind play evidence to the exact published pl
   assert.match(studioCliSource, /VIBE2_ROBLOX_STUDIO_PLACE_VERSION/);
 });
 
+test('production local-only Studio mode rejects online launch arguments', async () => {
+  const root=temp();
+  const scenarioFile=path.join(root,'scenario.json');
+  const runtimeFile=path.join(root,'runtime.json');
+  writeJson(scenarioFile,{version:1,engine:'roblox',actions:[]});
+  await assert.rejects(
+    runRobloxStudioCliRuntime({
+      scenarioFile,runtimeResultFile:runtimeFile,nonce:'abcdef123456',
+      localOnly:true,placeId:'123',universeId:'456',placeVersion:'7',
+      cwd:path.resolve('.')
+    }),
+    /local-only mode requires --place-file|local-only mode forbids/
+  );
+  assert.match(studioCliSource,/local-only mode requires --place-file/);
+  assert.match(studioCliSource,/local-only mode forbids placeId, universeId and placeVersion launch arguments/);
+});
+
 test('official Studio CLI runner persists nonce-bound runtime and sanitized authorized source evidence', async () => {
   const root = temp();
   const fakeStudio = path.join(root, 'fake-studio');
