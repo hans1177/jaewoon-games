@@ -67,6 +67,14 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.platformAdaptationDirectives.UNITY_WEB);
   assert.ok(directive.platformAdaptationDirectives.ROBLOX);
   assert.ok(directive.platformAdaptationDirectives.UNITY_APP);
+  assert.ok(directive.sourceSymbolAnchors.length>=1);
+  assert.ok(directive.sourceSymbolAnchors.some(row=>row.file.includes('Game.server.luau')||row.file.includes('GameCore.cs')));
+  assert.ok(directive.expectedPlayerEffect.length>20);
+  assert.equal(directive.effectivenessMeasurement.classification,'UNKNOWN_RUNTIME_EFFECT');
+  assert.equal(directive.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
+  assert.match(directivePrompt(directive),/SOURCE_ANCHORS:/);
+  assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
+  assert.match(directivePrompt(directive),/NEXT_VIBE_ACTION:/);
   assert.match(directivePrompt(directive),/GAME_SPECIFIC_BUILD_UP_DIRECTIVE/);
 });
 
@@ -135,15 +143,41 @@ test('verified loop outcome raises development depth and changes escalation stag
   const changedSourceObservation={...sourceObservation,sourceTreeFingerprint:'c'.repeat(64)};
   const second=buildGameSpecificBuildUpDirective({
     gameId:'bug-defense',designRecord:design(),sourceObservation:changedSourceObservation,
-    previousDirective:first,previousDirectiveOutcome:'verified'
+    previousDirective:first,previousDirectiveOutcome:'verified',
+    runtimeEvidence:{effectivenessClassification:'EFFECT_CONFIRMED',runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true,observedPlayerEffect:'적 역할을 읽고 배치 선택이 실제 전투 결과를 바꿨다'}
   });
   assert.equal(second.generation,2);
   assert.equal(second.developmentDepth,2);
   assert.equal(second.escalationStage,'ROLE_DIFFERENTIATION');
-  assert.equal(second.escalationMode,'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA');
+  assert.equal(second.escalationMode,'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA_AND_EFFECT');
+  assert.equal(second.effectivenessMeasurement.classification,'EFFECT_CONFIRMED');
   assert.equal(second.loopEscalation.nextDevelopmentDepth,3);
 });
 
+
+test('verified source delta without confirmed player effect cannot raise development depth',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/bug-defense',
+    sourceTreeFingerprint:'e'.repeat(64),
+    fileCount:3,
+    topFiles:[],
+    sourceAnchors:[{file:'roblox-games/bug-defense/server/Game.server.luau',kind:'FUNCTION',symbol:'attack',line:2,snippet:'function attack(enemy)'}],
+    signals:{combat:10,progression:6,ai:3,save:1,multiplayer:0,animation:2,vfx:2,camera:1,ui:3,lighting:1,primitive:2,todo:0,errorRecovery:2},
+    observations:['CURRENT_SOURCE_FILES=3']
+  };
+  const first=buildGameSpecificBuildUpDirective({gameId:'bug-defense',designRecord:design(),sourceObservation});
+  const changed={...sourceObservation,sourceTreeFingerprint:'f'.repeat(64)};
+  const second=buildGameSpecificBuildUpDirective({
+    gameId:'bug-defense',designRecord:design(),sourceObservation:changed,
+    previousDirective:first,previousDirectiveOutcome:'verified',
+    runtimeEvidence:{runtimeObserved:false}
+  });
+  assert.equal(second.developmentDepth,1);
+  assert.equal(second.escalationMode,'SOURCE_DELTA_WITHOUT_CONFIRMED_EFFECT_REVIEW');
+  assert.equal(second.effectivenessMeasurement.classification,'UNKNOWN_RUNTIME_EFFECT');
+  assert.equal(second.nextActionDecision.action,'REQUEST_REQUIRED_RUNTIME_OBSERVATION');
+  assert.equal(second.loopEscalation.completedGoalBecomesBaseline,false);
+});
 
 test('verified status without a real game source delta cannot raise development depth',()=>{
   const sourceObservation={
