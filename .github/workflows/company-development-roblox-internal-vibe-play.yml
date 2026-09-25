@@ -269,13 +269,18 @@ jobs:
 
       - name: Resolve English-primary Korean-subtitle store spec
         id: title
+        continue-on-error: true
         shell: powershell
         env:
           GAME_ID: ${{ inputs.game_id }}
         run: |
           $ErrorActionPreference = 'Stop'
           $launch = "main/roblox-games/$env:GAME_ID/launch-mvp.json"
-          if (-not (Test-Path $launch)) { throw 'ROBLOX_STORE_LAUNCH_MVP_MISSING' }
+          if (-not (Test-Path $launch)) {
+            $launch = Join-Path $env:RUNNER_TEMP 'roblox-store-launch-fallback.json'
+            @{ gameId = $env:GAME_ID } | ConvertTo-Json | Set-Content $launch -Encoding utf8
+            Write-Host 'ROBLOX_STORE_LAUNCH_MVP=FALLBACK_TO_CATALOG_AND_GAME_ID'
+          }
           $marketing = "main/company-learning/marketing/$env:GAME_ID/latest.json"
           if (-not (Test-Path $marketing)) { $marketing = '' }
           $args = @(
@@ -331,7 +336,7 @@ jobs:
 
       - name: Apply title only to dedicated game target
         id: applytitle
-        if: steps.storetarget.outputs.dedicated == 'true'
+        if: steps.storetarget.outputs.dedicated == 'true' && steps.title.outcome == 'success'
         shell: powershell
         env:
           TITLE: ${{ steps.title.outputs.display_name }}
@@ -407,6 +412,7 @@ jobs:
           VERSION_NUMBER: ${{ steps.candidate.outputs.version_number }}
           DISTINCT_FRAMES: ${{ steps.actualplay.outputs.distinct_frames }}
           DEDICATED_TARGET: ${{ steps.storetarget.outputs.dedicated }}
+          TITLE_SPEC_OUTCOME: ${{ steps.title.outcome }}
           TITLE_APPLY_OUTCOME: ${{ steps.applytitle.outcome }}
           STORE_MEDIA_OUTCOME: ${{ steps.storemedia.outcome }}
         run: |
@@ -438,12 +444,13 @@ jobs:
             authority='roblox-studio-official-test-service-vibe-play'
           }
           $dedicated = $env:DEDICATED_TARGET -eq 'true'
+          $titleSpecPassed = $env:TITLE_SPEC_OUTCOME -eq 'success'
           $titleApplied = $env:TITLE_APPLY_OUTCOME -eq 'success'
           $mediaApplied = $env:STORE_MEDIA_OUTCOME -eq 'success'
           $store = [ordered]@{
-            pass=($dedicated -and $titleApplied -and $mediaApplied)
+            pass=($dedicated -and $titleSpecPassed -and $titleApplied -and $mediaApplied)
             generated=$true
-            titleBilingualPass=$true
+            titleBilingualPass=$titleSpecPassed
             englishPrimaryKoreanSubtitle=$true
             homepageThumbnailGeneratedFromActualGameplay=$true
             homepageThumbnailCandidateCount=3
