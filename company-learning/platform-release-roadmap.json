@@ -7296,11 +7296,9 @@
     "unityWebFloorScope20260926": {
       "id": "UNITY_WEB_FLOOR_SCOPE_2026-09-26",
       "authority": "OWNER_DIRECTIVE_2026-09-26",
-      "grandfatherGameIds": [
-        "cozy-island",
-        "daechung-rpg"
-      ],
-      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
+      "grandfatherMode": "DURABLE_NATIVE_PROGRESS_EVIDENCE",
+      "grandfatherGameIds": [],
+      "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
       "releaseOrDeploymentAuthority": false
     }
   },
@@ -21627,19 +21625,17 @@
       "releaseOrDeploymentAuthority": false
     },
     "upperPlatformAdmissionMigration": {
-      "version": 2,
+      "version": 3,
       "existingNativeDevelopmentGrandfathered": true,
       "newNativeDevelopmentStartRequiresUnityWebReadiness": true,
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true,
-      "rule": "ONLY_COZY_ISLAND_AND_DAECHUNG_RPG_KEEP_GRANDFATHERED_NATIVE_PROGRESS; ALL_OTHER_DEVELOPMENT_CONFIRMED_GAMES_ENTER_UNITY_WEB_FLOOR",
-      "grandfatherGameIds": [
-        "cozy-island",
-        "daechung-rpg"
-      ],
-      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
-      "existingNativeRuntimeQaRepairMayContinueForGrandfatheredOnly": true
+      "rule": "ANY_GAME_WITH_DURABLE_NATIVE_PROGRESS_EVIDENCE_CONTINUES_WITHOUT_BACKTRACKING; ONLY_GAMES_WITHOUT_NATIVE_PROGRESS_REQUIRE_UNITY_WEB_READINESS_BEFORE_NEW_UPPER_PLATFORM_ENTRY",
+      "grandfatherMode": "DURABLE_NATIVE_PROGRESS_EVIDENCE",
+      "grandfatherGameIds": [],
+      "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
+      "existingNativeRuntimeQaRepairMayContinueWhenNativeProgressEvidenceExists": true
     },
     "orchestrationConcurrency": {
       "version": 1,

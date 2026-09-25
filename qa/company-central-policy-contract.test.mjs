@@ -312,6 +312,17 @@ test('Unity Web is required for new upper-platform entry while native evidence r
   for(const token of ['UPPER_PLATFORM_DEVELOPMENT_READY','PLATFORM_SPECIFIC_SOURCE_EXISTS','PLATFORM_SPECIFIC_RUNTIME_PASS','PLATFORM_SPECIFIC_INDEPENDENT_QA_PASS','PLATFORM_SPECIFIC_REGRESSION_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
   assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.existingNativeDevelopmentGrandfathered,true);
   assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.newNativeDevelopmentStartRequiresUnityWebReadiness,true);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,[]);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
+  assert.equal(roadmap.changeRecord?.unityWebFloorScope20260926?.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  assert.deepEqual(roadmap.changeRecord?.unityWebFloorScope20260926?.grandfatherGameIds,[]);
+  assert.equal(roadmap.changeRecord?.unityWebFloorScope20260926?.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
+  assert.equal(architecture.concurrentPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  assert.equal(architecture.concurrentPlatformDevelopment?.upperPlatformAdmissionMigration?.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebGrandfatherScope?.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  assert.deepEqual(architecture.concurrentPlatformDevelopment?.unityWebGrandfatherScope?.grandfatherGameIds,[]);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebGrandfatherScope?.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
   assert.equal(release.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
   assert.equal(release.target,'PROJECT_SELECTED_PLATFORM');
   assert.equal(release.targetPlatformProjectRequired,true);
