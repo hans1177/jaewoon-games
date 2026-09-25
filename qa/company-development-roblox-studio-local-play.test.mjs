@@ -38,6 +38,7 @@ function item(){
     robloxBuildOrPackagePassed:true,
     robloxBuildSourceRevision:source,
     robloxBuildArtifactIdentity:artifact,
+    robloxSharedTargetCurrent:false,
     robloxRuntimeCandidateEvidence:{
       sourceRevision:source,
       artifactIdentity:artifact,
@@ -45,7 +46,8 @@ function item(){
       universeId:'123',
       placeId:'456',
       versionNumber:9,
-      published:true
+      published:true,
+      authority:'roblox-open-cloud-private-runtime-candidate'
     }
   };
 }
@@ -55,10 +57,10 @@ function runtime(){
     authority:'vibe2-roblox-studio-runtime',
     runtimeVerified:true,
     capabilities:{studioTestService:true,virtualInput:true},
-    actions:[{id:'move',type:'key',dispatched:true,ok:true}],
+    actions:[{id:'move',type:'key',dispatched:true,ok:true,error:'raw action error'}],
     checkpoints:[
-      {id:'loaded',name:'game-loaded',required:true,pass:true},
-      {id:'player',name:'player-present',required:true,pass:true}
+      {id:'loaded',name:'game-loaded',required:true,pass:true,value:{raw:'drop-me'}},
+      {id:'player',name:'player-present',required:true,pass:true,value:'raw-player-value'}
     ],
     errors:[],
     metrics:{consoleErrorCount:0}
@@ -107,6 +109,11 @@ test('verified local Studio pass records no Player or online automation',()=>{
   assert.equal(result.evidence.publishedCandidateCrossCheckAuthority,'OPEN_CLOUD');
   assert.equal(result.evidence.rawSourceIncluded,false);
   assert.equal(result.evidence.learningReusable,true);
+  assert.deepEqual(result.evidence.scenarioCoverage,[]);
+  assert.equal(result.evidence.scenarioCoveragePass,false);
+  assert.equal('value' in result.evidence.checkpoints[0],false);
+  assert.equal('error' in result.evidence.actions[0],false);
+  assert.equal('timeToFirstActionMs' in result.evidence.runtimeSummary,false);
 });
 
 test('stale artifact is rejected before evidence persistence',()=>{
@@ -127,6 +134,8 @@ test('verified Studio runtime error routes exact game to repair while remaining 
   });
   assert.equal(applied.result.pass,false);
   assert.equal(applied.result.evidence.learningReusable,true);
+  assert.equal(applied.result.evidence.failureClass,'STUDIO_RUNTIME_ERROR');
+  assert.deepEqual(applied.result.evidence.errors,[{type:'studio-console-error',actionId:null}]);
   assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
   assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_LOCAL_RUNTIME_ERROR');
   assert.deepEqual(applied.item.routingBlockers,['roblox-studio-local-play-repair-required']);
