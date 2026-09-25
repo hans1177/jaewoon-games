@@ -103,6 +103,28 @@ test('tester debug recovery binds by game id and enters ROOT_CAUSE_MODE on third
 });
 
 
+test('exact Roblox engine version awaiting real server boot stays observation-only without code repair',()=>{
+ const dev={items:[{
+  gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',
+  robloxSourceCommit:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  robloxFoundationF0Passed:true,robloxRuntimeFoundationPassed:false,robloxRuntimePassed:false,
+  robloxRuntimeRetryCount:4,robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+  robloxFailureSignature:'ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT',
+  routingBlockers:['roblox-runtime-foundation-awaiting-real-server-boot'],
+  robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'10767445769',placeId:'126302702438348',versionNumber:23},
+  robloxRuntimeFoundationEvidence:{authority:'exact-engine-version-awaiting-real-server-boot',exactEngineVersion:true,engineExecuted:true,serverBootObserved:false,expectedVersionNumber:23,observedVersionNumber:22}
+ }]};
+ const result=ingestTesterDebug({developmentQueue:dev,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
+ const ticket=result.tickets.tickets.find(x=>x.gameId==='daechung-rpg'&&x.signature==='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT');
+ assert.ok(ticket);
+ assert.equal(ticket.route,'REAL_SERVER_RUNTIME_OBSERVATION_REQUIRED');
+ assert.equal(ticket.repairEligible,false);
+ assert.deepEqual(ticket.responsibleFiles,[]);
+ assert.match(ticket.reproduction,/REAL_ROBLOX_GAME_SERVER_BOOT/);
+ assert.ok(ticket.evidence.some(x=>x.includes('exact-engine-version-awaiting-real-server-boot')));
+ assert.equal(result.recovery.tasks.length,0);
+});
+
 test('actual runtime executor unavailability routes to System AI infrastructure recovery',()=>{
  const dev={items:[{
   gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',

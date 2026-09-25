@@ -103,6 +103,17 @@ function platformTickets(item={},stamp=''){
           route:'EXTERNAL_CREDENTIAL_REPAIR_REQUIRED',
           repairEligible:false
         });
+      }else if(failureSignature==='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'){
+        add('TARGET_PLATFORM_RUNTIME_FOUNDATION',failureSignature,[
+          JSON.stringify(candidate),
+          JSON.stringify(foundation),
+          `runtime-observation-attempts:${Math.max(0,Number(item.robloxRuntimeRetryCount||0))}`
+        ],{
+          reproduction:'OBSERVE_THE_EXACT_PRIVATE_CANDIDATE_AFTER_A_REAL_ROBLOX_GAME_SERVER_BOOT_AND_RERUN_FOUNDATION_QA',
+          responsibleFiles:false,
+          route:'REAL_SERVER_RUNTIME_OBSERVATION_REQUIRED',
+          repairEligible:false
+        });
       }else if(failureSignature==='ROBLOX_ACTUAL_RUNTIME_EXECUTOR_UNAVAILABLE'){
         add('TARGET_PLATFORM_RUNTIME_FOUNDATION',failureSignature,[
           JSON.stringify(candidate),
