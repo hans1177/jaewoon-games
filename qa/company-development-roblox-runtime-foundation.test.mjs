@@ -334,6 +334,10 @@ test('runtime QA passes internal QA and regression while exact real-server boot 
  assert.match(workflow,/actualRuntimeEvidence:false/);
  assert.match(workflow,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
  assert.match(workflow,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException=false/);
+ assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending=false/);
+ assert.match(workflow,/item\.robloxPublicReleaseFailureSignature=null/);
+ assert.match(workflow,/roblox-public-release-awaiting-real-server-boot/);
 });
 
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{
