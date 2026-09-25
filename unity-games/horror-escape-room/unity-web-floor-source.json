@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "gameId": "horror-escape-room",
+  "gameName": "심야 술래잡기",
+  "identity": "인간 4명과 몬스터 4명이 시작하고, 잡힌 인간이 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.",
+  "coreLoop": [
+    "인간4/몬스터4 배정, 빈자리 AI 충원",
+    "인간은 고유 도구·대시·정화로 생존/반격",
+    "몬스터는 인간을 접촉 감염",
+    "감염된 인간은 몬스터로 전환해 옛 팀 추격",
+    "한 진영이 0명이 되면 즉시 승패",
+    "240초까지 양팀이 남으면 무승부"
+  ],
+  "category": "ACTION",
+  "multiplayerMode": "FOUR_VS_FOUR_INFECTION_WITH_AI_FILL",
+  "canonicalSourceRoot": "unity-games/horror-escape-room",
+  "buildMethod": "UnityWebFloorBuild.BuildWeb",
+  "futureNativeBuildMethod": "UnityWebFloorBuild.Build",
+  "generatorFingerprint": "13404b8fdafa6c2fb7e1508f2086e6aa117caddee0a0bdfe336e064635e5975d",
+  "designBaseline": "/tmp/unity-web-bootstrap-design/horror-escape-room/design-revised.json",
+  "unityPlatformProfile": {
+    "platform": "UNITY",
+    "inputModel": "Android 터치 이동과 상호작용 버튼을 사용하고 에디터 입력을 보조한다.",
+    "sessionModel": "1인 역할 선택 + AI 충원과 비대칭 멀티 라운드를 같은 얼음땡 규칙으로 지원한다.",
+    "multiplayerRuntime": "호스트/서버 권한으로 역할 선정, 포획, 해동, 타이머와 승패를 동기화한다.",
+    "performanceBudget": "모바일 조명과 후처리 예산을 제한하고 방 단위 오브젝트 활성화를 사용한다.",
+    "uiUx": "직관적인 이동·대시·스킬·해동 UI만 제공한다.",
+    "saveAndNetwork": "탈출 기록은 버전 저장하고 라운드 상태는 세션 authoritative 상태로 유지한다.",
+    "platformContentAdaptation": "같은 고전 공포 몬스터 로스터와 얼음땡 규칙을 Unity 3D 추격전으로 구현한다.",
+    "internalReleaseTarget": "내부 Android 테스트 빌드.",
+    "validationEvidence": "1인 AI 충원과 실제 멀티 역할선정·포획·해동·승패·성능을 같은 빌드에서 검증한다."
+  },
+  "purpose": "UNITY_WEB_DEVELOPMENT_FLOOR",
+  "developmentFloor": true,
+  "presentationState": "BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP",
+  "upperPlatformReady": false,
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-09-25T16:28:37.439Z"
+}
