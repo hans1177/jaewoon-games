@@ -35,6 +35,66 @@ export function validateLocalStudioPolicy(roadmap={}){
   return true;
 }
 
+function collectAssistantSettingJsonFiles(root){
+  const files=[];
+  const visit=dir=>{
+    let entries=[];
+    try{entries=fs.readdirSync(dir,{withFileTypes:true});}catch{return;}
+    for(const entry of entries){
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory()){visit(full);continue;}
+      if(entry.isFile()&&/\.json$/i.test(entry.name))files.push(full);
+    }
+  };
+  if(root&&fs.existsSync(root))visit(root);
+  return files.sort();
+}
+
+function collectMcpServerEnabledValues(value,out=[]){
+  if(value==null)return out;
+  if(Array.isArray(value)){
+    for(const row of value)collectMcpServerEnabledValues(row,out);
+    return out;
+  }
+  if(typeof value!=='object')return out;
+  if(Object.prototype.hasOwnProperty.call(value,'mcp-server')){
+    const server=value['mcp-server'];
+    if(server&&typeof server==='object'&&typeof server.enabled==='boolean')out.push(server.enabled);
+  }
+  for(const child of Object.values(value))collectMcpServerEnabledValues(child,out);
+  return out;
+}
+
+export function detectStudioMcpAssistantSetting({settingsRoot=''}={}){
+  const root=clean(settingsRoot);
+  const files=collectAssistantSettingJsonFiles(root);
+  let enabledCount=0,disabledCount=0,parseErrorCount=0;
+  for(const file of files){
+    try{
+      const parsed=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+      for(const enabled of collectMcpServerEnabledValues(parsed,[])){
+        if(enabled===true)enabledCount++;
+        else if(enabled===false)disabledCount++;
+      }
+    }catch{
+      parseErrorCount++;
+    }
+  }
+  const state=enabledCount>0?'YES'
+    :files.length===0?'MISSING'
+    :disabledCount>0?'NO'
+    :'UNKNOWN';
+  return{
+    version:1,
+    state,
+    fileCount:files.length,
+    enabledCount,
+    disabledCount,
+    parseErrorCount,
+    mutationPerformed:false
+  };
+}
+
 function artifactRunIdFor(item={},candidate={}){
   return Number(candidate?.artifactRunId||item?.robloxFoundationF0Evidence?.artifactRunId||item?.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
 }
@@ -707,6 +767,17 @@ function args(argv=process.argv.slice(2)){
 async function main(){
   const a=args();
   const mode=clean(a.mode);
+  if(mode==='diagnose-setting'){
+    const result=detectStudioMcpAssistantSetting({settingsRoot:clean(a['settings-root'])});
+    if(clean(a.output))writeJson(a.output,result);
+    console.log('ROBLOX_STUDIO_MCP_SETTING_ENABLED='+result.state);
+    console.log('ROBLOX_STUDIO_MCP_SETTING_FILE_COUNT='+result.fileCount);
+    console.log('ROBLOX_STUDIO_MCP_SETTING_ENABLED_COUNT='+result.enabledCount);
+    console.log('ROBLOX_STUDIO_MCP_SETTING_DISABLED_COUNT='+result.disabledCount);
+    console.log('ROBLOX_STUDIO_MCP_SETTING_PARSE_ERROR_COUNT='+result.parseErrorCount);
+    console.log('ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO');
+    return;
+  }
   if(mode==='plan'){
     const matrix=planLocalStudioCandidates({
       queue:readJson(a.queue),
@@ -754,7 +825,7 @@ async function main(){
     console.log('ROBLOX_STUDIO_MCP_PLAY_LEARNING='+(applied.result.evidence.learningReusable?'STRUCTURED_VERIFIED':'NO'));
     return;
   }
-  throw new Error('unsupported --mode; expected plan, mcp-run, or persist');
+  throw new Error('unsupported --mode; expected diagnose-setting, plan, mcp-run, or persist');
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
