@@ -184,8 +184,30 @@ jobs:
             echo 'HOMEPAGE_RUNTIME_SOURCE=PR_REVISION'
           elif git fetch --depth=1 --no-tags origin "$COMPANY_RUNTIME_BRANCH"; then
             mkdir -p /tmp/homepage-runtime
-            git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/homepage-runtime/game-catalog.json
+            git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/homepage-runtime/runtime-game-catalog.json
             git show "origin/$COMPANY_RUNTIME_BRANCH:company-status.json" > /tmp/homepage-runtime/company-status.json
+            git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/homepage-runtime/development-queue.json
+            if ! git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/homepage-runtime/game-seed-state.json 2>/dev/null; then
+              printf '%s\n' '{"seeds":[]}' > /tmp/homepage-runtime/game-seed-state.json
+            fi
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            import { applyHomepageRuntimeInfo, mergeRuntimeCatalogMissingGames, syncProductionClasses } from './tools/company-status-sync.mjs';
+            import { validateNormalizedCatalog } from './tools/game-catalog-normalization.mjs';
+            const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+            const runtimeCatalog=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/runtime-game-catalog.json','utf8'));
+            const developmentQueue=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/development-queue.json','utf8'));
+            const seedState=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/game-seed-state.json','utf8'));
+            const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
+            const artbooks=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+            mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
+            syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem:fs});
+            applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
+            const validation=validateNormalizedCatalog(catalog);
+            if(!validation.pass)throw new Error('HOMEPAGE_RUNTIME_CATALOG_RECONCILE_FAILED:'+validation.errors.join(','));
+            fs.writeFileSync('/tmp/homepage-runtime/game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
+            console.log('HOMEPAGE_RUNTIME_CATALOG_RECONCILE=PASS');
+            NODE
             node -e "JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/company-status.json','utf8'))"
             echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
@@ -240,7 +262,7 @@ jobs:
           fi
           if [[ "$valid_runtime_exposure" != 'true' ]]; then
             git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/homepage-development-queue.json
-            git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/homepage-game-catalog.json
+            cp /tmp/homepage-runtime/game-catalog.json /tmp/homepage-game-catalog.json
             node tools/company-homepage-platform-exposure-sync.mjs /tmp/homepage-development-queue.json /tmp/homepage-game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json
             if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
               echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED'
@@ -290,6 +312,7 @@ jobs:
           set -euo pipefail
           cp /tmp/homepage-runtime/game-catalog.json game-catalog.json
           cp /tmp/homepage-runtime/company-status.json company-status.json
+          node qa/game-catalog-normalization.test.mjs
           node -e "JSON.parse(require('fs').readFileSync('game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
           echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
           echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
