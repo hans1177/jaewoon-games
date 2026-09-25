@@ -1884,10 +1884,12 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     if(!gameId||!project)continue;
     checked+=1;
     const history=tasks.filter((row,rowIndex)=>rowIndex!==index&&clean(row?.gameId)===gameId&&clean(row?.buildUpDirective?.directiveId));
-    const activeCanonical=history
-      .filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase()))
-      .sort((a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0))[0]||null;
+    const byGeneration=(a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0);
+    const activeCanonical=history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())).sort(byGeneration)[0]||null;
+    const latestHistorical=history.slice().sort(byGeneration)[0]||null;
     const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
+    const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
+    const latestHistoricalGeneration=Number(latestHistorical?.buildUpDirective?.generation||0);
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
     if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
       candidate=bindSharedBuildUpDirective(item,activeCanonical.buildUpDirective);
@@ -1911,6 +1913,22 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         }else{
           designPending+=1;
           freshness='DESIGN_PENDING';
+        }
+      }
+    }else if(!activeCanonical?.buildUpDirective&&latestHistoricalGeneration>currentGeneration){
+      const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
+      if(!verifiedDesign){
+        designPending+=1;
+        freshness='STALE_DESIGN_PENDING';
+        candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
+      }else{
+        const queueWithoutCurrent={...queue,tasks:tasks.filter((_,rowIndex)=>rowIndex!==index)};
+        const refreshed=attachGameSpecificBuildUpDirective(item,project,repoRoot,queueWithoutCurrent,verifiedDesign);
+        if(clean(refreshed?.buildUpDirective?.directiveId)){
+          candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
+          candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),...(refreshed.evidence||[]),'build-up-directive-stale-refresh:queued-existing-work'])]};
+          rebound+=1;changed+=1;
+          freshness='REGENERATED_AFTER_NEWER_TERMINAL_GENERATION';
         }
       }
     }else if(activeCanonical?.buildUpDirective){
