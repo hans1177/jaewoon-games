@@ -176,6 +176,31 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(architecture.departmentTopology?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(architecture.departmentRuntimeTopology?.developmentConfirmed?.unityWebReadinessPassDispatch,'ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT');
   assert.equal(architecture.developmentPipeline?.unityWebDevelopmentLane?.readinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(lane?.bootstrapOwner,'.github/workflows/unity-web-floor-source-bootstrap.yml');
+  assert.equal(lane?.bootstrapRole,'CANONICAL_UNITY_SOURCE_SKELETON_ONLY_NOT_GAME_COMPLETION');
+  assert.equal(lane?.repairExecutionOwner,'tools/vibe2-auto-planner.mjs');
+  assert.equal(lane?.repairExecutionEngine,'EXISTING_VIBE2_VIBE3_DEVELOPMENT_ENGINE');
+  assert.equal(lane?.repairTaskSourceRoot,'unity-games/<gameId>/');
+  assert.equal(lane?.repairReadsReadinessEvidence,'web-games/<gameId>/upper-platform-development-readiness.json');
+  assert.equal(lane?.repairMayModifyPolicyOrHomepage,false);
+  assert.equal(lane?.repairMayWeakenQaOrReadinessGate,false);
+  assert.deepEqual(lane?.causalRepairLoop,[
+    'READ_REPAIR_REQUIRED_AND_FAILED_READINESS_DOMAINS',
+    'VIBE_CODE_AND_GRAPHICS_CAUSAL_REPAIR_IN_CANONICAL_UNITY_SOURCE',
+    'MERGE_VERIFIED_SOURCE_DELTA',
+    'UNITY_WEBGL_REBUILD',
+    'ACTUAL_BROWSER_REPLAY',
+    'INDEPENDENT_QA',
+    'REGRESSION',
+    'UPPER_PLATFORM_DEVELOPMENT_READINESS_REEVALUATION',
+  ]);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.causalRepairOwner,'tools/vibe2-auto-planner.mjs');
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.repairWriteBoundary,'unity-games/<gameId>/');
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.repairPolicyWriteAllowed,false);
+  assert.equal(architecture.developmentPipeline?.unityWebDevelopmentLane?.repairLoopUsesExistingDevelopmentEngine,true);
+  assert.equal(architecture.developmentPipeline?.unityWebDevelopmentLane?.shadowRepairPipeline,false);
+  assert.equal(architecture.departmentRuntimeTopology?.developmentConfirmed?.unityWebRepairOwner,'tools/vibe2-auto-planner.mjs');
+  assert.equal(roadmap.changeRecord?.unityWebVibeRepairLoop20260926?.implementationState,'ACTIVE_VIBE_REPAIR_LOOP_BOUND');
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.nativeGateAuthority,true);
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.developmentAdmissionAuthority,true);
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.nativeFanOutTrigger,'UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN');
