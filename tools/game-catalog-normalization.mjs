@@ -13,6 +13,7 @@ const clean=value=>String(value??'').trim();
 const bool=value=>value===true;
 const list=value=>[...new Set((Array.isArray(value)?value:[]).map(clean).filter(Boolean))];
 const numericRank=(table,key,fallback=999)=>Number.isFinite(Number(table?.[key]))?Number(table[key]):fallback;
+const LEGACY_DEVELOPMENT_FREEZE_FIELDS=Object.freeze(['newFeatureExpansionFrozen']);
 
 const platformLabel=platform=>platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'';
 function autoClassificationPolicy(){
@@ -404,6 +405,7 @@ export function normalizeCatalog(catalog={}){
   const policy=normalizationPolicy();
   const ids=new Set();
   for(const game of catalog.games){
+    for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)delete game[field];
     applyHomepageAutoClassification(game);
     const id=clean(game.id||game.gameId);
     if(!id)throw new Error('catalog game id missing');
@@ -435,7 +437,8 @@ export function normalizeCatalog(catalog={}){
     publicationIdentityMustStayBoundToGameId:true,
     ordering:policy?.ordering?.mode||'CANONICAL_STABLE',
     orderField:policy?.ordering?.outputField||'catalogOrder',
-    orderContiguous:true
+    orderContiguous:true,
+    automaticFeatureExpansionFreezeForbidden:true
   };
   catalog.runtimeCounts={
     ...(catalog.runtimeCounts||{}),
@@ -457,6 +460,7 @@ export function validateNormalizedCatalog(catalog={}){
   for(let index=0;index<(Array.isArray(catalog.games)?catalog.games:[]).length;index+=1){
     const game=catalog.games[index];
     const id=clean(game.id),canonical=game.canonical;
+    for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)if(Object.hasOwn(game,field))errors.push('LEGACY_DEVELOPMENT_FREEZE_FORBIDDEN:'+id+':'+field);
     if(!id||!canonical||canonical.schemaVersion!==CATALOG_CANONICAL_SCHEMA_VERSION){errors.push('CANONICAL_MISSING:'+id);continue;}
     if(canonical.identity?.gameId!==id)errors.push('IDENTITY_MISMATCH:'+id);
     if(ids.has(id))errors.push('DUPLICATE_GAME_ID:'+id);ids.add(id);

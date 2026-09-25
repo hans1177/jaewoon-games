@@ -75,7 +75,13 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
     const newDesign=writeDesign(root,'new-native');
     const progressedDesign=writeDesign(root,'progressed');
     writeDesign(root,'paused');
-    write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',developmentGameWipMax:20,items:[
+    write(root,'development-queue.json',{
+      version:1,routerPolicy:'COMPANY_FLOW.md',developmentGameWipMax:20,
+      webValidationPolicy:'LEGACY',webValidationContractVersion:4,webGateRequired:true,webValidationParallelism:20,
+      robloxSourceParallelism:6,robloxTechnicalParallelism:6,webValidationEvidenceSchemaMinimum:15,webPromotionRevalidationRequired:true,
+      ownerPrimaryDevelopment:{authority:'OWNER',maxConcurrentPrimary:3},
+      fastLaunch:{strategy:'FAST_MVP',newFeatureExpansionFrozen:true},
+      items:[
       {
         gameId:'progressed',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
         selectedPlatform:'UNITY',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
@@ -86,7 +92,7 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
           ROBLOX:{source:progressedDesign,jsonPointer:'/content/platformProfiles/ROBLOX'},
           UNITY:{source:progressedDesign,jsonPointer:'/content/platformProfiles/UNITY'}
         },
-        webValidationRequired:true,musicValidationRequired:true,webSourcePath:'web-games/progressed'
+        webValidationRequired:true,musicValidationRequired:true,webSourcePath:'web-games/progressed',newFeatureExpansionFrozen:true
       },
       {gameId:'progressed',gameName:'duplicate'},
       {gameId:'paused',currentStep:'WEB_PLAYABLE_BOOTSTRAP'},
@@ -123,6 +129,7 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
       assert.equal(Object.hasOwn(item,'webValidationRequired'),false);
       assert.equal(Object.hasOwn(item,'musicValidationRequired'),false);
       assert.equal(Object.hasOwn(item,'webSourcePath'),false);
+      assert.equal(Object.hasOwn(item,'newFeatureExpansionFrozen'),false);
       assert.equal(item.saveNormalizationRequired,true);
       assert.equal(item.saveMeaningPreservationRequired,true);
     }
@@ -130,6 +137,15 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
     assert.equal(queue.nativeDevelopmentPolicy,'MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT');
     assert.equal(queue.developmentGameWipMax,null);
     assert.equal(queue.reconciliationPolicy,'ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE');
+    assert.equal(queue.internalConcurrencyCap,null);
+    assert.equal(queue.externalCapacityOnlyBoundary,true);
+    assert.equal(queue.automaticFeatureExpansionFreezeForbidden,true);
+    for(const key of ['webValidationPolicy','webValidationContractVersion','webGateRequired','webValidationParallelism','robloxSourceParallelism','robloxTechnicalParallelism','webValidationEvidenceSchemaMinimum','webPromotionRevalidationRequired']){
+      assert.equal(Object.hasOwn(queue,key),false,key);
+    }
+    assert.equal(Object.hasOwn(queue.ownerPrimaryDevelopment,'maxConcurrentPrimary'),false);
+    assert.equal(Object.hasOwn(queue.fastLaunch,'newFeatureExpansionFrozen'),false);
+    assert.equal(result.legacyQueueMetadataRemoved,true);
 
     const repeat=reconcileDevelopmentQueue({root});
     assert.equal(repeat.changed,false);

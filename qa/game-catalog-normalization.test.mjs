@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
+import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -22,6 +22,7 @@ assert.equal(catalog.normalization?.orderContiguous,true);
 assert.equal(catalog.runtimeCounts?.normalizedGames,catalog.games.length);
 
 for(const [index,game] of catalog.games.entries()){
+  assert.equal(Object.hasOwn(game,'newFeatureExpansionFrozen'),false,'legacy feature freeze must be removed: '+game.id);
   const c=game.canonical;
   assert(c,'canonical record missing: '+game.id);
   assert.equal(c.identity.gameId,game.id);
@@ -177,3 +178,24 @@ assert.equal(fs.existsSync('tools/game-catalog-normalize.mjs'),false);
 assert.equal(fs.existsSync('company-learning/catalog-homepage-normalization.json'),false);
 
 console.log('PASS canonical catalog normalization + stable homepage order: games='+catalog.games.length);
+
+
+{
+  const temp={
+    games:[{
+      id:'legacy-freeze-game',
+      name:'Legacy Freeze',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',
+      selectedPlatform:'ROBLOX',
+      newFeatureExpansionFrozen:true,
+      homepageInfo:{authority:'company-runtime',productionClass:'DEVELOPMENT_CONFIRMED'}
+    }]
+  };
+  normalizeCatalog(temp);
+  assert.equal(Object.hasOwn(temp.games[0],'newFeatureExpansionFrozen'),false);
+  assert.equal(temp.normalization.automaticFeatureExpansionFreezeForbidden,true);
+  assert.equal(validateNormalizedCatalog(temp).pass,true);
+}
+
+assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeatureExpansionFreezeForbidden,true);
