@@ -2017,6 +2017,8 @@ test('generation failure classification keeps causal retry reasons distinct',()=
   assert.equal(generationFailureClass(new Error('focused replace placeholder 금지: index.html')),'MALFORMED_OUTPUT');
   assert.equal(shouldRetryGenerationError(new Error('focused replace placeholder 금지: index.html')),true);
   assert.equal(generationFailureClass(new Error('focused replace 비어 있음')),'MALFORMED_OUTPUT');
+  assert.equal(generationFailureClass(new Error('FOCUSED_REPLACE_BLOCK_ANCHOR_TOO_NARROW: client/Game.client.luau')),'MALFORMED_OUTPUT');
+  assert.equal(shouldRetryGenerationError(new Error('FOCUSED_REPLACE_BLOCK_ANCHOR_TOO_NARROW: client/Game.client.luau')),true);
 });
 test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', async () => {
   const cwd = tempRoot();
@@ -2594,6 +2596,82 @@ test('focused Web repair recovers malformed focused replacement when the replace
   assert.equal(result.codingMethod.focusedReplaceStringRecovery,true);
   assert.deepEqual(result.changedFiles,['index.html']);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-string-recovery/files/index.html'),'utf8'),/Continue/);
+});
+
+test('focused replace-only rejects large replacement on a one-line function opener to prevent body duplication',()=>{
+  const spec={
+    path:'client/Game.client.luau',
+    find:'local function render()',
+    context:[
+      'local function render()',
+      ' local idx=p:GetAttribute("NextBaseIndex")or 1',
+      ' local b=C.Bases[idx]',
+      ' resources.Text="ready"',
+      'end'
+    ].join('\n')
+  };
+  const replace=[
+    'local function render()',
+    ' local idx=p:GetAttribute("NextBaseIndex")or 1',
+    ' local b=C.Bases[idx]',
+    ' resources.Text="updated"',
+    'end'
+  ].join('\n');
+  assert.throws(
+    ()=>normalizeFocusedReplaceOnly(JSON.stringify({replace}),spec),
+    /FOCUSED_REPLACE_BLOCK_ANCHOR_TOO_NARROW/
+  );
+});
+
+test('focused replace-only rejects copying unchanged following body lines into replacement',()=>{
+  const spec={
+    path:'client/Game.client.luau',
+    find:'QACamera.install(C,gui,function()',
+    context:[
+      'QACamera.install(C,gui,function()',
+      '  local shots={{label="rpg-village"}}',
+      '  return shots',
+      'end)',
+      'render()'
+    ].join('\n')
+  };
+  const replace=[
+    'QACamera.install(C,gui,function()',
+    '  local shots={{label="rpg-village"}}',
+    '  return shots',
+    'end)',
+    'render()'
+  ].join('\n');
+  assert.throws(
+    ()=>normalizeFocusedReplaceOnly(JSON.stringify({replace}),spec),
+    /FOCUSED_REPLACE_BLOCK_ANCHOR_TOO_NARROW/
+  );
+});
+
+test('focused replace-only still allows a full block anchor to be replaced coherently',()=>{
+  const spec={
+    path:'client/Game.client.luau',
+    find:[
+      'local function render()',
+      ' resources.Text="old"',
+      'end'
+    ].join('\n'),
+    context:[
+      'local function render()',
+      ' resources.Text="old"',
+      'end',
+      'render()'
+    ].join('\n')
+  };
+  const replace=[
+    'local function render()',
+    ' resources.Text="new"',
+    ' objective.Text="updated"',
+    'end'
+  ].join('\n');
+  const normalized=normalizeFocusedReplaceOnly(JSON.stringify({replace}),spec);
+  assert.equal(normalized.edits.length,1);
+  assert.equal(normalized.edits[0].replace,replace);
 });
 
 test('focused replace-only rejects unchanged replacement and supports early completion',()=>{
