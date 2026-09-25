@@ -27,6 +27,26 @@ const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATI
 
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
+
+function hydrateBuildUpQueueForRunner(queueInput={},queueFile=''){
+  const root=path.join(path.dirname(path.resolve(queueFile||'.vibe2/queue.json')),'build-up-directives');
+  const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(task=>{
+    const directiveId=clean(task?.buildUpDirectiveId);
+    const gameId=clean(task?.gameId);
+    if(task?.buildUpDirective||!directiveId||!gameId)return task;
+    const current=readJson(path.join(root,gameId,'current.json'),null);
+    if(current&&clean(current.directiveId)===directiveId){
+      return{...task,buildUpDirective:current,buildUpBindingState:clean(task.buildUpBindingState)||'CANONICAL_ARTIFACT_HYDRATED',buildUpFreshnessDecision:clean(task.buildUpFreshnessDecision)||'CURRENT'};
+    }
+    const generation=Math.max(0,Number(task?.buildUpGeneration||0));
+    const history=generation?readJson(path.join(root,gameId,'history',String(generation).padStart(4,'0')+'-'+directiveId+'.json'),null):null;
+    if(history&&clean(history.directiveId)===directiveId){
+      return{...task,buildUpDirective:history,buildUpBindingState:clean(task.buildUpBindingState)||'CANONICAL_HISTORY_HYDRATED',buildUpFreshnessDecision:clean(task.buildUpFreshnessDecision)||'CURRENT'};
+    }
+    return{...task,buildUpBindingState:'MISSING_CANONICAL_ARTIFACT',buildUpFreshnessDecision:'MISSING_ARTIFACT_BASELINE_ONLY'};
+  });
+  return{...queueInput,tasks};
+}
 function parseArgs(argv = process.argv.slice(2)) {
   const args = {};
   for (const raw of argv) {
@@ -704,7 +724,8 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const externalAiDistilled=readJson(resolvedExternalAiDistilledFile,{entries:[]});
   const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:true});
   const resolvedCentralPolicyLiveRef=clean(centralPolicyLiveRef)||clean(process.env.VIBE2_CENTRAL_POLICY_LIVE_REF)||'origin/main';
-  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, externalAiDistilled, centralPolicySnapshot, centralPolicyLiveRef:resolvedCentralPolicyLiveRef });
+  const runtimeQueue=hydrateBuildUpQueueForRunner(readJson(resolvedQueueFile,{tasks:[]}),resolvedQueueFile);
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:runtimeQueue, experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, externalAiDistilled, centralPolicySnapshot, centralPolicyLiveRef:resolvedCentralPolicyLiveRef });
   writeJson(resolvedOutputFile, order);
   return order;
 }
@@ -727,6 +748,13 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (order.run) {
     console.log(`VIBE2_TASK_ID=${order.taskId}`);
     console.log(`VIBE2_TARGET=${order.target}`);
+    console.log(`VIBE2_BUILD_UP_DIRECTIVE_ID=${order.selectedTask?.buildUpDirectiveId||'NONE'}`);
+    console.log(`VIBE2_PRE_RESERVE_DIRECTIVE_BINDING_STATE=${order.selectedTask?.buildUpBindingState||'UNBOUND_BASELINE_ONLY'}`);
+    console.log(`VIBE2_DIRECTIVE_FRESHNESS_DECISION=${order.selectedTask?.buildUpFreshnessDecision||'NO_DIRECTIVE'}`);
+    console.log(`VIBE2_EXPECTED_PLAYER_EFFECT=${order.selectedTask?.expectedPlayerEffect||order.selectedTask?.buildUpDirective?.expectedPlayerEffect||'UNKNOWN'}`);
+    console.log(`VIBE2_EFFECTIVENESS_CLASSIFICATION=${order.selectedTask?.effectivenessClassification||order.selectedTask?.buildUpDirective?.effectivenessMeasurement?.classification||'UNKNOWN_RUNTIME_EFFECT'}`);
+    console.log(`VIBE2_NEXT_VIBE_ACTION=${order.selectedTask?.nextVibeAction||order.selectedTask?.buildUpDirective?.nextActionDecision?.action||'NONE'}`);
+    console.log(`VIBE2_NEXT_VIBE_ACTION_REASON=${order.selectedTask?.nextVibeActionReason||order.selectedTask?.buildUpDirective?.nextActionDecision?.reason||'NONE'}`);
     console.log(`VIBE2_SHARD=${order.shard}`);
     console.log(`VIBE2_RELEASE_STATE=${order.releaseState}`);
     console.log(`VIBE2_AUTO_DEPLOY_ELIGIBLE=${order.deployment.automaticEligible?'YES':'NO'}`);
