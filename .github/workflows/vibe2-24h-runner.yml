@@ -94,8 +94,8 @@ on:
       - Vibe2 Distillation Sample Ingest
     types: [completed]
   schedule:
-    # Canonical hourly safety-net. The workflow-dispatch refill below handles continuous chaining.
-    - cron: '17 * * * *'
+    # Canonical five-minute safety-net. Event-driven refill remains the primary continuation path.
+    - cron: '*/5 * * * *'
   workflow_call:
   workflow_dispatch:
 
