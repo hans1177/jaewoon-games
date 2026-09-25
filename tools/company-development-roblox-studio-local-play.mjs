@@ -409,14 +409,22 @@ export function classifyStudioConsoleOutput(consoleResult){
       errors.push({type:'studio-console-error',actionId:null,signature});
     }
   };
+  const criticalConsolePatterns=[
+    /Infinite yield possible.*WaitForChild\(["']GameAction["']\)/i,
+    /DataStoreService.*(?:Studio access to APIs is not allowed|API Services are disabled)/i
+  ];
 
   for(const entry of structured){
     if(entry.messageType===3)addError(entry.message);
-    else if(entry.messageType===2)warningCount++;
+    else if(entry.messageType===2){
+      warningCount++;
+      if(criticalConsolePatterns.some(re=>re.test(entry.message)))addError(entry.message);
+    }
   }
 
   const fallbackText=flattenText(consoleResult,[]).join('\n');
   const strongFallbackPatterns=[
+    ...criticalConsolePatterns,
     /Script Runtime Error/i,
     /attempt to index nil/i,
     /unhandled exception/i
