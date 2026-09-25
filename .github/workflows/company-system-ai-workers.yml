@@ -572,8 +572,12 @@ jobs:
           const blocker=currentMainSatisfied||candidateOk?'':infrastructureFailure?'system-ai-infrastructure-contract-failed':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
           const executionDisposition=infrastructureFailure?'REPAIR_REQUIRED_INFRASTRUCTURE':security.verdict==='QUARANTINE'?'TERMINATED_QUARANTINED':security.verdict==='REVIEW'?'HELD_FOR_PRIMARY_AI_REVIEW':candidateOk?'VERIFIED_CANDIDATE':'ENDED_WITHOUT_VERIFIED_CANDIDATE';
           const row={
-            version:7,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,jointAccepted,
+            version:8,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,jointAccepted,
             repairStrategyFingerprint:clean(worker.repairStrategyFingerprint)||null,
+            deepReasoningUsed:worker.deepReasoningUsed===true,
+            selectedStrategyId:clean(worker.selectedStrategyId)||null,
+            criticVerdict:clean(worker.criticVerdict)||null,
+            criticWeakPoints:Array.isArray(worker.criticWeakPoints)?worker.criticWeakPoints:[],
             selectedHypothesisId:clean(worker.selectedHypothesisId)||null,
             falsifiedHypothesisIds:Array.isArray(worker.falsifiedHypothesisIds)?worker.falsifiedHypothesisIds:[],
             knownGoodRevision:clean(worker.knownGoodRevision)||null,
@@ -598,6 +602,10 @@ jobs:
               ...(worker.verifiedLearningApplied?['system-ai-knowledge-outcome:PENDING_VERIFIED_FANIN']:[]),
               clean(worker.selectedHypothesisId)&&`selected-hypothesis:${clean(worker.selectedHypothesisId)}`,
               ...(worker.falsifiedHypothesisIds||[]).map(x=>`hypothesis-rejected:${clean(x)}`),
+              ...(worker.deepReasoningUsed?['system-ai-deep-reasoning:YES']:[]),
+              clean(worker.selectedStrategyId)&&`selected-strategy:${clean(worker.selectedStrategyId)}`,
+              clean(worker.criticVerdict)&&`system-ai-critic-verdict:${clean(worker.criticVerdict)}`,
+              ...(worker.criticWeakPoints||[]).map(x=>`system-ai-critic-weak-point:${clean(x).slice(0,240)}`),
               clean(worker.knownGoodRevision)&&`known-good-revision:${clean(worker.knownGoodRevision)}`,
               clean(worker.repairStrategyFingerprint)&&`repair-strategy-fingerprint:${clean(worker.repairStrategyFingerprint)}`,
               ...(!candidateOk&&!currentMainSatisfied&&clean(worker.repairStrategyFingerprint)?[`failed-strategy-fingerprint:${clean(worker.repairStrategyFingerprint)}`]:[]),
