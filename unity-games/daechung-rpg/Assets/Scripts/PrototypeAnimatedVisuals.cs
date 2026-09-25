@@ -280,6 +280,16 @@ namespace JaewoonGames.DaechungRpg
                 var column = i % columns;
                 var row = i / columns;
                 var x = column * frameWidth;
+            if (texture.width < x) {
+                Debug.Log("Texture width insufficient");
+                _loadError = "texture width insufficient";
+                yield break;
+            }
+            if (texture.height < y) {
+                Debug.Log("Texture height insufficient");
+                _loadError = "texture height insufficient";
+                yield break;
+            }
                 var y = texture.height - ((row + 1) * frameHeight);
                 var rect = new Rect(x, y, frameWidth, frameHeight);
                 frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);

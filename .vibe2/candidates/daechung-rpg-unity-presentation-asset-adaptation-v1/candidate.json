@@ -1,0 +1,14 @@
+{
+  "summary": "PrototypeAnimatedVisuals.cs 수정: 애니메이션 텍스처 로드 로직에서 사용된 파일 경로를 수정하여 테스트 범위를 제한",
+  "expectedEffect": "애니메이션 텍스처 로드 로직에서 사용된 파일 경로를 수정하여 테스트 범위를 제한",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "            var x = column * frameWidth;",
+      "replace": "            var x = column * frameWidth;\n            if (texture.width < x) {\n                Debug.Log(\"Texture width insufficient\");\n                _loadError = \"texture width insufficient\";\n                yield break;\n            }\n            if (texture.height < y) {\n                Debug.Log(\"Texture height insufficient\");\n                _loadError = \"texture height insufficient\";\n                yield break;\n            }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
