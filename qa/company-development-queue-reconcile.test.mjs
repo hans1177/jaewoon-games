@@ -259,3 +259,56 @@ test('queue reconcile restores exact private Roblox candidate checkpoint instead
     assert.equal(item.robloxRuntimeCandidateEvidence.versionNumber,12);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('queue reconcile migrates exact shared Roblox fallback candidate to dedicated-target redeploy without rebuilding F0',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-shared-target-migration-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'shared-migrate',name:'Shared Migrate',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'shared-migrate',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    const source=writeDesign(root,'shared-migrate');
+    const revision='e'.repeat(40),artifact='sha256:'+'f'.repeat(64);
+    write(root,'development-queue.json',{items:[{
+      gameId:'shared-migrate',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+      canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      minimumDesignContract:{pass:true,source},
+      robloxSourceCommit:revision,
+      robloxBuildSourceRevision:revision,
+      robloxBuildArtifactIdentity:artifact,
+      robloxBuildOrPackagePassed:true,
+      robloxBuildPreflightPassed:true,
+      robloxFoundationF0Passed:true,
+      robloxRuntimePassed:false,
+      robloxPublicationTarget:{
+        version:2,gameId:'shared-migrate',universeId:'10766974456',placeId:'112507741861842',
+        verified:true,source:'owner-pinned-open-cloud-target',internalOnly:true
+      },
+      robloxRuntimeCandidateEvidence:{
+        published:true,sourceRevision:revision,artifactIdentity:artifact,
+        versionNumber:22,universeId:'10766974456',placeId:'112507741861842'
+      }
+    }]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.currentStep,'PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+    assert.equal(item.canonicalState,'F0_SOURCE_PREFLIGHT_PASSED');
+    assert.equal(item.robloxBuildOrPackagePassed,true);
+    assert.equal(item.robloxBuildPreflightPassed,true);
+    assert.equal(item.robloxFoundationF0Passed,true);
+    assert.equal(item.robloxFailureSignature,'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING');
+    assert.deepEqual(item.routingBlockers,['roblox-dedicated-runtime-target-migration-pending']);
+    assert.equal(item.robloxDedicatedTargetMigration.state,'PENDING_DEDICATED_PRIVATE_TARGET');
+    assert.equal(item.robloxPublicationTarget.source,'owner-pinned-open-cloud-target');
+    assert.equal(item.robloxRuntimeCandidateEvidence.versionNumber,22);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
