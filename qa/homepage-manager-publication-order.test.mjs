@@ -268,8 +268,10 @@ test('homepage has one canonical runtime data renderer',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(index,/\nloadData\(\);/);
   assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
+  assert.match(runtime,/const renderCatalog=currentCatalog=>/);
+  assert.match(runtime,/renderCatalog\(catalog\);/);
   assert.match(runtime,/const boundCatalog=await bindAvailableUnityWebSurfaces\(catalog\)/);
-  assert.match(runtime,/updateLiveSummary\(boundCatalog,status\);buildFocus\(boundCatalog,status\)/);
+  assert.match(runtime,/renderCatalog\(boundCatalog\);/);
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
 });
@@ -362,6 +364,7 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.match(block,/unity-web-deploy-manifest\.json\?ts=/);
   assert.match(block,/bundleComplete===true/);
   assert.match(block,/bundleGroupsFromUnityIndex/);
+  assert.match(block,/setTimeout\(\(\)=>controller\.abort\(\),2500\)/);
   assert.match(block,/method:'HEAD'/);
   assert.match(block,/\['loader','data','framework','wasm'\]/);
   assert.match(block,/unityWebAvailable:true/);
