@@ -779,7 +779,7 @@
       "developmentAdmissionUsesStrictScore": false,
       "hardDesignFailuresCreateParallelRepair": true
     },
-    "roadmapPhaseEntryGatesForbidden": false,
+    "roadmapPhaseEntryGatesForbidden": true,
     "platformDevelopmentMayStartWithoutPriorPlatformCompletion": false,
     "platformReleaseMayProceedWhenItsOwnEvidenceGatesPass": true,
     "currentExperiencePhase": "ROBLOX_UNITY_DIRECT_NATIVE_INTERNAL_RELEASE_AND_PLAYTEST",
@@ -788,16 +788,13 @@
     "parallelLearningPipelineAllowed": false,
     "webCompanionStrategy": {
       "status": "DEPRECATED_COMPATIBILITY_ALIAS",
-      "role": "UNITY_WEB_UPPER_PLATFORM_PREDEVELOPMENT_FLOOR",
-      "requiredAcross": [
-        "DEVELOPMENT_CONFIRMED_NEW_UPPER_PLATFORM_ENTRY"
-      ],
-      "requiredForDevelopmentAdmission": true,
+      "role": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
+      "requiredAcross": [],
+      "requiredForDevelopmentAdmission": false,
       "requiredForRelease": false,
       "nativeProjectRemainsCanonicalForPlatformRelease": true,
       "verifiedBuildMayExposeHomepageTestLink": true,
-      "missingBuildDoesNotBlockNative": false,
-      "missingBuildAction": "REPAIR_REQUIRED_BEFORE_UPPER_PLATFORM_DEVELOPMENT"
+      "missingBuildDoesNotBlockNative": true
     },
     "ROBLOX": {
       "role": "EQUAL_PRIMARY_SUPPORTED_PLATFORM",
@@ -831,9 +828,8 @@
       },
       "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE": {
         "defaultPriority": 1,
-        "entryGate": true,
-        "status": "ACTIVE",
-        "entryGateAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY"
+        "entryGate": false,
+        "status": "ACTIVE"
       },
       "FORTNITE_UEFN_EXPANSION": {
         "defaultPriority": 3,
@@ -860,8 +856,7 @@
       "seed-roblox-battleground-fight-welcome-to-bloxburg",
       "seed-roblox-obby-party-minigam-tower-of-hell"
     ],
-    "directNativeSourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
-    "upperPlatformDevelopmentAdmissionGate": "UPPER_PLATFORM_DEVELOPMENT_READY"
+    "directNativeSourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment"
   },
   "learning": {
     "webGameEvidence": {
