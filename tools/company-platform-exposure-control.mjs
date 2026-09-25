@@ -93,6 +93,7 @@ function robloxPublicHardGate(item={},tickets=[]){
   const stability=item.robloxReleaseStabilityEvidence||{};
   const security=item.robloxSecurityReleaseEvidence||{};
   const final=item.robloxPublicReleaseFinalEvidence||{};
+  const store=item.robloxStorePresentationEvidence||{};
   const mandatoryScenarios=['NEW_GAME_START','CORE_GAMEPLAY_LOOP','PROGRESSION_AND_REWARD'];
   const scenarios=new Set((play.scenarioCoverage||[]).map(upper));
   const scenarioCoverage=play.scenarioCoveragePass===true&&mandatoryScenarios.every(x=>scenarios.has(x));
@@ -110,6 +111,13 @@ function robloxPublicHardGate(item={},tickets=[]){
     mobileAndPerformance:item.robloxMobileControlUiPassed===true&&adaptation.mobileAndLowEndPerformancePassed===true,
     security:exactRobloxEvidence(security,item)&&security.noReleaseBlockingFinding===true,
     presentation:exactRobloxEvidence(presentation,item)&&presentation.primaryGameplayPlaceholderDebt===0&&presentation.runtimeVisualEvidencePassed===true,
+    storePresentation:exactRobloxEvidence(store,item)
+      &&store.titleBilingualPass===true
+      &&store.homepageThumbnailGeneratedFromActualGameplay===true
+      &&store.iconGeneratedFromActualGameplay===true
+      &&store.sharedPlaceholderUsed===false
+      &&store.thumbnailUploadVerified===true
+      &&store.iconUploadVerified===true,
     stability:exactRobloxEvidence(stability,item)&&stability.distinctCompletedBuildupCycles===true&&stability.releaseBlockingFailureObservedSinceBaseline===false,
     exactFinal:exactRobloxEvidence(final,item)&&final.fullPublicGateRevalidationPassed===true
   };
