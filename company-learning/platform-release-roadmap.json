@@ -1646,6 +1646,40 @@
           "CONTINUE_ANY_INDEPENDENT_IMPLEMENTATION_WORK",
           "CHECKPOINT_ONLY_TASKS_THAT_TRULY_REQUIRE_GENERATIVE_AUTHORING"
         ]
+      },
+      "externalWorkerCostPolicy": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-20_FREE_PLAN_ONLY",
+        "mode": "FREE_PLAN_AND_FREE_QUOTA_ONLY",
+        "appliesTo": [
+          "GEMINI",
+          "EXTERNAL_AI_MODELS",
+          "CHATGPT_PLUGINS_AND_CONNECTORS",
+          "EXTERNAL_CODING_AGENTS",
+          "CLOUD_RUNNERS"
+        ],
+        "freePlanOnly": true,
+        "freeTierOnly": true,
+        "freeCreditsAllowed": true,
+        "paidSubscriptionForbidden": true,
+        "paidApiForbidden": true,
+        "automaticPaidUpgradeForbidden": true,
+        "billingEnrollmentForbidden": true,
+        "paymentMethodEnrollmentForbidden": true,
+        "overagePurchaseForbidden": true,
+        "payAsYouGoForbidden": true,
+        "quotaExhaustionAction": "CHECKPOINT_AND_FALLBACK_WITHOUT_PAYMENT",
+        "fallbackOrder": [
+          "ANOTHER_AUTHORIZED_FREE_PROVIDER_OR_FREE_QUOTA",
+          "VIBE_LOCAL_OLLAMA",
+          "DETERMINISTIC_VERIFIED_EVIDENCE_MINING",
+          "STATIC_CODE_PATTERN_AND_FAILURE_REGRESSION_DISTILLATION",
+          "NON_MODEL_MUTATION_QA_AND_TEST_GENERATION"
+        ],
+        "installationAllowedOnlyWhenNoPaidCommitment": true,
+        "installationMustNotEnableBilling": true,
+        "runtimeMustRefusePaidEscalation": true,
+        "costGuardrail": "ZERO_DIRECT_PROVIDER_SPEND"
       }
     },
     "gameDevelopmentAuthority": {
