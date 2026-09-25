@@ -126,6 +126,9 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.launchInput,'LOCAL_EXACT_BUILD_PLACE_FILE_ONLY');
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.onlinePlaceIdLaunchForbidden,true);
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.executionTransport,'OFFICIAL_STUDIO_MCP_STDIO');
+  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.mcpOfficialBinaryFallbackWindows,'%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe');
+  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.generatedBatchRewrite,false);
+  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.thirdPartyBridge,false);
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.runtimeAuthority,'roblox-official-studio-mcp-runtime');
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.structuredQaFactsOnly,true);
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.rawViewportDirectTraining,false);

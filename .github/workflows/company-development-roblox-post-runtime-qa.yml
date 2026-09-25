@@ -776,15 +776,42 @@ jobs:
             Select-Object -First 1
           if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
 
-          $mcp = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat'
-          if (-not (Test-Path $mcp)) { throw 'Official Roblox Studio MCP launcher not found' }
+          $mcpBat = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat'
+          $studioDir = Split-Path -Parent $studio
+          $mcpExe = Join-Path $studioDir 'StudioMCP.exe'
+          if (-not (Test-Path $mcpExe)) {
+            $mcpExe = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Recurse -File -Filter 'StudioMCP.exe' -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime -Descending |
+              Select-Object -ExpandProperty FullName -First 1
+          }
+          if (-not (Test-Path $mcpBat) -and -not ($mcpExe -and (Test-Path $mcpExe))) {
+            throw 'Official Roblox Studio MCP launcher and StudioMCP.exe not found'
+          }
+
+          $mcpCommand = $mcpBat
+          $mcpLaunchKind = 'ROBLOX_GENERATED_MCP_BATCH'
+          if (Test-Path $mcpBat) {
+            $batchText = Get-Content $mcpBat -Raw -ErrorAction SilentlyContinue
+            $knownBrokenBatch = $batchText -match '(?m)^\s*\)\s*$\r?\n\s*else\s*\('
+            if ($knownBrokenBatch -and $mcpExe -and (Test-Path $mcpExe)) {
+              $mcpCommand = $mcpExe
+              $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH'
+            }
+          } elseif ($mcpExe -and (Test-Path $mcpExe)) {
+            $mcpCommand = $mcpExe
+            $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING'
+          }
 
           if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
             throw 'Runner has an existing Roblox Studio process; refusing ambiguous MCP attachment'
           }
 
           "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcp" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcpCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind"
+          Write-Host 'ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO'
+          Write-Host 'ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO'
           Write-Host 'ROBLOX_STUDIO_MCP_RUNNER=PASS'
           Write-Host 'ROBLOX_PLAYER_AUTOMATION=NO'
           Write-Host 'ROBLOX_UNDOCUMENTED_STUDIO_CLI_AUTOMATION=NO'

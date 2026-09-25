@@ -223,6 +223,10 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(studioMcpBlock,/development-roblox-package-\$\{\{ matrix\.gameId \}\}/);
   assert.match(studioMcpBlock,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
   assert.match(studioMcpBlock,/Roblox\\mcp\.bat/);
+  assert.match(studioMcpBlock,/StudioMCP\.exe/);
+  assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POLICY=PASS/);
   assert.match(studioMcpBlock,/JSON\.parse\(fs\.readFileSync\('main\/company-learning\/platform-release-roadmap\.json'/);
   assert.doesNotMatch(studioMcpBlock,/platform-release-roadmap\.json' -Raw \| ConvertFrom-Json/);
@@ -237,7 +241,8 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.doesNotMatch(studioMcpBlock,/--mode=mcp-run[\s\S]{0,500}(--place-id=|--universe-id=)/);
 });
 
-test('Windows Studio MCP transport matches Roblox documented cmd.exe /c launcher and retains bounded stderr diagnostics',()=>{
+test('Windows Studio MCP transport keeps documented batch launch and supports installed official binary fallback',()=>{
+  assert.match(helper,/process\.platform==='win32'&&\/\\\.exe\$\/i\.test\(resolved\)\)return\{command:resolved,args:\[\]\}/);
   assert.match(helper,/process\.platform==='win32'\)return\{command:'cmd\.exe',args:\['\/c',resolved\]\}/);
   assert.doesNotMatch(helper,/args:\['\/d','\/s','\/c',resolved\]/);
   assert.match(helper,/this\.stderrTail=\(this\.stderrTail\+value\)\.slice\(-6000\)/);
