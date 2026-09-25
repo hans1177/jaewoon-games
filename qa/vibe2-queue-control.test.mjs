@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-queue-control.test.mjs
-// 역할: DAG/shard/source-lock/work-stealing/backpressure/speculative fan-in 큐 계약을 검증한다.
+// 역할: DAG/shard/responsible-file-conflict/work-stealing/backpressure/speculative fan-in 큐 계약을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -579,12 +579,13 @@ test('awaiting QA holds only its responsible file and same-game disjoint work co
   queue=add(queue,'first','game-a','unity',{responsibleFiles:['Assets/Scripts/Combat.cs']});
   queue=add(queue,'same-next','game-a','unity',{responsibleFiles:['Assets/Scripts/Progression.cs']});
   queue=add(queue,'other','game-b','web',{responsibleFiles:['index.html']});
-  let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
-  assert.deepEqual(new Set(reserved.tasks.map(t=>t.id)),new Set(['first','other']));
+  let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1});
+  assert.deepEqual(reserved.tasks.map(t=>t.id),['first']);
   queue=markVibeTaskAwaiting(reserved.queue,{taskId:'first',blocker:'candidate-awaiting-qa-and-deployment'});
-  let done=settleVibeTask(queue,{taskId:'other',outcome:'PASS'}).queue;
-  const next=selectVibeQueueBatch(done,{maxConcurrentTasks:4});
+  const next=selectVibeQueueBatch(queue,{maxConcurrentTasks:4});
   assert.equal(next.selected.some(t=>t.id==='same-next'),true);
+  assert.equal(next.selected.some(t=>t.id==='other'),true);
+  assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-next'),false);
 });
 
 test('completed single worker releases capacity before fan-in without dropping source locks or adding QA pressure', () => {
