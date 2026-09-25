@@ -103,8 +103,10 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLACE="..tostring(game.PlaceId))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_VERSION="..tostring(game.PlaceVersion))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
+    'local RunService=game:GetService("RunService")',
+    'local simulationRunning=RunService:IsRunning()',
     'local foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true',
-    'for _=1,16 do if foundationServerBoot then break end; task.wait(0.5); foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true end',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING="..tostring(simulationRunning))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT="..tostring(foundationServerBoot))',
   ].join(';');
   const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
@@ -156,6 +158,7 @@ export async function probeRobloxOpenCloudEngine({
   const joined=messages.join('\n');
   const exactPlace=joined.includes(`JAEWOON_OPEN_CLOUD_ENGINE_PLACE=${place}`);
   const exactVersion=joined.includes(`JAEWOON_OPEN_CLOUD_ENGINE_VERSION=${version}`);
+  const simulationRunning=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=true');
   const serverBootObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
   const studioAssetApplied=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true');
   const studioAssetBindingVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=(\d+)/)?.[1]||0);
@@ -164,7 +167,7 @@ export async function probeRobloxOpenCloudEngine({
   const observedAtomSet=new Set(observedStudioAssetAtoms);
   const studioAssetSelectionMatched=!studioAssetBindingRequired||(expectedStudioAssetAtoms.length>0&&studioAssetApplied&&studioAssetBindingVersion===1&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom)));
   return Object.freeze({
-    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,serverBootObserved,
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
     studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,
     expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
