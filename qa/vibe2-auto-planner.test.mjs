@@ -2471,6 +2471,9 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
   assert.deepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
   assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
   assert.ok(rows.every(row=>row.buildUpDirective.version===2));
+  assert.ok(rows.every(row=>row.buildUpStatus==='DIRECTIVE_BOUND'));
+  assert.ok(rows.every(row=>row.developmentDepth===1));
+  assert.ok(rows.every(row=>row.escalationStage==='FOUNDATION_COMPLETENESS'));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-directive-backfill:queued-existing-work')));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-pre-reserve-binding:CHECKED')));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('game-specific-build-up-directive:v2')));
@@ -2486,6 +2489,8 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
     thisLoopPrimaryGoal:'실제 전투 피드백을 강화한다',
     sourceTreeFingerprint:'sha256:demo',
     developmentDepth:1,
+    escalationStage:'FOUNDATION_COMPLETENESS',
+    previousVersionDelta:{previousGoal:'이전 전투 피드백 개선'},
     allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}]
   };
   const normalized=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
@@ -2493,7 +2498,8 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
     sourceRoot:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Combat.server.luau'],
     goal:'build up',status:'queued',buildUpDirective:directive,buildUpDirectiveId:directive.directiveId,
     buildUpGeneration:1,buildUpGoal:directive.thisLoopPrimaryGoal,buildUpSourceTree:directive.sourceTreeFingerprint,
-    nextEscalationRequired:true
+    buildUpStatus:'DIRECTIVE_BOUND',previousGoal:'이전 전투 피드백 개선',lastAchievedGoal:'이전 전투 피드백 개선',
+    developmentDepth:1,escalationStage:'FOUNDATION_COMPLETENESS',nextEscalationRequired:true
   }]});
   const task=normalized.tasks[0];
   assert.deepEqual(task.buildUpDirective,directive);
@@ -2501,6 +2507,11 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
   assert.equal(task.buildUpGeneration,1);
   assert.equal(task.buildUpGoal,directive.thisLoopPrimaryGoal);
   assert.equal(task.buildUpSourceTree,directive.sourceTreeFingerprint);
+  assert.equal(task.buildUpStatus,'DIRECTIVE_BOUND');
+  assert.equal(task.previousGoal,'이전 전투 피드백 개선');
+  assert.equal(task.lastAchievedGoal,'이전 전투 피드백 개선');
+  assert.equal(task.developmentDepth,1);
+  assert.equal(task.escalationStage,'FOUNDATION_COMPLETENESS');
   assert.equal(task.nextEscalationRequired,true);
 });
 
@@ -2526,6 +2537,7 @@ test('queued game work without verified design stays DESIGN_PENDING and cannot c
   assert.equal(result.buildUpDirectiveBackfillCount,0);
   const row=result.queue.tasks[0];
   assert.equal(row.buildUpDirectiveId,null);
+  assert.equal(row.buildUpStatus,'DESIGN_PENDING');
   assert.ok(row.evidence.includes('build-up-directive:DESIGN_PENDING'));
   assert.ok(row.evidence.includes('build-up-pre-reserve-binding:CHECKED'));
   assert.ok(row.evidence.includes('build-up-directive-freshness:DESIGN_PENDING'));
