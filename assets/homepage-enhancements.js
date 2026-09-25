@@ -203,10 +203,7 @@ function platformLinks(game){
   const exposure=exposureOf(gameIdOf(game));
   const platform=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
   const rp=platform('ROBLOX'),up=platform('UNITY');
-  const canonical=publicationOf(game).roblox||{};
-  const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||game?.robloxReleaseEvidence||{});
-  const placeId=String(rp.placeId||target?.placeId||'').trim();
-  const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||(/^[1-9][0-9]*$/.test(placeId)?`https://www.roblox.com/games/${placeId}`:'')).trim();
+  const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||'').trim();
   const unity=String((up.publicRelease===true?up.publicUrl:up.internalUrl)||(game?.unityBuildVerified===true?game?.unityBuildUrl:'')||'').trim();
   const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebAvailable===true?String(game?.unityWebTestUrl||'').trim():'';
   return {roblox,unity,unityWeb};
@@ -248,7 +245,7 @@ function recentModificationRows(catalog){
 }
 function platformHref(game){
   const links=platformLinks(game);
-  return links.roblox||links.unity||'';
+  return links.roblox||links.unity||links.unityWeb||'';
 }
 function installStyles(){
   document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';
@@ -287,7 +284,7 @@ function buildCard(row){
       :''
   ].join('');
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
-  const direct=links.roblox||links.unity||'';
+  const direct=links.roblox||links.unity||links.unityWeb||'';
   return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
