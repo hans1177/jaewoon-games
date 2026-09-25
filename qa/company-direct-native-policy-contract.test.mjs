@@ -76,6 +76,12 @@ test('directive mirror cannot reactivate legacy Web-first development',()=>{
   assert.equal(directive.classes.RELEASE_CONFIRMED.webCompanionRequired,false);
   assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
   assert.equal(directive.ai.vibe2.ownsInternalPlaytestRepair,true);
+  assert.equal(directive.ai.robloxStudioExecutionAllowed,true);
+  assert.equal(directive.ai.robloxStudioExecutionMode,'OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_ONLY');
+  assert.equal(directive.ai.robloxStudioMcpAllowed,true);
+  assert.equal(directive.ai.robloxPlayerAutomationAllowed,false);
+  assert.equal(directive.ai.robloxStudioExternalGuiAutomationAllowed,false);
+  assert.equal(directive.ai.robloxStudioUndocumentedCliAutomationAllowed,false);
 });
 
 test('architecture and runtime execute the same direct-native topology',()=>{
@@ -133,6 +139,13 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
     'LOOP_BACK_TO_VIBE_INTERNAL_PLAY'
   ]);
   assert.equal(loop.actualVibePlayEvidenceRequired,true);
+  assert.equal(loop.actualVibePlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
+  assert.equal(loop.actualVibePlaySurface,'ROBLOX_STUDIO_MCP_PLAY_MODE');
+  assert.equal(loop.robloxPlayerAutomation,false);
+  assert.equal(loop.externalGuiAutomation,false);
+  assert.equal(loop.undocumentedStudioCliAutomation,false);
+  assert.equal(loop.historicalSharedTargetExactArtifactLocalPlayAllowed,true);
+  assert.equal(loop.historicalSharedTargetLocalPlayDoesNotClaimCurrentPublishedRuntime,true);
   assert.equal(loop.syntheticStaticOrDeclaredPlayPassForbidden,true);
   assert.equal(loop.noDurationExit,true);
   assert.equal(loop.noLimitedOrRestrictedPublicTestExit,true);
@@ -155,7 +168,7 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   const archGate=architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate;
   assert.equal(archLoop.perpetual,true);
   assert.equal(archLoop.continuesAfterPublicRelease,true);
-  assert.equal(archLoop.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play');
+  assert.equal(archLoop.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
   assert.equal(archGate.failClosed,true);
   assert.equal(archGate.actualVibePlayRequired,true);
   assert.equal(archGate.f9InternalReleaseCannotSetPublicReady,true);
