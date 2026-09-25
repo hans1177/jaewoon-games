@@ -87,6 +87,34 @@ test('presentation delta failure is retryable source generation work',()=>{
 });
 
 
+test('Roblox full graphics first attempt uses the compact connected package prompt',()=>{
+  const largeBody=Array.from({length:900},(_,i)=>`local visualLine${i} = Color3.fromRGB(20,30,40)`).join('\n');
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve full Roblox graphics and native motion without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local character = workspace:FindFirstChild("Character")',
+    'local weapon = workspace:FindFirstChild("Sword")',
+    'local terrainRock = workspace:FindFirstChild("TerrainRock")',
+    largeBody
+  ].join('\n');
+  const initial=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    responsibleFiles:['client/Game.client.luau'],
+    attempt:1,
+    robloxGraphicsInitial:true,
+    robloxFullGraphicsPackageActive:true
+  });
+  assert.match(initial,/INITIAL ROBLOX FULL GRAPHICS PACKAGE/i);
+  assert.match(initial,/ROBLOX FULL GRAPHICS RECOVERY PACKAGE/i);
+  assert.match(initial,/connected edits\[\] package/i);
+  assert.match(initial,/additional visual domains.*no upper limit/i);
+  assert.ok(Buffer.byteLength(initial,'utf8')<Buffer.byteLength(prompt,'utf8'));
+  assert.doesNotMatch(initial,/exactly one edit/i);
+});
+
 test('Roblox full graphics domain recovery keeps a connected multi-edit package instead of collapsing to one edit',()=>{
   const prompt=[
     '[PRESENTATION_PASS:ASSET_ADAPTATION]',
