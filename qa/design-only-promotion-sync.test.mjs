@@ -342,3 +342,32 @@ test('promotion sync recovers exact private Roblox runtime candidate instead of 
   assert.equal(item.canonicalState,'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED');
   assert.equal(item.robloxRuntimeCandidateEvidence.versionNumber,9);
 });
+
+
+test('promotion restores a durable dedicated Roblox target after a queue row is recreated',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-dedicated-target-restore-'));
+  try{
+    base(root);
+    write(root,'game-seed-state.json',{version:1,seeds:[{
+      seedId:'DR',gameId:'dedicated-restore',gameName:'Dedicated Restore',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',INITIAL_TARGET_PLATFORM:'ROBLOX'
+    }]});
+    write(root,'game-catalog.json',{version:1,games:[{
+      id:'dedicated-restore',name:'Dedicated Restore',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'
+    }]});
+    writeMinimumDesign(root,'dedicated-restore');
+    write(root,'roblox-dedicated-targets.json',{version:1,targets:[{
+      gameId:'dedicated-restore',universeId:'10767445741',placeId:'116850096561713',
+      dedicated:true,shared:false,verified:true,source:'owner-dedicated-github-bootstrap',bootstrapState:'PUBLISHED_PRIVATE'
+    }]});
+    write(root,'development-queue.json',{version:1,items:[]});
+    promoteReadyDesignSeeds({root});
+    const item=read(root,'development-queue.json').items[0];
+    assert.equal(item.robloxPublicationTarget.universeId,'10767445741');
+    assert.equal(item.robloxPublicationTarget.placeId,'116850096561713');
+    assert.equal(item.robloxPublicationTarget.dedicated,true);
+    assert.equal(item.robloxPublicationTarget.shared,false);
+    assert.equal(item.robloxSharedTargetCurrent,false);
+    assert.equal(item.robloxDedicatedTargetRegistryBinding.source,'roblox-dedicated-targets.json');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

@@ -47,12 +47,12 @@ jobs:
         run: |
           set -euo pipefail
           git fetch origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH" --depth=2 --no-tags --quiet
-          for runtime_path in game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json; do
+          for runtime_path in game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json roblox-dedicated-targets.json; do
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
               git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
             fi
           done
-          git reset -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json >/dev/null 2>&1 || true
+          git reset -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json roblox-dedicated-targets.json >/dev/null 2>&1 || true
           test -f game-seed-state.json
           echo 'DESIGN_PROMOTION_RUNTIME_OVERLAY=YES'
           echo 'DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY'
