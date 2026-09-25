@@ -56,6 +56,14 @@ export function nativeUpperPlatformAlreadyStarted(item={}){
   return step.startsWith('TARGET_PLATFORM_')&&step!=='TARGET_PLATFORM_SOURCE_BIND';
 }
 
+export function existingNativeReleasePublished(item={}){
+  return item.robloxInternalReleasePublished===true
+    ||item.robloxDedicatedExperience?.published===true
+    ||item.robloxExternalPublicReleaseConfirmed===true
+    ||item.unityInternalReleasePublished===true
+    ||item.unityExternalPublicReleaseConfirmed===true;
+}
+
 export function readUpperPlatformReadiness(repoRoot,gameId){
   const file=path.join(repoRoot,'web-games',gameId,'upper-platform-development-readiness.json');
   if(!fs.existsSync(file))return{pass:false,reason:'READINESS_EVIDENCE_MISSING'};
@@ -78,8 +86,9 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGam
   if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)return{gameId,state:'BLOCKED',reason:'DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED'};
   const targets=new Set(item.concurrentTargetPlatforms||[]);
   if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
+  if(existingNativeReleasePublished(item))return{gameId,state:'UPPER_PLATFORM',reason:'EXISTING_NATIVE_RELEASE_PRESERVED',grandfathered:true,released:true};
   const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
-  if(grandfathered.has(gameId)&&nativeUpperPlatformAlreadyStarted(item))return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true};
+  if(grandfathered.has(gameId)&&nativeUpperPlatformAlreadyStarted(item))return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true,released:false};
   const readiness=readUpperPlatformReadiness(repoRoot,gameId);
   if(readiness.pass)return{gameId,state:'UPPER_PLATFORM',reason:'UPPER_PLATFORM_DEVELOPMENT_READY',grandfathered:false,readiness};
   const buildMethod=discoverUnityWebBuildMethod(repoRoot,gameId);
