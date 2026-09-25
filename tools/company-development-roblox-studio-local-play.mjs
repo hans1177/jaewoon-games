@@ -110,7 +110,40 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       historicalExactPublishedArtifact:item?.robloxSharedTargetCurrent!==true
     });
   }
-  return{include};
+  if(!requested&&include.length>1){
+    const itemByGameId=new Map((queue?.items||[]).map(row=>[clean(row?.gameId),row]));
+    const infrastructurePending=include.filter(row=>{
+      const item=itemByGameId.get(row.gameId)||{};
+      const prior=item?.robloxInternalVibePlayEvidence||{};
+      return item?.robloxFailureSignature==='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING'
+        &&prior?.infrastructureFailure===true
+        &&prior?.failureClass==='STUDIO_MCP_INFRASTRUCTURE_PENDING'
+        &&clean(prior?.sourceRevision)===row.sourceRevision
+        &&clean(prior?.artifactIdentity)===row.artifactIdentity
+        &&Number(prior?.artifactRunId||0)===Number(row.artifactRunId||0)
+        &&String(prior?.universeId||'')===String(row.universeId||'')
+        &&String(prior?.placeId||'')===String(row.placeId||'')
+        &&Number(prior?.versionNumber||0)===Number(row.versionNumber||0);
+    });
+    if(infrastructurePending.length>1){
+      const infraIds=new Set(infrastructurePending.map(row=>row.gameId));
+      const nonInfra=include.filter(row=>!infraIds.has(row.gameId));
+      const canary=[...infrastructurePending].sort((a,b)=>{
+        const ai=clean(itemByGameId.get(a.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
+        const bi=clean(itemByGameId.get(b.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
+        return ai.localeCompare(bi)||a.gameId.localeCompare(b.gameId);
+      })[0];
+      const deferred=infrastructurePending.filter(row=>row.gameId!==canary.gameId).map(row=>row.gameId).sort();
+      console.log('ROBLOX_STUDIO_MCP_SHARED_INFRA_CANARY='+canary.gameId);
+      console.log('ROBLOX_STUDIO_MCP_SHARED_INFRA_DEFERRED='+(deferred.join(',')||'NONE'));
+      return{
+        include:[...nonInfra,canary],
+        sharedInfrastructureCanary:true,
+        deferredInfrastructureGameIds:deferred
+      };
+    }
+  }
+  return{include,sharedInfrastructureCanary:false,deferredInfrastructureGameIds:[]};
 }
 
 function flattenText(value,out=[]){

@@ -155,6 +155,64 @@ test('planner skips only an already verified exact Studio MCP play record',()=>{
   assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
 });
 
+test('planner collapses repeated shared Studio MCP infrastructure failures to one rotating canary',()=>{
+  const rows=['g1','g2','g3'].map((gameId,index)=>{
+    const candidate=item();
+    candidate.gameId=gameId;
+    candidate.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
+    candidate.robloxInternalVibePlayEvidence={
+      version:2,
+      gameId,
+      pass:false,
+      actualPlay:false,
+      infrastructureFailure:true,
+      failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',
+      sourceRevision:source,
+      artifactIdentity:artifact,
+      artifactRunId:777,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:9,
+      testedAt:['2026-09-25T09:02:00.000Z','2026-09-25T09:01:00.000Z','2026-09-25T09:03:00.000Z'][index]
+    };
+    return candidate;
+  });
+  const result=planLocalStudioCandidates({queue:{items:rows},roadmap:roadmap()});
+  assert.equal(result.sharedInfrastructureCanary,true);
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].gameId,'g2');
+  assert.deepEqual(result.deferredInfrastructureGameIds,['g1','g3']);
+});
+
+test('explicit game request bypasses shared Studio MCP infrastructure canary collapsing',()=>{
+  const rows=['g1','g2'].map(gameId=>{
+    const candidate=item();
+    candidate.gameId=gameId;
+    candidate.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
+    candidate.robloxInternalVibePlayEvidence={
+      version:2,
+      gameId,
+      pass:false,
+      actualPlay:false,
+      infrastructureFailure:true,
+      failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',
+      sourceRevision:source,
+      artifactIdentity:artifact,
+      artifactRunId:777,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:9,
+      testedAt:'2026-09-25T09:00:00.000Z'
+    };
+    return candidate;
+  });
+  const result=planLocalStudioCandidates({queue:{items:rows},roadmap:roadmap(),requestedGameId:'g2'});
+  assert.equal(result.sharedInfrastructureCanary,false);
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].gameId,'g2');
+  assert.deepEqual(result.deferredInfrastructureGameIds,[]);
+});
+
 test('verified official Studio MCP pass records actual play without claiming online runtime or public release',()=>{
   const result=createLocalStudioPlayEvidence({
     item:item(),runtime:runtime(),expected,workflowRunId:42,studioStepSucceeded:true,
