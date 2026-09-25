@@ -124,12 +124,13 @@
       "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
       "reworkOrRevalidationScoresNotShownAsCurrent": false,
       "scoreRequiresSchema15": false,
-      "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST",
+      "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE",
       "unityWebQaPassRequiredForHomepageLink": false,
       "unityWebEvidenceFilesRequiredForHomepageLink": false,
       "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
       "unityWebMayBeCardDirectLaunchFallback": true,
-      "staleSharedRobloxTargetHomepageLinkForbidden": true
+      "staleSharedRobloxTargetHomepageLinkForbidden": true,
+      "unityWebLegacyBuildCompatibility": true
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
