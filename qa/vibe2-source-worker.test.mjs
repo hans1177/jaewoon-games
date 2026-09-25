@@ -3160,3 +3160,37 @@ test('specialized verification requests are created only for game targets',()=>{
   assert.ok(web.requestedMarkers.includes('VERIFIED_WORLD_ROUTE_NAVIGATION_PASS'));
   assert.ok(web.requestedMarkers.includes('VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS'));
 });
+
+
+test('game-specific BUILD_UP directive survives compact generation retries',()=>{
+  const directiveBlock=[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=bug-defense-build-up-g3-demo generation=3 primaryFocus=PRESENTATION',
+    'gameIdentity=곤충 생태 상성과 서식지 배치가 핵심인 정원 방어',
+    'primaryGoal=벌 돌진, 거미 속박, 사마귀 베기의 실루엣과 공격 리듬을 실제 플레이에서 구분한다.',
+    'visual=CHARACTER=실루엣 강화 | ENEMY_CREATURE=종별 공격 전조 분리 | ANIMATION=anticipation impact recovery 연결',
+    'platform=Roblox 네이티브 Luau와 3D presentation으로 동일 목표를 구현한다.',
+    'acceptance=ACTUAL_RENDERED_CHANGE_REQUIRED | GAMEPLAY_STATE_DELTA_REQUIRED',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].join('\n');
+  const largeBody=Array.from({length:500},(_,i)=>`local line${i} = ${i}`).join('\n');
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: roblox',
+    'Goal: [STUDIO_QUALITY_EVOLUTION] build the current game-specific package',
+    directiveBlock,
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    largeBody
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    responsibleFiles:['client/Game.client.luau'],
+    attempt:2,
+    error:new Error('MODEL_TIMEOUT'),
+    sourceRoot:''
+  });
+  assert.match(retry,/bug-defense-build-up-g3-demo/);
+  assert.match(retry,/벌 돌진, 거미 속박, 사마귀 베기/);
+  assert.match(retry,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
+});

@@ -46,6 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
+          git fetch --no-tags --depth=1 origin vibe2-unreal-core
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
 
       - name: Generate canonical Unity Web floor sources
@@ -75,12 +76,23 @@ jobs:
             const local=path.join('/tmp/unity-web-bootstrap-design',gameId,'design-revised.json');
             fs.mkdirSync(path.dirname(local),{recursive:true});
             fs.writeFileSync(local,execFileSync('git',['show','origin/company-runtime:'+designSource]));
+            const directive='/tmp/unity-web-bootstrap-directive/'+gameId+'/current.json';
+            fs.mkdirSync(path.dirname(directive),{recursive:true});
+            let directiveArg=[];
+            try{
+              fs.writeFileSync(directive,execFileSync('git',['show','origin/vibe2-unreal-core:.vibe2/build-up-directives/'+gameId+'/current.json']));
+              directiveArg=['--build-up-directive='+directive];
+              console.log('UNITY_WEB_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:'+gameId);
+            }catch{
+              console.log('UNITY_WEB_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:'+gameId);
+            }
             execFileSync(process.execPath,[
               'tools/company-unity-web-floor-bootstrap.mjs',
               '--game-id='+gameId,
               '--game-name='+String(item.gameName||gameId),
               '--baseline='+local,
-              '--output=unity-games/'+gameId
+              '--output=unity-games/'+gameId,
+              ...directiveArg
             ],{stdio:'inherit'});
             generated.push(gameId);
           }

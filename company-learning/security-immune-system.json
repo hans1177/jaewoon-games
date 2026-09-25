@@ -1,5 +1,5 @@
 {
-  "version": 46,
+  "version": 47,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-24",
+  "updatedAt": "2026-09-26",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -710,5 +710,37 @@
       "genericRobloxRuntimePassAloneInsufficientForAssetProductionOrAdaptationMastery": true
     },
     "failureAction": "KEEP_VIBE_TASK_RUNTIME_QA_PENDING_OR_ASSET_REPAIR_REQUIRED"
+  },
+  "gameSpecificBuildUpDirectiveSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
+    "protections": {
+      "directiveGeneratorCannotExpandPolicyAuthority": true,
+      "directiveCannotChangeProtectedBalanceEconomySaveOrNetworkAuthorityWithoutExistingApproval": true,
+      "platformAdaptersCannotInventDifferentCoreGameMeaning": true,
+      "rawPlaytestOrAiOpinionCannotSelfPromoteToVerifiedPass": true,
+      "sourceTreeAndChangedGameFilesMustBindEvolutionClaim": true,
+      "workflowQaHomepageOnlyDeltaCannotClaimGameEvolution": true,
+      "visualMarkerConfigOrSemanticAtomOnlyCannotClaimRenderedImprovement": true,
+      "externalAssetsRemainSubjectToExistingRightsAndProvenance": true,
+      "directMainGameSourceWriteAuthorityUnchanged": true,
+      "vibeDirectorIsOnlyDirectiveCreationAuthority": true,
+      "platformBootstrapLocalDirectiveGenerationForbidden": true,
+      "missingDirectiveCannotBecomeBuildUpPass": true
+    },
+    "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT"
+  },
+  "minimumNecessaryDevelopmentSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentLoopOptimization",
+    "defaultMode": "SCOPED_AUTOMATED_SECURITY_NONBLOCKING_WHEN_NO_RELEVANT_BOUNDARY_CHANGED",
+    "protections": {
+      "unrelatedSecurityProcedureMayNotSerializeGameBuildUp": true,
+      "verifiedUnchangedSecurityEvidenceMayBeReused": true,
+      "relevantPrivilegeRemoteSaveEconomySecretExternalTrustChangeStillRequiresExistingSecurityGate": true,
+      "confirmedHighRiskFindingStillFailClosed": true,
+      "publicReleaseAndExternalPromotionSecurityEvidencePreserved": true,
+      "procedureMinimizationCannotDisableSecurityFindings": true
+    }
   }
 }

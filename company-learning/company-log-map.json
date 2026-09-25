@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -419,7 +419,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-09-25",
+  "updatedAt": "2026-09-26",
   "graphicsProductionEvidenceContract": {
     "version": 4,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1080,5 +1080,73 @@
     "observedFailure": "RECONCILE_JOB_STARTED_AFTER_NONBLOCKING_GATE_THEN_WAS_CANCELLED_BY_A_LATER_WORKFLOW_RUN_TRIGGER",
     "correction": "CANCEL_IN_PROGRESS_FALSE_AND_SERIALIZED_STATE_WRITES",
     "runtimePersistRequired": true
+  },
+  "gameSpecificBuildUpDirectiveEvidenceContract": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
+    "requiredCorrelationKeys": [
+      "gameId",
+      "buildUpDirectiveId",
+      "buildUpGeneration",
+      "sourceTreeFingerprint",
+      "previousDirectiveFingerprint",
+      "developmentDepth",
+      "escalationStage"
+    ],
+    "requiredEvidence": [
+      "DESIGN_SOURCE",
+      "CURRENT_SOURCE_OBSERVATIONS",
+      "PREVIOUS_VERSION_COMPARISON",
+      "PLAYTEST_RUNTIME_QA_FINDINGS_WHEN_AVAILABLE",
+      "SELECTED_PRIMARY_GOAL_AND_REASON",
+      "DEFERRED_GAPS",
+      "RESPONSIBLE_SYSTEMS_AND_FILES",
+      "PLATFORM_ADAPTATION_PLAN",
+      "CHANGED_GAME_FILES",
+      "BEFORE_AFTER_RESULT",
+      "NEXT_ESCALATION_CANDIDATES",
+      "ALL_APPLICABLE_DOMAIN_DIRECTIVES",
+      "PREVIOUS_AND_CURRENT_GAME_SOURCE_TREE_FINGERPRINTS",
+      "VERIFIED_SOURCE_DELTA_BEFORE_DEPTH_ESCALATION",
+      "SHARED_GENERATION_TASK_OUTCOME_SET",
+      "ALL_REQUIRED_SIBLINGS_VERIFIED_BEFORE_DEPTH_INCREASE",
+      "DIRECTIVE_GENERATION_FAN_IN_STATUS"
+    ],
+    "visualEvidenceDomains": [
+      "CHARACTER",
+      "ENEMY_CREATURE",
+      "WEAPON_EQUIPMENT",
+      "ENVIRONMENT_TERRAIN",
+      "MATERIAL_SURFACE",
+      "LIGHTING",
+      "ANIMATION",
+      "SECONDARY_MOTION",
+      "VFX",
+      "CAMERA",
+      "UI_HUD",
+      "AUDIO_VISUAL_SYNC",
+      "ENVIRONMENTAL_MOTION"
+    ],
+    "workflowOrHomepageOnlyChangeCannotEmitEvolutionSuccess": true,
+    "markerOnlyVisualChangeCannotEmitVisualBuildUpSuccess": true,
+    "noPlayEvidenceMustLogUnknownNotPass": true,
+    "eachVerifiedGenerationMustLinkNextDirective": true,
+    "verifiedStatusWithoutSourceTreeDeltaCannotAdvanceDepth": true,
+    "platformConsumersMustLogExactSharedDirectiveId": true,
+    "missingDirectiveMustLogBaselineOnlyNotBuildUpPass": true,
+    "anyFailedSiblingMustPreventDepthIncrease": true,
+    "sharedSiblingDirectiveIdAndFingerprintMustMatch": true,
+    "evolutionFingerprintMustExcludeGeneratedQaWorkflowBootstrapMetadata": true,
+    "evolutionFingerprintMustIncludeRealRenderableAssetChanges": true,
+    "generationFanInMustBeCompleteBeforeEscalation": true
+  },
+  "minimumNecessaryProcedureDevelopmentEvidence": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentLoopOptimization",
+    "logOnlyWhenProcedureRunsOrIsSkippedForKnownUnrelatedScope": true,
+    "reuseEvidenceMustReferenceOriginalVerifiedEvidence": true,
+    "optimizationLaneActivityMustRemainObservable": true,
+    "unrelatedProcedureSkipIsNotFailure": true,
+    "relevantSecurityFindingStillRequiresExistingQuarantineEvidence": true
   }
 }

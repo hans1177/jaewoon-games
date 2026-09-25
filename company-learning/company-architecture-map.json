@@ -1,5 +1,5 @@
 {
-  "version": 192,
+  "version": 193,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -76,7 +76,11 @@
       ".github/workflows/vibe3-engine-contract.yml"
     ],
     "unrelatedWorkflowStartupForbidden": true,
-    "scopeExpansionRequiresRelevantEvidence": true
+    "scopeExpansionRequiresRelevantEvidence": true,
+    "developmentLoopOptimization": "RUN_ONLY_DIRECTLY_RELEVANT_PROCEDURE_OR_NONBLOCKING_REUSED_EVIDENCE",
+    "unrelatedSecurityQaReviewMaySerializeBuildUp": false,
+    "optimizationLaneRemainsLive": true,
+    "optimizationParallelWhenNoResponsibleFileConflict": true
   },
   "executionTopology": {
     "design": [
@@ -3772,9 +3776,34 @@
       "directNativeDispatchFromBuildWorkflowForbidden": true,
       "sourceTreeExactMatchRequired": true,
       "existingNativeDevelopmentGrandfathered": true
+    },
+    "gameSpecificBuildUpDirective": {
+      "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
+      "coordinator": "tools/company-build-up-directive.mjs",
+      "consumes": [
+        "VERIFIED_DESIGN",
+        "CURRENT_SOURCE",
+        "PREVIOUS_VERIFIED_SOURCE",
+        "PLAYTEST_RUNTIME_QA",
+        "PREVIOUS_DIRECTIVE_RESULT"
+      ],
+      "produces": ".vibe2/build-up-directives/<gameId>/current.json",
+      "consumedBy": [
+        "UNITY_WEB_DEVELOPMENT",
+        "ROBLOX_DEVELOPMENT",
+        "UNITY_APP_DEVELOPMENT"
+      ],
+      "sameGoalDifferentNativeImplementation": true,
+      "runtimeBranch": "vibe2-unreal-core",
+      "creator": "VIBE_DIRECTOR_ONLY",
+      "platformConsumers": [
+        "UNITY_WEB",
+        "ROBLOX",
+        "UNITY_APP"
+      ]
     }
   },
-  "updatedAt": "2026-09-26T00:49:00+09:00",
+  "updatedAt": "2026-09-26",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -4406,6 +4435,65 @@
         "company-runtime:game-seed-state.json"
       ],
       "shadowPipelineCreated": false
+    },
+    "gameSpecificBuildUpDirective": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
+      "generator": "tools/company-build-up-directive.mjs",
+      "artifact": ".vibe2/build-up-directives/<gameId>/current.json",
+      "placement": "AFTER_BUILD_UP_DECISION_BEFORE_PLATFORM_IMPLEMENTATION",
+      "sharedGoalFanOut": [
+        "UNITY_WEB",
+        "ROBLOX",
+        "UNITY_APP"
+      ],
+      "flow": [
+        "LOAD_VERIFIED_DESIGN_AND_IDENTITY",
+        "INSPECT_CURRENT_GAME_SOURCE",
+        "COMPARE_PREVIOUS_VERIFIED_GAME_VERSION",
+        "CONSUME_LATEST_PLAYTEST_RUNTIME_QA_EVIDENCE",
+        "CLASSIFY_ALL_GAMEPLAY_WORLD_VISUAL_UX_STABILITY_DOMAINS",
+        "GENERATE_ONE_EXPLICIT_DIRECTIVE_FOR_EVERY_APPLICABLE_DOMAIN",
+        "CALCULATE_VERIFIED_LOOP_DEVELOPMENT_DEPTH",
+        "SELECT_HIGHEST_VALUE_GAME_SPECIFIC_GOAL",
+        "GENERATE_DETAILED_GAMEPLAY_WORLD_VISUAL_UX_PLATFORM_DIRECTIVES",
+        "FAN_OUT_SAME_COMMON_GOAL_TO_UNITY_WEB_ROBLOX_UNITY_APP",
+        "IMPLEMENT_IN_EXISTING_RESPONSIBLE_SYSTEMS",
+        "IMPACT_SCOPED_QA_AND_RUNTIME_OBSERVATION_WHEN_REQUIRED",
+        "COMPARE_TO_PREVIOUS_VERIFIED_BASELINE",
+        "PROMOTE_VERIFIED_RESULT_TO_NEXT_BASELINE",
+        "GENERATE_NEXT_ESCALATED_NON_REPEATING_DIRECTIVE"
+      ],
+      "everyVerifiedLoopRegeneratesDirective": true,
+      "genericCrossGameDirectiveForbidden": true,
+      "detailedVisualCoverageRequired": true,
+      "platformSpecificImplementationRequired": true,
+      "platformSpecificCoreMeaningDriftForbidden": true,
+      "workflowOrHomepageOnlyDeltaDoesNotCountAsBuildUp": true,
+      "foundationOnlyRepairDoesNotCountAsBuildUpUnlessItIsTheVerifiedPrimaryGap": true,
+      "shadowPipelineCreated": false,
+      "runtimeBranch": "vibe2-unreal-core",
+      "perApplicableDomainDirectiveRequired": true,
+      "verifiedLoopDevelopmentDepthEscalation": true,
+      "failedLoopDepthEscalationForbiddenUntilCausalRepairVerified": true,
+      "verifiedStatusWithoutGameSourceDeltaCannotEscalate": true,
+      "realGameSourceTreeDeltaRequiredForDepthIncrease": true,
+      "creationAuthority": "VIBE_DIRECTOR_ONLY",
+      "platformExecutors": [
+        "UNITY_WEB",
+        "ROBLOX",
+        "UNITY_APP"
+      ],
+      "platformExecutorsConsumerOnly": true,
+      "platformLocalDirectiveGenerationForbidden": true,
+      "missingDirectiveBehavior": "BASELINE_ONLY_NO_BUILD_UP_COMPLETION_CLAIM",
+      "sharedDirectiveGenerationAllRequiredTasksMustVerifyBeforeDepthIncrease": true,
+      "anyFailedSiblingKeepsCurrentDepth": true,
+      "sharedSiblingDirectiveObjectExact": true,
+      "evolutionFingerprintScope": "REAL_GAME_CODE_SCENE_PREFAB_MATERIAL_ANIMATION_IMAGE_AUDIO",
+      "generatedEvidenceMetadataExcludedFromEvolutionFingerprint": true,
+      "generationFanInBeforeEscalation": true,
+      "activeSiblingTaskPreventsGenerationAdvance": true,
+      "failedSiblingTaskPreventsGenerationAdvance": true
     }
   },
   "nonblockingCoordinationTelemetryTopology": {

@@ -32,6 +32,8 @@ on:
       - 'tools/company-web-validation-evidence-contract.mjs'
       - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
+      - 'tools/company-build-up-directive.mjs'
+      - 'qa/company-build-up-directive.test.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
@@ -80,6 +82,7 @@ on:
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/unity-web-floor-source-bootstrap.yml'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/unity-android-regression.yml'
@@ -126,6 +129,8 @@ on:
       - 'tools/company-web-validation-evidence-contract.mjs'
       - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
+      - 'tools/company-build-up-directive.mjs'
+      - 'qa/company-build-up-directive.test.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
@@ -166,6 +171,7 @@ on:
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/unity-web-floor-source-bootstrap.yml'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/unity-android-regression.yml'
@@ -219,6 +225,7 @@ jobs:
           node --check tools/company-web-validation-evidence-contract.mjs
           node --check tools/company-strict-production-review.mjs
           node --check tools/company-development-unity-bootstrap.mjs
+          node --check tools/company-build-up-directive.mjs
           node --check tools/company-development-unity-evidence.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
@@ -236,6 +243,7 @@ jobs:
           node --check assets/vibe-visual-autopilot.js
           node --check assets/vibe-presentation-director.js
           node --test \
+            qa/company-build-up-directive.test.mjs \
             qa/company-direct-native-policy-contract.test.mjs \
             qa/company-high-end-visual-contract.test.mjs \
             qa/vibe-visual-runtime-quality.test.mjs \
