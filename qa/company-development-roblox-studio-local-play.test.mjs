@@ -9,6 +9,7 @@ import {
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+const helper=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
@@ -232,6 +233,13 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.doesNotMatch(studioMcpBlock,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
   assert.doesNotMatch(studioMcpBlock,/Get-Content 'C:\\\\actions-runner\\\\\.runner'|ConvertFrom-Json.*runnerMetadata/);
   assert.doesNotMatch(studioMcpBlock,/--mode=mcp-run[\s\S]{0,500}(--place-id=|--universe-id=)/);
+});
+
+test('Windows Studio MCP transport matches Roblox documented cmd.exe /c launcher and retains bounded stderr diagnostics',()=>{
+  assert.match(helper,/process\.platform==='win32'\)return\{command:'cmd\.exe',args:\['\/c',resolved\]\}/);
+  assert.doesNotMatch(helper,/args:\['\/d','\/s','\/c',resolved\]/);
+  assert.match(helper,/this\.stderrTail=\(this\.stderrTail\+value\)\.slice\(-6000\)/);
+  assert.match(helper,/stderr=\$\{detail\}/);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
