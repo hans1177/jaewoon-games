@@ -58,7 +58,6 @@ function workerExecutionPolicyProjection(policy={}){
       postCentralDocumentWriteSharedContextResyncRequired:shared.postCentralDocumentWriteSharedContextResyncRequired===true,
       beforeWorkRequired:shared.beforeWorkRequired===true,
       afterWorkRequired:shared.afterWorkRequired===true,
-      bindSha256ToExecutionEvidence:shared.bindSha256ToExecutionEvidence===true,
       completionRequiresSharedContextSync:shared.completionRequiresSharedContextSync===true,
       runtimeMayNotCreatePolicy:shared.runtimeMayNotCreatePolicy===true,
       aiMayNotExpandOwnAuthority:shared.aiMayNotExpandOwnAuthority===true,
