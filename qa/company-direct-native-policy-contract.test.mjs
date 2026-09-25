@@ -155,7 +155,7 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   const archGate=architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate;
   assert.equal(archLoop.perpetual,true);
   assert.equal(archLoop.continuesAfterPublicRelease,true);
-  assert.equal(archLoop.actualPlayExecutor,'PENDING_DIRECT_BINDING_TO_EXISTING_ROBLOX_RUNTIME_NO_SHADOW_PIPELINE');
+  assert.equal(archLoop.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play');
   assert.equal(archGate.failClosed,true);
   assert.equal(archGate.actualVibePlayRequired,true);
   assert.equal(archGate.f9InternalReleaseCannotSetPublicReady,true);
