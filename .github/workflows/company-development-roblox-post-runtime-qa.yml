@@ -74,7 +74,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-tester-debug-intake.test.mjs
+          node --test \
+            qa/company-development-roblox-runtime-foundation.test.mjs \
+            qa/company-development-roblox-headless-fast-mvp.test.mjs \
+            qa/company-development-roblox-studio-local-play.test.mjs \
+            qa/company-tester-debug-intake.test.mjs
           echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
 
       - name: Probe exact Roblox Open Cloud engine execution
