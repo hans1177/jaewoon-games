@@ -1,57 +1,19 @@
 {
   "version": 1,
-  "before": "7a040950a95d900d3d222dccafd00214848b3b95",
-  "after": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-  "generatedAt": "2026-09-25T20:06:01.391Z",
+  "before": "de5224132f569ae9667e6df386f418af58ddd08f",
+  "after": "8a05c560c43004e16e5850fad4b1bda023deac94",
+  "generatedAt": "2026-09-25T20:21:04.387Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
-      "gameId": "bug-defense",
-      "sourcePath": "web-games/bug-defense",
-      "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
-      "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-      "semanticIntentFingerprint": "047e0cb5f5f04588b9702c7a76f384ef7f798dcc362ed4dde34c379eb4784768",
+      "gameId": "cozy-island",
+      "sourcePath": "web-games/cozy-island",
+      "sourceBefore": "de5224132f569ae9667e6df386f418af58ddd08f",
+      "sourceAfter": "8a05c560c43004e16e5850fad4b1bda023deac94",
+      "semanticIntentFingerprint": "eb194d4c25fdf348ebb07eceb87517c672be178cf645ea360feb4815e97eb596",
       "affectedSystems": [
-        "MOVEMENT",
-        "COMBAT",
-        "INVENTORY",
-        "WORLD",
-        "MULTIPLAYER",
-        "PROGRESSION",
-        "AUDIO",
-        "UI_UX",
-        "BALANCE"
-      ],
-      "platformTargets": [
-        "UNITY"
-      ],
-      "literalWebCodeCrossPlatformCopyForbidden": true,
-      "semanticIntentPropagationRequired": true,
-      "affectedWebQaRequired": true,
-      "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T20:06:01.391Z",
-      "state": "PLATFORM_PROPAGATION_REQUIRED"
-    },
-    {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE",
-      "gameId": "daechung-rpg",
-      "sourcePath": "web-games/daechung-rpg",
-      "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
-      "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-      "semanticIntentFingerprint": "eba6cbf8d439d64237f8fea66e0b06316cb0c2944a4706beb0fd22f8b3d3da03",
-      "affectedSystems": [
-        "MOVEMENT",
-        "COMBAT",
-        "INVENTORY",
-        "WORLD",
-        "MULTIPLAYER",
-        "PROGRESSION",
-        "AUDIO",
-        "UI_UX",
-        "SAVE",
-        "BALANCE"
+        "UI_UX"
       ],
       "platformTargets": [
         "ROBLOX"
@@ -60,113 +22,21 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T20:06:01.391Z",
+      "detectedAt": "2026-09-25T20:21:04.387Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     },
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
-      "gameId": "horror-escape-room",
-      "sourcePath": "web-games/horror-escape-room",
-      "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
-      "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-      "semanticIntentFingerprint": "9f72bda950fae65a031ed6130f1ea66a44a94afde2021f5a0798674d5b715fa8",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "sourceBefore": "de5224132f569ae9667e6df386f418af58ddd08f",
+      "sourceAfter": "8a05c560c43004e16e5850fad4b1bda023deac94",
+      "semanticIntentFingerprint": "4031d54e85e4460bb642bde6150bb78ef8185d5b4e9bca0e2949258dd9bee790",
       "affectedSystems": [
         "MOVEMENT",
         "COMBAT",
-        "INVENTORY",
-        "WORLD",
-        "MULTIPLAYER",
         "PROGRESSION",
-        "UI_UX",
-        "SAVE"
-      ],
-      "platformTargets": [
-        "ROBLOX"
-      ],
-      "literalWebCodeCrossPlatformCopyForbidden": true,
-      "semanticIntentPropagationRequired": true,
-      "affectedWebQaRequired": true,
-      "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T20:06:01.391Z",
-      "state": "PLATFORM_PROPAGATION_REQUIRED"
-    },
-    {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE",
-      "gameId": "monster-adventure",
-      "sourcePath": "web-games/monster-adventure",
-      "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
-      "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-      "semanticIntentFingerprint": "6bfe169a9b65834afb52ecf7501ab670874cb20a0499c3bde85e4d1d5177a686",
-      "affectedSystems": [
-        "MOVEMENT",
-        "COMBAT",
-        "INVENTORY",
-        "WORLD",
-        "MULTIPLAYER",
-        "PROGRESSION",
-        "UI_UX",
-        "SAVE",
-        "BALANCE"
-      ],
-      "platformTargets": [
-        "UNITY"
-      ],
-      "literalWebCodeCrossPlatformCopyForbidden": true,
-      "semanticIntentPropagationRequired": true,
-      "affectedWebQaRequired": true,
-      "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T20:06:01.391Z",
-      "state": "PLATFORM_PROPAGATION_REQUIRED"
-    },
-    {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "sourcePath": "web-games/seed-puzzle-chromatic-cascade",
-      "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
-      "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-      "semanticIntentFingerprint": "9fd0f2aa9861c63a299cb7d7e29b31422a156ac7f6f80d0be27b66b38d0743ff",
-      "affectedSystems": [
-        "MOVEMENT",
-        "COMBAT",
-        "CRAFTING",
-        "INVENTORY",
-        "WORLD",
-        "MULTIPLAYER",
-        "PROGRESSION",
-        "AUDIO",
-        "UI_UX",
-        "SAVE",
-        "BALANCE"
-      ],
-      "platformTargets": [
-        "UNITY"
-      ],
-      "literalWebCodeCrossPlatformCopyForbidden": true,
-      "semanticIntentPropagationRequired": true,
-      "affectedWebQaRequired": true,
-      "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T20:06:01.391Z",
-      "state": "PLATFORM_PROPAGATION_REQUIRED"
-    },
-    {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE",
-      "gameId": "survival",
-      "sourcePath": "web-games/survival",
-      "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
-      "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-      "semanticIntentFingerprint": "c65f820f5b0843ced905dae7b145d1b9230dae46dbdd2440c83fea1f9965755f",
-      "affectedSystems": [
-        "MOVEMENT",
-        "COMBAT",
-        "CRAFTING",
-        "INVENTORY",
-        "WORLD",
-        "PROGRESSION",
-        "AUDIO",
         "UI_UX",
         "BALANCE"
       ],
@@ -177,31 +47,7 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T20:06:01.391Z",
-      "state": "PLATFORM_PROPAGATION_REQUIRED"
-    },
-    {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE",
-      "gameId": "village-dungeons",
-      "sourcePath": "web-games/village-dungeons",
-      "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
-      "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
-      "semanticIntentFingerprint": "3bbae019cf34e54b0ea5db017bba6157e3a35b6b90668789ff5ef3c5ec92f096",
-      "affectedSystems": [
-        "INVENTORY",
-        "WORLD",
-        "UI_UX",
-        "SAVE"
-      ],
-      "platformTargets": [
-        "UNITY"
-      ],
-      "literalWebCodeCrossPlatformCopyForbidden": true,
-      "semanticIntentPropagationRequired": true,
-      "affectedWebQaRequired": true,
-      "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T20:06:01.391Z",
+      "detectedAt": "2026-09-25T20:21:04.387Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]

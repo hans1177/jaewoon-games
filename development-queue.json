@@ -569,7 +569,30 @@
       "robloxDedicatedExperiencePublished": true,
       "robloxDedicatedExperiencePublishedAt": "2026-09-25T14:08:10.303Z",
       "robloxFastMvpPublished": true,
-      "robloxFastMvpPublishedAt": "2026-09-25T14:08:10.303Z"
+      "robloxFastMvpPublishedAt": "2026-09-25T14:08:10.303Z",
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "cozy-island",
+        "sourcePath": "web-games/cozy-island",
+        "sourceBefore": "de5224132f569ae9667e6df386f418af58ddd08f",
+        "sourceAfter": "8a05c560c43004e16e5850fad4b1bda023deac94",
+        "semanticIntentFingerprint": "eb194d4c25fdf348ebb07eceb87517c672be178cf645ea360feb4815e97eb596",
+        "affectedSystems": [
+          "UI_UX"
+        ],
+        "platformTargets": [
+          "ROBLOX"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:21:04.387Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:21:04.387Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -4853,7 +4876,34 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "sourceBefore": "de5224132f569ae9667e6df386f418af58ddd08f",
+        "sourceAfter": "8a05c560c43004e16e5850fad4b1bda023deac94",
+        "semanticIntentFingerprint": "4031d54e85e4460bb642bde6150bb78ef8185d5b4e9bca0e2949258dd9bee790",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "PROGRESSION",
+          "UI_UX",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:21:04.387Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:21:04.387Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -7092,7 +7142,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-25T20:06:01.391Z",
+  "updatedAt": "2026-09-25T20:21:04.387Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
