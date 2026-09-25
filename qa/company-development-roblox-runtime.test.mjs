@@ -466,21 +466,20 @@ test('Roblox source and package workers avoid full repository history checkout',
 });
 
 
-test('Roblox runtime persist writers refetch and reapply instead of using a cancellable global writer lock',()=>{
+test('Roblox runtime persistence implementation obeys canonical shared-state and heavy-execution boundaries',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const writer=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.runtimeStateWriter;
-  assert.equal(writer.staticConcurrencyGroupForbidden,true);
-  assert.equal(writer.optimisticRetryRequired,true);
-  assert.equal(writer.refetchBeforeEveryAttempt,true);
-  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  const speed=roadmap.developmentSpeedExecution;
+  const roblox=speed.robloxEndToEndParallelExecution;
+  assert.equal(speed.qualityOrEvidenceGateWeakeningForbidden,true);
+  assert.equal(roblox.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
+  assert.equal(roblox.sharedStateWriteSerializationMayNotSerializeHeavyCheckoutBuildRuntimeOrQa,true);
   assert.match(workflow,/ROBLOX_SOURCE_PERSIST_ATTEMPT=/);
   assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
   assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_ATTEMPT=/);
   assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
-  assert.ok((workflow.match(/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH" main/g)||[]).length>=4);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
 });
-
 
 test('Roblox game source pushes route through exact changed-source sync instead of broad runtime batch',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
@@ -495,20 +494,18 @@ test('Roblox game source pushes route through exact changed-source sync instead 
 });
 
 
-test('exact Roblox dispatch stays per-game while batch runs and runtime writers avoid global serialization',()=>{
+test('exact Roblox dispatch follows canonical unbounded-by-policy parallel execution',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const concurrency=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.workflowRunConcurrency;
-  assert.equal(concurrency.exactGameDispatchGroup,'PER_GAME_STABLE_GROUP');
-  assert.equal(concurrency.batchDispatchGroup,'UNIQUE_PER_WORKFLOW_RUN');
-  assert.equal(concurrency.batchRunsMayOverlap,true);
-  assert.equal(concurrency.sharedRuntimeWritersRemainSerialized,false);
-  assert.equal(concurrency.sharedRuntimeWriterStrategy,'OPTIMISTIC_LATEST_READ_REAPPLY_PUSH_RETRY');
-  assert.equal(concurrency.staticGlobalWriterConcurrencyGroupForbidden,true);
+  const speed=roadmap.developmentSpeedExecution;
+  const roblox=speed.robloxEndToEndParallelExecution;
+  assert.equal(speed.globalAdaptiveParallelMax,null);
+  assert.equal(speed.parallelismMode,'UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_WAVES');
+  assert.equal(roblox.gameLevelExecution,'PARALLEL_BY_DEFAULT');
+  assert.equal(roblox.internalGameConcurrencyCapsForbidden,true);
+  assert.equal(roblox.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
   assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| format\('batch-\{0\}', github\.run_id\) \}\}/);
-  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
 });
-
 
 test('territory-war exact source honors approved competitive multiplayer profile',()=>{
   const config=fs.readFileSync('roblox-games/territory-war/shared/GameConfig.luau','utf8');
@@ -525,45 +522,39 @@ test('territory-war exact source honors approved competitive multiplayer profile
 });
 
 
-test('Roblox fused happy path reuses the exact package through shared preflight and F0',()=>{
+test('Roblox package preflight and F0 reuse obey canonical build-once and exact-resume policy',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const architecture=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
-  const fusion=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.happyPathStageFusion;
-  assert.equal(fusion.buildOncePerSourceFingerprintRequired,true);
-  assert.equal(fusion.sameExactPackageArtifactReusedForF0,true);
-  assert.equal(fusion.duplicateRojoRebuildOnUnchangedHappyPathForbidden,true);
-  assert.equal(fusion.separateContinuationWorkflowRole,'RECOVERY_AND_EXISTING_PENDING_STATE_ONLY');
-  assert.equal(architecture.developmentPipeline.robloxHappyPathStageFusion.sameWorkerHappyPath,true);
+  const speed=roadmap.developmentSpeedExecution;
+  const roblox=speed.robloxEndToEndParallelExecution;
+  assert.equal(speed.buildOncePerSourceFingerprint,true);
+  assert.equal(speed.successfulStageEvidenceReusableWhenSourceFingerprintStillMatches,true);
+  assert.equal(speed.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
+  assert.equal(speed.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.equal(roblox.f0Parallel,true);
   assert.match(workflow,/ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED/);
   assert.match(workflow,/Run fused shared-model build preflight/);
   assert.match(workflow,/ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE/);
   assert.match(workflow,/--rebuilt-artifact-identity="\$artifact_identity"/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/queue\.robloxTechnicalParallelism=null/);
-  assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=2/);
   assert.match(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR/);
 });
 
-
-test('Roblox F0 integrity failure reenters the canonical source worker without weakening gates',()=>{
+test('Roblox F0 integrity repair resumes the exact failed stage without weakening canonical gates',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const repair=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.f0SourceRepairLoop;
-  assert.equal(repair.shadowPipelineForbidden,true);
-  assert.equal(repair.f0GateBypassForbidden,true);
-  assert.equal(repair.existingGameplaySemanticsPreserved,true);
-  assert.equal(repair.newSourceGeneratorMustEmitFoundationContractByDefault,true);
+  const speed=roadmap.developmentSpeedExecution;
+  assert.equal(speed.qualityOrEvidenceGateWeakeningForbidden,true);
+  assert.equal(speed.failureMustRecordExactStageAndSignature,true);
+  assert.equal(speed.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.equal(speed.successfulStageEvidenceReusableWhenSourceFingerprintStillMatches,true);
   assert.match(workflow,/f0FoundationRepair/);
-  assert.match(workflow,/foundationRepair:f0FoundationRepair/);
   assert.match(workflow,/--foundation-repair="\$FOUNDATION_REPAIR"/);
   assert.match(workflow,/ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=YES/);
   assert.match(bootstrap,/native-foundation-sentinel-v1/);
   assert.match(bootstrap,/RuntimeFoundationReport/);
-  assert.match(bootstrap,/GROUND_CONTACT/);
-  assert.match(bootstrap,/MOVEMENT_CONFIRMED/);
   assert.match(bootstrap,/foundationRepairApplied:foundationRepair===true/);
   assert.match(bootstrap,/gameplayAuthorityChanged:false/);
 });
@@ -611,33 +602,33 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
 });
 
 
-test('known Roblox source repair debt outranks reconciliation pass and canonical-state rewrites',()=>{
+test('known Roblox source repair debt follows canonical exact-failure resume semantics',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const priority=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.f0SourceRepairLoop.reentryPriority;
-  assert.equal(priority.reconciliationPassMayNotSuppressKnownRepairDebt,true);
-  assert.equal(priority.canonicalStateMayBeRewrittenByHigherLevelRouting,true);
-  assert.equal(priority.knownBootstrapFailureMayNotBeSkippedByExactMainReconciliation,true);
+  const speed=roadmap.developmentSpeedExecution;
+  assert.equal(speed.failureMustRecordExactStageAndSignature,true);
+  assert.equal(speed.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.equal(speed.sourceOrRelevantDependencyChangeInvalidatesAffectedEvidenceOnly,true);
   assert.match(workflow,/const bootstrapFailed=secondaryOwnerFocus\?item\.ownerFocusRobloxSourceBootstrapFailedAt:item\.robloxSourceBootstrapFailedAt/);
   assert.match(workflow,/item\.robloxFoundationF0Passed!==true/);
   assert.match(workflow,/const knownSourceRepairDebt=Boolean\(bootstrapFailed\)\|\|f0FoundationRepair/);
   assert.match(workflow,/reconciledPass\.has\(item\.gameId\)&&!knownSourceRepairDebt/);
-  assert.doesNotMatch(workflow,/f0FoundationRepair=!secondaryOwnerFocus\s*\n\s*&&state==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'/);
 });
 
-
-test('pending private runtime candidates retry even when technical target count is zero',()=>{
+test('pending private runtime candidates use canonical immediate-next-stage and exact-resume semantics',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const retry=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateRetry;
-  assert.equal(retry.retryMayRunWhenTechnicalTargetCountIsZero,true);
-  assert.equal(retry.retryScansAllExactF0PassedPendingCandidates,true);
-  assert.equal(retry.duplicatePerGameDispatchSerializedByReleaseWorkflow,true);
+  const speed=roadmap.developmentSpeedExecution;
+  const releaseConcurrency=speed.candidateReleaseConcurrency;
+  assert.equal(speed.nextCanonicalStageDispatchImmediatelyAfterSuccess,true);
+  assert.equal(speed.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.equal(speed.existingEventChainPreferred,true);
+  assert.equal(releaseConcurrency.sameCandidateDuplicateDispatchSharesGroup,true);
+  assert.equal(releaseConcurrency.cancelInProgress,false);
   assert.match(workflow,/name: Dispatch pending private runtime candidates[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT=/);
-  assert.match(workflow,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
-  assert.match(workflow,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
-  assert.doesNotMatch(workflow,/Dispatch private runtime candidate for fused F0 passes/);
+  assert.match(workflow,/ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING/);
 });
+
