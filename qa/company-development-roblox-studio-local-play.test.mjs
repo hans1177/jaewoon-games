@@ -347,8 +347,10 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(studioMcpBlock,/StudioMCP\.exe/);
   assert.match(studioMcpBlock,/ROBLOX_DOCUMENTED_MCP_BATCH/);
   assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING/);
-  assert.doesNotMatch(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
-  assert.doesNotMatch(studioMcpBlock,/knownBrokenBatch|batchText = Get-Content \$mcpBat/);
+  assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_DOCUMENTED_BATCH/);
+  assert.match(studioMcpBlock,/knownBrokenBatch/);
+  assert.match(studioMcpBlock,/batchText = Get-Content \$mcpBat -Raw -ErrorAction SilentlyContinue/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_HEALTH=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POLICY=PASS/);
@@ -385,28 +387,37 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
   assert.match(helper,/stderr=\$\{detail\}/);
 });
 
-test('Windows workflow prefers Roblox documented mcp.bat whenever it exists',()=>{
+test('Windows workflow uses documented mcp.bat only when its installed text is healthy and otherwise uses official StudioMCP.exe',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   const batCheck=studioMcpBlock.indexOf("if (Test-Path $mcpBat)");
+  const healthCheck=studioMcpBlock.indexOf('$knownBrokenBatch =');
+  const brokenFallback=studioMcpBlock.indexOf("OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_DOCUMENTED_BATCH");
   const documented=studioMcpBlock.indexOf("$mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'");
-  const exeFallback=studioMcpBlock.indexOf("OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING");
   assert.ok(batCheck>0);
-  assert.ok(documented>batCheck);
-  assert.ok(exeFallback>documented);
-  assert.doesNotMatch(studioMcpBlock,/knownBrokenBatch|OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
+  assert.ok(healthCheck>batCheck);
+  assert.ok(brokenFallback>healthCheck);
+  assert.ok(documented>brokenFallback);
+  assert.match(studioMcpBlock,/%B\[\/\\\\\]\\\.\\\.\[\/\\\\\]StudioMCP\\\.exe/);
+  assert.match(studioMcpBlock,/\$mcpBatchHealth = 'BROKEN_USE_OFFICIAL_EXE'/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_HEALTH=\$mcpBatchHealth/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
 });
 
 
-test('workflow falls back to the installed official StudioMCP binary only after a failed documented batch attempt',()=>{
+test('workflow retries only with the installed official StudioMCP binary and classifies empty tools after a restarted Studio session',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_TRANSPORT_FALLBACK=OFFICIAL_STUDIOMCP_EXE/);
   assert.match(studioMcpBlock,/\$attempt -gt 1 -and \$env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND/);
+  assert.match(studioMcpBlock,/\$attempt -gt 1\) -and \(\$mcpCommandForAttempt -eq \$env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND\)/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/);
   assert.match(studioMcpBlock,/available=:/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO/);
   assert.doesNotMatch(studioMcpBlock,/ROBLOX_PLAYER_AUTOMATION=YES/);
+  assert.match(studioMcpBlock,/WaitForInputIdle\(30000\)/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_GUI_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES/);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
