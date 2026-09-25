@@ -1,5 +1,5 @@
 {
-  "version": 360,
+  "version": 361,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6596,6 +6596,14 @@
         ".github/workflows/company-development-queue-reconcile.yml",
         ".github/workflows/company-seed-design-runtime.yml"
       ]
+    },
+    "reconcileCancellationChurn20260925": {
+      "id": "RECONCILE_CANCELLATION_CHURN_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "WORKFLOW_RUN_TRIGGER_BURSTS_COULD_CANCEL_THE_RUNNING_COMPANY_RUNTIME_RECONCILE_BEFORE_PERSIST",
+      "resolution": "SERIALIZE_RECONCILE_STATE_WRITES_WITHOUT_CANCEL_IN_PROGRESS; SUBSEQUENT_TRIGGERS_QUEUE",
+      "affectedWorkflow": ".github/workflows/company-development-queue-reconcile.yml"
     }
   },
   "vibeExecutionLaneContract": {
@@ -19003,7 +19011,8 @@
       "asyncOrPosthocAuditPreferredWhenAcceptanceNeedNotBlock": true,
       "immediateAtomicRefillMustContinueWhileUnrelatedChecksRun": true,
       "coordinationTelemetryFailureMayNotDeferDevelopmentOrReconciliation": true,
-      "activeGameWorkMayNotDeferIndependentDesignOrQueueReconciliation": true
+      "activeGameWorkMayNotDeferIndependentDesignOrQueueReconciliation": true,
+      "reconciliationCancellationChurnForbidden": true
     },
     "hardGateOnlyWhen": [
       "CENTRAL_POLICY_OR_AUTHORITY_MUTATION",
@@ -19046,7 +19055,15 @@
       "queueTelemetryUnavailableAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
       "queueTelemetryInvalidAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
       "activeGameWorkActionForIndependentReconcileAndDesign": "RUN_PARALLEL",
-      "staleBranchQueueReferenceForbidden": true
+      "staleBranchQueueReferenceForbidden": true,
+      "stateReconciliation": {
+        "sameStateWriterConcurrentMutation": false,
+        "serializeStateWrites": true,
+        "cancelRunningReconcileOnNewTrigger": false,
+        "newestTriggerMayQueueBehindRunningReconcile": true,
+        "runningReconcileMustReachPersistOrExplicitFailure": true,
+        "repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation": true
+      }
     },
     "forbiddenInterpretations": [
       "SKIP_RELEVANT_SECURITY_FINDING",

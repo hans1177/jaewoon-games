@@ -1,5 +1,5 @@
 {
-  "version": 176,
+  "version": 177,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4046,6 +4046,12 @@
     "onInvalid": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
     "onActiveGameWork": "RUN_INDEPENDENT_RECONCILE_AND_DESIGN_PARALLEL",
     "staleBranchReferenceForbidden": true,
-    "noGamePrimarySlotConsumption": true
+    "noGamePrimarySlotConsumption": true,
+    "reconcileConcurrency": {
+      "group": "company-development-queue-reconcile-runtime",
+      "cancelInProgress": false,
+      "stateWritesSerialized": true,
+      "triggerBurstBehavior": "QUEUE_NOT_CANCEL"
+    }
   }
 }
