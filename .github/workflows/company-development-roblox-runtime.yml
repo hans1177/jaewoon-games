@@ -282,7 +282,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: company-learning/platform-release-roadmap.json.")"
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           merge_sha="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json mergeCommit --jq '.mergeCommit.oid')"
           [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'Roblox source merge revision missing' >&2; exit 2; }
