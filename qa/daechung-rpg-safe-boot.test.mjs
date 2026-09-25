@@ -29,7 +29,7 @@ test('service worker bypasses stale cache for daechung RPG',()=>{
 });
 
 
-test('daechung Unity Web QA uses a real fixed-screen mobile action target',()=>{
+test('daechung Unity Web QA touches the same fixed-screen attack button used by real gameplay',()=>{
   const source=fs.readFileSync('unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs','utf8');
   assert.match(source,/DrawQaMobileActionOverlay\(\)/);
   assert.match(source,/var actionRect = new Rect\(/);
