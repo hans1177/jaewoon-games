@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-25T08:27:37.368Z",
+      "updatedAt": "2026-09-25T08:30:30.672Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -295,17 +295,41 @@
       "robloxF9ReleaseRegressionEvidence": null,
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
-      "robloxInternalReleaseAt": null,
-      "robloxInternalReleaseEvidence": null,
+      "robloxInternalReleaseAt": "2026-09-25T05:30:47.218Z",
+      "robloxInternalReleaseEvidence": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "platform": "ROBLOX",
+        "sourceRevision": "4732acc131c7f36e19928d0b20ed3fee3067044f",
+        "artifactIdentity": "sha256:7bf90247615cd16c1fe3f13d61e13090ab2566a1dc704216fd29af886f0ef793",
+        "artifactRunId": 36098673080,
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": "OWNER_CONFIRMED_INTERNAL_RELEASE_HISTORY",
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 9,
+        "workflowRunId": 36098843231,
+        "publishedAt": "2026-09-25T05:30:47.218Z",
+        "authority": "owner-confirmed-internal-release-history-2026-09-25",
+        "internalRelease": true,
+        "publicRelease": false,
+        "publicReleaseReady": false,
+        "currentRuntimeRevalidationRequired": true,
+        "currentRuntimePassClaim": false,
+        "historicalSharedTarget": true
+      },
       "robloxReleaseEvidence": null,
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "ACTUAL_VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
       "routingBlockers": [
-        "roblox-dedicated-runtime-target-migration-pending"
+        "roblox-internal-vibe-play-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -342,8 +366,12 @@
         "fromPlaceId": "112507741861842",
         "sourceRevision": "4732acc131c7f36e19928d0b20ed3fee3067044f",
         "artifactIdentity": "sha256:7bf90247615cd16c1fe3f13d61e13090ab2566a1dc704216fd29af886f0ef793",
-        "state": "PENDING_DEDICATED_PRIVATE_TARGET"
-      }
+        "state": "NON_BLOCKING_AFTER_INTERNAL_RELEASE",
+        "blocking": false,
+        "internalReleasePreserved": true,
+        "updatedAt": "2026-09-25T08:30:30.672Z"
+      },
+      "robloxInternalReleasePublished": true
     },
     {
       "gameId": "daechung-rpg",
@@ -401,10 +429,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T08:27:37.368Z",
+      "updatedAt": "2026-09-25T08:30:30.672Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -634,17 +662,41 @@
       "robloxF9ReleaseRegressionEvidence": null,
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
-      "robloxInternalReleaseAt": null,
-      "robloxInternalReleaseEvidence": null,
+      "robloxInternalReleaseAt": "2026-09-25T07:11:09.865Z",
+      "robloxInternalReleaseEvidence": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "platform": "ROBLOX",
+        "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
+        "artifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
+        "artifactRunId": 36106173538,
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": "OWNER_CONFIRMED_INTERNAL_RELEASE_HISTORY",
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 18,
+        "workflowRunId": 36106325077,
+        "publishedAt": "2026-09-25T07:11:09.865Z",
+        "authority": "owner-confirmed-internal-release-history-2026-09-25",
+        "internalRelease": true,
+        "publicRelease": false,
+        "publicReleaseReady": false,
+        "currentRuntimeRevalidationRequired": true,
+        "currentRuntimePassClaim": false,
+        "historicalSharedTarget": true
+      },
       "robloxReleaseEvidence": null,
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "ACTUAL_VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
       "routingBlockers": [
-        "roblox-dedicated-runtime-target-migration-pending"
+        "roblox-internal-vibe-play-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -692,8 +744,12 @@
         "fromPlaceId": "112507741861842",
         "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
         "artifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
-        "state": "PENDING_DEDICATED_PRIVATE_TARGET"
-      }
+        "state": "NON_BLOCKING_AFTER_INTERNAL_RELEASE",
+        "blocking": false,
+        "internalReleasePreserved": true,
+        "updatedAt": "2026-09-25T08:30:30.672Z"
+      },
+      "robloxInternalReleasePublished": true
     },
     {
       "gameId": "horror-escape-room",
@@ -751,10 +807,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T08:27:37.368Z",
+      "updatedAt": "2026-09-25T08:30:30.672Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -984,17 +1040,41 @@
       "robloxF9ReleaseRegressionEvidence": null,
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
-      "robloxInternalReleaseAt": null,
-      "robloxInternalReleaseEvidence": null,
+      "robloxInternalReleaseAt": "2026-09-25T07:12:18.695Z",
+      "robloxInternalReleaseEvidence": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "platform": "ROBLOX",
+        "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
+        "artifactIdentity": "sha256:a298a9bdc3e5b0469d3b5a7adcdfd01da5b0ddc9ce19423631098e1668b1b236",
+        "artifactRunId": 36106173538,
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": "OWNER_CONFIRMED_INTERNAL_RELEASE_HISTORY",
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 19,
+        "workflowRunId": 36106433040,
+        "publishedAt": "2026-09-25T07:12:18.695Z",
+        "authority": "owner-confirmed-internal-release-history-2026-09-25",
+        "internalRelease": true,
+        "publicRelease": false,
+        "publicReleaseReady": false,
+        "currentRuntimeRevalidationRequired": true,
+        "currentRuntimePassClaim": false,
+        "historicalSharedTarget": true
+      },
       "robloxReleaseEvidence": null,
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "ACTUAL_VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
       "routingBlockers": [
-        "roblox-dedicated-runtime-target-migration-pending"
+        "roblox-internal-vibe-play-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1042,8 +1122,12 @@
         "fromPlaceId": "112507741861842",
         "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
         "artifactIdentity": "sha256:a298a9bdc3e5b0469d3b5a7adcdfd01da5b0ddc9ce19423631098e1668b1b236",
-        "state": "PENDING_DEDICATED_PRIVATE_TARGET"
-      }
+        "state": "NON_BLOCKING_AFTER_INTERNAL_RELEASE",
+        "blocking": false,
+        "internalReleasePreserved": true,
+        "updatedAt": "2026-09-25T08:30:30.672Z"
+      },
+      "robloxInternalReleasePublished": true
     },
     {
       "gameId": "amusement-tycoon",
@@ -5989,7 +6073,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T08:27:37.368Z",
+  "updatedAt": "2026-09-25T08:30:30.672Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
