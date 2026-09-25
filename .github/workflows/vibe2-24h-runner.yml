@@ -96,6 +96,7 @@ on:
   schedule:
     # Canonical hourly safety-net. The workflow-dispatch refill below handles continuous chaining.
     - cron: '17 * * * *'
+  workflow_call:
   workflow_dispatch:
 
 permissions:
