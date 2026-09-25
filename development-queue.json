@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-25T14:30:16.071Z",
+      "updatedAt": "2026-09-25T14:54:39.336Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -406,7 +406,7 @@
           {
             "type": "studio-mcp-infrastructure-or-runtime-error",
             "actionId": null,
-            "signature": "ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios,get_studio_state,start_stop_play,get_console_output,screen_capture,user_keyboard_input:available=:protocol=2024-11-05:server=RobloxStudio"
+            "signature": "ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios,get_studio_state,start_stop_play,get_console_output,screen_capture,user_keyboard_input,user_mouse_input,character_navigation:available=:protocol=2024-11-05:server=RobloxStudio"
           }
         ],
         "runtimeSummary": {
@@ -423,8 +423,8 @@
         "rawViewportIncluded": false,
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T14:17:15.674Z",
-        "workflowRunId": 36145688608,
+        "testedAt": "2026-09-25T14:54:39.336Z",
+        "workflowRunId": 36150298206,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -6392,7 +6392,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T14:51:56.580Z",
+  "updatedAt": "2026-09-25T14:54:39.336Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
