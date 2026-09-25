@@ -11,6 +11,7 @@ const MACHINE_POLICY_SOURCE='company-learning/platform-release-roadmap.json';
 const ACTIVE_LIFECYCLE=new Set(['ACTIVE','REBUILD']);
 const ACTIVE_SEED_STATUS=new Set(['ACTIVE']);
 const DIRECT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
+const DEDICATED_TARGET_REGISTRY='roblox-dedicated-targets.json';
 const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
   'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
   'webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault','webSourcePath','webFirstGatePassed',
@@ -78,6 +79,43 @@ function activeSeedById(seedState={}){
     if(!old||t>=oldT)map.set(id,seed);
   }
   return map;
+}
+function validDedicatedTarget(target={}){
+  return target?.dedicated===true
+    &&target?.shared!==true
+    &&/^[1-9][0-9]*$/.test(clean(target?.universeId))
+    &&/^[1-9][0-9]*$/.test(clean(target?.placeId));
+}
+function dedicatedTargetFromRegistry(registry={},gameId=''){
+  const rows=Array.isArray(registry?.targets)?registry.targets:[];
+  const target=rows.find(row=>clean(row?.gameId)===clean(gameId));
+  return validDedicatedTarget(target)?target:null;
+}
+function restoreDedicatedTargetIdentity(item,{registry,gameId,stamp}){
+  const target=dedicatedTargetFromRegistry(registry,gameId);
+  if(!target)return false;
+  if(validDedicatedTarget(item?.robloxPublicationTarget))return false;
+  item.robloxPublicationTarget={
+    version:3,
+    gameId,
+    universeId:clean(target.universeId),
+    placeId:clean(target.placeId),
+    verified:target.verified!==false,
+    verifiedAt:target.verifiedAt||target.lastVerifiedAt||null,
+    lastVerifiedAt:target.lastVerifiedAt||target.verifiedAt||null,
+    source:clean(target.source)||'company-runtime-dedicated-target-registry',
+    authority:'roblox-canonical-publication-target',
+    dedicated:true,
+    shared:false,
+    visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+    internalOnly:true,
+    publicDiscoveryAllowed:false,
+    bootstrapState:clean(target.bootstrapState)||'PUBLISHED_PRIVATE',
+  };
+  item.robloxSharedTargetCurrent=false;
+  item.robloxFastMvpSupersededBy=null;
+  item.robloxDedicatedTargetRegistryBinding={version:1,source:DEDICATED_TARGET_REGISTRY,restoredAt:stamp};
+  return true;
 }
 function recoverExactPrivateRuntimeCheckpoint(item,design){
   const priorDesignSource=clean(item?.minimumDesignContract?.source||item?.designBaselineSource);
@@ -168,7 +206,7 @@ function bindSaveContract(item,roadmap={}){
   item.saveVersioningContract=clean(save.canonicalWebModule)||'assets/save-versioning.js';
   item.saveRestoreEvidenceContract=clean(save.webRestoreEvidenceEvaluator)||'tools/company-web-save-restore-evidence.mjs';
 }
-function normalizeItem(oldItem,{game,seed,design,roadmap,stamp}){
+function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp}){
   const gameId=clean(game.id);
   const selected=resolveSelectedPlatform(seed,game,oldItem)||'ROBLOX';
   const paths=directPaths(gameId);
@@ -216,6 +254,7 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,stamp}){
   });
   removeLegacy(item);
   bindSaveContract(item,roadmap);
+  restoreDedicatedTargetIdentity(item,{registry:dedicatedRegistry,gameId,stamp});
   if(migrateSharedRobloxFallbackToDedicatedTarget(item)){
     item.updatedAt=stamp;
   }
@@ -229,6 +268,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const queuePath=p('development-queue.json');
   const queue=readJson(queuePath,{version:1,items:[]});
   const roadmap=readJson(p(MACHINE_POLICY_SOURCE),{});
+  const dedicatedRegistry=readJson(p(DEDICATED_TARGET_REGISTRY),{version:1,targets:[]});
   assertDirectNativePolicy(roadmap);
 
   catalog.games ||= [];
@@ -260,7 +300,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     if(!catalogConfirmed||!lifecycleActive||!seedActive||!seedConfirmed||!design)continue;
 
     const old=oldById.get(gameId)||{};
-    const normalized=normalizeItem(old,{game,seed,design,roadmap,stamp});
+    const normalized=normalizeItem(old,{game,seed,design,roadmap,dedicatedRegistry,stamp});
     const before={...old}; delete before.updatedAt;
     const after={...normalized}; delete after.updatedAt;
     if(!oldById.has(gameId)){normalized.updatedAt=stamp;created.push(gameId);}
