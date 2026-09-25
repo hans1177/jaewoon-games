@@ -16,6 +16,7 @@ import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-contex
 import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxBuildProfileFromBaseline } from './company-development-roblox-bootstrap.mjs';
+import { readUpperPlatformReadiness } from './company-upper-platform-admission.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -174,11 +175,14 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const firstStagePolicy=centralPolicy?.unityWebFirstStage||{};
   const upperMigration=centralPolicy?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration||{};
   const grandfatherIds=new Set((Array.isArray(upperMigration?.grandfatherGameIds)?upperMigration.grandfatherGameIds:[]).map(clean).filter(Boolean));
+  const upperReadiness=readUpperPlatformReadiness(repoRoot,id);
+  const upperPlatformDevelopmentReady=upperReadiness.pass===true;
   const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'
     &&clean(firstStagePolicy?.scope)==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
     &&firstStagePolicy?.developmentAdmissionAuthority===true
     &&firstStagePolicy?.validationSurfaceOnly===false
-    &&!grandfatherIds.has(id);
+    &&!grandfatherIds.has(id)
+    &&!upperPlatformDevelopmentReady;
   if(unityWebFirstStage){
     const root=`unity-games/${id}`;
     const readinessPath=`web-games/${id}/upper-platform-development-readiness.json`;
@@ -227,6 +231,69 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       developmentBaseline:null,
       developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
       ...queuePatch
+    });
+    continue;
+  }
+
+  if(upperPlatformDevelopmentReady&&!grandfatherIds.has(id)){
+    const commonPatch={
+      ...queueRuntimePatch,
+      queueCurrentStep:clean(item?.currentStep),
+      queueCanonicalState:clean(item?.canonicalState),
+      queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
+      upperPlatformDevelopmentReady:true,
+      upperPlatformReadinessReason:upperReadiness.reason,
+      upperPlatformReadinessSource:`web-games/${id}/upper-platform-development-readiness.json`,
+      firstStageUnityWeb:false,
+      companyDevelopmentQueueSource:true
+    };
+    const unityRoot=`unity-games/${id}`;
+    const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
+    if(existingUnity)Object.assign(existingUnity,commonPatch,{projectPath:unityRoot,target:'unity',releaseState:'development-confirmed'});
+    else rows.push({
+      gameId:id,name:clean(item?.gameName||game?.name||id),engine:'unity',target:'unity',
+      projectPath:unityRoot,lifecycleState:gameLifecycleState(game),
+      existing:fs.existsSync(path.join(repoRoot,unityRoot,'ProjectSettings','ProjectVersion.txt')),
+      releaseState:'development-confirmed',progress:Number(item?.progress||0),
+      source:'company-development-queue-upper-platform-unity',developmentBaseline:null,
+      ...commonPatch
+    });
+
+    const robloxRoot=posix(item?.robloxProjectPath||item?.targetSourcePaths?.ROBLOX||`roblox-games/${id}`);
+    const resolvedRobloxRoot=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(robloxRoot)?robloxRoot:`roblox-games/${id}`;
+    const minimumDesign=latestMinimumDesign(repoRoot,id);
+    let robloxDesignProfile={};
+    if(minimumDesign?.record){
+      try{robloxDesignProfile=robloxBuildProfileFromBaseline(minimumDesign.record);}
+      catch{robloxDesignProfile={};}
+    }
+    const executionEvidenceMatchesRoblox=!executionPlatform||executionPlatform==='ROBLOX';
+    const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
+    const robloxPatch={
+      ...commonPatch,
+      queueRobloxFailureStage:clean(item?.robloxFailureStage||(executionEvidenceMatchesRoblox?executionEvidence.failureStage:'')),
+      queueRobloxFailureSignature:clean(item?.robloxFailureSignature||(executionEvidenceMatchesRoblox?executionEvidence.failureSignature:'')),
+      queueRobloxSourceCommit:clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:'')),
+      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||(executionEvidenceMatchesRoblox?executionEvidence.artifactIdentity:'')),
+      queueRobloxRuntimeObserved:item?.robloxRuntimePassed===true||(executionEvidenceMatchesRoblox&&executionRuntimeObserved),
+      queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.runtimePassed===true),
+      queueRobloxIndependentQaPassed:item?.robloxIndependentQaPassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.independentQaPassed===true),
+      queueRobloxRegressionPassed:item?.robloxRegressionPassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.regressionPassed===true),
+      queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
+      queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
+      queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
+      queueRobloxInternalReleaseArtifact:clean(item?.robloxInternalReleaseEvidence?.artifactIdentity),
+      genre:clean(robloxDesignProfile.genre),subgenre:clean(robloxDesignProfile.subgenre),playMode:clean(robloxDesignProfile.playMode),
+      robloxDesignProfileSource:minimumDesign?.file||null
+    };
+    if(existingRoblox)Object.assign(existingRoblox,robloxPatch,{projectPath:resolvedRobloxRoot,target:'roblox',releaseState:'development-confirmed'});
+    else rows.push({
+      gameId:id,name:clean(item?.gameName||game?.name||id),engine:'roblox',target:'roblox',
+      projectPath:resolvedRobloxRoot,lifecycleState:gameLifecycleState(game),
+      existing:fs.existsSync(path.join(repoRoot,resolvedRobloxRoot)),
+      releaseState:'development-confirmed',progress:Number(item?.progress||0),
+      source:'company-development-queue-upper-platform-roblox',developmentBaseline:null,
+      ...robloxPatch
     });
     continue;
   }
