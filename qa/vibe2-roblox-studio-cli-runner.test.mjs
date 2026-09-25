@@ -55,12 +55,18 @@ test('Roblox production Studio keeps assertion-only learning isolated and extern
   assert.equal(targetConfig.policy.learningInputs.ownerDirectiveFeedback, true);
   const external=targetConfig.targets.find(x=>x.id==='external-roblox-potion-shop-flow-a');
   assert.equal(external?.enabled,false);
+  assert.equal(external?.runnerReady,false);
+  assert.deepEqual(external?.commandArgs,[]);
+  assert.equal(external?.onlinePublishedPlaceStudioAutomationForbidden,true);
+  assert.equal(external?.localPlaceFileRequiredForAnyFutureStudioReactivation,true);
+  assert.equal(targetConfig.policy.externalCopyEnabledRobloxAutomation,false);
   assert.match(liveSmokeWorkflow,/External Potion Shop Studio automation must remain disabled/);
+  assert.doesNotMatch(liveSmokeWorkflow,/--place-id=14215142052/);
 });
 
 test('Vibe2 live smoke transports Studio command args through environment on Windows PowerShell', () => {
   const envAssignments = liveSmokeWorkflow.match(/\$env:VIBE2_ROBLOX_AUTO_PLAYER_ARGS = ConvertTo-Json -InputObject @\(/g) || [];
-  assert.equal(envAssignments.length, 2);
+  assert.equal(envAssignments.length, 1);
   assert.doesNotMatch(liveSmokeWorkflow, /--args-json=/);
 });
 
@@ -84,7 +90,7 @@ test('Studio marker parser accepts only decodable JSON evidence', () => {
   assert.equal(studioCliSource.includes('tail.match(/^([A-Za-z0-9+/]{16,}={0,2})'), true);
 });
 
-test('uncopylocked Studio copies separate edit-time identity evidence from play-client checkpoints', () => {
+test('published-place Studio study remains disabled and absent from live workflow', () => {
   assert.match(studioCliSource, /const authorizedCopy =/);
   assert.match(studioCliSource, /const expectedRuntimePlaceId = authorizedCopy \|\| normalizedPlaceFile \? '' : normalizedPlaceId/);
   assert.match(studioCliSource, /observedPlaceId = tostring\(game\.PlaceId\)/);
@@ -93,10 +99,10 @@ test('uncopylocked Studio copies separate edit-time identity evidence from play-
   assert.match(potionScenario, /"expression": "player-present"/);
   assert.match(potionScenario, /"expression": "player-gui-nonempty"/);
   assert.doesNotMatch(potionScenario, /instance-path:/);
-  assert.match(liveSmokeWorkflow, /\$manifest\.observedPlaceId -ne '0'/);
-  assert.match(liveSmokeWorkflow, /\$manifest\.scriptCount -lt 6/);
-  assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_POTION_SHOP_COPY_SESSION_IDENTITY=PASS/);
-  assert.doesNotMatch(liveSmokeWorkflow, /vibe2-roblox-authorized-download-runner/);
+  assert.doesNotMatch(liveSmokeWorkflow, /Study official uncopylocked Potion Shop/);
+  assert.doesNotMatch(liveSmokeWorkflow, /--place-id=14215142052/);
+  assert.doesNotMatch(liveSmokeWorkflow, /VIBE2_ROBLOX_POTION_SHOP_COPY_SESSION_IDENTITY=PASS/);
+  assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=NO/);
 });
 
 test('assertion-only Studio mode does not create VirtualInput when scenario has no user actions', () => {
