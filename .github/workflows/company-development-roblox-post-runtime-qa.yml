@@ -7,6 +7,12 @@ on:
       - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
       - 'tools/company-development-roblox-runtime-foundation.mjs'
       - 'qa/company-development-roblox-runtime-foundation.test.mjs'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/company-development-roblox-studio-local-play.test.mjs'
+      - 'qa/fixtures/company-roblox-studio-local-play-scenario.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/canonical-learning-pipeline.json'
       - 'roblox-games/.company-runtime-trigger'
   workflow_dispatch:
     inputs:
