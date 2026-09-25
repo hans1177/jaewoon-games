@@ -1,5 +1,5 @@
 {
-  "version": 385,
+  "version": 386,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -2559,7 +2559,7 @@
         "gameRuntimeEvidenceStillRequiredForGameLearning": true
       },
       "developmentBottleneckFocus": {
-        "version": 78,
+        "version": 79,
         "authority": "OWNER_DIRECTIVE_2026-09-19",
         "enabled": true,
         "priority": "DEVELOPMENT_AND_RELEASE_BOTTLENECK_FIRST",
@@ -3147,7 +3147,11 @@
           "fullWebCompletenessContract": "QA_PASS_PENDING_NEXT_REFILL",
           "adaptiveWaveBaseline": 20,
           "adaptiveWaveMin": 4,
-          "adaptiveWaveMax": 256
+          "adaptiveWaveMax": 256,
+          "runnerPressureSpeculativeSuppression": "IMPLEMENTATION_IN_PROGRESS",
+          "runnerPressureSpeculativeSuppressionRule": "KEEP_ALL_PRIMARY_GAME_TASKS; DISABLE_ONLY_OPTIONAL_SPECULATIVE_VARIANTS_WHILE_ADAPTIVE_CONTROL_REPORTS_RUNNER_CAPACITY_QUEUE_WAIT_OR_CHECKOUT_PRESSURE; RESTORE_SPECULATION_AUTOMATICALLY_AFTER_PRESSURE_CLEARS",
+          "primaryCoverageUnaffectedBySpeculativeSuppression": true,
+          "qaAndFanInUnchangedBySpeculativeSuppression": true
         },
         "incidentHistory": [
           {
@@ -7300,6 +7304,28 @@
       "grandfatherGameIds": [],
       "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
       "releaseOrDeploymentAuthority": false
+    },
+    "runnerPressureSpeculativeRelief20260926": {
+      "id": "RUNNER_PRESSURE_SPECULATIVE_RELIEF_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "REDUCE_GITHUB_ACTIONS_CALLBACK_AND_RUNNER_PRESSURE_WITHOUT_REDUCING_PRIMARY_GAME_DEVELOPMENT_COVERAGE",
+      "existingArchitectureOnly": true,
+      "shadowPipelineCreated": false,
+      "behavior": "WHEN_EXISTING_ADAPTIVE_CONTROL_REPORTS_RUNNER_OR_QUEUE_PRESSURE_KEEP_EVERY_PRIMARY_RESERVED_TASK_AT_ONE_VARIANT_AND_SKIP_ONLY_SPARE_SPECULATIVE_EXPANSION; WHEN_PRESSURE_CLEARS EXISTING_SPECULATIVE_POLICY_RESUMES",
+      "preserves": [
+        "PRIMARY_GAME_TASK_RESERVATIONS",
+        "TASK_MICRO_FANIN",
+        "RESPONSIBLE_FILE_CONFLICT_GUARDS",
+        "INCREMENTAL_QA",
+        "FULL_FAN_IN_REGRESSION",
+        "SECURITY_AND_RELEASE_GATES"
+      ],
+      "bindings": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs",
+        "qa/vibe2-controller-contract.test.mjs"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
@@ -7325,7 +7351,18 @@
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
       "adaptiveConcurrencyRole": "TELEMETRY_ONLY",
-      "actualReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY"
+      "actualReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
+      "speculativeVariantsUseSpareCapacityOnly": true,
+      "speculativeVariantsMayBeSuppressedOnRunnerPressure": true,
+      "speculativeSuppressionSignals": [
+        "RUNNER_CAPACITY",
+        "RUNNER_QUEUE_WAIT",
+        "CHECKOUT_NETWORK",
+        "LOW_EFFECTIVE_PEAK_UTILIZATION_WITH_LOADED_WORK"
+      ],
+      "speculativeSuppressionPrimaryTaskReductionForbidden": true,
+      "speculativeSuppressionTaskMicroFanInPreserved": true,
+      "speculativeSuppressionAutomaticRecovery": true
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
