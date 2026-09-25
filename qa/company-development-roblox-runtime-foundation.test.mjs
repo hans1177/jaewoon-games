@@ -292,38 +292,48 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
 });
 
-test('central policy and architecture preserve Studio MCP PASS while exact runtime awaits a real server boot',()=>{
+test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
  const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
  const topology=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.runtimeFoundationObservation||{};
+ const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack?.robloxContract||{};
  assert.equal(policy.exactEngineVersionWithoutRealServerBootState,'ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT');
- assert.equal(policy.exactEngineVersionWithoutRealServerBootBlocker,'roblox-runtime-foundation-awaiting-real-server-boot');
  assert.equal(policy.exactEngineVersionDoesNotEqualRealGameServerBoot,true);
- assert.equal(policy.studioMcpActualPlayPassRemainsValidWhileRuntimeFoundationObservationPending,true);
  assert.equal(policy.runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution,true);
- assert.equal(policy.robloxPlayerAutomationForbidden,true);
- assert.equal(topology.pendingState,policy.exactEngineVersionWithoutRealServerBootState);
- assert.equal(topology.pendingBlocker,policy.exactEngineVersionWithoutRealServerBootBlocker);
- assert.equal(topology.exactEngineExecutionMayNotSubstituteRealServerBoot,true);
- assert.equal(topology.studioMcpActualPlayEvidencePreservedWhilePending,true);
- assert.equal(topology.fakeRuntimeFoundationPromotionForbidden,true);
- assert.equal(topology.playerAutomation,false);
+ assert.equal(policy.developmentBlocking,false);
+ assert.equal(policy.internalQaBlocking,false);
+ assert.equal(policy.internalRegressionBlocking,false);
+ assert.equal(policy.internalReleaseBlocking,false);
+ assert.equal(policy.externalPublicReleaseBlocking,true);
+ assert.equal(policy.runtimeTruthFieldsMustRemainUnfabricated,true);
+ assert.equal(topology.developmentBlocking,false);
+ assert.equal(topology.internalQaBlocking,false);
+ assert.equal(topology.internalRegressionBlocking,false);
+ assert.equal(topology.internalReleaseBlocking,false);
+ assert.equal(topology.externalPublicReleaseBlocking,true);
+ assert.equal(topology.runtimePassTruthRemainsFalseUntilRealServerBootEvidence,true);
+ assert.ok(Array.isArray(stack.runtimeFoundationInternalReleaseExceptionStates));
+ assert.ok(stack.runtimeFoundationInternalReleaseExceptionStates.includes('ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'));
+ assert.equal(stack.runtimeFoundationExceptionMaySetRuntimePass,false);
+ assert.equal(stack.runtimeFoundationExceptionMaySetExternalPublicReleaseReady,false);
 });
 
-test('runtime QA distinguishes exact engine version awaiting a real server boot from an actually stale deployment',()=>{
+test('runtime QA passes internal QA and regression while exact real-server boot remains external-release-only',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/const exactEngineVersionAwaitingRealServerBoot=/);
- assert.match(workflow,/engineProbe\?\.engineExecuted===true/);
- assert.match(workflow,/engineProbe\?\.exactPlace===true/);
- assert.match(workflow,/engineProbe\?\.exactVersion===true/);
- assert.match(workflow,/simulationRunning:engineProbe\?\.simulationRunning===true/);
- assert.match(workflow,/engineProbe\?\.serverBootObserved!==true/);
- assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT/);
- assert.match(workflow,/roblox-runtime-foundation-awaiting-real-server-boot/);
- assert.match(workflow,/exact-engine-version-awaiting-real-server-boot/);
- assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=/);
- assert.match(workflow,/authority:exactEngineVersionAwaitingRealServerBoot/);
+ assert.match(workflow,/const exactStudioPlay=/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException=true/);
+ assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending=true/);
+ assert.match(workflow,/ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT/);
+ assert.match(workflow,/item\.robloxIndependentQaPassed=true/);
+ assert.match(workflow,/item\.robloxRegressionPassed=true/);
+ assert.match(workflow,/internalRuntimeObservationDeferred:true/);
+ assert.match(workflow,/actualRuntimeEvidence:false/);
+ assert.match(workflow,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
+ assert.match(workflow,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
 });
 
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{
