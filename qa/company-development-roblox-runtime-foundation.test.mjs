@@ -292,6 +292,21 @@ test('multiplayer evidence stays release-blocking but does not block continued d
  assert.equal(r.f7MultiplayerFoundationPassed,false);
 });
 
+test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after Studio clears the runtime failure stage',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const exactStudioPlayPendingRuntime=/);
+ assert.match(workflow,/studioPlay\.pass===true/);
+ assert.match(workflow,/studioPlay\.actualPlay===true/);
+ assert.match(workflow,/studioPlay\.officialStudioMcp===true/);
+ assert.match(workflow,/studioPlay\.localPlaceFile===true/);
+ assert.match(workflow,/studioPlay\.sourceRevision===sourceRevision/);
+ assert.match(workflow,/studioPlay\.artifactIdentity===artifactIdentity/);
+ assert.match(workflow,/Number\(studioPlay\.versionNumber\)===Number\(candidate\.versionNumber\)/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed!==true/);
+ assert.match(workflow,/item\.robloxRuntimePassed!==true/);
+ assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\)/);
+});
+
 test('post-runtime QA preserves independent and regression progress while shared two-client sync is pending',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true/);
