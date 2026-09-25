@@ -209,7 +209,7 @@ jobs:
             if(!validation.pass)throw new Error('HOMEPAGE_RUNTIME_CATALOG_RECONCILE_FAILED:'+validation.errors.join(','));
             fs.writeFileSync('/tmp/homepage-runtime/game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
             console.log('HOMEPAGE_RUNTIME_CATALOG_RECONCILE=PASS');
-            NODE
+          NODE
             node -e "JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/company-status.json','utf8'))"
             echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
