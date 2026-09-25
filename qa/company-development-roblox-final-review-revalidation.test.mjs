@@ -84,6 +84,7 @@ test('F9 allows internal release when exact engine and official Studio MCP pass 
   assert.match(workflow,/item\.robloxRuntimeFoundationPassed===true\|\|internalRuntimeObservationDeferred/);
   assert.match(workflow,/actualRuntimeFoundationPassed:item\.robloxRuntimeFoundationPassed===true/);
   assert.match(workflow,/publicReleaseRuntimeObservationPending:internalRuntimeObservationDeferred/);
+  assert.match(workflow,/internalRuntimeObservationDeferred&&post\.studioAssetEngineBindingMatched===true/);
   assert.match(workflow,/roblox-public-release-awaiting-real-server-boot/);
   assert.match(workflow,/item\.robloxPublicReleaseReady=false/);
 });
