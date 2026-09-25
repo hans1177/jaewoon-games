@@ -174,6 +174,13 @@ test('new Roblox runtime candidate atomically invalidates stale release and QA p
     /item\.robloxReleaseEvidence=null/,
     /item\.robloxFinalReviewPassed=false/,
     /item\.robloxF9ReleaseRegressionPassed=false/,
+    /item\.robloxInternalVibePlayEvidence=null/,
+    /item\.robloxGameCompletionEvidence=null/,
+    /item\.robloxPlatformAdaptationEvidence=null/,
+    /item\.robloxSecurityReleaseEvidence=null/,
+    /item\.robloxPresentationCompletionEvidence=null/,
+    /item\.robloxReleaseStabilityEvidence=null/,
+    /item\.robloxPublicReleaseFinalEvidence=null/,
     /item\.robloxPostRuntimeQaEvidence=null/,
     /item\.robloxRuntimeEvidence=null/,
     /item\.robloxRuntimeFoundationEvidence=null/,
@@ -299,4 +306,18 @@ test('private runtime candidate mode comes from central policy plus exact F0 evi
   assert.doesNotMatch(candidate,/const headlessMode=item\.robloxValidationMode==='HEADLESS_FAST_MVP'/);
   assert.match(candidate,/ROBLOX_RELEASE_CANONICAL_VALIDATION_MODE=/);
   assert.match(candidate,/ROBLOX_RELEASE_F0_EVIDENCE_MODE=/);
+});
+
+test('every rebuilt Roblox candidate invalidates prior Vibe play and external-public evidence before revalidation',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  for(const pattern of [
+    /item\.robloxInternalVibePlayEvidence=null/,
+    /item\.robloxGameCompletionEvidence=null/,
+    /item\.robloxPlatformAdaptationEvidence=null/,
+    /item\.robloxSecurityReleaseEvidence=null/,
+    /item\.robloxPresentationCompletionEvidence=null/,
+    /item\.robloxReleaseStabilityEvidence=null/,
+    /item\.robloxPublicReleaseFinalEvidence=null/,
+    /item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/
+  ]) assert.match(candidate,pattern);
 });
