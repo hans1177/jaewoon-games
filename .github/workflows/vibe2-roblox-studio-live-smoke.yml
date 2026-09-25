@@ -59,7 +59,7 @@ jobs:
           if(cfg.policy?.robloxStudioConcurrency?.sameWindowsSessionConcurrent!==false) throw new Error('same-session production and study must stay disabled');
           if(cfg.policy?.robloxStudioConcurrency?.isolatedRunnerOrSessionConcurrent!==true) throw new Error('isolated Roblox study concurrency must stay enabled');
           const scenario=JSON.parse(fs.readFileSync(target.scenarioFile,'utf8'));
-          if(!scenario.actions.some(x=>x.type==='key'&&x.key==='P')) throw new Error('Potion Shop real input action missing');
+          if(scenario.actions.some(x=>x.type==='key'||x.type==='click')) throw new Error('automated user input must remain disabled');
           for(const expression of ['game-loaded','player-present','player-gui-nonempty']) {
             if(!scenario.actions.some(x=>x.type==='expect'&&x.expression===expression)) throw new Error(`Potion Shop runtime checkpoint missing: ${expression}`);
           }
@@ -100,7 +100,7 @@ jobs:
           Write-Host 'VIBE2_PRODUCTION_RUNNER_TOUCHED=NO'
           node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
 
-      - name: Verify official Studio CLI with real VirtualInput
+      - name: Verify official Studio CLI assertion-only play
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -111,7 +111,7 @@ jobs:
             --output="$env:RUNNER_TEMP/vibe2-roblox-studio-baseplate.json" `
             --timeout=120000
 
-      - name: Verify real two-client Studio multiplayer VirtualInput regression
+      - name: Verify real two-client Studio multiplayer assertion regression
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -119,7 +119,7 @@ jobs:
             --clients=2 `
             --output="$env:RUNNER_TEMP/vibe2-roblox-multiplayer.json" `
             --timeout=150000
-          node -e "const fs=require('fs');const p=process.env.RUNNER_TEMP+'/vibe2-roblox-multiplayer.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.runtimeVerified!==true)throw new Error('multiplayer runtime not verified');if(Number(r.multiplayer?.expectedClients||0)!==2)throw new Error('expected clients mismatch');if(Number(r.multiplayer?.resultCount||0)<2)throw new Error('not all clients reported');if(Number(r.multiplayer?.verifiedClients||0)<2)throw new Error('not all clients dispatched VirtualInput');if(r.authorityExpanded===true)throw new Error('authority expanded');console.log('VIBE2_ROBLOX_MULTIPLAYER_2_CLIENT=PASS')"
+          node -e "const fs=require('fs');const p=process.env.RUNNER_TEMP+'/vibe2-roblox-multiplayer.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.runtimeVerified!==true)throw new Error('multiplayer runtime not verified');if(Number(r.multiplayer?.expectedClients||0)!==2)throw new Error('expected clients mismatch');if(Number(r.multiplayer?.resultCount||0)<2)throw new Error('not all clients reported');if(Number(r.multiplayer?.verifiedClients||0)<2)throw new Error('not all clients reported ready');if(r.capabilities?.virtualInput!==false)throw new Error('automated user input unexpectedly enabled');if(r.capabilities?.assertionOnly!==true)throw new Error('assertion-only multiplayer mode missing');if(r.authorityExpanded===true)throw new Error('authority expanded');console.log('VIBE2_ROBLOX_MULTIPLAYER_2_CLIENT=PASS')"
 
       - name: Study official uncopylocked Potion Shop through dedicated Studio runner
         shell: powershell
@@ -142,7 +142,7 @@ jobs:
             --play-output="$env:RUNNER_TEMP/vibe2-potion-shop-play.json" `
             --output="$env:RUNNER_TEMP/vibe2-potion-shop-study.json" `
             --timeout=240000
-          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/vibe2-potion-shop-study.json','utf8'));if(s.verified!==true)throw new Error('Potion Shop study not verified');if(s.sourceAnalysis?.scanned!==true)throw new Error('authorized source evidence not scanned');if(s.sourceAnalysis?.authorized!==true)throw new Error('authorized source evidence rejected');if(s.policy?.rawSourceCopiedIntoMemory!==false)throw new Error('raw source policy changed');if(s.authorityExpanded===true)throw new Error('authority expanded');if(Number(s.run?.inputActionCount||0)<1)throw new Error('real input was not observed');if(Number(s.run?.checkpointPassCount||0)!==Number(s.run?.checkpointCount||0))throw new Error('runtime checkpoint mismatch');console.log('VIBE2_ROBLOX_POTION_SHOP_STUDY=PASS');console.log('VIBE2_ROBLOX_POTION_SHOP_PATTERNS='+(s.distilledPatterns?.length||0))"
+          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/vibe2-potion-shop-study.json','utf8'));if(s.verified!==true)throw new Error('Potion Shop study not verified');if(s.sourceAnalysis?.scanned!==true)throw new Error('authorized source evidence not scanned');if(s.sourceAnalysis?.authorized!==true)throw new Error('authorized source evidence rejected');if(s.policy?.rawSourceCopiedIntoMemory!==false)throw new Error('raw source policy changed');if(s.authorityExpanded===true)throw new Error('authority expanded');if(Number(s.run?.inputActionCount||0)!==0)throw new Error('automated user input must remain disabled');if(Number(s.run?.checkpointPassCount||0)!==Number(s.run?.checkpointCount||0))throw new Error('runtime checkpoint mismatch');console.log('VIBE2_ROBLOX_POTION_SHOP_STUDY=PASS');console.log('VIBE2_ROBLOX_POTION_SHOP_PATTERNS='+(s.distilledPatterns?.length||0))"
           $manifest = Get-Content (Join-Path $sourceRoot 'authorized-studio-manifest.json') -Raw | ConvertFrom-Json
           if ($manifest.placeId -ne '14215142052') { throw 'Potion Shop source provenance place id mismatch' }
           if ([string]$manifest.observedPlaceId -ne '0') { throw 'Potion Shop must open as an uncopylocked Studio copy' }
