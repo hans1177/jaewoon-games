@@ -52,6 +52,9 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const canonicalRobloxValidationMode=String(roadmap.roblox?.validationMode||'').trim();
+          if(canonicalRobloxValidationMode!=='HEADLESS_FAST_MVP')throw new Error('ROBLOX_F0_CANONICAL_VALIDATION_MODE_INVALID:'+canonicalRobloxValidationMode);
           let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(!requested&&process.env.EVENT_NAME==='push'&&fs.existsSync('roblox-games/.company-runtime-trigger')){
             requested=String(fs.readFileSync('roblox-games/.company-runtime-trigger','utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
@@ -63,7 +66,6 @@ jobs:
             if(requested&&item.gameId!==requested)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(item.robloxValidationMode!=='HEADLESS_FAST_MVP')continue;
             const revision=String(item.robloxSourceCommit||'');
             const artifact=String(item.robloxBuildArtifactIdentity||'');
             if(item.robloxBuildOrPackagePassed!==true||item.robloxBuildPreflightPassed!==true||item.robloxFoundationF0Passed===true)continue;
@@ -75,6 +77,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include:rows})+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json='+JSON.stringify(rows)+'\n');
           console.log('ROBLOX_F0_PREFLIGHT_TARGETS='+rows.map(x=>x.gameId).join(','));
+          console.log('ROBLOX_F0_CANONICAL_VALIDATION_MODE='+canonicalRobloxValidationMode);
           console.log('ROBLOX_F0_PARALLELISM=EXTERNAL_PROVIDER_CAPACITY_ONLY');
           console.log('ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL');
           NODE
