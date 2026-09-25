@@ -1892,9 +1892,10 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   const terminalStatuses=new Set(['verified','done','completed','failed','error','rejected','cancelled','superseded']);
   const tasks=[...(queue?.tasks||[])];
   let changed=0,mutated=0,attached=0,rebound=0,designPending=0,checked=0;
+  const preReserveStatuses=new Set(['queued','failed','blocked']);
   for(let index=0;index<tasks.length;index+=1){
     const item=tasks[index];
-    if(clean(item?.status).toLowerCase()!=='queued'||!isDevelopmentImplementation(item)||!supportedTarget(item))continue;
+    if(!preReserveStatuses.has(clean(item?.status).toLowerCase())||!isDevelopmentImplementation(item)||!supportedTarget(item))continue;
     const gameId=clean(item?.gameId),project=projectByGameId.get(gameId);
     if(!gameId||!project)continue;
     checked+=1;
