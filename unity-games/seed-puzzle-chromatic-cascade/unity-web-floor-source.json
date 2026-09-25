@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "gameName": "색채의 연쇄",
+  "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
+  "coreLoop": [
+    "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+    "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
+    "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다."
+  ],
+  "category": "PUZZLE",
+  "multiplayerMode": "SINGLE",
+  "canonicalSourceRoot": "unity-games/seed-puzzle-chromatic-cascade",
+  "buildMethod": "UnityWebFloorBuild.BuildWeb",
+  "futureNativeBuildMethod": "UnityWebFloorBuild.Build",
+  "generatorFingerprint": "13404b8fdafa6c2fb7e1508f2086e6aa117caddee0a0bdfe336e064635e5975d",
+  "designBaseline": "/tmp/unity-web-bootstrap-design/seed-puzzle-chromatic-cascade/design-revised.json",
+  "unityPlatformProfile": {
+    "platform": "UNITY",
+    "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+    "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+    "multiplayerRuntime": "single-player app session with local gameplay authority; networking remains disabled until design requires it",
+    "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+    "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+    "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+    "platformContentAdaptation": "Adapt \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.\" and its loop \"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다. → 색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다. → 연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+    "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+    "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+  },
+  "purpose": "UNITY_WEB_DEVELOPMENT_FLOOR",
+  "developmentFloor": true,
+  "presentationState": "BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP",
+  "upperPlatformReady": false,
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-09-25T17:02:42.029Z"
+}

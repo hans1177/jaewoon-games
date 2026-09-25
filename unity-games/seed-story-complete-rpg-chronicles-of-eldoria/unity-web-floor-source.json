@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "gameName": "엘도리아 연대기",
+  "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
+  "coreLoop": [
+    "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+    "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+    "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다."
+  ],
+  "category": "RPG",
+  "multiplayerMode": "SINGLE",
+  "canonicalSourceRoot": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
+  "buildMethod": "UnityWebFloorBuild.BuildWeb",
+  "futureNativeBuildMethod": "UnityWebFloorBuild.Build",
+  "generatorFingerprint": "13404b8fdafa6c2fb7e1508f2086e6aa117caddee0a0bdfe336e064635e5975d",
+  "designBaseline": "/tmp/unity-web-bootstrap-design/seed-story-complete-rpg-chronicles-of-eldoria/design-revised.json",
+  "unityPlatformProfile": {
+    "platform": "UNITY",
+    "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+    "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+    "multiplayerRuntime": "single-player app session with local gameplay authority; networking remains disabled until design requires it",
+    "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+    "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+    "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+    "platformContentAdaptation": "Adapt \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.\" and its loop \"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다. → 턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다. → 획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+    "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+    "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+  },
+  "purpose": "UNITY_WEB_DEVELOPMENT_FLOOR",
+  "developmentFloor": true,
+  "presentationState": "BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP",
+  "upperPlatformReady": false,
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-09-25T17:02:42.111Z"
+}
