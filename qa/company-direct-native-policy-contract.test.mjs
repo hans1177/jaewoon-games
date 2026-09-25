@@ -101,7 +101,7 @@ test('architecture and runtime execute the same direct-native topology',()=>{
   assert.match(webWorkflow,/candidates\.append\(f'\{prefix\}\{classes\[0\]\}\.BuildWeb'\)/);
   assert.match(webWorkflow,/Fan verified Unity Web into exact Roblox and Unity development/);
   assert.match(webWorkflow,/-f trigger_source="UNITY_WEB_VERIFIED"/);
-  assert.equal(architecture.concurrentPlatformDevelopment.unityWeb,'VALIDATION_SURFACE_PLUS_NATIVE_FANOUT_TRIGGER');
+  assert.equal(architecture.concurrentPlatformDevelopment.unityWeb,'VALIDATION_SURFACE_ONLY');
   assert.deepEqual(architecture.concurrentPlatformDevelopment.unityWebValidationSurface.nativeFanOutTargets,['ROBLOX','UNITY']);
   assert.equal(architecture.concurrentPlatformDevelopment.unityWebValidationSurface.nativeFanOutExactGameOnly,true);
   assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
