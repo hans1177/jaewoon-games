@@ -12,8 +12,17 @@ test('native learning accepts only verified Roblox or Unity runtime QA regressio
   assert.deepEqual(dual.platforms,['ROBLOX','UNITY']);
   assert.deepEqual(dual.acceptedSources,[
     'VERIFIED_ROBLOX_RUNTIME_QA_REGRESSION',
-    'VERIFIED_UNITY_APP_RUNTIME_QA_REGRESSION'
+    'VERIFIED_UNITY_APP_RUNTIME_QA_REGRESSION',
+    'VERIFIED_ROBLOX_STUDIO_LOCAL_EXACT_BUILD_PLAY'
   ]);
+  assert.equal(dual.robloxStudioLocalPlayEvidenceCanFeedReuse,true);
+  assert.equal(dual.robloxStudioLocalPlayEvidenceCannotSatisfyOpenCloudRuntimeGate,true);
+  assert.equal(learning.robloxStudioVerifiedLearning.enabled,true);
+  assert.equal(learning.robloxStudioVerifiedLearning.localPlaceFileRequired,true);
+  assert.equal(learning.robloxStudioVerifiedLearning.onlinePublishedPlaceDirectOpenForbidden,true);
+  assert.equal(learning.robloxStudioVerifiedLearning.robloxPlayerAutomationForbidden,true);
+  assert.equal(learning.robloxStudioVerifiedLearning.directRawTelemetryTraining,false);
+  assert.equal(learning.robloxStudioVerifiedLearning.directRawSourceTraining,false);
   assert.equal(dual.platformEvidenceIndependent,true);
   assert.equal(dual.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate,true);
   assert.equal(dual.verifiedPatternsFeedExistingCanonicalTrainingSamples,true);
