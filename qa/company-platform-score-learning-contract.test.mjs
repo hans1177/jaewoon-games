@@ -17,7 +17,7 @@ test('platform learning is evidence-driven and keeps Roblox and Unity platform s
   assert.equal(dual.verifiedPatternsFeedSharedV3Memory,true);
 });
 
-test('portable Web context cannot become native verified evidence or a shadow learning lane',()=>{
+test('Unity Web may gate upper-platform admission but cannot become native verified runtime evidence or a shadow learning lane',()=>{
   const web=learning.portableWebLearning;
   assert.equal(web.enabled,false);
   assert.equal(web.webEvidenceCountsAsRobloxVerifiedEvidence,false);
@@ -26,5 +26,7 @@ test('portable Web context cannot become native verified evidence or a shadow le
   assert.equal(vibe3.verifiedRag.positiveMemoryRequiresVerifiedEvidence,true);
   assert.equal(vibe3.verifiedRag.platformPassEvidenceMayNotTransfer,true);
   assert.equal(playbooks.directNativePlatformContext.platformEvidenceIndependent,true);
-  assert.equal(playbooks.directNativePlatformContext.unityWebNativeGateAuthority,false);
+  assert.equal(playbooks.directNativePlatformContext.unityWebNativeGateAuthority,true);
+  assert.equal(playbooks.directNativePlatformContext.upperPlatformReadinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(playbooks.directNativePlatformContext.unityWebReleaseStage,false);
 });
