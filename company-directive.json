@@ -189,9 +189,9 @@
       "silentFeatureOmissionForbidden": true,
       "webBuildIsNotNativePlatformSubstitute": true,
       "nativePlatformReleaseStillRequiresNativeEvidence": true,
-      "role": "UNITY_WEB_VALIDATION_SURFACE",
-      "developmentAdmissionAuthority": false,
-      "canonicalSource": "UNITY_PROJECT_WHEN_UNITY_WEB_AVAILABLE",
+      "role": "UNITY_WEB_UPPER_PLATFORM_PREDEVELOPMENT_FLOOR",
+      "developmentAdmissionAuthority": true,
+      "canonicalSource": "UNITY_PROJECT",
       "legacyDirectWebAuthoring": false
     },
     "approvedScopeCompletion": {
@@ -598,18 +598,18 @@
         "UNITY_PLATFORM_PROFILE_READY",
         "PLATFORM_PROFILES_DISTINCT"
       ],
-      "readyState": "MINIMUM_DESIGN_READY",
+      "readyState": "MINIMUM_DESIGN_READY_FOR_UNITY_WEB_FLOOR",
       "longLivedPromotionGate": false
     },
     "DEVELOPMENT_CONFIRMED": {
       "baseline": "DEVELOPMENT_BASELINE",
-      "executionMode": "DIRECT_NATIVE_DUAL_PLATFORM",
+      "executionMode": "UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM",
       "resumeFromLatestEvidence": true,
       "admissionAuthority": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "strictDesignScoreRequiredForAdmission": false,
       "strictDesignReviewRunsInParallel": true,
-      "targetPlatformPurpose": "PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION",
-      "targetPlatformMayRunImmediately": true,
+      "targetPlatformPurpose": "UNITY_WEB_PREDEVELOPMENT_THEN_PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION",
+      "targetPlatformMayRunImmediately": false,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -626,6 +626,12 @@
       ],
       "requiredFlow": [
         "LOAD_MINIMUM_SHARED_DESIGN",
+        "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
+        "UNITY_WEBGL_BUILD",
+        "UNITY_WEB_ACTUAL_BROWSER_PLAY",
+        "UNITY_WEB_INDEPENDENT_QA",
+        "UNITY_WEB_REGRESSION",
+        "UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION",
         "ROBLOX_UNITY_NATIVE_SOURCE_BIND",
         "TARGET_PLATFORM_RUNTIME",
         "TARGET_PLATFORM_INDEPENDENT_QA",
@@ -650,6 +656,7 @@
       ],
       "baselineReadyRequires": [
         "MINIMUM_DESIGN_CONTRACT_READY",
+        "UPPER_PLATFORM_DEVELOPMENT_READY",
         "PLATFORM_SPECIFIC_SOURCE_EXISTS",
         "PLATFORM_SPECIFIC_RUNTIME_PASS",
         "PLATFORM_SPECIFIC_INDEPENDENT_QA_PASS",
@@ -662,20 +669,26 @@
       ],
       "unityWebValidationSurface": {
         "enabled": true,
-        "optional": true,
+        "optional": false,
         "canonicalSourceRoot": "unity-games/<gameId>/",
         "outputRoot": "web-games/<gameId>/",
         "sameCanonicalUnityProjectRequired": true,
-        "nativeGateAuthority": false,
+        "nativeGateAuthority": true,
         "homepageTestSurface": true,
         "buildWhenProjectSupportsBuildWeb": true,
-        "missingOrFailedBuildDoesNotBlockNative": true
+        "missingOrFailedBuildDoesNotBlockNative": false,
+        "upperPlatformAdmissionGate": true,
+        "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+        "missingOrFailedBuildAction": "REPAIR_REQUIRED",
+        "releaseAuthority": false
       },
       "presentationSupport": {
         "graphicsRoot": "GRAPHICS_PRODUCTION",
         "audioAuthoringOwner": "audio",
         "artbookRunsInParallel": true
-      }
+      },
+      "upperPlatformAdmissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY",
+      "unityWebDevelopmentMayRunImmediately": true
     },
     "RELEASE_CONFIRMED": {
       "baseline": "RELEASE_BASELINE",
@@ -741,7 +754,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "priorityMeaning": "ROBLOX_UNITY_ACTIVE_EQUAL_TIER_UEFN_OWNER_HOLD",
+    "priorityMeaning": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_ACTIVE_EQUAL_UPPER_TIER",
     "developmentAccess": {
       "ROBLOX": "ALWAYS_ALLOWED",
       "UNITY": "ALWAYS_ALLOWED",
@@ -767,7 +780,7 @@
       "hardDesignFailuresCreateParallelRepair": true
     },
     "roadmapPhaseEntryGatesForbidden": true,
-    "platformDevelopmentMayStartWithoutPriorPlatformCompletion": true,
+    "platformDevelopmentMayStartWithoutPriorPlatformCompletion": false,
     "platformReleaseMayProceedWhenItsOwnEvidenceGatesPass": true,
     "currentExperiencePhase": "ROBLOX_UNITY_DIRECT_NATIVE_INTERNAL_RELEASE_AND_PLAYTEST",
     "currentPrimaryExperiencePlatform": "UNITY_OR_ROBLOX_EQUAL_TIER",
@@ -1059,7 +1072,7 @@
     "sharedModelReviewCount": 1,
     "fakeEvidenceForbidden": true
   },
-  "currentExecutionMode": "DIRECT_NATIVE_ROBLOX_UNITY",
+  "currentExecutionMode": "UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_ROBLOX_UNITY",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
@@ -1068,7 +1081,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "webDevelopmentStageRemoved": true,
+    "webDevelopmentStageRemoved": false,
     "unityWebEnabled": true,
     "minimumDesignRequired": true,
     "sameGameBothPlatformsRequired": true,
@@ -1080,22 +1093,24 @@
     "internalPlaytestStage": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
     "fortniteUefnState": "OWNER_HOLD",
     "noArtificialGlobalGameCountCap": true,
-    "unityWebRequired": false,
-    "unityWebGateRequired": false,
-    "unityWebMode": "VALIDATION_SURFACE_ONLY",
+    "unityWebRequired": true,
+    "unityWebGateRequired": true,
+    "unityWebMode": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
     "unityWebValidationSurface": {
       "enabled": true,
-      "optional": true,
+      "optional": false,
       "sameCanonicalUnityProjectRequired": true,
-      "requiredForDevelopmentAdmission": false,
+      "requiredForDevelopmentAdmission": true,
       "requiredForNativeRuntimePass": false,
-      "requiredForInternalRelease": false
+      "requiredForInternalRelease": false,
+      "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY"
     },
     "noArtificialSameGamePackageCap": true,
     "sourceRootExclusiveLockForbidden": true,
     "sameGameNonOverlappingPackagesParallel": true,
     "responsibleFileConflictSerializationOnly": true,
-    "externalCapacityOnlyParallelBoundary": true
+    "externalCapacityOnlyParallelBoundary": true,
+    "upperPlatformAdmissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY"
   },
   "highEndVisualProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
