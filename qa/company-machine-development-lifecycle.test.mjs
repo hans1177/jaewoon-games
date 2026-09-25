@@ -66,9 +66,12 @@ for(const step of [
   'PERSIST_VERIFIED_LEARNING_AND_CREATE_NEXT_FOCUS_CYCLE'
 ]) assert(work.executionOrder.includes(step),step);
 assert.equal(Object.hasOwn(work,'webWorker'),false);
-assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebMode,'VALIDATION_SURFACE_ONLY');
-assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
-assert.equal(roadmap.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
+assert.equal(work.unityWebWorker.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+assert.equal(work.unityWebWorker.readinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+assert.equal(work.unityWebWorker.deploymentOrReleaseAuthority,false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,false);
 assert.equal(work.selectedPlatformWorker.sharedMinimumDesignMustCarryForward,true);
 assert.equal(work.selectedPlatformWorker.platformSpecificImplementationRequired,true);
 assert.equal(work.selectedPlatformWorker.platformSpecificRuntimeQaRegressionRequired,true);
@@ -133,14 +136,13 @@ for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','TARGET_PLATFORM_SOURCE_BIND
   assert(continuation.verifiedLearningMaxUse.applyAt.includes(stage),stage);
 }
 
-assert.match(webRuntime,/Resolve direct native development/);
-assert.match(webRuntime,/DIRECT_NATIVE_MACHINE_CONTRACT=PASS/);
-assert.match(webRuntime,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
-assert.match(webRuntime,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
-assert.doesNotMatch(webRuntime,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+assert.match(webRuntime,/Resolve Unity Web floor and upper-platform eligibility/);
+assert.match(webRuntime,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
+assert.match(webRuntime,/UNITY_WEB_FLOOR_DISPATCH_COUNT/);
+assert.match(webRuntime,/UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT/);
+assert.match(webRuntime,/UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED/);
 assert.match(webRuntime,/ROBLOX_RUNTIME_DISPATCH=YES/);
 assert.match(webRuntime,/UNITY_APP_RUNTIME_DISPATCH=YES/);
-assert.match(webRuntime,/BIDIRECTIONAL_AUTO_PAIR=YES/);
 assert.match(webRuntime,/INTERNAL_RELEASE_FIRST=YES/);
 assert.doesNotMatch(webRuntime,/company-development-web-bootstrap\.mjs/);
 assert.doesNotMatch(webRuntime,/company-development-web-gameplay-validation\.mjs/);
@@ -193,8 +195,8 @@ assert.match(queue,/isPostReleaseFocused/);
 assert.match(queue,/postReleaseFocusedTaskId/);
 
 assert.equal(Object.hasOwn(lifecycle,'webFirstImplementation'),false);
-assert.equal(roadmap.webCompanion.role,'UNITY_WEB_VALIDATION_SURFACE_ONLY');
-assert.equal(roadmap.webCompanion.developmentAdmissionGate,false);
+assert.equal(roadmap.webCompanion.role,'UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS');
+assert.equal(roadmap.webCompanion.developmentAdmissionGate,true);
 assert.equal(roadmap.webCompanion.releaseGate,false);
 assert.equal(roadmap.webCompanion.cannotReplaceNativeRuntimeEvidence,true);
 const quota=lifecycle.modelQuotaContinuity;
