@@ -103,6 +103,10 @@ test('development-confirmed Web enters Vibe planning before homepage publication
   assert.ok(result.task.evidence.includes('central-policy:company-learning/platform-release-roadmap.json'));
   assert.ok(result.task.evidence.includes('existing-web-assessment-required'));
   assert.match(result.task.goal,/EXISTING_WEB_ASSESS_AND_IMPLEMENT/);
+  assert.match(result.task.goal,/게임별 아트 방향과 Style Lock/);
+  assert.match(result.task.goal,/임시 도형\/모형 몹\/무맥락 배경/);
+  assert.match(result.task.goal,/idle\/move\/attack\/hit\/death/);
+  assert.match(result.task.goal,/Roblox\/Unity\/UEFN 이관/);
   assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
 });
 
