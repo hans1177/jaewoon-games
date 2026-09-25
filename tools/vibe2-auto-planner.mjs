@@ -1894,7 +1894,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   const canonicalByGameId=new Map();
   for(const row of tasks){
     const gameId=clean(row?.gameId),directive=row?.buildUpDirective;
-    if(!gameId||!clean(directive?.directiveId)||terminalStatuses.has(clean(row?.status).toLowerCase()))continue;
+    if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running')continue;
     const current=canonicalByGameId.get(gameId);
     if(!current||Number(directive?.generation||0)>Number(current?.generation||0))canonicalByGameId.set(gameId,directive);
   }
@@ -1961,7 +1961,11 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         }
       }
     }else if(activeCanonical?.buildUpDirective){
+      canonicalByGameId.set(gameId,activeCanonical.buildUpDirective);
       freshness='CURRENT_ACTIVE_GENERATION';
+    }else if(currentId&&item?.buildUpDirective){
+      canonicalByGameId.set(gameId,item.buildUpDirective);
+      freshness='CURRENT_NO_NEWER_GENERATION';
     }
     const checkedCandidate={
       ...candidate,
