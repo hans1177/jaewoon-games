@@ -4,15 +4,15 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-09-25T06:20:21.603Z",
+  "generatedAt": "2026-09-25T08:33:31.822Z",
   "counts": {
     "ACCELERATE": 0,
     "CONTINUE": 1,
-    "FOCUSED_REPAIR": 14,
+    "FOCUSED_REPAIR": 16,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
-    "PENDING": 2
+    "PENDING": 0
   },
   "games": [
     {
@@ -44,6 +44,24 @@
     },
     {
       "gameId": "cozy-island",
+      "decision": "FOCUSED_REPAIR",
+      "label": "집중수리",
+      "priorityRank": 1,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "daechung-rpg",
+      "decision": "FOCUSED_REPAIR",
+      "label": "집중수리",
+      "priorityRank": 1,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "horror-escape-room",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -149,24 +167,6 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "daechung-rpg",
-      "decision": "PENDING",
-      "label": "판정 대기",
-      "priorityRank": 6,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PENDING_AUTOMATION"
-    },
-    {
-      "gameId": "horror-escape-room",
-      "decision": "PENDING",
-      "label": "판정 대기",
-      "priorityRank": 6,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PENDING_AUTOMATION"
     }
   ]
 }
