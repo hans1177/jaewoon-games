@@ -190,6 +190,7 @@ jobs:
           let changed=false,passed=0,pending=0,failed=0;
           const f9Ids=[];
           const stamp=new Date().toISOString();
+          const beforeById=new Map(candidates.map(item=>[item.gameId,structuredClone(item)]));
 
           for(const item of candidates){
             const candidate=item.robloxRuntimeCandidateEvidence||{};
@@ -393,7 +394,6 @@ jobs:
             item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
             item.robloxMobileControlUiPassed=result.f5InputCameraUiPassed===true;
             item.robloxMultiplayerQaPassed=result.f7MultiplayerFoundationPassed===true;
-            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const studioAssetRuntimeBindingPassed=studioAssetBindingRequired
               &&result.runtimeAcceptancePassed===true
               &&result.f5InputCameraUiPassed===true
@@ -566,10 +566,33 @@ jobs:
             item.updatedAt=stamp;changed=true;
           }
 
+          const patches=[];
+          for(const item of candidates){
+            const before=beforeById.get(item.gameId)||{};
+            const fields={};
+            const keys=new Set([...Object.keys(before),...Object.keys(item)]);
+            for(const key of keys){
+              const beforeValue=before[key];
+              const afterValue=item[key];
+              if(JSON.stringify(beforeValue)===JSON.stringify(afterValue))continue;
+              fields[key]=afterValue===undefined?null:afterValue;
+            }
+            if(Object.keys(fields).length===0)continue;
+            patches.push({
+              gameId:item.gameId,
+              sourceRevision:String(item.robloxSourceCommit||'').trim(),
+              artifactIdentity:String(item.robloxBuildArtifactIdentity||'').trim(),
+              candidateVersionNumber:Number(item.robloxRuntimeCandidateEvidence?.versionNumber||0),
+              fields,
+            });
+          }
+          fs.writeFileSync('/tmp/roblox-foundation-state-patches.json',JSON.stringify(patches,null,2)+'\n');
+
           if(changed){
             q.updatedAt=stamp;
             fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
           }
+          console.log(`ROBLOX_FOUNDATION_STATE_PATCHES=${patches.length}`);
           console.log(`ROBLOX_FOUNDATION_CANDIDATES=${candidates.length}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PASS=${passed}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
@@ -582,23 +605,59 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-roblox-tester-qa'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
-            exit 0
-          fi
-          git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
-          pushed=0
-          for attempt in 1 2 3; do
-            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-            sleep $((attempt*2))
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            echo "ROBLOX_FOUNDATION_PERSIST_ATTEMPT=$attempt"
+          node <<'NODE'
+          const fs=require('fs');
+          const queuePath='development-queue.json';
+          const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const patches=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-state-patches.json','utf8'));
+          const stamp=new Date().toISOString();
+          let applied=0,stale=0;
+          for(const patch of patches){
+            const item=(q.items||[]).find(row=>row.gameId===patch.gameId);
+            if(!item)throw new Error(`queue item missing during foundation persist: ${patch.gameId}`);
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const exact=
+              String(item.robloxSourceCommit||'').trim()===String(patch.sourceRevision||'').trim()
+              &&String(item.robloxBuildArtifactIdentity||'').trim()===String(patch.artifactIdentity||'').trim()
+              &&Number(candidate.versionNumber||0)===Number(patch.candidateVersionNumber||0);
+            if(!exact){
+              console.log(`ROBLOX_FOUNDATION_PERSIST_STALE_IGNORED=${patch.gameId}`);
+              stale++;
+              continue;
+            }
+            Object.assign(item,patch.fields||{});
+            item.updatedAt=stamp;
+            applied++;
+          }
+          if(applied>0){
+            q.updatedAt=stamp;
+            fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
+          }
+          console.log(`ROBLOX_FOUNDATION_PERSIST_APPLIED=${applied}`);
+          console.log(`ROBLOX_FOUNDATION_PERSIST_STALE=${stale}`);
+          NODE
+            git config user.name 'jaewoon-roblox-tester-qa'
+            git config user.email 'actions@users.noreply.github.com'
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
+              break
+            fi
+            git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_FOUNDATION_PERSIST_PUSH=PASS:$attempt"
+              break
+            fi
+            echo "ROBLOX_FOUNDATION_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep 2
           done
-          test "$pushed" = '1'
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
       - name: Dispatch F9 review for runtime-accepted candidates
