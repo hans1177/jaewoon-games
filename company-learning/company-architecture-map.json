@@ -1,5 +1,5 @@
 {
-  "version": 180,
+  "version": 181,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3135,7 +3135,7 @@
       "perpetual": true,
       "continuesAfterPublicRelease": true,
       "actualPlayEvidenceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
-      "actualPlayExecutor": "PENDING_DIRECT_BINDING_TO_EXISTING_ROBLOX_RUNTIME_NO_SHADOW_PIPELINE",
+      "actualPlayExecutor": ".github/workflows/company-development-roblox-internal-vibe-play.yml",
       "missingExecutor": "PUBLIC_RELEASE_FAIL_CLOSED_INTERNAL_BUILDUP_CONTINUES",
       "focusFeeder": "tools/vibe2-post-release-focus.mjs",
       "developmentScheduler": ".github/workflows/vibe2-24h-runner.yml",
@@ -3148,7 +3148,17 @@
       "rebuildAfterEveryAcceptedModification": true,
       "staleArtifactReuseAfterSourceModification": false,
       "revalidationInput": "NEWLY_REBUILT_EXACT_CANDIDATE_ONLY",
-      "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY"
+      "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY",
+      "actualPlayMode": "ROBLOX_STUDIO_EXACT_CANDIDATE_PLAY",
+      "actualPlayRunner": [
+        "self-hosted",
+        "Windows",
+        "X64",
+        "roblox-studio-authenticated"
+      ],
+      "actualPlayEvidence": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
+      "actualPlayTrigger": ".github/workflows/company-development-roblox-final-review-revalidation.yml#after-exact-internal-release",
+      "frameCaptureOutput": "workflow-artifact:roblox-vibe-play-frames-<gameId>-<version>"
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -3169,6 +3179,27 @@
       "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
       "staleBuildEvidenceRejected": true,
       "changedSourceRequiresRebuildBeforeGateReevaluation": true
+    },
+    "robloxStorePresentation": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate.robloxStorePresentation",
+      "titleSource": "roblox-games/<gameId>/launch-mvp.json + game-catalog.json",
+      "titleResolver": "tools/company-roblox-store-presentation.mjs",
+      "titleHierarchy": "ENGLISH_PRIMARY_KOREAN_SUBTITLE",
+      "titleFormat": "ENGLISH_PRIMARY | KOREAN_SUBTITLE",
+      "gameplayCaptureOwner": ".github/workflows/company-development-roblox-internal-vibe-play.yml",
+      "creativeComposer": "tools/company-roblox-thumbnail-compose.py",
+      "thumbnailCandidateCount": 3,
+      "thumbnailCandidateSource": "DISTINCT_VERIFIED_ACTUAL_GAMEPLAY_FRAMES",
+      "thumbnailBenchmark": "ROBLOX_HIGH_CLICK_INTENT_STRUCTURAL_TRAITS_WITHOUT_COPYING",
+      "uploadOwner": ".github/workflows/company-development-roblox-internal-vibe-play.yml",
+      "uploadApi": "ROBLOX_THUMBNAIL_PERSONALIZATION_OPEN_CLOUD",
+      "requiredScopes": [
+        "universe.thumbnail:write",
+        "universe.thumbnail:read"
+      ],
+      "publicGateEvidence": "company-runtime:development-queue.json#robloxStorePresentationEvidence",
+      "runtimeCandidateFailureIsolation": true,
+      "externalPublicReleaseBlocking": true
     }
   },
   "autonomousBottleneckRecovery": {
