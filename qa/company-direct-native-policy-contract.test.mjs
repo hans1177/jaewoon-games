@@ -183,3 +183,22 @@ test('every accepted Roblox buildup modification must rebuild before revalidatio
   assert.equal(a.staleArtifactReuseAfterSourceModification,false);
   assert.equal(a.revalidationInput,'NEWLY_REBUILT_EXACT_CANDIDATE_ONLY');
 });
+
+test('Roblox public gate requires bilingual title plus gameplay-derived dedicated thumbnail and icon',()=>{
+  const hard=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate;
+  const store=hard.robloxStorePresentation;
+  assert.ok(hard.requirements.includes('ROBLOX_BILINGUAL_TITLE_EVIDENCE_PASS'));
+  assert.ok(hard.requirements.includes('ROBLOX_ICON_AND_THUMBNAIL_PRODUCTION_EVIDENCE_PASS'));
+  assert.ok(hard.requirements.includes('ROBLOX_ICON_AND_THUMBNAIL_UPLOAD_VERIFY_PASS'));
+  assert.equal(store.title.bilingualRequired,true);
+  assert.equal(store.title.displayFormat,'<ENGLISH_TITLE> | <KOREAN_TITLE>');
+  assert.equal(store.iconAndThumbnail.dedicatedPerGameCreativeRequired,true);
+  assert.equal(store.iconAndThumbnail.genericSharedPlaceholderForbidden,true);
+  assert.equal(store.iconAndThumbnail.actualGameplayRepresentativeRequired,true);
+  assert.equal(store.iconAndThumbnail.uploadVerificationRequired,true);
+  assert.equal(store.iconAndThumbnail.thumbnailShouldReadAtSmallRobloxCardSize,true);
+  const a=architecture.releaseExposureLifecycle.robloxStorePresentation;
+  assert.equal(a.titleFormat,'ENGLISH | KOREAN');
+  assert.equal(a.thumbnailProduction,'CURRENT_GAME_IDENTITY_PLUS_VERIFIED_GAMEPLAY_FRAME');
+  assert.equal(a.externalPublicReleaseBlocking,true);
+});
