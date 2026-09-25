@@ -242,6 +242,7 @@ test('native executors cannot bypass Unity Web upper-platform readiness',()=>{
   }
   assert.match(unity,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
   assert.match(roblox,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,['cozy-island','daechung-rpg']);
 });
 
 test('Unity Web source bootstrap is fail-closed and excludes the two owner-grandfathered games',()=>{
