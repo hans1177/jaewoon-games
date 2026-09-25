@@ -2123,8 +2123,8 @@ function verifiedRobloxStudioReusablePatterns(binding={}){
   const semanticText=[
     'roblox studio runtime virtual input actual play',
     ...(evidence?.learningSignals||[]),
-    ...(binding?.actions||[]).flatMap(row=>[row?.id,row?.type]),
-    ...(binding?.checkpoints||[]).flatMap(row=>[row?.id,row?.name])
+    ...(binding?.actions||[]).filter(row=>row?.ok===true).flatMap(row=>[row?.id,row?.type]),
+    ...(binding?.checkpoints||[]).filter(row=>row?.pass===true).flatMap(row=>[row?.id,row?.name])
   ].map(clean).filter(Boolean).join(' ');
   const domains=uniq(inferDomains(semanticText,'roblox')).filter(domain=>MASTERY_DOMAINS.includes(domain));
   return uniq(domains.map(domain=>'verified-studio-play:'+lower(domain).replaceAll('_','-')));
