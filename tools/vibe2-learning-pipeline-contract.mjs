@@ -24,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 5, 'contract.version');
+eq(contract.version, 12, 'contract.version');
 eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
 eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
 eq(contract.policyAuthority, false, 'contract.policyAuthority');
@@ -67,6 +67,21 @@ eq(contract.studioAssetUniverseEvidence?.rawCoverageTelemetryDirectTraining, fal
 eq(contract.studioAssetUniverseEvidence?.verifiedOutcomeMayBecomeTrainingSample, true, 'verified asset outcome may become training sample');
 eq(contract.studioAssetUniverseEvidence?.existingThresholdsHoldoutCanaryUnchanged, true, 'studio asset universe learning thresholds unchanged');
 eq(contract.studioAssetUniverseEvidence?.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate, true, 'asset platform evidence separation');
+const studioLearning=contract.robloxStudioVerifiedLearning;
+eq(studioLearning?.enabled,true,'Roblox Studio verified learning enabled');
+eq(studioLearning?.localPlaceFileRequired,true,'Roblox Studio local Place file required');
+eq(studioLearning?.onlinePublishedPlaceDirectOpenForbidden,true,'published Place direct Studio open forbidden');
+eq(studioLearning?.robloxPlayerAutomationForbidden,true,'Roblox Player automation forbidden');
+eq(studioLearning?.exactArtifactRequired,true,'exact Roblox artifact required');
+eq(studioLearning?.publishedCandidateCrossCheckAuthority,'OPEN_CLOUD','published candidate cross-check authority');
+eq(studioLearning?.directRawTelemetryTraining,false,'raw Studio telemetry direct training');
+eq(studioLearning?.directRawSourceTraining,false,'raw Studio source direct training');
+eq(studioLearning?.separatePipelineForbidden,true,'Studio learning separate pipeline forbidden');
+eq(studioLearning?.separateTrainerForbidden,true,'Studio learning separate trainer forbidden');
+eq(roadmap.roblox?.studioExecution?.localPlaceFileRequired,true,'central Studio local Place file required');
+eq(roadmap.roblox?.studioExecution?.onlinePublishedPlaceDirectOpenForbidden,true,'central published Place direct Studio open forbidden');
+eq(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.learningUseForbidden,false,'central Studio verified learning allowed');
+
 
 const portableWeb=contract.portableWebLearning;
 eq(portableWeb?.enabled, false, 'legacy portable Web learning disabled');
