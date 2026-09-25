@@ -48,12 +48,12 @@ jobs:
           const target=cfg.targets.find(x=>x.id==='external-roblox-potion-shop-flow-a');
           if(!target) throw new Error('Potion Shop Roblox target missing');
           if(target.enabled!==false) throw new Error('External Potion Shop Studio automation must remain disabled');
-          if(target.engine!=='roblox'||target.runnerReady!==true) throw new Error('Potion Shop target Studio contract invalid');
-          if(target.sourceAccess!=='owned-or-authorized-server-workspace') throw new Error('Potion Shop target source access must be explicitly authorized');
-          if(!target.commandArgs.some(x=>String(x).includes('14215142052'))) throw new Error('official Potion Shop place id missing');
-          if(!target.commandArgs.some(x=>String(x).includes('creator-enabled-place-copying'))) throw new Error('copy permission contract missing');
+          if(target.engine!=='roblox'||target.runnerReady!==false) throw new Error('Potion Shop target must remain non-runnable');
+          if((target.commandArgs||[]).length!==0) throw new Error('Potion Shop online Studio launch args must remain empty');
+          if(target.onlinePublishedPlaceStudioAutomationForbidden!==true) throw new Error('published-place Studio automation must remain forbidden');
+          if(target.localPlaceFileRequiredForAnyFutureStudioReactivation!==true) throw new Error('future Studio reactivation must require a local Place file');
           if(cfg.policy?.externalRobloxActiveAutomation!==false) throw new Error('generic external Roblox automation must remain disabled');
-          if(cfg.policy?.externalCopyEnabledRobloxAutomation!==true) throw new Error('copy-enabled capability declaration missing');
+          if(cfg.policy?.externalCopyEnabledRobloxAutomation!==false) throw new Error('copy-enabled external Studio automation must remain disabled');
           if(Number(cfg.policy?.robloxStudioConcurrency?.defaultMultiplayerClients||0)!==2) throw new Error('default Roblox multiplayer regression must be 2 clients');
           if(Number(cfg.policy?.robloxStudioConcurrency?.maxStudioTestClients||0)!==8) throw new Error('Roblox Studio client cap contract changed');
           if(cfg.policy?.robloxStudioConcurrency?.sameWindowsSessionConcurrent!==false) throw new Error('same-session production and study must stay disabled');
@@ -66,7 +66,7 @@ jobs:
           if(scenario.actions.some(x=>String(x.expression||'').startsWith('instance-path:'))) throw new Error('Studio edit objects must not be asserted from the play client');
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
           console.log('VIBE2_ROBLOX_DEDICATED_RUNNER_REQUIRED=YES');
-          console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=YES');
+          console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=NO');
           console.log('VIBE2_ROBLOX_MULTIPLAYER_CONTRACT=2_OF_8');
           NODE
 
@@ -121,40 +121,6 @@ jobs:
             --timeout=150000
           node -e "const fs=require('fs');const p=process.env.RUNNER_TEMP+'/vibe2-roblox-multiplayer.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.runtimeVerified!==true)throw new Error('multiplayer runtime not verified');if(Number(r.multiplayer?.expectedClients||0)!==2)throw new Error('expected clients mismatch');if(Number(r.multiplayer?.resultCount||0)<2)throw new Error('not all clients reported');if(Number(r.multiplayer?.verifiedClients||0)<2)throw new Error('not all clients reported ready');if(r.capabilities?.virtualInput!==false)throw new Error('automated user input unexpectedly enabled');if(r.capabilities?.assertionOnly!==true)throw new Error('assertion-only multiplayer mode missing');if(r.authorityExpanded===true)throw new Error('authority expanded');console.log('VIBE2_ROBLOX_MULTIPLAYER_2_CLIENT=PASS')"
 
-      - name: Study official uncopylocked Potion Shop through dedicated Studio runner
-        if: ${{ false }}
-        shell: powershell
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $sourceRoot = Join-Path $env:RUNNER_TEMP 'vibe2-potion-shop-source'
-          $env:VIBE2_ROBLOX_AUTO_PLAYER_ARGS = ConvertTo-Json -InputObject @(
-            'tools/vibe2-roblox-studio-cli-runner.mjs',
-            '--place-id=14215142052',
-            '--copy-permission=creator-enabled-place-copying',
-            '--permission-evidence=https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo',
-            "--source-root=$sourceRoot"
-          ) -Compress
-          node tools/vibe2-roblox-game-study.mjs `
-            --game-id=external-roblox-potion-shop-demo `
-            --scenario=.vibe2/game-study-scenarios/external-roblox-potion-shop-flow-a.json `
-            --command=node `
-            "--source-root=$sourceRoot" `
-            --source-access=owned-or-authorized-server-workspace `
-            --play-output="$env:RUNNER_TEMP/vibe2-potion-shop-play.json" `
-            --output="$env:RUNNER_TEMP/vibe2-potion-shop-study.json" `
-            --timeout=240000
-          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/vibe2-potion-shop-study.json','utf8'));if(s.verified!==true)throw new Error('Potion Shop study not verified');if(s.sourceAnalysis?.scanned!==true)throw new Error('authorized source evidence not scanned');if(s.sourceAnalysis?.authorized!==true)throw new Error('authorized source evidence rejected');if(s.policy?.rawSourceCopiedIntoMemory!==false)throw new Error('raw source policy changed');if(s.authorityExpanded===true)throw new Error('authority expanded');if(Number(s.run?.inputActionCount||0)!==0)throw new Error('automated user input must remain disabled');if(Number(s.run?.checkpointPassCount||0)!==Number(s.run?.checkpointCount||0))throw new Error('runtime checkpoint mismatch');console.log('VIBE2_ROBLOX_POTION_SHOP_STUDY=PASS');console.log('VIBE2_ROBLOX_POTION_SHOP_PATTERNS='+(s.distilledPatterns?.length||0))"
-          $manifest = Get-Content (Join-Path $sourceRoot 'authorized-studio-manifest.json') -Raw | ConvertFrom-Json
-          if ($manifest.placeId -ne '14215142052') { throw 'Potion Shop source provenance place id mismatch' }
-          if ([string]$manifest.observedPlaceId -ne '0') { throw 'Potion Shop must open as an uncopylocked Studio copy' }
-          if ($manifest.rawSourcePersisted -ne $false -or $manifest.rawPlacePersisted -ne $false) { throw 'raw Roblox source/place persisted' }
-          if ([int]$manifest.scriptCount -lt 6) { throw 'Potion Shop copy did not expose the expected source structure' }
-          if (@($manifest.generalizedPatterns).Count -lt 1) { throw 'Potion Shop produced no generalized source patterns' }
-          Write-Host "VIBE2_ROBLOX_POTION_SHOP_OBSERVED_PLACE_ID=$($manifest.observedPlaceId)"
-          Write-Host "VIBE2_ROBLOX_POTION_SHOP_SCRIPT_COUNT=$($manifest.scriptCount)"
-          Write-Host "VIBE2_ROBLOX_POTION_SHOP_GENERALIZED_PATTERNS=$(@($manifest.generalizedPatterns).Count)"
-          Write-Host 'VIBE2_ROBLOX_POTION_SHOP_COPY_SESSION_IDENTITY=PASS'
-
       - name: Upload real Roblox Studio evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -163,9 +129,5 @@ jobs:
           path: |
             ${{ runner.temp }}/vibe2-roblox-studio-baseplate.json
             ${{ runner.temp }}/vibe2-roblox-multiplayer.json
-            ${{ runner.temp }}/vibe2-potion-shop-play.json
-            ${{ runner.temp }}/vibe2-potion-shop-study.json
-            ${{ runner.temp }}/vibe2-potion-shop-source/authorized-studio-manifest.json
-            ${{ runner.temp }}/vibe2-potion-shop-source/authorized-pattern-evidence.luau
           if-no-files-found: warn
           retention-days: 3
