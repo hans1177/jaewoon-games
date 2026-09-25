@@ -1,5 +1,5 @@
 {
-  "version": 181,
+  "version": 182,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2841,15 +2841,15 @@
       }
     },
     "robloxStudioVerifiedRuntimeIngress": {
-      "version": 1,
+      "version": 2,
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.robloxStudioUsage",
       "sourceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
-      "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play",
+      "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
       "executionHost": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_AUTHENTICATED",
       "launchInput": "LOCAL_EXACT_BUILD_PLACE_FILE_ONLY",
       "onlinePlaceIdLaunchForbidden": true,
       "robloxPlayerAutomationForbidden": true,
-      "runtimeAuthority": "vibe2-roblox-studio-runtime",
+      "runtimeAuthority": "roblox-official-studio-mcp-runtime",
       "exactArtifactRequired": true,
       "exactArtifactFields": [
         "sourceRevision",
@@ -2861,12 +2861,14 @@
         "placeId",
         "versionNumber"
       ],
-      "publishedCandidateCrossCheckAuthority": "OPEN_CLOUD",
+      "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
       "runtimeRequirements": [
-        "StudioTestService",
-        "VirtualInput",
-        "required-checkpoint-pass",
-        "zero-runtime-errors"
+        "OFFICIAL_STUDIO_MCP",
+        "START_STOP_PLAY",
+        "MCP_PLAYER_INPUT",
+        "SCREEN_CAPTURE_BEFORE_AFTER_CHANGE",
+        "CONSOLE_OUTPUT_CAPTURE",
+        "REQUIRED_CHECKPOINT_PASS"
       ],
       "canonicalIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience",
       "canonicalExperienceStore": ".vibe2/experience.json",
@@ -2877,8 +2879,16 @@
       "separateTrainer": false,
       "separatePipeline": false,
       "authorityExpansion": false,
-      "supersededSharedTargetRejected": true,
-      "publishedCandidateMustBeCurrentWhenShared": true
+      "supersededSharedTargetRejected": false,
+      "publishedCandidateMustBeCurrentWhenShared": false,
+      "executionTransport": "OFFICIAL_STUDIO_MCP_STDIO",
+      "mcpServerWindows": "%LOCALAPPDATA%\\Roblox\\mcp.bat",
+      "externalGuiAutomationForbidden": true,
+      "undocumentedStudioCliAutomationForbidden": true,
+      "rawViewportDirectTraining": false,
+      "structuredQaFactsOnly": true,
+      "supersededSharedTargetLocalExactArtifactAllowed": true,
+      "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true
     }
   },
   "ownerRule2Topology": {
@@ -3175,7 +3185,7 @@
       "perpetual": true,
       "continuesAfterPublicRelease": true,
       "actualPlayEvidenceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
-      "actualPlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play",
+      "actualPlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
       "missingExecutor": "PUBLIC_RELEASE_FAIL_CLOSED_INTERNAL_BUILDUP_CONTINUES",
       "focusFeeder": "tools/vibe2-post-release-focus.mjs",
       "developmentScheduler": ".github/workflows/vibe2-24h-runner.yml",
@@ -3189,12 +3199,28 @@
       "staleArtifactReuseAfterSourceModification": false,
       "revalidationInput": "NEWLY_REBUILT_EXACT_CANDIDATE_ONLY",
       "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY",
-      "actualPlayExecution": "SELF_HOSTED_WINDOWS_STUDIO_LOCAL_PLACE_FILE_PLUS_STUDIO_TEST_SERVICE_PLUS_VIRTUAL_INPUT",
-      "publishedPlaceDirectStudioAutomation": false,
-      "learningReuse": "EXACT_LOCAL_BUILD_VERIFIED_STUDIO_EVIDENCE_TO_EXISTING_LEARNING_MOTOR",
-      "publishedCandidateVerification": "OPEN_CLOUD_ONLY",
+      "actualPlayExecution": "SELF_HOSTED_WINDOWS_OFFICIAL_STUDIO_MCP_LOCAL_EXACT_ARTIFACT",
+      "learningReuse": "STRUCTURED_VERIFIED_QA_FACTS_ONLY_NO_RAW_GAMEPLAY_TRAINING",
+      "publishedCandidateVerification": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD",
       "headlessF0RemainsIndependent": true,
-      "supersededSharedTargetCannotMintActualPlayEvidence": true
+      "actualPlaySurface": "ROBLOX_STUDIO_MCP_PLAY_MODE",
+      "actualPlayTransport": "STDIO_VIA_%LOCALAPPDATA%\\Roblox\\mcp.bat",
+      "actualPlayRequiredTools": [
+        "list_roblox_studios",
+        "get_studio_state",
+        "start_stop_play",
+        "get_console_output",
+        "screen_capture",
+        "user_keyboard_input",
+        "user_mouse_input",
+        "character_navigation"
+      ],
+      "robloxPlayerAutomation": false,
+      "externalStudioGuiAutomation": false,
+      "undocumentedStudioCliAutomation": false,
+      "evidenceContract": "EXACT_ARTIFACT_PLUS_OFFICIAL_MCP_INPUT_PLUS_RUNTIME_CHANGE_PLUS_CONSOLE_CAPTURE",
+      "supersededSharedTargetCanMintLocalExactArtifactPlayEvidence": true,
+      "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
