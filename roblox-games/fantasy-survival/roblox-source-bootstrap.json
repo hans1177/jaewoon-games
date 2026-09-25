@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
   "platform": "ROBLOX",
@@ -11,113 +11,89 @@
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "saveRequired": true,
-  "approvedScopeCount": 6,
-  "robloxBuildProfile": {
-    "version": 2,
-    "targetPlatform": "ROBLOX",
-    "taxonomy": "DIRECT_NATIVE_DESIGN_PROFILE",
-    "declaredGameCategory": null,
-    "genre": "Survival",
-    "subgenre": null,
-    "playMode": "HYBRID",
-    "multiplayerRequired": true,
-    "coopImplementationRequired": true,
-    "competitiveImplementationRequired": true,
-    "networkingRequired": true,
-    "multiplayerQaRequired": true,
-    "minimumParticipantsForRequiredQa": 2,
-    "displayLabelKo": "Survival"
-  },
-  "robloxPlatformProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
-    "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
-    "multiplayerRuntime": "server-authoritative Roblox hybrid multiplayer with co-op and competitive state separated by mode",
-    "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
-    "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
-    "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
-    "platformContentAdaptation": "Adapt \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.\" and its loop \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
-    "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
-    "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
-  },
-  "minimumDesignContractRequired": true,
-  "genreImplementationRequired": true,
-  "multiplayerImplementationRequired": true,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "default.project.json"
+    "client/Game.client.luau"
   ],
-  "generationMode": "DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT",
-  "model": "none",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": true,
-  "robloxPlaybookChecklist": [
-    "bind-roblox-source-and-place",
-    "separate-server-client-authority",
-    "validate-remotes-and-datastore-boundaries",
-    "run-real-roblox-runtime-and-independent-qa",
-    "verify-save-rejoin-and-mobile-ui-when-applicable",
-    "publish-only-after-exact-revision-pass",
-    "rank-responsible-source-before-edit",
-    "generate-3-to-5-independent-candidates",
-    "prefer-smallest-behavior-preserving-diff",
-    "run-syntax-tests-runtime-regression"
-  ],
-  "recombinationRecipeId": "recombine_8bb681be5a403e13",
-  "recombinationOperator": "change-session-structure",
-  "recombinationSourceProjects": [
-    "external-commercial-afk-arena",
-    "external-commercial-hill-climb-racing-2"
-  ],
-  "learningFeatureBlend": [
-    "idle-reward",
-    "offline-progress",
-    "upgrade-layer",
-    "claim-idempotency",
-    "persistent-growth",
-    "commercial-idle-runtime-architecture",
-    "short-session",
-    "simple-input",
-    "fast-retry",
-    "score-loop"
-  ],
-  "platformDesignProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
-    "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
-    "multiplayerRuntime": "server-authoritative Roblox hybrid multiplayer with co-op and competitive state separated by mode",
-    "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
-    "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
-    "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
-    "platformContentAdaptation": "Adapt \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.\" and its loop \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
-    "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
-    "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
+  "vibe3LearningApplied": false,
+  "recombinationRecipeId": null,
+  "studioAssetBinding": {
+    "version": 1,
+    "applied": true,
+    "source": "company-asset-library.json#baseMaterialLibrary",
+    "libraryVersion": 16,
+    "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    "selectedAtomCount": 29,
+    "families": {
+      "UI": [
+        "FRAME_PANEL",
+        "BUTTON_PRIMARY",
+        "BAR_HEALTH"
+      ],
+      "ENVIRONMENT": [
+        "TREE_TRUNK_THICK",
+        "TREE_CROWN_ROUND",
+        "ROCK_MEDIUM",
+        "ROAD_DIRT"
+      ],
+      "BUILDING": [
+        "FOUNDATION_RECT",
+        "WALL_SOLID",
+        "DOOR_SINGLE",
+        "ROOF_GABLE"
+      ],
+      "PROP": [
+        "CHEST",
+        "CRATE",
+        "LAMP"
+      ],
+      "MATERIAL": [
+        "WOOD",
+        "STONE",
+        "METAL"
+      ],
+      "VFX": [
+        "IMPACT_FLASH",
+        "TRAIL_SHORT",
+        "SHAPE_BURST"
+      ],
+      "WEAPON": [
+        "BLADE_LONG",
+        "GUARD_CROSS",
+        "GRIP_LONG"
+      ],
+      "CHARACTER": [
+        "TORSO_CLOTH",
+        "SHOULDER_LIGHT",
+        "BACK_CAPE"
+      ],
+      "CREATURE": [
+        "HEAD_CANINE",
+        "JAW_LONG",
+        "CLAW"
+      ]
+    },
+    "recipeId": "NORMAL_VARIANT",
+    "productionVerified": false,
+    "runtimeVerificationRequired": true,
+    "verifiedPromotionAllowed": false,
+    "gameplayAuthority": false
   },
-  "webPlatformHandoffLegacy": null,
-  "webPlatformHandoffRequired": false,
+  "studioAssetBindingApplied": true,
+  "studioAssetRuntimeVerified": false,
+  "studioAssetPromotionEligible": false,
   "implementationNotes": [
-    "approved scope count=6",
-    "roblox genre=Survival",
-    "play mode=HYBRID",
-    "multiplayer required=yes",
-    "genre core action is compiled from the approved Roblox build profile",
-    "minimum dual-platform design contract carried forward",
-    "Roblox platform session: Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
-    "Roblox internal release target: Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
-    "server-authoritative actions broadcast synchronized participant state to all clients",
-    "co-op source maintains SharedObjective across current participants",
-    "competitive source maintains per-player RoundScore and broadcasts it",
-    "mobile-first ScreenGui exposes approved gameplay actions",
-    "Vibe3 Roblox playbook applied: bind-roblox-source-and-place, separate-server-client-authority, validate-remotes-and-datastore-boundaries, run-real-roblox-runtime-and-independent-qa, verify-save-rejoin-and-mobile-ui-when-applicable, publish-only-after-exact-revision-pass, rank-responsible-source-before-edit, generate-3-to-5-independent-candidates, prefer-smallest-behavior-preserving-diff, run-syntax-tests-runtime-regression",
-    "transformative recipe=recombine_8bb681be5a403e13; operator=change-session-structure; features=idle-reward, offline-progress, upgrade-layer, claim-idempotency, persistent-growth, commercial-idle-runtime-architecture, short-session, simple-input, fast-retry, score-loop",
-    "persistent player state uses DataStoreService with safe fallback",
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-21T15:03:05.898Z"
+  "createdAt": "2026-09-25T04:11:18.220Z"
 }
