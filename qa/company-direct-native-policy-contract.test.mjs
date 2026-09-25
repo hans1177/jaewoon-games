@@ -36,6 +36,8 @@ test('canonical policy routes new Roblox and Unity work through the Unity Web re
   assert.equal(fan?.sourceTreeExactMatchRequired,true);
   assert.equal(fan?.nativeEvidenceStillRequired,true);
   assert.equal(direct.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
+  assert.deepEqual(direct.upperPlatformAdmissionMigration?.grandfatherGameIds,['cozy-island','daechung-rpg']);
+  assert.equal(direct.upperPlatformAdmissionMigration?.allOtherDevelopmentConfirmedMustRunUnityWebFloor,true);
   assert.equal(direct.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,true);
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.sameGameBothPlatformsRequired,true);
@@ -122,6 +124,9 @@ test('architecture and runtime execute Unity Web readiness before new upper-plat
   assert.match(runtime,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
   assert.match(runtime,/UPPER_PLATFORM_DISPATCH_COUNT=/);
   assert.match(runtime,/UNITY_WEB_FLOOR_DISPATCH_COUNT=/);
+  assert.match(runtime,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
+  assert.match(runtime,/unity-web-floor-source-bootstrap\.yml/);
+  assert.match(runtime,/grandfatherGameIds/);
   assert.match(runtime,/company-development-roblox-runtime\.yml/);
   assert.match(runtime,/company-development-unity-runtime\.yml/);
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
@@ -223,4 +228,23 @@ test('every accepted Roblox buildup modification must rebuild before revalidatio
   assert.equal(a.rebuildAfterEveryAcceptedModification,true);
   assert.equal(a.staleArtifactReuseAfterSourceModification,false);
   assert.equal(a.revalidationInput,'NEWLY_REBUILT_EXACT_CANDIDATE_ONLY');
+});
+
+
+test('Unity Web source bootstrap is fail-closed and excludes the two owner-grandfathered games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/unity-web-floor-source-bootstrap.yml','utf8');
+  const generator=fs.readFileSync('tools/company-unity-web-floor-bootstrap.mjs','utf8');
+  assert.match(workflow,/cozy-island/);
+  assert.match(workflow,/daechung-rpg/);
+  assert.match(workflow,/UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN/);
+  assert.match(workflow,/company-unity-web-floor-bootstrap\.mjs/);
+  assert.match(workflow,/git add "unity-games\/\$id"/);
+  assert.doesNotMatch(workflow,/git add "unity-games\/\$id" "\.build-requests\/unity-web\/\$id\.json"/);
+  assert.match(generator,/BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP/);
+  assert.match(generator,/upperPlatformReady:false/);
+  assert.match(generator,/releaseOrDeploymentAuthority:false/);
+  assert.match(generator,/public static void BuildWeb\(\)/);
+  const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  assert.match(webWorkflow,/bootstrapGraphicsBlocked/);
+  assert.match(webWorkflow,/presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'/);
 });
