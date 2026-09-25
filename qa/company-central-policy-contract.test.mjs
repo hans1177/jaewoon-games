@@ -243,7 +243,7 @@ test('department launcher delegates DEVELOPMENT_CONFIRMED to one canonical direc
   assert.doesNotMatch(pipeline,/await run\('tools\/company-development-disposition-gate\.mjs'\)/);
   assert.match(pipeline,/DEVELOPMENT_EXECUTION_MODE=UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM/);
   assert.match(pipeline,/DEVELOPMENT_RUNTIME_OWNER=\.github\/workflows\/company-development-confirmed-runtime\.yml/);
-  assert.match(pipeline,/DEVELOPMENT_LEGACY_WEB_FIRST_VALIDATION=DISABLED/);
+  assert.match(pipeline,/DEVELOPMENT_UNITY_WEB_FLOOR=REQUIRED_FOR_NEW_UPPER_PLATFORM_ENTRY/);
 });
 
 test('Vibe2/Vibe3 remain primary integration and learning owner for direct-native implementation with isolated external AI collaboration',()=>{
