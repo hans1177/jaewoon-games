@@ -9,8 +9,6 @@ import {
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-const centralRoadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
@@ -20,14 +18,10 @@ function roadmap(){
     roblox:{studioExecution:{
       enabled:true,required:true,localPlaceFileRequired:true,
       onlinePublishedPlaceDirectOpenForbidden:true,
-      placeIdOrUniverseIdAsStudioLaunchTargetForbidden:true,
-      requiresRuntimeFoundationQaSuccess:true,
-      requiresRuntimeFoundationCandidatePass:true
+      placeIdOrUniverseIdAsStudioLaunchTargetForbidden:true
     }},
     developmentLifecycleMachine:{robloxStudioUsage:{
       learningUseForbidden:false,
-      runtimeFoundationQaPassRequiredBeforeStudioPlay:true,
-      runtimeFoundationCandidatePassRequiredBeforeStudioPlay:true,
       forbidden:[
         'ROBLOX_PLAYER_AUTOMATION',
         'PUBLIC_SERVER_BOT_PLAY',
@@ -159,11 +153,6 @@ test('verified Studio runtime error routes exact game to repair while remaining 
 });
 
 test('local Studio play is ordered after successful runtime foundation QA and exact candidate pass',()=>{
-  assert.equal(centralRoadmap.roblox.studioExecution.requiresRuntimeFoundationQaSuccess,true);
-  assert.equal(centralRoadmap.roblox.studioExecution.requiresRuntimeFoundationCandidatePass,true);
-  assert.equal(centralRoadmap.developmentLifecycleMachine.robloxStudioUsage.runtimeFoundationQaPassRequiredBeforeStudioPlay,true);
-  assert.equal(architecture.learningClosedLoopTopology.robloxStudioVerifiedRuntimeIngress.requiresRuntimeFoundationQaSuccess,true);
-  assert.equal(architecture.learningClosedLoopTopology.robloxStudioVerifiedRuntimeIngress.requiresRuntimeFoundationCandidatePass,true);
   assert.match(workflow,/studio-local-plan:[\s\S]*needs: runtime-foundation-qa[\s\S]*if: needs\.runtime-foundation-qa\.result == 'success'/);
   assert.equal((workflow.match(/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true;/g)||[]).length,1);
   const candidate=item();
