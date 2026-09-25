@@ -1,5 +1,5 @@
-name: Unity WebGL Validation Surface Build
-run-name: Unity Web ${{ inputs.game_id || inputs.request_file || github.event.head_commit.message }}
+name: Unity Web Development Floor
+run-name: Unity Web Floor ${{ inputs.game_id || inputs.request_file || github.event.head_commit.message }}
 
 on:
   push:
@@ -144,7 +144,7 @@ jobs:
           print(f'UNITY_WEB_BUILD_METHOD={method}')
           PY
 
-      - name: Verify Unity WebGL validation-surface contract
+      - name: Verify Unity Web development-floor contract
         shell: bash
         run: |
           set -euo pipefail
@@ -152,13 +152,27 @@ jobs:
           import fs from 'node:fs';
           const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const c=policy.unityWebFirstStage;
+          const gate=policy.directNativeDualPlatformDevelopment?.upperPlatformDevelopmentReadinessGate;
           if(c?.status!=='OWNER_DIRECT_LOCKED') throw new Error('Unity Web policy not locked');
-          if(c?.scope!=='VALIDATION_SURFACE_ONLY'||c?.enabled!==true||c?.developmentAdmissionAuthority!==false) throw new Error('Unity Web validation surface contract changed');
+          if(c?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||c?.enabled!==true||c?.developmentAdmissionAuthority!==true) throw new Error('Unity Web development floor contract changed');
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
-          if(c?.postUnityWebGatePipelineUnchanged!==true) throw new Error('post gate pipeline changed');
-          console.log('UNITY_WEB_VALIDATION_SURFACE_CONTRACT=PASS');
+          if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
+          console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
           NODE
+
+      - name: Bind canonical Unity source tree
+        id: source
+        shell: bash
+        env:
+          PROJECT_PATH: ${{ steps.request.outputs.project_path }}
+        run: |
+          set -euo pipefail
+          test -d "$PROJECT_PATH"
+          tree_sha="$(find "$PROJECT_PATH" -type f -not -path '*/Library/*' -not -path '*/Temp/*' -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')"
+          test -n "$tree_sha"
+          echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
+          echo "UNITY_WEB_CANONICAL_SOURCE_TREE_SHA256=$tree_sha"
 
       - name: Verify Unity credentials
         shell: bash
