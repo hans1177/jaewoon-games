@@ -391,3 +391,14 @@ test('Unity direct native changes override unrelated representative canary selec
   assert.match(workflowSource,/const canary=requestedRows\.length\?null:/);
   assert.match(workflowSource,/const selected=requestedRows\.length\?requestedRows\.slice/);
 });
+
+
+test('Unity queue resolver binds the roadmap once inside its embedded Node module',()=>{
+  const marker="const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));";
+  const resolver=workflowSource.slice(
+    workflowSource.indexOf('- name: Resolve Unity work from unbounded native queue with representative canary'),
+    workflowSource.indexOf('\n  unity-technical-validation:')
+  );
+  assert.equal(resolver.split(marker).length-1,1);
+  assert.match(resolver,/developmentSpeedExecution\?\.externalMatrixBatchMax/);
+});
