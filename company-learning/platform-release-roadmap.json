@@ -1,5 +1,5 @@
 {
-  "version": 363,
+  "version": 364,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -597,6 +597,28 @@
         "exactArtifactBindingPreserved": true,
         "failureRoutesToExactFailedStage": true,
         "externalProviderCapacityRemainsOnlyHeavyExecutionBoundary": true
+      },
+      "f0SourceRepairLoop": {
+        "version": 1,
+        "trigger": {
+          "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+          "failureStage": "F0_SOURCE_INTEGRITY",
+          "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+        },
+        "action": "REENTER_EXISTING_ROBLOX_SOURCE_WORKER_WITH_EXACT_F0_REPAIR_SCOPE",
+        "shadowPipelineForbidden": true,
+        "exactBlockerEvidenceRequired": true,
+        "existingGameplaySemanticsPreserved": true,
+        "balanceValuesPreserved": true,
+        "saveSchemaPreserved": true,
+        "networkAuthorityPreserved": true,
+        "sourceRootWideLockForbidden": true,
+        "repairOnlyFoundationAndInputRuntimeScaffolding": true,
+        "newSourceGeneratorMustEmitFoundationContractByDefault": true,
+        "f0GateBypassForbidden": true,
+        "retryUntilPassOrVerifiedDifferentRootCause": true,
+        "wakeAfterTechnicalPersist": true,
+        "repairFanout": "PER_GAME_PARALLEL_EXTERNAL_PROVIDER_CAPACITY_ONLY"
       }
     },
     "candidateReleaseConcurrency": {
@@ -6639,6 +6661,23 @@
         ".github/workflows/company-development-roblox-runtime.yml",
         ".github/workflows/company-development-roblox-runtime-continuation.yml",
         ".github/workflows/company-development-roblox-headless-fast-mvp.yml"
+      ]
+    },
+    "robloxF0SourceRepairLoop20260925": {
+      "id": "ROBLOX_F0_SOURCE_REPAIR_LOOP_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "ROBLOX_PACKAGE_AND_SHARED_PREFLIGHT_COULD_PASS_WHILE_EXISTING_SOURCES_FAILED_F0_FOUNDATION_CONTRACT_AND_SOURCE_PLANNER_SKIPPED_THEM_AS_ALREADY_RECONCILED",
+      "resolution": "ROUTE_F0_SOURCE_INTEGRITY_FAILURE_BACK_INTO_THE_EXISTING_ROBLOX_SOURCE_WORKER_WITH_A_DETERMINISTIC_FOUNDATION_MIGRATION_THAT_PRESERVES_GAMEPLAY_BALANCE_SAVE_SCHEMA_AND_NETWORK_AUTHORITY; NEWLY_GENERATED_ROBLOX_SOURCE_EMITS_THE_FOUNDATION_CONTRACT_FROM_FIRST_BUILD",
+      "noNewPipeline": true,
+      "qualityGateWeakening": false,
+      "exactF0BlockersRemainAuthoritative": true,
+      "affected": [
+        "tools/company-development-roblox-bootstrap.mjs",
+        "tools/company-development-roblox-headless-fast-mvp.mjs",
+        ".github/workflows/company-development-roblox-runtime.yml",
+        "qa/company-development-roblox-runtime.test.mjs",
+        "qa/company-development-roblox-headless-fast-mvp.test.mjs"
       ]
     }
   },
