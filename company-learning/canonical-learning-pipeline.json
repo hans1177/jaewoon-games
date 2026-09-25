@@ -424,11 +424,11 @@
       "versionNumber"
     ],
     "requiredCapabilities": [
-      "studioTestService",
-      "virtualInput"
+      "studioTestService"
     ],
     "requiredObservedBehavior": [
-      "AT_LEAST_ONE_DISPATCHED_INPUT",
+      "LOCAL_IMMUTABLE_ARTIFACT_SHA256_VERIFIED",
+      "AUTOMATED_USER_INPUT_FALSE",
       "AT_LEAST_ONE_REQUIRED_CHECKPOINT",
       "ALL_REQUIRED_CHECKPOINTS_PASS",
       "ZERO_RUNTIME_ERRORS"
@@ -444,6 +444,12 @@
     "separatePipelineForbidden": true,
     "separateTrainerForbidden": true,
     "onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate": true,
-    "studioEvidenceCannotPublishOrDiscoverPublicationTarget": true
+    "studioEvidenceCannotPublishOrDiscoverPublicationTarget": true,
+    "executionSurface": "LOCAL_IMMUTABLE_ARTIFACT",
+    "publishedCandidateObservedByStudio": false,
+    "publishedCandidateObservationAuthority": "OPEN_CLOUD_RUNTIME_QA_ONLY",
+    "automatedUserInputRequired": false,
+    "automatedUserInputForbidden": true,
+    "virtualInputRequired": false
   }
 }
