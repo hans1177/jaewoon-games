@@ -535,10 +535,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T14:10:29.790Z",
+      "updatedAt": "2026-09-25T14:20:14.250Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -801,9 +801,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
       "routingBlockers": [
-        "roblox-internal-vibe-play-pending"
+        "roblox-studio-mcp-infrastructure-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -847,6 +847,8 @@
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": true,
         "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "studioMcpServerEnablementRequired": true,
+        "operatorPrerequisite": "ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT",
         "localPlaceFile": true,
         "officialStudioMcp": true,
         "onlinePlaceDirectOpen": false,
@@ -857,9 +859,9 @@
         "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
         "artifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
         "artifactRunId": 36106173538,
-        "universeId": "10766974456",
-        "placeId": "112507741861842",
-        "versionNumber": 18,
+        "universeId": "10767445769",
+        "placeId": "126302702438348",
+        "versionNumber": 22,
         "historicalSharedTargetExactArtifact": true,
         "currentPublishedRuntimeClaim": false,
         "publishedCandidateCrossCheckPassed": true,
@@ -877,7 +879,7 @@
           {
             "type": "studio-mcp-infrastructure-or-runtime-error",
             "actionId": null,
-            "signature": "MCP process exited code=1 signal=null stderr='else'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ� ��ġ ������ �ƴմϴ�. '\"%B/..\\StudioMCP.exe\"'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ� ��ġ ������ �ƴմϴ�. '))'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ� ��ġ ������ �ƴմϴ�."
+            "signature": "ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios,get_studio_state,start_stop_play,get_console_output,screen_capture,user_keyboard_input:available=:protocol=2024-11-05:server=RobloxStudio"
           }
         ],
         "runtimeSummary": {
@@ -894,8 +896,8 @@
         "rawViewportIncluded": false,
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T13:45:42.504Z",
-        "workflowRunId": 36142793459,
+        "testedAt": "2026-09-25T14:20:14.250Z",
+        "workflowRunId": 36145688608,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -928,7 +930,7 @@
       "robloxInternalPlaytestPassed": false,
       "robloxInternalPlaytestPassedAt": null,
       "robloxStudioLocalPlayRepairRequired": false,
-      "robloxStudioLocalPlayInfrastructurePending": false,
+      "robloxStudioLocalPlayInfrastructurePending": true,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
         "source": "roblox-dedicated-targets.json",
@@ -6391,7 +6393,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T14:17:15.674Z",
+  "updatedAt": "2026-09-25T14:20:14.250Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
