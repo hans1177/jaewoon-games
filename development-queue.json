@@ -653,7 +653,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T20:46:23.713Z",
+      "updatedAt": "2026-09-25T20:47:47.630Z",
       "robloxSourceCommit": "51eadc7b331419af8319c664c539023aed1e7403",
       "robloxSourceBootstrapPassedAt": "2026-09-25T17:30:08.745Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1497,7 +1497,11 @@
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z",
+      "robloxF9FailureSignature": "ROBLOX_F9_OPEN_TESTER_FAILURE",
+      "robloxF9Blockers": [
+        "roblox-f9-open-tester-failure"
+      ]
     },
     {
       "gameId": "horror-escape-room",
@@ -7243,7 +7247,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-25T20:46:23.713Z",
+  "updatedAt": "2026-09-25T20:47:47.630Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
