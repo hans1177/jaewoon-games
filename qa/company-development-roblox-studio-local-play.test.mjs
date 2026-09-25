@@ -178,10 +178,9 @@ test('planner collapses repeated shared Studio MCP infrastructure failures to on
     return candidate;
   });
   const result=planLocalStudioCandidates({queue:{items:rows},roadmap:roadmap()});
-  assert.equal(result.sharedInfrastructureCanary,true);
+  assert.deepEqual(Object.keys(result),['include']);
   assert.equal(result.include.length,1);
   assert.equal(result.include[0].gameId,'g2');
-  assert.deepEqual(result.deferredInfrastructureGameIds,['g1','g3']);
 });
 
 test('explicit game request bypasses shared Studio MCP infrastructure canary collapsing',()=>{
@@ -207,10 +206,9 @@ test('explicit game request bypasses shared Studio MCP infrastructure canary col
     return candidate;
   });
   const result=planLocalStudioCandidates({queue:{items:rows},roadmap:roadmap(),requestedGameId:'g2'});
-  assert.equal(result.sharedInfrastructureCanary,false);
+  assert.deepEqual(Object.keys(result),['include']);
   assert.equal(result.include.length,1);
   assert.equal(result.include[0].gameId,'g2');
-  assert.deepEqual(result.deferredInfrastructureGameIds,[]);
 });
 
 test('verified official Studio MCP pass records actual play without claiming online runtime or public release',()=>{
