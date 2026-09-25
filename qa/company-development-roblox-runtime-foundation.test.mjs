@@ -317,6 +317,7 @@ test('runtime QA distinguishes exact engine version awaiting a real server boot 
  assert.match(workflow,/engineProbe\?\.engineExecuted===true/);
  assert.match(workflow,/engineProbe\?\.exactPlace===true/);
  assert.match(workflow,/engineProbe\?\.exactVersion===true/);
+ assert.match(workflow,/simulationRunning:engineProbe\?\.simulationRunning===true/);
  assert.match(workflow,/engineProbe\?\.serverBootObserved!==true/);
  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT/);
  assert.match(workflow,/roblox-runtime-foundation-awaiting-real-server-boot/);

@@ -454,6 +454,7 @@ jobs:
                 exactVersion:false,
                 exactEngineVersion:engineProbe?.exactVersion===true,
                 engineExecuted:engineProbe?.engineExecuted===true,
+                simulationRunning:engineProbe?.simulationRunning===true,
                 serverBootObserved:engineProbe?.serverBootObserved===true,
                 blockers:result.blockers,
                 observedAt:stamp,
