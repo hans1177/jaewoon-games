@@ -1,5 +1,5 @@
 {
-  "version": 363,
+  "version": 364,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -980,7 +980,11 @@
         "internalReleaseEnters": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
         "observedInternalPlaytestEvidenceRequiredBeforePublicReleaseReady": true,
         "internalPlaytestFailureRoutesToExistingCausalRepairLoop": true,
-        "internalBuildMayBeIteratedRepeatedlyUntilAcceptance": true
+        "internalBuildMayBeIteratedRepeatedlyUntilAcceptance": true,
+        "actualVibeInternalPlayRequiredForPublicReleaseReady": true,
+        "headlessEvidenceCannotSubstituteActualVibePlay": true,
+        "publicReleaseReadyCannotBeSetAtInternalRelease": true,
+        "perpetualBuildupContinuesAfterPublicRelease": true
       }
     }
   },
@@ -1409,7 +1413,17 @@
       "internalParallelCap": null,
       "sameGameNonOverlappingFocusPackagesParallel": true,
       "responsibilityConflictIsOnlyGameLocalSerialization": true,
-      "sourceRootOrGameWideFocusLockForbidden": true
+      "sourceRootOrGameWideFocusLockForbidden": true,
+      "perpetualInternalBuildupLoop": true,
+      "startsAtInternalPlatformRelease": true,
+      "continuesAfterPublicRelease": true,
+      "publicReleaseDoesNotTerminateFocus": true,
+      "actualVibeInternalPlayRequiredEachBuildupCycle": true,
+      "actualVibePlayEvidenceAuthority": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
+      "syntheticPlayEvidenceForbidden": true,
+      "fixedDurationOrElapsedTimeExitForbidden": true,
+      "limitedPublicTestRequirement": false,
+      "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate"
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -4236,7 +4250,7 @@
       "globalWindow": null
     },
     "internalPlatformReleaseAndPublicExposureGate": {
-      "version": 3,
+      "version": 4,
       "authority": "OWNER_DIRECTIVE_2026-09-21",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "objective": "ALLOW_FAST_NATIVE_INTERNAL_RELEASE_AND_REAL_PLATFORM_TESTING_BEFORE PUBLIC EXPOSURE; REQUIRE PLATFORM-SPECIFIC QA/REGRESSION AND ADAPTATION PASS BEFORE FULL PUBLIC RELEASE",
@@ -4360,7 +4374,10 @@
         "internalHomepageMayExposeAllDevelopmentEvidence": true,
         "marketingOrExternalListingBeforeSecondGateForbidden": true,
         "explicitExternalPublicationEvidenceRequiredAfterSecondGate": true,
-        "secondGatePassAloneDoesNotClaimPublication": true
+        "secondGatePassAloneDoesNotClaimPublication": true,
+        "externalHardGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
+        "publicReadyMayNotBeSetByInternalReleaseOrF9Alone": true,
+        "publicReadyRequiresHardGatePass": true
       },
       "implementation": {
         "controlTool": "tools/company-platform-exposure-control.mjs",
@@ -4408,6 +4425,147 @@
         "platformIndependent": true,
         "onePlatformDoesNotWaitForOther": true,
         "explicitExternalExposureEvidenceRequired": true
+      },
+      "internalBuildupLoop": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-25",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT_WITH_ACTUAL_VIBE_PLAY_EXECUTOR_REQUIRED",
+        "platform": "ROBLOX",
+        "startsAfter": "INTERNAL_PLATFORM_RELEASE",
+        "umbrellaState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+        "perpetual": true,
+        "neverCompletes": true,
+        "continuesAfterPublicRelease": true,
+        "publicReleaseDoesNotStopOrReplaceLoop": true,
+        "sequence": [
+          "VIBE_INTERNAL_PLAY",
+          "CAUSAL_REPAIR_AND_DEVELOPMENT",
+          "ROBLOX_PLATFORM_REBUILD",
+          "EXACT_CANDIDATE_REVALIDATION",
+          "LOOP_BACK_TO_VIBE_INTERNAL_PLAY"
+        ],
+        "stageMeaning": {
+          "VIBE_INTERNAL_PLAY": "ACTUAL_INTERNAL_ROBLOX_BUILD_PLAY_BY_VIBE_AGENT_WITH_ACTION_AND_STATE_EVIDENCE",
+          "CAUSAL_REPAIR_AND_DEVELOPMENT": "EXISTING_VIBE_DEVELOPMENT_QUEUE_REPAIRS_REPRODUCIBLE_BUGS_COMPLETENESS_UX_BALANCE_GRAPHICS_AUDIO_AND_PERFORMANCE_GAPS",
+          "ROBLOX_PLATFORM_REBUILD": "EXISTING_ROBLOX_SOURCE_IS_REBUILT_FOR_MOBILE_INPUT_UI_FAST_ENTRY_REPEATABLE_GOALS_SOCIAL_OR_MULTIPLAYER_SERVER_AUTHORITY_NATIVE_SERVICES_AND_LOW_END_DENSITY_WHEN_APPLICABLE",
+          "EXACT_CANDIDATE_REVALIDATION": "EXISTING_ROBLOX_RUNTIME_QA_REGRESSION_SECURITY_SAVE_MULTIPLAYER_AND_EXACT_ARTIFACT_EVIDENCE_REVALIDATES_CHANGED_AREAS"
+        },
+        "actualVibePlayEvidenceRequired": true,
+        "syntheticStaticOrDeclaredPlayPassForbidden": true,
+        "headlessRuntimeEvidenceCannotSubstituteActualVibePlay": true,
+        "sourceMarkersCannotSubstituteActualVibePlay": true,
+        "missingActualVibePlayExecutorAction": "KEEP_INTERNAL_BUILDUP_RUNNING_AND_BLOCK_PUBLIC_RELEASE_READY",
+        "failureAction": "ROUTE_CAUSALLY_TO_EXISTING_VIBE_REPAIR_QUEUE_THEN_REENTER_SAME_LOOP",
+        "noArtificialRetryCap": true,
+        "noDurationExit": true,
+        "noElapsedDayOrHourExit": true,
+        "noLimitedOrRestrictedPublicTestExit": true,
+        "externalPublicReleaseEvaluationRunsBesideLoop": true,
+        "rebuildAfterEveryAcceptedModificationRequired": true,
+        "modifiedSourceMayNotReusePriorBuildArtifact": true,
+        "modifiedSourceInvalidatesAffectedPlayAndValidationEvidence": true,
+        "rebuildMustProduceNewExactCandidateBeforeRevalidation": true,
+        "revalidationMustBindToRebuiltCandidate": true,
+        "loopBackRequiresRebuiltCandidatePass": true,
+        "rebuildSequence": [
+          "ACCEPTED_MODIFICATION_WRITTEN",
+          "PRIOR_AFFECTED_ARTIFACT_AND_PLAY_EVIDENCE_INVALIDATED",
+          "ROBLOX_PLATFORM_REBUILD",
+          "INTERNAL_REDEPLOY_EXACT_CANDIDATE",
+          "EXACT_CANDIDATE_REVALIDATION",
+          "VIBE_INTERNAL_PLAY"
+        ]
+      },
+      "externalPublicReleaseHardGate": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-25",
+        "status": "FAIL_CLOSED",
+        "platform": "ROBLOX",
+        "objective": "PUBLIC_EXPOSURE_ONLY_AFTER_GAME_COMPLETION_ACTUAL_VIBE_PLAY_ROBLOX_ADAPTATION_STABILITY_SECURITY_AND_EXACT_CANDIDATE_EVIDENCE_ALL_PASS",
+        "independentFromPerpetualBuildupLoop": true,
+        "buildupLoopContinuesWhetherGateFailsOrPasses": true,
+        "criteriaMode": "EVIDENCE_AND_COMPLETION_ONLY",
+        "fixedDurationRequired": false,
+        "elapsedDaysRequired": null,
+        "elapsedHoursRequired": null,
+        "limitedOrRestrictedPublicTestRequired": false,
+        "publicExposureBeforePassForbidden": true,
+        "fixedBuildupCycleCountRequired": false,
+        "allRequirementsRequired": true,
+        "exactCandidateBindingRequired": true,
+        "requirements": [
+          "GAME_COMPLETION_EVIDENCE_PASS",
+          "ACTUAL_VIBE_INTERNAL_PLAY_EVIDENCE_PASS",
+          "VIBE_PLAY_SCENARIO_COVERAGE_PASS",
+          "NO_OPEN_CRITICAL_OR_HIGH_REPRODUCIBLE_TESTER_BUG",
+          "NO_PROGRESS_BLOCKER",
+          "NO_SAVE_CORRUPTION_OR_BLOCKER",
+          "NO_CONFIRMED_SECURITY_RELEASE_BLOCKER",
+          "ROBLOX_PLATFORM_REBUILD_COMPLETED",
+          "ROBLOX_PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS",
+          "NATIVE_RUNTIME_PASS",
+          "REGRESSION_PASS",
+          "SAVE_REJOIN_PASS_WHEN_APPLICABLE",
+          "MULTIPLAYER_2PLUS_PASS_WHEN_REQUIRED",
+          "SERVER_CLIENT_AUTHORITY_AND_REMOTE_SECURITY_PASS",
+          "MOBILE_INPUT_UI_AND_LOW_END_PERFORMANCE_PASS",
+          "PRESENTATION_COMPLETION_EVIDENCE_PASS",
+          "STABILITY_EVIDENCE_ACROSS_DISTINCT_BUILDUP_CYCLES_PASS",
+          "EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS"
+        ],
+        "vibeInternalPlay": {
+          "mustBeActualPlay": true,
+          "exactCandidateRequired": true,
+          "requiredScenarioClasses": [
+            "NEW_GAME_START",
+            "ONBOARDING_OR_TUTORIAL_WHEN_PRESENT",
+            "CORE_GAMEPLAY_LOOP",
+            "PROGRESSION_AND_REWARD",
+            "MIDGAME_OR_EQUIVALENT_DEPTH",
+            "LATE_GAME_END_GOAL_OR_EQUIVALENT_WHEN_DESIGNED",
+            "DEATH_RESPAWN_WHEN_APPLICABLE",
+            "SAVE_AND_REJOIN_WHEN_APPLICABLE",
+            "ECONOMY_REWARD_INTEGRITY_WHEN_APPLICABLE",
+            "MULTIPLAYER_2PLUS_WHEN_REQUIRED",
+            "INVALID_OR_ABUSIVE_INPUT_WHEN_APPLICABLE"
+          ],
+          "sameScenarioRepeatedCannotSubstituteMissingCoverage": true,
+          "headlessQaCannotSubstitute": true,
+          "staticSourceInspectionCannotSubstitute": true
+        },
+        "gameCompletion": {
+          "prototypeOnlyForbidden": true,
+          "beginningMiddleAndLateProgressionOrGenreEquivalentRequired": true,
+          "coreSystemsImplementedRequired": true,
+          "noCoreContentDeadEndRequired": true,
+          "goalsRewardsProgressionConnectedRequired": true
+        },
+        "presentationCompletion": {
+          "coreCharacterEnemyEquipmentEnvironmentMaterialStyleUiMotionRequiredWhenApplicable": true,
+          "primaryGameplayPlaceholderDebtBlocksPublicRelease": true,
+          "runtimeVisualEvidenceRequired": true
+        },
+        "stability": {
+          "evidenceAcrossDistinctCompletedBuildupCyclesRequired": true,
+          "fixedCycleCount": null,
+          "releaseBlockingFailureResetsStabilityEvidence": true,
+          "sourceOrRelevantDependencyChangeInvalidatesAffectedEvidence": true
+        },
+        "exactCandidate": {
+          "sourceRevisionRequired": true,
+          "artifactIdentityRequired": true,
+          "universeIdRequired": true,
+          "placeIdRequired": true,
+          "versionNumberRequired": true,
+          "allEvidenceMustReferenceSameCandidate": true,
+          "changedRelevantSourceRequiresAffectedEvidenceRevalidation": true,
+          "changedRelevantSourceRequiresNewBuildBeforeAffectedEvidenceRevalidation": true,
+          "staleBuildEvidenceCannotSatisfyPublicGate": true
+        },
+        "passState": "PUBLIC_RELEASE_READY",
+        "publicationRequiresExplicitExternalPublicationEvidenceAfterPass": true,
+        "publicationSuccessState": "PUBLIC_RELEASE",
+        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP"
       }
     },
     "autonomousBottleneckRecovery": {

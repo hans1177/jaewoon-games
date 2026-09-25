@@ -122,14 +122,14 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 reuses one exact two-client sync proof for internal and public readiness without republishing',()=>{
+test('F9 reuses exact two-client sync proof for internal release but external public readiness stays hard-gated',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
   assert.match(finalReview,/item\.robloxRuntimeFoundationPassed===true/);
   assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
   assert.match(finalReview,/runtime\.f7MultiplayerFoundationPassed===true/);
   assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
-  assert.match(finalReview,/const publicRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
+  assert.match(finalReview,/const publicRuntimeAcceptance=false;/);
   assert.doesNotMatch(finalReview,/const simplifiedInternalMultiplayer=/);
   assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
   assert.match(finalReview,/item\.robloxRegressionPassed===true/);
@@ -142,12 +142,13 @@ test('F9 reuses one exact two-client sync proof for internal and public readines
   assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
   assert.match(finalReview,/multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC'/);
   assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:false/);
-  assert.match(finalReview,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
-  assert.match(finalReview,/item\.robloxPublicReleaseVersionNumber=Number\(candidate\.versionNumber\)/);
-  assert.match(finalReview,/sameAsInternalVersion:true/);
-  assert.match(finalReview,/roblox-public-exposure-pending/);
+  assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
+  assert.match(finalReview,/INTERNAL_BUILDUP_PENDING_EXTERNAL_PUBLIC_HARD_GATE/);
+  assert.match(finalReview,/externalPublicHardGatePending:true/);
+  assert.match(finalReview,/roblox-perpetual-buildup-public-hard-gate-pending/);
   assert.match(finalReview,/promotedWithoutRepublish:true/);
   assert.match(finalReview,/publicRelease:false/);
+  assert.doesNotMatch(finalReview,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
   assert.doesNotMatch(finalReview,/publishRobloxPlace/);
   assert.doesNotMatch(finalReview,/versions\?versionType=Published/);
 });
@@ -173,6 +174,13 @@ test('new Roblox runtime candidate atomically invalidates stale release and QA p
     /item\.robloxReleaseEvidence=null/,
     /item\.robloxFinalReviewPassed=false/,
     /item\.robloxF9ReleaseRegressionPassed=false/,
+    /item\.robloxInternalVibePlayEvidence=null/,
+    /item\.robloxGameCompletionEvidence=null/,
+    /item\.robloxPlatformAdaptationEvidence=null/,
+    /item\.robloxSecurityReleaseEvidence=null/,
+    /item\.robloxPresentationCompletionEvidence=null/,
+    /item\.robloxReleaseStabilityEvidence=null/,
+    /item\.robloxPublicReleaseFinalEvidence=null/,
     /item\.robloxPostRuntimeQaEvidence=null/,
     /item\.robloxRuntimeEvidence=null/,
     /item\.robloxRuntimeFoundationEvidence=null/,
@@ -298,4 +306,18 @@ test('private runtime candidate mode comes from central policy plus exact F0 evi
   assert.doesNotMatch(candidate,/const headlessMode=item\.robloxValidationMode==='HEADLESS_FAST_MVP'/);
   assert.match(candidate,/ROBLOX_RELEASE_CANONICAL_VALIDATION_MODE=/);
   assert.match(candidate,/ROBLOX_RELEASE_F0_EVIDENCE_MODE=/);
+});
+
+test('every rebuilt Roblox candidate invalidates prior Vibe play and external-public evidence before revalidation',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  for(const pattern of [
+    /item\.robloxInternalVibePlayEvidence=null/,
+    /item\.robloxGameCompletionEvidence=null/,
+    /item\.robloxPlatformAdaptationEvidence=null/,
+    /item\.robloxSecurityReleaseEvidence=null/,
+    /item\.robloxPresentationCompletionEvidence=null/,
+    /item\.robloxReleaseStabilityEvidence=null/,
+    /item\.robloxPublicReleaseFinalEvidence=null/,
+    /item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/
+  ]) assert.match(candidate,pattern);
 });
