@@ -547,7 +547,7 @@ jobs:
               commit_message='vibe2: ingest authorized Block Blast learning memory [skip ci]'
             elif test -f /tmp/vibe2-external-ai-distillation.log && grep -Eq '^VIBE2_EXTERNAL_AI_ACCEPTED=[1-9][0-9]*$' /tmp/vibe2-external-ai-distillation.log; then
               commit_message='vibe2: persist distilled external ai knowledge [skip ci]'
-            elif grep -Eq '^VIBE2_MASTERY_NEW_(EXPERIENCE|CODE_PATTERNS)=[1-9][0-9]*$|^VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED=[1-9][0-9]*$' /tmp/vibe2-learning-motor.log; then
+            elif grep -Eq '^VIBE2_MASTERY_NEW_(EXPERIENCE|CODE_PATTERNS)=[1-9][0-9]*$|^VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED=[1-9][0-9]*$|^VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=[1-9][0-9]*$' /tmp/vibe2-learning-motor.log; then
               commit_message='vibe2: absorb verified development mastery and experience [skip ci]'
             elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
               commit_message='vibe2: queue release baseline implementation gap [skip ci]'
