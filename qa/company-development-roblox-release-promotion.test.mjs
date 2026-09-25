@@ -340,3 +340,17 @@ test('shared FAST_MVP target selects the newest current runtime candidate and pr
   assert.doesNotMatch(rotation,/other\.robloxRuntimeFoundationEvidence=null/);
   assert.doesNotMatch(rotation,/other\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
 });
+
+
+test('shared runtime target rotation waits for exact Vibe play on the occupied candidate',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/const occupiedPlay=occupied\?\.robloxInternalVibePlayEvidence\|\|\{\}/);
+  assert.match(candidate,/occupiedPlay\.pass===true/);
+  assert.match(candidate,/occupiedPlay\.actualPlay===true/);
+  assert.match(candidate,/occupiedPlay\.sourceRevision/);
+  assert.match(candidate,/occupiedPlay\.artifactIdentity/);
+  assert.match(candidate,/occupiedPlay\.universeId/);
+  assert.match(candidate,/occupiedPlay\.placeId/);
+  assert.match(candidate,/occupiedPlay\.versionNumber/);
+  assert.match(candidate,/if\(occupied&&!occupiedVibePlayComplete\)/);
+});
