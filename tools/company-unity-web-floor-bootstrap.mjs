@@ -289,12 +289,23 @@ public static class UnityWebFloorBuild
 
 fs.writeFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/UnityWebFloorBuild.cs'),build);
+const bootstrapRuntimeSha256=createHash('sha256').update(runtime).digest('hex');
+const bootstrapBuildSha256=createHash('sha256').update(build).digest('hex');
 fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify({
   version:1,gameId,gameName,identity,coreLoop,category,multiplayerMode,
   canonicalSourceRoot:`unity-games/${gameId}`,
   buildMethod:'UnityWebFloorBuild.BuildWeb',
   futureNativeBuildMethod:'UnityWebFloorBuild.Build',
   generatorFingerprint:fingerprint,
+  bootstrapRuntimeSha256,
+  bootstrapBuildSha256,
+  presentationDevelopmentContract:{
+    requiredState:'DEVELOPED_GAME_SPECIFIC_PRESENTATION',
+    placeholderDominatedPresentationForbidden:true,
+    sourceDeltaFromBootstrapRequired:true,
+    actualAssetDomainsOrProceduralVisualImplementationRequired:true,
+    flagOnlyPromotionForbidden:true
+  },
   designBaseline:baselinePath,
   unityPlatformProfile:profile,
   purpose:'UNITY_WEB_DEVELOPMENT_FLOOR',
