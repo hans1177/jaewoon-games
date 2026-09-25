@@ -2857,7 +2857,7 @@
       ],
       "runtimeRequirements": [
         "StudioTestService",
-        "VirtualInput",
+        "automated-user-input-false",
         "required-checkpoint-pass",
         "zero-runtime-errors"
       ],
@@ -2869,7 +2869,12 @@
       "rawGameplayValuesDirectTraining": false,
       "separateTrainer": false,
       "separatePipeline": false,
-      "authorityExpansion": false
+      "authorityExpansion": false,
+      "executionSurface": "LOCAL_IMMUTABLE_ARTIFACT",
+      "immutableArtifactSha256Required": true,
+      "publishedCandidateObservedByStudio": false,
+      "publishedCandidateObservationAuthority": "OPEN_CLOUD_RUNTIME_QA_ONLY",
+      "automatedUserInputForbidden": true
     }
   },
   "ownerRule2Topology": {
@@ -3180,9 +3185,11 @@
       "staleArtifactReuseAfterSourceModification": false,
       "revalidationInput": "NEWLY_REBUILT_EXACT_CANDIDATE_ONLY",
       "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY",
-      "actualPlayExecution": "SELF_HOSTED_WINDOWS_STUDIO_TEST_SERVICE_PLUS_VIRTUAL_INPUT",
-      "learningReuse": "EXACT_CANDIDATE_VERIFIED_STUDIO_EVIDENCE_TO_EXISTING_LEARNING_MOTOR",
-      "headlessF0RemainsIndependent": true
+      "actualPlayExecution": "SELF_HOSTED_WINDOWS_STUDIO_TEST_SERVICE_LOCAL_IMMUTABLE_ARTIFACT_ASSERTION_ONLY",
+      "learningReuse": "CURRENT_CANDIDATE_METADATA_PLUS_EXACT_ARTIFACT_HASH_TO_EXISTING_LEARNING_MOTOR",
+      "headlessF0RemainsIndependent": true,
+      "automatedUserInputForbidden": true,
+      "publishedPlaceAutoJoinForbidden": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
