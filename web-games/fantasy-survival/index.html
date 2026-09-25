@@ -35,7 +35,7 @@ const multiplayer={client:null,channel:null,room:'',connected:false,playerId:ses
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=46,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=47,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -288,7 +288,7 @@ ironibex:{id:'ironibex',name:'철갑 산양',mood:'neutral',hp:180,dmg:18,speed:
 sapdeer:{id:'sapdeer',name:'수액사슴',mood:'harmless',hp:120,dmg:0,speed:72,r:22,color:'#8bb476',detect:0,worldtree:true,huntable:true},
 crystalboar:{id:'crystalboar',name:'수정 멧돼지',mood:'aggressive',hp:350,dmg:40,speed:82,r:25,color:'#7d65c9',detect:560,attackCooldown:1100,crystalZone:true,crystalSpecial:true},
 crystalboarjunior:{id:'crystalboarjunior',name:'수정 멧돼지 주니어',mood:'aggressive',hp:140,dmg:16,speed:82,r:17,color:'#a391e2',detect:500,attackCooldown:1000,crystalZone:true,summoned:true},
-crystalguardian:{id:'crystalguardian',name:'수정 수호자',mood:'aggressive',hp:1111,dmg:45,speed:76,r:31,color:'#5f49a8',detect:1050,attackCooldown:1050,crystalZone:true,guardian:true},
+crystalguardian:{id:'crystalguardian',name:'수정 수호자',mood:'aggressive',hp:700,dmg:50,speed:76,r:31,color:'#5f49a8',detect:1050,attackCooldown:1050,crystalZone:true,guardian:true},
 crystalgoblin:{id:'crystalgoblin',name:'수정 고블린',mood:'aggressive',hp:120,dmg:22,speed:82,r:19,color:'#8871cf',detect:470,attackCooldown:850,crystalVariant:true,sealSpawn:true},
 crystalironspirit:{id:'crystalironspirit',name:'수정 철 정령',mood:'aggressive',hp:210,dmg:31,speed:138,r:20,color:'#8e80d8',detect:620,attackCooldown:900,crystalVariant:true,sealSpawn:true},
 crystalbear:{id:'crystalbear',name:'수정 곰',mood:'aggressive',hp:650,dmg:46,speed:76,r:32,color:'#7560b8',detect:560,attackCooldown:1050,crystalVariant:true,sealSpawn:true},
@@ -2920,7 +2920,7 @@ function guardianRageState(e,p,now){
 }
 function throwGuardianCrystal(e,p,now){
  const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1,speed=82*2.5*1.5;
- state.projectiles.push({x:e.x,y:e.y,vx:dx/d*speed,vy:dy/d*speed,damage:78,createdAt:now,life:5500,area:e.area,sourceId:e.netId});
+ state.projectiles.push({x:e.x,y:e.y,vx:dx/d*speed,vy:dy/d*speed,damage:e.type.dmg,createdAt:now,life:5500,area:e.area,sourceId:e.netId});
  e.nextThrowAt=now+4000
 }
 function updateProjectiles(dt,now){
@@ -3988,7 +3988,7 @@ function loadGame(){
   if(s.explored&&typeof s.explored==='object'){
    state.explored={};
    for(const key of Object.keys(s.explored)){
-  for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
+     const [gx,gy]=key.split(',').map(Number);if(!Number.isFinite(gx)||!Number.isFinite(gy))continue;
      let wx,wy;
      if(version<8){wx=(gx*300+150)*2;wy=(gy*300+150)*2}else{wx=gx*MAP_CELL+MAP_CELL/2;wy=gy*MAP_CELL+MAP_CELL/2}
   if(version<13){wx+=3000;wy+=2000}
