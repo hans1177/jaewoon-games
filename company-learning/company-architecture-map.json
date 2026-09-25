@@ -1,5 +1,5 @@
 {
-  "version": 178,
+  "version": 179,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3036,7 +3036,7 @@
     "onePlatformMayReleaseWithoutWaitingForOther": true,
     "globalGameCountCap": null,
     "uefn": "OWNER_HOLD",
-    "unityWeb": "VALIDATION_SURFACE_ONLY",
+    "unityWeb": "VALIDATION_SURFACE_PLUS_NATIVE_FANOUT_TRIGGER",
     "unityWebValidationSurface": {
       "enabled": true,
       "releasePlatform": false,
@@ -3055,7 +3055,18 @@
       ],
       "indexOnlyPublicationForbidden": true,
       "nestedBuildDirectoryMustBeTracked": true,
-      "cloudflareSingleAssetMaxBytes": 26214400
+      "cloudflareSingleAssetMaxBytes": 26214400,
+      "nativeFanOutPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebNativeFanOut",
+      "nativeFanOutTrigger": "VERIFIED_UNITY_WEB_VALIDATION",
+      "nativeFanOutTargets": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "nativeFanOutWorkflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "nativeFanOutExactGameOnly": true,
+      "nativeFanOutLoopGuardInput": "trigger_source=UNITY_WEB_VERIFIED",
+      "nativeFanOutDoesNotCreateAdmissionAuthority": true,
+      "nativeFanOutDoesNotReplaceNativeEvidence": true
     },
     "admissionAuthority": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
     "strictDesignScoreAdmissionAuthority": false,
