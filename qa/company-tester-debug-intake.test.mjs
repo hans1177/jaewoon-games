@@ -103,6 +103,32 @@ test('tester debug recovery binds by game id and enters ROOT_CAUSE_MODE on third
 });
 
 
+test('exact Roblox runtime failure keeps repair active but does not block internal flow',()=>{
+ const dev={items:[{
+  gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',
+  robloxSourceCommit:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  robloxFoundationF0Passed:true,robloxRuntimeFoundationPassed:false,robloxRuntimePassed:false,
+  robloxRuntimeFailureExternalReleaseOnly:true,
+  robloxPublicReleaseFailureSignature:'GROUND_CONTACT_FAILURE',
+  robloxPublicReleaseBlockers:['roblox-public-release-runtime-finding:ground_contact_failure'],
+  robloxFailureStage:'ROBLOX_FINAL_REVIEW_REVALIDATION',robloxFailureSignature:'ROBLOX_FINAL_REVIEW_PENDING',
+  robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'1',placeId:'2',versionNumber:23},
+  robloxRuntimeFoundationEvidence:{state:'BLOCKED',exactGame:true,exactPlace:true,exactVersion:true,actualRuntimeEvidence:true,failureSignature:'GROUND_CONTACT_FAILURE'},
+  executionEvidence:{failureStage:'PUBLIC_RELEASE_RUNTIME_FINDING',failureSignature:'GROUND_CONTACT_FAILURE'}
+ }]};
+ const result=ingestTesterDebug({developmentQueue:dev,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
+ const ticket=result.tickets.tickets.find(x=>x.gameId==='daechung-rpg'&&x.signature==='GROUND_CONTACT_FAILURE'&&x.externalReleaseBlockingOnly===true);
+ assert.ok(ticket);
+ assert.equal(ticket.severity,'CRITICAL');
+ assert.equal(ticket.repairEligible,true);
+ assert.equal(ticket.internalFlowBlocking,false);
+ assert.equal(ticket.externalReleaseBlockingOnly,true);
+ assert.equal(ticket.route,'FOCUSED_REPAIR_AND_RECOVERY');
+ assert.match(ticket.reproduction,/WITHOUT_PAUSING_INTERNAL_DEVELOPMENT/);
+ const recovery=result.recovery.tasks.find(x=>x.sourceTaskId===ticket.id);
+ assert.ok(recovery);
+});
+
 test('exact Roblox engine version awaiting real server boot stays observation-only without code repair',()=>{
  const dev={items:[{
   gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',
