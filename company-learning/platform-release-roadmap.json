@@ -1,8 +1,8 @@
 {
-  "version": 383,
+  "version": 384,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-25",
+  "recordedAt": "2026-09-26",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -22346,7 +22346,7 @@
       "directiveRoot": ".vibe2/build-up-directives/<gameId>/current.json"
     },
     "gameSpecificBuildUpDirective": {
-      "version": 1,
+      "version": 2,
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "authority": "OWNER_DIRECTIVE_2026-09-26",
       "objective": "AUTONOMOUSLY_GENERATE_A_GAME_SPECIFIC_LOOP_SPECIFIC_DETAILED_BUILD_UP_DIRECTIVE_FROM_VERIFIED_DESIGN_CURRENT_SOURCE_PREVIOUS_VERSION_AND_PLAY_RUNTIME_EVIDENCE_THEN_FEED_THE_SAME_COMMON_GOAL_TO_UNITY_WEB_ROBLOX_AND_UNITY_APP_WITH_PLATFORM_NATIVE_IMPLEMENTATION",
@@ -22452,6 +22452,39 @@
         "mustReferenceAtLeastOneGameSpecificDesignElement": true,
         "mustReferenceAtLeastOneCurrentSourceObservation": true,
         "mustExplainWhySelectedGoalHasHigherPlayerValueThanDeferredGaps": true
+      },
+      "sourceSpecificity": {
+        "exactSourceAnchorsRequired": true,
+        "primaryGoalMustBindToCurrentSourceResponsibilities": true,
+        "symbolKinds": [
+          "FUNCTION",
+          "CLASS",
+          "STATE_MACHINE",
+          "EVENT_HANDLER",
+          "COMPONENT_OR_SCRIPT",
+          "SCENE_OR_PREFAB_WHEN_APPLICABLE"
+        ],
+        "minimumPrimaryGoalAnchors": 1,
+        "fileAndSymbolRequiredWhenDiscoverable": true,
+        "symbolUnavailableFallback": "EXACT_FILE_AND_STATE_OR_RUNTIME_BEHAVIOR_ANCHOR_REQUIRED",
+        "genericTopFileListAloneInsufficient": true,
+        "directiveMustExplainCurrentBehaviorAndIntendedBehaviorAtEachPrimaryAnchor": true,
+        "responsibleFilesMustComeFromObservedCurrentSourceOrVerifiedDesignBinding": true,
+        "sourceObservationMustBeRegeneratedWhenSourceFingerprintChanges": true
+      },
+      "executionTimeBinding": {
+        "required": true,
+        "appliesToExistingQueuedAndResumedTasks": true,
+        "preReserveReconciliationRequired": true,
+        "taskWithoutDirectiveAction": "ATTACH_CURRENT_COMPATIBLE_GAME_DIRECTIVE_BEFORE_EXECUTION",
+        "staleDirectiveAction": "RECONCILE_TO_CURRENT_CANONICAL_DIRECTIVE_WHEN_NO_ACTIVE_GENERATION_BINDING_MUST_BE_PRESERVED",
+        "activeGenerationBindingImmutableDuringReservation": true,
+        "inFlightRunningTaskMayNotBeSilentlyRewritten": true,
+        "requeueOrResumeMustRecheckDirectiveFreshness": true,
+        "sameGenerationSiblingExactDirectiveRequired": true,
+        "historicalTaskGoalPreservedAsAuditContext": true,
+        "currentDirectiveControlsImplementationIntent": true,
+        "newShadowQueueOrSchedulerForbidden": true
       },
       "directiveDetail": {
         "requiredSections": [
@@ -22605,6 +22638,60 @@
         "verifiedStatusWithoutSourceTreeDeltaAction": "KEEP_DEPTH_AND_REGENERATE_REAL_IMPLEMENTATION_DIRECTIVE",
         "sourceTreeFingerprintIncludesRealGameCodeScenesPrefabsMaterialsAnimationImagesAudio": true,
         "generatedWorkflowQaBootstrapEvidenceMetadataExcludedFromEvolutionFingerprint": true
+      },
+      "effectivenessMeasurement": {
+        "required": true,
+        "expectedPlayerEffectRequiredBeforeImplementation": true,
+        "baselineSourceAndRelevantRuntimeStateRequired": true,
+        "postChangeSourceAndRelevantRuntimeStateRequired": true,
+        "classifications": [
+          "EFFECT_CONFIRMED",
+          "PARTIAL_EFFECT",
+          "NO_MEANINGFUL_EFFECT",
+          "REGRESSION",
+          "UNKNOWN_RUNTIME_EFFECT"
+        ],
+        "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true,
+        "behaviorClaimRequiresDeterministicGameplayOrRuntimeEvidenceWhenExecutable": true,
+        "visualClaimRequiresVisibleRuntimeEvidenceWhenExecutable": true,
+        "noMeaningfulEffectCannotAdvanceDevelopmentDepth": true,
+        "partialEffectKeepsDepthUnlessRequiredGenerationAcceptanceIsFullyVerified": true,
+        "regressionRoutesToCausalRepair": true,
+        "unknownRuntimeEffectMayNotBePromotedToConfirmedEffect": true,
+        "effectComparisonMustReferenceSameDirectiveGoalAndResponsibleScope": true
+      },
+      "nextActionDecision": {
+        "requiredAfterGenerationFanIn": true,
+        "authority": "VIBE_DIRECTOR_ONLY",
+        "inputs": [
+          "DIRECTIVE_EFFECTIVENESS_CLASSIFICATION",
+          "QA_AND_RUNTIME_RESULT",
+          "CURRENT_SOURCE_STATE",
+          "DEFERRED_GAPS",
+          "FAILURE_SIGNATURE_WHEN_PRESENT",
+          "VERIFIED_BOTTLENECK_WHEN_PRESENT"
+        ],
+        "allowedActions": [
+          "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+          "MOVE_TO_NEXT_HIGHER_VALUE_GAP",
+          "CAUSAL_REPAIR",
+          "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+          "OPTIMIZE_VERIFIED_BOTTLENECK",
+          "MAINTAIN_VERIFIED_BASELINE_WHILE_WAITING_FOR_REQUIRED_EXTERNAL_EVIDENCE"
+        ],
+        "primaryGoalPriority": [
+          "PROGRESS_BLOCKER_OR_BROKEN_CONTROL",
+          "CORE_FUN_AND_PRIMARY_INTERACTION",
+          "PROGRESSION_AND_MEANINGFUL_CONTENT",
+          "USABILITY_AND_GAME_FEEL",
+          "PRESENTATION_AND_IDENTITY",
+          "MINOR_NONBLOCKING_QUALITY_DEBT"
+        ],
+        "priorityDoesNotDisableParallelSafeLanes": true,
+        "nextActionMustExplainWhyItHasHigherPlayerValueThanDeferredAlternatives": true,
+        "sameFailedStrategyMayNotBeSelectedWithoutNewCausalEvidence": true,
+        "protectedGameMeaningMayNotChangeWithoutExistingAuthority": true,
+        "qaSecurityReleaseAuthoritiesUnchanged": true
       },
       "runtimeStateProjection": {
         "queueStoresSummaryOnly": true,

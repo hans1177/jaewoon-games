@@ -1,5 +1,5 @@
 {
-  "version": 47,
+  "version": 48,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -712,7 +712,7 @@
     "failureAction": "KEEP_VIBE_TASK_RUNTIME_QA_PENDING_OR_ASSET_REPAIR_REQUIRED"
   },
   "gameSpecificBuildUpDirectiveSecurity": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
     "protections": {
       "directiveGeneratorCannotExpandPolicyAuthority": true,
@@ -726,7 +726,13 @@
       "directMainGameSourceWriteAuthorityUnchanged": true,
       "vibeDirectorIsOnlyDirectiveCreationAuthority": true,
       "platformBootstrapLocalDirectiveGenerationForbidden": true,
-      "missingDirectiveCannotBecomeBuildUpPass": true
+      "missingDirectiveCannotBecomeBuildUpPass": true,
+      "sourceSymbolInspectionIsReadOnlyAndCannotExpandWritableScope": true,
+      "executionTimeDirectiveBindingCannotChangeProtectedGameMeaning": true,
+      "activeReservationDirectiveCannotBeSilentlyRewritten": true,
+      "effectivenessClassifierCannotSelfApproveQaRuntimeReleaseOrPromotion": true,
+      "nextActionDecisionCannotBypassSecurityQaRuntimeOrReleaseAuthority": true,
+      "sameFailedStrategyRequiresNewVerifiedCausalEvidenceBeforeReuse": true
     },
     "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT"
   },
