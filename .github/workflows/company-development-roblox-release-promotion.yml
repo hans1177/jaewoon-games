@@ -643,7 +643,8 @@ jobs:
           import fs from 'node:fs';
           import {resolveRobloxBilingualTitle} from './tools/company-roblox-store-presentation.mjs';
 
-          const launch=JSON.parse(fs.readFileSync(`${process.env.SOURCE_ROOT}/launch-mvp.json`,'utf8'));
+          const launchPath=`${process.env.SOURCE_ROOT}/launch-mvp.json`;
+          const launch=fs.existsSync(launchPath)?JSON.parse(fs.readFileSync(launchPath,'utf8')):{gameId:process.env.GAME_ID};
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
           const runtime=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const gameId=String(process.env.GAME_ID||launch.gameId||'').trim();
