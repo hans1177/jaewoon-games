@@ -112,6 +112,13 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(architectureIngress?.postNativeFinalReviewImplementation,'tools/vibe2-fan-in-review.mjs');
   assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.nativeTwoStageReviewRequired,true);
   assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.candidateResultWorkflowCannotMintFinalMarker,true);
+  assert.equal(roadmap.roblox?.studioExecution?.enabled,true);
+  assert.equal(roadmap.roblox?.studioExecution?.verifiedSemanticLearningReuseAllowed,true);
+  assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.learningProviderIsolation?.robloxStudioAllowedFor24hLearning,true);
+  assert.equal(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.learningUseForbidden,false);
+  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.exactCandidateRequired,true);
+  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.separateTrainer,false);
+  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-auto-play');
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
