@@ -1,5 +1,5 @@
 {
-  "version": 368,
+  "version": 369,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1000,7 +1000,14 @@
       "rawViewportTrainingForbidden": true,
       "verifiedSemanticLearningScope": "STRUCTURED_QA_FACTS_ONLY_NO_RAW_GAMEPLAY_TRAINING",
       "historicalExactPublishedArtifactAllowedForLocalActualPlay": true,
-      "historicalExactPublishedArtifactMayClaimCurrentOnlineRuntime": false
+      "historicalExactPublishedArtifactMayClaimCurrentOnlineRuntime": false,
+      "studioMcpWindowsPrimaryLauncher": "%LOCALAPPDATA%\\Roblox\\mcp.bat",
+      "studioMcpWindowsOfficialBinaryFallback": "%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe",
+      "generatedBatchBrokenOrStaleFallbackAllowed": true,
+      "generatedBatchFallbackAction": "USE_INSTALLED_OFFICIAL_STUDIOMCP_EXE_DIRECTLY",
+      "generatedBatchRewriteForbidden": true,
+      "thirdPartyMcpBridgeForbidden": true,
+      "fallbackMustRemainInsideRobloxInstalledVersions": true
     },
     "headlessValidation": {
       "version": 2,
@@ -4600,7 +4607,10 @@
         ],
         "historicalSharedTargetExactArtifactLocalPlayAllowed": true,
         "historicalSharedTargetLocalPlayDoesNotClaimCurrentPublishedRuntime": true,
-        "rawViewportDirectLearningForbidden": true
+        "rawViewportDirectLearningForbidden": true,
+        "actualVibePlayTransport": "OFFICIAL_STUDIO_MCP_STDIO_ROBLOX_BATCH_WITH_INSTALLED_STUDIOMCP_EXE_FALLBACK",
+        "generatedBatchRepairPolicy": "DO_NOT_REWRITE_USE_OFFICIAL_INSTALLED_STUDIOMCP_EXE_FALLBACK",
+        "thirdPartyMcpBridgeForbidden": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
