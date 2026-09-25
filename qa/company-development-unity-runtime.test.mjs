@@ -8,6 +8,7 @@ import {spawnSync} from 'node:child_process';
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
 const routerSource=fs.readFileSync(path.resolve('tools/company-selected-platform-router.mjs'),'utf8');
+const admissionSource=fs.readFileSync(path.resolve('tools/company-upper-platform-admission.mjs'),'utf8');
 const cloudBuildSource=fs.readFileSync(path.resolve('.github/workflows/unity-cloud-android-test.yml'),'utf8');
 const hybridWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unity-hybrid-android-build.yml'),'utf8');
 const runtimeWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-runtime-smoke.yml'),'utf8');
@@ -106,6 +107,16 @@ test('Unity native generator ignores legacy Web evidence and emits no WebGL path
   assert.doesNotMatch(build,/BuildWeb|BuildTarget\.WebGL|WebGL/);
   assert.equal(meta.nativeAppOnly,true);
   assert.equal(meta.unityWebEnabled,false);
+});
+
+test('Unity native executor independently enforces Unity Web upper-platform admission',()=>{
+  assert.match(workflowSource,/company-upper-platform-admission\.mjs/);
+  assert.match(workflowSource,/classifyUpperPlatformAdmission/);
+  assert.match(workflowSource,/grandfatherGameIds/);
+  assert.match(workflowSource,/admission\.state!=='UPPER_PLATFORM'/);
+  assert.match(workflowSource,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
+  assert.match(admissionSource,/UPPER_PLATFORM_DEVELOPMENT_READY/);
+  assert.match(admissionSource,/READINESS_SOURCE_STALE/);
 });
 
 test('Unity executor uses unbounded eligibility with capacity batching, canary and exact-stage resume sequence',()=>{
