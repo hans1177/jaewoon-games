@@ -300,7 +300,7 @@
       "CROSS_PLATFORM_EXPANSION_VALUE"
     ],
     "derivedProductionRequirements": [
-      "UNITY_WEB_VALIDATION_SURFACE_WHEN_BUILDABLE",
+      "UNITY_WEB_UPPER_PLATFORM_PREDEVELOPMENT_FLOOR",
       "FULL_APPROVED_SCOPE_IMPLEMENTATION"
     ],
     "seedMaterialPoolTarget": 100,
@@ -542,7 +542,7 @@
         "ROBLOX"
       ],
       "directGameplayBalanceMutationForbidden": true,
-      "unityWebRole": "VALIDATION_SURFACE_ONLY"
+      "unityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR"
     },
     "leadDistinctnessPolicy": "NOT_REQUIRED_FOR_EXECUTION",
     "leadSelectionObjective": "VIBE_PLUS_ONE_AVAILABLE_SHARED_MODEL",
@@ -910,9 +910,9 @@
     "minimum-dual-platform-design-ready-is-the-only-native-development-admission-design-gate",
     "strict-design-review-runs-in-parallel-and-does-not-block-native-admission",
     "design-only-is-transient-until-minimum-common-core-and-distinct-roblox-unity-profiles-are-ready",
-    "request-either-roblox-or-unity-starts-both-native-lanes-for-the-same-game",
-    "unity-web-is-optional-validation-surface-from-the-same-canonical-unity-project",
-    "unity-web-pass-or-failure-never-substitutes-or-blocks-native-runtime-qa-release-evidence",
+    "request-either-roblox-or-unity-starts-the-unity-web-development-floor-and-after-readiness-both-native-lanes-for-the-same-game",
+    "unity-web-is-required-predevelopment-floor-for-new-roblox-unity-upper-platform-entry-from-the-same-canonical-unity-project",
+    "unity-web-readiness-blocks-new-upper-platform-entry-but-never-substitutes-native-runtime-qa-or-release-evidence",
     "existing-web-archives-remain-readable-but-create-no-development-authority",
     "vibe2-vibe3-own-native-game-source-implementation-and-post-release-development",
     "final-presentation-rejects-placeholder-monsters-context-mismatch-backgrounds-and-color-only-enemy-variants",
@@ -929,7 +929,7 @@
     "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
     "artbookRequiredForHomepageRegistration": true,
     "officialCardRequiresPromotion": true,
-    "surface": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
+    "surface": "UNITY_WEB_DEVELOPMENT_TEST_SURFACE_NO_RELEASE_AUTHORITY",
     "developmentAdmissionAuthority": false,
     "nativeReleaseAuthority": false
   },
