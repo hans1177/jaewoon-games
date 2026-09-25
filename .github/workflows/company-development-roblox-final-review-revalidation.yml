@@ -132,7 +132,7 @@ jobs:
               &&post.studioAssetRuntimeBindingEvidence?.sourceRevision===sourceRevision
               &&post.studioAssetRuntimeBindingEvidence?.artifactIdentity===artifactIdentity
               &&Number(post.studioAssetRuntimeBindingEvidence?.candidateVersionNumber)===Number(candidate.versionNumber)
-            )||(internalRuntimeObservationDeferred&&post.studioAssetEngineBindingMatched!==false);
+            )||(internalRuntimeObservationDeferred&&post.studioAssetEngineBindingMatched===true);
             const exact=
               item.robloxFoundationF0Passed===true
               &&(item.robloxRuntimeFoundationPassed===true||internalRuntimeObservationDeferred)
