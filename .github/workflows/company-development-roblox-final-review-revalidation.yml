@@ -273,6 +273,42 @@ jobs:
           test "$pushed" = '1'
           echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=YES'
 
+      - name: Dispatch actual Roblox internal Vibe play
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module - "runtime/development-queue.json" "$REQUESTED_GAME_ID" > /tmp/roblox-vibe-play-targets.txt <<'NODE'
+          import fs from 'node:fs';
+          const [file,requested='']=process.argv.slice(2);
+          const q=JSON.parse(fs.readFileSync(file,'utf8'));
+          for(const item of q.items||[]){
+            if(requested&&item.gameId!==requested)continue;
+            const e=item.robloxInternalReleaseEvidence||{};
+            if(item.robloxInternalReleaseReady!==true||e.published!==true)continue;
+            if(item.currentStep!=='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG')continue;
+            if(item.robloxSharedTargetCurrent===false)continue;
+            const p=item.robloxInternalVibePlayEvidence||{};
+            const exact=p.actualPlay===true
+              &&p.sourceRevision===item.robloxSourceCommit
+              &&p.artifactIdentity===item.robloxBuildArtifactIdentity
+              &&Number(p.versionNumber||0)===Number(e.versionNumber||0);
+            if(!exact)process.stdout.write(String(item.gameId)+'\n');
+          }
+          NODE
+          count=0
+          while IFS= read -r game_id; do
+            [ -n "$game_id" ] || continue
+            gh workflow run company-development-roblox-internal-vibe-play.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+            count=$((count+1))
+            echo "ROBLOX_F9_INTERNAL_VIBE_PLAY_DISPATCHED=$game_id"
+          done < /tmp/roblox-vibe-play-targets.txt
+          echo "ROBLOX_F9_INTERNAL_VIBE_PLAY_DISPATCH_COUNT=$count"
+
       - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks
         env:
           GH_TOKEN: ${{ github.token }}
