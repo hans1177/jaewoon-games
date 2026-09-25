@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
 import { assessExistingWebSource } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const baseline={content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}};
@@ -85,4 +88,37 @@ test('stale high validation does not hide current approved scope gaps',()=>{
     assert.equal(result.strategy,'PARTIAL_REPAIR');
     assert.ok(result.reasons.includes('CURRENT_APPROVED_SCOPE_GAPS_REMAIN'));
   }
+});
+
+
+test('development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const checked=[];
+  for(const game of catalog.games||[]){
+    if(String(game.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+    const root=path.join('web-games',String(game.id||''));
+    const index=path.join(root,'index.html');
+    if(!fs.existsSync(index))continue;
+    const html=fs.readFileSync(index,'utf8');
+    assert.doesNotMatch(html,/task-local exploration handoff|placeholder for the actual implementation|Approved Web Bootstrap/i,game.id);
+    const scriptTag=/<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+    for(const match of html.matchAll(scriptTag)){
+      const attrs=match[1]||'',body=match[2]||'';
+      const srcMatch=attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
+      if(srcMatch){
+        const src=srcMatch[1].split(/[?#]/)[0];
+        if(/^(?:https?:)?\/\//i.test(src)||src.startsWith('data:')||src.startsWith('blob:'))continue;
+        const local=src.startsWith('/')?src.slice(1):path.join(root,src);
+        assert.equal(fs.existsSync(local),true,`${game.id}: missing local script ${src}`);
+        continue;
+      }
+      if(!body.trim())continue;
+      assert.doesNotThrow(()=>new vm.Script(body,{filename:index}),`${game.id}: inline startup syntax`);
+    }
+    if(/\bbuildUrl\s*=\s*["']Build["']|\/[^"'\s]+\.loader\.js["']/i.test(html)){
+      assert.equal(fs.existsSync(path.join(root,'Build')),true,`${game.id}: Unity Web Build directory missing`);
+    }
+    checked.push(game.id);
+  }
+  assert.ok(checked.length>=10,'expected current development-confirmed Web games to be checked');
 });
