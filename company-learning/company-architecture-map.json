@@ -1,5 +1,5 @@
 {
-  "version": 190,
+  "version": 191,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3197,7 +3197,20 @@
       "readinessPassNextAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
       "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
       "newUpperPlatformEntryBlocking": true,
-      "existingNativeDevelopmentGrandfathered": true
+      "existingNativeDevelopmentGrandfathered": true,
+      "bootstrapOwner": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+      "bootstrapCompletionAuthority": false,
+      "causalRepairOwner": "tools/vibe2-auto-planner.mjs",
+      "causalRepairEngine": "EXISTING_VIBE2_VIBE3_DEVELOPMENT_ENGINE",
+      "repairEvidenceInput": [
+        "web-games/<gameId>/upper-platform-development-readiness.json",
+        "unity-games/<gameId>/unity-web-floor-source.json"
+      ],
+      "repairWriteBoundary": "unity-games/<gameId>/",
+      "repairPolicyWriteAllowed": false,
+      "repairHomepageWriteAllowed": false,
+      "repairQaWeakeningAllowed": false,
+      "postRepairExecutor": ".github/workflows/company-development-confirmed-runtime.yml"
     },
     "upperPlatformTargets": [
       "ROBLOX",
@@ -3711,8 +3724,8 @@
       "deploymentAndReleaseOmitted": true,
       "passIsCheckpointNotTerminal": true,
       "nativePipelinesRemainIndependent": true,
-      "currentImplementationBinding": ".github/workflows/unity-web-first-stage-build.yml",
-      "nextImplementationTask": "UPGRADE_EXISTING_UNITY_WEB_EXECUTOR_AND_ORCHESTRATION_NO_NEW_SHADOW_PIPELINE",
+      "currentImplementationBinding": ".github/workflows/unity-web-first-stage-build.yml + tools/vibe2-auto-planner.mjs",
+      "nextImplementationTask": "NONE_REPAIR_LOOP_ACTIVE_AFTER_QA",
       "readinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "readinessDomains": [
         "DESIGN",
@@ -3729,10 +3742,13 @@
       "mainBoundReadinessEvidence": "web-games/<gameId>/upper-platform-development-readiness.json",
       "directNativeDispatchFromBuildWorkflowForbidden": true,
       "sourceTreeExactMatchRequired": true,
-      "existingNativeDevelopmentGrandfathered": true
+      "existingNativeDevelopmentGrandfathered": true,
+      "causalRepairOwner": "tools/vibe2-auto-planner.mjs",
+      "repairLoopUsesExistingDevelopmentEngine": true,
+      "shadowRepairPipeline": false
     }
   },
-  "updatedAt": "2026-09-26T00:49:00+09:00",
+  "updatedAt": "2026-09-26T01:00:00+09:00",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -4076,10 +4092,12 @@
       "unityWebBuildOutput": "web-games/<gameId>/",
       "unityWebDeploymentStage": false,
       "unityWebReleaseStage": false,
-      "unityWebRegressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
+      "unityWebRegressionPassNextAction": "UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION",
       "unityWebUpperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "unityWebReadinessPassDispatch": "ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT",
-      "unityWebReadinessFailure": "REPAIR_REQUIRED"
+      "unityWebReadinessFailure": "REPAIR_REQUIRED_TO_VIBE_CAUSAL_DEVELOPMENT",
+      "unityWebRepairOwner": "tools/vibe2-auto-planner.mjs",
+      "unityWebRepairSourceBoundary": "unity-games/<gameId>/"
     },
     "revisions": {
       "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
