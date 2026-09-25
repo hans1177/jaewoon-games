@@ -49,6 +49,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 75
+    outputs:
+      game_id: ${{ steps.request.outputs.game_id }}
+      source_commit: ${{ steps.request.outputs.source_commit || github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -605,3 +608,88 @@ jobs:
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
+
+
+  persist-repair:
+    name: Persist Unity Web floor failure
+    needs: build
+    if: ${{ always() && needs.build.result == 'failure' && needs.build.outputs.game_id != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - name: Checkout main repair tooling
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - name: Resolve failed Unity Web stage
+        id: failure
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ needs.build.outputs.game_id }}
+          SOURCE_COMMIT: ${{ needs.build.outputs.source_commit }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?filter=latest" > /tmp/unity-web-run-jobs.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const payload=JSON.parse(fs.readFileSync('/tmp/unity-web-run-jobs.json','utf8'));
+          const build=(payload.jobs||[]).find(job=>job.name==='build')||(payload.jobs||[]).find(job=>job.conclusion==='failure')||{};
+          const failed=(build.steps||[]).find(step=>step.conclusion==='failure')||{};
+          const stage=String(failed.name||'UNKNOWN');
+          const infrastructure=/^(Checkout|Setup Node|Verify Unity Web development-floor contract|Verify Unity credentials|Install Unity Hub and WebGL Editor|Activate Unity Personal|Enforce Unity activation)$/.test(stage);
+          const repairable=!infrastructure;
+          const slug=stage.toUpperCase().replace(/[^A-Z0-9]+/g,'_').replace(/^_|_$/g,'')||'UNKNOWN';
+          const evidence={
+            version:1,
+            gameId:process.env.GAME_ID,
+            state:repairable?'REPAIR_REQUIRED':'INFRASTRUCTURE_PENDING',
+            repairable,
+            failureStage:stage,
+            failureSignature:'UNITY_WEB_FLOOR_'+slug,
+            sourceRevision:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
+            workflowRunId:Number(process.env.GITHUB_RUN_ID),
+            workflowRunAttempt:Number(process.env.GITHUB_RUN_ATTEMPT),
+            observedAt:new Date().toISOString()
+          };
+          fs.writeFileSync('/tmp/unity-web-floor-failure.json',JSON.stringify(evidence,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'repairable='+(repairable?'true':'false')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'stage='+slug+'\n');
+          console.log('UNITY_WEB_FLOOR_FAILURE_STATE='+evidence.state);
+          console.log('UNITY_WEB_FLOOR_FAILURE_STAGE='+stage);
+          NODE
+
+      - name: Persist failure on company-runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --no-tags origin company-runtime
+          rm -rf /tmp/company-runtime-unity-web
+          git worktree add --detach /tmp/company-runtime-unity-web origin/company-runtime
+          node tools/company-unity-web-floor-runtime-persist.mjs             /tmp/company-runtime-unity-web/development-queue.json             /tmp/unity-web-floor-failure.json
+          cd /tmp/company-runtime-unity-web
+          git add development-queue.json
+          if git diff --cached --quiet; then
+            echo 'UNITY_WEB_FLOOR_RUNTIME_PERSIST=NO_CHANGE'
+            exit 0
+          fi
+          git commit -m "runtime: persist Unity Web floor failure [skip ci]"
+          git push origin HEAD:company-runtime
+          echo 'UNITY_WEB_FLOOR_RUNTIME_PERSIST=PASS'
+
+      - name: Wake Vibe repair loop
+        if: steps.failure.outputs.repairable == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'UNITY_WEB_VIBE_REPAIR_WAKE=DISPATCHED'
