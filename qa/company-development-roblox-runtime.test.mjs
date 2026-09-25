@@ -528,3 +528,40 @@ test('Roblox fused happy path reuses the exact package through shared preflight 
   assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=2/);
   assert.match(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR/);
 });
+
+
+test('Roblox F0 integrity failure reenters the canonical source worker without weakening gates',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const repair=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.f0SourceRepairLoop;
+  assert.equal(repair.shadowPipelineForbidden,true);
+  assert.equal(repair.f0GateBypassForbidden,true);
+  assert.equal(repair.existingGameplaySemanticsPreserved,true);
+  assert.equal(repair.newSourceGeneratorMustEmitFoundationContractByDefault,true);
+  assert.match(workflow,/f0FoundationRepair/);
+  assert.match(workflow,/foundationRepair:f0FoundationRepair/);
+  assert.match(workflow,/--foundation-repair="\$FOUNDATION_REPAIR"/);
+  assert.match(workflow,/ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=YES/);
+  assert.match(bootstrap,/native-foundation-sentinel-v1/);
+  assert.match(bootstrap,/RuntimeFoundationReport/);
+  assert.match(bootstrap,/GROUND_CONTACT/);
+  assert.match(bootstrap,/MOVEMENT_CONFIRMED/);
+  assert.match(bootstrap,/foundationRepairApplied:foundationRepair===true/);
+  assert.match(bootstrap,/gameplayAuthorityChanged:false/);
+});
+
+test('new Roblox compiler output contains the F0 foundation contract from first source build',()=>{
+  const compiled=compileRobloxSource({gameId:'foundation-demo',gameName:'Foundation Demo',baseline,artbook:{}});
+  assert.match(compiled.result.serverCode,/native-foundation-sentinel-v1/);
+  assert.match(compiled.result.serverCode,/RuntimeFoundationReport/);
+  assert.match(compiled.result.serverCode,/SpawnLocation/);
+  assert.match(compiled.result.serverCode,/HumanoidRootPart/);
+  assert.match(compiled.result.serverCode,/GROUND_CONTACT/);
+  assert.match(compiled.result.serverCode,/MOVEMENT_CONFIRMED/);
+  assert.match(compiled.result.serverCode,/BindToClose/);
+  assert.match(compiled.result.clientCode,/TouchEnabled/);
+  assert.match(compiled.result.clientCode,/CameraSubject/);
+  assert.match(compiled.result.clientCode,/RuntimeFoundationReport/);
+});
