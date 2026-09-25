@@ -14,6 +14,8 @@ import {
   collectVerifiedSpecializedQueueExperience,
   applyVerifiedSpecializedQueueOutcomes,
   mergeVerifiedSpecializedQueueExperienceMemory,
+  collectVerifiedRobloxStudioPlayExperience,
+  mergeVerifiedRobloxStudioPlayExperienceMemory,
   applyVerifiedGraphicsEvolutionOutcomes,
   architectureDriftRiskForTask,
   architectureDriftGuidance,
@@ -34,6 +36,58 @@ import {
   dedupeIdlePracticeTasks,
   buildWebRobloxHandoffs
 } from '../tools/vibe2-learning-motor.mjs';
+
+test('verified exact Roblox Studio play evidence becomes reusable experience and stale evidence is rejected',()=>{
+  const base={
+    gameId:'studio-game',
+    robloxSourceCommit:'a'.repeat(40),
+    robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    robloxRuntimeCandidateEvidence:{
+      sourceRevision:'a'.repeat(40),
+      artifactIdentity:'sha256:'+'b'.repeat(64),
+      universeId:'123',
+      placeId:'456',
+      versionNumber:7,
+      published:true
+    },
+    robloxInternalVibePlayEvidence:{
+      authority:'vibe2-roblox-studio-runtime',
+      pass:true,
+      actualPlay:true,
+      runtimeVerified:true,
+      learningReusable:true,
+      rawSourceIncluded:false,
+      rawGameplayValuesIncluded:false,
+      sourceRevision:'a'.repeat(40),
+      artifactIdentity:'sha256:'+'b'.repeat(64),
+      universeId:'123',
+      placeId:'456',
+      versionNumber:7,
+      capabilities:{studioTestService:true,virtualInput:true},
+      actions:[{id:'move',type:'key',dispatched:true,ok:true}],
+      checkpoints:[{id:'player',name:'player-present',required:true,pass:true}],
+      errors:[],
+      learningSignals:['input','runtime','player'],
+      workflowRunId:12345,
+      testedAt:'2026-09-25T08:00:00.000Z'
+    }
+  };
+  const extracted=collectVerifiedRobloxStudioPlayExperience({items:[base]});
+  assert.equal(extracted.records.length,1);
+  assert.equal(extracted.records[0].engine,'roblox');
+  assert.ok(extracted.records[0].reusablePatterns.includes('verified-studio-play:roblox-studio'));
+  assert.match(extracted.records[0].evidence.join(' '),/roblox-studio-exact-candidate:PASS/);
+  const merged=mergeVerifiedRobloxStudioPlayExperienceMemory({records:[]},{items:[base]});
+  assert.equal(merged.changed,true);
+  assert.equal(merged.added,1);
+  assert.equal(merged.memory.records.length,1);
+  const stale=structuredClone(base);
+  stale.robloxInternalVibePlayEvidence.versionNumber=6;
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[stale]}).records.length,0);
+  const noInput=structuredClone(base);
+  noInput.robloxInternalVibePlayEvidence.actions=[{id:'wait',type:'wait',dispatched:false,ok:true}];
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[noInput]}).records.length,0);
+});
 
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
   const experience={records:[
