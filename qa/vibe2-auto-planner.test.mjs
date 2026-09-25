@@ -1386,56 +1386,145 @@ test('owner focused games and all released games receive focused caretaker prior
 });
 
 
-test('central Unity Web owner lock routes DEVELOPMENT_CONFIRMED first-stage work to canonical Unity source',()=>{
+test('Unity Web development floor routes bootstrap presentation into Vibe code and graphics repair',()=>{
   const root=tempRepo();
-  const gameId='unity-first-stage-game';
+  const gameId='unity-web-floor-game';
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
     authority:'MACHINE_EXECUTION_CONTRACT',
     machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
-    humanDocumentRequired:false,
     unityWebFirstStage:{
       status:'OWNER_DIRECT_LOCKED',
-      scope:'FIRST_WEB_GAME_STAGE_ONLY',
-      appliesToAllGames:true,
-      canonicalGameSourceRoot:'unity-games/<gameId>/',
-      publicWebBuildRoot:'web-games/<gameId>/',
-      postUnityWebGatePipelineUnchanged:true
+      scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+      developmentAdmissionAuthority:true,
+      validationSurfaceOnly:false
+    },
+    directNativeDualPlatformDevelopment:{
+      upperPlatformAdmissionMigration:{grandfatherGameIds:['cozy-island','daechung-rpg']}
     }
   },null,2),'utf8');
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  for(const dir of ['Art','Prefabs','Materials','Animations']){
+    fs.mkdirSync(path.join(unityRoot,'Assets',dir),{recursive:true});
+    fs.writeFileSync(path.join(unityRoot,'Assets',dir,'unity-web-floor-domain.json'),JSON.stringify({domain:dir}));
+  }
+  fs.writeFileSync(path.join(unityRoot,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','UnityWebFloorGame.cs'),`
+using UnityEngine;
+public sealed class UnityWebFloorGame:MonoBehaviour {
+  void Awake(){ Debug.Log("JAEWOON_UNITY_WEB_QA BOOT status=PASS"); Debug.Log("JAEWOON_UNITY_WEB_QA STATE progress=0"); Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=0.5 y=0.7"); }
+  void Action(){ Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT role=action status=PASS"); Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN status=PASS"); }
+  void BuildVisual(){ GameObject.CreatePrimitive(PrimitiveType.Cube); }
+}`);
+  fs.writeFileSync(path.join(unityRoot,'Assets','Editor','UnityWebFloorBuild.cs'),'public static class UnityWebFloorBuild { public static void BuildWeb(){} }\n');
+  fs.writeFileSync(path.join(unityRoot,'unity-web-floor-source.json'),JSON.stringify({
+    purpose:'UNITY_WEB_DEVELOPMENT_FLOOR',
+    presentationState:'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP',
+    upperPlatformReady:false,
+    releaseOrDeploymentAuthority:false
+  },null,2));
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{
-      id:gameId,name:'Unity First Stage',
+      id:gameId,name:'Unity Web Floor',
       productionClass:'DEVELOPMENT_CONFIRMED',
       homepageCategory:'development-confirmed',
       lifecycleState:'ACTIVE'
     }]},
     developmentQueue:{items:[{
-      gameId,gameName:'Unity First Stage',
+      gameId,gameName:'Unity Web Floor',
       status:'ACTIVE',
       productionClass:'DEVELOPMENT_CONFIRMED',
-      currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',
-      canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
-      selectedPlatform:'ROBLOX',
-      webSourcePath:`web-games/${gameId}`
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      selectedPlatform:'ROBLOX'
     }]},
     queue:{maxConcurrentTasks:4,tasks:[]},
     repoRoot:root,maxConcurrentTasks:4
   });
   assert.equal(result.planned,true);
-  const task=result.tasks.find(row=>row.gameId===gameId);
+  const task=result.tasks.find(row=>row.gameId===gameId&&(row.evidence||[]).includes('unity-web-repair-required'));
   assert.ok(task);
   assert.equal(task.target,'unity');
   assert.equal(task.sourceRoot,`unity-games/${gameId}`);
-  assert.deepEqual(task.responsibleFiles,[
-    `unity-games/${gameId}/Assets/Scripts/GameCore.cs`,
-    `unity-games/${gameId}/Assets/Scripts/RuntimeBootstrap.cs`
-  ]);
-  assert.ok(task.evidence.includes('unity-web-first-stage'));
-  assert.ok(task.evidence.includes('unity-web-source-root-bootstrap-required'));
-  assert.match(task.goal,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
-  assert.match(task.goal,/1차 Web 게임 원본을 unity-games\//);
-  assert.match(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
+  assert.ok(task.responsibleFiles.includes(`unity-games/${gameId}/Assets/Scripts/UnityWebFloorGame.cs`));
+  assert.ok(task.responsibleFiles.includes(`unity-games/${gameId}/unity-web-floor-source.json`));
+  assert.ok(task.evidence.includes('unity-web-bootstrap-graphics-build-up:required'));
+  assert.ok(task.evidence.includes('upper-platform-readiness-gate:UPPER_PLATFORM_DEVELOPMENT_READY'));
+  assert.match(task.goal,/코드\/그래픽 실제 수정/);
+  assert.match(task.goal,/placeholder/);
+  assert.match(task.goal,/플래그만 바꾸는 수정은 금지/);
+  assert.doesNotMatch(task.responsibleFiles.join('\n'),/company-learning|homepage/);
+});
+
+test('Unity Web readiness failed domains become causal Vibe repair evidence before upper-platform handoff',()=>{
+  const root=tempRepo();
+  const gameId='unity-web-readiness-repair';
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
+    unityWebFirstStage:{
+      status:'OWNER_DIRECT_LOCKED',
+      scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+      developmentAdmissionAuthority:true,
+      validationSurfaceOnly:false
+    },
+    directNativeDualPlatformDevelopment:{
+      upperPlatformAdmissionMigration:{grandfatherGameIds:['cozy-island','daechung-rpg']}
+    }
+  },null,2),'utf8');
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','Game.cs'),`
+using UnityEngine;
+public class Game:MonoBehaviour {
+  void Awake(){ Debug.Log("JAEWOON_UNITY_WEB_QA BOOT status=PASS"); Debug.Log("JAEWOON_UNITY_WEB_QA STATE progress=0"); Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=0.5 y=0.7"); }
+  void Action(){ Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT role=action status=PASS"); Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN status=PASS"); }
+}`);
+  fs.writeFileSync(path.join(unityRoot,'Assets','Editor','Build.cs'),'public static class Build { public static void BuildWeb(){} }\n');
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'upper-platform-development-readiness.json'),JSON.stringify({
+    version:1,gameId,state:'REPAIR_REQUIRED',pass:false,releaseOrDeploymentAuthority:false,
+    criteria:{
+      design:{pass:true},code:{pass:true},graphics:{pass:false},webglBuild:{pass:true},
+      actualPlay:{pass:true},qa:{pass:false},portability:{pass:true}
+    },
+    failureAction:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION'
+  },null,2));
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Unity Web Readiness Repair',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE'
+    }]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Unity Web Readiness Repair',
+      status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      selectedPlatform:'UNITY'
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[]},
+    repoRoot:root,maxConcurrentTasks:4
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId&&(row.evidence||[]).includes('unity-web-repair-required'));
+  assert.ok(task);
+  assert.ok(task.evidence.includes('unity-web-failed-domain:graphics'));
+  assert.ok(task.evidence.includes('unity-web-failed-domain:qa'));
+  assert.match(task.goal,/READINESS_DOMAIN:graphics/);
+  assert.match(task.goal,/READINESS_DOMAIN:qa/);
+  assert.match(task.goal,/7개 도메인이 모두 PASS하기 전에는 Roblox\/Unity 상위 플랫폼 개발 진입을 주장하지 않는다/);
 });
 
 
