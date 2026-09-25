@@ -455,6 +455,15 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(studioMcpBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(studioMcpBlock,/development-roblox-package-\$\{\{ matrix\.gameId \}\}/);
   assert.match(studioMcpBlock,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
+  assert.match(studioMcpBlock,/id: artifact_download/);
+  assert.match(studioMcpBlock,/continue-on-error: true/);
+  assert.match(studioMcpBlock,/Rebuild byte-identical exact artifact when GitHub artifact API is unavailable/);
+  assert.match(studioMcpBlock,/steps\.artifact_download\.outcome != 'success'/);
+  assert.match(studioMcpBlock,/rojo-7\.7\.0-windows-x86_64\.zip/);
+  assert.match(studioMcpBlock,/2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949/);
+  assert.match(studioMcpBlock,/company-development-roblox-package\.mjs/);
+  assert.match(studioMcpBlock,/Studio MCP exact rebuild identity mismatch/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ARTIFACT_SOURCE=DETERMINISTIC_EXACT_HASH_MATCH/);
   assert.match(studioMcpBlock,/Roblox\\mcp\.bat/);
   assert.match(studioMcpBlock,/StudioMCP\.exe/);
   assert.match(studioMcpBlock,/ROBLOX_DOCUMENTED_MCP_BATCH/);

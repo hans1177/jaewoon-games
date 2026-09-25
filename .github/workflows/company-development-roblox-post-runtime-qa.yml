@@ -949,6 +949,8 @@ jobs:
           Write-Host 'ROBLOX_UNDOCUMENTED_STUDIO_CLI_AUTOMATION=NO'
 
       - name: Download exact immutable Roblox build artifact
+        id: artifact_download
+        continue-on-error: true
         if: steps.mcp_preflight.outputs.setting_blocked != 'true'
         uses: actions/download-artifact@v4
         with:
@@ -957,6 +959,72 @@ jobs:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           run-id: ${{ matrix.artifactRunId }}
+
+      - name: Rebuild byte-identical exact artifact when GitHub artifact API is unavailable
+        if: steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
+        shell: powershell
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-package'
+          Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+          $packageDir = Join-Path $root 'packages'
+          $evidenceDir = Join-Path $root 'results'
+          New-Item -ItemType Directory -Force -Path $packageDir,$evidenceDir | Out-Null
+
+          $metadataJson = & node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));const row=(q.items||[]).find(x=>x.gameId===process.argv[2]);if(!row)process.exit(2);const sourcePath=row.robloxProjectPath||row.targetSourcePath||('roblox-games/'+row.gameId);const baselineSource=row.designBaselineSource||'';process.stdout.write(JSON.stringify({sourcePath,baselineSource}));" 'runtime/development-queue.json' $env:GAME_ID
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($metadataJson)) { throw 'Studio MCP exact rebuild metadata lookup failed' }
+          $metadata = $metadataJson | ConvertFrom-Json
+          $sourcePath = [string]$metadata.sourcePath
+          $baselineSource = [string]$metadata.baselineSource
+          if ([string]::IsNullOrWhiteSpace($sourcePath) -or [string]::IsNullOrWhiteSpace($baselineSource)) {
+            throw 'Studio MCP exact rebuild source or baseline metadata missing'
+          }
+
+          git -C main fetch --no-tags origin $env:SOURCE_REVISION
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP exact source revision fetch failed' }
+
+          $baseline = Join-Path (Resolve-Path 'runtime').Path $baselineSource
+          if (-not (Test-Path $baseline)) { throw "Studio MCP exact rebuild baseline missing: $baselineSource" }
+
+          $rojoZip = Join-Path $env:RUNNER_TEMP 'rojo-7.7.0-windows-x86_64.zip'
+          $rojoDir = Join-Path $env:RUNNER_TEMP 'rojo-7.7.0-windows-x86_64'
+          Remove-Item -Recurse -Force $rojoDir -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $rojoDir | Out-Null
+          & curl.exe -fL --retry 3 --retry-delay 2 -o $rojoZip 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip'
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned Windows Rojo download failed' }
+          $rojoZipHash = (Get-FileHash -Path $rojoZip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($rojoZipHash -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949') {
+            throw "Pinned Windows Rojo SHA256 mismatch: $rojoZipHash"
+          }
+          Expand-Archive -Path $rojoZip -DestinationPath $rojoDir -Force
+          $rojo = Get-ChildItem -Path $rojoDir -Recurse -File -Filter 'rojo.exe' | Select-Object -ExpandProperty FullName -First 1
+          if (-not $rojo) { throw 'Pinned Windows Rojo executable missing after extraction' }
+
+          $buildEvidence = Join-Path $evidenceDir 'build.json'
+          $buildArgs = @(
+            '--repo-root=main',
+            "--game-id=$env:GAME_ID",
+            "--source-path=$sourcePath",
+            "--source-revision=$env:SOURCE_REVISION",
+            "--baseline=$baseline",
+            "--rojo=$rojo",
+            "--output-dir=$packageDir",
+            "--evidence=$buildEvidence"
+          )
+          & node 'main/tools/company-development-roblox-package.mjs' @buildArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP exact artifact deterministic rebuild failed' }
+
+          $rebuilt = (& node -e "const e=require(process.argv[1]);process.stdout.write(String(e.artifactIdentity||''));" $buildEvidence).Trim().ToLowerInvariant()
+          $expected = ([string]$env:EXPECTED_ARTIFACT).Trim().ToLowerInvariant()
+          if ($rebuilt -ne $expected) { throw "Studio MCP exact rebuild identity mismatch: $rebuilt != $expected" }
+
+          Write-Host "ROBLOX_STUDIO_MCP_ARTIFACT_REBUILD=PASS:$rebuilt"
+          Write-Host 'ROBLOX_STUDIO_MCP_ARTIFACT_SOURCE=DETERMINISTIC_EXACT_HASH_MATCH'
+          Write-Host 'ROBLOX_STUDIO_MCP_ARTIFACT_API_FALLBACK=NO_GAMEPLAY_OR_RUNTIME_BYPASS'
 
       - name: Bind and open exact local Place artifact
         if: steps.mcp_preflight.outputs.setting_blocked != 'true'
