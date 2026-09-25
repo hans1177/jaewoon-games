@@ -104,3 +104,9 @@ test('shared fallback QA only probes the one current candidate and marks older d
   assert.match(workflow,/ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING/);
   assert.match(workflow,/roblox-shared-runtime-target-capacity-republish-required/);
 });
+
+
+test('runtime foundation QA no longer performs Studio actual-play automation',()=>{
+  assert.doesNotMatch(workflow,/studio-local-auto-play|company-development-roblox-studio-local-play|ROBLOX_STUDIO_LOCAL_PLAY_PASS/);
+  assert.doesNotMatch(workflow,/RobloxStudioBeta\.exe|ExecutePlayModeAsync|Vibe2AutoPlayer/);
+});
