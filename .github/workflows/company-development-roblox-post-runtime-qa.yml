@@ -794,18 +794,34 @@ jobs:
           }
 
           $mcpFallbackCommand = ''
+          $mcpBatchHealth = 'MISSING'
           if (Test-Path $mcpBat) {
-            $mcpCommand = $mcpBat
-            $mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'
-            if ($mcpExe -and (Test-Path $mcpExe)) {
+            $batchText = Get-Content $mcpBat -Raw -ErrorAction SilentlyContinue
+            $knownBrokenBatch = ($batchText -match '(?im)^\s*else\b') -or ($batchText -match '(?i)%B[/\\]\.\.[/\\]StudioMCP\.exe') -or ($batchText -match '(?m)\)\s*\r?\n\s*else\s*\(')
+            if ($knownBrokenBatch) {
+              if (-not ($mcpExe -and (Test-Path $mcpExe))) {
+                throw 'Documented Roblox mcp.bat is malformed and official StudioMCP.exe fallback is unavailable'
+              }
+              $mcpCommand = $mcpExe
               $mcpFallbackCommand = $mcpExe
+              $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_DOCUMENTED_BATCH'
+              $mcpBatchHealth = 'BROKEN_USE_OFFICIAL_EXE'
+            } else {
+              $mcpCommand = $mcpBat
+              $mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'
+              $mcpBatchHealth = 'READY'
+              if ($mcpExe -and (Test-Path $mcpExe)) {
+                $mcpFallbackCommand = $mcpExe
+              }
             }
           } elseif ($mcpExe -and (Test-Path $mcpExe)) {
             $mcpCommand = $mcpExe
+            $mcpFallbackCommand = $mcpExe
             $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING'
           } else {
             throw 'Official Roblox Studio MCP launcher unavailable'
           }
+          Write-Host "ROBLOX_STUDIO_MCP_BATCH_HEALTH=$mcpBatchHealth"
 
           if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
             throw 'Runner has an existing Roblox Studio process; refusing ambiguous MCP attachment'
@@ -931,7 +947,16 @@ jobs:
           "VIBE2_STUDIO_EXPECTED_NAME=$($places[0].BaseName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "ROBLOX_STUDIO_LOCAL_ARTIFACT_BIND=PASS:$hash"
           Write-Host "ROBLOX_STUDIO_PROCESS_ID=$($studioProcess.Id)"
-          Start-Sleep -Seconds 15
+          try {
+            if ($studioProcess.WaitForInputIdle(30000)) {
+              Write-Host 'ROBLOX_STUDIO_GUI_READY=YES'
+            } else {
+              Write-Host 'ROBLOX_STUDIO_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE'
+            }
+          } catch {
+            Write-Host 'ROBLOX_STUDIO_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
+          }
+          Start-Sleep -Seconds 5
 
       - name: Run actual local play through official Studio MCP
         id: studio_play
@@ -974,7 +999,7 @@ jobs:
               Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result"
               $failureSignature = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));process.stdout.write(String(r?.errors?.[0]?.signature||''))" $result).Trim()
               if ($LASTEXITCODE -ne 0) { throw 'Studio MCP failure evidence parse failed' }
-              if (($mcpCommandForAttempt -eq $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) -and ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')) {
+              if (($attempt -gt 1) -and ($mcpCommandForAttempt -eq $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) -and ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')) {
                 $enablementRequired = $true
                 Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT'
                 Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
@@ -993,7 +1018,16 @@ jobs:
             $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
             "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             Write-Host "ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=$($studioProcess.Id)"
-            Start-Sleep -Seconds 15
+            try {
+              if ($studioProcess.WaitForInputIdle(30000)) {
+                Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES'
+              } else {
+                Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE'
+              }
+            } catch {
+              Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
+            }
+            Start-Sleep -Seconds 5
           }
 
           if (-not $success) {
