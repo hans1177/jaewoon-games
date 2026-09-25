@@ -141,7 +141,7 @@ test('F9 reuses exact two-client sync proof for internal release but external pu
   assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
   assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
   assert.match(finalReview,/multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC'/);
-  assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:false/);
+  assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
   assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
   assert.match(finalReview,/INTERNAL_BUILDUP_PENDING_EXTERNAL_PUBLIC_HARD_GATE/);
   assert.match(finalReview,/externalPublicHardGatePending:true/);
