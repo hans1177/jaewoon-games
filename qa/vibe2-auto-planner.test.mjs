@@ -2513,6 +2513,7 @@ test('BUILD_UP backlog synchronization never rewrites already running work',()=>
   assert.equal(result.planned,false);
   assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
   assert.equal(result.buildUpDirectiveBackfillCount,0);
-  assert.equal(result.queue.tasks[0].buildUpDirectiveId,undefined);
+  assert.equal(result.queue.tasks[0].buildUpDirectiveId,null);
+  assert.equal(result.queue.tasks[0].buildUpDirective,null);
   assert.equal(result.queue.tasks[0].goal,'already reserved work');
 });
