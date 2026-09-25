@@ -334,7 +334,7 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert(reserveBlock.includes('.vibe2/queue.json'));
   assert(reserveBlock.includes('.vibe2/parallelism-control.json'));
   assert(reserveBlock.includes('.vibe2/learning-motor-state.json'));
-  assert(reserveBlock.includes('git add "${state_paths[@]}"'));
+  assert(reserveBlock.includes('git -C "$control_root" add "${state_paths[@]}"'));
   assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
   assert(workflow.includes('Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.'));
   assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
@@ -414,8 +414,8 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   const reserveBlock=workflow.slice(start,end);
   assert(reserveBlock.includes('for state_attempt in 1 2 3 4 5; do'));
   assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_ATTEMPT='));
-  assert(reserveBlock.includes('git reset --hard origin/vibe2-unreal-core'));
-  assert(reserveBlock.includes('git push origin HEAD:vibe2-unreal-core'));
+  assert(reserveBlock.includes('git -C "$control_root" reset --hard origin/vibe2-unreal-core'));
+  assert(reserveBlock.includes('git -C "$control_root" push origin HEAD:vibe2-unreal-core'));
   assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_RETRY='));
   assert.equal(reserveBlock.includes('git pull --rebase origin vibe2-unreal-core'),false);
   assert(workflow.includes('actions/upload-artifact@v4'));
@@ -468,7 +468,7 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.slotRefillResponsibleFileLocksHeldUntilFanIn,true);
   assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"),false);
   assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"),false);
-  assert(reserveBlock.includes('git fetch origin company-runtime --quiet'));
+  assert(reserveBlock.includes('git -C "$control_root" fetch origin company-runtime --quiet'));
   assert(reserveBlock.includes('VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind'));
   assert.equal(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'),false);
   assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS'));
@@ -965,14 +965,14 @@ test('continuous core connects existing evidence reasoning into self-generated s
 
 test('every non-neuron reserve ingress syncs current company runtime before planning and reservation',()=>{
   const steward=workflow.indexOf("echo 'VIBE2_RESERVE_STEWARD=PASS'");
-  const fetchRuntime=workflow.indexOf('git fetch origin company-runtime --quiet',steward);
+  const fetchRuntime=workflow.indexOf('git -C "$control_root" fetch origin company-runtime --quiet',steward);
   const planner=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs',fetchRuntime);
   const learning=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs',planner);
   const handoff=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check',learning);
   const reserve=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch',handoff);
   assert.ok(steward>=0&&fetchRuntime>steward&&planner>fetchRuntime&&learning>planner&&handoff>learning&&reserve>handoff);
   const block=workflow.slice(steward,handoff);
-  assert.match(block,/git show origin\/company-runtime:development-queue\.json > \/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/git -C "\$control_root" show origin\/company-runtime:development-queue\.json > \/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/--company-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC=PASS/);
