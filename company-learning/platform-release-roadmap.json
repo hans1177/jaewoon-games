@@ -1,5 +1,5 @@
 {
-  "version": 366,
+  "version": 367,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -644,6 +644,17 @@
         "duplicateExactGameDispatchMaySerialize": true,
         "cancelInProgress": false,
         "externalProviderCapacityRemainsOnlyHeavyExecutionBoundary": true
+      },
+      "privateRuntimeCandidateModeAuthority": {
+        "version": 1,
+        "canonicalValidationModeSource": "company-learning/platform-release-roadmap.json#roblox.validationMode",
+        "requiredCanonicalMode": "HEADLESS_FAST_MVP",
+        "requiredF0EvidenceMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "queueLocalRobloxValidationModeRequired": false,
+        "exactF0EvidenceRequired": true,
+        "sourceRevisionArtifactIdentityAndArtifactRunMustRemainExact": true,
+        "candidateDeploymentMayNotInferRuntimePassFromF0": true,
+        "failClosedOnCentralModeOrF0EvidenceMismatch": true
       }
     },
     "candidateReleaseConcurrency": {
@@ -6725,6 +6736,16 @@
       "qualityGateWeakening": false,
       "failureEvidenceAuthoritative": true,
       "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
+    },
+    "robloxPrivateRuntimeModeAuthority20260925": {
+      "id": "ROBLOX_PRIVATE_RUNTIME_MODE_AUTHORITY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY_REQUIRED_A_QUEUE_LOCAL_ROBLOX_VALIDATION_MODE_FIELD_EVEN_THOUGH_THE_CANONICAL_VALIDATION_MODE_IS_CENTRAL_AND_F0_EVIDENCE_ALREADY_RECORDS_HEADLESS_SOURCE_PREFLIGHT",
+      "resolution": "DERIVE_CANDIDATE_DEPLOYMENT_MODE_FROM_CENTRAL_ROADMAP_AND_EXACT_F0_EVIDENCE; DO_NOT_REQUIRE_A_STALE_QUEUE_LOCAL_VALIDATION_MODE_CACHE",
+      "qualityGateWeakening": false,
+      "actualRuntimeStillRequiredAfterCandidateDeployment": true,
+      "affectedWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml"
     }
   },
   "vibeExecutionLaneContract": {
