@@ -1,5 +1,5 @@
 {
-  "version": 380,
+  "version": 381,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -7254,6 +7254,15 @@
       ],
       "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
       "releaseOrDeploymentAuthority": false
+    },
+    "unityWebVibeRepairLoop20260926": {
+      "id": "UNITY_WEB_VIBE_CAUSAL_REPAIR_LOOP_2026-09-26",
+      "documentedAt": "2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "summary": "Bind Unity Web REPAIR_REQUIRED and seven-domain readiness failures to the existing Vibe2/Vibe3 development engine. Bootstrap creates source skeleton only; Vibe performs actual code/graphics repair in canonical Unity source; existing runtime rebuilds and revalidates before upper-platform handoff.",
+      "shadowPipelineCreated": false,
+      "implementationOwner": "tools/vibe2-auto-planner.mjs",
+      "implementationState": "ACTIVE_PENDING_CURRENT_PR_QA"
     }
   },
   "vibeExecutionLaneContract": {
@@ -21492,7 +21501,27 @@
       "readinessFailNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
       "readinessPassNextAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
       "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
-      "oneLaneFailureMigrationMeaning": "DOES_NOT_CANCEL_ALREADY_STARTED_GRANDFATHERED_NATIVE_DEVELOPMENT; DOES_BLOCK_NEW_UPPER_PLATFORM_ENTRY"
+      "oneLaneFailureMigrationMeaning": "DOES_NOT_CANCEL_ALREADY_STARTED_GRANDFATHERED_NATIVE_DEVELOPMENT; DOES_BLOCK_NEW_UPPER_PLATFORM_ENTRY",
+      "bootstrapOwner": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+      "bootstrapRole": "CANONICAL_UNITY_SOURCE_SKELETON_ONLY_NOT_GAME_COMPLETION",
+      "repairExecutionOwner": "tools/vibe2-auto-planner.mjs",
+      "repairExecutionEngine": "EXISTING_VIBE2_VIBE3_DEVELOPMENT_ENGINE",
+      "repairTaskSourceRoot": "unity-games/<gameId>/",
+      "repairReadsReadinessEvidence": "web-games/<gameId>/upper-platform-development-readiness.json",
+      "repairReadsFloorSourceEvidence": "unity-games/<gameId>/unity-web-floor-source.json",
+      "repairMayModifyPolicyOrHomepage": false,
+      "repairMayWeakenQaOrReadinessGate": false,
+      "rebuildAfterRepair": "COMPANY_DEVELOPMENT_CONFIRMED_RUNTIME_REDISPATCHES_UNITY_WEBGL_FLOOR",
+      "causalRepairLoop": [
+        "READ_REPAIR_REQUIRED_AND_FAILED_READINESS_DOMAINS",
+        "VIBE_CODE_AND_GRAPHICS_CAUSAL_REPAIR_IN_CANONICAL_UNITY_SOURCE",
+        "MERGE_VERIFIED_SOURCE_DELTA",
+        "UNITY_WEBGL_REBUILD",
+        "ACTUAL_BROWSER_REPLAY",
+        "INDEPENDENT_QA",
+        "REGRESSION",
+        "UPPER_PLATFORM_DEVELOPMENT_READINESS_REEVALUATION"
+      ]
     },
     "upperPlatformAdmission": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "upperPlatformDevelopmentReadinessGate": {
