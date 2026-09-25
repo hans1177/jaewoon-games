@@ -29,7 +29,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.serverClientBoundary=/RemoteEvent/.test(server)&&/OnServerEvent/.test(server)&&/FireServer/.test(client);
   checks.remoteSecurity=/typeof\s*\(/i.test(server)&&/rateLimit|cooldown|lastActionRequest|lastRequest|lastHit/i.test(server);
   checks.coreProgression=/SetAttribute\s*\(/.test(server)&&/Actions\s*=/.test(config)&&/FireServer\s*\(/.test(client);
-  checks.combatOrRound=/ATTACK|SKILL|InBattle|BattleProgress|RoundState|endRound|freezePlayer/i.test(config+'\n'+server);
+  checks.combatOrRound=/ATTACK|SKILL|InBattle|BattleProgress|RoundState|endRound|freezePlayer|Actions\s*=/i.test(config+'\n'+server);
   const save=saveEnabled(config);
   checks.saveRejoin=!save||(/DataStoreService/.test(server)&&/GetAsync/.test(server)&&/(SetAsync|UpdateAsync)/.test(server));
   const multi=multiplayerRequired(config);
