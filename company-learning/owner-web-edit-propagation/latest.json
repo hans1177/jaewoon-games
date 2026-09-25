@@ -1,20 +1,21 @@
 {
   "version": 1,
-  "before": "4c5e910f81823521fcde2e28f15412d554d329ac",
-  "after": "03446ab599b490de940c2770189be5cc83f2192b",
-  "generatedAt": "2026-09-25T04:11:54.053Z",
+  "before": "b6f87fb7bc6a80820552341e9eab87ff648e1fce",
+  "after": "7d6de2bc4a4e541426b44b8c04d6e4cc9c1d8258",
+  "generatedAt": "2026-09-25T08:16:45.059Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
-      "gameId": "amusement-tycoon",
-      "sourcePath": "web-games/amusement-tycoon",
-      "sourceBefore": "4c5e910f81823521fcde2e28f15412d554d329ac",
-      "sourceAfter": "03446ab599b490de940c2770189be5cc83f2192b",
-      "semanticIntentFingerprint": "b4d6dfe47d356bb741d80612d8cfe3108c1959d3dbf45c7bfb95d12572eb83b7",
+      "gameId": "fantasy-survival",
+      "sourcePath": "web-games/fantasy-survival",
+      "sourceBefore": "b6f87fb7bc6a80820552341e9eab87ff648e1fce",
+      "sourceAfter": "7d6de2bc4a4e541426b44b8c04d6e4cc9c1d8258",
+      "semanticIntentFingerprint": "ed530e706ed71471b21f1a931f8a34dbbd2d0623473de85414c808df8f1cdd5e",
       "affectedSystems": [
         "MOVEMENT",
         "COMBAT",
+        "CRAFTING",
         "INVENTORY",
         "WORLD",
         "MULTIPLAYER",
@@ -25,13 +26,14 @@
         "BALANCE"
       ],
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "ROBLOX"
       ],
       "literalWebCodeCrossPlatformCopyForbidden": true,
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T04:11:54.053Z",
+      "detectedAt": "2026-09-25T08:16:45.059Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
