@@ -536,9 +536,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "REPAIR_REQUIRED",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T17:25:36.431Z",
+      "updatedAt": "2026-09-25T17:29:36.866Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -799,12 +799,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
-      "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
-      ],
+      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -840,13 +838,13 @@
         "version": 2,
         "gameId": "daechung-rpg",
         "authority": "roblox-official-studio-mcp-runtime",
-        "pass": false,
+        "pass": true,
         "actualPlay": true,
-        "runtimeVerified": false,
+        "runtimeVerified": true,
         "learningReusable": true,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
-        "failureClass": "STUDIO_MCP_RUNTIME_ERROR",
+        "failureClass": null,
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
         "localPlaceFile": true,
@@ -954,7 +952,7 @@
             "id": "no-release-blocking-runtime-errors",
             "name": "no-release-blocking-runtime-errors",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "play-mode-stopped",
@@ -963,20 +961,9 @@
             "pass": true
           }
         ],
-        "errors": [
-          {
-            "type": "studio-console-error",
-            "actionId": null,
-            "signature": "Stack Begin"
-          },
-          {
-            "type": "studio-console-error",
-            "actionId": null,
-            "signature": "infinite yield possible"
-          }
-        ],
+        "errors": [],
         "runtimeSummary": {
-          "consoleErrorCount": 2,
+          "consoleErrorCount": 0,
           "distinctFrameChange": true
         },
         "learningSignals": [
@@ -993,17 +980,16 @@
           "mcp-input-dispatched",
           "viewport-changed-after-input",
           "console-output-captured",
-          "play-mode-stopped",
-          "debugging",
-          "runtime error"
+          "no-release-blocking-runtime-errors",
+          "play-mode-stopped"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
         "rawViewportIncluded": false,
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T17:25:36.431Z",
-        "workflowRunId": 36166611996,
+        "testedAt": "2026-09-25T17:29:36.866Z",
+        "workflowRunId": 36166804259,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -1033,9 +1019,9 @@
         "completedAt": "2026-09-25T14:08:10.303Z"
       },
       "robloxInternalReleasePublished": true,
-      "robloxInternalPlaytestPassed": false,
-      "robloxInternalPlaytestPassedAt": null,
-      "robloxStudioLocalPlayRepairRequired": true,
+      "robloxInternalPlaytestPassed": true,
+      "robloxInternalPlaytestPassedAt": "2026-09-25T17:29:36.866Z",
+      "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
@@ -6503,7 +6489,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T17:25:36.431Z",
+  "updatedAt": "2026-09-25T17:29:36.866Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
