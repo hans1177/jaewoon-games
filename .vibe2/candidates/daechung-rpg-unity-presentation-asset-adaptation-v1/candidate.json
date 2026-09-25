@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "                var x = column * frameWidth;",
+      "replace": "            var x = column * frameWidth;var y = texture.height - ((row + 1) * frameHeight);var rect = new Rect(x, y, frameWidth, frameHeight);frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);frames[i].name = \"{actorId}-{action}-{i:00}\";"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
