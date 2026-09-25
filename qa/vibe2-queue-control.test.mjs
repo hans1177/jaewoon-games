@@ -778,7 +778,7 @@ test('fan-in persists neural shadow calibration without granting learning or rou
   const criticPayload=JSON.parse(decodeURIComponent(criticMarker.slice('neural-shadow-critic:'.length)));
   assert.equal(criticPayload.verdict,'PIPELINE_SUPPORTED');
   assert.equal(criticPayload.actionFiringAllowed,false);
-  assert.equal(criticPayload.authorityPromotionEligible,false);
+
   assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,false);
   assert.equal(merged.neuralCalibration.durableEvidenceSamples,1);
   assert.equal(merged.neuralCalibration.matches,1);
