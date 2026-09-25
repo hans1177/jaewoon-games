@@ -957,3 +957,16 @@ test('game-specific BUILD_UP directive is one autonomous common goal with exhaus
     assert.match(source,/buildUpDirectiveCompletionClaim:false/);
   }
 });
+
+
+test('seed design runtime keeps owner reset priority without starving missing-design intake',()=>{
+  const designContext=roadmap.continuousGameplaySystemEvolutionContract?.designContext;
+  assert.equal(designContext?.missingDesignMustNotRemainPassive,true);
+  assert.equal(designContext?.activeGameWorkDoesNotDeferDesignGeneration,true);
+  const workflow=readText('.github/workflows/company-seed-design-runtime.yml');
+  assert.match(workflow,/const ownerResetPriority=seed=>activeResetIds\.has\(String\(seed\?\.gameId\|\|''\)\.trim\(\)\)\?0:1;/);
+  assert.match(workflow,/const eligible=preservationOnly[\s\S]{0,120}\? active\.filter\(preservationSeed\)[\s\S]{0,80}: active;/);
+  assert.match(workflow,/ownerResetPriority\(a\)-ownerResetPriority\(b\)\|\|/);
+  assert.doesNotMatch(workflow,/activeResetPending\.length\?activeResetSeeds:active/);
+  assert.match(workflow,/OWNER_RESET_SCHEDULING=PRIORITY_NOT_EXCLUSIVE/);
+});
