@@ -1,5 +1,5 @@
 {
-  "version": 387,
+  "version": 388,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3179,7 +3179,12 @@
               "attempt": 2,
               "result": "PASS"
             }
-          }
+          },
+          "workerControlCheckoutRelief": "IMPLEMENTED_PENDING_QA",
+          "workerControlCheckoutScope": "VIBE2_STATE_ONLY",
+          "workerExecutableCodeSource": "PINNED_MAIN_CONTRACT",
+          "workerControlCheckoutGamePrimaryBoundary": 256,
+          "workerControlCheckoutAdaptiveBehaviorUnchanged": true
         },
         "incidentHistory": [
           {
@@ -7363,6 +7368,40 @@
         "companyEvolutionQa": 36200348264,
         "securityImmune": 36200348267
       }
+    },
+    "controlBranchWorkerCheckoutRelief20260926": {
+      "id": "VIBE2_WORKER_CONTROL_CHECKOUT_RELIEF_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "REDUCE_PER_WORKER_CHECKOUT_NETWORK_AND_FILESYSTEM_PRESSURE_WITHOUT_REDUCING_GAME_PRIMARY_CAPACITY_OR_CHANGING_GAME_BEHAVIOR",
+      "existingArchitectureOnly": true,
+      "shadowPipelineCreated": false,
+      "scope": "WORKER_CONTROL_BRANCH_CHECKOUT_ONLY",
+      "behavior": "CHECK_OUT_ONLY_VIBE_CONTROL_STATE_FROM_VIBE2_UNREAL_CORE_FOR_EACH_WORKER_AND_EXECUTE_WORKER_TOOLING_FROM_THE_ALREADY_PINNED_MAIN_CONTRACT",
+      "gamePrimaryExternalBoundary": 256,
+      "gamePrimaryBoundaryUnchanged": true,
+      "adaptivePressureBehaviorUnchanged": true,
+      "preserves": [
+        "PRIMARY_GAME_TASK_RESERVATIONS",
+        "PINNED_MAIN_CONTRACT",
+        "RESPONSIBLE_FILE_CONFLICT_GUARDS",
+        "TASK_LOCAL_EXPLORATION",
+        "INCREMENTAL_QA",
+        "FAN_IN_REGRESSION",
+        "SECURITY_AND_RELEASE_GATES",
+        "GAME_RULES_PROGRESSION_SAVE_AND_BALANCE"
+      ],
+      "bindings": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-controller-contract.test.mjs"
+      ],
+      "requiredEvidence": [
+        "VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY",
+        "VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT",
+        "checkoutMs"
+      ],
+      "expectedEffect": "LOWER_REPEATED_WORKER_STARTUP_CHECKOUT_COST_AND_CHECKOUT_NETWORK_PRESSURE",
+      "securityImpact": "NO_AUTHORITY_EXPANSION_NO_GATE_WEAKENING",
+      "implementationState": "IMPLEMENTED_PENDING_QA"
     }
   },
   "vibeExecutionLaneContract": {
