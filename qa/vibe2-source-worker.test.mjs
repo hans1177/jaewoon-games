@@ -3194,3 +3194,14 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
   assert.match(retry,/벌 돌진, 거미 속박, 사마귀 베기/);
   assert.match(retry,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
 });
+
+
+test('game-specific BUILD_UP worker guidance carries source current-to-intended behavior and player effect',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/sourceAnchors=.*CURRENT=/);
+  assert.match(source,/INTENDED=/);
+  assert.match(source,/ACCEPT=/);
+  assert.match(source,/expectedPlayerEffect=/);
+  assert.match(source,/previousEffectiveness=/);
+  assert.match(source,/nextVibeAction=/);
+});
