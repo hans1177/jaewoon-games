@@ -1,5 +1,5 @@
 {
-  "version": 60,
+  "version": 61,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1110,7 +1110,15 @@
       "VERIFIED_SOURCE_DELTA_BEFORE_DEPTH_ESCALATION",
       "SHARED_GENERATION_TASK_OUTCOME_SET",
       "ALL_REQUIRED_SIBLINGS_VERIFIED_BEFORE_DEPTH_INCREASE",
-      "DIRECTIVE_GENERATION_FAN_IN_STATUS"
+      "DIRECTIVE_GENERATION_FAN_IN_STATUS",
+      "SOURCE_SYMBOL_ANCHORS",
+      "PRE_RESERVE_DIRECTIVE_BINDING_STATE",
+      "DIRECTIVE_FRESHNESS_DECISION",
+      "EXPECTED_PLAYER_EFFECT",
+      "OBSERVED_PLAYER_EFFECT",
+      "EFFECTIVENESS_CLASSIFICATION",
+      "NEXT_VIBE_ACTION",
+      "NEXT_VIBE_ACTION_REASON"
     ],
     "visualEvidenceDomains": [
       "CHARACTER",
@@ -1138,7 +1146,17 @@
     "sharedSiblingDirectiveIdAndFingerprintMustMatch": true,
     "evolutionFingerprintMustExcludeGeneratedQaWorkflowBootstrapMetadata": true,
     "evolutionFingerprintMustIncludeRealRenderableAssetChanges": true,
-    "generationFanInMustBeCompleteBeforeEscalation": true
+    "generationFanInMustBeCompleteBeforeEscalation": true,
+    "primaryGoalMustLogExactCurrentSourceAnchorWhenDiscoverable": true,
+    "genericTopFileListAloneCannotSatisfySourceSpecificityEvidence": true,
+    "existingQueuedOrResumedTaskMustLogDirectiveBindingBeforeExecution": true,
+    "activeReservationDirectiveMayNotBeSilentlyRebound": true,
+    "directiveFreshnessMustBeRecheckedOnRequeueOrResume": true,
+    "sourceDeltaAloneCannotEmitEffectConfirmed": true,
+    "noMeaningfulEffectCannotAdvanceDepth": true,
+    "unknownRuntimeEffectCannotEmitConfirmedEffect": true,
+    "nextVibeActionMustReferenceEffectClassificationAndDeferredGapEvidence": true,
+    "sameFailedStrategySelectionRequiresNewCausalEvidence": true
   },
   "minimumNecessaryProcedureDevelopmentEvidence": {
     "version": 1,
