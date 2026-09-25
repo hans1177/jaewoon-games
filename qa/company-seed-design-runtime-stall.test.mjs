@@ -257,3 +257,15 @@ test('owner all-games reset freshness applies only to the reset gameIds, not eve
   assert.match(workflow,/const resetAt=resetGameIds\.has\(gameId\)\?resetTimestamp:0/);
   assert.doesNotMatch(workflow,/const resetAt=Date\.parse\(state\?\.ownerAllGamesDesignReset\?\.updatedAt/);
 });
+
+
+test('design generation never stops on unavailable or invalid Vibe queue telemetry',()=>{
+  assert.match(workflow,/queue_api="repos\/\$\{GITHUB_REPOSITORY\}\/contents\/\.vibe2\/queue\.json\?ref=main"/);
+  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_DESIGN_QUEUE_TELEMETRY_UNAVAILABLE/);
+  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_DESIGN_QUEUE_TELEMETRY_INVALID/);
+  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN/);
+  assert.doesNotMatch(workflow,/vibe2-unreal-core/);
+  assert.doesNotMatch(workflow,/GAME_PRIMARY_GATE=DEFER_QUEUE_UNAVAILABLE/);
+  assert.doesNotMatch(workflow,/GAME_PRIMARY_GATE=DEFER_QUEUE_INVALID/);
+  assert.match(workflow,/echo 'defer=false' >> "\$GITHUB_OUTPUT"/);
+});

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 79,
+  "revision": 80,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -924,7 +924,13 @@
     "postReleaseFocusedInternalCap": null,
     "ownerFocusedInternalCap": null,
     "sameGameFocusedIndependentPackagesParallel": true,
-    "logicalCaretakerDoesNotLimitPhysicalParallelism": true
+    "logicalCaretakerDoesNotLimitPhysicalParallelism": true,
+    "coordinationTelemetryBlocksDevelopment": false,
+    "coordinationTelemetryUnavailableAction": "RUN_PARALLEL",
+    "coordinationTelemetryInvalidAction": "RUN_PARALLEL",
+    "activeGameWorkBlocksQueueReconcile": false,
+    "activeGameWorkBlocksDesignRuntime": false,
+    "staleQueueBranchReferenceForbidden": true
   },
   "stageGateScoringV2": {
     "version": 2,
@@ -1366,6 +1372,7 @@
     "verifiedDesignHardFailuresMax": 0,
     "companyRuntimeDesignOverlayRequired": true,
     "companyRuntimeSeedStateOverlayRequired": true,
-    "unverifiedDesignMayNotAuthorizeCoreFunOrProgression": true
+    "unverifiedDesignMayNotAuthorizeCoreFunOrProgression": true,
+    "queueTelemetryMayDeferDesignGeneration": false
   }
 }

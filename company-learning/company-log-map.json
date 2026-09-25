@@ -1,5 +1,5 @@
 {
-  "version": 57,
+  "version": 58,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1064,5 +1064,14 @@
     "plannerMustOverlayRuntimeDesignEvidence": true,
     "coreFunOrProgressionWithoutVerifiedDesignForbidden": true,
     "safeParallelLanesRemainLive": true
+  },
+  "nonblockingCoordinationTelemetryContract": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+    "documentedAt": "2026-09-25",
+    "observedFailure": "COMPANY_DEVELOPMENT_QUEUE_RECONCILE_MARKED_SUCCESS_WHILE_RECONCILE_JOB_SKIPPED_AFTER_VIBE_QUEUE_TELEMETRY_INVALID",
+    "staleReference": "vibe2-unreal-core",
+    "correction": "READ_MAIN_QUEUE_AS_OPTIONAL_TELEMETRY_AND_NEVER_DEFER_RECONCILE_OR_DESIGN_ON_MISSING_INVALID_OR_ACTIVE_GAME_WORK",
+    "runtimeReconcileMustActuallyExecute": true
   }
 }
