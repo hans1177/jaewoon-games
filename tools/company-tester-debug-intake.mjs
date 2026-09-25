@@ -64,16 +64,37 @@ function platformTickets(item={},stamp=''){
       severity:severity(signature),category:category(signature),signature,
       reproduction:clean(options.reproduction)||'RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE',
       responsibleFiles:Array.isArray(options.responsibleFiles)?uniq(options.responsibleFiles):(options.responsibleFiles===false?[]:responsibleFiles(item,platform)),evidence:uniq(evidence),exactFailedStage:clean(stage||'TARGET_PLATFORM_RUNTIME'),
-      route:clean(options.route)||'FOCUSED_REPAIR_AND_RECOVERY',repairEligible:options.repairEligible!==false,status:'OPEN',createdAt:stamp,updatedAt:stamp});
+      route:clean(options.route)||'FOCUSED_REPAIR_AND_RECOVERY',
+      repairEligible:options.repairEligible!==false,
+      internalFlowBlocking:options.internalFlowBlocking!==false,
+      externalReleaseBlockingOnly:options.externalReleaseBlockingOnly===true,
+      status:'OPEN',createdAt:stamp,updatedAt:stamp});
   };
   const ex=item.executionEvidence||{};
-  if(ex.failureStage)add(ex.failureStage,ex.failureSignature||ex.failureStage,[JSON.stringify(ex)]);
+  if(ex.failureStage)add(ex.failureStage,ex.failureSignature||ex.failureStage,[JSON.stringify(ex)],{
+    internalFlowBlocking:clean(ex.failureStage)!=='PUBLIC_RELEASE_RUNTIME_FINDING',
+    externalReleaseBlockingOnly:clean(ex.failureStage)==='PUBLIC_RELEASE_RUNTIME_FINDING'
+  });
   if(platform==='ROBLOX'){
     const rr=item.robloxRuntimeEvidence||{};
     const foundation=item.robloxRuntimeFoundationEvidence||{};
     const candidate=item.robloxRuntimeCandidateEvidence||{};
     const failureStage=upper(item.robloxFailureStage);
     const failureSignature=clean(item.robloxFailureSignature);
+    const publicRuntimeFailureSignature=clean(item.robloxPublicReleaseFailureSignature);
+    if(item.robloxRuntimeFailureExternalReleaseOnly===true&&publicRuntimeFailureSignature){
+      add('PUBLIC_RELEASE_RUNTIME_FINDING',publicRuntimeFailureSignature,[
+        JSON.stringify(foundation),
+        JSON.stringify(candidate),
+        ...(item.robloxPublicReleaseBlockers||[])
+      ],{
+        reproduction:'REPAIR_THE_RECORDED_EXACT_RUNTIME_FINDING_AND_RERUN_CANONICAL_ROBLOX_RUNTIME_QA_WITHOUT_PAUSING_INTERNAL_DEVELOPMENT',
+        route:'FOCUSED_REPAIR_AND_RECOVERY',
+        repairEligible:true,
+        internalFlowBlocking:false,
+        externalReleaseBlockingOnly:true
+      });
+    }
     const preRuntimeRepairStages=new Set(['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_BUILD_OR_PACKAGE','VIBE_SHARED_MODEL_BUILD_PREFLIGHT','F0_SOURCE_INTEGRITY']);
     const preRuntimePending=/PENDING|AWAITING|UNVERIFIED/.test(upper(failureSignature));
     if(failureSignature&&!preRuntimePending&&preRuntimeRepairStages.has(failureStage)){
