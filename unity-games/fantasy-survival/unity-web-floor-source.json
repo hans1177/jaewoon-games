@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "gameId": "fantasy-survival",
+  "gameName": "마력숲 생존기",
+  "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
+  "coreLoop": [
+    "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+    "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+    "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+  ],
+  "category": "SURVIVAL",
+  "multiplayerMode": "HYBRID",
+  "canonicalSourceRoot": "unity-games/fantasy-survival",
+  "buildMethod": "UnityWebFloorBuild.BuildWeb",
+  "futureNativeBuildMethod": "UnityWebFloorBuild.Build",
+  "generatorFingerprint": "13404b8fdafa6c2fb7e1508f2086e6aa117caddee0a0bdfe336e064635e5975d",
+  "designBaseline": "/tmp/unity-web-bootstrap-design/fantasy-survival/design-revised.json",
+  "unityPlatformProfile": {
+    "platform": "UNITY",
+    "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+    "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+    "multiplayerRuntime": "authoritative hybrid app networking with explicit co-op and competitive session modes plus reconnect recovery",
+    "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+    "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+    "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+    "platformContentAdaptation": "Adapt \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.\" and its loop \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+    "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+    "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+  },
+  "purpose": "UNITY_WEB_DEVELOPMENT_FLOOR",
+  "developmentFloor": true,
+  "presentationState": "BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP",
+  "upperPlatformReady": false,
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-09-25T16:31:35.476Z"
+}
