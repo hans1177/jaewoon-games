@@ -3355,13 +3355,20 @@
         "authority": "OWNER_DIRECTIVE",
         "gameId": "fantasy-survival",
         "sourcePath": "web-games/fantasy-survival",
-        "sourceBefore": "5312503d3028244fd7ddc2cc876613ea735c0363",
-        "sourceAfter": "c3fb6bd69e247c44bc2b735c228b618543843a87",
-        "semanticIntentFingerprint": "5f36f948c97f5332c7074239a1fc540fd8b92c9423051265aaea617aec7d0ac0",
+        "sourceBefore": "00e4a431199bde8cd89406b4397d1e01f068b776",
+        "sourceAfter": "d2ca1b1308f0d7431ba821e31887bc529bbe8b45",
+        "semanticIntentFingerprint": "1e54e50def732305503b08308cfbe279b07a4eee9f425be7198bce446d64f87b",
         "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "CRAFTING",
+          "INVENTORY",
           "WORLD",
           "MULTIPLAYER",
-          "SAVE"
+          "PROGRESSION",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
         ],
         "platformTargets": [
           "UNITY",
@@ -3371,11 +3378,11 @@
         "semanticIntentPropagationRequired": true,
         "affectedWebQaRequired": true,
         "affectedPlatformQaRequired": true,
-        "detectedAt": "2026-09-25T10:02:40.350Z",
+        "detectedAt": "2026-09-25T10:07:17.498Z",
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-25T10:02:40.350Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T10:07:17.498Z"
     },
     {
       "gameId": "monster-adventure",
@@ -6274,7 +6281,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T10:06:21.870Z",
+  "updatedAt": "2026-09-25T10:07:17.498Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
