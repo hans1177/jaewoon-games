@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
+import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -2462,6 +2463,33 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
   assert.deepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
   assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-directive-backfill:queued-existing-work')));
+});
+
+
+test('queue normalization preserves BUILD_UP directive payload and aliases for workers',()=>{
+  const directive={
+    directiveId:'build-up-demo-g1',
+    gameId:'demo',
+    generation:1,
+    thisLoopPrimaryGoal:'실제 전투 피드백을 강화한다',
+    sourceTreeFingerprint:'sha256:demo',
+    developmentDepth:1,
+    allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}]
+  };
+  const normalized=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'demo-build-up',gameId:'demo',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Combat.server.luau'],
+    goal:'build up',status:'queued',buildUpDirective:directive,buildUpDirectiveId:directive.directiveId,
+    buildUpGeneration:1,buildUpGoal:directive.thisLoopPrimaryGoal,buildUpSourceTree:directive.sourceTreeFingerprint,
+    nextEscalationRequired:true
+  }]});
+  const task=normalized.tasks[0];
+  assert.deepEqual(task.buildUpDirective,directive);
+  assert.equal(task.buildUpDirectiveId,directive.directiveId);
+  assert.equal(task.buildUpGeneration,1);
+  assert.equal(task.buildUpGoal,directive.thisLoopPrimaryGoal);
+  assert.equal(task.buildUpSourceTree,directive.sourceTreeFingerprint);
+  assert.equal(task.nextEscalationRequired,true);
 });
 
 test('BUILD_UP backlog synchronization never rewrites already running work',()=>{
