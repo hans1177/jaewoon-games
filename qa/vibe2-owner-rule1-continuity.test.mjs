@@ -9,6 +9,7 @@ import {createVibeContinuousQueue,finishVibeQueueTask} from '../assets/vibe-cont
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const roadmap=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'));
 const runner=fs.readFileSync(path.join(repoRoot,'.github/workflows/vibe2-24h-runner.yml'),'utf8');
+const core=fs.readFileSync(path.join(repoRoot,'.github/workflows/vibe2-continuous-core.yml'),'utf8');
 
 test('owner rule1 forbids terminal done and defines verified completion as a continuation checkpoint',()=>{
   const rule=roadmap.ownerCanonicalRules?.rule1;
@@ -53,4 +54,17 @@ test('24h scheduler wake signals collapse into one continuous chain while refill
   assert.match(runner,/cancel-in-progress:\s*false/);
   assert.doesNotMatch(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
   assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
+});
+
+
+test('24h execution lanes cannot cancel one another while waiting to reserve shared Vibe2 state',()=>{
+  assert.match(core,/format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.doesNotMatch(core,/'vibe2-control-state-vibe2-unreal-core'/);
+  assert.match(core,/jobs:\s*[\s\S]*reserve:[\s\S]*cancel-in-progress:\s*false/);
+  assert.match(core,/for state_attempt in 1 2 3 4 5; do/);
+  assert.match(core,/git fetch origin vibe2-unreal-core --quiet[\s\S]*git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(core,/git push origin HEAD:vibe2-unreal-core[\s\S]*VIBE2_CONTROL_OPTIMISTIC_RETRY=/);
+  assert.match(runner,/execution_lane: recovery-fast/);
+  assert.match(runner,/execution_lane: game-primary/);
+  assert.match(runner,/execution_lane: learning-idle/);
 });
