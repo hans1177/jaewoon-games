@@ -1,5 +1,5 @@
 {
-  "version": 186,
+  "version": 187,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3258,7 +3258,11 @@
         "explicitDisabledState": "NO",
         "explicitDisabledExecution": "SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS",
         "requiredToolHandshakeAuthority": true
-      }
+      },
+      "actualPlayPlannerEligibility": "INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+      "actualPlayPlannerExclusiveCurrentStepGate": false,
+      "parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease": true,
+      "explicitDisabledGameEligible": false
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
