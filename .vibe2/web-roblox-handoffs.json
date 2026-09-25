@@ -67,6 +67,123 @@
       "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
+      "gameId": "daechung-rpg",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
+      "PLATFORM": "ROBLOX",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "roblox-games/daechung-rpg",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": true,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [
+          "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+          "capability_ctrace_f81cb2c64243a4d226f7aebf",
+          "capability_ctrace_0c25d3cd8ea64024889cf42f",
+          "capability_ctrace_cabd54645f7cd0476a6c213e",
+          "capability_ctrace_c77e9012adc1458e5f026af9",
+          "capability_ctrace_c309f6cac4c6972e940e2026",
+          "capability_ctrace_80403bf5ab5774c5d6bb03dc",
+          "capability_ctrace_8384b04814b6ef675cd54829",
+          "capability_ctrace_e59700341fa9fa647ce7b08b",
+          "capability_ctrace_9a8dbd0a7f2d4fcb35be29ed"
+        ],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
+    },
+    {
+      "gameId": "horror-escape-room",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
+      "PLATFORM": "ROBLOX",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "roblox-games/horror-escape-room",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": true,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
+    },
+    {
       "gameId": "amusement-tycoon",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
       "PLATFORM": "UNITY",
@@ -792,117 +909,6 @@
         "continuousLearning": true
       },
       "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
-    },
-    {
-      "gameId": "daechung-rpg",
-      "PROJECT_PHASE": "POST_RELEASE_FOCUSED_DEVELOPMENT",
-      "PLATFORM": "ROBLOX",
-      "GENRE": null,
-      "WEB_BASELINE": {
-        "requiredForNewPlatformLifecycle": true,
-        "requiredForThisMaintenanceCycle": true,
-        "state": "NOT_BOUND_IN_CURRENT_COMPANY_QUEUE_SNAPSHOT",
-        "verified": false,
-        "sourcePath": null,
-        "evidencePath": null,
-        "currentCompanyWebBaselineBound": false,
-        "historicalDeploymentRecovery": false,
-        "reason": "CURRENT_COMPANY_WEB_BASELINE_NOT_PRESENT_IN_QUEUE_SNAPSHOT"
-      },
-      "ROBLOX_HANDOFF": {
-        "required": true,
-        "ready": false,
-        "currentWebHandoffClaim": false,
-        "webEvidenceSubstitutesRobloxQa": false,
-        "reason": "CURRENT_COMPANY_WEB_HANDOFF_NOT_PRESENT_IN_QUEUE_SNAPSHOT"
-      },
-      "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": true,
-        "assigned": true,
-        "state": "ASSIGNED",
-        "queueTaskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
-        "queueStatus": "queued",
-        "logicalRunnerPerProject": 1,
-        "activeTaskMaxPerProject": 1,
-        "sharedProtectedRunnerSlots": 1,
-        "scheduler": "vibe2-24h-runner",
-        "worker": "vibe2-continuous-core",
-        "continuousRefill": true,
-        "historicalDeploymentRecovery": false
-      },
-      "LEARNING_CONTEXT": {
-        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
-        "verifiedSemanticExperienceIds": [
-          "capability_ctrace_5dfec906b032e3f9d70dbdf7",
-          "capability_ctrace_f81cb2c64243a4d226f7aebf",
-          "capability_ctrace_0c25d3cd8ea64024889cf42f",
-          "capability_ctrace_cabd54645f7cd0476a6c213e",
-          "capability_ctrace_c77e9012adc1458e5f026af9",
-          "capability_ctrace_c309f6cac4c6972e940e2026",
-          "capability_ctrace_80403bf5ab5774c5d6bb03dc",
-          "capability_ctrace_8384b04814b6ef675cd54829",
-          "capability_ctrace_e59700341fa9fa647ce7b08b",
-          "capability_ctrace_9a8dbd0a7f2d4fcb35be29ed"
-        ],
-        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
-        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        "recombinationRecipeId": "recombine_b67272fce188489f",
-        "rawSourceCopyAllowed": false,
-        "rawAssetCopyAllowed": false,
-        "gateBypass": false,
-        "continuousLearning": true
-      },
-      "NEXT_MACHINE_ACTION": "EXECUTE_POST_RELEASE_FOCUSED_GAP"
-    },
-    {
-      "gameId": "horror-escape-room",
-      "PROJECT_PHASE": "POST_RELEASE_FOCUSED_DEVELOPMENT",
-      "PLATFORM": "ROBLOX",
-      "GENRE": null,
-      "WEB_BASELINE": {
-        "requiredForNewPlatformLifecycle": true,
-        "requiredForThisMaintenanceCycle": true,
-        "state": "NOT_BOUND_IN_CURRENT_COMPANY_QUEUE_SNAPSHOT",
-        "verified": false,
-        "sourcePath": null,
-        "evidencePath": null,
-        "currentCompanyWebBaselineBound": false,
-        "historicalDeploymentRecovery": false,
-        "reason": "CURRENT_COMPANY_WEB_BASELINE_NOT_PRESENT_IN_QUEUE_SNAPSHOT"
-      },
-      "ROBLOX_HANDOFF": {
-        "required": true,
-        "ready": false,
-        "currentWebHandoffClaim": false,
-        "webEvidenceSubstitutesRobloxQa": false,
-        "reason": "CURRENT_COMPANY_WEB_HANDOFF_NOT_PRESENT_IN_QUEUE_SNAPSHOT"
-      },
-      "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": true,
-        "assigned": true,
-        "state": "ASSIGNED",
-        "queueTaskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-        "queueStatus": "queued",
-        "logicalRunnerPerProject": 1,
-        "activeTaskMaxPerProject": 1,
-        "sharedProtectedRunnerSlots": 1,
-        "scheduler": "vibe2-24h-runner",
-        "worker": "vibe2-continuous-core",
-        "continuousRefill": true,
-        "historicalDeploymentRecovery": false
-      },
-      "LEARNING_CONTEXT": {
-        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
-        "verifiedSemanticExperienceIds": [],
-        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
-        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        "recombinationRecipeId": "recombine_6d561628435c78d7",
-        "rawSourceCopyAllowed": false,
-        "rawAssetCopyAllowed": false,
-        "gateBypass": false,
-        "continuousLearning": true
-      },
-      "NEXT_MACHINE_ACTION": "EXECUTE_POST_RELEASE_FOCUSED_GAP"
     }
   ],
   "handoffs": [],

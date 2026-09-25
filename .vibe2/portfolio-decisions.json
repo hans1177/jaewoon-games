@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-09-25T06:20:21.603Z",
+  "generatedAt": "2026-09-25T08:33:31.822Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -49,6 +49,66 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "daechung-rpg",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": true,
+          "joint": "AWAITING_VIBE"
+        },
+        "development": {
+          "activeTasks": 3,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "horror-escape-room",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 2,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 4
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
