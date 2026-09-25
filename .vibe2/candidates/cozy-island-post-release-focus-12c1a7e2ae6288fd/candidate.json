@@ -1,0 +1,24 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": ""
+    },
+    {
+      "path": "client/Game.client.luau",
+      "find": "QACamera.install(C,gui,function()",
+      "replace": ""
+    },
+    {
+      "path": "client/Game.client.luau",
+      "find": "if hasStudioAssetAtom(\"FRAME_PANEL\") then",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

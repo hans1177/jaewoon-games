@@ -83,7 +83,7 @@ local function makeButton(parent,text,color)
 end
 
 local feedbackFlash=Instance.new("Frame")
-if hasStudioAssetAtom("FRAME_PANEL") then
+
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
   studioAssetStroke.Thickness = 1
@@ -251,7 +251,7 @@ for groupIndex,group in ipairs(groups)do
 end
 
 -- 상태 갱신
-local function render()
+
  local idx=p:GetAttribute("NextBaseIndex")or 1
  local b=C.Bases[idx]
  local target=b and (b.Name.." · "..(b.Enemy or"수비대").." · 전력 "..b.Strength)or"5개 거점 정복 완료"
@@ -294,7 +294,7 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
 end)
 
-QACamera.install(C,gui,function()
+
  return{
   {label="cozy-home-overview",position=Vector3.new(0,145,170),lookAt=Vector3.new(0,4,0)},
   {label="cozy-home-ground",position=Vector3.new(0,24,98),lookAt=Vector3.new(0,5,0)},
