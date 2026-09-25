@@ -2108,10 +2108,14 @@ function verifiedRobloxStudioPlayBinding(item={}){
     &&evidence?.rawSourceIncluded===false
     &&evidence?.rawGameplayValuesIncluded===false
     &&clean(evidence?.authority)==='vibe2-roblox-studio-runtime'
+    &&clean(evidence?.executionSurface)==='LOCAL_IMMUTABLE_ARTIFACT'
+    &&evidence?.immutableArtifactVerified===true
+    &&evidence?.publishedCandidateObserved===false
+    &&evidence?.automatedUserInput===false
     &&exactCandidate
     &&evidence?.capabilities?.studioTestService===true
-    &&evidence?.capabilities?.virtualInput===true
-    &&actions.some(row=>row?.dispatched===true&&row?.ok===true)
+    &&evidence?.capabilities?.virtualInput===false
+    &&!actions.some(row=>row?.dispatched===true)
     &&requiredCheckpoints.length>0
     &&requiredCheckpoints.every(row=>row?.pass===true)
     &&errors.length===0
@@ -2121,7 +2125,7 @@ function verifiedRobloxStudioPlayBinding(item={}){
 function verifiedRobloxStudioReusablePatterns(binding={}){
   const evidence=binding?.evidence||{};
   const semanticText=[
-    'roblox studio runtime virtual input actual play',
+    'roblox studio runtime assertion only actual play',
     ...(evidence?.learningSignals||[]),
     ...(binding?.actions||[]).filter(row=>row?.ok===true).flatMap(row=>[row?.id,row?.type]),
     ...(binding?.checkpoints||[]).filter(row=>row?.pass===true).flatMap(row=>[row?.id,row?.name])
@@ -2161,7 +2165,7 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
       build:binding.artifactIdentity,
       evidence:[
         'roblox-studio-runtime:PASS',
-        'roblox-studio-virtual-input:PASS',
+        'roblox-studio-assertion-only:PASS',
         'roblox-studio-exact-candidate:PASS',
         'raw-source-stored:NO',
         'raw-gameplay-values-stored:NO',
