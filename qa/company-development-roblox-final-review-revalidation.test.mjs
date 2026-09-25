@@ -74,3 +74,12 @@ test('exact Roblox F9 review is isolated per game after multiplayer acceptance',
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
+
+test('F9 promotion stops at internal release and cannot self-approve external public readiness',()=>{
+  assert.match(workflow,/const publicRuntimeAcceptance=false; \/\/ Internal F9 cannot satisfy the external public hard gate\./);
+  assert.match(workflow,/item\.robloxPublicReleaseReady=false;/);
+  assert.match(workflow,/INTERNAL_BUILDUP_PENDING_EXTERNAL_PUBLIC_HARD_GATE/);
+  assert.match(workflow,/externalPublicHardGatePending:true/);
+  assert.match(workflow,/roblox-perpetual-buildup-public-hard-gate-pending/);
+  assert.doesNotMatch(workflow,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
+});
