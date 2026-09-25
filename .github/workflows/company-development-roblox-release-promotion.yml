@@ -180,15 +180,18 @@ jobs:
             );
           let sharedRotation=false;
           if(selectedUsesSharedFallback){
-            const occupied=(q.items||[]).find(row=>{
-              if(row.gameId===gameId||row.robloxSharedTargetCurrent===false)return false;
-              const current=row.robloxRuntimeCandidateEvidence?.published===true
-                ?row.robloxRuntimeCandidateEvidence
-                :(row.robloxInternalReleaseEvidence?.published===true?row.robloxInternalReleaseEvidence:null);
-              return current
-                &&String(current.universeId||'').trim()===universeId
-                &&String(current.placeId||'').trim()===placeId;
-            });
+            const occupied=(q.items||[])
+              .filter(row=>{
+                if(row.gameId===gameId||row.robloxSharedTargetCurrent===false)return false;
+                const current=row.robloxRuntimeCandidateEvidence?.published===true
+                  ?row.robloxRuntimeCandidateEvidence
+                  :(row.robloxInternalReleaseEvidence?.published===true?row.robloxInternalReleaseEvidence:null);
+                return current
+                  &&String(current.universeId||'').trim()===universeId
+                  &&String(current.placeId||'').trim()===placeId;
+              })
+              .sort((a,b)=>Number(b.robloxRuntimeCandidateEvidence?.versionNumber||b.robloxInternalReleaseEvidence?.versionNumber||0)
+                -Number(a.robloxRuntimeCandidateEvidence?.versionNumber||a.robloxInternalReleaseEvidence?.versionNumber||0))[0];
             sharedRotation=headlessCanonical===true;
             const occupiedRuntimeComplete=occupied?.robloxRuntimePassed===true
               ||occupied?.robloxFinalReviewPassed===true
