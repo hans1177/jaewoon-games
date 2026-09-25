@@ -44,6 +44,6 @@ test('emergency local history is transient and queued directives replay without 
 
 test('inline command script parses and service worker cache is refreshed',()=>{
   assert.doesNotThrow(()=>new Function(inlineScript(command)));
-  assert.match(sw,/jaewoon-pwa-v24/);
+  assert.match(sw,/jaewoon-pwa-v25/);
   assert.match(sw,/['"]\/emergency-ai\.js['"]/);
 });
