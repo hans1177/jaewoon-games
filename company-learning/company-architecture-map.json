@@ -3144,7 +3144,11 @@
       "finalRuntimeReview": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
       "exposureController": "tools/company-platform-exposure-control.mjs",
       "noDurationExit": true,
-      "noLimitedPublicTestExit": true
+      "noLimitedPublicTestExit": true,
+      "rebuildAfterEveryAcceptedModification": true,
+      "staleArtifactReuseAfterSourceModification": false,
+      "revalidationInput": "NEWLY_REBUILT_EXACT_CANDIDATE_ONLY",
+      "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY"
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -3162,7 +3166,9 @@
       "restrictedPublicTestRequired": false,
       "f9InternalReleaseCannotSetPublicReady": true,
       "passState": "PUBLIC_RELEASE_READY",
-      "explicitExternalPublicationEvidenceRequiredForPublicRelease": true
+      "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
+      "staleBuildEvidenceRejected": true,
+      "changedSourceRequiresRebuildBeforeGateReevaluation": true
     }
   },
   "autonomousBottleneckRecovery": {
