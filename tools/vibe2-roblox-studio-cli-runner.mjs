@@ -205,8 +205,6 @@ export async function runRobloxStudioCliRuntime({
   if (clean(scenario?.engine).toLowerCase() !== 'roblox') throw new Error('Roblox Studio scenario engine must be roblox');
   const modulePath = path.resolve(cwd, moduleFile);
   if (!fs.existsSync(modulePath)) throw new Error(`Roblox AUTO PLAYER module missing: ${modulePath}`);
-  const resolvedStudio = findRobloxStudioBinary({ override: studioPath });
-  if (!resolvedStudio) throw new Error('RobloxStudioBeta.exe not found; set VIBE2_ROBLOX_STUDIO_PATH on the self-hosted runner');
   const normalizedPlaceFile = clean(placeFile);
   const normalizedPlaceId = clean(placeId);
   const normalizedPlaceVersion = clean(placeVersion);
@@ -214,6 +212,8 @@ export async function runRobloxStudioCliRuntime({
     if (!normalizedPlaceFile) throw new Error('Roblox Studio local-only mode requires --place-file');
     if (normalizedPlaceId || clean(universeId) || normalizedPlaceVersion) throw new Error('Roblox Studio local-only mode forbids placeId, universeId and placeVersion launch arguments');
   }
+  const resolvedStudio = findRobloxStudioBinary({ override: studioPath });
+  if (!resolvedStudio) throw new Error('RobloxStudioBeta.exe not found; set VIBE2_ROBLOX_STUDIO_PATH on the self-hosted runner');
   if (normalizedPlaceVersion && !/^[1-9]\d*$/.test(normalizedPlaceVersion)) throw new Error('Roblox Studio expected place version must be a positive integer');
   const authorizedCopy = clean(copyPermission) === COPY_PERMISSION && Boolean(clean(permissionEvidence)) && /^\d+$/.test(normalizedPlaceId);
   const expectedRuntimePlaceId = authorizedCopy || normalizedPlaceFile ? '' : normalizedPlaceId;
