@@ -4,16 +4,21 @@ import assert from 'node:assert/strict';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 
-test('Roblox runtime foundation QA uses Open Cloud sentinel and never Studio',()=>{
-  assert.match(workflow,/name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA/);
-  assert.match(workflow,/runs-on: ubuntu-latest/);
-  assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY/);
-  assert.match(workflow,/fetchRobloxRuntimeFoundationEvidence/);
-  assert.match(workflow,/validateRobloxRuntimeFoundationEvidence/);
-  assert.match(workflow,/native-foundation-sentinel-v1|company-development-roblox-runtime-foundation\.mjs/);
-  assert.doesNotMatch(workflow,/roblox-studio-authenticated/);
-  assert.doesNotMatch(workflow,/RobloxStudioBeta\.exe/);
-  assert.doesNotMatch(workflow,/ExecuteMultiplayerTestAsync/);
+test('Roblox runtime foundation lane remains Open Cloud only while post-release actual play is a separate Studio MCP lane',()=>{
+  const foundation=workflow.split('\n  studio-local-plan:')[0];
+  assert.match(foundation,/name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA/);
+  assert.match(foundation,/runs-on: ubuntu-latest/);
+  assert.match(foundation,/ROBLOX_OPEN_CLOUD_API_KEY/);
+  assert.match(foundation,/fetchRobloxRuntimeFoundationEvidence/);
+  assert.match(foundation,/validateRobloxRuntimeFoundationEvidence/);
+  assert.match(foundation,/native-foundation-sentinel-v1|company-development-roblox-runtime-foundation\.mjs/);
+  assert.doesNotMatch(foundation,/roblox-studio-authenticated/);
+  assert.doesNotMatch(foundation,/RobloxStudioBeta\.exe/);
+  assert.doesNotMatch(foundation,/ExecuteMultiplayerTestAsync/);
+  assert.match(workflow,/studio-mcp-auto-play:/);
+  assert.match(workflow,/Roblox\\mcp\.bat/);
+  assert.doesNotMatch(workflow,/RobloxPlayerBeta|roblox:\/\//i);
+  assert.doesNotMatch(workflow,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
 });
 
 test('Studio asset binding promotion waits for exact accepted Roblox runtime',()=>{
