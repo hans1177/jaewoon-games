@@ -5,6 +5,7 @@ import {pathToFileURL} from 'node:url';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const list=v=>Array.isArray(v)?v:[];
+const MULTIPLAYER_MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
 export const MINIMUM_COMMON_FIELDS=Object.freeze([
   'identity','coreFun','coreLoop','signatureSystems','progressionDirection',
   'failureRetryRisk','multiplayerMode','technicalAssumptions'
@@ -15,6 +16,12 @@ export const MINIMUM_PLATFORM_PROFILE_FIELDS=Object.freeze([
 ]);
 
 function textReady(v,min=8){return clean(v).length>=min;}
+function multiplayerModeReady(content={}){
+  const declared=clean(content.multiplayerMode).toUpperCase();
+  if(MULTIPLAYER_MODES.has(declared))return true;
+  const canonicalProfileMode=clean(content.robloxBuildProfile?.playMode).toUpperCase();
+  return MULTIPLAYER_MODES.has(canonicalProfileMode);
+}
 function commonReady(content={}){
   return textReady(content.identity,24)
     &&textReady(content.coreFun,20)
@@ -22,7 +29,7 @@ function commonReady(content={}){
     &&list(content.signatureSystems).filter(v=>v&&textReady(v.name,2)&&textReady(v.purpose,8)).length>=2
     &&textReady(content.progressionDirection,16)
     &&content.failureRetryRisk&&list(content.failureRetryRisk.failureStates).length>=2
-    &&['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(clean(content.multiplayerMode).toUpperCase())
+    &&multiplayerModeReady(content)
     &&list(content.technicalAssumptions).filter(v=>textReady(v,8)).length>=2;
 }
 function platformProfileReady(profile={},platform=''){

@@ -43,3 +43,21 @@ test('single copied or missing platform design cannot start native development',
   copied.content.platformProfiles.UNITY={...copied.content.platformProfiles.ROBLOX};
   assert.equal(evaluateMinimumDesignContract(copied).pass,false);
 });
+
+
+test('detailed multiplayer label may use canonical Roblox play mode without weakening the minimum gate',()=>{
+  const detailed=base();
+  detailed.content.multiplayerMode='COOP_WITH_BOSS_COMPANIONS';
+  detailed.content.robloxBuildProfile={playMode:'COOP'};
+  assert.equal(evaluateMinimumDesignContract(detailed).pass,true);
+
+  const competitive=base();
+  competitive.content.multiplayerMode='FOUR_VS_FOUR_INFECTION_WITH_AI_FILL';
+  competitive.content.robloxBuildProfile={playMode:'COMPETITIVE'};
+  assert.equal(evaluateMinimumDesignContract(competitive).pass,true);
+
+  const invalid=base();
+  invalid.content.multiplayerMode='CUSTOM_UNCLASSIFIED_MODE';
+  invalid.content.robloxBuildProfile={playMode:'CUSTOM'};
+  assert.equal(evaluateMinimumDesignContract(invalid).pass,false);
+});

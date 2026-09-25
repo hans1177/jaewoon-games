@@ -165,3 +165,12 @@ test('merged Roblox source PRs wake exact source drift synchronization even when
   assert.match(workflow,/pulls\/\$PR_NUMBER\/files\?per_page=100/);
   assert.match(workflow,/ROBLOX_MERGED_PR_SOURCE_FILES=/);
 });
+
+
+test('changed Roblox source repairs a stale missing development queue through canonical promotion sync',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/reason==='not-active-development'/);
+  assert.match(workflow,/gh workflow run company-design-promotion-sync\.yml/);
+  assert.match(workflow,/ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_RECOVERY=DISPATCHED/);
+  assert.doesNotMatch(workflow,/new-shadow|shadow-pipeline/i);
+});

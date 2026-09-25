@@ -185,6 +185,23 @@ jobs:
           echo 'ROBLOX_SOURCE_SYNC_RUNTIME_PERSIST=FAILED' >&2
           exit 1
 
+      - name: Recover design-ready Roblox games missing from runtime queue
+        if: steps.changed.outputs.game_ids != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t missing_ids < <(node -e "const r=require('/tmp/roblox-source-drift-results.json');for(const x of r.filter(x=>x.skipped===true&&x.reason==='not-active-development'))console.log(x.gameId)")
+          missing="${#missing_ids[@]}"
+          echo "ROBLOX_SOURCE_SYNC_MISSING_QUEUE_COUNT=$missing"
+          if [[ "$missing" -gt 0 ]]; then
+            gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_RECOVERY=DISPATCHED:$(IFS=,; echo "${missing_ids[*]}")"
+          else
+            echo 'ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_RECOVERY=NO'
+          fi
+
       - name: Dispatch canonical Roblox runtime for fresh build
         if: steps.changed.outputs.game_ids != ''
         env:
