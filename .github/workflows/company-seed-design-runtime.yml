@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-all-games-design-reset.mjs'
+      - 'game-catalog.json'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'tools/company-design-checkpoint-recovery.mjs'
@@ -137,6 +139,13 @@ jobs:
           console.log(`OWNER_ACTIVE_DESIGN_RESET_MATERIALIZED=${result.changed.length}`);
           console.log(`OWNER_ACTIVE_DESIGN_RESET_IDS=${active.map(x=>x.gameId).join(',')}`);
           NODE
+
+      - name: Auto-enroll active games missing design into canonical GAME_SEED intake
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-all-games-design-reset.mjs --auto-missing-design-intake
+          echo 'MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
 
       - name: Validate shared worker policy log and architecture context
         run: |
@@ -389,6 +398,15 @@ jobs:
           NODE
         env:
           GAME_ID: ${{ matrix.target.game_id }}
+
+      - name: Ensure target missing-design GAME_SEED exists
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-all-games-design-reset.mjs --auto-missing-design-intake --game-id="$GAME_ID"
+          echo 'TARGET_MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
 
       - name: Normalize target GAME_SEED contract
         env:
