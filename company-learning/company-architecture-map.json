@@ -3175,7 +3175,7 @@
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate.robloxStorePresentation",
       "titleSource": "roblox-games/<gameId>/launch-mvp.json",
       "titleResolver": "tools/company-roblox-store-presentation.mjs",
-      "titleFormat": "ENGLISH | KOREAN",
+      "titleFormat": "ENGLISH_PRIMARY | KOREAN_SUBTITLE",
       "creativeDirectionSource": "company-learning/marketing/<gameId>/latest.json#creative.thumbnailDirection",
       "creativeOutputRoot": "roblox-games/<gameId>/store-presentation/",
       "thumbnailProduction": "CURRENT_GAME_IDENTITY_PLUS_VERIFIED_GAMEPLAY_FRAME",
@@ -3189,7 +3189,12 @@
       ],
       "publicGateEvidence": "company-runtime:development-queue.json#robloxStorePresentationEvidence",
       "runtimeCandidateFailureIsolation": true,
-      "externalPublicReleaseBlocking": true
+      "externalPublicReleaseBlocking": true,
+      "titleHierarchy": "ENGLISH_PRIMARY_KOREAN_SUBTITLE",
+      "thumbnailCandidateCount": 3,
+      "thumbnailCandidateSource": "DISTINCT_VERIFIED_ACTUAL_GAMEPLAY_FRAMES",
+      "thumbnailBenchmark": "ROBLOX_HIGH_CLICK_INTENT_STRUCTURAL_TRAITS_WITHOUT_COPYING",
+      "thumbnailPersonalization": "2_TO_5_ELIGIBLE_INITIAL_3"
     }
   },
   "autonomousBottleneckRecovery": {
