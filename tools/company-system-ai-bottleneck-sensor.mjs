@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { systemAiImpactProfile } from './company-system-ai-queue.mjs';
 
 const clean=v=>String(v??'').trim();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
@@ -29,9 +30,9 @@ function fileOverlap(a={},b={}){
 function rankPriority(v=''){
   return({critical:4,high:3,normal:2,low:1})[clean(v).toLowerCase()]||2;
 }
-function chooseRepresentative(rows=[]){
-  return [...rows].sort((a,b)=>rankPriority(b.priority)-rankPriority(a.priority)
-    ||Number(b.impactScore||0)-Number(a.impactScore||0)
+function chooseRepresentative(rows=[],impactProfiles=new Map()){
+  return [...rows].sort((a,b)=>(impactProfiles.get(b.id)?.score||Number(b.impactScore||0))-(impactProfiles.get(a.id)?.score||Number(a.impactScore||0))
+    ||rankPriority(b.priority)-rankPriority(a.priority)
     ||clean(a.createdAt).localeCompare(clean(b.createdAt))
     ||clean(a.id).localeCompare(clean(b.id)))[0]||null;
 }
@@ -49,6 +50,7 @@ export function analyzeSystemAiBottlenecks({
   const queued=tasks.filter(t=>clean(t.status).toLowerCase()==='queued');
   const running=tasks.filter(t=>clean(t.status).toLowerCase()==='running');
   const awaiting=tasks.filter(t=>clean(t.status).toLowerCase()==='awaiting-supervisor');
+  const impactProfiles=new Map(tasks.map(task=>[clean(task.id),systemAiImpactProfile(task,systemAiQueue,{at})]));
   const leaseMs=Math.max(1,Number(leaseMinutes)||30)*60000;
   const stale=running.filter(t=>{
     const stamp=reservedAtMs(t);
@@ -71,15 +73,16 @@ export function analyzeSystemAiBottlenecks({
         signature,
         size:rows.length,
         runningRepresentativeExists,
-        representativeTaskId:runningRepresentativeExists?null:(chooseRepresentative(queuedRows)?.id||null),
+        representativeTaskId:runningRepresentativeExists?null:(chooseRepresentative(queuedRows,impactProfiles)?.id||null),
+        maxImpactScore:Math.max(...rows.map(t=>Number(impactProfiles.get(clean(t.id))?.score||0))),
         taskIds:rows.map(t=>clean(t.id)).filter(Boolean)
       };
     })
     .sort((a,b)=>b.size-a.size||a.signature.localeCompare(b.signature));
 
   const disjointQueued=[];
-  for(const task of [...queued].sort((a,b)=>rankPriority(b.priority)-rankPriority(a.priority)
-    ||Number(b.impactScore||0)-Number(a.impactScore||0)
+  for(const task of [...queued].sort((a,b)=>(impactProfiles.get(clean(b.id))?.score||0)-(impactProfiles.get(clean(a.id))?.score||0)
+    ||rankPriority(b.priority)-rankPriority(a.priority)
     ||clean(a.createdAt).localeCompare(clean(b.createdAt)))){
     if([...running,...disjointQueued].some(other=>fileOverlap(task,other)))continue;
     disjointQueued.push(task);
@@ -99,6 +102,28 @@ export function analyzeSystemAiBottlenecks({
   const configured=Math.max(1,Math.floor(Number(maxBatch)||32));
   const freeCapacity=Math.max(0,configured-running.length);
   const recommendedBatch=Math.max(0,Math.min(configured,freeCapacity,disjointQueued.length));
+  const disjointIds=new Set(disjointQueued.map(t=>clean(t.id)));
+  const canaryFirst=commonFailureCohorts
+    .map(row=>clean(row.representativeTaskId))
+    .filter(id=>id&&disjointIds.has(id));
+  const recommendedReserveTaskIds=uniq([
+    ...canaryFirst,
+    ...disjointQueued.map(t=>clean(t.id))
+  ]).slice(0,recommendedBatch);
+  const recommendedTargets=recommendedReserveTaskIds.map(id=>{
+    const task=tasks.find(t=>clean(t.id)===id)||{};
+    const impact=impactProfiles.get(id)||{};
+    const cohort=commonFailureCohorts.find(row=>row.representativeTaskId===id)||null;
+    return{
+      taskId:id,
+      priority:clean(task.priority)||'normal',
+      impactScore:Number(impact.score||0),
+      commonBottleneck:Boolean(impact.commonBottleneck),
+      cohortSize:Number(cohort?.size||impact.cohortSize||1),
+      failureSignature:clean(cohort?.signature||impact.signature)||null,
+      responsibleFiles:uniq(task.responsibleFiles)
+    };
+  });
   const reservationWaitMs=Math.max(0,Number(workflowMetrics.reservationWaitMs)||0);
   const fanInWaitMs=Math.max(0,Number(workflowMetrics.fanInWaitMs)||0);
   const supervisorReviewWaitMs=Math.max(0,Number(workflowMetrics.supervisorReviewWaitMs)||0);
@@ -129,6 +154,17 @@ export function analyzeSystemAiBottlenecks({
     configuredBatch:configured,
     freeCapacity,
     recommendedBatch,
+    recommendedReserveTaskIds,
+    recommendedTargets,
+    decisionSummary:{
+      representativeCanaryCount:canaryFirst.length,
+      highestImpactTaskId:recommendedTargets[0]?.taskId||null,
+      highestImpactScore:recommendedTargets[0]?.impactScore||0,
+      pendingRuns,
+      reservationWaitMs,
+      fanInWaitMs,
+      supervisorReviewWaitMs
+    },
     actions,
     reserveSharedQueueMutationSerialized:true,
     disjointWorkersMayRunParallel:true,
@@ -152,5 +188,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_BOTTLENECK_STALE_RESERVATIONS='+result.staleReservations.length);
   console.log('SYSTEM_AI_BOTTLENECK_COMMON_FAILURE_COHORTS='+result.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_BATCH='+result.recommendedBatch);
+  console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_TARGETS='+(result.recommendedReserveTaskIds||[]).join(','));
   console.log('SYSTEM_AI_BOTTLENECK_ACTIONS='+result.actions.join(','));
 }
