@@ -510,7 +510,7 @@ test('Studio inventory parser accepts current id and studio instance id response
   assert.deepEqual(legacy,[{studioId:'studio-legacy',name:'legacy',placeId:''}]);
 });
 
-test('Studio console classification blocks MessageError but keeps warnings and stack markers non-blocking',()=>{
+test('Studio console classification blocks errors and critical boot warnings while keeping ordinary warnings non-blocking',()=>{
   const warningOnly={
     content:[{
       type:'text',
@@ -526,10 +526,32 @@ test('Studio console classification blocks MessageError but keeps warnings and s
   assert.equal(warningResult.warningCount,1);
   assert.equal(warningResult.structuredEntryCount,3);
 
+  const gameActionYield={
+    content:[{
+      type:'text',
+      text:JSON.stringify({message:'Infinite yield possible on ReplicatedStorage:WaitForChild("GameAction")',messageType:2,timestamp:4})
+    }]
+  };
+  const gameActionYieldResult=classifyStudioConsoleOutput(gameActionYield);
+  assert.equal(gameActionYieldResult.errors.length,1);
+  assert.match(gameActionYieldResult.errors[0].signature,/GameAction/);
+  assert.equal(gameActionYieldResult.warningCount,1);
+
+  const dataStoreBootError={
+    content:[{
+      type:'text',
+      text:JSON.stringify({message:'DataStoreService: StudioAccessToApisNotAllowed: Studio access to APIs is not allowed. API: GetAsync',messageType:3,timestamp:5})
+    }]
+  };
+  const dataStoreBootResult=classifyStudioConsoleOutput(dataStoreBootError);
+  assert.equal(dataStoreBootResult.errors.length,1);
+  assert.match(dataStoreBootResult.errors[0].signature,/DataStoreService/);
+  assert.equal(dataStoreBootResult.warningCount,0);
+
   const realError={
     content:[{
       type:'text',
-      text:JSON.stringify({message:'Game.server.luau:42: attempt to index nil with Health',messageType:3,timestamp:4})
+      text:JSON.stringify({message:'Game.server.luau:42: attempt to index nil with Health',messageType:3,timestamp:6})
     }]
   };
   const errorResult=classifyStudioConsoleOutput(realError);
@@ -543,6 +565,11 @@ test('Studio console classification blocks MessageError but keeps warnings and s
   const unknownResult=classifyStudioConsoleOutput(unknownStrong);
   assert.equal(unknownResult.errors.length,1);
   assert.equal(unknownResult.errors[0].signature,'Script Runtime Error: unhandled exception');
+
+  const unknownGameActionYield={
+    content:[{type:'text',text:JSON.stringify({message:'Infinite yield possible on ReplicatedStorage:WaitForChild("GameAction")',messageType:null})}]
+  };
+  assert.equal(classifyStudioConsoleOutput(unknownGameActionYield).errors.length,1);
 });
 
 test('Studio console parser accepts line-delimited structured console output',()=>{
