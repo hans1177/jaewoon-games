@@ -10,13 +10,17 @@ const write=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n
 function robloxState(item={}){
   const pub=item.robloxPublicationTarget||{};
   const rel=item.robloxReleaseEvidence||{};
-  const placeId=clean(pub.placeId||rel.placeId);
-  const published=bool(rel.published)||bool(pub.published)||bool(rel.verified)||bool(pub.verified);
-  const explicitPublic=bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC';
+  const staleSharedTarget=item.robloxSharedTargetCurrent===false
+    &&pub.dedicated!==true
+    &&Boolean(clean(pub.placeId||rel.placeId));
+  const placeId=staleSharedTarget?'':clean(pub.placeId||rel.placeId);
+  const published=!staleSharedTarget&&(bool(rel.published)||bool(pub.published)||bool(rel.verified)||bool(pub.verified));
+  const explicitPublic=!staleSharedTarget&&(bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC');
   const runtime=bool(item.robloxRuntimePassed)||bool(item.robloxRuntimeEvidence?.pass)||bool(item.robloxIndependentQaPassed);
   const regression=bool(item.robloxRegressionPassed)||bool(item.robloxRegressionEvidence?.pass);
   const sourceReady=Boolean(item.robloxProjectPath||item.robloxSourceCommit||item.robloxCandidateBranch||item.targetSourcePaths?.ROBLOX);
-  const internalReady=bool(item.robloxInternalReleaseReady)||(published&&!explicitPublic)||(published&&runtime&&regression);
+  const internalReady=!staleSharedTarget&&(bool(item.robloxInternalReleaseReady)||(published&&!explicitPublic)||(published&&runtime&&regression));
+  const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&regression&&published));
   return{
     platform:'ROBLOX',
     developmentState:sourceReady?'NATIVE_DEVELOPMENT':'WAITING_SOURCE',
@@ -25,12 +29,13 @@ function robloxState(item={}){
     regressionPassed:regression,
     internalReleaseReady:internalReady,
     internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':'NOT_READY',
-    publicReleaseReady:bool(item.robloxPublicReleaseReady)||(runtime&&regression&&published),
+    publicReleaseReady,
     publicRelease:explicitPublic,
-    publicReleaseState:explicitPublic?'PUBLIC_RELEASE':(bool(item.robloxPublicReleaseReady)?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'),
+    publicReleaseState:explicitPublic?'PUBLIC_RELEASE':(publicReleaseReady?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'),
     placeId:placeId||null,
     internalUrl:placeId?`https://www.roblox.com/games/${placeId}`:null,
-    publicUrl:explicitPublic&&placeId?`https://www.roblox.com/games/${placeId}`:null
+    publicUrl:explicitPublic&&placeId?`https://www.roblox.com/games/${placeId}`:null,
+    internalLinkSuppressedReason:staleSharedTarget?'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET':null
   };
 }
 function unityState(item={}){
