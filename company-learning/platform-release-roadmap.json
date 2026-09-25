@@ -1,5 +1,5 @@
 {
-  "version": 364,
+  "version": 365,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -619,6 +619,18 @@
         "retryUntilPassOrVerifiedDifferentRootCause": true,
         "wakeAfterTechnicalPersist": true,
         "repairFanout": "PER_GAME_PARALLEL_EXTERNAL_PROVIDER_CAPACITY_ONLY"
+      },
+      "workflowRunConcurrency": {
+        "version": 1,
+        "exactGameDispatchGroup": "PER_GAME_STABLE_GROUP",
+        "batchDispatchGroup": "UNIQUE_PER_WORKFLOW_RUN",
+        "batchRunsMayOverlap": true,
+        "oneSlowGameMayNotQueueUnrelatedNewBatchRun": true,
+        "sharedRuntimeWritersRemainSerialized": true,
+        "heavySourceBuildPreflightF0MayNotBeSerializedByBatchWorkflowGroup": true,
+        "duplicateExactGameDispatchMaySerialize": true,
+        "cancelInProgress": false,
+        "externalProviderCapacityRemainsOnlyHeavyExecutionBoundary": true
       }
     },
     "candidateReleaseConcurrency": {
@@ -6679,6 +6691,17 @@
         "qa/company-development-roblox-runtime.test.mjs",
         "qa/company-development-roblox-headless-fast-mvp.test.mjs"
       ]
+    },
+    "robloxBatchWorkflowConcurrency20260925": {
+      "id": "ROBLOX_BATCH_WORKFLOW_CONCURRENCY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "ONE_SLOW_GAME_WORKER_IN_A_BATCH_COULD_HOLD_THE_SINGLE_BATCH_WORKFLOW_CONCURRENCY_GROUP_AND_QUEUE_NEW_UNRELATED_ROBLOX_BATCH_RUNS",
+      "resolution": "KEEP_STABLE_PER_GAME_CONCURRENCY_FOR_EXACT_GAME_DISPATCH_BUT_GIVE_EACH_BATCH_WORKFLOW_RUN_A_UNIQUE_GROUP; ONLY_SHARED_RUNTIME_JSON_WRITES_REMAIN_SERIALIZED",
+      "qualityGatesWeakened": false,
+      "runtimeWriterSerializationPreserved": true,
+      "externalProviderCapacityOnly": true,
+      "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
     }
   },
   "vibeExecutionLaneContract": {
