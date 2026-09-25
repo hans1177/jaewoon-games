@@ -377,9 +377,14 @@ test('Studio MCP unavailable recovery diagnoses setting recursively, fails fast 
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_PARSE_ERROR_COUNT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLED=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO/);
+  assert.match(studioMcpBlock,/setting_confirmed=/);
   assert.match(studioMcpBlock,/setting_blocked=/);
+  assert.match(studioMcpBlock,/\$settingConfirmed = \$settingState -eq 'YES'/);
+  assert.match(studioMcpBlock,/\$settingBlocked = -not \$settingConfirmed/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLE_REQUIRED:/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLE_NOT_CONFIRMED:/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_IN_STUDIO_ASSISTANT_UI:/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=SKIPPED_UNTIL_SETTING_CONFIRMED/);
   assert.match(studioMcpBlock,/Download exact immutable Roblox build artifact[\s\S]{0,180}if: steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
   assert.match(studioMcpBlock,/Run actual local play through official Studio MCP[\s\S]{0,180}if: steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
   assert.doesNotMatch(studioMcpBlock,/Set-Content .*AssistantSettings|Out-File .*AssistantSettings|Remove-Item .*AssistantSettings/i);
@@ -406,6 +411,13 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.equal(recovery.guiToggleAutomationForbidden,true);
   assert.equal(recovery.finalFailureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
   assert.equal(recovery.infrastructureFailureMustNotBecomeGameFailure,true);
+  assert.equal(recovery.settingEnablementEvidenceRequired,true);
+  assert.equal(recovery.confirmedEnabledState,'YES');
+  assert.deepEqual(recovery.unconfirmedStates,['NO','MISSING','UNKNOWN']);
+  assert.equal(recovery.unconfirmedSettingAction,'FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT');
+  assert.equal(recovery.automaticSettingMutationForbidden,true);
+  assert.equal(recovery.manualPrerequisite,'ASSISTANT_MANAGE_MCP_SERVERS_ENABLE_STUDIO_AS_MCP_SERVER');
+  assert.equal(recovery.automaticResumeAfterPrerequisite,true);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.mcpUnavailableRecovery||{};
   assert.equal(arch.automaticSessionAttempts,3);
   assert.equal(arch.ownedStudioRestart,true);
@@ -413,6 +425,11 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.equal(arch.assistantSettingsReadOnlyDiagnostic,true);
   assert.equal(arch.assistantSettingsMutation,false);
   assert.equal(arch.guiToggleAutomation,false);
+  assert.equal(arch.settingGate,'ASSISTANT_MCP_ENABLED_MUST_BE_CONFIRMED_YES');
+  assert.deepEqual(arch.unconfirmedSettingStates,['NO','MISSING','UNKNOWN']);
+  assert.equal(arch.unconfirmedSettingExecution,'SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS');
+  assert.equal(arch.unconfirmedSettingState,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
+  assert.equal(arch.automaticSettingMutation,false);
 });
 
 
