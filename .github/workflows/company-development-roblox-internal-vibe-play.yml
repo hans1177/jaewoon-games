@@ -56,6 +56,9 @@ jobs:
           if ([string]$item.currentStep -ne 'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG') {
             throw "ROBLOX_VIBE_PLAY_WRONG_STAGE:$($item.currentStep)"
           }
+          if ($item.robloxSharedTargetCurrent -eq $false) {
+            throw 'ROBLOX_VIBE_PLAY_SHARED_TARGET_NOT_CURRENT'
+          }
           $source = [string]$item.robloxSourceCommit
           $artifact = [string]$item.robloxBuildArtifactIdentity
           if ([string]$e.sourceRevision -ne $source -or [string]$e.artifactIdentity -ne $artifact) {
@@ -302,7 +305,8 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add development-queue.json
           git diff --cached --check
-          if (-not (git diff --cached --quiet)) {
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
             git commit -m "runtime: persist actual Roblox Vibe play $env:GAME_ID [skip ci]"
             for ($i=1; $i -le 3; $i++) {
               git push origin "HEAD:$env:COMPANY_RUNTIME_BRANCH"
