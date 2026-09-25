@@ -796,7 +796,7 @@ jobs:
           $mcpLaunchKind = 'ROBLOX_GENERATED_MCP_BATCH'
           if (Test-Path $mcpBat) {
             $batchText = Get-Content $mcpBat -Raw -ErrorAction SilentlyContinue
-            $knownBrokenBatch = $batchText -match '(?m)\)\s*\r?\n\s*else\s*\('
+            $knownBrokenBatch = ($batchText -match '(?im)^\s*else\b') -or ($batchText -match '(?i)%B[/\\]\.\.[/\\]StudioMCP\.exe') -or ($batchText -match '(?m)\)\s*\r?\n\s*else\s*\(')
             if ($knownBrokenBatch -and $mcpExe -and (Test-Path $mcpExe)) {
               $mcpCommand = $mcpExe
               $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH'
