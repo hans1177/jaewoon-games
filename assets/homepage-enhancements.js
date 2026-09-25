@@ -371,7 +371,7 @@ function buildPortfolioBoard(){
 function buildGameCenter(catalog,status){
   const hub=document.getElementById('gameHub');
   if(!hub)return;
-  for(const id of ['homeReleaseGameCenter','homeRobloxDeploymentCenter','homeWebGameCenter','homePlatformAvailableGameCenter','homeDevelopmentGameCenter'])document.getElementById(id)?.remove();
+  for(const id of ['homeInternalReleaseFallback','homeReleaseGameCenter','homeRobloxDeploymentCenter','homeWebGameCenter','homePlatformAvailableGameCenter','homeDevelopmentGameCenter'])document.getElementById(id)?.remove();
   const available=internalReleaseRows(catalog,status);
   const availableIds=new Set(available.map(gameIdOf));
   const development=developmentRows(catalog,status).filter(game=>!availableIds.has(gameIdOf(game)));
