@@ -656,7 +656,11 @@ jobs:
           for attempt in 1 2 3; do
             if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            if ! git rebase "origin/$COMPANY_RUNTIME_BRANCH"; then
+              git rebase --abort || true
+              echo 'ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE'
+              exit 0
+            fi
             sleep $((attempt*2))
           done
           test "$pushed" = '1'
@@ -735,7 +739,7 @@ jobs:
   studio-mcp-auto-play:
     name: Official Studio MCP actual play ${{ matrix.gameId }}
     needs: studio-local-plan
-    if: needs.studio-local-plan.outputs.count != '0'
+    if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.studio-local-plan.outputs.matrix) }}
