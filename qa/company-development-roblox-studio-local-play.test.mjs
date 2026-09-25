@@ -222,6 +222,9 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(studioMcpBlock,/development-roblox-package-\$\{\{ matrix\.gameId \}\}/);
   assert.match(studioMcpBlock,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
   assert.match(studioMcpBlock,/Roblox\\mcp\.bat/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POLICY=PASS/);
+  assert.match(studioMcpBlock,/JSON\.parse\(fs\.readFileSync\('main\/company-learning\/platform-release-roadmap\.json'/);
+  assert.doesNotMatch(studioMcpBlock,/platform-release-roadmap\.json' -Raw \| ConvertFrom-Json/);
   assert.match(studioMcpBlock,/--mode=mcp-run/);
   assert.match(studioMcpBlock,/Local Place SHA256 mismatch/);
   assert.match(studioMcpBlock,/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/);
