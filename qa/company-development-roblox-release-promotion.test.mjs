@@ -322,3 +322,13 @@ test('every rebuilt Roblox candidate invalidates prior Vibe play and external-pu
     /item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/
   ]) assert.match(candidate,pattern);
 });
+
+test('private runtime candidate never overwrites a shared Roblox target with one games metadata',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(workflow,/resolveRobloxBilingualTitle/);
+  assert.match(workflow,/ROBLOX_SHARED_INTERNAL_TARGET_MUTATION=FORBIDDEN/);
+  assert.match(workflow,/PENDING_DEDICATED_PRIVATE_TARGET/);
+  assert.match(workflow,/ROBLOX_METADATA_SYNC=SKIPPED_SHARED_OR_PENDING_DEDICATED_TARGET/);
+  assert.match(workflow,/ROBLOX_PLACE_TITLE_BILINGUAL=PASS/);
+  assert.doesNotMatch(workflow,/const displayName=String\(launch\.robloxTitleKorean\|\|launch\.gameName/);
+});
