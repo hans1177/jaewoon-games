@@ -1,5 +1,5 @@
 {
-  "version": 384,
+  "version": 385,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -21902,7 +21902,9 @@
     },
     "schedulerBehavior": {
       "continuousDispatchChaining": true,
-      "hourlySafetyNetCron": true,
+      "hourlySafetyNetCron": false,
+      "fiveMinuteSafetyNetCron": true,
+      "safetyNetCron": "*/5 * * * *",
       "singletonConcurrency": true,
       "noManualRestartRequiredAfterNormalCycleCompletion": true,
       "nextLearningSignalAfterCompletedGenerationRequired": true
