@@ -974,7 +974,8 @@
       "publishedCandidateVerificationRoute": "OPEN_CLOUD_ONLY",
       "reEnabledAt": "2026-09-25",
       "previousRemovalAt": "2026-09-22T03:45:00+09:00",
-      "authority": "OWNER_DIRECTIVE_2026-09-25"
+      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "sharedPublishedTargetCurrentRequired": true
     },
     "headlessValidation": {
       "version": 2,
@@ -3466,7 +3467,8 @@
       "publicationSeparatedFromStudioRunner": true,
       "publicationRoute": "OPEN_CLOUD",
       "publicationTargetDiscoveryFromStudioForbidden": true,
-      "offlineBehavior": "QUEUE_LOCAL_STUDIO_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS"
+      "offlineBehavior": "QUEUE_LOCAL_STUDIO_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS",
+      "publishedCandidateMustNotBeSupersededSharedTarget": true
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -6851,7 +6853,8 @@
       "rawSourceDirectTraining": false,
       "rawGameplayValuesDirectTraining": false,
       "robloxPlayerAutomation": false,
-      "publicServerBotPlay": false
+      "publicServerBotPlay": false,
+      "sharedSupersededCandidateCannotMintStudioActualPlayEvidence": true
     }
   },
   "vibeExecutionLaneContract": {
