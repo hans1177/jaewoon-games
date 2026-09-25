@@ -11,15 +11,24 @@ local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
 
-local store=DSS:GetDataStore("daechung-rpg-portal-v1")
+-- 네트워크 Remote는 로컬 exact Studio에서도 먼저 준비해서 클라이언트 부팅을 막지 않는다.
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
-local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
-local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")
 local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
 foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
+
+-- 미게시 로컬 exact Place에서는 GetDataStore 자체가 실패할 수 있다.
+-- 배포 Place에서는 기존 DataStore 이름과 저장 구조를 그대로 사용한다.
+local store
+local qaCaptureStore
+local foundationStore
+do
+ local ok,value=pcall(function()return DSS:GetDataStore("daechung-rpg-portal-v1")end);if ok then store=value end
+ ok,value=pcall(function()return DSS:GetDataStore("qa-camera-captures-v1")end);if ok then qaCaptureStore=value end
+ ok,value=pcall(function()return DSS:GetDataStore("native-foundation-sentinel-v1")end);if ok then foundationStore=value end
+end
 local qaCaptureLast={}
 
 local world
@@ -62,6 +71,7 @@ local function classDisplay(classId,advId,secondId)
  local c=classDef(classId);return c and c.Name or"직업 미선택"
 end
 local function loadFoundationState()
+ if not foundationStore then return end
  local ok,old=pcall(function()return foundationStore:GetAsync("latest")end)
  if not ok or typeof(old)~="table"then return end
  if tostring(old.gameId or"")~=tostring(C.GameId)or tonumber(old.placeId)~=game.PlaceId or tonumber(old.placeVersion)~=game.PlaceVersion then return end
@@ -74,6 +84,7 @@ local function loadFoundationState()
 end
 local function foundationCheckpoint(name,p,extra)
  if foundationSeen[name]then return true end
+ if not foundationStore then return false end
  local payload={name=name,at=os.time(),userId=p and p.UserId or 0,gameId=C.GameId,placeId=tostring(game.PlaceId),placeVersion=game.PlaceVersion}
  if typeof(extra)=="table"then for k,v in pairs(extra)do if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then payload[k]=v end end end
  local committedSequence=foundationSequence
@@ -515,16 +526,18 @@ p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialP
 end
 local function load(p)
  init(p)
+ if not store then setStats(p,true);return end
  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
  if ok and typeof(d)=="table"then for _,k in ipairs(SAVE)do if d[k]~=nil then p:SetAttribute(k,d[k])end end end
  setStats(p,true)
 end
 local function save(p)
+ if not store then return end
  local d={};for _,k in ipairs(SAVE)do d[k]=p:GetAttribute(k)end
  pcall(function()store:SetAsync("p:"..p.UserId,d)end)
 end
 task.spawn(function()
- if C.SaveEnabled~=true or foundationSeen.SAVE_ROUNDTRIP then return end
+ if C.SaveEnabled~=true or foundationSeen.SAVE_ROUNDTRIP or not store then return end
  local probeKey="__foundation_probe__:"..tostring(game.PlaceVersion)
  local token=C.GameId..":"..tostring(game.PlaceVersion)..":"..tostring(os.time())
  local ok,readBack=pcall(function()
@@ -1390,7 +1403,7 @@ foundationRemote.OnServerEvent:Connect(function(p,name)
 end)
 
 qaCaptureRemote.OnServerEvent:Connect(function(p,labelName,value)
- if C.QACameraEnabled~=true then return end;if typeof(labelName)~="string"then return end
+ if C.QACameraEnabled~=true or not qaCaptureStore then return end;if typeof(labelName)~="string"then return end
  local raw=tostring(value or"");if #raw<1 or #raw>160 then return end;local isStatus=labelName=="STATUS";if not isStatus and not raw:match("^%d+$")then return end
  local now=os.clock();if now-(qaCaptureLast[p]or 0)<.18 then return end;qaCaptureLast[p]=now
  local rec={gameId=C.GameId,label=labelName,userId=p.UserId,capturedAt=os.time(),kind=isStatus and"STATUS"or"CAPTURE"}
