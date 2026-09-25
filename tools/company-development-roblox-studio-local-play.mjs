@@ -651,6 +651,10 @@ export function createLocalStudioPlayEvidence({
     &&errors.length===0
   );
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
+  const studioMcpServerEnablementRequired=errors.some(row=>
+    /ROBLOX_STUDIO_MCP_SETTING_ENABLE|ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(row.signature||'')
+    &&(/available=:/i.test(row.signature||'')||/SETTING_ENABLE/i.test(row.signature||''))
+  );
   const failureClass=pass?null
     :infrastructureFailure?'STUDIO_MCP_INFRASTRUCTURE_PENDING'
     :errors.length?'STUDIO_MCP_RUNTIME_ERROR'
@@ -678,6 +682,8 @@ export function createLocalStudioPlayEvidence({
       learningScope:'STRUCTURED_VERIFIED_QA_FACTS_ONLY',
       infrastructureFailure,
       failureClass,
+      studioMcpServerEnablementRequired,
+      operatorPrerequisite:studioMcpServerEnablementRequired?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
       localPlaceFile:true,
       officialStudioMcp:true,
       onlinePlaceDirectOpen:false,
