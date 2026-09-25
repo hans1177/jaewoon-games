@@ -1,0 +1,95 @@
+name: Vibe2 Roblox R4 Obstacle Variety Smoke
+
+on:
+  pull_request:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - 'tools/vibe2-roblox-obstacle-variety-smoke.mjs'
+      - '.github/workflows/vibe2-roblox-obstacle-variety-r4-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibe2-roblox-obstacle-variety-r4-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify R4 obstacle traversal contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-roblox-obstacle-variety-smoke.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const source=fs.readFileSync('tools/vibe2-roblox-obstacle-variety-smoke.mjs','utf8');
+          for(const token of ['precision-zone','moving-platform-live','sweeper-live','Step%02dC','CreateVirtualInput','StudioTestService:ExecutePlayModeAsync']) {
+            if(!source.includes(token)) throw new Error(`missing R4 runtime contract: ${token}`);
+          }
+          console.log('VIBE2_ROBLOX_R4_OBSTACLE_CONTRACT=PASS');
+          NODE
+
+  live-studio:
+    needs: contract
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Locate authenticated Roblox Studio
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
+          if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
+
+      - name: Traverse R4 obstacle zones in real Studio
+        shell: powershell
+        env:
+          CANDIDATE_REF: vibe2/candidate/OWNER-ROBLOX-OBBY-OBSTACLE-VARIETY-20260916-R4
+          CANDIDATE_PROJECT_ROOT: roblox-games/seed-roblox-obby-party-minigam-tower-of-hell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git config --global --add safe.directory "$env:GITHUB_WORKSPACE"
+          $candidateDir = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-r4-obstacles'
+          $candidateZip = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-r4-obstacles.zip'
+          if (Test-Path $candidateDir) { Remove-Item -Recurse -Force $candidateDir }
+          if (Test-Path $candidateZip) { Remove-Item -Force $candidateZip }
+          git fetch origin $env:CANDIDATE_REF
+          if ($LASTEXITCODE -ne 0) { throw 'R4 candidate fetch failed' }
+          git archive --format=zip --output="$candidateZip" FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'R4 candidate archive failed' }
+          Expand-Archive -Path $candidateZip -DestinationPath $candidateDir -Force
+          $projectRoot = Join-Path $candidateDir $env:CANDIDATE_PROJECT_ROOT
+          node tools/vibe2-roblox-obstacle-variety-smoke.mjs `
+            "--project-root=$projectRoot" `
+            --output="$env:RUNNER_TEMP/vibe2-roblox-r4-obstacles.json" `
+            --timeout=240000
+          if ($LASTEXITCODE -ne 0) { throw 'R4 obstacle traversal Studio QA failed' }
+          Write-Host "VIBE2_ROBLOX_R4_CANDIDATE_REF=$env:CANDIDATE_REF"
+          Write-Host 'VIBE2_ROBLOX_R4_STUDIO_QA=PASS'
+
+      - name: Upload R4 obstacle evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-roblox-r4-obstacles-${{ github.run_id }}
+          path: ${{ runner.temp }}/vibe2-roblox-r4-obstacles.json
+          if-no-files-found: warn
+          retention-days: 3
