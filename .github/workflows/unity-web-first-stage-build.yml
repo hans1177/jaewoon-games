@@ -7,6 +7,27 @@ on:
       - main
     paths:
       - '.build-requests/unity-web/**'
+  workflow_call:
+    inputs:
+      request_file:
+        required: false
+        type: string
+      game_id:
+        required: false
+        type: string
+      project_path:
+        required: false
+        type: string
+      build_method:
+        required: false
+        type: string
+      source_commit:
+        required: false
+        type: string
+      publish_to_main:
+        required: false
+        default: false
+        type: boolean
   workflow_dispatch:
     inputs:
       request_file:
@@ -49,6 +70,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 75
+    outputs:
+      repair_required: ${{ steps.repair.outputs.required }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -475,7 +498,11 @@ jobs:
             &&Boolean(item.platformDesignProfiles?.UNITY?.source);
           const codePass=play.pass===true&&play.gameplay?.pass===true&&play.coreFun?.pass===true&&play.noCriticalRuntimeError===true;
           const graphicsCounts={Art:countFiles('Art'),Prefabs:countFiles('Prefabs'),Materials:countFiles('Materials'),Animations:countFiles('Animations')};
-          const graphicsPass=Object.values(graphicsCounts).filter(v=>v>0).length>=3
+          const floorSourceFile=path.join(project,'unity-web-floor-source.json');
+          let floorSource={};try{if(fs.existsSync(floorSourceFile))floorSource=JSON.parse(fs.readFileSync(floorSourceFile,'utf8'));}catch{}
+          const bootstrapGraphicsBlocked=floorSource?.presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'||floorSource?.upperPlatformReady===false;
+          const graphicsPass=!bootstrapGraphicsBlocked
+            &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
             &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png');
           const webglPass=build.bootSmoke==='PASS'
             &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
@@ -503,7 +530,7 @@ jobs:
           const criteria={
             design:{pass:designPass},
             code:{pass:codePass},
-            graphics:{pass:graphicsPass,assetCounts:graphicsCounts},
+            graphics:{pass:graphicsPass,assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
             webglBuild:{pass:Boolean(webglPass)},
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
@@ -539,10 +566,17 @@ jobs:
           retention-days: 7
 
       - name: Mark Unity Web floor repair requirement
+        id: repair
         if: steps.readiness.outputs.pass != 'true'
         shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
+          set -euo pipefail
+          echo 'required=true' >> "$GITHUB_OUTPUT"
           echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
+          echo "UNITY_WEB_REPAIR_GAME_ID=$GAME_ID"
+          echo 'UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW'
           exit 42
 
       - name: Create verified Unity Web readiness PR
@@ -581,3 +615,14 @@ jobs:
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
+
+
+  repair-vibe2:
+    name: Re-enter Vibe2 Unity Web causal repair
+    needs: build
+    if: always() && (needs.build.outputs.repair_required == 'true' || needs.build.result == 'failure')
+    permissions:
+      contents: write
+      actions: write
+    uses: ./.github/workflows/vibe2-24h-runner.yml
+    secrets: inherit
