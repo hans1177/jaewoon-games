@@ -835,16 +835,15 @@ jobs:
           Write-Host 'ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO'
 
           $settingConfirmed = $settingState -eq 'YES'
-          $settingBlocked = -not $settingConfirmed
+          $settingExplicitlyDisabled = $settingState -eq 'NO'
+          $settingProbeRequired = -not $settingConfirmed -and -not $settingExplicitlyDisabled
+          $settingBlocked = $settingExplicitlyDisabled
           "setting_confirmed=$($settingConfirmed.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "setting_probe_required=$($settingProbeRequired.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "setting_blocked=$($settingBlocked.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           if ($settingBlocked) {
             $blockedResult = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
-            $settingSignature = if ($settingState -in @('NO','MISSING')) {
-              "ROBLOX_STUDIO_MCP_SETTING_ENABLE_REQUIRED:$settingState"
-            } else {
-              "ROBLOX_STUDIO_MCP_SETTING_ENABLE_NOT_CONFIRMED:$settingState"
-            }
+            $settingSignature = "ROBLOX_STUDIO_MCP_SETTING_ENABLE_REQUIRED:$settingState"
             @{
               version = 1
               authority = 'roblox-official-studio-mcp-runtime'
@@ -874,7 +873,13 @@ jobs:
             "VIBE2_STUDIO_RUNTIME_RESULT=$blockedResult" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             Write-Host "ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_IN_STUDIO_ASSISTANT_UI:$settingState"
             Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
-            Write-Host 'ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=SKIPPED_UNTIL_SETTING_CONFIRMED'
+            Write-Host 'ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=SKIPPED_EXPLICITLY_DISABLED'
+          } elseif ($settingProbeRequired) {
+            Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC_ADVISORY=$settingState"
+            Write-Host 'ROBLOX_STUDIO_MCP_ENABLEMENT_AUTHORITY=OFFICIAL_REQUIRED_TOOL_HANDSHAKE'
+            Write-Host 'ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=PROBE_OFFICIAL_TOOL_HANDSHAKE'
+          } else {
+            Write-Host 'ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=CONFIRMED_ENABLED'
           }
 
           "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
