@@ -2,238 +2,8 @@
   "version": 2,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-25T04:09:06.097Z",
+  "updatedAt": "2026-09-25T04:24:55.136Z",
   "games": [
-    {
-      "gameId": "bug-defense",
-      "gameName": "곤충 디펜스",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "bug-defense",
-        "gameName": "곤충 디펜스",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "곤충 디펜스",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "survival",
-      "gameName": "나의 생존기",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "survival",
-        "gameName": "나의 생존기",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "나의 생존기",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
     {
       "gameId": "cozy-island",
       "gameName": "포근섬",
@@ -354,6 +124,696 @@
       ]
     },
     {
+      "gameId": "amusement-tycoon",
+      "gameName": "놀이공원 타이쿤",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "amusement-tycoon",
+        "gameName": "놀이공원 타이쿤",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "놀이공원 타이쿤",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
+      "gameId": "bug-defense",
+      "gameName": "곤충 디펜스",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "bug-defense",
+        "gameName": "곤충 디펜스",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "곤충 디펜스",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
+      "gameId": "line-defense",
+      "gameName": "골목 군단 대전",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "line-defense",
+        "gameName": "골목 군단 대전",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "골목 군단 대전",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
+      "gameId": "village-dungeons",
+      "gameName": "마을 던전 RPG",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "village-dungeons",
+        "gameName": "마을 던전 RPG",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 79,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 80,
+            "development": 77,
+            "graphics": 87,
+            "audio": 84,
+            "qa": 72,
+            "balance": 80,
+            "growthMarketing": 75
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "마을 던전 RPG",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": true,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
+      "gameId": "fantasy-survival",
+      "gameName": "마력숲 생존기",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "fantasy-survival",
+        "gameName": "마력숲 생존기",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "마력숲 생존기",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
+      "gameId": "monster-adventure",
+      "gameName": "몬스터 어드벤처",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "monster-adventure",
+        "gameName": "몬스터 어드벤처",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "몬스터 어드벤처",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "gameName": "잃어버린 별의 메아리",
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
@@ -411,236 +871,6 @@
         },
         "signals": {
           "genre": "잃어버린 별의 메아리",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "gameName": "천상의 보루",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "seed-single-defense-strat-celestial-bastion",
-        "gameName": "천상의 보루",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "천상의 보루",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "gameName": "색채의 연쇄",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "seed-puzzle-chromatic-cascade",
-        "gameName": "색채의 연쇄",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "색채의 연쇄",
           "playMode": "UNSPECIFIED",
           "multiplayer": false,
           "deepSystemGenre": false,
@@ -929,6 +1159,236 @@
       ]
     },
     {
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "gameName": "색채의 연쇄",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "gameName": "색채의 연쇄",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "색채의 연쇄",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "gameName": "천상의 보루",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "gameName": "천상의 보루",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "천상의 보루",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
       "gameName": "엘도리아 연대기",
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
@@ -1044,14 +1504,14 @@
       ]
     },
     {
-      "gameId": "monster-adventure",
-      "gameName": "몬스터 어드벤처",
+      "gameId": "survival",
+      "gameName": "나의 생존기",
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "externalPublicReleaseState": "INTERNAL_ONLY",
       "publicReleaseReady": false,
       "suitability": {
-        "gameId": "monster-adventure",
-        "gameName": "몬스터 어드벤처",
+        "gameId": "survival",
+        "gameName": "나의 생존기",
         "executionMode": "ROBLOX_UNITY_CONCURRENT",
         "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
         "ROBLOX": {
@@ -1100,467 +1560,7 @@
           ]
         },
         "signals": {
-          "genre": "몬스터 어드벤처",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "village-dungeons",
-      "gameName": "마을 던전 RPG",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "village-dungeons",
-        "gameName": "마을 던전 RPG",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 79,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 80,
-            "development": 77,
-            "graphics": 87,
-            "audio": 84,
-            "qa": 72,
-            "balance": 80,
-            "growthMarketing": 75
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "마을 던전 RPG",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": true,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "amusement-tycoon",
-      "gameName": "놀이공원 타이쿤",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "amusement-tycoon",
-        "gameName": "놀이공원 타이쿤",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "놀이공원 타이쿤",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "line-defense",
-      "gameName": "골목 군단 대전",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "line-defense",
-        "gameName": "골목 군단 대전",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "골목 군단 대전",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "fantasy-survival",
-      "gameName": "마력숲 생존기",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "fantasy-survival",
-        "gameName": "마력숲 생존기",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "마력숲 생존기",
+          "genre": "나의 생존기",
           "playMode": "UNSPECIFIED",
           "multiplayer": false,
           "deepSystemGenre": false,

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-09-25T04:09:05.698Z",
+  "generatedAt": "2026-09-25T04:24:54.824Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -125,8 +125,8 @@
     },
     {
       "gameId": "line-defense",
-      "decision": "CONTINUE",
-      "reason": "NORMAL_ACTIVE_DEVELOPMENT",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "evidence": {
@@ -135,13 +135,13 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 0,
+          "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 0
         },
         "qa": {
-          "criticalRuntimeOrGateBlocker": false
+          "criticalRuntimeOrGateBlocker": true
         },
         "balance": {
           "structuralCoreFailure": false
