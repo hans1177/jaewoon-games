@@ -959,12 +959,49 @@ jobs:
           $expected = ([string]$env:EXPECTED_ARTIFACT).ToLowerInvariant()
           if ("sha256:$hash" -ne $expected) { throw "Local Place SHA256 mismatch: sha256:$hash != $expected" }
 
-          $studioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+          $warmStudioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -PassThru
+          Write-Host "ROBLOX_STUDIO_MCP_WARM_PROCESS_ID=$($warmStudioProcess.Id)"
+          try {
+            if ($warmStudioProcess.WaitForInputIdle(30000)) {
+              Write-Host 'ROBLOX_STUDIO_MCP_WARM_GUI_READY=YES'
+            } else {
+              Write-Host 'ROBLOX_STUDIO_MCP_WARM_GUI_READY=TIMEOUT_CONTINUE'
+            }
+          } catch {
+            Write-Host 'ROBLOX_STUDIO_MCP_WARM_GUI_READY=UNAVAILABLE_CONTINUE'
+          }
+          Start-Sleep -Seconds 6
+
+          $warmDiag = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-setting-warm.json'
+          $warmDiagArgs = @(
+            '--mode=diagnose-setting',
+            "--settings-root=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT",
+            "--output=$warmDiag"
+          )
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @warmDiagArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP warm read-only setting diagnostic failed' }
+          $warmSetting = Get-Content $warmDiag -Raw | ConvertFrom-Json
+          Write-Host "ROBLOX_STUDIO_MCP_WARM_SETTING_ENABLED=$([string]$warmSetting.state)"
+          Write-Host "ROBLOX_STUDIO_MCP_WARM_SETTING_ENABLED_COUNT=$([int]$warmSetting.enabledCount)"
+          Write-Host 'ROBLOX_STUDIO_MCP_WARM_SETTING_MUTATION=NO'
+
+          $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+          Start-Sleep -Seconds 4
+          $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Sort-Object StartTime)
+          if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio exited before exact local Place MCP probe' }
+          $studioProcess = $ownedStudioProcesses | Sort-Object StartTime -Descending | Select-Object -First 1
+          $ownedStudioIds = @($ownedStudioProcesses | ForEach-Object { [string]$_.Id } | Select-Object -Unique)
+          $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
+          $env:VIBE2_STUDIO_PROCESS_IDS = $ownedStudioIds -join ','
+
           "VIBE2_LOCAL_PLACE_FILE=$($places[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_PROCESS_IDS=$($ownedStudioIds -join ',')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_STUDIO_EXPECTED_NAME=$($places[0].BaseName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "ROBLOX_STUDIO_LOCAL_ARTIFACT_BIND=PASS:$hash"
           Write-Host "ROBLOX_STUDIO_PROCESS_ID=$($studioProcess.Id)"
+          Write-Host "ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=$($ownedStudioIds -join ',')"
+          Write-Host "ROBLOX_STUDIO_MCP_PLACE_LAUNCH_PROCESS_ID=$($placeLaunchProcess.Id)"
           try {
             if ($studioProcess.WaitForInputIdle(30000)) {
               Write-Host 'ROBLOX_STUDIO_GUI_READY=YES'
@@ -1050,25 +1087,26 @@ jobs:
             if ($attempt -ge $maxSessionAttempts) { break }
 
             Write-Host "ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt"
-            if ($env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
-              Stop-Process -Id ([int]$env:VIBE2_STUDIO_PROCESS_ID) -Force -ErrorAction SilentlyContinue
+            $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+$' } | Select-Object -Unique)
+            foreach ($ownedId in $ownedIds) {
+              Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
             }
             Start-Sleep -Seconds 2
             if (-not (Test-Path $env:VIBE2_LOCAL_PLACE_FILE)) { throw 'Exact local Place artifact disappeared before MCP recovery restart' }
-            $studioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
-            $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
-            "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            Write-Host "ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=$($studioProcess.Id)"
+
+            $warmStudioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -PassThru
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_WARM_PROCESS_ID=$($warmStudioProcess.Id):attempt=$attempt"
             try {
-              if ($studioProcess.WaitForInputIdle(30000)) {
-                Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES'
+              if ($warmStudioProcess.WaitForInputIdle(30000)) {
+                Write-Host "ROBLOX_STUDIO_MCP_RETRY_WARM_GUI_READY=YES:attempt=$attempt"
               } else {
-                Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE'
+                Write-Host "ROBLOX_STUDIO_MCP_RETRY_WARM_GUI_READY=TIMEOUT_CONTINUE:attempt=$attempt"
               }
             } catch {
-              Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
+              Write-Host "ROBLOX_STUDIO_MCP_RETRY_WARM_GUI_READY=UNAVAILABLE_CONTINUE:attempt=$attempt"
             }
-            Start-Sleep -Seconds 5
+            Start-Sleep -Seconds 6
+
             $retryDiag = Join-Path $env:RUNNER_TEMP "roblox-studio-mcp-setting-retry-$attempt.json"
             $retryDiagArgs = @(
               '--mode=diagnose-setting',
@@ -1081,6 +1119,30 @@ jobs:
             Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=$([string]$retrySetting.state):attempt=$attempt"
             Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=$([int]$retrySetting.enabledCount):attempt=$attempt"
             Write-Host 'ROBLOX_STUDIO_MCP_RETRY_SETTING_MUTATION=NO'
+
+            $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
+            Start-Sleep -Seconds 4
+            $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Sort-Object StartTime)
+            if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio exited before MCP recovery Place probe' }
+            $studioProcess = $ownedStudioProcesses | Sort-Object StartTime -Descending | Select-Object -First 1
+            $ownedStudioIds = @($ownedStudioProcesses | ForEach-Object { [string]$_.Id } | Select-Object -Unique)
+            $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
+            $env:VIBE2_STUDIO_PROCESS_IDS = $ownedStudioIds -join ','
+            "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "VIBE2_STUDIO_PROCESS_IDS=$($ownedStudioIds -join ',')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=$($studioProcess.Id)"
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_OWNED_PROCESS_IDS=$($ownedStudioIds -join ','):attempt=$attempt"
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_PLACE_LAUNCH_PROCESS_ID=$($placeLaunchProcess.Id):attempt=$attempt"
+            try {
+              if ($studioProcess.WaitForInputIdle(30000)) {
+                Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES'
+              } else {
+                Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE'
+              }
+            } catch {
+              Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
+            }
+            Start-Sleep -Seconds 5
           }
 
           if (-not $success) {
@@ -1249,7 +1311,11 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = 'Continue'
-          if ($env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
-            Stop-Process -Id ([int]$env:VIBE2_STUDIO_PROCESS_ID) -Force -ErrorAction SilentlyContinue
-            Write-Host "ROBLOX_STUDIO_MCP_PROCESS_REAPED=$env:VIBE2_STUDIO_PROCESS_ID"
+          $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+$' } | Select-Object -Unique)
+          if (-not $ownedIds.Count -and $env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
+            $ownedIds = @([string]$env:VIBE2_STUDIO_PROCESS_ID)
+          }
+          foreach ($ownedId in $ownedIds) {
+            Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
+            Write-Host "ROBLOX_STUDIO_MCP_PROCESS_REAPED=$ownedId"
           }
