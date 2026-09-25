@@ -101,6 +101,12 @@ test('development-confirmed Web entries have parseable startup code and no missi
     assert.equal(fs.existsSync(index),true,`${game.id}: DEVELOPMENT_CONFIRMED Web entry missing`);
     const html=fs.readFileSync(index,'utf8');
     assert.doesNotMatch(html,/task-local exploration handoff|placeholder for the actual implementation|Approved Web Bootstrap/i,game.id);
+    const markupWithoutScripts=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
+    const staticDomIdList=[...markupWithoutScripts.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi)].map(match=>match[1]);
+    const staticDomIds=new Set(staticDomIdList);
+    const duplicateStaticDomIds=[...staticDomIds].filter(id=>staticDomIdList.filter(candidate=>candidate===id).length>1);
+    assert.deepEqual(duplicateStaticDomIds,[],`${game.id}: duplicate static DOM ids ${duplicateStaticDomIds.join(',')}`);
+    let startupSource='';
     const scriptTag=/<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
     for(const match of html.matchAll(scriptTag)){
       const attrs=match[1]||'',body=match[2]||'';
@@ -111,15 +117,28 @@ test('development-confirmed Web entries have parseable startup code and no missi
         const local=src.startsWith('/')?src.slice(1):path.join(root,src);
         assert.equal(fs.existsSync(local),true,`${game.id}: missing local script ${src}`);
         const isModule=/\btype\s*=\s*["']module["']/i.test(attrs);
-        if(!isModule&&/\.js$/i.test(local)){
+        if(/\.js$/i.test(local)){
           const localSource=fs.readFileSync(local,'utf8');
-          assert.doesNotThrow(()=>new vm.Script(localSource,{filename:local}),`${game.id}: local startup syntax ${src}`);
+          startupSource+='\\n'+localSource;
+          if(!isModule)assert.doesNotThrow(()=>new vm.Script(localSource,{filename:local}),`${game.id}: local startup syntax ${src}`);
         }
         continue;
       }
       if(!body.trim())continue;
+      startupSource+='\\n'+body;
       assert.doesNotThrow(()=>new vm.Script(body,{filename:index}),`${game.id}: inline startup syntax`);
     }
+    const createdDomIds=new Set([
+      ...[...startupSource.matchAll(/\\.id\\s*=\\s*["']([^"']+)["']/g)].map(match=>match[1]),
+      ...[...startupSource.matchAll(/setAttribute\\(\\s*["']id["']\\s*,\\s*["']([^"']+)["']\\s*\\)/g)].map(match=>match[1]),
+      ...[...startupSource.matchAll(/\\bid=["']([^"']+)["']/g)].map(match=>match[1])
+    ]);
+    const referencedDomIds=new Set([
+      ...[...startupSource.matchAll(/getElementById\\(\\s*["']([^"']+)["']\\s*\\)/g)].map(match=>match[1]),
+      ...[...startupSource.matchAll(/querySelector\\(\\s*["']#([A-Za-z0-9_-]+)["']\\s*\\)/g)].map(match=>match[1])
+    ]);
+    const unresolvedDomIds=[...referencedDomIds].filter(id=>!staticDomIds.has(id)&&!createdDomIds.has(id));
+    assert.deepEqual(unresolvedDomIds,[],`${game.id}: unresolved startup DOM ids ${unresolvedDomIds.join(',')}`);
     if(/\bbuildUrl\s*=\s*["']Build["']|\/[^"'\s]+\.loader\.js["']/i.test(html)){
       assert.equal(fs.existsSync(path.join(root,'Build')),true,`${game.id}: Unity Web Build directory missing`);
     }
