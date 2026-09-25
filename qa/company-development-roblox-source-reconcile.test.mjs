@@ -174,7 +174,6 @@ test('SOURCE_BIND routing preserves existing exact Roblox evidence when only unr
       repoRoot:tmp,
       sourceRevision:currentRevision,
       loadBaseline:()=>baseline,
-      assetLibrary:companyAssetLibrary,
     });
 
     assert.equal(rows.length,0,'unchanged exact game path must preserve its bound source revision and downstream evidence');
