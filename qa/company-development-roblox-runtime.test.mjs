@@ -642,3 +642,12 @@ test('pending private runtime candidates retry even when technical target count 
   assert.match(workflow,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
   assert.doesNotMatch(workflow,/Dispatch private runtime candidate for fused F0 passes/);
 });
+
+
+test('pending private candidate dispatch reuses only a candidate bound to the current Roblox publication target',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/const publicationTarget=x\.robloxPublicationTarget\|\|\{\}/);
+  assert.match(workflow,/String\(candidate\.universeId\|\|''\)===String\(publicationTarget\.universeId\|\|''\)/);
+  assert.match(workflow,/String\(candidate\.placeId\|\|''\)===String\(publicationTarget\.placeId\|\|''\)/);
+  assert.match(workflow,/bootstrapState\|\|''\)\.toUpperCase\(\)==='CREATED_PRIVATE_UNPUBLISHED'/);
+});
