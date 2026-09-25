@@ -158,6 +158,6 @@ async function main(){
   const diagnostics=buildDiagnosticsMap(portfolio,catalog),order=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState,date,priorityGameId});
   writeJson(output,order);console.log(JSON.stringify(order,null,2));
 }
-if(import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(error.message);process.exitCode=1;});
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(error.message);process.exitCode=1;});
 
 export { actionableDiagnostic, actionableImprovementHints, baseGoal, diagnosticConstraints, featureDevelopmentGoal, improvementHints, issueText, kstDate, latestArtbookFor, runtimeIncident, buildDiagnosticsMap, isCompletedDesignBaseline };
