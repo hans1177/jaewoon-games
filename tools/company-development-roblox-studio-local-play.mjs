@@ -654,6 +654,24 @@ export async function runOfficialStudioMcpPlay({
       /infinite yield possible/i,
       /unhandled exception/i
     ];
+    const consoleLines=consoleText.split(/\r?\n/).map(line=>clean(line)).filter(Boolean);
+    const diagnosticIndexes=new Set();
+    for(let index=0;index<consoleLines.length;index++){
+      if(errorPatterns.some(re=>re.test(consoleLines[index]))){
+        for(let offset=-2;offset<=4;offset++){
+          const target=index+offset;
+          if(target>=0&&target<consoleLines.length)diagnosticIndexes.add(target);
+        }
+      }
+    }
+    const diagnosticLines=[...diagnosticIndexes]
+      .sort((a,b)=>a-b)
+      .map(index=>consoleLines[index])
+      .slice(0,40);
+    for(const line of diagnosticLines){
+      const safe=line.replace(/\s+/g,' ').slice(0,700);
+      console.log('ROBLOX_STUDIO_MCP_CONSOLE_DIAGNOSTIC='+safe);
+    }
     const matched=errorPatterns.filter(re=>re.test(consoleText)).map(re=>re.source);
     for(const pattern of matched)errors.push({type:'studio-console-error',actionId:null,signature:pattern});
     checkpoint('no-release-blocking-runtime-errors',errors.length===0);

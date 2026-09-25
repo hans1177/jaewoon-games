@@ -515,6 +515,9 @@ test('Studio MCP CLI fails closed when runtime checkpoints are not verified and 
   assert.match(helper,/ROBLOX_STUDIO_MCP_VIEWPORT_AFTER_FRAMES=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_VIEWPORT_CHANGED=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_CONSOLE_ERROR_COUNT=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_CONSOLE_DIAGNOSTIC=/);
+  assert.match(helper,/for\(let offset=-2;offset<=4;offset\+\+\)/);
+  assert.match(helper,/\.slice\(0,700\)/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_RUNTIME_NOT_VERIFIED:failed=/);
   assert.match(helper,/if\(!result\.runtimeVerified\)/);
 });
