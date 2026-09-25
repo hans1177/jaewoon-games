@@ -7,6 +7,27 @@ on:
       - main
     paths:
       - '.build-requests/unity-web/**'
+  workflow_call:
+    inputs:
+      request_file:
+        required: false
+        type: string
+      game_id:
+        required: false
+        type: string
+      project_path:
+        required: false
+        type: string
+      build_method:
+        required: false
+        type: string
+      source_commit:
+        required: false
+        type: string
+      publish_to_main:
+        required: false
+        default: false
+        type: boolean
   workflow_dispatch:
     inputs:
       request_file:
