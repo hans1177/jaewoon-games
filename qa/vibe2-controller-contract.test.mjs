@@ -97,7 +97,7 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.parallelismPolicy,'UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY');
   assert.equal(runtime.continuous.externalMatrixBatchMax,256);
-  assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
+  assert.equal(runtime.continuous.unityReleaseFocusSlots,null);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
   assert.equal(runtime.continuous.minimumNecessaryProcedure.enabled,true);
@@ -159,7 +159,7 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.ok(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P1_CAPTURE_LIVE_VERIFIED_RUNTIME_FAIL_REQUEUE')));
   assert.ok(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P2_VERIFIED_THROUGHPUT_OPTIMIZATION')));
   assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
-  assert.equal(runtime.coordination.sourceRootExclusive,true);
+  assert.equal(runtime.coordination.sourceRootExclusive,false);
   assert.equal(runtime.coordination.separateFileLocks,true);
   assert.equal(runtime.coordination.fanOutFanIn,true);
   assert.equal(runtime.qaOptimization.incrementalFirst,true);
@@ -174,11 +174,11 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.workManagement.machineContextRequired,true);
   assert.deepEqual(runtime.workManagement.handoffConsumers,['planner','reserve','worker','fan-in']);
   assert.equal(runtime.continuous.entryWorkflow,'.github/workflows/vibe2-24h-runner.yml');
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,20);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,20);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,256);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,4);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,256);
-  assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,20);
-  assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,20);
+  assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,256);
+  assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,4);
   assert.equal(runtime.adaptiveBackpressure.externalBatchMax,256);
 });
 
@@ -228,13 +228,13 @@ test('work order exposes source bootstrap only for explicit Web or Unity Web fir
   assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed,/);
 });
 
-test('controller reserves a batch and fans workers out with a bounded matrix',()=>{
+test('controller reserves a batch and fans workers out to the external matrix boundary',()=>{
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
   assert.equal(workflow.includes('max-parallel: 30'),false);
   assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'"));
-  assert(workflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'"));
-  assert(workflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '20'"));
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
   assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
   assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,4);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
@@ -458,7 +458,8 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.perWorkerSlotRefillEnabled,false);
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
-  assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
+  assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,false);
+  assert.equal(runtime.continuous.slotRefillResponsibleFileLocksHeldUntilFanIn,true);
   assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"),false);
   assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"),false);
   assert(reserveBlock.includes('git fetch origin company-runtime --quiet'));
@@ -469,7 +470,7 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE') < reserveBlock.indexOf("event_type:'vibe2-fanin-refill'"));
 });
 
-test('24H safety-net refills free game slots while preserving queue-level conflict protection',()=>{
+test('24H safety-net refills free game slots while preserving responsible-file conflict protection',()=>{
   assert(safetyNetWorkflow.includes('wave_ready: ${{ steps.queue_state.outputs.wave_ready }}'));
   assert(safetyNetWorkflow.includes('game_refill_ready: ${{ steps.queue_state.outputs.game_refill_ready }}'));
   assert(safetyNetWorkflow.includes('free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}'));
@@ -477,8 +478,8 @@ test('24H safety-net refills free game slots while preserving queue-level confli
   assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_FREE_GAME_WORKER_SLOTS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_REFILL_READY='));
-  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'"));
-  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '20'"));
+  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
+  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
   assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
   assert(safetyNetWorkflow.includes('const effectiveMax=Math.max(adaptiveMin,Math.min(configuredMax,controlTarget));'));
   assert(safetyNetWorkflow.includes("echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'"));
