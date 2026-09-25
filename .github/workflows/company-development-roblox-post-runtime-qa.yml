@@ -793,9 +793,13 @@ jobs:
             throw 'Official Roblox Studio MCP launcher and StudioMCP.exe not found'
           }
 
+          $mcpFallbackCommand = ''
           if (Test-Path $mcpBat) {
             $mcpCommand = $mcpBat
             $mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'
+            if ($mcpExe -and (Test-Path $mcpExe)) {
+              $mcpFallbackCommand = $mcpExe
+            }
           } elseif ($mcpExe -and (Test-Path $mcpExe)) {
             $mcpCommand = $mcpExe
             $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING'
@@ -880,12 +884,14 @@ jobs:
 
           "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcpCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND=$mcpFallbackCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $studioVersion = (Get-Item $studio).VersionInfo.ProductVersion
           $mcpVersion = if ($mcpExe -and (Test-Path $mcpExe)) { (Get-Item $mcpExe).VersionInfo.ProductVersion } else { 'NONE' }
           Write-Host "ROBLOX_STUDIO_PRODUCT_VERSION=$studioVersion"
           Write-Host "ROBLOX_STUDIO_MCP_PRODUCT_VERSION=$mcpVersion"
           Write-Host "ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind"
+          Write-Host "ROBLOX_STUDIO_MCP_OFFICIAL_EXE_FALLBACK_AVAILABLE=$([bool]$mcpFallbackCommand)"
           Write-Host 'ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO'
           Write-Host 'ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO'
           Write-Host 'ROBLOX_STUDIO_MCP_RUNNER=PASS'
@@ -935,27 +941,63 @@ jobs:
           "VIBE2_STUDIO_RUNTIME_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $maxSessionAttempts = 3
           $success = $false
+          $batchTransportFailed = $false
 
           for ($attempt = 1; $attempt -le $maxSessionAttempts; $attempt++) {
             if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
             Write-Host "ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=$attempt/$maxSessionAttempts"
-            $runnerArgs = @(
-              '--mode=mcp-run',
-              "--mcp-command=$env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND",
-              "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
-              "--output=$result",
-              '--timeout=15000',
-              '--tool-attempts=5',
-              '--tool-delay-ms=1000'
-            )
-            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
-            if ($LASTEXITCODE -eq 0) {
-              $success = $true
-              Write-Host "ROBLOX_STUDIO_MCP_SESSION_RECOVERY=PASS_ATTEMPT_$attempt"
-              break
+
+            $commands = @()
+            if (-not $batchTransportFailed -and $env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND) {
+              $commands += [pscustomobject]@{
+                Command = $env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND
+                Kind = $env:VIBE2_ROBLOX_STUDIO_MCP_LAUNCH_KIND
+              }
+            }
+            if ($env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND -and
+                $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND -ne $env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND) {
+              $commands += [pscustomobject]@{
+                Command = $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND
+                Kind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_FAILED'
+              }
+            }
+            if ($commands.Count -eq 0) {
+              throw 'No official Studio MCP transport available for recovery attempt'
             }
 
-            if (Test-Path $result) { Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result" }
+            foreach ($candidate in $commands) {
+              if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
+              Write-Host "ROBLOX_STUDIO_MCP_TRANSPORT_ATTEMPT=$($candidate.Kind)"
+              $runnerArgs = @(
+                '--mode=mcp-run',
+                "--mcp-command=$($candidate.Command)",
+                "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
+                "--output=$result",
+                '--timeout=45000',
+                '--tool-attempts=20',
+                '--tool-delay-ms=1500'
+              )
+              & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
+              if ($LASTEXITCODE -eq 0) {
+                $success = $true
+                Write-Host "ROBLOX_STUDIO_MCP_TRANSPORT_PASS=$($candidate.Kind)"
+                Write-Host "ROBLOX_STUDIO_MCP_SESSION_RECOVERY=PASS_ATTEMPT_$attempt"
+                break
+              }
+
+              if (Test-Path $result) {
+                Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result"
+                if ($candidate.Kind -eq 'ROBLOX_DOCUMENTED_MCP_BATCH') {
+                  $failureJson = Get-Content $result -Raw -ErrorAction SilentlyContinue
+                  if ($failureJson -match 'MCP process exited code=1|not recognized|StudioMCP\.exe') {
+                    $batchTransportFailed = $true
+                    Write-Host 'ROBLOX_STUDIO_MCP_BATCH_TRANSPORT=FAILED_USE_OFFICIAL_EXE_FALLBACK'
+                  }
+                }
+              }
+            }
+
+            if ($success) { break }
             if ($attempt -ge $maxSessionAttempts) { break }
 
             Write-Host "ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt"
