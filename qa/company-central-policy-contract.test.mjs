@@ -176,7 +176,7 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(architecture.departmentTopology?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(architecture.departmentRuntimeTopology?.developmentConfirmed?.unityWebReadinessPassDispatch,'ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT');
   assert.equal(architecture.developmentPipeline?.unityWebDevelopmentLane?.readinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
-  assert.equal(roadmap.changeRecord?.unityWebUpperPlatformDevelopmentGate20260925?.implementationState,'CENTRAL_POLICY_AND_ARCHITECTURE_SYNC_FIRST_IMPLEMENTATION_NEXT');
+  assert.equal(roadmap.changeRecord?.unityWebUpperPlatformDevelopmentGate20260925?.implementationState,'CENTRAL_POLICY_ARCHITECTURE_AND_EXECUTOR_BOUND');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
   assert.equal(directive.production.webCompanion?.legacyDirectWebAuthoring,false);
   assert.match(nativeDevelopmentWorkflow,/gh workflow run unity-web-first-stage-build\.yml/);
