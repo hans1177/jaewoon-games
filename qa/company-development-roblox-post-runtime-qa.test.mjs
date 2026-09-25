@@ -115,3 +115,9 @@ test('foundation runtime write contention defers only the stale write and keeps 
   assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE/);
   assert.match(workflow,/if ! git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"; then[\s\S]*git rebase --abort \|\| true[\s\S]*exit 0/);
 });
+
+
+test('Roblox runtime foundation QA collapses stale all-game runs without cancelling the active run',()=>{
+  assert.match(workflow,/concurrency:\n  group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id \|\| 'all-pending' \}\}\n  cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
+});
