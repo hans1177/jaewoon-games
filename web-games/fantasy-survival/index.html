@@ -35,12 +35,15 @@ const multiplayer={client:null,channel:null,room:'',connected:false,playerId:ses
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=44,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=45,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
 const JUNGLE_REGION={x:18000,y:0,w:7200,h:3840}; // 기존 밀림의 0.4배
 const SNOW_REGION={x:18000,y:3840,w:18000,h:4800}; // 축소된 밀림 바로 아래
+const FLOWER_FIELD={x:18000,y:8640,w:18000,h:2880};
+const GIANT_GARDEN={x:28800,y:8640,w:7200,h:2880};
+const FLOWER_BUILDINGS=[{name:'꽃바람 오두막',x:20400,y:9300,w:460,h:320},{name:'양봉 창고',x:23600,y:10150,w:520,h:340},{name:'꽃시장',x:26500,y:9200,w:500,h:300},{name:'낡은 온실',x:27800,y:10750,w:620,h:380}];
 const JUNGLE_LAKES=[{x:20560,y:1040,r:144},{x:22560,y:2600,r:120},{x:24480,y:3560,r:136}];
 const JUNGLE_TEMPLE_ENTRANCE={x:22040,y:1560,r:90};
 const SNOW_OUTPOSTS=[
@@ -92,11 +95,12 @@ const recipes=[
 {id:'map',name:'지도',where:'bench',cost:{wood:2,fiber:5},desc:'탐험한 곳만 표시되는 지도',kind:'map'},
 {id:'furnace',name:'화로',where:'hand',cost:{wood:3,stone:6},desc:'철광석을 1개당 5초에 구움 · 설치 후 두 번 누르기',kind:'structure'},
 {id:'iron-bench',name:'철 제작대',where:'hand',cost:{wood:1,stone:3,ironIngot:5},desc:'철 장비와 좋은 붕대 제작',kind:'structure'},
+{id:'flower-leather',name:'꽃가죽',where:'ironbench',cost:{giantPetal:3},desc:'거대 꽃잎 3개를 가공한 꽃가죽',kind:'material',outputMaterial:'flowerLeather',output:1},
 {id:'iron-sword',name:'철 검',where:'ironbench',cost:{wood:1,stone:2,fiber:3,ironIngot:3},desc:'공격력 54 · 돌검의 3배',kind:'weapon',power:54,range:80,cooldown:380},
 {id:'iron-axe',name:'철 도끼',where:'ironbench',cost:{wood:1,stone:2,fiber:3,ironIngot:3},desc:'공격력 70.2 · 철 검의 1.3배 · 공격속도 1초',kind:'weapon',power:70.2,range:76,cooldown:1000},
 {id:'iron-pick',name:'철 곡괭이',where:'ironbench',cost:{wood:1,fiber:2,ironIngot:3},desc:'철광석 채집 가능 · 철 광맥은 총 3개',kind:'tool',target:'iron',mult:5},
 {id:'forest-wooden-sword',name:'숲의 목검',where:'reward',cost:{},desc:'공격력 40 · 공격 시 30% 확률로 적을 2초간 속박',kind:'weapon',power:40,range:82,cooldown:420,bindChance:.30},
-{id:'gold-bench',name:'금 제작대',where:'hand',cost:{wood:3,stone:5,goldIngot:8},desc:'화산 금 장비 제작대',kind:'structure'},
+{id:'gold-bench',name:'금 제작대',where:'hand',cost:{wood:3,stone:5,goldIngot:8,flowerLeather:4},desc:'화산 금 장비 제작대 · 꽃가죽 4개 필요',kind:'structure'},
 {id:'good-bandage',name:'좋은 붕대',where:'ironbench',cost:{wood:1,fiber:3},desc:'1초마다 체력 10 · 5초 지속',kind:'consumable',regen:true},
 {id:'gold-greatsword',name:'황금 검',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:6},desc:'공격력 100 · 묵직한 황금 검',kind:'weapon',power:100,range:105,cooldown:1150},
 {id:'gold-dagger',name:'금단검',where:'goldbench',cost:{wood:1,fiber:2,goldIngot:3},desc:'공격력 68 · 공격속도 0.22초 · 짧은 사거리',kind:'weapon',power:68,range:58,cooldown:220},
@@ -167,9 +171,9 @@ const recipes=[
 {id:'meal-bug-bug',name:'벌레고기 대접',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 20 회복 · 5초',kind:'consumable',hunger:100,foodRegen:20,foodRegenSeconds:5},
 {id:'meal-bug-firewolf',name:'화염 벌레구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
 {id:'meal-firewolf-firewolf',name:'화염 고기 만찬',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
-{id:'croc-jaw-blade',name:'악어 턱날',where:'goldbench',cost:{crocTooth:5,crocHide:2,goldIngot:7},desc:'공격력 216 · 악어 전리품 4티어 무기',kind:'weapon',power:216,range:84,cooldown:700},
-{id:'croc-tooth-spear',name:'악어 이빨창',where:'goldbench',cost:{crocTooth:7,crocHide:1,goldIngot:6,wood:3},desc:'공격력 192 · 긴 사거리 · 악어 전리품 4티어 무기',kind:'weapon',power:192,range:122,cooldown:850},
-{id:'croc-armor',name:'악어 껍질갑옷',where:'goldbench',cost:{crocHide:8,crocTooth:3,goldIngot:8},desc:'최대 체력 +228 · 받는 피해 21% 감소 · 4티어',kind:'armor',maxHp:228,reduce:.21},
+{id:'croc-jaw-blade',name:'악어 턱날',where:'goldbench',cost:{crocTooth:5,crocHide:2,goldIngot:7,flowerLeather:3},desc:'공격력 216 · 악어 전리품 4티어 무기',kind:'weapon',power:216,range:84,cooldown:700},
+{id:'croc-tooth-spear',name:'악어 이빨창',where:'goldbench',cost:{crocTooth:7,crocHide:1,goldIngot:6,wood:3,flowerLeather:3},desc:'공격력 192 · 긴 사거리 · 악어 전리품 4티어 무기',kind:'weapon',power:192,range:122,cooldown:850},
+{id:'croc-armor',name:'악어 껍질갑옷',where:'goldbench',cost:{crocHide:8,crocTooth:3,goldIngot:8,flowerLeather:3},desc:'최대 체력 +228 · 받는 피해 21% 감소 · 4티어',kind:'armor',maxHp:228,reduce:.21},
 {id:'diving-suit',name:'잠수복',where:'goldbench',cost:{sharkSkin:4,ironIngot:6,fiber:8},desc:'물속 산소 무제한 · 최대 체력 +120',kind:'armor',maxHp:120,reduce:.12,underwaterBreath:true},
 {id:'raw-fish',name:'생선',where:'loot',cost:{},desc:'물고기 전리품 · 화로에서 10초 굽기',kind:'ingredient'},
 {id:'cooked-fish',name:'구운생선',where:'loot',cost:{},desc:'밥 +55 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:55},
@@ -193,17 +197,20 @@ const recipes=[
 {id:'mud-spear',name:'머드 워커 창',where:'junglebench',cost:{mudCore:6,monopolyIngot:6,goldIngot:4,wood:3},desc:'공격력 160 · 긴 사거리 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:160,range:120,cooldown:860,slowChance:.10,slowDuration:3000},
 {id:'jungle-guardian-glaive',name:'밀림 수호자의 장창',where:'junglebench',cost:{jungleGuardianCore:1,monopolyIngot:8,goldIngot:6},desc:'공격력 215 · 긴 사거리 · 밀림 신전 수호자 전리품으로 만드는 4티어 무기',kind:'weapon',power:215,range:122,cooldown:900},
 {id:'tiger-twin-blades',name:'호랑이 쌍검',where:'hidden',cost:{},desc:'히든 4티어 무기 · 공격력 222 · 공격속도 1초',kind:'weapon',power:222,range:90,cooldown:1000},
-{id:'jungle-bench',name:'독점석 제작대',where:'goldbench',cost:{monopolyIngot:5,goldIngot:3,wood:2},desc:'밀림과 설원 장비를 제작하는 상위 제작대',kind:'structure'},
+{id:'jungle-bench',name:'독점석 제작대',where:'goldbench',cost:{monopolyIngot:5,goldIngot:3,wood:2,flowerLeather:4},desc:'밀림과 설원 장비를 제작하는 상위 제작대',kind:'structure'},
 {id:'cooked-bird-meat',name:'구운 꿩고기',where:'smelt',cost:{},desc:'세계수 꿩고기를 구운 음식 · 밥 +55',kind:'consumable',hunger:55},
 {id:'cooked-crystal-goat-meat',name:'구운 수정염소고기',where:'smelt',cost:{},desc:'수정염소고기를 구운 음식 · 밥 +65',kind:'consumable',hunger:65},
 {id:'yeti-horn-maul',name:'예티 뿔 대검',where:'junglebench',cost:{yetiHorn:2,yetiHide:2,monopolyIngot:8,goldIngot:5},desc:'공격력 340 · 설원 5티어 무기',kind:'weapon',power:340,range:104,cooldown:1000},
 {id:'yeti-armor',name:'예티 방어구',where:'junglebench',cost:{yetiHide:4,yetiHorn:1,monopolyIngot:10,goldIngot:6},desc:'최대 체력 +420 · 피해 38% 감소 · 추위 게이지 상승 완전 차단',kind:'armor',maxHp:420,reduce:.38,coldImmune:true},
 {id:'polar-bear-axe',name:'북극곰 발톱도끼',where:'junglebench',cost:{polarBearClaw:4,polarBearHide:2,monopolyIngot:6},desc:'공격력 205 · 4티어',kind:'weapon',power:205,range:88,cooldown:780},
 {id:'polar-bear-spear',name:'북극곰 창',where:'junglebench',cost:{polarBearClaw:3,polarBearHide:3,monopolyIngot:6,wood:3},desc:'공격력 195 · 긴 사거리 · 4티어',kind:'weapon',power:195,range:118,cooldown:900},
-{id:'polar-bear-armor',name:'북극곰 방어구',where:'junglebench',cost:{polarBearHide:7,polarBearClaw:3,monopolyIngot:7},desc:'최대 체력 +250 · 피해 23% 감소 · 추위 상승 111배 느림',kind:'armor',maxHp:250,reduce:.23,coldDivisor:111},
+{id:'polar-bear-armor',name:'북극곰 방어구',where:'junglebench',cost:{polarBearHide:7,polarBearClaw:3,monopolyIngot:7,flowerLeather:3},desc:'최대 체력 +250 · 피해 23% 감소 · 추위 상승 111배 느림',kind:'armor',maxHp:250,reduce:.23,coldDivisor:111},
 {id:'polar-wolf-blade',name:'북극늑대 검',where:'junglebench',cost:{polarWolfPelt:5,monopolyIngot:5,goldIngot:3},desc:'공격력 185 · 4티어',kind:'weapon',power:185,range:86,cooldown:720},
-{id:'polar-wolf-armor',name:'북극늑대 방어구',where:'junglebench',cost:{polarWolfPelt:7,monopolyIngot:6},desc:'최대 체력 +220 · 피해 20% 감소 · 추위 상승 70배 느림',kind:'armor',maxHp:220,reduce:.20,coldDivisor:70},
-{id:'polar-wolf-hunter-armor',name:'북극늑대 사냥갑',where:'junglebench',cost:{polarWolfPelt:8,monopolyIngot:6,goldIngot:2},desc:'최대 체력 +200 · 공격력 +15 · 추위 상승 70배 느림',kind:'armor',maxHp:200,reduce:.18,bonusDamage:15,coldDivisor:70}
+{id:'polar-wolf-armor',name:'북극늑대 방어구',where:'junglebench',cost:{polarWolfPelt:7,monopolyIngot:6,flowerLeather:3},desc:'최대 체력 +220 · 피해 20% 감소 · 추위 상승 70배 느림',kind:'armor',maxHp:220,reduce:.20,coldDivisor:70},
+{id:'polar-wolf-hunter-armor',name:'북극늑대 사냥갑',where:'junglebench',cost:{polarWolfPelt:8,monopolyIngot:6,goldIngot:2},desc:'최대 체력 +200 · 공격력 +15 · 추위 상승 70배 느림',kind:'armor',maxHp:200,reduce:.18,bonusDamage:15,coldDivisor:70},
+{id:'spider-fang-blade',name:'거대거미 송곳니검',where:'ironbench',cost:{giantSpiderSilk:4,giantSpiderFang:3,ironIngot:4,flowerLeather:3},desc:'공격력 108',kind:'weapon',power:108,range:82,cooldown:720},
+{id:'spider-silk-spear',name:'거대거미 실창',where:'ironbench',cost:{giantSpiderSilk:5,giantSpiderFang:2,ironIngot:3,flowerLeather:3,wood:2},desc:'공격력 96 · 긴 사거리',kind:'weapon',power:96,range:118,cooldown:860},
+{id:'spider-silk-armor',name:'거대거미 실갑옷',where:'ironbench',cost:{giantSpiderSilk:8,giantSpiderFang:2,ironIngot:4,flowerLeather:3},desc:'최대 체력 +114 · 피해 10% 감소',kind:'armor',maxHp:114,reduce:.10}
 ];
 const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat','cooked-hare-meat','cooked-bird-meat','cooked-lizard-meat','cooked-crystal-goat-meat','cooked-greens','cooked-fish','cooked-crystal-deer-meat'];
 function foodComboKey(a,b){return[a,b].sort().join('|')}
@@ -267,7 +274,7 @@ const ITEM_TIER_5=new Set(['yeti-horn-maul','yeti-armor']);
 function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul']);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,giantspider:3,giantspiderling:2};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -313,18 +320,23 @@ icegolem:{id:'icegolem',name:'빙결 골렘',mood:'aggressive',hp:420,dmg:36,spe
 jungletiger:{id:'jungletiger',name:'밀림 호랑이',mood:'aggressive',hp:850,dmg:55,speed:110,r:29,color:'#c67a31',detect:680,jungle:true},
 primitiveSpearman:{id:'primitiveSpearman',name:'창병 원시인',mood:'aggressive',hp:600,dmg:30,speed:68,r:24,color:'#8c6843',detect:900,area:'jungletemple-upper',templeSpearman:true},
 primitiveArcher:{id:'primitiveArcher',name:'원거리 원시인',mood:'aggressive',hp:400,dmg:50,speed:64,r:22,color:'#6e8150',detect:1050,area:'jungletemple-upper',templeArcher:true},
-jungleGuardian:{id:'jungleGuardian',name:'밀림 수호자',mood:'aggressive',hp:1300,dmg:70,speed:76,r:36,color:'#37654c',detect:950,area:'jungletemple-lower',templeGuardian:true}
+jungleGuardian:{id:'jungleGuardian',name:'밀림 수호자',mood:'aggressive',hp:1300,dmg:70,speed:76,r:36,color:'#37654c',detect:950,area:'jungletemple-lower',templeGuardian:true},
+flowergoblin:{id:'flowergoblin',name:'꽃 고블린',mood:'neutral',hp:222,dmg:30,speed:72,r:20,color:'#a7c957',detect:470,attackCooldown:1000,flowerZone:true},
+giantbee:{id:'giantbee',name:'거대 꿀벌',mood:'neutral',hp:350,dmg:40,speed:110,r:22,color:'#e3b341',detect:620,attackCooldown:1000,flowerZone:true},
+giantspider:{id:'giantspider',name:'거대 거미',mood:'aggressive',hp:888,dmg:40,speed:76,r:30,color:'#4d3d52',detect:620,attackCooldown:1000,flowerZone:true},
+giantspiderling:{id:'giantspiderling',name:'새끼 거대거미',mood:'aggressive',hp:100,dmg:19,speed:92,r:15,color:'#76627a',detect:360,attackCooldown:850,flowerZone:true}
+
 };
 const DROP_MATERIAL_NAMES={
  mossTusk:'이끼멧돼지 엄니',stoneCore:'돌정령 핵',goblinCharm:'고블린 부적',wolfHide:'늑대가죽',
  ironSpiritCore:'철 정령 핵',bearClaw:'곰발톱',bearHide:'곰가죽',bearFang:'곰이빨',
  sovereignCore:'근원포식자 핵',fireWolfFang:'화염 늑대 송곳니',burrowerShell:'초거대 벌레 갑각',
  walkerClaw:'샌드워커 집게',calmMagmaCore:'고요한 화염 핵',rageMagmaCore:'격노한 화염 핵',
- fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석',monopolyIngot:'구운 독점석',yetiHide:'예티 가죽',yetiHorn:'예티 뿔',polarBearHide:'북극곰 가죽',polarBearClaw:'북극곰 발톱',polarWolfPelt:'북극늑대 가죽',tigerOffering:'호랑이 제물',jungleGuardianCore:'밀림 수호자 핵'
+ fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석',monopolyIngot:'구운 독점석',yetiHide:'예티 가죽',yetiHorn:'예티 뿔',polarBearHide:'북극곰 가죽',polarBearClaw:'북극곰 발톱',polarWolfPelt:'북극늑대 가죽',tigerOffering:'호랑이 제물',jungleGuardianCore:'밀림 수호자 핵',giantPetal:'거대 꽃잎',flowerLeather:'꽃가죽',giantSpiderSilk:'거대거미 실',giantSpiderFang:'거대거미 송곳니'
 };
-const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore'];
+const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderFang'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,cookingStation:null,incubator:null,flags:[],chests:[],walls:[],doors:[],beds:[],crops:[],snowChests:[false,false],respawnPos:null,blueprint:null,activeWallId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,cookingStation:null,incubator:null,flags:[],chests:[],walls:[],doors:[],beds:[],crops:[],snowChests:[false,false],respawnPos:null,blueprint:null,activeWallId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],flowerGiantFlowers:[],flowerWebs:[],enemies:[],projectiles:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
 const RAID_WAVES=[
  [{id:'mossboar',count:3},{id:'golem',count:1},{id:'shadowwolf',count:2}],
  [{id:'goblin',count:4},{id:'ironspirit',count:2},{id:'shadowwolf',count:2}],
@@ -1191,6 +1203,10 @@ const BESTIARY_INFO={
  primitiveSpearman:{cat:'aggressive',desc:'밀림 신전 위층의 3티어 창병. 창 3개를 빠르게 던진 뒤 3초 동안 공격하지 못한다.'},
  primitiveArcher:{cat:'aggressive',desc:'밀림 신전 위층의 3티어 원거리 원시인. 2초마다 독화살을 발사한다.'},
  jungleGuardian:{cat:'aggressive',desc:'밀림 신전 지하의 4티어 수호자. 찢고 뜯기로 플레이어를 붙잡고 체력을 회복한다.'},
+ flowergoblin:{cat:'neutral',desc:'꽃밭 2티어 중립 고블린. 1초마다 30% 확률로 4초간 초당 15 회복.'},
+ giantbee:{cat:'neutral',desc:'꽃밭 3티어 거대 꿀벌. 동족 인식과 유도 독침 돌진을 사용한다.'},
+ giantspider:{cat:'aggressive',desc:'거대화원 3티어 거대 거미. 거미줄에 닿으면 근처 성체가 몰려온다.'},
+ giantspiderling:{cat:'aggressive',desc:'2티어 새끼 거대거미. 보통 성체 주변에 약 3마리씩 모여 다닌다.'},
  lakecroc:{cat:'aggressive',desc:'거대 호수의 4티어 포식자. 끌고 뒤집기와 수중 데스롤을 사용한다.'},
  lakebuffalo:{cat:'neutral',desc:'거대 호숫가를 돌아다니는 중립 물소. 먼저 공격하지 않으면 조용하다.'},
  crystaldeer:{cat:'neutral',desc:'호수의 마력을 받아 수정이 돋은 중립 사슴. 수정 사슴고기를 얻을 수 있다.'},
