@@ -1,5 +1,5 @@
 {
-  "version": 191,
+  "version": 192,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3369,7 +3369,21 @@
       "actualPlayPlannerEligibility": "INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
       "actualPlayPlannerExclusiveCurrentStepGate": false,
       "parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease": true,
-      "explicitDisabledGameEligible": false
+      "explicitDisabledGameEligible": false,
+      "runtimeFoundationObservation": {
+        "version": 1,
+        "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
+        "exactEngineExecutionEvidence": "OPEN_CLOUD_EXACT_PLACE_VERSION_LUAU_EXECUTION",
+        "realServerBootEvidence": "NATIVE_FOUNDATION_SENTINEL_EXACT_PLACE_VERSION",
+        "pendingState": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
+        "pendingBlocker": "roblox-runtime-foundation-awaiting-real-server-boot",
+        "exactEngineExecutionMayNotSubstituteRealServerBoot": true,
+        "studioMcpActualPlayEvidencePreservedWhilePending": true,
+        "fakeRuntimeFoundationPromotionForbidden": true,
+        "observationRetry": "UNLIMITED_OBSERVATION",
+        "playerAutomation": false,
+        "publishedPlaceDirectStudioAutomation": false
+      }
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",

@@ -288,6 +288,25 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
 });
 
+test('central policy and architecture preserve Studio MCP PASS while exact runtime awaits a real server boot',()=>{
+ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+ const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
+ const topology=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.runtimeFoundationObservation||{};
+ assert.equal(policy.exactEngineVersionWithoutRealServerBootState,'ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT');
+ assert.equal(policy.exactEngineVersionWithoutRealServerBootBlocker,'roblox-runtime-foundation-awaiting-real-server-boot');
+ assert.equal(policy.exactEngineVersionDoesNotEqualRealGameServerBoot,true);
+ assert.equal(policy.studioMcpActualPlayPassRemainsValidWhileRuntimeFoundationObservationPending,true);
+ assert.equal(policy.runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution,true);
+ assert.equal(policy.robloxPlayerAutomationForbidden,true);
+ assert.equal(topology.pendingState,policy.exactEngineVersionWithoutRealServerBootState);
+ assert.equal(topology.pendingBlocker,policy.exactEngineVersionWithoutRealServerBootBlocker);
+ assert.equal(topology.exactEngineExecutionMayNotSubstituteRealServerBoot,true);
+ assert.equal(topology.studioMcpActualPlayEvidencePreservedWhilePending,true);
+ assert.equal(topology.fakeRuntimeFoundationPromotionForbidden,true);
+ assert.equal(topology.playerAutomation,false);
+});
+
 test('runtime QA distinguishes exact engine version awaiting a real server boot from an actually stale deployment',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/const exactEngineVersionAwaitingRealServerBoot=/);
