@@ -39,6 +39,8 @@ test('promotion persists only runtime state while machine policy comes from main
   const calls=promotion.match(/node tools\/design-only-promotion-sync\.mjs/g)||[];
   assert.ok(calls.length>=2);
   assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json tools\/design-only-promotion-sync\.mjs/);
+  assert.match(promotion,/tools\/company-homepage-platform-exposure-sync\.mjs tools\/company-shared-context\.mjs tools\/company-direct-native-design-migration\.mjs/);
+  assert.match(promotion,/git reset --[\s\S]*tools\/company-homepage-platform-exposure-sync\.mjs tools\/company-shared-context\.mjs tools\/company-direct-native-design-migration\.mjs/);
   assert.match(promotion,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
   assert.doesNotMatch(promotion,/COMPANY_FLOW\.md/);
   assert.doesNotMatch(promotion,/DIRECT_NATIVE_DUAL_PLATFORM\.md/);
