@@ -459,7 +459,7 @@ function mcpCommandArgs(command=''){
 }
 
 export async function runOfficialStudioMcpPlay({
-  mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000
+  mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=20,toolDelayMs=1500
 }={}){
   const launch=mcpCommandArgs(mcpCommand);
   const client=new McpStdioClient({...launch,timeoutMs});
@@ -470,8 +470,8 @@ export async function runOfficialStudioMcpPlay({
     await client.connect();
     const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input'];
     await client.waitForTools(requiredTools,{
-      attempts:Math.max(1,Number(toolAttempts)||5),
-      delayMs:Math.max(100,Number(toolDelayMs)||1000)
+      attempts:Math.max(1,Number(toolAttempts)||20),
+      delayMs:Math.max(100,Number(toolDelayMs)||1500)
     });
     for(const name of requiredTools)client.tool(name);
     checkpoint('official-studio-mcp-connected',true);
@@ -794,8 +794,8 @@ async function main(){
       output:clean(a.output),
       expectedStudioName:clean(a['studio-name']),
       timeoutMs:Number(a.timeout||45000),
-      toolAttempts:Number(a['tool-attempts']||5),
-      toolDelayMs:Number(a['tool-delay-ms']||1000)
+      toolAttempts:Number(a['tool-attempts']||20),
+      toolDelayMs:Number(a['tool-delay-ms']||1500)
     });
     console.log('ROBLOX_STUDIO_MCP_RUNTIME='+(result.runtimeVerified?'PASS':'FAIL'));
     return;
