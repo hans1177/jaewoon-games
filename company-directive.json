@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 80,
+  "revision": 81,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -930,7 +930,10 @@
     "coordinationTelemetryInvalidAction": "RUN_PARALLEL",
     "activeGameWorkBlocksQueueReconcile": false,
     "activeGameWorkBlocksDesignRuntime": false,
-    "staleQueueBranchReferenceForbidden": true
+    "staleQueueBranchReferenceForbidden": true,
+    "reconcileCancelInProgress": false,
+    "reconcileStateWritesSerialized": true,
+    "reconcileTriggerBurstQueuesInsteadOfCancels": true
   },
   "stageGateScoringV2": {
     "version": 2,

@@ -224,7 +224,8 @@ assert.match(developmentQueueReconcileWorkflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_R
 assert.match(developmentQueueReconcileWorkflow,/RUN_PARALLEL_QUEUE_TELEMETRY_UNAVAILABLE/);
 assert.match(developmentQueueReconcileWorkflow,/RUN_PARALLEL_QUEUE_TELEMETRY_INVALID/);
 assert.doesNotMatch(developmentQueueReconcileWorkflow,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
-assert.match(developmentQueueReconcileWorkflow,/cancel-in-progress: true/);
+assert.match(developmentQueueReconcileWorkflow,/cancel-in-progress: false/);
+assert.equal(roadmap.minimumNecessaryProcedurePolicy?.execution?.stateReconciliation?.cancelRunningReconcileOnNewTrigger,false);
 assert.match(developmentQueueReconcileWorkflow,/needs: game-primary-gate/);
 assert.doesNotMatch(developmentQueueReconcileWorkflow,/needs\.game-primary-gate\.outputs\.defer != 'true'/);
 assert.match(seedDesignRuntime,/game-primary-gate:/);

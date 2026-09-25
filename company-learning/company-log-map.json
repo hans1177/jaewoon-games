@@ -1,5 +1,5 @@
 {
-  "version": 58,
+  "version": 59,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1073,5 +1073,12 @@
     "staleReference": "vibe2-unreal-core",
     "correction": "READ_MAIN_QUEUE_AS_OPTIONAL_TELEMETRY_AND_NEVER_DEFER_RECONCILE_OR_DESIGN_ON_MISSING_INVALID_OR_ACTIVE_GAME_WORK",
     "runtimeReconcileMustActuallyExecute": true
+  },
+  "reconcileCancellationChurnContract": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.execution.stateReconciliation",
+    "observedFailure": "RECONCILE_JOB_STARTED_AFTER_NONBLOCKING_GATE_THEN_WAS_CANCELLED_BY_A_LATER_WORKFLOW_RUN_TRIGGER",
+    "correction": "CANCEL_IN_PROGRESS_FALSE_AND_SERIALIZED_STATE_WRITES",
+    "runtimePersistRequired": true
   }
 }
