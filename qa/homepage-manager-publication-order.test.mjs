@@ -355,23 +355,29 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
 
-test('Unity Web homepage links require a deployable bundle manifest, not QA gate PASS',()=>{
+test('Unity Web homepage links require a deployable manifest or verified Unity index bundle, not QA gate PASS',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog){')[1]||'').split('function webPublishedRows')[0]||'';
   assert.match(block,/index\.html\?ts=/);
   assert.match(block,/unity-web-deploy-manifest\.json\?ts=/);
   assert.match(block,/bundleComplete===true/);
+  assert.match(block,/bundleGroupsFromUnityIndex/);
+  assert.match(block,/method:'HEAD'/);
   assert.match(block,/\['loader','data','framework','wasm'\]/);
   assert.match(block,/unityWebAvailable:true/);
   assert.match(block,/unityWebAvailable:false/);
   assert.doesNotMatch(block,/unity-web-build\.json|unity-web-gameplay-validation\.json|bootSmoke|initialRealGameplayQa|noCriticalRuntimeError/);
   const display=roadmap.serverHomepageIntegration?.managerContract?.developmentProgressDisplay||{};
   const surface=roadmap.serverHomepageIntegration?.unityWebValidationSurface||{};
-  assert.equal(display.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST');
+  assert.equal(display.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
   assert.equal(display.unityWebQaPassRequiredForHomepageLink,false);
   assert.equal(display.unityWebEvidenceFilesRequiredForHomepageLink,false);
-  assert.equal(surface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST');
-  assert.equal(surface.homepageLinkRequiresDeployManifest,true);
+  assert.equal(surface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
+  assert.equal(surface.homepageLinkRequiresDeployManifest,false);
+  assert.equal(surface.homepageLinkRequiresDeployableBundle,true);
+  assert.equal(surface.homepageLinkAllowsUnityIndexBundleProbe,true);
+  assert.equal(surface.homepageLinkLegacyUnityBuildCompatibility,true);
+  assert.deepEqual(surface.homepageLinkLegacyProbeRequiredBundleComponents,['loader','data','framework','wasm']);
   assert.equal(surface.homepageLinkQaPassRequired,false);
   assert.equal(surface.homepageLinkEvidenceFilesRequired,false);
   assert.equal(surface.validationEvidenceStillRequiredForQaVerdict,true);
@@ -386,6 +392,8 @@ test('Unity Web homepage links require a deployable bundle manifest, not QA gate
   const directiveDisplay=directive.homepageOperations?.developmentProgressDisplay||{};
   assert.equal(directiveDisplay.webTestButtonEnabled,true);
   assert.equal(directiveDisplay.webAndPlatformTestButtonsMustBeSeparate,true);
+  assert.equal(directiveDisplay.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
+  assert.equal(directiveDisplay.unityWebLegacyBuildCompatibility,true);
 });
 test('platform availability requires explicit internal release evidence from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
