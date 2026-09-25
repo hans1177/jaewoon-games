@@ -14,13 +14,18 @@ on:
       - '.github/workflows/company-development-unity-runtime.yml'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
+      - 'tools/company-upper-platform-admission.mjs'
+      - 'qa/company-upper-platform-admission.test.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-architecture-map.json'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-minimum-design-contract.test.mjs'
       - '.github/workflows/unity-web-first-stage-build.yml'
+      - '.github/workflows/unity-web-floor-source-bootstrap.yml'
+      - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'tools/company-unity-web-gameplay-validation.mjs'
+      - 'qa/company-unity-web-gameplay-validation.test.mjs'
       - 'unity-games/**'
       - 'web-games/**/upper-platform-development-readiness.json'
   workflow_dispatch:
@@ -39,10 +44,6 @@ permissions:
   contents: read
   actions: write
 
-concurrency:
-  group: company-development-confirmed-runtime
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
@@ -54,7 +55,10 @@ jobs:
     outputs:
       eligible_count: ${{ steps.plan.outputs.eligible_count }}
       eligible_ids: ${{ steps.plan.outputs.eligible_ids }}
+      eligible_json: ${{ steps.plan.outputs.eligible_json }}
       unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
+      unity_web_json: ${{ steps.plan.outputs.unity_web_json }}
+      unity_web_bootstrap_ids: ${{ steps.plan.outputs.unity_web_bootstrap_ids }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,6 +80,8 @@ jobs:
           node --check tools/company-minimum-design-contract.mjs
           node --test qa/company-selected-platform-router.test.mjs
           node --test qa/company-minimum-design-contract.test.mjs
+          node --test qa/company-upper-platform-admission.test.mjs
+          node --test qa/company-unity-web-gameplay-validation.test.mjs
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -109,10 +115,11 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import path from 'node:path';
-          import crypto from 'node:crypto';
           import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
@@ -121,130 +128,106 @@ jobs:
             String(item.status||'').toUpperCase()!=='DISABLED'&&
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
-          const treeHash=root=>{
-            if(!fs.existsSync(root))return null;
-            const files=[];
-            const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,e.name);const rel=path.relative(root,full).replaceAll('\\','/');if(e.isDirectory()){if(rel==='Library'||rel.startsWith('Library/')||rel==='Temp'||rel.startsWith('Temp/'))continue;walk(full);}else if(e.isFile())files.push(rel);}};
-            walk(root);files.sort();
-            const hash=crypto.createHash('sha256');
-            for(const rel of files){hash.update(rel);hash.update('\0');hash.update(fs.readFileSync(path.join(root,rel)));hash.update('\0');}
-            return hash.digest('hex');
-          };
-          const discoverBuildWeb=gameId=>{
-            const editor=path.join('unity-games',gameId,'Assets','Editor');
-            if(!fs.existsSync(editor))return null;
-            const files=[];
-            const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory())walk(full);else if(entry.isFile()&&entry.name.endsWith('.cs'))files.push(full);}};
-            walk(editor);
-            const methods=[];
-            for(const file of files){
-              const source=fs.readFileSync(file,'utf8');
-              if(!/public\s+static\s+void\s+BuildWeb\s*\(/.test(source))continue;
-              const namespaceName=source.match(/\bnamespace\s+([A-Za-z_][A-Za-z0-9_.]*)/)?.[1]||'';
-              const classes=[...source.matchAll(/(?:public\s+)?static\s+class\s+([A-Za-z_][A-Za-z0-9_]*)/g)].map(m=>m[1]);
-              if(classes.length===1)methods.push([namespaceName,classes[0],'BuildWeb'].filter(Boolean).join('.'));
-            }
-            const unique=[...new Set(methods)];
-            return unique.length===1?unique[0]:null;
-          };
-          const nativeAlreadyStarted=item=>{
-            const step=String(item.currentStep||'').toUpperCase();
-            if(item.robloxFoundationF0Passed===true||item.robloxRuntimeCandidateEvidence?.published===true||item.robloxInternalReleasePublished===true)return true;
-            if(item.unityRuntimePassed===true||item.unityIndependentQaPassed===true||item.unityRegressionPassed===true)return true;
-            return step.startsWith('TARGET_PLATFORM_')&&step!=='TARGET_PLATFORM_SOURCE_BIND';
-          };
-          const readinessFor=gameId=>{
-            const file=path.join('web-games',gameId,'upper-platform-development-readiness.json');
-            if(!fs.existsSync(file))return{pass:false,reason:'READINESS_EVIDENCE_MISSING'};
-            const data=JSON.parse(fs.readFileSync(file,'utf8'));
-            const currentTree=treeHash(path.join('unity-games',gameId));
-            if(data.pass!==true||data.state!=='UPPER_PLATFORM_DEVELOPMENT_READY')return{pass:false,reason:'READINESS_NOT_PASS'};
-            if(!currentTree||data.unitySourceTreeSha256!==currentTree)return{pass:false,reason:'READINESS_SOURCE_STALE'};
-            return{pass:true,reason:'READY',data,currentTree};
-          };
-          const nativeIds=[],webIds=[],blockedIds=[],grandfatheredIds=[];
+          const nativeIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
-            if(item.minimumDesignContract?.pass!==true)throw new Error('MINIMUM_DESIGN_CONTRACT_REQUIRED:'+item.gameId);
-            const profiles=item.platformDesignProfiles||{};
-            if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)throw new Error('DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED:'+item.gameId);
-            const targets=new Set(item.concurrentTargetPlatforms||[]);
-            if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error('DUAL_NATIVE_TARGETS_REQUIRED:'+item.gameId);
-            if(nativeAlreadyStarted(item)){
-              nativeIds.push(item.gameId);grandfatheredIds.push(item.gameId);continue;
+            const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
+            if(decision.state==='UPPER_PLATFORM'){
+              nativeIds.push(item.gameId);
+              if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
+              continue;
             }
-            const ready=readinessFor(item.gameId);
-            if(ready.pass){nativeIds.push(item.gameId);continue;}
-            if(discoverBuildWeb(item.gameId)){webIds.push(item.gameId);continue;}
+            if(decision.state==='UNITY_WEB_FLOOR'){
+              webIds.push(item.gameId);
+              console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+decision.reason+':'+decision.buildMethod);
+              continue;
+            }
+            if(decision.state==='UNITY_WEB_BOOTSTRAP'){
+              bootstrapIds.push(item.gameId);
+              console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+decision.reason);
+              continue;
+            }
             blockedIds.push(item.gameId);
-            console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+ready.reason+':BUILD_WEB_UNAVAILABLE');
+            console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+decision.reason);
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_json='+JSON.stringify(nativeIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_json='+JSON.stringify(webIds)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_ids='+bootstrapIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
           console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
           console.log('UNITY_WEB_FLOOR_IDS='+(webIds.join(',')||'NONE'));
+          console.log('UNITY_WEB_FLOOR_BOOTSTRAP_IDS='+(bootstrapIds.join(',')||'NONE'));
           console.log('UPPER_PLATFORM_GRANDFATHERED_IDS='+(grandfatheredIds.join(',')||'NONE'));
           console.log('UPPER_PLATFORM_BLOCKED_IDS='+(blockedIds.join(',')||'NONE'));
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
 
-  dispatch-native:
-    name: Dispatch ready Roblox and Unity app lanes
+
+
+  dispatch-roblox:
+    name: Run ready Roblox upper-platform lanes
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch upper-platform runtimes
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ELIGIBLE_IDS: ${{ needs.native-plan.outputs.eligible_ids }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          IFS=',' read -ra ids <<< "$ELIGIBLE_IDS"
-          count=0
-          for id in "${ids[@]}"; do
-            [ -n "$id" ] || continue
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            count=$((count+1))
-          done
-          echo "UPPER_PLATFORM_DISPATCH_COUNT=$count"
-          echo "UPPER_PLATFORM_IDS=$ELIGIBLE_IDS"
-          echo 'ROBLOX_RUNTIME_DISPATCH=YES'
-          echo 'UNITY_APP_RUNTIME_DISPATCH=YES'
-          echo 'UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED'
-          echo 'INTERNAL_RELEASE_FIRST=YES'
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    uses: ./.github/workflows/company-development-roblox-runtime.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+    secrets: inherit
+
+  dispatch-unity:
+    name: Run ready Unity upper-platform lanes
+    needs: native-plan
+    if: needs.native-plan.outputs.eligible_count != '0'
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
+    permissions:
+      contents: write
+      actions: write
+    uses: ./.github/workflows/company-development-unity-runtime.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+    secrets: inherit
 
   dispatch-unity-web-floor:
-    name: Dispatch Unity Web development floor
+    name: Run Unity Web development floor
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_ids != ''
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch WebGL development-floor builds
-        env:
-          GH_TOKEN: ${{ github.token }}
-          UNITY_WEB_IDS: ${{ needs.native-plan.outputs.unity_web_ids }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          IFS=',' read -ra ids <<< "$UNITY_WEB_IDS"
-          count=0
-          for id in "${ids[@]}"; do
-            [ -n "$id" ] || continue
-            gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
-              -f game_id="$id" \
-              -f project_path="unity-games/$id" \
-              -f source_commit="$GITHUB_SHA" \
-              -f publish_to_main=true
-            count=$((count+1))
-          done
-          echo "UNITY_WEB_FLOOR_DISPATCH_COUNT=$count"
-          echo "UNITY_WEB_FLOOR_IDS=$UNITY_WEB_IDS"
-          echo 'UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT'
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_json) }}
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    uses: ./.github/workflows/unity-web-first-stage-build.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+      project_path: unity-games/${{ matrix.game_id }}
+      source_commit: ${{ github.sha }}
+      publish_to_main: true
+    secrets: inherit
 
+  dispatch-unity-web-bootstrap:
+    name: Bootstrap Unity Web development-floor sources
+    needs: native-plan
+    if: needs.native-plan.outputs.unity_web_bootstrap_ids != ''
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml
+    with:
+      game_ids: ${{ needs.native-plan.outputs.unity_web_bootstrap_ids }}
+    secrets: inherit
