@@ -597,6 +597,14 @@ test('Studio MCP failure evidence path is exported before the MCP process can fa
 });
 
 
+test('pre-MCP infrastructure failures preserve the last real MCP evidence instead of fabricating a runtime result',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const persistBlock=studioMcpBlock.slice(studioMcpBlock.indexOf('      - name: Persist exact Studio MCP play evidence'));
+  assert.match(persistBlock,/ROBLOX_STUDIO_MCP_EVIDENCE_PERSIST=SKIPPED_NO_MCP_RUNTIME_EVIDENCE/);
+  assert.match(persistBlock,/ROBLOX_STUDIO_MCP_EXISTING_EVIDENCE_PRESERVED=YES/);
+  assert.doesNotMatch(persistBlock,/MCP_RUN_DID_NOT_PRODUCE_EVIDENCE/);
+});
+
 test('Studio MCP diagnostics expose installed version and available tool inventory on contract mismatch',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_PRODUCT_VERSION=/);

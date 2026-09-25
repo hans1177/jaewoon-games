@@ -1255,34 +1255,9 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           if (-not $env:VIBE2_STUDIO_RUNTIME_RESULT -or -not (Test-Path $env:VIBE2_STUDIO_RUNTIME_RESULT)) {
-            $fallback = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
-            @{
-              version = 1
-              authority = 'roblox-official-studio-mcp-runtime'
-              runtimeVerified = $false
-              capabilities = @{
-                officialStudioMcp = $false
-                playMode = $false
-                mcpInput = $false
-                screenCapture = $false
-                consoleCapture = $false
-              }
-              actions = @()
-              checkpoints = @()
-              errors = @(@{
-                type = 'studio-mcp-infrastructure-or-runtime-error'
-                actionId = $null
-                signature = 'MCP_RUN_DID_NOT_PRODUCE_EVIDENCE'
-              })
-              metrics = @{
-                distinctFrameChange = $false
-                consoleErrorCount = 1
-              }
-              rawSourceIncluded = $false
-              rawGameplayValuesIncluded = $false
-              rawViewportIncluded = $false
-            } | ConvertTo-Json -Depth 8 | Out-File -FilePath $fallback -Encoding utf8
-            $env:VIBE2_STUDIO_RUNTIME_RESULT = $fallback
+            Write-Host 'ROBLOX_STUDIO_MCP_EVIDENCE_PERSIST=SKIPPED_NO_MCP_RUNTIME_EVIDENCE'
+            Write-Host 'ROBLOX_STUDIO_MCP_EXISTING_EVIDENCE_PRESERVED=YES'
+            exit 0
           }
 
           git -C runtime fetch --no-tags origin company-runtime
