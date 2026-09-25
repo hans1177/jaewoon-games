@@ -104,3 +104,10 @@ test('architecture projects verified design resume without a shadow pipeline',()
   assert.deepEqual(resume.plannerRuntimeOverlay,['company-runtime:design','company-runtime:game-seed-state.json']);
   assert.equal(resume.shadowPipelineCreated,false);
 });
+
+
+test('promotion invariant accepts progressed native states and rejects Web-first regression',()=>{
+  assert.match(promotion,/const currentStep=String\(item\.currentStep\|\|''\)\.trim\(\)\.toUpperCase\(\)/);
+  assert.match(promotion,/\^WEB_\|\^WAITING_WEB/);
+  assert.doesNotMatch(promotion,/currentStep\|\|''\)!=='TARGET_PLATFORM_SOURCE_BIND'/);
+});
