@@ -1,5 +1,5 @@
 {
-  "version": 177,
+  "version": 178,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4031,7 +4031,19 @@
       "PRESENTATION",
       "USABILITY",
       "STABILITY"
-    ]
+    ],
+    "verifiedDesignResume": {
+      "policy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.designContext",
+      "promotionRuntime": ".github/workflows/company-design-promotion-sync.yml",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "condition": "AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS",
+      "mode": "WAKE_EXISTING_CANONICAL_VIBE_SCHEDULER",
+      "plannerRuntimeOverlay": [
+        "company-runtime:design",
+        "company-runtime:game-seed-state.json"
+      ],
+      "shadowPipelineCreated": false
+    }
   },
   "nonblockingCoordinationTelemetryTopology": {
     "version": 1,
