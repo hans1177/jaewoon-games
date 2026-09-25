@@ -212,11 +212,16 @@ test('canonical DEVELOPMENT_CONFIRMED runtime gates new upper-platform work on U
 
 test('native routing admits only readiness-pass or grandfathered games while unready games stay in Unity Web floor',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.match(source,/nativeAlreadyStarted/);
-  assert.match(source,/readinessFor/);
-  assert.match(source,/if\(ready\.pass\)\{nativeIds\.push\(item\.gameId\);continue;\}/);
-  assert.match(source,/if\(discoverBuildWeb\(item\.gameId\)\)\{webIds\.push\(item\.gameId\);continue;\}/);
+  const admission=fs.readFileSync('tools/company-upper-platform-admission.mjs','utf8');
+  assert.match(source,/classifyUpperPlatformAdmission/);
+  assert.match(source,/decision\.state==='UPPER_PLATFORM'/);
+  assert.match(source,/decision\.state==='UNITY_WEB_FLOOR'/);
+  assert.match(source,/decision\.state==='UNITY_WEB_BOOTSTRAP'/);
   assert.match(source,/grandfatheredIds\.push\(item\.gameId\)/);
+  assert.match(admission,/grandfathered\.has\(gameId\)&&nativeUpperPlatformAlreadyStarted\(item\)/);
+  assert.match(admission,/if\(readiness\.pass\)return\{gameId,state:'UPPER_PLATFORM'/);
+  assert.match(admission,/if\(buildMethod\)return\{gameId,state:'UNITY_WEB_FLOOR'/);
+  assert.match(admission,/state:'UNITY_WEB_BOOTSTRAP'/);
   assert.match(source,/dispatch-roblox:/);
   assert.match(source,/dispatch-unity:/);
   assert.match(source,/dispatch-unity-web-floor:/);
