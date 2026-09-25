@@ -104,16 +104,18 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
   assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
 });
 
-test('homepage exposes Unity Web only as an optional same-project validation surface',()=>{
+test('homepage exposes Unity Web as the required pre-native development test surface without release authority',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
   const web=policy.directNativeDualPlatformDevelopment.unityWebValidationSurface;
   assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
   assert.equal(snap.unityWebEnabled,true);
-  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
-  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
-  assert.equal(web.requiredForDevelopmentAdmission,false);
+  assert.equal(web.requiredForDevelopmentAdmission,true);
+  assert.equal(web.releaseStage,false);
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageTestLinkIsNotDeploymentOrRelease,true);
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkQaPassRequired,false);
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkEvidenceFilesRequired,false);
