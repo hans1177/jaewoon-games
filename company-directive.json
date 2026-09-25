@@ -137,7 +137,11 @@
       "playableWebCompanionRequiresPlayableAndArchive": true,
       "playableWebCompanionRequiresExistingCanonicalIndex": true,
       "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
-      "mainCatalogMayNotOverrideFresherCompanyRuntime": true
+      "mainCatalogMayNotOverrideFresherCompanyRuntime": true,
+      "runtimeCatalogMirrorMode": "RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY",
+      "rawRuntimeCatalogDirectCopyForbidden": true,
+      "actualGameFileSourceMetadataPreserved": true,
+      "canonicalNormalizationRequiredBeforeHomepagePublication": true
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
