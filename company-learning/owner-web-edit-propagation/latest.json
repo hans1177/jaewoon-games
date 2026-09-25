@@ -1,23 +1,27 @@
 {
   "version": 1,
-  "before": "56343c669bd2aaee6de6a7d785b07532048d7dc9",
-  "after": "05c8896b844664e6f75b8a21f6e44dfad16e6c4c",
-  "generatedAt": "2026-09-25T15:04:03.394Z",
+  "before": "582d48bf2bb07af3215080975829c0c50aa04db2",
+  "after": "295ccd644a00192821e6ddc2ee1ad63ba87d8aff",
+  "generatedAt": "2026-09-25T15:19:41.987Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "fantasy-survival",
       "sourcePath": "web-games/fantasy-survival",
-      "sourceBefore": "56343c669bd2aaee6de6a7d785b07532048d7dc9",
-      "sourceAfter": "05c8896b844664e6f75b8a21f6e44dfad16e6c4c",
-      "semanticIntentFingerprint": "be44da71f209808586f8c99d91b39f3221028f7629953b524e294f6e0e65c1c3",
+      "sourceBefore": "582d48bf2bb07af3215080975829c0c50aa04db2",
+      "sourceAfter": "295ccd644a00192821e6ddc2ee1ad63ba87d8aff",
+      "semanticIntentFingerprint": "32c975961997aa3097d43f70f5f9957047dbeecbe77ebd4f444a55067669d8bd",
       "affectedSystems": [
         "MOVEMENT",
         "COMBAT",
+        "CRAFTING",
         "INVENTORY",
         "WORLD",
+        "MULTIPLAYER",
         "PROGRESSION",
+        "AUDIO",
+        "UI_UX",
         "SAVE",
         "BALANCE"
       ],
@@ -29,7 +33,7 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-25T15:04:03.394Z",
+      "detectedAt": "2026-09-25T15:19:41.987Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
