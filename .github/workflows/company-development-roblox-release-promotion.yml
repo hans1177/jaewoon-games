@@ -735,6 +735,7 @@ jobs:
           item.robloxF9ReleaseRegressionPassed=false;
           item.robloxF9ReleaseRegressionEvidence=null;
           item.robloxInternalVibePlayEvidence=null;
+          item.robloxStorePresentationEvidence=null;
           item.robloxGameCompletionEvidence=null;
           item.robloxPlatformAdaptationEvidence=null;
           item.robloxSecurityReleaseEvidence=null;
@@ -824,23 +825,54 @@ jobs:
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
+          GAME_ID: ${{ steps.target.outputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {resolveRobloxBilingualTitle} from './tools/company-roblox-store-presentation.mjs';
 
           const launch=JSON.parse(fs.readFileSync(`${process.env.SOURCE_ROOT}/launch-mvp.json`,'utf8'));
-          const displayName=String(launch.robloxTitleKorean||launch.gameName||'').trim();
-          const description=String(launch.robloxDescriptionKorean||'').trim();
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const runtime=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const gameId=String(process.env.GAME_ID||launch.gameId||'').trim();
+          const item=(runtime.items||[]).find(x=>String(x.gameId||'').trim()===gameId);
+          if(!item)throw new Error('ROBLOX_METADATA_RUNTIME_ITEM_MISSING');
+
+          const universeId=String(process.env.ROBLOX_UNIVERSE_ID||'').trim();
+          const placeId=String(process.env.ROBLOX_PLACE_ID||'').trim();
+          const matching=(runtime.items||[]).filter(row=>{
+            const sources=[
+              row.robloxRuntimeCandidateEvidence,
+              row.robloxInternalReleaseEvidence,
+              row.robloxReleaseEvidence,
+              row.robloxPublicationTarget,
+            ].filter(Boolean);
+            return sources.some(e=>String(e.universeId||'')===universeId&&String(e.placeId||'')===placeId);
+          });
+          const migrationState=String(item.robloxDedicatedTargetMigration?.state||'').trim();
+          const dedicated=matching.length===1
+            &&String(matching[0].gameId||'')===gameId
+            &&migrationState!=='PENDING_DEDICATED_PRIVATE_TARGET';
+
+          if(!dedicated){
+            console.log(`ROBLOX_METADATA_SYNC=SKIPPED_SHARED_OR_PENDING_DEDICATED_TARGET:${matching.length}:${migrationState||'UNKNOWN'}`);
+            console.log('ROBLOX_SHARED_INTERNAL_TARGET_MUTATION=FORBIDDEN');
+            process.exit(0);
+          }
+
+          const catalogEntry=(catalog.games||[]).find(x=>String(x.id||x.gameId||'').trim()===gameId)||{};
+          const title=resolveRobloxBilingualTitle({launch,catalogEntry,gameId});
+          const displayName=title.displayName;
+          const description=String(launch.robloxDescriptionKorean||launch.gameDescriptionKo||'').trim();
           const serverSize=Number(launch.robloxServerSize||0);
-          if(!displayName)throw new Error('ROBLOX_METADATA_TITLE_MISSING');
 
           const fields=['displayName','description'];
           const payload={displayName,description};
           if(Number.isInteger(serverSize)&&serverSize>0){fields.push('serverSize');payload.serverSize=serverSize;}
 
-          const base=`https://apis.roblox.com/cloud/v2/universes/${process.env.ROBLOX_UNIVERSE_ID}/places/${process.env.ROBLOX_PLACE_ID}`;
+          const base=`https://apis.roblox.com/cloud/v2/universes/${universeId}/places/${placeId}`;
           const headers={'x-api-key':process.env.ROBLOX_OPEN_CLOUD_API_KEY,'content-type':'application/json'};
           const update=await fetch(`${base}?updateMask=${encodeURIComponent(fields.join(','))}`,{
             method:'PATCH',headers,body:JSON.stringify(payload),
@@ -855,10 +887,11 @@ jobs:
           if(description&&String(place.description||'')!==description)throw new Error('ROBLOX_DESCRIPTION_VERIFY_MISMATCH');
           if(Number.isInteger(serverSize)&&serverSize>0&&Number(place.serverSize)!==serverSize)throw new Error(`ROBLOX_SERVER_SIZE_VERIFY_MISMATCH:${place.serverSize}`);
 
-          console.log(`ROBLOX_EXPERIENCE_TITLE=${displayName}`);
-          console.log(`ROBLOX_EXPERIENCE_DESCRIPTION_LENGTH=${description.length}`);
+          console.log(`ROBLOX_PLACE_TITLE=${displayName}`);
+          console.log('ROBLOX_PLACE_TITLE_BILINGUAL=PASS');
+          console.log(`ROBLOX_PLACE_DESCRIPTION_LENGTH=${description.length}`);
           if(serverSize>0)console.log(`ROBLOX_SERVER_SIZE=${serverSize}`);
-          console.log('ROBLOX_EXPERIENCE_METADATA_UPDATE=PASS');
+          console.log('ROBLOX_PLACE_METADATA_UPDATE=PASS');
           NODE
 
       - name: Private runtime candidate deployment summary

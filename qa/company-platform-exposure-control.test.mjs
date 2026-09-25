@@ -33,6 +33,16 @@ const strictRobloxEvidence=()=>({
   }),
   robloxSecurityReleaseEvidence:exact({noReleaseBlockingFinding:true}),
   robloxPresentationCompletionEvidence:exact({primaryGameplayPlaceholderDebt:0,runtimeVisualEvidencePassed:true}),
+  robloxStorePresentationEvidence:exact({
+    titleBilingualPass:true,
+    englishPrimaryKoreanSubtitle:true,
+    homepageThumbnailGeneratedFromActualGameplay:true,
+    homepageThumbnailCandidateCount:3,
+    iconGeneratedFromActualGameplay:true,
+    sharedPlaceholderUsed:false,
+    thumbnailUploadVerified:true,
+    iconUploadVerified:true
+  }),
   robloxReleaseStabilityEvidence:exact({distinctCompletedBuildupCycles:true,releaseBlockingFailureObservedSinceBaseline:false}),
   robloxPublicReleaseFinalEvidence:exact({fullPublicGateRevalidationPassed:true})
 });
@@ -113,4 +123,13 @@ test('homepage snapshot exposes strict Roblox buildup/public state',()=>{
   assert.equal(snap.version,3);
   assert.equal(snap.internalCompanySurface,true);
   assert.deepEqual(snap.games[0].platforms.map(p=>p.platform),['ROBLOX','UNITY']);
+});
+
+test('Roblox public release blocks generic or unverified store creative',()=>{
+  const item={...technicalBase(),robloxInternalReleasePublished:true,...strictRobloxEvidence()};
+  item.robloxStorePresentationEvidence={...item.robloxStorePresentationEvidence,sharedPlaceholderUsed:true,thumbnailUploadVerified:false};
+  const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});
+  const p=r.state.games[0].platforms.find(x=>x.platform==='ROBLOX');
+  assert.equal(p.publicReleaseReady,false);
+  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_STOREPRESENTATION'));
 });

@@ -175,6 +175,7 @@ test('new Roblox runtime candidate atomically invalidates stale release and QA p
     /item\.robloxFinalReviewPassed=false/,
     /item\.robloxF9ReleaseRegressionPassed=false/,
     /item\.robloxInternalVibePlayEvidence=null/,
+    /item\.robloxStorePresentationEvidence=null/,
     /item\.robloxGameCompletionEvidence=null/,
     /item\.robloxPlatformAdaptationEvidence=null/,
     /item\.robloxSecurityReleaseEvidence=null/,

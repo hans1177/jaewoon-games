@@ -1,5 +1,5 @@
 {
-  "version": 364,
+  "version": 365,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -4429,7 +4429,7 @@
       "internalBuildupLoop": {
         "version": 1,
         "authority": "OWNER_DIRECTIVE_2026-09-25",
-        "status": "ACTIVE_EXECUTABLE_CONTRACT_WITH_ACTUAL_VIBE_PLAY_EXECUTOR_REQUIRED",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "platform": "ROBLOX",
         "startsAfter": "INTERNAL_PLATFORM_RELEASE",
         "umbrellaState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
@@ -4474,7 +4474,27 @@
           "INTERNAL_REDEPLOY_EXACT_CANDIDATE",
           "EXACT_CANDIDATE_REVALIDATION",
           "VIBE_INTERNAL_PLAY"
-        ]
+        ],
+        "actualVibePlayExecutor": ".github/workflows/company-development-roblox-internal-vibe-play.yml",
+        "actualVibePlayExecutionSurface": "ROBLOX_STUDIO_ONLY",
+        "actualPlayerProcessRequired": false,
+        "actualInputRequired": true,
+        "distinctScreenChangeRequired": true,
+        "actualPlayFramesFeedStoreCreative": true,
+        "f9AutoDispatchesActualPlay": true,
+        "storePresentationRefresh": {
+          "titleHierarchy": "ENGLISH_PRIMARY_KOREAN_SUBTITLE",
+          "gameplayThumbnailCandidateCount": 3,
+          "actualGameplayFrameRequired": true,
+          "genericSharedPlaceholderForbidden": true,
+          "refreshAfterRebuild": true,
+          "staleStoreEvidenceInvalidatedByNewCandidate": true,
+          "sharedInternalTargetMutationForbidden": true,
+          "dedicatedGameTargetRequiredForRobloxMutation": true
+        },
+        "studioTestServiceRequired": true,
+        "virtualInputRequired": true,
+        "publishedRobloxPlayerAutomationForbidden": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
@@ -4511,7 +4531,10 @@
           "MOBILE_INPUT_UI_AND_LOW_END_PERFORMANCE_PASS",
           "PRESENTATION_COMPLETION_EVIDENCE_PASS",
           "STABILITY_EVIDENCE_ACROSS_DISTINCT_BUILDUP_CYCLES_PASS",
-          "EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS"
+          "EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS",
+          "ROBLOX_BILINGUAL_TITLE_EVIDENCE_PASS",
+          "ROBLOX_ICON_AND_THUMBNAIL_PRODUCTION_EVIDENCE_PASS",
+          "ROBLOX_ICON_AND_THUMBNAIL_UPLOAD_VERIFY_PASS"
         ],
         "vibeInternalPlay": {
           "mustBeActualPlay": true,
@@ -4543,7 +4566,8 @@
         "presentationCompletion": {
           "coreCharacterEnemyEquipmentEnvironmentMaterialStyleUiMotionRequiredWhenApplicable": true,
           "primaryGameplayPlaceholderDebtBlocksPublicRelease": true,
-          "runtimeVisualEvidenceRequired": true
+          "runtimeVisualEvidenceRequired": true,
+          "robloxStorePresentationRequired": true
         },
         "stability": {
           "evidenceAcrossDistinctCompletedBuildupCyclesRequired": true,
@@ -4565,7 +4589,41 @@
         "passState": "PUBLIC_RELEASE_READY",
         "publicationRequiresExplicitExternalPublicationEvidenceAfterPass": true,
         "publicationSuccessState": "PUBLIC_RELEASE",
-        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP"
+        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP",
+        "robloxStorePresentation": {
+          "version": 1,
+          "authority": "OWNER_DIRECTIVE_2026-09-25",
+          "title": {
+            "primaryLanguage": "EN",
+            "secondarySubtitleLanguage": "KO",
+            "hierarchy": "ENGLISH_PRIMARY_KOREAN_SECONDARY",
+            "displayFormat": "<ENGLISH_PRIMARY_TITLE> | <KOREAN_SUBTITLE>",
+            "bilingualRequired": true,
+            "koreanMustNotReplaceEnglishPrimary": true,
+            "exactUploadedValueVerificationRequired": true
+          },
+          "iconAndThumbnail": {
+            "source": "ACTUAL_INTERNAL_VIBE_PLAY_GAMEPLAY_FRAMES",
+            "dedicatedPerGameCreativeRequired": true,
+            "genericSharedPlaceholderForbidden": true,
+            "actualGameplayRepresentativeRequired": true,
+            "homepageCandidateCount": 3,
+            "candidatesMustUseDistinctVerifiedGameplayFrames": true,
+            "preferredResolution": "1920x1080",
+            "iconResolution": "512x512",
+            "misleadingSyntheticGameplayForbidden": true,
+            "mildPostProcessingOnly": true,
+            "uploadRequired": true,
+            "uploadVerificationRequired": true,
+            "runtimeEvidenceField": "robloxStorePresentationEvidence",
+            "currentSharedTargetOwnershipRequiredBeforeMutation": true,
+            "sharedInternalTargetMutationForbidden": true,
+            "dedicatedGameTargetRequiredForUpload": true,
+            "thumbnailUploadApi": "POST /legacy-game-internationalization/v1/game-thumbnails/games/{gameId}/language-codes/{languageCode}/image",
+            "iconUploadApi": "POST /legacy-game-internationalization/v1/game-icon/games/{gameId}/language-codes/{languageCode}",
+            "apiKeyAuthRequired": true
+          }
+        }
       }
     },
     "autonomousBottleneckRecovery": {

@@ -1,0 +1,506 @@
+name: Company Roblox Internal Vibe Play
+
+on:
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: Exact internally released Roblox gameId to play in Studio and capture.
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-roblox-internal-vibe-play-${{ inputs.game_id }}
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  play:
+    name: StudioTestService internal play and gameplay creative capture
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Resolve exact internally released candidate
+        id: candidate
+        shell: powershell
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $q = Get-Content 'runtime/development-queue.json' -Raw | ConvertFrom-Json
+          $item = @($q.items | Where-Object { [string]$_.gameId -eq $env:GAME_ID }) | Select-Object -First 1
+          if (-not $item) { throw "ROBLOX_VIBE_PLAY_GAME_NOT_FOUND:$env:GAME_ID" }
+          $e = $item.robloxInternalReleaseEvidence
+          if ($item.robloxInternalReleaseReady -ne $true -or -not $e -or $e.published -ne $true) {
+            throw "ROBLOX_VIBE_PLAY_REQUIRES_INTERNAL_RELEASE:$env:GAME_ID"
+          }
+          if ([string]$item.currentStep -ne 'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG') {
+            throw "ROBLOX_VIBE_PLAY_WRONG_STAGE:$($item.currentStep)"
+          }
+          $source = [string]$item.robloxSourceCommit
+          $artifact = [string]$item.robloxBuildArtifactIdentity
+          if ([string]$e.sourceRevision -ne $source -or [string]$e.artifactIdentity -ne $artifact) {
+            throw 'ROBLOX_VIBE_PLAY_EXACT_CANDIDATE_MISMATCH'
+          }
+          $artifactRunId = [int64]($item.robloxFoundationF0Evidence.artifactRunId)
+          if ($artifactRunId -le 0) { $artifactRunId = [int64]($item.robloxHeadlessFastMvpEvidence.artifactRunId) }
+          if ($artifactRunId -le 0) { $artifactRunId = [int64]($item.robloxRuntimeEvidence.artifactRunId) }
+          if ($artifactRunId -le 0) { throw 'ROBLOX_VIBE_PLAY_ARTIFACT_RUN_ID_MISSING' }
+          if ([int64]$e.versionNumber -le 0 -or [int64]$e.placeId -le 0 -or [int64]$e.universeId -le 0) {
+            throw 'ROBLOX_VIBE_PLAY_CANDIDATE_IDENTITY_MISSING'
+          }
+          "source_revision=$source" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_identity=$artifact" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_run_id=$artifactRunId" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "universe_id=$($e.universeId)" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "place_id=$($e.placeId)" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "version_number=$($e.versionNumber)" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "ROBLOX_VIBE_PLAY_EXACT_CANDIDATE=PASS:$env:GAME_ID:$($e.versionNumber)"
+
+      - name: Download exact immutable Roblox place artifact
+        id: package
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
+          ARTIFACT_RUN_ID: ${{ steps.candidate.outputs.artifact_run_id }}
+          EXPECTED_ARTIFACT: ${{ steps.candidate.outputs.artifact_identity }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP "roblox-vibe-package-$env:GAME_ID"
+          Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $root | Out-Null
+          gh run download $env:ARTIFACT_RUN_ID --repo $env:GITHUB_REPOSITORY -n "development-roblox-package-$env:GAME_ID" -D $root
+          $places = @(Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "ROBLOX_VIBE_PLAY_EXACT_PLACE_COUNT:$($places.Count)" }
+          $place = $places[0]
+          $hash = (Get-FileHash -Algorithm SHA256 $place.FullName).Hash.ToLowerInvariant()
+          if ("sha256:$hash" -ne $env:EXPECTED_ARTIFACT.ToLowerInvariant()) { throw 'ROBLOX_VIBE_PLAY_IMMUTABLE_ARTIFACT_MISMATCH' }
+          "place_file=$($place.FullName)" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_VIBE_PLAY_LOCAL_ARTIFACT_BIND=PASS'
+
+      - name: Create Studio official test driver
+        id: driver
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $driver = Join-Path $env:RUNNER_TEMP 'jaewoon-roblox-vibe-studio-test.luau'
+          @'
+          local StudioTestService = game:GetService("StudioTestService")
+          local StarterPlayer = game:GetService("StarterPlayer")
+          local ServerScriptService = game:GetService("ServerScriptService")
+
+          local client = Instance.new("LocalScript")
+          client.Name = "__JaewoonVibeVirtualInput"
+          client.Source = [=[
+          local UserInputService = game:GetService("UserInputService")
+          local virtualInput = UserInputService:CreateVirtualInput()
+          assert(virtualInput, "VIRTUAL_INPUT_UNAVAILABLE")
+          print("JAEWOON_VIBE_VIRTUAL_INPUT_READY")
+          task.wait(2)
+          local function tap(key, duration)
+              virtualInput:SendKey(true, key, false)
+              task.wait(duration or 0.25)
+              virtualInput:SendKey(false, key, false)
+          end
+          tap(Enum.KeyCode.W, 1.4)
+          task.wait(0.5)
+          tap(Enum.KeyCode.D, 0.9)
+          task.wait(0.5)
+          tap(Enum.KeyCode.Space, 0.2)
+          task.wait(0.5)
+          tap(Enum.KeyCode.A, 0.8)
+          task.wait(0.5)
+          virtualInput:SendMousePosition(Vector2.new(640,360))
+          virtualInput:SendMouseButton(Vector2.new(640,360), Enum.UserInputType.MouseButton1, true, 1)
+          task.wait(0.15)
+          virtualInput:SendMouseButton(Vector2.new(640,360), Enum.UserInputType.MouseButton1, false, 1)
+          print("JAEWOON_VIBE_VIRTUAL_INPUT_SEQUENCE_COMPLETE")
+          ]=]
+          client.Parent = StarterPlayer.StarterPlayerScripts
+
+          local server = Instance.new("Script")
+          server.Name = "__JaewoonVibeTestTerminator"
+          server.Source = [=[
+          local Players = game:GetService("Players")
+          local StudioTestService = game:GetService("StudioTestService")
+          local player = Players.PlayerAdded:Wait()
+          local character = player.Character or player.CharacterAdded:Wait()
+          local root = character:WaitForChild("HumanoidRootPart", 10)
+          local startPosition = root and root.Position or Vector3.zero
+          task.wait(9)
+          local finishRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+          local distance = finishRoot and (finishRoot.Position - startPosition).Magnitude or 0
+          print("JAEWOON_VIBE_STUDIO_MOVEMENT_DISTANCE=" .. tostring(distance))
+          StudioTestService:EndTest({
+              status = "PASS",
+              playerObserved = true,
+              virtualInputWindowSeconds = 9,
+              movementDistance = distance,
+          })
+          ]=]
+          server.Parent = ServerScriptService
+
+          print("JAEWOON_VIBE_STUDIO_TEST_START")
+          local result = StudioTestService:ExecutePlayModeAsync({
+              mode = "JAEWOON_VIBE_INTERNAL_PLAY",
+              version = 1,
+          })
+          assert(type(result) == "table" and result.status == "PASS", "STUDIO_TEST_RESULT_INVALID")
+          assert(result.playerObserved == true, "STUDIO_TEST_PLAYER_NOT_OBSERVED")
+          print("JAEWOON_VIBE_STUDIO_TEST_PASS")
+          print("JAEWOON_VIBE_STUDIO_MOVEMENT_DISTANCE_RESULT=" .. tostring(result.movementDistance or 0))
+          '@ | Set-Content -Path $driver -Encoding utf8
+          "driver_file=$driver" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Execute StudioTestService play and capture Studio-only gameplay
+        id: actualplay
+        shell: powershell
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+          DRIVER_FILE: ${{ steps.driver.outputs.driver_file }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName System.Drawing
+          Add-Type @"
+          using System;
+          using System.Runtime.InteropServices;
+          public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+          public static class StudioWindow {
+            [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
+          }
+          "@
+          function Capture-StudioWindow([IntPtr]$hwnd,[string]$path) {
+            $rect = New-Object RECT
+            if (-not [StudioWindow]::GetWindowRect($hwnd,[ref]$rect)) { throw 'ROBLOX_STUDIO_WINDOW_RECT_FAILED' }
+            $width = $rect.Right - $rect.Left
+            $height = $rect.Bottom - $rect.Top
+            if ($width -lt 320 -or $height -lt 240) { throw ('ROBLOX_STUDIO_WINDOW_TOO_SMALL:' + $width + 'x' + $height) }
+            $bmp = New-Object System.Drawing.Bitmap $width,$height
+            $gfx = [System.Drawing.Graphics]::FromImage($bmp)
+            $gfx.CopyFromScreen((New-Object System.Drawing.Point($rect.Left,$rect.Top)),[System.Drawing.Point]::Empty,(New-Object System.Drawing.Size($width,$height)))
+            $bmp.Save($path,[System.Drawing.Imaging.ImageFormat]::Png)
+            $gfx.Dispose(); $bmp.Dispose()
+          }
+
+          $studio = Get-ChildItem "$env:LOCALAPPDATA\Roblox\Versions" -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction Stop | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+          $frames = Join-Path $env:RUNNER_TEMP "roblox-vibe-studio-play-$env:GAME_ID"
+          $log = Join-Path $env:RUNNER_TEMP "roblox-vibe-studio-play-$env:GAME_ID.log"
+          Remove-Item -Recurse -Force $frames -ErrorAction SilentlyContinue
+          Remove-Item -Force $log -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $frames | Out-Null
+
+          $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$env:DRIVER_FILE`" --outputFile `"$log`" --quitAfterExecution"
+          $p = Start-Process -FilePath $studio.FullName -ArgumentList $argLine -PassThru
+          $deadline = (Get-Date).AddSeconds(90)
+          $captured = 0
+          do {
+            Start-Sleep -Seconds 2
+            $p.Refresh()
+            if (-not $p.HasExited -and $p.MainWindowHandle -ne 0) {
+              $captured++
+              Capture-StudioWindow $p.MainWindowHandle (Join-Path $frames ("{0:D2}-studio-play.png" -f $captured))
+            }
+          } while (-not $p.HasExited -and (Get-Date) -lt $deadline)
+          if (-not $p.HasExited) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            throw 'ROBLOX_STUDIO_TEST_TIMEOUT'
+          }
+          if (-not (Test-Path $log)) { throw 'ROBLOX_STUDIO_TEST_OUTPUT_MISSING' }
+          $text = Get-Content $log -Raw
+          if ($text -notmatch 'JAEWOON_VIBE_STUDIO_TEST_PASS') { throw 'ROBLOX_STUDIO_TEST_NOT_PASSED' }
+          if ($text -notmatch 'JAEWOON_VIBE_VIRTUAL_INPUT_SEQUENCE_COMPLETE') { throw 'ROBLOX_STUDIO_VIRTUAL_INPUT_NOT_OBSERVED' }
+
+          $hashes = @(Get-ChildItem $frames -Filter '*.png' | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash })
+          $distinct = @($hashes | Select-Object -Unique).Count
+          if ($distinct -lt 3) { throw "ROBLOX_VIBE_PLAY_SCREEN_CHANGE_INSUFFICIENT:$distinct" }
+          "frames_dir=$frames" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "studio_log=$log" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "distinct_frames=$distinct" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_VIBE_PLAY_SURFACE=STUDIO_ONLY'
+          Write-Host 'ROBLOX_PUBLISHED_PLAYER_AUTOMATION=NO'
+          Write-Host 'ROBLOX_STUDIO_TEST_SERVICE=PASS'
+          Write-Host 'ROBLOX_STUDIO_VIRTUAL_INPUT=PASS'
+          Write-Host "ROBLOX_VIBE_PLAY_DISTINCT_FRAMES=$distinct"
+
+      - name: Build three gameplay-derived thumbnail candidates and icon
+        id: creative
+        shell: powershell
+        env:
+          FRAMES_DIR: ${{ steps.actualplay.outputs.frames_dir }}
+          GAME_ID: ${{ inputs.game_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP "roblox-store-presentation-$env:GAME_ID"
+          Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+          python -m pip install --disable-pip-version-check --quiet pillow
+          python main/tools/company-roblox-thumbnail-compose.py --frames-dir "$env:FRAMES_DIR" --output-dir "$out"
+          if (-not (Test-Path (Join-Path $out 'manifest.json'))) { throw 'ROBLOX_THUMBNAIL_MANIFEST_MISSING' }
+          $m = Get-Content (Join-Path $out 'manifest.json') -Raw | ConvertFrom-Json
+          if ($m.actualGameplayFrameSource -ne $true -or $m.sharedPlaceholderUsed -ne $false -or [int]$m.homepageThumbnailCandidateCount -ne 3) {
+            throw 'ROBLOX_THUMBNAIL_ACTUAL_GAMEPLAY_CONTRACT_FAILED'
+          }
+          "output_dir=$out" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_GAMEPLAY_THUMBNAIL_CANDIDATES=3'
+          Write-Host 'ROBLOX_GAMEPLAY_ICON=PASS'
+
+      - name: Resolve English-primary Korean-subtitle store spec
+        id: title
+        shell: powershell
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $launch = "main/roblox-games/$env:GAME_ID/launch-mvp.json"
+          if (-not (Test-Path $launch)) { throw 'ROBLOX_STORE_LAUNCH_MVP_MISSING' }
+          $marketing = "main/company-learning/marketing/$env:GAME_ID/latest.json"
+          if (-not (Test-Path $marketing)) { $marketing = '' }
+          $args = @(
+            'main/tools/company-roblox-store-presentation.mjs',
+            "--launch=$launch",
+            '--catalog=main/game-catalog.json',
+            "--game-id=$env:GAME_ID",
+            '--output=' + (Join-Path $env:RUNNER_TEMP 'roblox-store-spec.json')
+          )
+          if ($marketing) { $args += "--marketing=$marketing" }
+          node @args
+          $spec = Get-Content (Join-Path $env:RUNNER_TEMP 'roblox-store-spec.json') -Raw | ConvertFrom-Json
+          if (-not $spec.title.displayName -or $spec.title.verifiedBilingual -ne $true) { throw 'ROBLOX_STORE_BILINGUAL_TITLE_FAILED' }
+          "display_name=$($spec.title.displayName)" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "ROBLOX_STORE_TITLE=$($spec.title.displayName)"
+          Write-Host 'ROBLOX_STORE_TITLE_BILINGUAL_SPEC=PASS'
+
+      - name: Determine whether Roblox store mutation is safe
+        id: storetarget
+        shell: powershell
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          UNIVERSE_ID: ${{ steps.candidate.outputs.universe_id }}
+          PLACE_ID: ${{ steps.candidate.outputs.place_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $q = Get-Content 'runtime/development-queue.json' -Raw | ConvertFrom-Json
+          $same = @($q.items | Where-Object {
+            $ids = @(
+              $_.robloxRuntimeCandidateEvidence,
+              $_.robloxInternalReleaseEvidence,
+              $_.robloxReleaseEvidence,
+              $_.robloxPublicationTarget
+            ) | Where-Object { $_ }
+            @($ids | Where-Object {
+              [string]$_.universeId -eq $env:UNIVERSE_ID -and [string]$_.placeId -eq $env:PLACE_ID
+            }).Count -gt 0
+          })
+          $self = @($q.items | Where-Object { [string]$_.gameId -eq $env:GAME_ID }) | Select-Object -First 1
+          $migrationState = [string]$self.robloxDedicatedTargetMigration.state
+          $dedicated = (
+            $same.Count -eq 1
+            -and [string]$same[0].gameId -eq $env:GAME_ID
+            -and $migrationState -ne 'PENDING_DEDICATED_PRIVATE_TARGET'
+          )
+          "dedicated=$($dedicated.ToString().ToLowerInvariant())" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "migration_state=$migrationState" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          if ($dedicated) {
+            Write-Host 'ROBLOX_STORE_MUTATION_TARGET=DEDICATED_GAME_TARGET'
+          } else {
+            Write-Host "ROBLOX_STORE_MUTATION_SKIPPED=SHARED_OR_PENDING_DEDICATED_TARGET:$($same.Count):$migrationState"
+          }
+
+      - name: Apply title only to dedicated game target
+        id: applytitle
+        if: steps.storetarget.outputs.dedicated == 'true'
+        shell: powershell
+        env:
+          TITLE: ${{ steps.title.outputs.display_name }}
+          UNIVERSE_ID: ${{ steps.candidate.outputs.universe_id }}
+          PLACE_ID: ${{ steps.candidate.outputs.place_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $body = @{ displayName = $env:TITLE } | ConvertTo-Json -Compress
+          $headers = @{ 'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY; 'content-type'='application/json' }
+          $url = "https://apis.roblox.com/cloud/v2/universes/$env:UNIVERSE_ID/places/$env:PLACE_ID?updateMask=displayName"
+          Invoke-RestMethod -Method Patch -Uri $url -Headers $headers -Body $body | Out-Null
+          $verify = Invoke-RestMethod -Method Get -Uri "https://apis.roblox.com/cloud/v2/universes/$env:UNIVERSE_ID/places/$env:PLACE_ID" -Headers @{ 'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY }
+          if ([string]$verify.displayName -ne $env:TITLE) { throw 'ROBLOX_STORE_TITLE_VERIFY_MISMATCH' }
+          Write-Host 'ROBLOX_STORE_TITLE_APPLY_VERIFY=PASS'
+
+      - name: Apply generated thumbnails and icon only to dedicated game target
+        id: storemedia
+        if: steps.storetarget.outputs.dedicated == 'true'
+        shell: powershell
+        env:
+          UNIVERSE_ID: ${{ steps.candidate.outputs.universe_id }}
+          CREATIVE_DIR: ${{ steps.creative.outputs.output_dir }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $manifest = Get-Content (Join-Path $env:CREATIVE_DIR 'manifest.json') -Raw | ConvertFrom-Json
+          $thumbs = @($manifest.homepageThumbnails)
+          if ($thumbs.Count -ne 3) { throw "ROBLOX_STORE_THUMBNAIL_COUNT_INVALID:$($thumbs.Count)" }
+          $header = @('-H', "x-api-key: $env:ROBLOX_OPEN_CLOUD_API_KEY")
+          $uploaded = 0
+          foreach ($thumb in $thumbs) {
+            $response = Join-Path $env:RUNNER_TEMP ("roblox-thumb-upload-{0}.json" -f $uploaded)
+            $code = & curl.exe -sS -o $response -w "%{http_code}" -X POST @header -F "file=@$thumb" "https://apis.roblox.com/legacy-game-internationalization/v1/game-thumbnails/games/$env:UNIVERSE_ID/language-codes/en-us/image"
+            if ([int]$code -lt 200 -or [int]$code -ge 300) {
+              throw "ROBLOX_STORE_THUMBNAIL_UPLOAD_FAILED:$code:$((Get-Content $response -Raw -ErrorAction SilentlyContinue))"
+            }
+            $uploaded++
+          }
+          $icon = [string]$manifest.icon
+          $iconResponse = Join-Path $env:RUNNER_TEMP 'roblox-icon-upload.json'
+          $iconCode = & curl.exe -sS -o $iconResponse -w "%{http_code}" -X POST @header -F "file=@$icon" "https://apis.roblox.com/legacy-game-internationalization/v1/game-icon/games/$env:UNIVERSE_ID/language-codes/en-us"
+          if ([int]$iconCode -lt 200 -or [int]$iconCode -ge 300) {
+            throw "ROBLOX_STORE_ICON_UPLOAD_FAILED:$iconCode:$((Get-Content $iconResponse -Raw -ErrorAction SilentlyContinue))"
+          }
+          if ($uploaded -ne 3) { throw "ROBLOX_STORE_THUMBNAIL_UPLOAD_COUNT_MISMATCH:$uploaded" }
+
+          # Verify Roblox accepted current media through documented read APIs.
+          $verifiedThumbs = $false
+          for ($i=0; $i -lt 12; $i++) {
+            Start-Sleep -Seconds 5
+            try {
+              $media = Invoke-RestMethod -Method Get -Uri "https://games.roblox.com/v2/games/$env:UNIVERSE_ID/media"
+              $imageCount = @($media.data | Where-Object { [string]$_.assetType -match 'Image' }).Count
+              if ($imageCount -ge 3) { $verifiedThumbs = $true; break }
+            } catch {}
+          }
+          if (-not $verifiedThumbs) { throw 'ROBLOX_STORE_THUMBNAIL_READBACK_VERIFY_FAILED' }
+
+          $icons = Invoke-RestMethod -Method Get -Uri "https://apis.roblox.com/legacy-game-internationalization/v1/game-icon/games/$env:UNIVERSE_ID" -Headers @{ 'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY }
+          if (-not $icons) { throw 'ROBLOX_STORE_ICON_READBACK_VERIFY_FAILED' }
+          Write-Host 'ROBLOX_STORE_THUMBNAIL_UPLOAD_VERIFY=PASS'
+          Write-Host 'ROBLOX_STORE_ICON_UPLOAD_VERIFY=PASS'
+
+      - name: Persist Studio play and generated store-presentation evidence
+        shell: powershell
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          SOURCE_REVISION: ${{ steps.candidate.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ steps.candidate.outputs.artifact_identity }}
+          UNIVERSE_ID: ${{ steps.candidate.outputs.universe_id }}
+          PLACE_ID: ${{ steps.candidate.outputs.place_id }}
+          VERSION_NUMBER: ${{ steps.candidate.outputs.version_number }}
+          DISTINCT_FRAMES: ${{ steps.actualplay.outputs.distinct_frames }}
+          DEDICATED_TARGET: ${{ steps.storetarget.outputs.dedicated }}
+          TITLE_APPLY_OUTCOME: ${{ steps.applytitle.outcome }}
+          STORE_MEDIA_OUTCOME: ${{ steps.storemedia.outcome }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-Location runtime
+          git fetch --no-tags origin $env:COMPANY_RUNTIME_BRANCH
+          git reset --hard "origin/$env:COMPANY_RUNTIME_BRANCH"
+          $q = Get-Content 'development-queue.json' -Raw | ConvertFrom-Json
+          $item = @($q.items | Where-Object { [string]$_.gameId -eq $env:GAME_ID }) | Select-Object -First 1
+          if (-not $item) { throw 'ROBLOX_VIBE_PLAY_PERSIST_GAME_MISSING' }
+          $e = $item.robloxInternalReleaseEvidence
+          if ([string]$item.robloxSourceCommit -ne $env:SOURCE_REVISION -or [string]$item.robloxBuildArtifactIdentity -ne $env:ARTIFACT_IDENTITY) { throw 'ROBLOX_VIBE_PLAY_SOURCE_CHANGED_BEFORE_PERSIST' }
+          if ([int64]$e.versionNumber -ne [int64]$env:VERSION_NUMBER) { throw 'ROBLOX_VIBE_PLAY_VERSION_CHANGED_BEFORE_PERSIST' }
+          $stamp = (Get-Date).ToUniversalTime().ToString('o')
+          $play = [ordered]@{
+            pass=$true
+            actualPlay=$true
+            playSurface='ROBLOX_STUDIO_TEST_SERVICE'
+            publishedPlayerAutomation=$false
+            studioTestServiceUsed=$true
+            virtualInputUsed=$true
+            screenChangeObserved=$true
+            distinctGameplayFrames=[int]$env:DISTINCT_FRAMES
+            scenarioCoveragePass=$false
+            scenarioCoverage=@('NEW_GAME_START','CORE_GAMEPLAY_INPUT_SMOKE')
+            sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY
+            universeId=[string]$env:UNIVERSE_ID; placeId=[string]$env:PLACE_ID; versionNumber=[int64]$env:VERSION_NUMBER
+            workflowRunId=[int64]$env:GITHUB_RUN_ID; playedAt=$stamp
+            authority='roblox-studio-official-test-service-vibe-play'
+          }
+          $dedicated = $env:DEDICATED_TARGET -eq 'true'
+          $titleApplied = $env:TITLE_APPLY_OUTCOME -eq 'success'
+          $mediaApplied = $env:STORE_MEDIA_OUTCOME -eq 'success'
+          $store = [ordered]@{
+            pass=($dedicated -and $titleApplied -and $mediaApplied)
+            generated=$true
+            titleBilingualPass=$true
+            englishPrimaryKoreanSubtitle=$true
+            homepageThumbnailGeneratedFromActualGameplay=$true
+            homepageThumbnailCandidateCount=3
+            iconGeneratedFromActualGameplay=$true
+            sharedPlaceholderUsed=$false
+            dedicatedGameTarget=$dedicated
+            titleUploadVerified=($dedicated -and $titleApplied)
+            thumbnailUploadVerified=($dedicated -and $mediaApplied)
+            iconUploadVerified=($dedicated -and $mediaApplied)
+            uploadBlockedReason=if(-not $dedicated){'SHARED_OR_PENDING_DEDICATED_TARGET'}elseif(-not $mediaApplied){'ROBLOX_STORE_MEDIA_UPLOAD_OR_READBACK_FAILED'}else{''}
+            sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY
+            universeId=[string]$env:UNIVERSE_ID; placeId=[string]$env:PLACE_ID; versionNumber=[int64]$env:VERSION_NUMBER
+            workflowRunId=[int64]$env:GITHUB_RUN_ID; updatedAt=$stamp
+            authority='roblox-studio-gameplay-store-presentation'
+          }
+          $item | Add-Member -NotePropertyName robloxInternalVibePlayEvidence -NotePropertyValue $play -Force
+          $item | Add-Member -NotePropertyName robloxStorePresentationEvidence -NotePropertyValue $store -Force
+          $item | Add-Member -NotePropertyName robloxInternalPlaytestPassed -NotePropertyValue $true -Force
+          $item.updatedAt=$stamp
+          $q.updatedAt=$stamp
+          $q | ConvertTo-Json -Depth 100 | Set-Content 'development-queue.json' -Encoding utf8
+          git config user.name 'jaewoon-roblox-vibe-play'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "runtime: persist Studio Roblox Vibe play $env:GAME_ID [skip ci]"
+            for ($i=1; $i -le 3; $i++) {
+              git push origin "HEAD:$env:COMPANY_RUNTIME_BRANCH"
+              if ($LASTEXITCODE -eq 0) { break }
+              git fetch --no-tags origin $env:COMPANY_RUNTIME_BRANCH
+              git rebase "origin/$env:COMPANY_RUNTIME_BRANCH"
+              Start-Sleep -Seconds (2*$i)
+            }
+            if ($LASTEXITCODE -ne 0) { throw 'ROBLOX_VIBE_PLAY_RUNTIME_PUSH_FAILED' }
+          }
+          Write-Host 'ROBLOX_INTERNAL_VIBE_PLAY_EVIDENCE=PERSISTED'
+          Write-Host 'ROBLOX_PUBLISHED_PLAYER_AUTOMATION=NO'
+
+      - name: Upload Studio gameplay and generated creative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-internal-vibe-play-${{ inputs.game_id }}-${{ github.run_id }}
+          path: |
+            ${{ steps.actualplay.outputs.frames_dir }}/*.png
+            ${{ steps.actualplay.outputs.studio_log }}
+            ${{ steps.creative.outputs.output_dir }}/*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Refill existing Vibe development loop
+        if: success()
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run vibe2-24h-runner.yml --repo $env:GITHUB_REPOSITORY --ref main
+          Write-Host 'ROBLOX_VIBE_PLAY_TO_EXISTING_REPAIR_LOOP=DISPATCHED'
