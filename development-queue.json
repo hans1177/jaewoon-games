@@ -1442,7 +1442,39 @@
       "robloxPublicReleaseBlockers": [
         "roblox-public-release-runtime-finding:ground_contact_failure"
       ],
-      "robloxF9PendingInParallel": true
+      "robloxF9PendingInParallel": true,
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "daechung-rpg",
+        "sourcePath": "web-games/daechung-rpg",
+        "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
+        "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
+        "semanticIntentFingerprint": "eba6cbf8d439d64237f8fea66e0b06316cb0c2944a4706beb0fd22f8b3d3da03",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "AUDIO",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "ROBLOX"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:06:01.391Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -1926,7 +1958,37 @@
       "robloxDedicatedExperiencePublished": true,
       "robloxDedicatedExperiencePublishedAt": "2026-09-25T14:08:10.303Z",
       "robloxFastMvpPublished": true,
-      "robloxFastMvpPublishedAt": "2026-09-25T14:08:10.303Z"
+      "robloxFastMvpPublishedAt": "2026-09-25T14:08:10.303Z",
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "horror-escape-room",
+        "sourcePath": "web-games/horror-escape-room",
+        "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
+        "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
+        "semanticIntentFingerprint": "9f72bda950fae65a031ed6130f1ea66a44a94afde2021f5a0798674d5b715fa8",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "UI_UX",
+          "SAVE"
+        ],
+        "platformTargets": [
+          "ROBLOX"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:06:01.391Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     },
     {
       "gameId": "amusement-tycoon",
@@ -2772,7 +2834,38 @@
         "sourceRevision": "ffdac80fb7bc2b967408dec382c74da6b079e3d0",
         "artifactIdentity": "sha256:c1a1d044c752a92bd1e3e677f412fdf1d27a8281f5893094b7e093bbebd5b41e",
         "state": "PENDING_DEDICATED_PRIVATE_TARGET"
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "bug-defense",
+        "sourcePath": "web-games/bug-defense",
+        "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
+        "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
+        "semanticIntentFingerprint": "047e0cb5f5f04588b9702c7a76f384ef7f798dcc362ed4dde34c379eb4784768",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "AUDIO",
+          "UI_UX",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:06:01.391Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     },
     {
       "gameId": "line-defense",
@@ -3588,7 +3681,33 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-25T17:32:29.055Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-25T17:32:29.055Z",
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "village-dungeons",
+        "sourcePath": "web-games/village-dungeons",
+        "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
+        "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
+        "semanticIntentFingerprint": "3bbae019cf34e54b0ea5db017bba6157e3a35b6b90668789ff5ef3c5ec92f096",
+        "affectedSystems": [
+          "INVENTORY",
+          "WORLD",
+          "UI_UX",
+          "SAVE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:06:01.391Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -4341,7 +4460,38 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "monster-adventure",
+        "sourcePath": "web-games/monster-adventure",
+        "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
+        "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
+        "semanticIntentFingerprint": "6bfe169a9b65834afb52ecf7501ab670874cb20a0499c3bde85e4d1d5177a686",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:06:01.391Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -5789,7 +5939,40 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "sourcePath": "web-games/seed-puzzle-chromatic-cascade",
+        "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
+        "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
+        "semanticIntentFingerprint": "9fd0f2aa9861c63a299cb7d7e29b31422a156ac7f6f80d0be27b66b38d0743ff",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "CRAFTING",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "AUDIO",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:06:01.391Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -6875,10 +7058,41 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "survival",
+        "sourcePath": "web-games/survival",
+        "sourceBefore": "7a040950a95d900d3d222dccafd00214848b3b95",
+        "sourceAfter": "58869eb7b3d900d28e86e46f1a7ccfec224f4871",
+        "semanticIntentFingerprint": "c65f820f5b0843ced905dae7b145d1b9230dae46dbdd2440c83fea1f9965755f",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "CRAFTING",
+          "INVENTORY",
+          "WORLD",
+          "PROGRESSION",
+          "AUDIO",
+          "UI_UX",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T20:06:01.391Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-25T19:02:27.278Z",
+  "updatedAt": "2026-09-25T20:06:01.391Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
