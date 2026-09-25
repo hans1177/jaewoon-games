@@ -980,9 +980,22 @@ test('every non-neuron reserve ingress syncs current company runtime before plan
 });
 
 
+test('24h scheduler fetches only required shallow refs before planning',()=>{
+  const start=safetyNetWorkflow.indexOf('- name: Checkout Vibe2 control branch');
+  const end=safetyNetWorkflow.indexOf('- uses: actions/setup-node@v4',start);
+  const checkout=safetyNetWorkflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(checkout,/fetch-depth: 2/);
+  assert.doesNotMatch(checkout,/fetch-depth: 0/);
+  assert.match(safetyNetWorkflow,/refs\/heads\/main:refs\/remotes\/origin\/main/);
+  assert.match(safetyNetWorkflow,/refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core/);
+  assert.match(safetyNetWorkflow,/refs\/heads\/company-runtime:refs\/remotes\/origin\/company-runtime/);
+  assert.match(safetyNetWorkflow,/--depth=2 --no-tags --quiet/);
+});
+
 test('continuous planners overlay company-runtime design evidence before autonomous planning',()=>{
   for(const currentWorkflow of [workflow,safetyNetWorkflow]){
-    assert.match(currentWorkflow,/git -C \/tmp\/vibe2-main fetch origin company-runtime --quiet/);
+    assert.match(currentWorkflow,/git -C \/tmp\/vibe2-main fetch origin [^\n]*company-runtime[^\n]*--quiet/);
     assert.match(currentWorkflow,/for runtime_design_path in design game-seed-state\.json/);
     assert.match(currentWorkflow,/git -C \/tmp\/vibe2-main checkout origin\/company-runtime -- "\$runtime_design_path"/);
     assert.match(currentWorkflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
