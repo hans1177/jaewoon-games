@@ -530,7 +530,22 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("MonsterCount",tonumber(snapshot.MonsterCount)or 0)
 end)
 
-QACamera.install(C,gui,function()
+local arena=workspace:FindFirstChild("MidnightArena")
+if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
+local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
+if id=="HOSPITAL"then
+ return{
+ {label="horror-hospital-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),
+ {label="horror-hospital-emergency",position=Vector3.new(-155,25,-45),lookAt=Vector3.new(-118,4,-82)),
+ {label="horror-hospital-morgue",position=Vector3.new(-150,24,145),lookAt=Vector3.new(-118,4,108)),
+ }
+ elseif id=="THEME_PARK"then
+ return{
+ {label="horror-park-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),
+ {label="horror-park-arcade",position=Vector3.new(-154,24,-52),lookAt=Vector3.new(-118,4,-92)),
+ {label="horror-park-maintenance",position=Vector3.new(154,24,145),lookAt=Vector3.new(118,4,108)),
+ }
+ end
  local arena=workspace:FindFirstChild("MidnightArena")
  if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")

@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "QACamera.install(C,gui,function()",
+      "replace": "local arena=workspace:FindFirstChild(\"MidnightArena\")\nif not arena or workspace:GetAttribute(\"MapReady\")~=true then return{}end\nlocal id=tostring(workspace:GetAttribute(\"CurrentMapId\")or\"SCHOOL\")\nif id==\"HOSPITAL\"then\n return{\n {label=\"horror-hospital-overview\",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),\n {label=\"horror-hospital-emergency\",position=Vector3.new(-155,25,-45),lookAt=Vector3.new(-118,4,-82)),\n {label=\"horror-hospital-morgue\",position=Vector3.new(-150,24,145),lookAt=Vector3.new(-118,4,108)),\n }\n elseif id==\"THEME_PARK\"then\n return{\n {label=\"horror-park-overview\",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),\n {label=\"horror-park-arcade\",position=Vector3.new(-154,24,-52),lookAt=Vector3.new(-118,4,-92)),\n {label=\"horror-park-maintenance\",position=Vector3.new(154,24,145),lookAt=Vector3.new(118,4,108)),\n }\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
