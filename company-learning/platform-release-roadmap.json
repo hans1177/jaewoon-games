@@ -1,5 +1,5 @@
 {
-  "version": 390,
+  "version": 391,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -4153,7 +4153,53 @@
           "HOMEPAGE_PUBLIC_SURFACE_BLOCKER",
           "CI_QUEUE_QA_INFRASTRUCTURE_BLOCKER"
         ],
-        "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK"
+        "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK",
+        "bottleneckReasoning": {
+          "version": 1,
+          "mode": "VIBE_DIRECTED_DEEP_CAUSAL_REASONING",
+          "activation": [
+            "TASK_TYPE_BOTTLENECK_REPAIR",
+            "RETRY_COUNT_GT_0",
+            "SOURCE_MUTATION_REQUIRED",
+            "COMMON_FAILURE_COHORT"
+          ],
+          "sequence": [
+            "BUILD_DETERMINISTIC_EVIDENCE_PACKET",
+            "GENERATE_MULTIPLE_CAUSAL_HYPOTHESES",
+            "GENERATE_MULTIPLE_REPAIR_STRATEGIES",
+            "CRITIC_CHALLENGES_SELECTED_CAUSE_AND_STRATEGY",
+            "IMPLEMENT_MINIMUM_BLAST_RADIUS_SURVIVING_STRATEGY",
+            "RUN_EXACT_TASK_VERIFICATION",
+            "PERSIST_FAILED_STRATEGY_AND_REJECTED_HYPOTHESES_ON_FAILURE",
+            "REPLAN_FROM_NEW_EVIDENCE"
+          ],
+          "plannerCriticImplementerMayUseSameFreeLocalModel": true,
+          "artificialDistinctModelRequirement": false,
+          "rawPrivateReasoningPersistenceForbidden": true,
+          "conciseDecisionEvidenceRequired": true,
+          "minimumHypothesesForDeepRepair": 2,
+          "minimumRepairStrategiesForDeepRepair": 2,
+          "criticMustChallengeSelectedStrategy": true,
+          "repeatedFailedStrategyForbiddenWithoutNewCausalEvidence": true,
+          "selectedStrategyMustFitAssignedResponsibleFiles": true,
+          "minimalBlastRadiusPreferred": true,
+          "deterministicVerificationRemainsAuthority": true,
+          "workerSelfAcceptance": false,
+          "taskCreationAuthority": "EXISTING_VIBE_RECOVERY_AND_PRIMARY_AI_ROUTING_ONLY",
+          "spontaneousUnscopedTaskCreationForbidden": true,
+          "centralPolicyMutationAuthority": false
+        },
+        "bottleneckSensorReservationBinding": {
+          "version": 1,
+          "sensor": "tools/company-system-ai-bottleneck-sensor.mjs",
+          "rule": "SENSOR_RECOMMENDATIONS_MUST_AFFECT_RESERVATION_ORDER_NOT_BE_LOG_ONLY",
+          "commonFailureRepresentativeCanaryFirst": true,
+          "highestImpactDisjointRepairsFirst": true,
+          "preserveResponsibleFileConflictExclusion": true,
+          "fallbackToExistingGeneralReserveWhenNoRecommendation": true,
+          "mayNotInventWritableScope": true,
+          "mayNotCreateNewPolicyAuthority": true
+        }
       },
       "internalVibeAiCollaboration": {
         "version": 1,
@@ -4991,7 +5037,24 @@
       },
       "companyWideImpactPriorityRequired": true,
       "multiHypothesisFalsificationRequiredForRepeatedOrBottleneckRepair": true,
-      "failedRepairStrategyFingerprintMustPersistAcrossRetry": true
+      "failedRepairStrategyFingerprintMustPersistAcrossRetry": true,
+      "deepReasoningExecution": {
+        "version": 1,
+        "worker": "tools/company-system-ai-worker.mjs",
+        "reservationSensor": "tools/company-system-ai-bottleneck-sensor.mjs",
+        "scheduler": ".github/workflows/company-system-ai-workers.yml",
+        "requiresVibeOrRecoveryRoutedTask": true,
+        "representativeCanaryRecommendationMustBeConsumed": true,
+        "hardRepairUsesPlannerCriticImplementer": true,
+        "failureFeedbackIncludes": [
+          "FAILED_STRATEGY_FINGERPRINT",
+          "REJECTED_HYPOTHESIS_IDS",
+          "CRITIC_WEAK_POINTS",
+          "VERIFICATION_FAILURE"
+        ],
+        "successfulCandidateStillRequiresDeterministicVerificationAndExistingReviewGate": true,
+        "authorityChange": "NONE"
+      }
     },
     "systemAiVerifiedLearningFanIn": {
       "version": 1,
@@ -7439,6 +7502,30 @@
       "expectedEffect": "LOWER_REPEATED_WORKER_STARTUP_CHECKOUT_COST_AND_CHECKOUT_NETWORK_PRESSURE",
       "securityImpact": "NO_AUTHORITY_EXPANSION_NO_GATE_WEAKENING",
       "implementationState": "IMPLEMENTED_PENDING_QA"
+    },
+    "systemAiDeepBottleneckReasoning20260926": {
+      "id": "SYSTEM_AI_DEEP_BOTTLENECK_REASONING_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "MAKE_VIBE_DIRECTED_BOTTLENECK_REPAIR_MORE_SYSTEMATIC_THAN_SINGLE_PASS_PRIMARY_AI_MANUAL_REPAIR_WITHOUT_EXPANDING_AUTHORITY",
+      "changes": [
+        "BIND_BOTTLENECK_SENSOR_CANARY_OUTPUT_TO_RESERVATION",
+        "USE_PLAN_CRITIC_IMPLEMENT_FOR_HARD_REPAIRS",
+        "PERSIST_REJECTED_CAUSES_AND_FAILED_STRATEGIES",
+        "REPLAN_FROM_NEW_VERIFICATION_EVIDENCE"
+      ],
+      "newWorkflowCreated": false,
+      "newSchedulerCreated": false,
+      "newAuthorityCreated": false,
+      "directMainWrite": false,
+      "centralPolicyWriteByWorker": false,
+      "deterministicCompletionAuthorityPreserved": true,
+      "bindings": [
+        "tools/company-system-ai-bottleneck-sensor.mjs",
+        "tools/company-system-ai-worker.mjs",
+        ".github/workflows/company-system-ai-workers.yml",
+        "qa/company-system-ai-worker.test.mjs",
+        "qa/company-system-ai-supervision-loop.test.mjs"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
