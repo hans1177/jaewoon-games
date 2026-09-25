@@ -115,3 +115,9 @@ test('failed-floor recovery cannot be evicted by the prepare writer queue and re
   assert.match(recover,/git reset --hard origin\/autonomous-dev/);
   assert.match(recover,/if git push origin HEAD:autonomous-dev; then/);
 });
+
+
+test('autonomous queue state CLI guard tolerates import contexts without argv[1]',()=>{
+  const source=fs.readFileSync(new URL('../tools/autonomous-queue-state.mjs',import.meta.url),'utf8');
+  assert.match(source,/if\(process\.argv\[1\]&&import\.meta\.url===pathToFileURL\(process\.argv\[1\]\)\.href\)/);
+});
