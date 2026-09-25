@@ -109,12 +109,12 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   const bad1=path.join(cwd,'presentation-bad-1.json');
   const good=path.join(cwd,'presentation-good-focused.json');
   write(bad1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(good,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
+  write(good,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('70,95,130')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,good]});
   assert.equal(result.generation.attempts,2);
   assert.equal(result.generation.recoveryUsed,true);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.presentationCandidateDelta.pass,true);
   assert.equal(result.presentationCandidateDelta.presentationPass,'ASSET_ADAPTATION');
   assert.deepEqual(result.changedFiles,[relative]);
@@ -145,14 +145,14 @@ test('presentation delta uses the configured fourth recovery attempt instead of 
   const r3=path.join(cwd,'presentation-r3.json');
   const r4=path.join(cwd,'presentation-r4.json');
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(r2,JSON.stringify({replace:'local score = 2'}));
-  write(r3,JSON.stringify({replace:'local score = 3'}));
-  write(r4,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
+  write(r2,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 2'}]}));
+  write(r3,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 3'}]}));
+  write(r4,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('70,95,130')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
   assert.equal(result.generation.attempts,4);
   assert.equal(result.generation.recoveryUsed,true);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.presentationCandidateDelta.pass,true);
   assert.deepEqual(result.changedFiles,[relative]);
 });
@@ -177,13 +177,13 @@ test('repeated presentation delta rotates to the next visual anchor before the n
   const r2=path.join(cwd,'presentation-rotate-r2.json');
   const r3=path.join(cwd,'presentation-rotate-r3.json');
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(r2,JSON.stringify({replace:'local presentationMarker = 2'}));
-  write(r3,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
+  write(r2,JSON.stringify({edits:[{path:relative,find:'camera.FieldOfView = 70',replace:'camera.FieldOfView = 71'}]}));
+  write(r3,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('70,95,130')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3]});
   assert.equal(result.generation.attempts,3);
-  assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.ok(result.generation.focusedReplaceAnchorRotations>=1);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.focusedReplaceAnchorRotations,0);
   assert.equal(result.presentationCandidateDelta.pass,true);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
   assert.match(candidate,/70,95,130/);
@@ -209,17 +209,117 @@ test('presentation recovery keeps the fourth slot after malformed focused output
   const r3=path.join(cwd,'presentation-malformed-r3.json');
   const r4=path.join(cwd,'presentation-malformed-r4.json');
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(r2,JSON.stringify({replace:'local score = 2'}));
-  write(r3,'{"replace":');
-  write(r4,JSON.stringify({replace:robloxFullGraphicsMotionPatch('82,110,148')}));
+  write(r2,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 2'}]}));
+  write(r3,'{"edits":');
+  write(r4,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('82,110,148')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
   assert.equal(result.generation.attempts,4);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.presentationCandidateDelta.pass,true);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
   assert.match(candidate,/82,110,148/);
   assert.match(candidate,/weapon\.Orientation\s*=/);
+});
+
+test('Roblox domain recovery names missing core domains and keeps the multi-edit full graphics contract',()=>{
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve complete native Roblox graphics',
+    'Allowed edit paths: client/Game.client.luau, shared/VisualStyle.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local enemyBody = workspace.EnemyBody',
+    'local weapon = workspace.Sword',
+    '=== FILE shared/VisualStyle.luau [EDITABLE] ===',
+    'local accent = Color3.fromRGB(20,30,40)'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED:MISSING_CHARACTER_ENEMY,WEAPON_EQUIPMENT'),
+    responsibleFiles:['client/Game.client.luau','shared/VisualStyle.luau'],
+    attempt:3
+  });
+  assert.match(retry,/previous Roblox graphics candidate omitted one or more mandatory core visual domains/i);
+  assert.match(retry,/MISSING ROBLOX CORE DOMAINS: CHARACTER_ENEMY,WEAPON_EQUIPMENT/i);
+  assert.match(retry,/1-4 connected edits/i);
+  assert.match(retry,/no upper limit/i);
+  assert.doesNotMatch(retry,/exactly one edit/i);
+});
+
+test('Roblox motion recovery requires executable transform mutation without collapsing to one edit',()=>{
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve complete native Roblox graphics',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local enemyBody = workspace.EnemyBody'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED:NATIVE_DRIVER_AND_TRANSFORM_MUTATION'),
+    responsibleFiles:['client/Game.client.luau'],
+    attempt:3
+  });
+  assert.match(retry,/did not contain verified native transform motion/i);
+  assert.match(retry,/TweenService\/RenderStepped\/Heartbeat\/Animator\/AnimationTrack\/Motor6D\/Bone/i);
+  assert.match(retry,/CFrame\/Transform\/Position\/Orientation assignment/i);
+  assert.match(retry,/1-4 connected exact-anchor edits/i);
+  assert.doesNotMatch(retry,/exactly one edit/i);
+});
+
+test('Roblox missing-domain recovery uses the configured fourth attempt and then accepts full graphics plus motion',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({
+    target:'roblox',
+    root,
+    responsibleFiles:[`${root}/${relative}`],
+    taskId:'roblox-domain-fourth-retry'
+  });
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve complete native Roblox graphics without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const missingWeapon=robloxFullGraphicsMotionPatch('60,80,110')
+    .split('\n')
+    .filter(line=>!/\\bweapon\\b/i.test(line))
+    .join('\n');
+  const responses=[];
+  for(let i=1;i<=3;i+=1){
+    const file=path.join(cwd,`domain-missing-${i}.json`);
+    write(file,JSON.stringify({edits:[{
+      path:relative,
+      find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+      replace:missingWeapon
+    }]}));
+    responses.push(file);
+  }
+  const good=path.join(cwd,'domain-good-4.json');
+  write(good,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:robloxFullGraphicsMotionPatch('82,110,148')
+  }]}));
+  responses.push(good);
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:responses});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.presentationCandidateDelta.pass,true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/SwordEquipment/);
+  assert.match(candidate,/weapon\.Orientation\s*=/);
+  assert.match(candidate,/enemyBody\.CFrame\s*=/);
 });
 
 test('presentation focused recovery prioritizes visual anchors and forbids marker-only repair',()=>{
