@@ -115,3 +115,50 @@ test('active scheduling cannot silently re-enable UEFN or weaken native evidence
   assert.equal(roadmap.platformPriorityInvariant.qualityOrEvidenceGateWeakeningAllowed,false);
   assert.equal(roadmap.directNativeDualPlatformDevelopment.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
 });
+
+test('Roblox internal release enters perpetual 3-to-6 buildup while external public release stays fail-closed',()=>{
+  const gate=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
+  const loop=gate.internalBuildupLoop;
+  const hard=gate.externalPublicReleaseHardGate;
+  assert.equal(loop.status,'ACTIVE_EXECUTABLE_CONTRACT_WITH_ACTUAL_VIBE_PLAY_EXECUTOR_REQUIRED');
+  assert.equal(loop.startsAfter,'INTERNAL_PLATFORM_RELEASE');
+  assert.equal(loop.perpetual,true);
+  assert.equal(loop.neverCompletes,true);
+  assert.equal(loop.continuesAfterPublicRelease,true);
+  assert.deepEqual(loop.sequence,[
+    'VIBE_INTERNAL_PLAY',
+    'CAUSAL_REPAIR_AND_DEVELOPMENT',
+    'ROBLOX_PLATFORM_REBUILD',
+    'EXACT_CANDIDATE_REVALIDATION',
+    'LOOP_BACK_TO_VIBE_INTERNAL_PLAY'
+  ]);
+  assert.equal(loop.actualVibePlayEvidenceRequired,true);
+  assert.equal(loop.syntheticStaticOrDeclaredPlayPassForbidden,true);
+  assert.equal(loop.noDurationExit,true);
+  assert.equal(loop.noLimitedOrRestrictedPublicTestExit,true);
+  assert.equal(hard.status,'FAIL_CLOSED');
+  assert.equal(hard.criteriaMode,'EVIDENCE_AND_COMPLETION_ONLY');
+  assert.equal(hard.fixedDurationRequired,false);
+  assert.equal(hard.elapsedDaysRequired,null);
+  assert.equal(hard.limitedOrRestrictedPublicTestRequired,false);
+  assert.equal(hard.allRequirementsRequired,true);
+  assert.equal(hard.exactCandidateBindingRequired,true);
+  assert.ok(hard.requirements.includes('ACTUAL_VIBE_INTERNAL_PLAY_EVIDENCE_PASS'));
+  assert.ok(hard.requirements.includes('GAME_COMPLETION_EVIDENCE_PASS'));
+  assert.ok(hard.requirements.includes('ROBLOX_PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS'));
+  assert.ok(hard.requirements.includes('PRESENTATION_COMPLETION_EVIDENCE_PASS'));
+  assert.ok(hard.requirements.includes('EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS'));
+  assert.equal(gate.publicExposure.publicReadyMayNotBeSetByInternalReleaseOrF9Alone,true);
+  assert.equal(gate.publicExposure.publicReadyRequiresHardGatePass,true);
+
+  const archLoop=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
+  const archGate=architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate;
+  assert.equal(archLoop.perpetual,true);
+  assert.equal(archLoop.continuesAfterPublicRelease,true);
+  assert.equal(archLoop.actualPlayExecutor,'PENDING_DIRECT_BINDING_TO_EXISTING_ROBLOX_RUNTIME_NO_SHADOW_PIPELINE');
+  assert.equal(archGate.failClosed,true);
+  assert.equal(archGate.actualVibePlayRequired,true);
+  assert.equal(archGate.f9InternalReleaseCannotSetPublicReady,true);
+  assert.equal(archGate.fixedDurationRequired,false);
+  assert.equal(archGate.restrictedPublicTestRequired,false);
+});
