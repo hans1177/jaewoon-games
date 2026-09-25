@@ -77,21 +77,6 @@ jobs:
               '--baseline='+local,
               '--output=unity-games/'+gameId
             ],{stdio:'inherit'});
-            const requestDir='.build-requests/unity-web';
-            fs.mkdirSync(requestDir,{recursive:true});
-            fs.writeFileSync(path.join(requestDir,gameId+'.json'),JSON.stringify({
-              version:1,
-              requestId:'unity-web-floor-'+gameId+'-'+process.env.GITHUB_RUN_ID,
-              gameId,
-              projectPath:'unity-games/'+gameId,
-              buildMethod:'UnityWebFloorBuild.BuildWeb',
-              sourceCommit:'',
-              purpose:'UNITY_WEB_DEVELOPMENT_FLOOR',
-              upperPlatformReadinessGate:'UPPER_PLATFORM_DEVELOPMENT_READY',
-              fullGameplayPassAuthority:true,
-              nativeGateAuthority:true,
-              releaseOrDeploymentAuthority:false
-            },null,2)+'\n');
             generated.push(gameId);
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'ids='+generated.join(',')+'\n');
@@ -112,7 +97,7 @@ jobs:
           IFS=',' read -ra ids <<< "$IDS"
           for id in "${ids[@]}"; do
             [ -n "$id" ] || continue
-            git add "unity-games/$id" ".build-requests/unity-web/$id.json"
+            git add "unity-games/$id"
           done
           git diff --cached --check
           if git diff --cached --quiet; then
@@ -121,6 +106,6 @@ jobs:
           fi
           git commit -m "dev: bootstrap Unity Web floor sources"
           git push origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources and Unity Web development-floor build requests for: $IDS. Excludes cozy-island and daechung-rpg by contract. Generated sources still require WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources for: $IDS. After merge, Company DEVELOPMENT_CONFIRMED Runtime classifies every non-grandfathered game and dispatches the Unity Web floor build individually. Excludes cozy-island and daechung-rpg by contract. Generated sources still require WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
           echo "UNITY_WEB_BOOTSTRAP_PR=$pr_url"
           echo 'UNITY_WEB_BOOTSTRAP_DIRECT_MAIN_WRITE=NO'
