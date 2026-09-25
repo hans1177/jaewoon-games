@@ -44,7 +44,7 @@ test('preflight or F0 recovery work uses continuation while fused F0 success dis
   assert.ok(workflow.includes('ROBLOX_F0_READY_COUNT=$f0_ready'));
   assert.match(workflow,/package_pending.*preflight_ready.*f0_ready/);
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml'));
-  assert.ok(workflow.includes('ROBLOX_FUSED_PRIVATE_RUNTIME_DISPATCH='));
+  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH='));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-release-promotion.yml'));
 });
 
