@@ -87,6 +87,47 @@ test('verified local Roblox Studio play becomes reusable and online/stale eviden
   assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[noInput]}).records.length,0);
 });
 
+test('verified local Studio runtime failure becomes reusable failure lesson but infrastructure does not',()=>{
+  const source='c'.repeat(40);
+  const artifact='sha256:'+'d'.repeat(64);
+  const base={
+    gameId:'studio-fail',
+    robloxSourceCommit:source,
+    robloxBuildArtifactIdentity:artifact,
+    robloxFoundationF0Evidence:{artifactRunId:888},
+    robloxRuntimeCandidateEvidence:{
+      sourceRevision:source,artifactIdentity:artifact,artifactRunId:888,
+      universeId:'777',placeId:'999',versionNumber:3,published:true
+    },
+    robloxInternalVibePlayEvidence:{
+      authority:'vibe2-roblox-studio-runtime',
+      pass:false,actualPlay:true,runtimeVerified:false,learningReusable:true,
+      localPlaceFile:true,onlinePlaceDirectOpen:false,robloxPlayerAutomation:false,
+      rawSourceIncluded:false,rawGameplayValuesIncluded:false,
+      sourceRevision:source,artifactIdentity:artifact,artifactRunId:888,
+      publishedCandidateCrossCheckPassed:true,publishedCandidateCrossCheckAuthority:'OPEN_CLOUD',
+      universeId:'777',placeId:'999',versionNumber:3,
+      capabilities:{studioTestService:true,virtualInput:true},
+      actions:[{id:'move',type:'key',dispatched:true,ok:true}],
+      checkpoints:[{id:'gui',name:'ui-visible-elements',required:true,pass:false}],
+      errors:[{type:'studio-console-error',actionId:null}],
+      learningSignals:['ui','debugging'],
+      workflowRunId:333,testedAt:'2026-09-25T08:10:00.000Z'
+    }
+  };
+  const extracted=collectVerifiedRobloxStudioPlayExperience({items:[base]});
+  assert.equal(extracted.records.length,1);
+  assert.equal(extracted.records[0].outcome,'FAIL');
+  assert.match(extracted.records[0].failureCause,/studio-console-error/);
+  assert.ok(extracted.records[0].avoidPatterns.length>0);
+
+  const infra=structuredClone(base);
+  infra.robloxInternalVibePlayEvidence.actualPlay=false;
+  infra.robloxInternalVibePlayEvidence.capabilities.studioTestService=false;
+  infra.robloxInternalVibePlayEvidence.infrastructureFailure=true;
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[infra]}).records.length,0);
+});
+
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
   const experience={records:[
     {id:'same',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat save mobile',reusablePatterns:['combat-state']},
