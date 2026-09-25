@@ -902,6 +902,7 @@ jobs:
             Write-Host 'ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=CONFIRMED_ENABLED'
           }
 
+          "VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT=$settingsRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcpCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND=$mcpFallbackCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -957,6 +958,21 @@ jobs:
             Write-Host 'ROBLOX_STUDIO_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
           }
           Start-Sleep -Seconds 5
+
+          $postLaunchDiag = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-setting-post-launch.json'
+          $postLaunchArgs = @(
+            '--mode=diagnose-setting',
+            "--settings-root=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT",
+            "--output=$postLaunchDiag"
+          )
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @postLaunchArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP post-launch read-only setting diagnostic failed' }
+          $postLaunch = Get-Content $postLaunchDiag -Raw | ConvertFrom-Json
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED=$([string]$postLaunch.state)"
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED_COUNT=$([int]$postLaunch.enabledCount)"
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_DISABLED_COUNT=$([int]$postLaunch.disabledCount)"
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATHS=$(@($postLaunch.candidatePaths) -join ',')"
+          Write-Host 'ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_MUTATION=NO'
 
       - name: Run actual local play through official Studio MCP
         id: studio_play
@@ -1028,6 +1044,18 @@ jobs:
               Write-Host 'ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
             }
             Start-Sleep -Seconds 5
+            $retryDiag = Join-Path $env:RUNNER_TEMP "roblox-studio-mcp-setting-retry-$attempt.json"
+            $retryDiagArgs = @(
+              '--mode=diagnose-setting',
+              "--settings-root=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT",
+              "--output=$retryDiag"
+            )
+            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @retryDiagArgs
+            if ($LASTEXITCODE -ne 0) { throw 'Studio MCP retry read-only setting diagnostic failed' }
+            $retrySetting = Get-Content $retryDiag -Raw | ConvertFrom-Json
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=$([string]$retrySetting.state):attempt=$attempt"
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=$([int]$retrySetting.enabledCount):attempt=$attempt"
+            Write-Host 'ROBLOX_STUDIO_MCP_RETRY_SETTING_MUTATION=NO'
           }
 
           if (-not $success) {
