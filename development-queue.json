@@ -131,7 +131,39 @@
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "amusement-tycoon",
+        "sourcePath": "web-games/amusement-tycoon",
+        "sourceBefore": "4c5e910f81823521fcde2e28f15412d554d329ac",
+        "sourceAfter": "03446ab599b490de940c2770189be5cc83f2192b",
+        "semanticIntentFingerprint": "b4d6dfe47d356bb741d80612d8cfe3108c1959d3dbf45c7bfb95d12572eb83b7",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "AUDIO",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-25T04:11:54.053Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T04:11:54.053Z"
     },
     {
       "gameId": "bug-defense",
@@ -1152,7 +1184,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-09-25T04:11:41.459Z",
+  "updatedAt": "2026-09-25T04:11:54.053Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",

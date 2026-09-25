@@ -1,7 +1,38 @@
 {
   "version": 1,
-  "before": "2fd64b92ff0c6688186cf12281da1868c468314f",
-  "after": "a8db80e541fc231df4b1a614e1daa1c4ffbacfc2",
-  "generatedAt": "2026-09-24T09:29:13.141Z",
-  "manifests": []
+  "before": "4c5e910f81823521fcde2e28f15412d554d329ac",
+  "after": "03446ab599b490de940c2770189be5cc83f2192b",
+  "generatedAt": "2026-09-25T04:11:54.053Z",
+  "manifests": [
+    {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE",
+      "gameId": "amusement-tycoon",
+      "sourcePath": "web-games/amusement-tycoon",
+      "sourceBefore": "4c5e910f81823521fcde2e28f15412d554d329ac",
+      "sourceAfter": "03446ab599b490de940c2770189be5cc83f2192b",
+      "semanticIntentFingerprint": "b4d6dfe47d356bb741d80612d8cfe3108c1959d3dbf45c7bfb95d12572eb83b7",
+      "affectedSystems": [
+        "MOVEMENT",
+        "COMBAT",
+        "INVENTORY",
+        "WORLD",
+        "MULTIPLAYER",
+        "PROGRESSION",
+        "AUDIO",
+        "UI_UX",
+        "SAVE",
+        "BALANCE"
+      ],
+      "platformTargets": [
+        "UNITY"
+      ],
+      "literalWebCodeCrossPlatformCopyForbidden": true,
+      "semanticIntentPropagationRequired": true,
+      "affectedWebQaRequired": true,
+      "affectedPlatformQaRequired": true,
+      "detectedAt": "2026-09-25T04:11:54.053Z",
+      "state": "PLATFORM_PROPAGATION_REQUIRED"
+    }
+  ]
 }
