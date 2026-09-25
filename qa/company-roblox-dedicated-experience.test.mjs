@@ -127,12 +127,24 @@ test('publishRobloxDedicatedPlace sends built place to exact dedicated target', 
 
 test('dedicated Roblox project titles match the published Experience titles',()=>{
   const expected={
-    'cozy-island':'포근섬',
-    'daechung-rpg':'Whatever RPG',
-    'horror-escape-room':'심야 술래잡기',
+    'cozy-island':'포근섬: 작은 왕국 키우기',
+    'daechung-rpg':'5포탈 RPG: 던전 파티',
+    'horror-escape-room':'심야 감염전 [4대4]',
   };
   for(const [gameId,title] of Object.entries(expected)){
     const project=JSON.parse(fs.readFileSync(new URL(`../roblox-games/${gameId}/default.project.json`,import.meta.url),'utf8'));
     assert.equal(project.name,title);
   }
+});
+
+
+test('dedicated Roblox workflow recovers and persists the durable target registry',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
+  assert.match(workflow,/roblox-dedicated-targets\.json/);
+  assert.match(workflow,/ROBLOX_DEDICATED_TARGET_RECOVERED_FROM_REGISTRY=YES/);
+  assert.match(workflow,/registry\.targets\.findIndex/);
+  assert.match(workflow,/git add development-queue\.json roblox-dedicated-targets\.json/);
+  assert.match(workflow,/gameName: '포근섬: 작은 왕국 키우기'/);
+  assert.match(workflow,/gameName: '5포탈 RPG: 던전 파티'/);
+  assert.match(workflow,/gameName: '심야 감염전 \[4대4\]'/);
 });
