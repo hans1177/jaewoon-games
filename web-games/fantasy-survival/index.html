@@ -108,7 +108,7 @@ const recipes=[
 {id:'gold-pick',name:'금 곡괭이',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:4,leechSucker:1},desc:'돌·철 채집 강화 · 독점석 채굴 가능 · 거머리 흡반 필요',kind:'tool',target:'rock',mult:7},
 {id:'wolf-armor',name:'늑대 방어구',where:'ironbench',cost:{wolfHide:3,wood:2},desc:'최대 체력 +100 · 받는 피해 10% 감소',kind:'armor',maxHp:100,reduce:.10},
 {id:'walker-greatsword',name:'워커 대검',where:'goldbench',cost:{walkerClaw:4,goldIngot:7,wood:3,fiber:3},desc:'공격력 97 · 공격속도 1초 · 중립 몬스터에게 2배 데미지',kind:'weapon',power:97,range:104,cooldown:1000,neutralDouble:true},
-{id:'sand-armor',name:'모래의 방어구',where:'goldbench',cost:{walkerClaw:2,goldIngot:9},desc:'최대 체력 +150 · 받는 피해 15% 감소 · 초거대 벌레가 먼저 공격하지 않음',kind:'armor',maxHp:150,reduce:.15,burrowerPeace:true},
+{id:'sand-armor',name:'모래의 방어구',where:'goldbench',cost:{walkerClaw:2,goldIngot:9,flowerLeather:2},desc:'최대 체력 +150 · 받는 피해 15% 감소 · 초거대 벌레가 먼저 공격하지 않음',kind:'armor',maxHp:150,reduce:.15,burrowerPeace:true},
 {id:'bear-spear',name:'곰 창',where:'ironbench',cost:{bearClaw:2,wood:4,fiber:2},desc:'공격력 45 · 35% 확률 3연타 15/25/30',kind:'weapon',power:45,range:104,cooldown:650,bearTripleChance:.35},
 {id:'bear-armor',name:'곰 방어구',where:'ironbench',cost:{bearHide:2,wood:4,walkerClaw:1},desc:'최대 체력 +120 · 공격력 +10',kind:'armor',maxHp:120,bonusDamage:10},
 {id:'boar-spear',name:'이끼엄니 창',where:'bench',cost:{mossTusk:2,wood:4,fiber:2},desc:'공격력 24 · 이끼멧돼지 전리품 무기',kind:'weapon',power:24,range:98,cooldown:520},
@@ -121,20 +121,20 @@ const recipes=[
 {id:'ironspirit-sword',name:'철정령 검',where:'bench',cost:{ironSpiritCore:3,wood:2,stone:3},desc:'공격력 46',kind:'weapon',power:46,range:78,cooldown:500},
 {id:'ironspirit-armor',name:'철정령 갑옷',where:'bench',cost:{ironSpiritCore:4,stone:5,fiber:3},desc:'최대 체력 +70 · 받는 피해 7% 감소',kind:'armor',maxHp:70,reduce:.07},
 {id:'sovereign-cleaver',name:'근원 대검',where:'goldbench',cost:{sovereignCore:2,goldIngot:10,wood:4,fiber:5},desc:'공격력 276 · 녹스바르 전리품 4티어 무기',kind:'weapon',power:276,range:112,cooldown:1200},
-{id:'sovereign-armor',name:'근원포식자 갑옷',where:'goldbench',cost:{sovereignCore:3,goldIngot:12,walkerClaw:2},desc:'최대 체력 +300 · 받는 피해 30% 감소',kind:'armor',maxHp:300,reduce:.30},
+{id:'sovereign-armor',name:'근원포식자 갑옷',where:'goldbench',cost:{sovereignCore:3,goldIngot:12,walkerClaw:2,flowerLeather:2},desc:'최대 체력 +300 · 받는 피해 30% 감소',kind:'armor',maxHp:300,reduce:.30},
 {id:'firewolf-saber',name:'화염늑대 검',where:'ironbench',cost:{fireWolfFang:3,ironIngot:3,wood:2},desc:'공격력 82 · 2티어 화염 검',kind:'weapon',power:82,range:82,cooldown:620},
 {id:'firewolf-armor',name:'화염늑대 갑옷',where:'ironbench',cost:{fireWolfFang:4,ironIngot:3,fiber:4},desc:'최대 체력 +105 · 받는 피해 10% 감소',kind:'armor',maxHp:105,reduce:.10},
 {id:'burrower-lance',name:'잠복벌레 창',where:'ironbench',cost:{burrowerShell:3,wood:4,ironIngot:2},desc:'공격력 74 · 긴 사거리',kind:'weapon',power:74,range:112,cooldown:780},
 {id:'burrower-armor',name:'잠복벌레 갑각',where:'ironbench',cost:{burrowerShell:4,ironIngot:3,fiber:3,essence:5},desc:'최대 체력 +135 · 받는 피해 12% 감소',kind:'armor',maxHp:135,reduce:.12},
 {id:'calm-golem-maul',name:'고요한 용암망치',where:'goldbench',cost:{calmMagmaCore:3,goldIngot:7,wood:3},desc:'공격력 132 · 3티어 중립 화염 골렘 무기',kind:'weapon',power:132,range:88,cooldown:1150},
-{id:'calm-golem-armor',name:'고요한 현무암 갑옷',where:'goldbench',cost:{calmMagmaCore:4,goldIngot:8,stone:6,essence:6},desc:'최대 체력 +175 · 받는 피해 18% 감소',kind:'armor',maxHp:175,reduce:.18},
+{id:'calm-golem-armor',name:'고요한 현무암 갑옷',where:'goldbench',cost:{calmMagmaCore:4,goldIngot:8,stone:6,essence:6,flowerLeather:2},desc:'최대 체력 +175 · 받는 피해 18% 감소',kind:'armor',maxHp:175,reduce:.18},
 {id:'rage-golem-axe',name:'격노의 용암도끼',where:'goldbench',cost:{rageMagmaCore:3,goldIngot:8,wood:3},desc:'공격력 148 · 강한 3티어 무기',kind:'weapon',power:148,range:86,cooldown:1000},
-{id:'rage-golem-armor',name:'격노의 화산갑옷',where:'goldbench',cost:{rageMagmaCore:4,goldIngot:9,fiber:4,essence:6},desc:'최대 체력 +155 · 공격력 +15',kind:'armor',maxHp:155,bonusDamage:15},
+{id:'rage-golem-armor',name:'격노의 화산갑옷',where:'goldbench',cost:{rageMagmaCore:4,goldIngot:9,fiber:4,essence:6,flowerLeather:2},desc:'최대 체력 +155 · 공격력 +15',kind:'armor',maxHp:155,bonusDamage:15},
 {id:'firesnake-blade',name:'화염뱀 칼',where:'ironbench',cost:{fireSnakeScale:3,ironIngot:3,wood:2},desc:'공격력 80 · 공격속도 0.45초',kind:'weapon',power:80,range:70,cooldown:450},
 {id:'firesnake-armor',name:'화염뱀 비늘갑옷',where:'ironbench',cost:{fireSnakeScale:4,ironIngot:3,fiber:4,essence:5},desc:'최대 체력 +95 · 받는 피해 12% 감소',kind:'armor',maxHp:95,reduce:.12},
 {id:'ironibex-spear',name:'철뿔 창',where:'ironbench',cost:{ironHorn:3,wood:4,ironIngot:2},desc:'공격력 69 · 긴 사거리',kind:'weapon',power:69,range:108,cooldown:700},
 {id:'ironibex-armor',name:'철뿔 갑옷',where:'ironbench',cost:{ironHorn:4,ironIngot:3,fiber:3},desc:'최대 체력 +115 · 받는 피해 10% 감소',kind:'armor',maxHp:115,reduce:.10},
-{id:'crystal-boar-armor',name:'멧돼지 갑각 갑옷',where:'goldbench',cost:{mossTusk:4,hardShell:3,crystalCore:2},desc:'최대 체력 +150 · 공격력 +26 · 받는 피해 30% 감소',kind:'armor',maxHp:150,bonusDamage:26,reduce:.30},
+{id:'crystal-boar-armor',name:'멧돼지 갑각 갑옷',where:'goldbench',cost:{mossTusk:4,hardShell:3,crystalCore:2,flowerLeather:2},desc:'최대 체력 +150 · 공격력 +26 · 받는 피해 30% 감소',kind:'armor',maxHp:150,bonusDamage:26,reduce:.30},
 {id:'crystal-core-greatsword',name:'수정 코어 대검',where:'goldbench',cost:{hardShell:4,crystalCore:3,essence:5,goldIngot:4,wood:3},desc:'공격력 119 · 장착 중 최대 체력 +10',kind:'weapon',power:119,range:106,cooldown:900,maxHp:10},
 {id:'cooking-station',name:'요리대',where:'hand',cost:{wood:4,stone:4,ironIngot:4},desc:'보유 음식 2개를 골라 합성 요리 제작',kind:'structure'},
 {id:'shadow-wolf-incubator',name:'그림자 늑대 부화기',where:'hand',cost:{wood:3,stone:5,ironIngot:4},desc:'그림자 늑대 알을 넣으면 5분 뒤 부화',kind:'structure'},
@@ -174,7 +174,7 @@ const recipes=[
 {id:'croc-jaw-blade',name:'악어 턱날',where:'goldbench',cost:{crocTooth:5,crocHide:2,goldIngot:7,flowerLeather:3},desc:'공격력 216 · 악어 전리품 4티어 무기',kind:'weapon',power:216,range:84,cooldown:700},
 {id:'croc-tooth-spear',name:'악어 이빨창',where:'goldbench',cost:{crocTooth:7,crocHide:1,goldIngot:6,wood:3,flowerLeather:3},desc:'공격력 192 · 긴 사거리 · 악어 전리품 4티어 무기',kind:'weapon',power:192,range:122,cooldown:850},
 {id:'croc-armor',name:'악어 껍질갑옷',where:'goldbench',cost:{crocHide:8,crocTooth:3,goldIngot:8,flowerLeather:3},desc:'최대 체력 +228 · 받는 피해 21% 감소 · 4티어',kind:'armor',maxHp:228,reduce:.21},
-{id:'diving-suit',name:'잠수복',where:'goldbench',cost:{sharkSkin:4,ironIngot:6,fiber:8},desc:'물속 산소 무제한 · 최대 체력 +120',kind:'armor',maxHp:120,reduce:.12,underwaterBreath:true},
+{id:'diving-suit',name:'잠수복',where:'goldbench',cost:{sharkSkin:4,ironIngot:6,fiber:8,flowerLeather:2},desc:'물속 산소 무제한 · 최대 체력 +120',kind:'armor',maxHp:120,reduce:.12,underwaterBreath:true},
 {id:'raw-fish',name:'생선',where:'loot',cost:{},desc:'물고기 전리품 · 화로에서 10초 굽기',kind:'ingredient'},
 {id:'cooked-fish',name:'구운생선',where:'loot',cost:{},desc:'밥 +55 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:55},
 {id:'raw-crystal-deer-meat',name:'수정 사슴고기',where:'loot',cost:{},desc:'거대 호수 수정사슴 고기 · 화로에서 굽기',kind:'ingredient'},
@@ -207,7 +207,7 @@ const recipes=[
 {id:'polar-bear-armor',name:'북극곰 방어구',where:'junglebench',cost:{polarBearHide:7,polarBearClaw:3,monopolyIngot:7,flowerLeather:3},desc:'최대 체력 +250 · 피해 23% 감소 · 추위 상승 111배 느림',kind:'armor',maxHp:250,reduce:.23,coldDivisor:111},
 {id:'polar-wolf-blade',name:'북극늑대 검',where:'junglebench',cost:{polarWolfPelt:5,monopolyIngot:5,goldIngot:3},desc:'공격력 185 · 4티어',kind:'weapon',power:185,range:86,cooldown:720},
 {id:'polar-wolf-armor',name:'북극늑대 방어구',where:'junglebench',cost:{polarWolfPelt:7,monopolyIngot:6,flowerLeather:3},desc:'최대 체력 +220 · 피해 20% 감소 · 추위 상승 70배 느림',kind:'armor',maxHp:220,reduce:.20,coldDivisor:70},
-{id:'polar-wolf-hunter-armor',name:'북극늑대 사냥갑',where:'junglebench',cost:{polarWolfPelt:8,monopolyIngot:6,goldIngot:2},desc:'최대 체력 +200 · 공격력 +15 · 추위 상승 70배 느림',kind:'armor',maxHp:200,reduce:.18,bonusDamage:15,coldDivisor:70},
+{id:'polar-wolf-hunter-armor',name:'북극늑대 사냥갑',where:'junglebench',cost:{polarWolfPelt:8,monopolyIngot:6,goldIngot:2,flowerLeather:3},desc:'최대 체력 +200 · 공격력 +15 · 추위 상승 70배 느림',kind:'armor',maxHp:200,reduce:.18,bonusDamage:15,coldDivisor:70},
 {id:'spider-fang-blade',name:'거대거미 송곳니검',where:'ironbench',cost:{giantSpiderSilk:4,giantSpiderFang:3,ironIngot:4,flowerLeather:3},desc:'공격력 108',kind:'weapon',power:108,range:82,cooldown:720},
 {id:'spider-silk-spear',name:'거대거미 실창',where:'ironbench',cost:{giantSpiderSilk:5,giantSpiderFang:2,ironIngot:3,flowerLeather:3,wood:2},desc:'공격력 96 · 긴 사거리',kind:'weapon',power:96,range:118,cooldown:860},
 {id:'spider-silk-armor',name:'거대거미 실갑옷',where:'ironbench',cost:{giantSpiderSilk:8,giantSpiderFang:2,ironIngot:4,flowerLeather:3},desc:'최대 체력 +114 · 피해 10% 감소',kind:'armor',maxHp:114,reduce:.10}
@@ -267,8 +267,8 @@ function registerAllCookingCombos(){
  if(Object.keys(COOKING_COMBOS).length!==expected)throw new Error('요리 조합 수 오류: '+Object.keys(COOKING_COMBOS).length+'/'+expected)
 }
 registerAllCookingCombos();
-const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
-const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
+const ITEM_TIER_2=new Set(['flower-leather','rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
+const ITEM_TIER_3=new Set(['spider-fang-blade','spider-silk-spear','spider-silk-armor','gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
 const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','gorilla-armor','gorilla-guard-armor','anaconda-armor','jungle-guardian-glaive','tiger-twin-blades','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
 const ITEM_TIER_5=new Set(['yeti-horn-maul','yeti-armor']);
 function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
@@ -695,6 +695,7 @@ function tryHardDifficultySkill(e,targetP,now,playerD){
 function spawnCreature(type,index=0,anchor=null,packId=null){
  let x,y;
  if(type.underwater){const p=randomUnderwaterPoint();x=p.x;y=p.y}
+ else if(type.flowerZone){const p=randomFlowerPoint(type.id==='giantspider'||type.id==='giantspiderling');x=p.x;y=p.y}
  else if(type.snow){const p=randomSnowPoint();x=p.x;y=p.y}
  else if(type.jungle){const p=randomJunglePoint();x=p.x;y=p.y}
  else if(type.lakeZone){const p=randomLakeShorePoint();x=p.x;y=p.y}
@@ -2731,7 +2732,7 @@ function crocodileMonsterTarget(e){
 function alertBeeKin(e){for(const b of state.enemies)if(b.hp>0&&b.type.id==='giantbee'&&b.area===e.area&&dist(e.x,e.y,b.x,b.y)<=650)b.hostile=true}
 function updateFlowerEnemySpecial(e,targetP,now){
  if(e.type.id==='flowergoblin'){
-  if(now>=(e.flowerHealNextCheck||0)){e.flowerHealNextCheck=now+1000;if(Math.random()<.30){e.flowerHealUntil=now+4000;e.flowerHealTick=now}}
+  if(now>=(e.flowerHealUntil||0)&&now>=(e.flowerHealNextCheck||0)){e.flowerHealNextCheck=now+1000;if(Math.random()<.30){e.flowerHealUntil=now+4000;e.flowerHealTick=now}}
   if(now<(e.flowerHealUntil||0)&&now>=(e.flowerHealTick||0)){e.flowerHealTick=now+1000;e.hp=Math.min(e.maxHp,e.hp+15)}
   return null
  }
