@@ -192,7 +192,8 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       placeId:String(candidate.placeId),
       versionNumber:Number(candidate.versionNumber),
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
-      historicalExactPublishedArtifact:item?.robloxSharedTargetCurrent!==true
+      dedicatedTarget:candidate?.dedicated===true,
+      historicalExactPublishedArtifact:candidate?.dedicated!==true&&item?.robloxSharedTargetCurrent!==true
     });
   }
   if(!requested&&include.length>1){
@@ -722,7 +723,8 @@ export function createLocalStudioPlayEvidence({
       universeId,
       placeId,
       versionNumber,
-      historicalSharedTargetExactArtifact:item?.robloxSharedTargetCurrent!==true,
+      dedicatedTarget:candidate?.dedicated===true,
+      historicalSharedTargetExactArtifact:candidate?.dedicated!==true&&item?.robloxSharedTargetCurrent!==true,
       currentPublishedRuntimeClaim:false,
       publishedCandidateCrossCheckPassed:true,
       publishedCandidateCrossCheckAuthority:'COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE',
