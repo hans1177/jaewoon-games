@@ -110,6 +110,11 @@ test('development-confirmed Web entries have parseable startup code and no missi
         if(/^(?:https?:)?\/\//i.test(src)||src.startsWith('data:')||src.startsWith('blob:'))continue;
         const local=src.startsWith('/')?src.slice(1):path.join(root,src);
         assert.equal(fs.existsSync(local),true,`${game.id}: missing local script ${src}`);
+        const isModule=/\btype\s*=\s*["']module["']/i.test(attrs);
+        if(!isModule&&/\.js$/i.test(local)){
+          const localSource=fs.readFileSync(local,'utf8');
+          assert.doesNotThrow(()=>new vm.Script(localSource,{filename:local}),`${game.id}: local startup syntax ${src}`);
+        }
         continue;
       }
       if(!body.trim())continue;
