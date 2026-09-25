@@ -115,9 +115,9 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
       });
       continue;
     }
-    if(!sourceBind){
-      const boundRevision=clean(item.robloxSourceCommit);
-      if(!sha40(currentRevision)||boundRevision===currentRevision)continue;
+    const boundRevision=clean(item.robloxSourceCommit);
+    if(sha40(boundRevision)&&sha40(currentRevision)){
+      if(boundRevision===currentRevision)continue;
       try{
         execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',sourcePath],{cwd:repoRoot,stdio:'ignore'});
         continue;
