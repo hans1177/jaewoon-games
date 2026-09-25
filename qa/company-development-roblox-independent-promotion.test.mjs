@@ -48,12 +48,14 @@ test('preflight or F0 recovery work uses continuation while fused F0 success dis
   assert.ok(workflow.includes('gh workflow run company-development-roblox-release-promotion.yml'));
 });
 
-test('merged Roblox source stays in the Roblox lane while the central orchestrator dispatches both native lanes',()=>{
-  assert.ok(parentWorkflow.includes('company-development-roblox-runtime.yml'));
-  assert.ok(parentWorkflow.includes('company-development-unity-runtime.yml'));
-  assert.ok(parentWorkflow.includes('BIDIRECTIONAL_AUTO_PAIR=YES'));
-  assert.ok(parentWorkflow.includes('UNITY_WEB_RUNTIME_DISPATCH_COUNT'));
-  assert.ok(parentWorkflow.includes('UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE'));
+test('merged Roblox source stays in the Roblox lane while the central orchestrator calls both upper-platform lanes',()=>{
+  assert.match(parentWorkflow,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(parentWorkflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
+  assert.match(parentWorkflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.match(parentWorkflow,/UPPER_PLATFORM_ELIGIBLE_IDS=/);
+  assert.match(parentWorkflow,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
+  assert.doesNotMatch(parentWorkflow,/BIDIRECTIONAL_AUTO_PAIR=YES/);
+  assert.doesNotMatch(parentWorkflow,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
   assert.ok(workflow.includes('persist Roblox source-bind results'));
   assert.ok(workflow.includes('technical-plan:'));
   assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
