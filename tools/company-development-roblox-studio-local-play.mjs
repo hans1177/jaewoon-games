@@ -120,7 +120,6 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
   const include=[];
   for(const item of queue?.items||[]){
     if(requested&&clean(item?.gameId)!==requested)continue;
-    if(clean(item?.currentStep)!=='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG')continue;
     const candidate=item?.robloxRuntimeCandidateEvidence||{};
     const sourceRevision=clean(item?.robloxSourceCommit);
     const artifactIdentity=clean(item?.robloxBuildArtifactIdentity);
