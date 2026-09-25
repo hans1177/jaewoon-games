@@ -223,6 +223,36 @@ function secondaryDesignAnchor(design={}){
   return clean(system?.name)||clean(system?.playerChoice)||clean(design.progressionDirection)||design.coreLoop?.[0]||'핵심 루프';
 }
 
+const EFFECTIVENESS_CLASSES=new Set(['EFFECT_CONFIRMED','PARTIAL_EFFECT','NO_MEANINGFUL_EFFECT','REGRESSION','UNKNOWN_RUNTIME_EFFECT']);
+function previousEffectiveness(runtimeEvidence={}){
+  const explicit=clean(runtimeEvidence?.effectivenessClassification).toUpperCase();
+  if(EFFECTIVENESS_CLASSES.has(explicit))return explicit;
+  const observed=clean(runtimeEvidence?.observedPlayerEffect||runtimeEvidence?.playtestFinding);
+  const runtimeObserved=runtimeEvidence?.runtimeObserved===true;
+  const runtimePassed=runtimeEvidence?.runtimePassed===true;
+  const qaPassed=runtimeEvidence?.independentQaPassed===true;
+  const regressionPassed=runtimeEvidence?.regressionPassed===true;
+  if(runtimeObserved&&runtimeEvidence?.runtimePassed===false)return'REGRESSION';
+  if(runtimeObserved&&runtimePassed&&qaPassed&&regressionPassed&&observed)return'EFFECT_CONFIRMED';
+  if(runtimeObserved&&observed)return'PARTIAL_EFFECT';
+  return'UNKNOWN_RUNTIME_EFFECT';
+}
+function expectedEffectForFocus(focus,{identity='',anchor='',secondary='',progression=''}={}){
+  if(focus==='PROGRESSION')return identity+'에서 '+(progression||secondary)+'의 결과가 다음 목표·보상·해금 선택을 더 명확하게 바꾼다.';
+  if(focus==='PRESENTATION')return identity+'에서 '+anchor+'의 위협·역할·상태가 실제 렌더와 모션 피드백으로 더 빠르게 읽힌다.';
+  if(focus==='USABILITY')return identity+'에서 핵심 행동과 다음 목표를 모바일 입력에서 더 적은 오조작과 탐색으로 수행한다.';
+  if(focus==='STABILITY')return identity+'에서 동일 핵심 루프를 반복해도 진행·저장·복구가 끊기지 않고 같은 의미를 유지한다.';
+  return identity+'에서 '+anchor+'에 대한 플레이어 판단이 실제 상태 변화와 피드백으로 더 강하게 연결되어 다음 선택이 달라진다.';
+}
+function nextActionForEffect(classification,{previousDirective=false}={}){
+  if(!previousDirective)return{action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'INITIAL_OR_CURRENT_DIRECTIVE_REQUIRES_IMPLEMENTATION_AND_MEASUREMENT'};
+  if(classification==='EFFECT_CONFIRMED')return{action:'MOVE_TO_NEXT_HIGHER_VALUE_GAP',reason:'PRIOR_DIRECTIVE_EFFECT_CONFIRMED_AND_VERIFIED_BASELINE_CAN_ADVANCE'};
+  if(classification==='PARTIAL_EFFECT')return{action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'PRIOR_DIRECTIVE_HAS_PARTIAL_EFFECT_BUT_ACCEPTANCE_IS_NOT_FULLY_VERIFIED'};
+  if(classification==='NO_MEANINGFUL_EFFECT')return{action:'MOVE_TO_NEXT_HIGHER_VALUE_GAP',reason:'PRIOR_STRATEGY_DID_NOT_CREATE_MEANINGFUL_PLAYER_VALUE_AND_MUST_NOT_REPEAT_WITHOUT_NEW_EVIDENCE'};
+  if(classification==='REGRESSION')return{action:'CAUSAL_REPAIR',reason:'PRIOR_DIRECTIVE_REGRESSED_RUNTIME_OR_PLAYER_VALUE'};
+  return{action:'REQUEST_REQUIRED_RUNTIME_OBSERVATION',reason:'SOURCE_OR_QA_STATE_CANNOT_CONFIRM_PLAYER_EFFECT_WITHOUT_REQUIRED_RUNTIME_OBSERVATION'};
+}
+
 function domainState(domain,{design={},source={}}={}){
   const s=source?.signals||{};
   const relevantByText=qualitySignalText([
@@ -248,7 +278,7 @@ function domainState(domain,{design={},source={}}={}){
 }
 
 
-function escalationDepthInfo({previousDirective=null,previousOutcome='',currentSourceTreeFingerprint=''}={}){
+function escalationDepthInfo({previousDirective=null,previousOutcome='',currentSourceTreeFingerprint='',previousEffectivenessClassification='UNKNOWN_RUNTIME_EFFECT'}={}){
   const priorDepth=Math.max(0,Number(previousDirective?.developmentDepth||0));
   const outcome=clean(previousOutcome).toLowerCase();
   const verified=['verified','done','completed','pass','passed'].includes(outcome);
@@ -256,7 +286,8 @@ function escalationDepthInfo({previousDirective=null,previousOutcome='',currentS
   const previousTree=clean(previousDirective?.sourceTreeFingerprint);
   const currentTree=clean(currentSourceTreeFingerprint);
   const sourceChangedSincePrevious=Boolean(previousDirective&&previousTree&&currentTree&&previousTree!==currentTree);
-  const verifiedEvolution=verified&&sourceChangedSincePrevious;
+  const effectConfirmed=clean(previousEffectivenessClassification).toUpperCase()==='EFFECT_CONFIRMED';
+  const verifiedEvolution=verified&&sourceChangedSincePrevious&&effectConfirmed;
   const depth=Math.max(1,priorDepth+(verifiedEvolution?1:priorDepth?0:1));
   const stage=depth===1?'FOUNDATION_COMPLETENESS'
     :depth===2?'ROLE_DIFFERENTIATION'
@@ -269,11 +300,13 @@ function escalationDepthInfo({previousDirective=null,previousOutcome='',currentS
     escalationStage:stage,
     escalationMode:failed?'DEEPER_CAUSAL_REPAIR'
       :verified&&!sourceChangedSincePrevious?'VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'
-      :verifiedEvolution?'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA'
+      :verified&&sourceChangedSincePrevious&&!effectConfirmed?'SOURCE_DELTA_WITHOUT_CONFIRMED_EFFECT_REVIEW'
+      :verifiedEvolution?'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA_AND_EFFECT'
       :previousDirective?'CONTINUE_UNVERIFIED_DEPTH'
       :'INITIAL_GAME_SPECIFIC_BUILD_UP',
     previousOutcome:outcome||null,
     sourceChangedSincePrevious,
+    previousEffectivenessClassification:clean(previousEffectivenessClassification).toUpperCase()||'UNKNOWN_RUNTIME_EFFECT',
     verifiedEvolution,
     advanceAllowed:verifiedEvolution
   });
