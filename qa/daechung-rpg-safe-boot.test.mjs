@@ -29,14 +29,15 @@ test('service worker bypasses stale cache for daechung RPG',()=>{
 });
 
 
-test('daechung Unity Web QA uses a real fixed-screen mobile action target',()=>{
+test('daechung Unity Web QA touches the same fixed-screen attack button used by real gameplay',()=>{
   const source=fs.readFileSync('unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs','utf8');
-  assert.match(source,/DrawQaMobileActionOverlay\(\)/);
+  assert.match(source,/DrawPrimaryCombatActionButton\(\)/);
   assert.match(source,/var actionRect = new Rect\(/);
   assert.match(source,/center\.x \/ Screen\.width/);
   assert.match(source,/center\.y \/ Screen\.height/);
-  assert.match(source,/GUI\.Button\(actionRect, "ATTACK · QA TOUCH"\)/);
+  assert.match(source,/GUI\.Button\(actionRect, "ATTACK"\)/);
   assert.match(source,/MOBILE_TARGET game=daechung-rpg role=action/);
   assert.match(source,/MOBILE_INPUT game=daechung-rpg role=action status=PASS/);
   assert.doesNotMatch(source,/var attackRect = GUILayoutUtility\.GetLastRect\(\)/);
+  assert.match(source,/Use the fixed ATTACK button for the primary combat action/);
 });
