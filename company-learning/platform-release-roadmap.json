@@ -3658,7 +3658,10 @@
         "sameGameIndependentDevelopmentContinuesWhilePending": true,
         "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": true,
         "runtimeTruthFieldsMustRemainUnfabricated": true,
-        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_EXTERNAL_PUBLIC_RELEASE_WAITS_FOR_VERIFIED_REAL_GAME_SERVER_BOOT",
+        "exactPrivateRuntimeFailuresBlockInternalFlow": false,
+        "exactPrivateRuntimeFailuresBlockExternalPublicRelease": true,
+        "internalContinuationUsesSeparateTruthPreservingFlags": true,
+        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_RUNTIME_FINDINGS_REMAIN_EXTERNAL_PUBLIC_RELEASE_BLOCKERS",
         "robloxPlayerAutomationForbidden": true,
         "publishedPlaceDirectStudioAutomationForbidden": true
       }
@@ -5546,7 +5549,8 @@
         "headlessOnlyInternalReleaseForbidden": true,
         "runtimeFoundationRequiredForInternalRelease": true,
         "runtimeFoundationInternalReleaseExceptionStates": [
-          "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT"
+          "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
+          "EXACT_PRIVATE_RUNTIME_FINDING_EXTERNAL_RELEASE_ONLY"
         ],
         "runtimeFoundationInternalReleaseExceptionRequires": [
           "EXACT_PRIVATE_OR_RESTRICTED_CANDIDATE",
