@@ -520,7 +520,7 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxSourceParallelism=6;
+          queue.robloxSourceParallelism=null;
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
@@ -694,7 +694,7 @@ jobs:
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=6');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED');
           NODE
 
   technical-worker:
@@ -761,6 +761,114 @@ jobs:
           identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$evidence")"
           echo "artifact_identity=$identity" >> "$GITHUB_OUTPUT"
           echo "build_evidence=$evidence" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare shared local review model in package worker
+        if: steps.package.outcome == 'success'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: 'llama3.2:1b'
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+
+      - name: Ensure fused shared preflight model is local
+        if: steps.package.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
+          have="$(ollama list | awk 'NR>1{print $1}')"
+          grep -Fxq "$model" <<<"$have" || ollama pull "$model"
+          echo "ROBLOX_PREFLIGHT_SHARED_MODEL=$model"
+          echo 'ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED'
+
+      - name: Run fused shared-model build preflight
+        id: fused_preflight
+        if: steps.package.outcome == 'success'
+        continue-on-error: true
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+          BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          artifact_identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$BUILD_EVIDENCE")"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-technical/preflight-queue.json
+          GAME_ID="$GAME_ID" SOURCE_REVISION="$SOURCE_REVISION" ARTIFACT_IDENTITY="$artifact_identity" SECONDARY_OWNER_FOCUS="$SECONDARY_OWNER_FOCUS" node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-technical/preflight-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('queue item missing: '+process.env.GAME_ID);
+          const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
+          if(secondary){
+            item.ownerFocusRobloxBuildOrPackagePassed=true;
+            item.ownerFocusRobloxBuildSourceRevision=process.env.SOURCE_REVISION;
+            item.ownerFocusRobloxBuildArtifactIdentity=process.env.ARTIFACT_IDENTITY;
+          }else{
+            item.robloxBuildOrPackagePassed=true;
+            item.robloxBuildSourceRevision=process.env.SOURCE_REVISION;
+            item.robloxBuildArtifactIdentity=process.env.ARTIFACT_IDENTITY;
+          }
+          fs.writeFileSync('/tmp/roblox-technical/preflight-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+          node tools/company-development-roblox-build-preflight.mjs \
+            --game-id="$GAME_ID" \
+            --queue=/tmp/roblox-technical/preflight-queue.json \
+            --directive=company-directive.json \
+            --secondary-owner-focus="$SECONDARY_OWNER_FOCUS" \
+            --output="/tmp/roblox-technical/results/${safe}.preflight.json"
+
+      - name: Install pinned official Luau compiler for fused F0
+        if: steps.package.outcome == 'success' && steps.fused_preflight.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/luau-bin /tmp/luau.zip
+          mkdir -p /tmp/luau-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
+          unzip -q /tmp/luau.zip -d /tmp/luau-bin
+          test -x /tmp/luau-bin/luau-compile || chmod +x /tmp/luau-bin/luau-compile
+          test -x /tmp/luau-bin/luau-compile
+
+      - name: Run fused F0 from the same exact package
+        id: fused_f0
+        if: steps.package.outcome == 'success' && steps.fused_preflight.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        continue-on-error: true
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_PATH: ${{ matrix.sourcePath }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          artifact_identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$BUILD_EVIDENCE")"
+          rm -rf /tmp/luau-exact-source
+          mkdir -p /tmp/luau-exact-source
+          git archive "$SOURCE_REVISION" "$SOURCE_PATH" | tar -x -C /tmp/luau-exact-source
+          mapfile -d '' luau_files < <(find "/tmp/luau-exact-source/$SOURCE_PATH" -type f -name '*.luau' -print0 | sort -z)
+          [ "${#luau_files[@]}" -gt 0 ]
+          for file in "${luau_files[@]}"; do
+            /tmp/luau-bin/luau-compile "$file" >/dev/null
+          done
+          echo "ROBLOX_F0_LUAU_COMPILE_PASS=${#luau_files[@]}"
+          node tools/company-development-roblox-headless-fast-mvp.mjs \
+            --repo-root=. \
+            --game-id="$GAME_ID" \
+            --source-path="$SOURCE_PATH" \
+            --source-revision="$SOURCE_REVISION" \
+            --artifact-identity="$artifact_identity" \
+            --rebuilt-artifact-identity="$artifact_identity" \
+            --artifact-run-id="$GITHUB_RUN_ID" \
+            --native-language-compile-passed=true \
+            --native-compiler-version=0.739 \
+            --output="/tmp/roblox-technical/results/${safe}.headless.json"
+          echo 'ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE'
       - name: Record Roblox technical package result
         if: always()
         env:
@@ -768,6 +876,9 @@ jobs:
           SOURCE_PATH: ${{ matrix.sourcePath }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          PREFLIGHT_OUTCOME: ${{ steps.fused_preflight.outcome }}
+          F0_OUTCOME: ${{ steps.fused_f0.outcome }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
           BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
         shell: bash
         run: |
@@ -778,21 +889,35 @@ jobs:
           const path=require('path');
           const id=process.env.GAME_ID;
           const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
-          const passed=process.env.PACKAGE_OUTCOME==='success';
+          const packagePassed=process.env.PACKAGE_OUTCOME==='success';
+          const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
           let evidence=null;
-          if(passed&&process.env.BUILD_EVIDENCE&&fs.existsSync(process.env.BUILD_EVIDENCE))evidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
+          if(packagePassed&&process.env.BUILD_EVIDENCE&&fs.existsSync(process.env.BUILD_EVIDENCE))evidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
+          const preflightPath=path.join('/tmp/roblox-technical/results',safe+'.preflight.json');
+          const f0Path=path.join('/tmp/roblox-technical/results',safe+'.headless.json');
+          const preflightEvidence=fs.existsSync(preflightPath)?JSON.parse(fs.readFileSync(preflightPath,'utf8')):null;
+          const f0Evidence=fs.existsSync(f0Path)?JSON.parse(fs.readFileSync(f0Path,'utf8')):null;
+          const preflightPass=process.env.PREFLIGHT_OUTCOME==='success'&&preflightEvidence?.pass===true;
+          const f0Pass=secondary?null:(process.env.F0_OUTCOME==='success'&&f0Evidence?.pass===true);
           const result={
             gameId:id,
-            pass:passed&&evidence?.buildOrPackagePassed===true,
+            pass:packagePassed&&evidence?.buildOrPackagePassed===true,
+            preflightPass,
+            f0Pass,
+            preflightEvidence,
+            f0Evidence,
+            secondaryOwnerFocus:secondary,
             sourcePath:process.env.SOURCE_PATH,
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:evidence?.artifactIdentity||null,
             saveRequired:evidence?.saveRequired===true,
-            failure:passed?null:'roblox-build-package-failed',
+            failure:!packagePassed?'roblox-build-package-failed':!preflightPass?'roblox-build-preflight-blocked':(!secondary&&!f0Pass?'roblox-f0-source-preflight-failed':null),
           };
           fs.writeFileSync(path.join('/tmp/roblox-technical/results',`${safe}.result.json`),JSON.stringify(result,null,2)+'\n');
           console.log(`ROBLOX_TECHNICAL_PACKAGE_RESULT=${id}:${result.pass?'PASS':'FAIL'}`);
-          console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
+          console.log(`ROBLOX_FUSED_PREFLIGHT_RESULT=${id}:${result.preflightPass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_FUSED_F0_RESULT=${id}:${result.f0Pass===null?'N/A':result.f0Pass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_BUILD_PREFLIGHT_PASS=${result.preflightPass?'YES':'NO'}`);
           console.log('ROBLOX_RUNTIME_PASS=NO');
           console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
           console.log('ROBLOX_REGRESSION_PASS=NO');
@@ -806,17 +931,33 @@ jobs:
           path: /tmp/roblox-technical
           if-no-files-found: error
           retention-days: 3
-      - name: Enforce package result after checkpoint capture
+      - name: Enforce fused package preflight and F0 result after checkpoint capture
         if: always()
         env:
           PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          PREFLIGHT_OUTCOME: ${{ steps.fused_preflight.outcome }}
+          F0_OUTCOME: ${{ steps.fused_f0.outcome }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
         run: |
           if [ "$PACKAGE_OUTCOME" != 'success' ]; then
             echo 'ROBLOX_BUILD_PACKAGE=FAIL'
             exit 1
           fi
+          if [ "$PREFLIGHT_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
+            exit 1
+          fi
+          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$F0_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=FAIL'
+            exit 1
+          fi
           echo 'ROBLOX_BUILD_PACKAGE=PASS'
-          echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
+          echo 'ROBLOX_BUILD_PREFLIGHT_PASS=YES'
+          if [ "$SECONDARY_OWNER_FOCUS" = 'true' ]; then
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=DEFER_SECONDARY_OWNER_FOCUS'
+          else
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=PASS'
+          fi
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
@@ -885,9 +1026,10 @@ jobs:
                 Object.assign(item,{
                   ownerFocusRobloxBuildOrPackagePassed:true,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
                   ownerFocusRobloxBuildArtifactIdentity:result.artifactIdentity,ownerFocusRobloxBuildPassedAt:stamp,ownerFocusRobloxBuildFailedAt:null,
-                  ownerFocusRobloxBuildPreflightPassed:false,ownerFocusRobloxBuildPreflightPassedAt:null,ownerFocusRobloxBuildPreflightFailedAt:null,
+                  ownerFocusRobloxBuildPreflightPassed:result.preflightPass===true,ownerFocusRobloxBuildPreflightPassedAt:result.preflightPass===true?stamp:null,
+                  ownerFocusRobloxBuildPreflightFailedAt:result.preflightPass===true?null:stamp,ownerFocusRobloxBuildPreflightEvidence:result.preflightEvidence||null,
                   ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxRuntimePassedAt:null,ownerFocusRobloxRuntimeFailedAt:null,
-                  ownerFocusRobloxAssetPipelineState:'BUILD_READY',updatedAt:stamp,
+                  ownerFocusRobloxAssetPipelineState:result.preflightPass===true?'PREFLIGHT_READY':'PREFLIGHT_REPAIR_REQUIRED',updatedAt:stamp,
                 });
                 passCount++;
               }else{
@@ -902,20 +1044,33 @@ jobs:
               continue;
             }
             if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
+              const preflightExact=result.preflightPass===true
+                &&result.preflightEvidence?.sourceRevision===result.sourceRevision
+                &&result.preflightEvidence?.artifactIdentity===result.artifactIdentity;
+              const f0Exact=preflightExact&&result.f0Pass===true
+                &&result.f0Evidence?.sourceRevision===result.sourceRevision
+                &&result.f0Evidence?.artifactIdentity===result.artifactIdentity;
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+                status:'ACTIVE',
+                currentStep:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+                canonicalState:f0Exact?'F0_SOURCE_PREFLIGHT_PASSED':preflightExact?'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED':'TARGET_PLATFORM_REPAIR_REQUIRED',
                 robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
-                robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
-                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
-                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,
+                robloxBuildPreflightPassed:preflightExact,robloxBuildPreflightPassedAt:preflightExact?stamp:null,robloxBuildPreflightFailedAt:preflightExact?null:stamp,robloxBuildPreflightEvidence:result.preflightEvidence||null,
+                robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:f0Exact?result.f0Evidence:null,
+                robloxHeadlessFastMvpPassed:f0Exact,robloxHeadlessFastMvpEvidence:f0Exact?result.f0Evidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxExactRevisionPassed:f0Exact,
                 robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
                 robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
                 robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
                 robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
                 robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
                 robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
-                robloxLastSuccessfulStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',
-                robloxFailureSignature:'ROBLOX_BUILD_PREFLIGHT_PENDING',routingBlockers:['roblox-build-preflight-pending'],updatedAt:stamp,
+                robloxLastSuccessfulStage:f0Exact?'F0_SOURCE_PREFLIGHT':preflightExact?'VIBE_SHARED_MODEL_BUILD_PREFLIGHT':'TARGET_PLATFORM_BUILD_OR_PACKAGE',
+                robloxFailureStage:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'F0_SOURCE_INTEGRITY':'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+                robloxFailureSignature:f0Exact?'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED':'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
+                routingBlockers:[f0Exact?'roblox-runtime-candidate-deploy-pending':preflightExact?'roblox-f0-source-preflight-failed':'roblox-build-preflight-blocked'],
+                updatedAt:stamp,
               });
               passCount++;
             }else{
@@ -937,7 +1092,7 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxTechnicalParallelism=6;
+          queue.robloxTechnicalParallelism=null;
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
@@ -1029,6 +1184,39 @@ jobs:
           echo 'ROBLOX_REGRESSION_PASS=NO'
           echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
+      - name: Dispatch private runtime candidate for fused F0 passes
+        if: always() && needs.technical-plan.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git checkout --detach origin/main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-fused-f0-dispatch-queue.json
+          node - <<'NODE' > /tmp/roblox-fused-f0-release-ids
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-fused-f0-dispatch-queue.json','utf8'));
+          const ids=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').filter(x=>x.secondaryOwnerFocus!==true).map(x=>x.gameId));
+          const valid=t=>/^[1-9][0-9]*$/.test(String(t?.universeId||''))&&/^[1-9][0-9]*$/.test(String(t?.placeId||''));
+          let sharedFallbackUsed=false;
+          for(const x of q.items||[]){
+            if(!ids.has(x.gameId)||x.robloxFoundationF0Passed!==true||x.robloxRuntimeFoundationPassed===true)continue;
+            const exactTarget=(x.robloxPublicationTarget?.verified===true&&valid(x.robloxPublicationTarget))
+              ||(x.robloxInternalReleaseEvidence?.published===true&&valid(x.robloxInternalReleaseEvidence))
+              ||(x.robloxReleaseEvidence?.published===true&&valid(x.robloxReleaseEvidence));
+            if(exactTarget){console.log(x.gameId);continue;}
+            if(!sharedFallbackUsed){sharedFallbackUsed=true;console.log(x.gameId);continue;}
+            console.error('ROBLOX_FUSED_SHARED_FALLBACK_DEFERRED='+x.gameId);
+          }
+          NODE
+          while read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            echo "ROBLOX_FUSED_PRIVATE_RUNTIME_DISPATCH=$id"
+          done < /tmp/roblox-fused-f0-release-ids
+
       - name: Dispatch Roblox HEADLESS FAST_MVP continuation
         if: always()
         env:
@@ -1045,7 +1233,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
-          let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;
+          let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
@@ -1063,12 +1251,14 @@ jobs:
               const runtimeHarness=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeHarnessVersion:item.robloxRuntimeHarnessVersion;
               const runtimeEvidence=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeEvidence:item.robloxRuntimeEvidence;
               const securityHoldFlag=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeSecurityHold:item.robloxRuntimeSecurityHold;
+              const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;
               if(preflightPassed!==true){
                 preflightReady++;
+              }else if(!secondaryOwnerFocus&&f0Passed!==true){
+                f0Ready++;
               }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
                 const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
                 if(securityBlocked)externalBlocked++;
-                else runtimeReady++;
               }
               continue;
             }
@@ -1080,28 +1270,28 @@ jobs:
             if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
             packagePending++;
           }
-          process.stdout.write(`${packagePending} ${preflightReady} ${runtimeReady} ${externalBlocked}`);
+          process.stdout.write(`${packagePending} ${preflightReady} ${f0Ready} ${externalBlocked}`);
           NODE
           )"
-          read -r package_pending preflight_ready runtime_ready external_blocked <<<"$state"
+          read -r package_pending preflight_ready f0_ready external_blocked <<<"$state"
           echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
           echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
-          echo "ROBLOX_RUNTIME_READY_COUNT=$runtime_ready"
+          echo "ROBLOX_F0_READY_COUNT=$f0_ready"
           echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
-          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=2'
+          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR'
           echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
           echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
           echo 'ROBLOX_HEADLESS_FAST_MVP_AUTODISPATCH=ENABLED'
           echo 'ROBLOX_STUDIO_RUNTIME_REQUIRED=NO'
-          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
+          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=DISABLED_HEADLESS_PATH'
           active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
           echo 'ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'
-          if [[ ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) && "$active_continuations" == '0' ]]; then
+          if [[ ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$f0_ready" =~ ^[1-9][0-9]*$ ) && "$active_continuations" == '0' ]]; then
             gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'
-          elif [[ "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ]]; then
+          elif [[ "$preflight_ready" =~ ^[1-9][0-9]*$ || "$f0_ready" =~ ^[1-9][0-9]*$ ]]; then
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE'
           else
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=NO'
