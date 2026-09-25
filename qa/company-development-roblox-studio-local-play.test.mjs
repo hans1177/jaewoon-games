@@ -284,3 +284,10 @@ test('Studio MCP diagnostics expose installed version and available tool invento
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PRODUCT_VERSION=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_TOOL_MISSING:'\+name\+':available='\+available\.join\(','\)/);
 });
+
+
+test('automatic Roblox Studio MCP scans share one concurrency group without cancelling active play',()=>{
+  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ github\.event_name == 'workflow_dispatch' && \(inputs\.game_id \|\| 'manual-scan'\) \|\| 'automatic-scan' \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
+});
