@@ -1,5 +1,5 @@
 {
-  "version": 186,
+  "version": 187,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3239,7 +3239,7 @@
         "executor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
         "helper": "tools/company-development-roblox-studio-local-play.mjs",
         "automaticSessionAttempts": 3,
-        "perSessionToolProbe": "5_ATTEMPTS_X_1000MS",
+        "perSessionToolProbe": "20_ATTEMPTS_X_1500MS",
         "ownedStudioRestart": true,
         "mcpClientRestart": true,
         "assistantSettingsReadOnlyDiagnostic": true,
@@ -3257,7 +3257,10 @@
         "resume": "AUTOMATIC_ON_NEXT_EXISTING_RUNTIME_QA_TRIGGER",
         "explicitDisabledState": "NO",
         "explicitDisabledExecution": "SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS",
-        "requiredToolHandshakeAuthority": true
+        "requiredToolHandshakeAuthority": true,
+        "generatedBatchFailureFallbackBeforeStudioRestart": true,
+        "generatedBatchFailureFallback": "INSTALLED_OFFICIAL_STUDIOMCP_EXE_DIRECT",
+        "generatedBatchFailureMustNotRepeatAcrossRemainingSessions": true
       }
     },
     "robloxExternalPublicReleaseHardGate": {
