@@ -609,6 +609,10 @@ jobs:
             };
 
             if(result.runtimeAcceptancePassed===true){
+              item.robloxRuntimeFoundationInternalReleaseException=false;
+              item.robloxPublicReleaseRuntimeObservationPending=false;
+              item.robloxPublicReleaseFailureSignature=null;
+              item.robloxPublicReleaseBlockers=(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]).filter(value=>value!=='roblox-public-release-awaiting-real-server-boot');
               item.robloxRuntimePassedAt=stamp;
               item.robloxRuntimeFailedAt=null;
               item.robloxIndependentQaPassed=true;
