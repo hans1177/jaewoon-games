@@ -200,6 +200,13 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(architecture.developmentPipeline?.unityWebDevelopmentLane?.repairLoopUsesExistingDevelopmentEngine,true);
   assert.equal(architecture.developmentPipeline?.unityWebDevelopmentLane?.shadowRepairPipeline,false);
   assert.equal(architecture.departmentRuntimeTopology?.developmentConfirmed?.unityWebRepairOwner,'tools/vibe2-auto-planner.mjs');
+  assert.equal(lane?.preReadinessFailurePersistence,'company-runtime:development-queue.json#unityWebDevelopmentFloorEvidence');
+  assert.equal(lane?.repairableFailureWake,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(lane?.infrastructureFailureState,'INFRASTRUCTURE_PENDING');
+  assert.equal(lane?.infrastructureFailureDoesNotAuthorizeSourceRepair,true);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.preReadinessFailureWriter,'tools/company-unity-web-floor-runtime-persist.mjs');
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.preReadinessFailureStore,'company-runtime:development-queue.json');
+  assert.equal(architecture.departmentRuntimeTopology?.developmentConfirmed?.unityWebFailureWriter,'tools/company-unity-web-floor-runtime-persist.mjs');
   assert.equal(roadmap.changeRecord?.unityWebVibeRepairLoop20260926?.implementationState,'ACTIVE_VIBE_REPAIR_LOOP_BOUND');
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.nativeGateAuthority,true);
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.developmentAdmissionAuthority,true);
