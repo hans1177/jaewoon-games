@@ -19,7 +19,10 @@ test('native learning accepts only verified Roblox or Unity runtime QA regressio
   assert.equal(dual.robloxStudioPlayEvidenceCannotSatisfyOpenCloudRuntimeGate,true);
   assert.equal(learning.robloxStudioVerifiedLearning.enabled,true);
   assert.equal(learning.robloxStudioVerifiedLearning.exactCandidateRequired,true);
-  assert.deepEqual(learning.robloxStudioVerifiedLearning.requiredCapabilities,['studioTestService','virtualInput']);
+  assert.deepEqual(learning.robloxStudioVerifiedLearning.requiredCapabilities,['studioTestService']);
+  assert.equal(learning.robloxStudioVerifiedLearning.executionSurface,'LOCAL_IMMUTABLE_ARTIFACT');
+  assert.equal(learning.robloxStudioVerifiedLearning.automatedUserInputForbidden,true);
+  assert.equal(learning.robloxStudioVerifiedLearning.virtualInputRequired,false);
   assert.equal(learning.robloxStudioVerifiedLearning.directRawTelemetryTraining,false);
   assert.equal(learning.robloxStudioVerifiedLearning.directRawSourceTraining,false);
   assert.equal(dual.platformEvidenceIndependent,true);
