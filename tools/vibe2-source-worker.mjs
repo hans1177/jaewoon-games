@@ -2117,7 +2117,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const missingVisualDomains=Object.entries(requiredVisualDomains).filter(([,present])=>!present).map(([name])=>name);
       if(missingVisualDomains.length)throw new Error('ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED:MISSING_'+missingVisualDomains.join(','));
       const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(changedPresentationText);
-      const motionMutation=/(?:TweenService[\\s\\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\\s*=|(?:RenderStepped|Heartbeat)[\\s\\S]{0,1200}\\.(?:CFrame|Transform|Position|Orientation)\\s*=|(?:Motor6D|Bone)[\\s\\S]{0,800}\\.Transform\\s*=|\\.(?:CFrame|Transform|Position|Orientation)\\s*=\\s*(?:CFrame|Vector3|UDim2|[^\\n;]+[+*\\-]))/i.test(changedPresentationText);
+      const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(changedPresentationText);
       if(!motionDriver||!motionMutation)throw new Error('ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED:NATIVE_DRIVER_AND_TRANSFORM_MUTATION');
     }
     const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
