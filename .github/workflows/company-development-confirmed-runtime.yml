@@ -22,6 +22,8 @@ on:
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-minimum-design-contract.test.mjs'
       - '.github/workflows/unity-web-first-stage-build.yml'
+      - '.github/workflows/unity-web-floor-source-bootstrap.yml'
+      - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'tools/company-unity-web-gameplay-validation.mjs'
       - 'unity-games/**'
       - 'web-games/**/upper-platform-development-readiness.json'
@@ -57,6 +59,7 @@ jobs:
       eligible_count: ${{ steps.plan.outputs.eligible_count }}
       eligible_ids: ${{ steps.plan.outputs.eligible_ids }}
       unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
+      unity_web_bootstrap_ids: ${{ steps.plan.outputs.unity_web_bootstrap_ids }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -115,6 +118,8 @@ jobs:
           import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
@@ -123,9 +128,9 @@ jobs:
             String(item.status||'').toUpperCase()!=='DISABLED'&&
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
-          const nativeIds=[],webIds=[],blockedIds=[],grandfatheredIds=[];
+          const nativeIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
-            const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd()});
+            const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
             if(decision.state==='UPPER_PLATFORM'){
               nativeIds.push(item.gameId);
               if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
@@ -136,16 +141,23 @@ jobs:
               console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+decision.reason+':'+decision.buildMethod);
               continue;
             }
+            if(decision.state==='UNITY_WEB_BOOTSTRAP'){
+              bootstrapIds.push(item.gameId);
+              console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+decision.reason);
+              continue;
+            }
             blockedIds.push(item.gameId);
             console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+decision.reason);
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_ids='+bootstrapIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
           console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
           console.log('UNITY_WEB_FLOOR_IDS='+(webIds.join(',')||'NONE'));
+          console.log('UNITY_WEB_FLOOR_BOOTSTRAP_IDS='+(bootstrapIds.join(',')||'NONE'));
           console.log('UPPER_PLATFORM_GRANDFATHERED_IDS='+(grandfatheredIds.join(',')||'NONE'));
           console.log('UPPER_PLATFORM_BLOCKED_IDS='+(blockedIds.join(',')||'NONE'));
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
@@ -210,3 +222,23 @@ jobs:
           echo "UNITY_WEB_FLOOR_IDS=$UNITY_WEB_IDS"
           echo 'UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT'
 
+
+
+  dispatch-unity-web-bootstrap:
+    name: Bootstrap Unity Web development-floor sources
+    needs: native-plan
+    if: needs.native-plan.outputs.unity_web_bootstrap_ids != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch canonical Unity Web floor source bootstrap
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UNITY_WEB_BOOTSTRAP_IDS: ${{ needs.native-plan.outputs.unity_web_bootstrap_ids }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run unity-web-floor-source-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f game_ids="$UNITY_WEB_BOOTSTRAP_IDS"
+          echo "UNITY_WEB_FLOOR_BOOTSTRAP_IDS=$UNITY_WEB_BOOTSTRAP_IDS"
+          echo 'UNITY_WEB_FLOOR_BOOTSTRAP_DISPATCH=YES'
