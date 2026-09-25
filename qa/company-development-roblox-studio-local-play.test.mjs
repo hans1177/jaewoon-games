@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {
   validateLocalStudioPolicy,
+  detectStudioMcpAssistantSetting,
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult
@@ -365,7 +368,9 @@ test('Studio MCP unavailable recovery diagnoses setting recursively, fails fast 
   assert.match(studioMcpBlock,/--tool-delay-ms=1000/);
   assert.match(studioMcpBlock,/--timeout=15000/);
   assert.match(studioMcpBlock,/Roblox\\AssistantSettings/);
-  assert.match(studioMcpBlock,/Get-ChildItem \$settingsRoot -Recurse -File -Filter '\*\.json'/);
+  assert.match(studioMcpBlock,/--mode=diagnose-setting/);
+  assert.match(studioMcpBlock,/--settings-root=/);
+  assert.match(studioMcpBlock,/roblox-studio-mcp-setting-diagnostic\.json/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_FILE_COUNT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLED_COUNT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_DISABLED_COUNT=/);
@@ -416,4 +421,65 @@ test('Studio MCP strategy matrix receives include rows only and never planner me
   assert.match(studioPlanBlock,/JSON\.stringify\(\{include:Array\.isArray\(x\.include\)\?x\.include:\[\]\}\)/);
   assert.doesNotMatch(studioPlanBlock,/JSON\.stringify\(x\)\)"/);
   assert.match(workflow,/matrix: \$\{\{ fromJSON\(needs\.studio-local-plan\.outputs\.matrix\) \}\}/);
+});
+
+
+test('Studio MCP setting diagnostic finds nested mcp-server.enabled without mutating AssistantSettings',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-mcp-setting-'));
+  try{
+    const nested=path.join(root,'nested','profile');
+    fs.mkdirSync(nested,{recursive:true});
+    const enabledFile=path.join(nested,'assistant.json');
+    const disabledFile=path.join(root,'other.json');
+    const originalEnabled=JSON.stringify({assistant:{settings:{'mcp-server':{enabled:true}}},other:{enabled:false}},null,2);
+    const originalDisabled=JSON.stringify({deep:[{configuration:{'mcp-server':{enabled:false}}}]},null,2);
+    fs.writeFileSync(enabledFile,originalEnabled);
+    fs.writeFileSync(disabledFile,originalDisabled);
+    const result=detectStudioMcpAssistantSetting({settingsRoot:root});
+    assert.equal(result.state,'YES');
+    assert.equal(result.fileCount,2);
+    assert.equal(result.enabledCount,1);
+    assert.equal(result.disabledCount,1);
+    assert.equal(result.parseErrorCount,0);
+    assert.equal(result.mutationPerformed,false);
+    assert.equal(fs.readFileSync(enabledFile,'utf8'),originalEnabled);
+    assert.equal(fs.readFileSync(disabledFile,'utf8'),originalDisabled);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Studio MCP setting diagnostic distinguishes disabled, missing, unknown, and parse errors',()=>{
+  const disabledRoot=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-mcp-disabled-'));
+  const unknownRoot=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-mcp-unknown-'));
+  const badRoot=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-mcp-bad-'));
+  const missingRoot=path.join(os.tmpdir(),'roblox-mcp-missing-'+process.pid+'-'+Date.now());
+  try{
+    fs.writeFileSync(path.join(disabledRoot,'settings.json'),JSON.stringify({a:{'mcp-server':{enabled:false}}}));
+    fs.writeFileSync(path.join(unknownRoot,'settings.json'),JSON.stringify({a:{unrelated:true}}));
+    fs.writeFileSync(path.join(badRoot,'settings.json'),'{bad json');
+    const disabled=detectStudioMcpAssistantSetting({settingsRoot:disabledRoot});
+    const unknown=detectStudioMcpAssistantSetting({settingsRoot:unknownRoot});
+    const bad=detectStudioMcpAssistantSetting({settingsRoot:badRoot});
+    const missing=detectStudioMcpAssistantSetting({settingsRoot:missingRoot});
+    assert.equal(disabled.state,'NO');
+    assert.equal(disabled.disabledCount,1);
+    assert.equal(unknown.state,'UNKNOWN');
+    assert.equal(unknown.fileCount,1);
+    assert.equal(bad.state,'UNKNOWN');
+    assert.equal(bad.parseErrorCount,1);
+    assert.equal(missing.state,'MISSING');
+    assert.equal(missing.fileCount,0);
+  }finally{
+    fs.rmSync(disabledRoot,{recursive:true,force:true});
+    fs.rmSync(unknownRoot,{recursive:true,force:true});
+    fs.rmSync(badRoot,{recursive:true,force:true});
+  }
+});
+
+test('Studio MCP setting diagnostic CLI is part of the helper contract',()=>{
+  assert.match(helper,/mode==='diagnose-setting'/);
+  assert.match(helper,/detectStudioMcpAssistantSetting/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO/);
+  assert.match(helper,/collectMcpServerEnabledValues/);
 });
