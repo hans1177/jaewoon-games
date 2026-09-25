@@ -96,6 +96,16 @@ test('homepage live runtime state bypasses the PWA cache',()=>{
   assert.ok(sw.includes('/assets\\/homepage-enhancements\\.js'), 'homepage renderer must stay network-only');
 });
 
+test('homepage keeps the three current internal releases visible before runtime sync',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  assert.match(index,/id="homeInternalReleaseFallback"/);
+  for(const id of ['cozy-island','daechung-rpg','horror-escape-room'])assert.match(index,new RegExp(`data-game-id="${id}"`));
+  for(const title of ['포근섬: 작은 왕국 키우기','5포탈 RPG: 던전 파티','심야 감염전 \\[4대4\\]'])assert.match(index,new RegExp(title));
+  assert.match(index,/Roblox · 내부출시 · 링크이전중/);
+  assert.match(homepage,/homeInternalReleaseFallback/);
+  assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
+});
+
 test('homepage shows native, Unity Web, and server-catalog playable web actions',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
