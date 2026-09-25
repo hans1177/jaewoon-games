@@ -27,6 +27,11 @@ on:
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/unity-package-fatal-logcat.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
+  workflow_call:
+    inputs:
+      game_id:
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
       game_id:
