@@ -398,7 +398,8 @@ test('Windows workflow uses documented mcp.bat only when its installed text is h
   assert.ok(brokenFallback>healthCheck);
   assert.ok(documented>brokenFallback);
   assert.match(studioMcpBlock,/%B\[\/\\\\\]\\\.\\\.\[\/\\\\\]StudioMCP\\\.exe/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_HEALTH=BROKEN_USE_OFFICIAL_EXE/);
+  assert.match(studioMcpBlock,/\$mcpBatchHealth = 'BROKEN_USE_OFFICIAL_EXE'/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_HEALTH=\$mcpBatchHealth/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
 });
 
