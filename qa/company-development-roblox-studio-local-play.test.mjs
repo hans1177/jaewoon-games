@@ -309,8 +309,8 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/protocolVersion:'2024-11-05'/);
   assert.match(helper,/async waitForTools\(requiredNames=\[\],\{attempts=24,delayMs=1500\}=\{\}\)/);
   assert.match(helper,/await client\.waitForTools\(requiredTools,\{/);
-  assert.match(helper,/attempts:Math\.max\(1,Number\(toolAttempts\)\|\|5\)/);
-  assert.match(helper,/delayMs:Math\.max\(100,Number\(toolDelayMs\)\|\|1000\)/);
+  assert.match(helper,/attempts:Math\.max\(1,Number\(toolAttempts\)\|\|20\)/);
+  assert.match(helper,/delayMs:Math\.max\(100,Number\(toolDelayMs\)\|\|1500\)/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_TOOLS_WAIT=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=/);
   assert.match(helper,/:available=/);
@@ -324,15 +324,19 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
   assert.match(helper,/stderr=\$\{detail\}/);
 });
 
-test('Windows workflow prefers Roblox documented mcp.bat whenever it exists',()=>{
+test('Windows workflow tries documented mcp.bat first then falls back to installed official StudioMCP.exe after batch failure',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   const batCheck=studioMcpBlock.indexOf("if (Test-Path $mcpBat)");
   const documented=studioMcpBlock.indexOf("$mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'");
-  const exeFallback=studioMcpBlock.indexOf("OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING");
+  const fallbackExport=studioMcpBlock.indexOf('VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND');
   assert.ok(batCheck>0);
   assert.ok(documented>batCheck);
-  assert.ok(exeFallback>documented);
-  assert.doesNotMatch(studioMcpBlock,/knownBrokenBatch|OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
+  assert.ok(fallbackExport>documented);
+  assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_FAILED/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_TRANSPORT=FAILED_USE_OFFICIAL_EXE_FALLBACK/);
+  assert.match(studioMcpBlock,/\$batchTransportFailed = \$true/);
+  assert.match(studioMcpBlock,/MCP process exited code=1\|not recognized\|StudioMCP\\\.exe/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
@@ -376,9 +380,9 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_RESTART=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
-  assert.match(studioMcpBlock,/--tool-attempts=5/);
-  assert.match(studioMcpBlock,/--tool-delay-ms=1000/);
-  assert.match(studioMcpBlock,/--timeout=15000/);
+  assert.match(studioMcpBlock,/--tool-attempts=20/);
+  assert.match(studioMcpBlock,/--tool-delay-ms=1500/);
+  assert.match(studioMcpBlock,/--timeout=45000/);
   assert.match(studioMcpBlock,/Roblox\\AssistantSettings/);
   assert.match(studioMcpBlock,/--mode=diagnose-setting/);
   assert.match(studioMcpBlock,/--settings-root=/);
@@ -409,11 +413,11 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
 });
 
 test('MCP helper accepts bounded per-session readiness attempts from workflow arguments',()=>{
-  assert.match(helper,/toolAttempts=5,toolDelayMs=1000/);
+  assert.match(helper,/toolAttempts=20,toolDelayMs=1500/);
   assert.match(helper,/attempts:Math\.max\(1,Number\(toolAttempts\)\|\|5\)/);
   assert.match(helper,/delayMs:Math\.max\(100,Number\(toolDelayMs\)\|\|1000\)/);
-  assert.match(helper,/toolAttempts:Number\(a\['tool-attempts'\]\|\|5\)/);
-  assert.match(helper,/toolDelayMs:Number\(a\['tool-delay-ms'\]\|\|1000\)/);
+  assert.match(helper,/toolAttempts:Number\(a\['tool-attempts'\]\|\|20\)/);
+  assert.match(helper,/toolDelayMs:Number\(a\['tool-delay-ms'\]\|\|1500\)/);
 });
 
 test('central Studio MCP recovery policy stays restart-only and fail-closed on infrastructure exhaustion',()=>{
@@ -422,7 +426,11 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   const recovery=roadmap.roblox?.studioExecution?.mcpUnavailableRecovery||{};
   assert.equal(recovery.mode,'OFFICIAL_RESTART_ONLY');
   assert.equal(recovery.automaticSessionAttempts,3);
-  assert.equal(recovery.toolReadinessAttemptsPerSession,5);
+  assert.equal(recovery.toolReadinessAttemptsPerSession,20);
+  assert.equal(recovery.toolReadinessDelayMs,1500);
+  assert.equal(recovery.generatedBatchFailureFallbackBeforeStudioRestart,true);
+  assert.equal(recovery.generatedBatchFailureFallback,'INSTALLED_OFFICIAL_STUDIOMCP_EXE_DIRECT');
+  assert.equal(recovery.generatedBatchFailureMustNotRepeatAcrossRemainingSessions,true);
   assert.equal(recovery.assistantSettingsDiagnosticOnly,true);
   assert.equal(recovery.assistantSettingsMutationForbidden,true);
   assert.equal(recovery.guiToggleAutomationForbidden,true);
@@ -442,6 +450,10 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.equal(recovery.automaticResumeAfterPrerequisite,true);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.mcpUnavailableRecovery||{};
   assert.equal(arch.automaticSessionAttempts,3);
+  assert.equal(arch.perSessionToolProbe,'20_ATTEMPTS_X_1500MS');
+  assert.equal(arch.generatedBatchFailureFallbackBeforeStudioRestart,true);
+  assert.equal(arch.generatedBatchFailureFallback,'INSTALLED_OFFICIAL_STUDIOMCP_EXE_DIRECT');
+  assert.equal(arch.generatedBatchFailureMustNotRepeatAcrossRemainingSessions,true);
   assert.equal(arch.ownedStudioRestart,true);
   assert.equal(arch.mcpClientRestart,true);
   assert.equal(arch.assistantSettingsReadOnlyDiagnostic,true);
