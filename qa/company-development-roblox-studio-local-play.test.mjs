@@ -162,5 +162,8 @@ test('company runtime QA uses local immutable Place artifact and never launches 
   assert.doesNotMatch(workflow,/RobloxPlayerBeta|RobloxPlayerLauncher|roblox-player/i);
   assert.match(workflow,/Local Place SHA256 mismatch/);
   assert.match(workflow,/company-development-roblox-studio-local-play\.mjs/);
+  assert.match(workflow,/if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
+  const declarations=workflow.match(/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true;/g)||[];
+  assert.equal(declarations.length,1);
 });
 
