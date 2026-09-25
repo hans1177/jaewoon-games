@@ -57,6 +57,34 @@
       "sourceFailure": "fail_1agpu1k"
     },
     {
+      "id": "review-fail_c9xvk3",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "UI_STATE",
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL",
+        "ROBLOX_STUDIO",
+        "STORYTELLING",
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VFX",
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION"
+      ],
+      "sourceFailure": "fail_c9xvk3"
+    },
+    {
       "id": "review-fail_lhx93q",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -104,34 +132,6 @@
         "ROBLOX_STUDIO"
       ],
       "sourceFailure": "fail_wu3qnk"
-    },
-    {
-      "id": "review-fail_c9xvk3",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "UI_STATE",
-        "COMBAT",
-        "RECOVERY",
-        "SECURITY",
-        "ANIMATION_FEEL",
-        "ROBLOX_STUDIO",
-        "STORYTELLING",
-        "ASSET_PRODUCTION",
-        "ASSET_ADAPTATION",
-        "VFX",
-        "VISUAL_IDENTITY",
-        "CONCEPT_DIRECTION"
-      ],
-      "sourceFailure": "fail_c9xvk3"
     },
     {
       "id": "review-fail_3e38u6",
@@ -192,6 +192,34 @@
       "sourceFailure": "fail_1agpu1k"
     },
     {
+      "id": "relearn-fail_c9xvk3",
+      "kind": "RELEARNING_REPLAY_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "UI_STATE",
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL",
+        "ROBLOX_STUDIO",
+        "STORYTELLING",
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VFX",
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION"
+      ],
+      "sourceFailure": "fail_c9xvk3"
+    },
+    {
       "id": "relearn-fail_lhx93q",
       "kind": "RELEARNING_REPLAY_DRILL",
       "priority": "high",
@@ -210,35 +238,6 @@
         "ECONOMY"
       ],
       "sourceFailure": "fail_lhx93q"
-    },
-    {
-      "id": "relearn-fail_wu3qnk",
-      "kind": "RELEARNING_REPLAY_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "UI_STATE",
-        "COMBAT",
-        "RECOVERY",
-        "SECURITY",
-        "ANIMATION_FEEL",
-        "LEVEL_DESIGN",
-        "ROUTE_DESIGN",
-        "ASSET_PRODUCTION",
-        "ASSET_ADAPTATION",
-        "VFX",
-        "VISUAL_IDENTITY",
-        "CONCEPT_DIRECTION",
-        "ROBLOX_STUDIO"
-      ],
-      "sourceFailure": "fail_wu3qnk"
     },
     {
       "id": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627-control",
@@ -1897,16 +1896,6 @@
       ]
     },
     {
-      "id": "gap-concept_direction-l4",
-      "kind": "CONCEPT_DIRECTION_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CONCEPT_DIRECTION"
-      ]
-    },
-    {
       "id": "gap-asset_adaptation-l5",
       "kind": "ASSET_ADAPTATION_DRILL",
       "priority": "low",
@@ -1917,13 +1906,13 @@
       ]
     },
     {
-      "id": "gap-roblox_studio-l5",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-concept_direction-l5",
+      "kind": "CONCEPT_DIRECTION_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ROBLOX_STUDIO"
+        "CONCEPT_DIRECTION"
       ]
     },
     {
@@ -1954,6 +1943,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "VISUAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "gap-roblox_studio-l6",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_STUDIO"
       ]
     },
     {
