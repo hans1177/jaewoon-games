@@ -2305,7 +2305,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-25T07:28:41.855Z",
+      "updatedAt": "2026-09-25T07:35:11.831Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2606,7 +2606,27 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "robloxPublicationTarget": {
+        "version": 3,
+        "gameId": "village-dungeons",
+        "universeId": "10767957971",
+        "placeId": "122627666882942",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-canonical-publication-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-09-25T07:35:11.831Z"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null
     },
     {
       "gameId": "fantasy-survival",
@@ -5867,7 +5887,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T07:33:03.492Z",
+  "updatedAt": "2026-09-25T07:35:11.831Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
