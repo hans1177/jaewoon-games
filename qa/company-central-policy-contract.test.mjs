@@ -170,8 +170,8 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(roadmap.webCompanion?.developmentAdmissionGate,true);
   assert.equal(roadmap.webCompanion?.releaseGate,false);
   assert.equal(roadmap.changeRecord?.legacyWebFirstCleanup20260923?.activeUnityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(roadmap.departmentParallelExecution?.runtimeExecution?.unityWebValidationSurface?.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(roadmap.departmentParallelExecution?.runtimeExecution?.unityWebValidationSurface?.developmentAdmissionGate,true);
+  assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.developmentAdmissionGate,true);
   assert.equal(roadmap.canonicalProductionDepartments?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(directive.gameSeed?.derivedProductionRequirements?.includes('UNITY_WEB_UPPER_PLATFORM_PREDEVELOPMENT_FLOOR'),true);
   assert.equal(directive.gameSeed?.derivedProductionRequirements?.includes('UNITY_WEB_VALIDATION_SURFACE_WHEN_BUILDABLE'),false);
