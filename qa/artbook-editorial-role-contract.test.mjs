@@ -126,28 +126,32 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
 });
 
-test('DEVELOPMENT_CONFIRMED starts Roblox and Unity from minimum shared design while Unity Web stays optional',()=>{
+test('DEVELOPMENT_CONFIRMED uses Unity Web readiness before new Roblox and Unity upper-platform work',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
-  assert.equal(dev.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
+  assert.equal(dev.executionMode,'UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM');
   assert.equal(dev.resumeFromLatestEvidence,true);
   assert.equal(dev.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  assert.equal(dev.upperPlatformAdmissionAuthority,'UPPER_PLATFORM_DEVELOPMENT_READY');
   assert.equal(dev.strictDesignScoreRequiredForAdmission,false);
   assert.equal(dev.strictDesignReviewRunsInParallel,true);
-  assert.equal(dev.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
-  assert.equal(dev.targetPlatformMayRunImmediately,true);
+  assert.equal(dev.targetPlatformMayRunImmediately,false);
+  assert.equal(dev.unityWebDevelopmentMayRunImmediately,true);
   assert.deepEqual(dev.concurrentTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(dev.onePlatformFailureDoesNotCancelOther,true);
-  assert.equal(dev.approvedScopeCompletionRequired,true);
   assert.equal(dev.platformSpecificValidationRequired,true);
   assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
   assert.deepEqual(dev.waitingStates,[]);
   assert.equal(dev.unityWebValidationSurface.enabled,true);
-  assert.equal(dev.unityWebValidationSurface.optional,true);
+  assert.equal(dev.unityWebValidationSurface.optional,false);
   assert.equal(dev.unityWebValidationSurface.sameCanonicalUnityProjectRequired,true);
-  assert.equal(dev.unityWebValidationSurface.nativeGateAuthority,false);
-  assert.equal(dev.unityWebValidationSurface.missingOrFailedBuildDoesNotBlockNative,true);
-  for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'])assert.ok(dev.requiredFlow.includes(token));
-  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
+  assert.equal(dev.unityWebValidationSurface.nativeGateAuthority,true);
+  assert.equal(dev.unityWebValidationSurface.upperPlatformReadinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(dev.unityWebValidationSurface.missingOrFailedBuildDoesNotBlockNative,false);
+  for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT','UNITY_WEBGL_BUILD','UNITY_WEB_ACTUAL_BROWSER_PLAY','UNITY_WEB_INDEPENDENT_QA','UNITY_WEB_REGRESSION','UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION'])assert.ok(dev.requiredFlow.includes(token),token);
+  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,false);
+  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
+  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmission,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.existingNativeDevelopmentGrandfathered,true);
   assert.deepEqual(machinePolicy.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.doesNotMatch(JSON.stringify(dev),/ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
 });
@@ -180,7 +184,7 @@ test('Roblox and Unity are the active equal tier while UEFN remains owner-held',
   assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'OWNER_HOLD'});
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
-  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
+  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,false);
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
   assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
   assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
