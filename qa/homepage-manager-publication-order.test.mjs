@@ -118,7 +118,8 @@ test('homepage keeps the three current internal releases visible before runtime 
   assert.match(index,/id="homeInternalReleaseFallback"/);
   for(const id of ['cozy-island','daechung-rpg','horror-escape-room'])assert.match(index,new RegExp(`data-game-id="${id}"`));
   for(const title of ['포근섬: 작은 왕국 키우기','5포탈 RPG: 던전 파티','심야 감염전 \\[4대4\\]'])assert.match(index,new RegExp(title));
-  assert.match(index,/Roblox · 내부출시 · 링크이전중/);
+  assert.match(index,/Roblox · 내부출시/);
+  for(const placeId of ['116850096561713','126302702438348','98222620265768'])assert.match(index,new RegExp(`href="https:\\/\\/www\\.roblox\\.com\\/games\\/${placeId}"`));
   assert.match(homepage,/homeInternalReleaseFallback/);
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
