@@ -16,7 +16,11 @@ export function validateLocalStudioPolicy(roadmap={}){
     &&studio.localPlaceFileRequired===true
     &&studio.onlinePublishedPlaceDirectOpenForbidden===true
     &&studio.placeIdOrUniverseIdAsStudioLaunchTargetForbidden===true
+    &&studio.requiresRuntimeFoundationQaSuccess===true
+    &&studio.requiresRuntimeFoundationCandidatePass===true
     &&usage.learningUseForbidden===false
+    &&usage.runtimeFoundationQaPassRequiredBeforeStudioPlay===true
+    &&usage.runtimeFoundationCandidatePassRequiredBeforeStudioPlay===true
     &&Array.isArray(usage.forbidden)
     &&usage.forbidden.includes('ROBLOX_PLAYER_AUTOMATION')
     &&usage.forbidden.includes('PUBLIC_SERVER_BOT_PLAY')
@@ -41,6 +45,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const artifactRunId=artifactRunIdFor(item,candidate);
     const exact=Boolean(
       item?.robloxBuildOrPackagePassed===true
+      &&item?.robloxRuntimeFoundationPassed===true
       &&clean(item?.robloxBuildSourceRevision)===sourceRevision
       &&/^sha256:[0-9a-f]{64}$/i.test(artifactIdentity)
       &&candidate?.published===true
@@ -94,6 +99,7 @@ export function createLocalStudioPlayEvidence({
   const versionNumber=Number(expected?.versionNumber||0);
   const exactCurrent=Boolean(
     clean(item?.robloxSourceCommit)===sourceRevision
+    &&item?.robloxRuntimeFoundationPassed===true
     &&clean(item?.robloxBuildArtifactIdentity)===artifactIdentity
     &&candidate?.published===true
     &&item?.robloxSharedTargetCurrent!==false
