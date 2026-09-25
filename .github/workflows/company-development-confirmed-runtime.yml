@@ -25,6 +25,7 @@ on:
       - '.github/workflows/unity-web-floor-source-bootstrap.yml'
       - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'tools/company-unity-web-gameplay-validation.mjs'
+      - 'qa/company-unity-web-gameplay-validation.test.mjs'
       - 'unity-games/**'
       - 'web-games/**/upper-platform-development-readiness.json'
   workflow_dispatch:
@@ -80,6 +81,7 @@ jobs:
           node --test qa/company-selected-platform-router.test.mjs
           node --test qa/company-minimum-design-contract.test.mjs
           node --test qa/company-upper-platform-admission.test.mjs
+          node --test qa/company-unity-web-gameplay-validation.test.mjs
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
