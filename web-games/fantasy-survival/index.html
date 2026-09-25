@@ -2705,6 +2705,45 @@ function performEnemyBasicAttack(e,targetP,now){
  if(e.type.flame&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*2,false);applyEnemyEffectTarget(e,targetP,'burn',4000);return}
  enemyDamageTarget(e,e.type.dmg,false)
 }
+function performMonsterVsMonsterAttack(e,target,now,damageMult=1){
+  markEnemyAttack(e,now);
+  const hit=(amount)=>damageMonster(target,amount*damageMult,e,now);
+  const stun=(ms)=>{target.stunnedUntil=Math.max(target.stunnedUntil||0,now+ms)};
+  if(e.type.id==='lakecroc'){
+    if(Math.random()<.30){
+      target.x=e.x+(e.faceX||1)*(e.type.r+target.type.r+10);
+      target.y=e.y+(e.faceY||0)*(e.type.r+target.type.r+10);
+      hit(70);stun(2000);showNotice('악어 · 몬스터 끌고 뒤집기');
+      return
+    }
+    hit(e.type.dmg);return
+  }
+  if(e.type.id==='giantleech'){
+    hit(44);e.hp=Math.min(e.maxHp,e.hp+44);return
+  }
+  if(e.type.id==='gorilla'){
+    if(Math.random()<.30){hit(20);hit(30);hit(30);stun(3000);showNotice('고릴라 · 몬스터 잡아치기');return}
+    hit(50);return
+  }
+  if(e.type.id==='anaconda'){
+    if(Math.random()<.30){for(let i=0;i<8&&target.hp>0;i++)hit(7);stun(4000);showNotice('아나콘다 · 몬스터 감싸기');return}
+    hit(65);return
+  }
+  if(e.type.id==='polarbear'){
+    if(Math.random()<.30){hit(30);stun(2000);showNotice('북극곰 · 몬스터 가르기');return}
+    hit(50);return
+  }
+  if(e.type.id==='shark'&&Math.random()<.30){
+    hit(30);if(target.hp>0)hit(40);if(target.hp>0)hit(30);showNotice('상어 · 몬스터 3연타');return
+  }
+  if(e.type.flame&&Math.random()<.30){
+    hit(e.type.dmg*2);showNotice(e.type.name+' · 몬스터 화염 특수공격');return
+  }
+  if(enemyCanUseCommonSpecial(e)&&Math.random()<.30){
+    hit(e.type.dmg*1.5);showNotice(e.type.name+' · 몬스터 특수 공격 강타');return
+  }
+  hit(e.type.dmg)
+}
 function chaseMonster(e,target,now,speedMult=1,damageMult=1){
   if(!target||target.hp<=0)return null;
   const d=dist(e.x,e.y,target.x,target.y),meleeRange=e.type.r+target.type.r+8;
@@ -2713,12 +2752,7 @@ function chaseMonster(e,target,now,speedMult=1,damageMult=1){
     vx=(target.x-e.x)/(d||1)*e.type.speed*speedMult;
     vy=(target.y-e.y)/(d||1)*e.type.speed*speedMult
   }
-  if(d<=meleeRange&&enemyAttackReady(e,now,900)){
-    markEnemyAttack(e,now);
-    const special=enemyCanUseCommonSpecial(e)&&Math.random()<.30;
-    damageMonster(target,e.type.dmg*damageMult*(special?1.5:1),e,now);
-    if(e.type.leechLife)e.hp=Math.min(e.maxHp,e.hp+44)
-  }
+  if(d<=meleeRange&&enemyAttackReady(e,now,900))performMonsterVsMonsterAttack(e,target,now,damageMult);
   return{vx,vy}
 }
 function crocodileMonsterTarget(e){
