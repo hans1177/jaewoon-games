@@ -1891,6 +1891,9 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
     if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
       candidate=bindSharedBuildUpDirective(item,activeCanonical.buildUpDirective);
+      if(!currentId){
+        candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
+      }
       rebound+=1;changed+=1;
       freshness='RECONCILED_TO_ACTIVE_GENERATION';
     }else if(!currentId){
