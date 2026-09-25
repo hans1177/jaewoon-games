@@ -518,10 +518,13 @@ jobs:
                   authority:'roblox-internal-qa-external-real-server-observation-deferred',
                   verifiedAt:stamp,
                 };
-                item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                item.canonicalState='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+                item.robloxInternalReleaseReady=true;
+                item.robloxInternalReleasePublished=true;
+                item.robloxF9PendingInParallel=true;
+                item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.robloxFailureStage='PUBLIC_RELEASE_RUNTIME_OBSERVATION';
+                item.robloxFailureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
                 item.routingBlockers=[];
                 if(item.executionEvidence){
                   item.executionEvidence.runtimePassed=false;
@@ -776,10 +779,13 @@ jobs:
                     authority:'roblox-internal-flow-runtime-finding-external-release-only',
                     verifiedAt:stamp,
                   };
-                  item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                  item.canonicalState='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                  item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
-                  item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+                  item.robloxInternalReleaseReady=true;
+                  item.robloxInternalReleasePublished=true;
+                  item.robloxF9PendingInParallel=true;
+                  item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                  item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                  item.robloxFailureStage='PUBLIC_RELEASE_RUNTIME_FINDING';
+                  item.robloxFailureSignature=runtimeSignature;
                   item.routingBlockers=[];
                   item.robloxPromotionBlockers=[...new Set([
                     ...(Array.isArray(item.robloxPromotionBlockers)?item.robloxPromotionBlockers:[]),

@@ -3661,7 +3661,9 @@
         "exactPrivateRuntimeFailuresBlockInternalFlow": false,
         "exactPrivateRuntimeFailuresBlockExternalPublicRelease": true,
         "internalContinuationUsesSeparateTruthPreservingFlags": true,
-        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_RUNTIME_FINDINGS_REMAIN_EXTERNAL_PUBLIC_RELEASE_BLOCKERS",
+        "f9ReviewRunsInParallelWithInternalPlaytestWhenOnlyExternalPublicReleaseIsBlocked": true,
+        "f9PendingMayNotPauseInternalDevelopmentOrInternalPlaytest": true,
+        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_INTERNAL_RELEASE_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_F9_AND_RUNTIME_REPAIR_CONTINUE; BLOCK_EXTERNAL_PUBLIC_RELEASE_ONLY",
         "robloxPlayerAutomationForbidden": true,
         "publishedPlaceDirectStudioAutomationForbidden": true
       }

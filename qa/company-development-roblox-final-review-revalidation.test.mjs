@@ -105,6 +105,18 @@ test('F9 accepts truth-preserving exact runtime failure continuation for interna
   assert.match(workflow,/item\.robloxPublicReleaseReady=false/);
 });
 
+test('F9 runs in parallel and cannot pause internal playtest under an external-only runtime blocker',()=>{
+  assert.match(workflow,/const parallelF9Pending=item\.robloxF9PendingInParallel===true/);
+  assert.match(workflow,/if\(!legacyF9Pending&&!parallelF9Pending\)continue/);
+  assert.match(workflow,/const internalFlowNonBlocking=/);
+  assert.match(workflow,/item\.robloxF9PendingInParallel=internalFlowNonBlocking/);
+  assert.match(workflow,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
+  assert.match(workflow,/item\.robloxF9FailureSignature=f9FailureSignature/);
+  assert.match(workflow,/item\.robloxF9PendingInParallel=false/);
+  assert.match(workflow,/PUBLIC_RELEASE_RUNTIME_FINDING/);
+  assert.match(workflow,/PUBLIC_RELEASE_RUNTIME_OBSERVATION/);
+});
+
 test('F9 promotion stops at internal release and cannot self-approve external public readiness',()=>{
   assert.match(workflow,/const publicRuntimeAcceptance=false; \/\/ Internal F9 cannot satisfy the external public hard gate\./);
   assert.match(workflow,/item\.robloxPublicReleaseReady=false;/);

@@ -3391,6 +3391,8 @@
         "exactPrivateRuntimeFailureInternalFlowBlocking": false,
         "exactPrivateRuntimeFailureExternalPublicReleaseBlocking": true,
         "truthPreservingInternalContinuationFlagsRequired": true,
+        "f9ParallelWithInternalPlaytestUnderExternalOnlyBlocker": true,
+        "internalPlaytestMayNotWaitForF9RunnerCapacity": true,
         "sameGameIndependentDevelopmentContinues": true,
         "playerAutomation": false,
         "publishedPlaceDirectStudioAutomation": false

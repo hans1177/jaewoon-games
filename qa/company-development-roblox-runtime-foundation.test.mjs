@@ -357,6 +357,10 @@ test('exact private Roblox runtime failures continue internal flow but remain ex
  assert.match(workflow,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
  assert.match(workflow,/ROBLOX_INTERNAL_FLOW_CONTINUES_RUNTIME_FINDING_EXTERNAL_ONLY=/);
  assert.match(workflow,/item\.robloxRuntimePassed=false/);
+ assert.match(workflow,/item\.robloxInternalReleaseReady=true/);
+ assert.match(workflow,/item\.robloxF9PendingInParallel=true/);
+ assert.match(workflow,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
+ assert.match(workflow,/item\.robloxFailureStage='PUBLIC_RELEASE_RUNTIME_FINDING'/);
 });
 
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{

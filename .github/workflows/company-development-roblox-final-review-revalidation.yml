@@ -96,7 +96,9 @@ jobs:
 
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(item.currentStep!=='ROBLOX_FINAL_REVIEW_REVALIDATION'||item.robloxFailureSignature!=='ROBLOX_FINAL_REVIEW_PENDING')continue;
+            const legacyF9Pending=item.currentStep==='ROBLOX_FINAL_REVIEW_REVALIDATION'&&item.robloxFailureSignature==='ROBLOX_FINAL_REVIEW_PENDING';
+            const parallelF9Pending=item.robloxF9PendingInParallel===true;
+            if(!legacyF9Pending&&!parallelF9Pending)continue;
             const candidate=item.robloxRuntimeCandidateEvidence||{};
             const runtime=item.robloxRuntimeFoundationEvidence||{};
             const post=item.robloxPostRuntimeQaEvidence||{};
@@ -197,16 +199,38 @@ jobs:
               &&studioAssetRuntimeBindingExact===true;
             const tickets=currentBlockingTickets.get(item.gameId)||[];
             if(!exact||tickets.length){
+              const f9FailureSignature=!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE';
+              const f9Blocker=!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure';
+              const internalFlowNonBlocking=
+                item.robloxRuntimeFailureExternalReleaseOnly===true
+                ||item.robloxRuntimeFoundationInternalReleaseException===true
+                ||item.robloxInternalReleaseReady===true;
               item.robloxFinalReviewPassed=false;
-              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
-              item.robloxFailureSignature=!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE';
-              item.routingBlockers=[!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure'];
+              item.robloxF9PendingInParallel=internalFlowNonBlocking;
+              item.robloxF9FailureSignature=f9FailureSignature;
+              item.robloxF9Blockers=[f9Blocker];
+              if(internalFlowNonBlocking){
+                item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.robloxFailureStage=item.robloxRuntimeFailureExternalReleaseOnly===true
+                  ?'PUBLIC_RELEASE_RUNTIME_FINDING'
+                  :'PUBLIC_RELEASE_RUNTIME_OBSERVATION';
+                item.robloxFailureSignature=String(item.robloxPublicReleaseFailureSignature||f9FailureSignature);
+                item.routingBlockers=[];
+              }else{
+                item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                item.robloxFailureSignature=f9FailureSignature;
+                item.routingBlockers=[f9Blocker];
+              }
               item.updatedAt=stamp;blocked++;
               continue;
             }
 
             item.robloxFinalReviewPassed=true;
             item.robloxFinalReviewPassedAt=stamp;
+            item.robloxF9PendingInParallel=false;
+            item.robloxF9FailureSignature=null;
+            item.robloxF9Blockers=[];
             item.robloxF9ReleaseRegressionPassed=true;
             item.robloxF9ReleaseRegressionEvidence={
               version:1,
@@ -300,8 +324,12 @@ jobs:
             item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
             item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
             item.robloxLastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
-            item.robloxFailureStage=null;
-            item.robloxFailureSignature=null;
+            item.robloxFailureStage=item.robloxRuntimeFailureExternalReleaseOnly===true
+              ?'PUBLIC_RELEASE_RUNTIME_FINDING'
+              :item.robloxPublicReleaseRuntimeObservationPending===true
+                ?'PUBLIC_RELEASE_RUNTIME_OBSERVATION'
+                :null;
+            item.robloxFailureSignature=String(item.robloxPublicReleaseFailureSignature||'').trim()||null;
             item.routingBlockers=[];
             if(item.executionEvidence){
               item.executionEvidence.lastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
