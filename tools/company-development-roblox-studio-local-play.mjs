@@ -979,7 +979,32 @@ async function main(){
       settingState:clean(a['setting-state']),
       settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1)
     });
+    const checkpointSummary=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
+      .map(row=>clean(row?.id)+':'+(row?.pass===true?'PASS':'FAIL'))
+      .filter(Boolean)
+      .join(',');
+    const failedCheckpoints=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
+      .filter(row=>row?.required!==false&&row?.pass!==true)
+      .map(row=>clean(row?.id))
+      .filter(Boolean);
+    const actionSummary=(Array.isArray(result?.actions)?result.actions:[])
+      .map(row=>clean(row?.id)+':'+(row?.ok===true?'PASS':'FAIL'))
+      .filter(Boolean)
+      .join(',');
+    console.log('ROBLOX_STUDIO_MCP_CHECKPOINTS='+(checkpointSummary||'NONE'));
+    console.log('ROBLOX_STUDIO_MCP_ACTIONS='+(actionSummary||'NONE'));
+    console.log('ROBLOX_STUDIO_MCP_VIEWPORT_BEFORE_FRAMES='+Number(result?.metrics?.beforeFrameCount||0));
+    console.log('ROBLOX_STUDIO_MCP_VIEWPORT_AFTER_FRAMES='+Number(result?.metrics?.afterFrameCount||0));
+    console.log('ROBLOX_STUDIO_MCP_VIEWPORT_CHANGED='+(result?.metrics?.distinctFrameChange===true?'YES':'NO'));
+    console.log('ROBLOX_STUDIO_MCP_CONSOLE_ERROR_COUNT='+Number(result?.metrics?.consoleErrorCount||0));
     console.log('ROBLOX_STUDIO_MCP_RUNTIME='+(result.runtimeVerified?'PASS':'FAIL'));
+    if(!result.runtimeVerified){
+      throw new Error(
+        'ROBLOX_STUDIO_MCP_RUNTIME_NOT_VERIFIED:failed='
+        +(failedCheckpoints.join(',')||'NONE')
+        +':errors='+Number(Array.isArray(result?.errors)?result.errors.length:0)
+      );
+    }
     return;
   }
   if(mode==='persist'){
