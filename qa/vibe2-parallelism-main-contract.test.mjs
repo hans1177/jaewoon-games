@@ -41,3 +41,28 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
 });
+
+test('reserve scheduling is lane-isolated and stale scheduler concurrency uses the current epoch',()=>{
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const reserve=architecture.neuralWorkGraphTopology?.currentWaveExecution?.reserveConcurrency||{};
+  const bottleneck=roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.bottleneckPolicy||{};
+
+  assert.equal(bottleneck.laneSpecificBackpressurePreferred,true);
+  assert.equal(bottleneck.globalCollapseForSingleLaneFailureForbidden,true);
+  assert.equal(reserve.mode,'LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE');
+  assert.equal(reserve.crossLaneGlobalReserveLock,false);
+  assert.equal(reserve.sameLaneReserveSerialization,true);
+  assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5');
+  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v2');
+
+  assert.match(core,/format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.doesNotMatch(core,/['"]vibe2-control-state-vibe2-unreal-core['"]/);
+  assert.match(core,/for state_attempt in 1 2 3 4 5/);
+  assert.match(core,/git fetch origin vibe2-unreal-core --quiet/);
+  assert.match(core,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(core,/git push origin HEAD:vibe2-unreal-core/);
+
+  assert.match(runner,/group: vibe2-24h-cycle-singleton-v2/);
+  assert.doesNotMatch(runner,/group: vibe2-24h-cycle-singleton\n/);
+});
+
