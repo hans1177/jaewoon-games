@@ -592,9 +592,38 @@ test('Studio MCP setting diagnostic distinguishes disabled, missing, unknown, an
   }
 });
 
+test('Studio MCP setting diagnostic recognizes safe schema variants without mutating AssistantSettings',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-mcp-schema-'));
+  try{
+    const files=[
+      ['camel.json',{assistant:{mcpServerEnabled:true}}],
+      ['nested.json',{assistant:{studioMcpServer:{enabled:{value:false}}}}],
+      ['value.json',{assistant:{'mcp-server':{value:true}}}],
+      ['unrelated.json',{assistant:{mcpModelEnabled:false},studio:{serverEnabled:false}}]
+    ];
+    for(const [name,value] of files)fs.writeFileSync(path.join(root,name),JSON.stringify(value));
+    const result=detectStudioMcpAssistantSetting({settingsRoot:root});
+    assert.equal(result.version,2);
+    assert.equal(result.state,'YES');
+    assert.equal(result.enabledCount,2);
+    assert.equal(result.disabledCount,1);
+    assert.equal(result.candidatePathCount,3);
+    assert.deepEqual(result.candidatePaths,[
+      'assistant.mcpServerEnabled',
+      'assistant.mcp-server.value',
+      'assistant.studioMcpServer.enabled.value'
+    ].sort());
+    assert.equal(result.mutationPerformed,false);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
 test('Studio MCP setting diagnostic CLI is part of the helper contract',()=>{
   assert.match(helper,/mode==='diagnose-setting'/);
   assert.match(helper,/detectStudioMcpAssistantSetting/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO/);
-  assert.match(helper,/collectMcpServerEnabledValues/);
+  assert.match(helper,/collectMcpServerEnabledSignals/);
+  assert.match(helper,/candidatePathCount/);
+  assert.match(helper,/candidatePaths/);
 });

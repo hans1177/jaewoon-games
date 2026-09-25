@@ -50,18 +50,39 @@ function collectAssistantSettingJsonFiles(root){
   return files.sort();
 }
 
-function collectMcpServerEnabledValues(value,out=[]){
+function normalizeSettingPath(parts=[]){
+  return parts.map(part=>clean(part).toLowerCase().replace(/[^a-z0-9]/g,'')).filter(Boolean);
+}
+
+function isStudioMcpEnableBooleanPath(parts=[]){
+  const normalized=normalizeSettingPath(parts);
+  if(!normalized.length)return false;
+  const joined=normalized.join('.');
+  const hasMcp=joined.includes('mcp');
+  const hasServerOrStudio=joined.includes('server')||joined.includes('studio');
+  if(!hasMcp||!hasServerOrStudio)return false;
+  const hasEnableSemantic=joined.includes('enable')||joined.includes('enabled')||joined.includes('active');
+  if(hasEnableSemantic)return true;
+  const leaf=normalized.at(-1)||'';
+  const parent=normalized.at(-2)||'';
+  return leaf==='value'&&(parent.includes('mcpserver')||parent.includes('studiomcp')||parent==='mcpserver');
+}
+
+function collectMcpServerEnabledSignals(value,pathParts=[],out=[]){
   if(value==null)return out;
   if(Array.isArray(value)){
-    for(const row of value)collectMcpServerEnabledValues(row,out);
+    value.forEach((row,index)=>collectMcpServerEnabledSignals(row,[...pathParts,String(index)],out));
     return out;
   }
-  if(typeof value!=='object')return out;
-  if(Object.prototype.hasOwnProperty.call(value,'mcp-server')){
-    const server=value['mcp-server'];
-    if(server&&typeof server==='object'&&typeof server.enabled==='boolean')out.push(server.enabled);
+  if(typeof value!=='object'){
+    if(typeof value==='boolean'&&isStudioMcpEnableBooleanPath(pathParts)){
+      out.push({enabled:value,path:pathParts.join('.')});
+    }
+    return out;
   }
-  for(const child of Object.values(value))collectMcpServerEnabledValues(child,out);
+  for(const [key,child] of Object.entries(value)){
+    collectMcpServerEnabledSignals(child,[...pathParts,key],out);
+  }
   return out;
 }
 
@@ -69,12 +90,14 @@ export function detectStudioMcpAssistantSetting({settingsRoot=''}={}){
   const root=clean(settingsRoot);
   const files=collectAssistantSettingJsonFiles(root);
   let enabledCount=0,disabledCount=0,parseErrorCount=0;
+  const candidatePaths=new Set();
   for(const file of files){
     try{
       const parsed=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
-      for(const enabled of collectMcpServerEnabledValues(parsed,[])){
-        if(enabled===true)enabledCount++;
-        else if(enabled===false)disabledCount++;
+      for(const signal of collectMcpServerEnabledSignals(parsed,[],[])){
+        candidatePaths.add(clean(signal.path));
+        if(signal.enabled===true)enabledCount++;
+        else if(signal.enabled===false)disabledCount++;
       }
     }catch{
       parseErrorCount++;
@@ -85,12 +108,14 @@ export function detectStudioMcpAssistantSetting({settingsRoot=''}={}){
     :disabledCount>0?'NO'
     :'UNKNOWN';
   return{
-    version:1,
+    version:2,
     state,
     fileCount:files.length,
     enabledCount,
     disabledCount,
     parseErrorCount,
+    candidatePathCount:candidatePaths.size,
+    candidatePaths:[...candidatePaths].filter(Boolean).sort().slice(0,32),
     mutationPerformed:false
   };
 }
