@@ -1419,6 +1419,7 @@ jobs:
                 `shared-context-policy:${clean(c?.hashes?.policySha256)}`,
                 `shared-context-log-map:${clean(c?.hashes?.logMapSha256)}`,
                 `shared-context-architecture:${clean(c?.hashes?.architectureSha256)}`,
+                `shared-context-security:${clean(c?.hashes?.securityPolicySha256)}`,
                 'shared-context-sync:PASS'
               ];
             })():['shared-context-sync:MISSING']),
