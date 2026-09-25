@@ -9,6 +9,8 @@ test('Roblox title is English plus Korean and never Korean-only',()=>{
     robloxTitleKorean:'[섬 정복] 포근섬'
   }});
   assert.equal(r.displayName,'[ISLAND CONQUEST] Cozy Island | [섬 정복] 포근섬');
+  assert.equal(r.english,'[ISLAND CONQUEST] Cozy Island');
+  assert.equal(r.korean,'[섬 정복] 포근섬');
   assert.equal(r.verifiedBilingual,true);
 });
 
@@ -34,10 +36,15 @@ test('creative spec requires actual gameplay and forbids shared generic placehol
 
 test('thumbnail compositor produces 16:9 thumbnail and square icon from gameplay frames only',()=>{
   const src=fs.readFileSync('tools/company-roblox-thumbnail-compose.py','utf8');
-  assert.match(src,/NO_VALID_GAMEPLAY_FRAMES/);
+  assert.match(src,/INSUFFICIENT_DISTINCT_GAMEPLAY_FRAMES/);
+  assert.match(src,/select_frames\(frames,3\)/);
+  assert.match(src,/homepage-thumbnail-\{i\}/);
+  assert.match(src,/"homepageThumbnailCandidateCount":len\(thumbnails\)/);
   assert.match(src,/ImageOps\.fit\(im\.convert\("RGB"\),\(1920,1080\)/);
   assert.match(src,/ImageOps\.fit\(im\.convert\("RGB"\),\(512,512\)/);
   assert.match(src,/"actualGameplayFrameSource":True/);
+  assert.match(src,/"distinctGameplayFramesRequired":True/);
   assert.match(src,/"sharedPlaceholderUsed":False/);
   assert.match(src,/"misleadingSyntheticGameplayAdded":False/);
+  assert.match(src,/"benchmark":"ROBLOX_CLICK_INTENT_STRUCTURE_NO_COPYING"/);
 });
