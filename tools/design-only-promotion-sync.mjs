@@ -18,12 +18,28 @@ const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
   'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
   'webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault','webSourcePath','webFirstGatePassed',
   'webSecondGateRequired','webPlatformHandoff','unityWebFirstStagePassed','vibeWebImplementationRequired',
-  'vibeWebRequestedStage','vibeWebImplementationReason','postPromotionArtbookRequired','postWebArtbookRequired'
+  'vibeWebRequestedStage','vibeWebImplementationReason','postPromotionArtbookRequired','postWebArtbookRequired',
+  'newFeatureExpansionFrozen'
 ]);
 const removeLegacyWebAdmissionFields=target=>{
   if(!target||typeof target!=='object')return target;
   for(const key of LEGACY_WEB_ADMISSION_KEYS)delete target[key];
   return target;
+};
+const LEGACY_QUEUE_ROOT_KEYS=Object.freeze([
+  'webValidationPolicy','webValidationContractVersion','webGateRequired','webValidationParallelism',
+  'robloxSourceParallelism','robloxTechnicalParallelism','webValidationEvidenceSchemaMinimum',
+  'webPromotionRevalidationRequired'
+]);
+const clearLegacyQueueCaps=queue=>{
+  if(!queue||typeof queue!=='object')return queue;
+  for(const key of LEGACY_QUEUE_ROOT_KEYS)delete queue[key];
+  if(queue.ownerPrimaryDevelopment&&typeof queue.ownerPrimaryDevelopment==='object')delete queue.ownerPrimaryDevelopment.maxConcurrentPrimary;
+  if(queue.fastLaunch&&typeof queue.fastLaunch==='object')delete queue.fastLaunch.newFeatureExpansionFrozen;
+  queue.internalConcurrencyCap=null;
+  queue.externalCapacityOnlyBoundary=true;
+  queue.automaticFeatureExpansionFreezeForbidden=true;
+  return queue;
 };
 
 
@@ -289,10 +305,12 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   portfolio.updatedAt=stamp;
   catalog.updatedAt=stamp;
   queue.updatedAt=stamp;
-  delete queue.webValidationPolicy;
   queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
   queue.developmentGameWipMax=null;
-  for(const item of queue.items||[])if(clean(item?.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED')removeLegacyWebAdmissionFields(item);
+  for(const game of catalog.games||[])removeLegacyWebAdmissionFields(game);
+  for(const item of queue.items||[])removeLegacyWebAdmissionFields(item);
+  clearLegacyQueueCaps(queue);
+  if(catalog.normalization&&typeof catalog.normalization==='object')catalog.normalization.automaticFeatureExpansionFreezeForbidden=true;
 
   writeJson(seedPath,state);
   writeJson(portfolioPath,portfolio);

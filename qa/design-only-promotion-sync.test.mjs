@@ -218,3 +218,47 @@ test('preservation presentation metadata remains inside the same direct-native q
   assert.equal(item.ownerPreservationPresentationUpgrade,true);
   assert.equal(item.presentationFirstPass,'ASSET_ADAPTATION');
 });
+
+
+test('promotion runtime writer purges legacy feature freezes and internal queue caps before persistence',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-legacy-runtime-cleanup-'));
+  try{
+    base(root);
+    write(root,'game-seed-state.json',{version:1,seeds:[{
+      seedId:'SL',gameId:'legacy-runtime',gameName:'Legacy Runtime',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',GAME_CATEGORY:'CASUAL',INITIAL_TARGET_PLATFORM:'ROBLOX'
+    }]});
+    writeMinimumDesign(root,'legacy-runtime');
+    write(root,'game-catalog.json',{version:1,normalization:{},games:[{
+      id:'legacy-runtime',name:'Legacy Runtime',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',newFeatureExpansionFrozen:true
+    }]});
+    write(root,'development-queue.json',{
+      version:1,
+      webValidationPolicy:'LEGACY',webValidationContractVersion:4,webGateRequired:true,webValidationParallelism:20,
+      robloxSourceParallelism:6,robloxTechnicalParallelism:6,webValidationEvidenceSchemaMinimum:15,
+      webPromotionRevalidationRequired:true,
+      ownerPrimaryDevelopment:{maxConcurrentPrimary:3},
+      fastLaunch:{newFeatureExpansionFrozen:true},
+      items:[{
+        gameId:'legacy-runtime',productionClass:'DEVELOPMENT_CONFIRMED',
+        newFeatureExpansionFrozen:true
+      }]
+    });
+
+    promoteReadyDesignSeeds({root});
+    const catalog=read(root,'game-catalog.json');
+    const queue=read(root,'development-queue.json');
+    assert.equal(Object.hasOwn(catalog.games[0],'newFeatureExpansionFrozen'),false);
+    assert.equal(catalog.normalization.automaticFeatureExpansionFreezeForbidden,true);
+    assert.equal(Object.hasOwn(queue.items[0],'newFeatureExpansionFrozen'),false);
+    for(const key of ['webValidationPolicy','webValidationContractVersion','webGateRequired','webValidationParallelism','robloxSourceParallelism','robloxTechnicalParallelism','webValidationEvidenceSchemaMinimum','webPromotionRevalidationRequired']){
+      assert.equal(Object.hasOwn(queue,key),false,key);
+    }
+    assert.equal(Object.hasOwn(queue.ownerPrimaryDevelopment,'maxConcurrentPrimary'),false);
+    assert.equal(Object.hasOwn(queue.fastLaunch,'newFeatureExpansionFrozen'),false);
+    assert.equal(queue.internalConcurrencyCap,null);
+    assert.equal(queue.externalCapacityOnlyBoundary,true);
+    assert.equal(queue.automaticFeatureExpansionFreezeForbidden,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
