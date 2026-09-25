@@ -1,5 +1,5 @@
 {
-  "version": 189,
+  "version": 190,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3107,7 +3107,7 @@
     "unityWebValidationSurface": {
       "enabled": true,
       "releasePlatform": false,
-      "nativeGateAuthority": false,
+      "nativeGateAuthority": true,
       "canonicalSource": "unity-games/<gameId>/",
       "outputRoot": "web-games/<gameId>/",
       "dispatchOwner": ".github/workflows/unity-web-first-stage-build.yml",
@@ -3124,20 +3124,24 @@
       "nestedBuildDirectoryMustBeTracked": true,
       "cloudflareSingleAssetMaxBytes": 26214400,
       "nativeFanOutPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebNativeFanOut",
-      "nativeFanOutTrigger": "VERIFIED_UNITY_WEB_VALIDATION",
+      "nativeFanOutTrigger": "UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN",
       "nativeFanOutTargets": [
         "ROBLOX",
         "UNITY"
       ],
       "nativeFanOutWorkflow": ".github/workflows/company-development-confirmed-runtime.yml",
       "nativeFanOutExactGameOnly": true,
-      "nativeFanOutLoopGuardInput": "trigger_source=UNITY_WEB_VERIFIED",
-      "nativeFanOutDoesNotCreateAdmissionAuthority": true,
+      "nativeFanOutLoopGuardInput": null,
+      "nativeFanOutDoesNotCreateAdmissionAuthority": false,
       "nativeFanOutDoesNotReplaceNativeEvidence": true,
-      "role": "COMPATIBILITY_ALIAS_TO_UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP",
+      "role": "COMPATIBILITY_ALIAS_TO_UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
       "compatibilityAliasFor": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
       "deploymentAuthority": false,
-      "developmentLoopAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane"
+      "developmentLoopAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "developmentAdmissionAuthority": true,
+      "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+      "newUpperPlatformEntryBlocking": true,
+      "existingNativeDevelopmentGrandfathered": true
     },
     "admissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "strictDesignScoreAdmissionAuthority": false,
@@ -3188,10 +3192,12 @@
       "retryLimit": null,
       "currentExecutor": ".github/workflows/unity-web-first-stage-build.yml",
       "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml",
-      "implementationState": "ARCHITECTURE_BOUND_EXECUTOR_UPGRADE_NEXT",
+      "implementationState": "ACTIVE_EXECUTOR_BOUND",
       "readinessFailNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
       "readinessPassNextAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
-      "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate"
+      "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
+      "newUpperPlatformEntryBlocking": true,
+      "existingNativeDevelopmentGrandfathered": true
     },
     "upperPlatformTargets": [
       "ROBLOX",
@@ -3718,7 +3724,7 @@
       "existingNativeDevelopmentGrandfathered": true
     }
   },
-  "updatedAt": "2026-09-25T23:24:00+09:00",
+  "updatedAt": "2026-09-26T00:49:00+09:00",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
