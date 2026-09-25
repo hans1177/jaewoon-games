@@ -429,6 +429,11 @@ jobs:
               blockers:result.blockers,
             }));
             if(result.exactGame===true&&result.exactPlace===true&&result.exactVersion!==true){
+              const exactEngineVersionAwaitingRealServerBoot=
+                engineProbe?.engineExecuted===true
+                &&engineProbe?.exactPlace===true
+                &&engineProbe?.exactVersion===true
+                &&engineProbe?.serverBootObserved!==true;
               const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
               item.robloxRuntimeRetryCount=attempts;
               item.robloxRuntimeLastObservationAttemptAt=stamp;
@@ -447,13 +452,26 @@ jobs:
                 exactGame:result.exactGame,
                 exactPlace:result.exactPlace,
                 exactVersion:false,
+                exactEngineVersion:engineProbe?.exactVersion===true,
+                engineExecuted:engineProbe?.engineExecuted===true,
+                serverBootObserved:engineProbe?.serverBootObserved===true,
                 blockers:result.blockers,
                 observedAt:stamp,
-                authority:'stale-runtime-sentinel-observation',
+                authority:exactEngineVersionAwaitingRealServerBoot
+                  ?'exact-engine-version-awaiting-real-server-boot'
+                  :'stale-runtime-sentinel-observation',
               };
-              item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
-              item.routingBlockers=['roblox-runtime-foundation-stale-version'];
-              console.log(`ROBLOX_FOUNDATION_STALE_RUNTIME=${item.gameId}:attempt=${attempts}:staleVersion=${Number(sentinel.placeVersion||0)}:expectedVersion=${Number(candidate.versionNumber)}:retry=UNLIMITED_CAUSAL_REPAIR`);
+              item.robloxFailureSignature=exactEngineVersionAwaitingRealServerBoot
+                ?'ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'
+                :'ROBLOX_RUNTIME_FOUNDATION_PENDING';
+              item.routingBlockers=exactEngineVersionAwaitingRealServerBoot
+                ?['roblox-runtime-foundation-awaiting-real-server-boot']
+                :['roblox-runtime-foundation-stale-version'];
+              if(exactEngineVersionAwaitingRealServerBoot){
+                console.log(`ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinelVersion=${Number(sentinel.placeVersion||0)}:retry=UNLIMITED_OBSERVATION`);
+              }else{
+                console.log(`ROBLOX_FOUNDATION_STALE_RUNTIME=${item.gameId}:attempt=${attempts}:staleVersion=${Number(sentinel.placeVersion||0)}:expectedVersion=${Number(candidate.versionNumber)}:retry=UNLIMITED_CAUSAL_REPAIR`);
+              }
               pending++;
               item.updatedAt=stamp;
               changed=true;
