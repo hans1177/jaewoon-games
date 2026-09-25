@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "gameId": "village-dungeons",
+  "gameName": "마을 던전 RPG",
+  "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+  "coreLoop": [
+    "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+    "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+    "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+    "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+    "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
+  ],
+  "category": "RPG",
+  "multiplayerMode": "SINGLE",
+  "canonicalSourceRoot": "unity-games/village-dungeons",
+  "buildMethod": "UnityWebFloorBuild.BuildWeb",
+  "futureNativeBuildMethod": "UnityWebFloorBuild.Build",
+  "generatorFingerprint": "manual-owner-bootstrap-v1",
+  "designBaseline": "design/village-dungeons/2026-09-19/design-revised.json",
+  "unityPlatformProfile": {
+    "platform": "UNITY",
+    "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+    "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+    "multiplayerRuntime": "single-player app session with local gameplay authority; networking remains disabled until design requires it",
+    "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+    "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+    "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+    "platformContentAdaptation": "Adapt \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.\" and its loop \"마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다. → 5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다. → 한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다. → 포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+    "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+    "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+  },
+  "purpose": "UNITY_WEB_DEVELOPMENT_FLOOR",
+  "developmentFloor": true,
+  "presentationState": "BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP",
+  "upperPlatformReady": false,
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-09-25T16:10:00.000Z"
+}
