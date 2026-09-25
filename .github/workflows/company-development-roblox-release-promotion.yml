@@ -58,6 +58,134 @@ jobs:
           set -euo pipefail
           node --test qa/company-development-roblox-release-promotion.test.mjs qa/vibe3-roblox-platform.test.mjs
 
+      - name: Ensure game-specific private Roblox target
+        id: dedicated_target
+        continue-on-error: true
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {
+            createRobloxDedicatedExperience,
+            configureRobloxExperience,
+            ensureRobloxExperiencePrivate,
+          } from './tools/company-roblox-dedicated-experience.mjs';
+
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const pending=(q.items||[]).find(row=>
+            row.robloxFoundationF0Passed===true
+            &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+            &&row.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
+          );
+          const gameId=requested||String(pending?.gameId||'').trim();
+          const item=(q.items||[]).find(row=>row.gameId===gameId);
+          if(!item)throw new Error('ROBLOX_DEDICATED_TARGET_ITEM_MISSING:'+gameId);
+          const valid=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
+          const current=item.robloxPublicationTarget||{};
+          const dedicated=current.dedicated===true
+            &&current.shared!==true
+            &&valid(current.universeId)
+            &&valid(current.placeId);
+          if(dedicated){
+            console.log('ROBLOX_DEDICATED_TARGET_REUSE='+gameId);
+            process.exit(0);
+          }
+          const created=await createRobloxDedicatedExperience({
+            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            cookie:'',
+          });
+          await configureRobloxExperience({
+            universeId:created.universeId,
+            name:String(item.gameName||gameId),
+            description:'Private internal build for '+String(item.gameName||gameId)+'. Managed by the canonical Roblox development flow.',
+            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            cookie:'',
+          });
+          await ensureRobloxExperiencePrivate({
+            universeId:created.universeId,
+            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            cookie:'',
+          });
+          const result={
+            version:1,
+            gameId,
+            universeId:String(created.universeId),
+            placeId:String(created.placeId),
+            dedicated:true,
+            shared:false,
+            private:true,
+            source:'canonical-dedicated-open-cloud-bootstrap',
+            createdAt:new Date().toISOString(),
+          };
+          fs.writeFileSync('/tmp/roblox-dedicated-target.json',JSON.stringify(result,null,2)+'\n');
+          console.log('ROBLOX_DEDICATED_TARGET_CREATED='+gameId+':'+result.universeId+'/'+result.placeId);
+          NODE
+
+      - name: Persist dedicated private target reservation
+        if: steps.dedicated_target.outcome == 'success'
+        working-directory: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-dedicated-target.json || { echo 'ROBLOX_DEDICATED_TARGET_RESERVATION=REUSE_OR_NONE'; exit 0; }
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const r=JSON.parse(fs.readFileSync('/tmp/roblox-dedicated-target.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===r.gameId);
+          if(!item)throw new Error('dedicated target queue item missing: '+r.gameId);
+          const stamp=new Date().toISOString();
+          item.robloxPublicationTarget={
+            version:3,
+            gameId:r.gameId,
+            universeId:String(r.universeId),
+            placeId:String(r.placeId),
+            verified:false,
+            verifiedAt:null,
+            lastVerifiedAt:null,
+            source:'canonical-dedicated-open-cloud-bootstrap',
+            authority:'roblox-canonical-publication-target',
+            dedicated:true,
+            shared:false,
+            visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+            internalOnly:true,
+            publicDiscoveryAllowed:false,
+            bootstrapState:'CREATED_PRIVATE_UNPUBLISHED',
+            reservedAt:stamp,
+          };
+          item.robloxSharedTargetCurrent=false;
+          item.robloxFastMvpSupersededBy=null;
+          item.updatedAt=stamp;
+          q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          git diff --cached --quiet && exit 0
+          git commit -m 'runtime: reserve dedicated private Roblox target [skip ci]'
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'ROBLOX_DEDICATED_TARGET_RESERVATION=PERSISTED'
+
       - name: Resolve exact canonical release target
         id: target
         working-directory: main
