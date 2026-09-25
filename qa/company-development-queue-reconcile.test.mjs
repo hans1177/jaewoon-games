@@ -312,3 +312,63 @@ test('queue reconcile migrates exact shared Roblox fallback candidate to dedicat
     assert.equal(item.robloxRuntimeCandidateEvidence.versionNumber,22);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('queue reconcile never demotes an already published internal Roblox release for dedicated-target migration',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-internal-release-preserve-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'released-shared',name:'Released Shared',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'released-shared',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    const source=writeDesign(root,'released-shared');
+    const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+    const releaseEvidence={
+      published:true,sourceRevision:revision,artifactIdentity:artifact,
+      versionNumber:31,universeId:'10766974456',placeId:'112507741861842',
+      visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+      authority:'owner-confirmed-internal-release'
+    };
+    write(root,'development-queue.json',{items:[{
+      gameId:'released-shared',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      minimumDesignContract:{pass:true,source},
+      robloxSourceCommit:revision,
+      robloxBuildSourceRevision:revision,
+      robloxBuildArtifactIdentity:artifact,
+      robloxBuildOrPackagePassed:true,
+      robloxBuildPreflightPassed:true,
+      robloxFoundationF0Passed:true,
+      robloxInternalReleasePublished:true,
+      robloxInternalReleaseEvidence:releaseEvidence,
+      robloxPublicationTarget:{
+        version:2,gameId:'released-shared',universeId:'10766974456',placeId:'112507741861842',
+        verified:true,source:'owner-pinned-open-cloud-target',internalOnly:true
+      },
+      robloxRuntimeCandidateEvidence:{
+        published:true,sourceRevision:revision,artifactIdentity:artifact,
+        versionNumber:31,universeId:'10766974456',placeId:'112507741861842'
+      },
+      robloxFailureStage:'ACTUAL_VIBE_INTERNAL_PLAY',
+      robloxFailureSignature:'ROBLOX_INTERNAL_VIBE_PLAY_PENDING',
+      routingBlockers:['roblox-internal-vibe-play-pending']
+    }]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.currentStep,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+    assert.equal(item.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+    assert.equal(item.robloxInternalReleasePublished,true);
+    assert.equal(item.robloxInternalReleaseEvidence.versionNumber,31);
+    assert.equal(item.robloxFailureSignature,'ROBLOX_INTERNAL_VIBE_PLAY_PENDING');
+    assert.deepEqual(item.routingBlockers,['roblox-internal-vibe-play-pending']);
+    assert.equal(item.robloxDedicatedTargetMigration,undefined);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
