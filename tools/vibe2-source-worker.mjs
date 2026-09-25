@@ -1727,6 +1727,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         speculativeFocusedRetryCredit=true;
         console.log(`VIBE2_SPECULATIVE_FOCUSED_RETRY_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}:${failureClass}`);
       }
+      const robloxFullGraphicsRecoveryRetry=!allowFullRewrite
+        &&robloxAssetAdaptationTask
+        &&['ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','TIMEOUT','MALFORMED_OUTPUT','EDIT_MATCH'].includes(failureClass)
+        &&attempt<configuredBaseMaxAttempts;
+      if(robloxFullGraphicsRecoveryRetry)console.log(`VIBE2_ROBLOX_FULL_GRAPHICS_RECOVERY_RETRY=${attempt}->${attempt+1}:${candidateVariant}:${failureClass}`);
       const presentationRecoveryRetry=!allowFullRewrite&&presentationPatchDeltaObserved&&focusedFinalRetryAllowed(error)&&attempt<configuredBaseMaxAttempts;
       let presentationPatchDeltaCreditRetry=false;
       if(!allowFullRewrite&&presentationPatchDeltaObserved&&focusedFinalRetryAllowed(error)&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts&&!presentationPatchDeltaCreditUsed){
@@ -1782,7 +1787,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
