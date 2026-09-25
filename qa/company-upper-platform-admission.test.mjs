@@ -76,7 +76,7 @@ test('Unity source drift invalidates readiness and returns the new game to Unity
 
 test('already-started native games remain grandfathered and are never rewound to Unity Web floor',()=>{
   const item={...baseItem('existing-game'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
-  const result=classifyUpperPlatformAdmission(item,{repoRoot:fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-grandfather-'))});
+  const result=classifyUpperPlatformAdmission(item,{repoRoot:fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-grandfather-')),grandfatherGameIds:['existing-game']});
   assert.equal(result.state,'UPPER_PLATFORM');
   assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
   assert.equal(result.grandfathered,true);
@@ -107,5 +107,31 @@ test('readiness must pass all seven domains and may never gain release authority
     result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
     assert.equal(result.state,'UNITY_WEB_FLOOR');
     assert.equal(result.reason,'READINESS_RELEASE_AUTHORITY_INVALID');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('native-started games outside the explicit grandfather list still enter Unity Web floor or bootstrap',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-non-grandfather-'));
+  try{
+    const item={...baseItem('existing-other'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
+    let result=classifyUpperPlatformAdmission(item,{repoRoot:root,grandfatherGameIds:['cozy-island','daechung-rpg']});
+    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    assert.match(result.reason,/CANONICAL_UNITY_WEB_SOURCE_REQUIRED/);
+
+    write(root,'unity-games/existing-other/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
+    result=classifyUpperPlatformAdmission(item,{repoRoot:root,grandfatherGameIds:['cozy-island','daechung-rpg']});
+    assert.equal(result.state,'UNITY_WEB_FLOOR');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('only the owner-scoped cozy-island and daechung-rpg examples may grandfather native progress',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-owner-scope-'));
+  try{
+    for(const gameId of ['cozy-island','daechung-rpg']){
+      const result=classifyUpperPlatformAdmission({...baseItem(gameId),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'},{repoRoot:root,grandfatherGameIds:['cozy-island','daechung-rpg']});
+      assert.equal(result.state,'UPPER_PLATFORM');
+      assert.equal(result.grandfathered,true);
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
