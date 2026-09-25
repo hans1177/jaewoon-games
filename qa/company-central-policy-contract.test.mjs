@@ -97,14 +97,16 @@ test('DESIGN_ONLY is transient until the minimum dual-platform design contract i
   ]);
   assert.equal(design.readyState,'MINIMUM_DESIGN_READY');
   assert.equal(design.longLivedPromotionGate,false);
-  assert.equal(development.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
+  assert.equal(development.executionMode,'UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM');
   assert.equal(development.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(development.strictDesignScoreRequiredForAdmission,false);
   assert.equal(development.strictDesignReviewRunsInParallel,true);
   assert.deepEqual(development.concurrentTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(development.onePlatformFailureDoesNotCancelOther,true);
-  assert.equal(development.targetPlatformMayRunImmediately,true);
-  for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','TARGETED_REPAIR_AND_REVALIDATION','PUBLIC_RELEASE_READY'])assert.ok(development.requiredFlow.includes(token),token);
+  assert.equal(development.targetPlatformMayRunImmediately,false);
+  assert.equal(development.unityWebDevelopmentMayRunImmediately,true);
+  assert.equal(development.upperPlatformAdmissionAuthority,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT','UNITY_WEBGL_BUILD','UNITY_WEB_ACTUAL_BROWSER_PLAY','UNITY_WEB_INDEPENDENT_QA','UNITY_WEB_REGRESSION','UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','TARGETED_REPAIR_AND_REVALIDATION','PUBLIC_RELEASE_READY'])assert.ok(development.requiredFlow.includes(token),token);
   assert.equal(development.presentationSupport.graphicsRoot,'GRAPHICS_PRODUCTION');
   assert.equal(development.presentationSupport.audioAuthoringOwner,'audio');
   assert.equal(development.presentationSupport.artbookRunsInParallel,true);
@@ -335,7 +337,7 @@ test('Unity and Roblox share the active first development tier while Fortnite UE
   assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
   assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
   assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX']]);
-  assert.equal(strategy.priorityMeaning,'ROBLOX_UNITY_ACTIVE_EQUAL_TIER_UEFN_OWNER_HOLD');
+  assert.equal(strategy.priorityMeaning,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_ACTIVE_EQUAL_UPPER_TIER');
   assert.equal(strategy.designStabilizationScheduling.unityRobloxEqualPriority,true);
   assert.equal(strategy.designStabilizationScheduling.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
