@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-25T05:45:13.378Z",
+  "updatedAt": "2026-09-25T05:52:35.050Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -316,8 +316,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T07:13:17.730Z",
-      "updatedAt": "2026-09-25T05:45:13.377Z",
-      "occurrenceCount": 46
+      "updatedAt": "2026-09-25T05:52:35.048Z",
+      "occurrenceCount": 47
     },
     {
       "id": "bug-ea186d71ff8c7f6300a7",
@@ -383,6 +383,69 @@
       "createdAt": "2026-09-24T09:30:30.062Z",
       "updatedAt": "2026-09-25T02:42:28.148Z",
       "occurrenceCount": 39
+    },
+    {
+      "id": "bug-d9326601c4a0d6f105ea",
+      "gameId": "amusement-tycoon",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "FOUNDATION",
+      "signature": "ROBLOX_RUNTIME_FOUNDATION_UNVERIFIED",
+      "reproduction": "RUN_EXISTING_GAME_TESTER_F0_TO_F4_FOUNDATION_SCENARIO_ON_EXACT_PRIVATE_RUNTIME_CANDIDATE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"gameId\":\"amusement-tycoon\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"ffdac80fb7bc2b967408dec382c74da6b079e3d0\",\"artifactIdentity\":\"sha256:22c1e20d9614f08ca07574d8289f3eb43858aae75ca293123835925bde66a677\",\"artifactRunId\":36099254984,\"universeId\":\"10766974456\",\"placeId\":\"112507741861842\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":15,\"workflowRunId\":36099857855,\"publishedAt\":\"2026-09-25T05:45:27.127Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "route": "GAME_TESTER_FOUNDATION_EXECUTION",
+      "repairEligible": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-25T05:52:35.048Z",
+      "updatedAt": "2026-09-25T05:52:35.048Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-2d9eb45865e17276bf07",
+      "gameId": "bug-defense",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "FOUNDATION",
+      "signature": "ROBLOX_RUNTIME_FOUNDATION_UNVERIFIED",
+      "reproduction": "RUN_EXISTING_GAME_TESTER_F0_TO_F4_FOUNDATION_SCENARIO_ON_EXACT_PRIVATE_RUNTIME_CANDIDATE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"gameId\":\"bug-defense\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"ffdac80fb7bc2b967408dec382c74da6b079e3d0\",\"artifactIdentity\":\"sha256:c1a1d044c752a92bd1e3e677f412fdf1d27a8281f5893094b7e093bbebd5b41e\",\"artifactRunId\":36099254984,\"universeId\":\"10766974456\",\"placeId\":\"112507741861842\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":16,\"workflowRunId\":36100306186,\"publishedAt\":\"2026-09-25T05:51:32.141Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "route": "GAME_TESTER_FOUNDATION_EXECUTION",
+      "repairEligible": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-25T05:52:35.048Z",
+      "updatedAt": "2026-09-25T05:52:35.048Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-b447353575095cf75c68",
+      "gameId": "line-defense",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "FOUNDATION",
+      "signature": "ROBLOX_RUNTIME_FOUNDATION_UNVERIFIED",
+      "reproduction": "RUN_EXISTING_GAME_TESTER_F0_TO_F4_FOUNDATION_SCENARIO_ON_EXACT_PRIVATE_RUNTIME_CANDIDATE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"gameId\":\"line-defense\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"ffdac80fb7bc2b967408dec382c74da6b079e3d0\",\"artifactIdentity\":\"sha256:e7262abc432abe73556beaf964698092d1bf5260bd9a74e5fdfd82fdf2308482\",\"artifactRunId\":36099254984,\"universeId\":\"10766974456\",\"placeId\":\"112507741861842\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":13,\"workflowRunId\":36099861071,\"publishedAt\":\"2026-09-25T05:45:17.988Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "route": "GAME_TESTER_FOUNDATION_EXECUTION",
+      "repairEligible": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-25T05:52:35.048Z",
+      "updatedAt": "2026-09-25T05:52:35.048Z",
+      "occurrenceCount": 1
     }
   ]
 }
