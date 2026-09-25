@@ -156,6 +156,47 @@ test('Roblox full graphics source worker switches to package recovery after a co
   assert.match(candidate,/enemyBody\.CFrame\s*=/);
 });
 
+test('Roblox full graphics recovery uses the configured fourth attempt after repeated visual-domain failures',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-full-graphics-fourth-attempt'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve full Roblox graphics and native motion without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const weakFiles=[1,2,3].map(n=>path.join(cwd,`weak-${n}.json`));
+  for(const file of weakFiles){
+    write(file,JSON.stringify({edits:[{
+      path:relative,
+      find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+      replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'
+    }]}));
+  }
+  const strong=path.join(cwd,'strong-fourth.json');
+  write(strong,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:robloxFullGraphicsMotionPatch('88,118,154')
+  }]}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[...weakFiles,strong]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/88,118,154/);
+  assert.match(candidate,/RenderStepped/);
+  assert.match(candidate,/weapon\.Orientation\s*=/);
+});
+
 test('Roblox presentation recovery reaches a real visual source delta on the focused retry',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
