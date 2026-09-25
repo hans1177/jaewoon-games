@@ -333,6 +333,7 @@ test('empty official Studio MCP tool inventory is persisted as an explicit one-t
   assert.equal(result.pass,false);
   assert.equal(result.evidence.infrastructureFailure,true);
   assert.equal(result.evidence.studioMcpServerEnablementRequired,true);
+  assert.equal(result.evidence.studioMcpServerEnablementVerificationRequired,false);
   assert.equal(result.evidence.operatorPrerequisite,'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT');
   assert.equal(result.evidence.learningReusable,false);
 });
@@ -354,7 +355,8 @@ test('Studio tool provider timeout stays infrastructure-pending without falsely 
   });
   assert.equal(result.evidence.infrastructureFailure,true);
   assert.equal(result.evidence.studioMcpServerEnablementRequired,false);
-  assert.equal(result.evidence.operatorPrerequisite,null);
+  assert.equal(result.evidence.studioMcpServerEnablementVerificationRequired,true);
+  assert.equal(result.evidence.operatorPrerequisite,'ASSISTANT_MANAGE_MCP_SERVERS_ENABLE_STUDIO_AS_MCP_SERVER');
   assert.equal(result.evidence.failureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
 });
 
