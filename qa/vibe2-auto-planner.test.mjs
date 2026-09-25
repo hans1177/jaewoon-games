@@ -2266,10 +2266,18 @@ test('BUILD_UP depth advances only when the entire shared directive generation v
   assert.equal(new Set(afterMixed.map(row=>row.buildUpDirectiveId)).size,1);
 
   const verified=first.map(row=>({...row,status:'verified'}));
-  const afterVerified=findStudioContinuousImprovementTasks(project,root,{tasks:verified});
+  const effectPending=findStudioContinuousImprovementTasks(project,root,{tasks:verified});
+  assert.equal(effectPending.length,5);
+  assert.equal(effectPending[0].buildUpDirective.developmentDepth,1);
+  assert.equal(effectPending[0].buildUpDirective.escalationMode,'VERIFIED_SOURCE_DELTA_AWAITING_EFFECT');
+  assert.equal(effectPending[0].buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'PARTIAL_EFFECT');
+
+  const projectWithConfirmedEffect={...project,queueRuntimeObserved:true,queueRuntimePassed:true};
+  const afterVerified=findStudioContinuousImprovementTasks(projectWithConfirmedEffect,root,{tasks:verified});
   assert.equal(afterVerified.length,5);
   assert.equal(afterVerified[0].buildUpDirective.developmentDepth,2);
   assert.equal(afterVerified[0].buildUpDirective.escalationMode,'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA');
+  assert.equal(afterVerified[0].buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'EFFECT_CONFIRMED');
   assert.equal(new Set(afterVerified.map(row=>JSON.stringify(row.buildUpDirective))).size,1);
 });
 
@@ -2425,7 +2433,7 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
   const gameId='backlog-build-up';
   for(const [dir,file,body] of [
     [`roblox-games/${gameId}/client`,'Visual.client.luau','local camera = workspace.CurrentCamera\n'],
-    [`roblox-games/${gameId}/server`,'Combat.server.luau','local combat = {}\n'],
+    [`roblox-games/${gameId}/server`,'Combat.server.luau','local Combat = {}\nfunction Combat.resolveAttack(player, enemy) return player ~= nil and enemy ~= nil end\nreturn Combat\n'],
     [`roblox-games/${gameId}/shared`,'Save.luau','local save = {}\n'],
     [`unity-games/${gameId}/Assets/Scripts`,'RuntimeBootstrap.cs','public class RuntimeBootstrap {}\n']
   ]){
@@ -2462,7 +2470,11 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
   assert.equal(rows[1].buildUpGeneration,1);
   assert.deepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
   assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
+  assert.ok(rows.every(row=>row.buildUpDirective.version===2));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-directive-backfill:queued-existing-work')));
+  assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-pre-reserve-binding:CHECKED')));
+  assert.ok(rows.every(row=>(row.evidence||[]).includes('game-specific-build-up-directive:v2')));
+  assert.ok(rows[0].buildUpDirective.responsibleSystemsAndFiles.sourceAnchors.some(row=>row.symbol==='Combat.resolveAttack'));
 });
 
 
@@ -2490,6 +2502,66 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
   assert.equal(task.buildUpGoal,directive.thisLoopPrimaryGoal);
   assert.equal(task.buildUpSourceTree,directive.sourceTreeFingerprint);
   assert.equal(task.nextEscalationRequired,true);
+});
+
+test('queued game work without verified design stays DESIGN_PENDING and cannot claim BUILD_UP',()=>{
+  const root=tempRepo();
+  const gameId='pending-design-build-up';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  const queued={
+    id:`${gameId}-queued-v1`,gameId,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:`roblox-games/${gameId}`,responsibleFiles:[`roblox-games/${gameId}/server/Combat.server.luau`],
+    goal:'existing queued work',releaseState:'development-confirmed',status:'queued'
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:'Pending Design Build Up',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[queued]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.buildUpDirectiveBackfillCount,0);
+  const row=result.queue.tasks[0];
+  assert.equal(row.buildUpDirectiveId,null);
+  assert.ok(row.evidence.includes('build-up-directive:DESIGN_PENDING'));
+  assert.ok(row.evidence.includes('build-up-pre-reserve-binding:CHECKED'));
+  assert.ok(row.evidence.includes('build-up-directive-freshness:DESIGN_PENDING'));
+});
+
+test('stale queued directive rebinds to the active shared generation before reserve',()=>{
+  const root=tempRepo();
+  const gameId='stale-build-up-rebind';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미'});
+  const project={gameId,name:'Stale Build Up Rebind',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(generated?.buildUpDirective);
+  const active={...generated,id:`${gameId}-active`,status:'running',reservationRunId:'run-active'};
+  const staleDirective={...generated.buildUpDirective,directiveId:`${gameId}-old-directive`,generation:0};
+  const stale={
+    ...generated,id:`${gameId}-stale`,status:'queued',goal:'stale queued goal',
+    buildUpDirective:staleDirective,buildUpDirectiveId:staleDirective.directiveId,buildUpGeneration:0
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[active,stale]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.buildUpDirectiveBackfillCount,1);
+  const activeAfter=result.queue.tasks.find(row=>row.id===active.id);
+  const staleAfter=result.queue.tasks.find(row=>row.id===stale.id);
+  assert.equal(activeAfter.buildUpDirectiveId,active.buildUpDirectiveId);
+  assert.equal(activeAfter.goal,active.goal);
+  assert.equal(staleAfter.buildUpDirectiveId,active.buildUpDirectiveId);
+  assert.equal(staleAfter.buildUpGeneration,active.buildUpGeneration);
+  assert.ok(staleAfter.evidence.includes('build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION'));
 });
 
 test('BUILD_UP backlog synchronization never rewrites already running work',()=>{
