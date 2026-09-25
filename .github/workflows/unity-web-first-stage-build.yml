@@ -452,6 +452,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
+          import {createHash} from 'node:crypto';
           import {execFileSync} from 'node:child_process';
           const gameId=process.env.GAME_ID;
           const root='/tmp/unity-web/web-games/'+gameId;
