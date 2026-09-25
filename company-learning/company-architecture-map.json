@@ -3226,6 +3226,14 @@
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true
+    },
+    "unityWebGrandfatherScope": {
+      "grandfatherGameIds": [
+        "cozy-island",
+        "daechung-rpg"
+      ],
+      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
+      "migrationMode": "NO_DEMOTION_OF_RELEASE_STATE_BUT_WEB_FLOOR_REQUIRED_BEFORE_NEW_UPPER_PLATFORM_PROGRESS"
     }
   },
   "releaseExposureLifecycle": {

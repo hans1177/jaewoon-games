@@ -1,0 +1,111 @@
+name: Unity Web Floor Source Bootstrap
+run-name: Unity Web Floor Bootstrap ${{ inputs.game_ids }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      game_ids:
+        description: 'Comma-separated DEVELOPMENT_CONFIRMED game ids that need canonical Unity Web floor source'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: unity-web-floor-source-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify bootstrap contract
+        run: |
+          set -euo pipefail
+          node --check tools/company-unity-web-floor-bootstrap.mjs
+          node --test qa/company-unity-web-floor-bootstrap.test.mjs
+
+      - name: Fetch runtime design authority
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin company-runtime
+          git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
+
+      - name: Generate canonical Unity Web floor sources
+        id: generate
+        env:
+          GAME_IDS: ${{ inputs.game_ids }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          const ids=[...new Set(String(process.env.GAME_IDS||'').split(',').map(x=>x.trim()).filter(Boolean))];
+          if(!ids.length)throw new Error('UNITY_WEB_BOOTSTRAP_IDS_REQUIRED');
+          const forbidden=new Set(['cozy-island','daechung-rpg']);
+          const queue=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const generated=[];
+          for(const gameId of ids){
+            if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_ID_INVALID:'+gameId);
+            if(forbidden.has(gameId))throw new Error('UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN:'+gameId);
+            const item=(queue.items||[]).find(row=>row.gameId===gameId);
+            if(!item)throw new Error('UNITY_WEB_BOOTSTRAP_QUEUE_ITEM_MISSING:'+gameId);
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')throw new Error('UNITY_WEB_BOOTSTRAP_PRODUCTION_CLASS_INVALID:'+gameId);
+            const designSource=String(item.designBaselineSource||item.minimumDesignContract?.source||'').trim();
+            if(!designSource)throw new Error('UNITY_WEB_BOOTSTRAP_DESIGN_SOURCE_MISSING:'+gameId);
+            const local=path.join('/tmp/unity-web-bootstrap-design',gameId,'design-revised.json');
+            fs.mkdirSync(path.dirname(local),{recursive:true});
+            fs.writeFileSync(local,execFileSync('git',['show','origin/company-runtime:'+designSource]));
+            execFileSync(process.execPath,[
+              'tools/company-unity-web-floor-bootstrap.mjs',
+              '--game-id='+gameId,
+              '--game-name='+String(item.gameName||gameId),
+              '--baseline='+local,
+              '--output=unity-games/'+gameId
+            ],{stdio:'inherit'});
+            generated.push(gameId);
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'ids='+generated.join(',')+'\n');
+          console.log('UNITY_WEB_BOOTSTRAP_GENERATED_IDS='+generated.join(','));
+          NODE
+
+      - name: Create bootstrap PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IDS: ${{ steps.generate.outputs.ids }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="unity-web-floor/bootstrap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "jaewoon-unity-web-floor"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -b "$branch"
+          IFS=',' read -ra ids <<< "$IDS"
+          for id in "${ids[@]}"; do
+            [ -n "$id" ] || continue
+            git add "unity-games/$id"
+          done
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'UNITY_WEB_BOOTSTRAP_PR=NO_CHANGE'
+            exit 0
+          fi
+          git commit -m "dev: bootstrap Unity Web floor sources"
+          git push origin HEAD:"$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources for: $IDS. After merge, Company DEVELOPMENT_CONFIRMED Runtime classifies every non-grandfathered game and dispatches the Unity Web floor build individually. Excludes cozy-island and daechung-rpg by contract. Generated sources still require WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
+          echo "UNITY_WEB_BOOTSTRAP_PR=$pr_url"
+          echo 'UNITY_WEB_BOOTSTRAP_DIRECT_MAIN_WRITE=NO'
