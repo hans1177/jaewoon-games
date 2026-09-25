@@ -169,10 +169,20 @@ jobs:
         run: |
           set -euo pipefail
           test -d "$PROJECT_PATH"
-          tree_sha="$(find "$PROJECT_PATH" -type f -not -path '*/Library/*' -not -path '*/Temp/*' -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')"
-          test -n "$tree_sha"
-          echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
-          echo "UNITY_WEB_CANONICAL_SOURCE_TREE_SHA256=$tree_sha"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import crypto from 'node:crypto';
+          const root=process.env.PROJECT_PATH;
+          const files=[];
+          const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,e.name);const rel=path.relative(root,full).replaceAll('\\','/');if(e.isDirectory()){if(rel==='Library'||rel.startsWith('Library/')||rel==='Temp'||rel.startsWith('Temp/'))continue;walk(full);}else if(e.isFile())files.push(rel);}};
+          walk(root);files.sort();
+          const hash=crypto.createHash('sha256');
+          for(const rel of files){hash.update(rel);hash.update('\0');hash.update(fs.readFileSync(path.join(root,rel)));hash.update('\0');}
+          const digest=hash.digest('hex');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'tree_sha='+digest+'\n');
+          console.log('UNITY_WEB_CANONICAL_SOURCE_TREE_SHA256='+digest);
+          NODE
 
       - name: Verify Unity credentials
         shell: bash
