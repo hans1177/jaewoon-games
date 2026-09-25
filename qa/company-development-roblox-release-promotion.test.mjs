@@ -285,13 +285,14 @@ test('private runtime candidate deployment serializes only duplicate work for th
 });
 
 
-test('private runtime candidate mode comes from central policy plus exact F0 evidence',()=>{
+test('private runtime candidate mode and exact evidence obey canonical v362 release policy',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const authority=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateModeAuthority;
-  assert.equal(authority.queueLocalRobloxValidationModeRequired,false);
-  assert.equal(authority.requiredCanonicalMode,'HEADLESS_FAST_MVP');
-  assert.equal(authority.requiredF0EvidenceMode,'HEADLESS_SOURCE_PREFLIGHT_F0');
+  const speed=roadmap.developmentSpeedExecution;
+  assert.equal(roadmap.roblox.validationMode,'HEADLESS_FAST_MVP');
+  assert.equal(speed.immutableArtifactIdentityRequired,true);
+  assert.equal(speed.sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression,true);
+  assert.equal(speed.qualityOrEvidenceGateWeakeningForbidden,true);
   assert.match(candidate,/canonicalRobloxValidationMode=String\(roadmap\?\.roblox\?\.validationMode\|\|''\)/);
   assert.match(candidate,/f0EvidenceMode=String\(item\.robloxFoundationF0Evidence\?\.validationMode\|\|item\.robloxHeadlessFastMvpEvidence\?\.validationMode\|\|''\)/);
   assert.match(candidate,/canonicalRobloxValidationMode==='HEADLESS_FAST_MVP'&&f0EvidenceMode==='HEADLESS_SOURCE_PREFLIGHT_F0'/);
