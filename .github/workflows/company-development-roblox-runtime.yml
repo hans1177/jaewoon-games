@@ -698,14 +698,14 @@ jobs:
           NODE
 
   technical-worker:
-    name: Roblox package ${{ matrix.gameId }}
+    name: Roblox package + preflight + F0 ${{ matrix.gameId }}
     needs: technical-plan
     if: always() && needs.technical-plan.result == 'success' && needs.technical-plan.outputs.count != '0'
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.technical-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
