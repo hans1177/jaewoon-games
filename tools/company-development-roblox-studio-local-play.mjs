@@ -195,24 +195,45 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       historicalExactPublishedArtifact:item?.robloxSharedTargetCurrent!==true
     });
   }
-  if(!requested&&include.length>1){
+  if(!requested){
     const itemByGameId=new Map((queue?.items||[]).map(row=>[clean(row?.gameId),row]));
-    const infrastructurePending=include.filter(row=>{
+    const exactPriorMatches=(row,prior={})=>
+      clean(prior?.sourceRevision)===row.sourceRevision
+      &&clean(prior?.artifactIdentity)===row.artifactIdentity
+      &&Number(prior?.artifactRunId||0)===Number(row.artifactRunId||0)
+      &&String(prior?.universeId||'')===String(row.universeId||'')
+      &&String(prior?.placeId||'')===String(row.placeId||'')
+      &&Number(prior?.versionNumber||0)===Number(row.versionNumber||0);
+    const prerequisiteDeferred=include.filter(row=>{
+      const prior=itemByGameId.get(row.gameId)?.robloxInternalVibePlayEvidence||{};
+      return exactPriorMatches(row,prior)
+        &&prior?.studioMcpServerEnablementRequired===true
+        &&clean(prior?.operatorPrerequisite)==='ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT';
+    });
+    const prerequisiteIds=new Set(prerequisiteDeferred.map(row=>row.gameId));
+    const activeInclude=include.filter(row=>!prerequisiteIds.has(row.gameId));
+    if(prerequisiteDeferred.length){
+      console.log('ROBLOX_STUDIO_MCP_PREREQUISITE_DEFERRED='+prerequisiteDeferred.map(row=>row.gameId).sort().join(','));
+    }
+    if(activeInclude.length<=1){
+      return{
+        include:activeInclude,
+        sharedInfrastructureCanary:false,
+        deferredInfrastructureGameIds:[],
+        deferredPrerequisiteGameIds:prerequisiteDeferred.map(row=>row.gameId).sort()
+      };
+    }
+    const infrastructurePending=activeInclude.filter(row=>{
       const item=itemByGameId.get(row.gameId)||{};
       const prior=item?.robloxInternalVibePlayEvidence||{};
       return item?.robloxFailureSignature==='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING'
         &&prior?.infrastructureFailure===true
         &&prior?.failureClass==='STUDIO_MCP_INFRASTRUCTURE_PENDING'
-        &&clean(prior?.sourceRevision)===row.sourceRevision
-        &&clean(prior?.artifactIdentity)===row.artifactIdentity
-        &&Number(prior?.artifactRunId||0)===Number(row.artifactRunId||0)
-        &&String(prior?.universeId||'')===String(row.universeId||'')
-        &&String(prior?.placeId||'')===String(row.placeId||'')
-        &&Number(prior?.versionNumber||0)===Number(row.versionNumber||0);
+        &&exactPriorMatches(row,prior);
     });
     if(infrastructurePending.length>1){
       const infraIds=new Set(infrastructurePending.map(row=>row.gameId));
-      const nonInfra=include.filter(row=>!infraIds.has(row.gameId));
+      const nonInfra=activeInclude.filter(row=>!infraIds.has(row.gameId));
       const canary=[...infrastructurePending].sort((a,b)=>{
         const ai=clean(itemByGameId.get(a.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
         const bi=clean(itemByGameId.get(b.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
@@ -224,11 +245,18 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       return{
         include:[...nonInfra,canary],
         sharedInfrastructureCanary:true,
-        deferredInfrastructureGameIds:deferred
+        deferredInfrastructureGameIds:deferred,
+        deferredPrerequisiteGameIds:prerequisiteDeferred.map(row=>row.gameId).sort()
       };
     }
+    return{
+      include:activeInclude,
+      sharedInfrastructureCanary:false,
+      deferredInfrastructureGameIds:[],
+      deferredPrerequisiteGameIds:prerequisiteDeferred.map(row=>row.gameId).sort()
+    };
   }
-  return{include,sharedInfrastructureCanary:false,deferredInfrastructureGameIds:[]};
+  return{include,sharedInfrastructureCanary:false,deferredInfrastructureGameIds:[],deferredPrerequisiteGameIds:[]};
 }
 
 function flattenText(value,out=[]){
