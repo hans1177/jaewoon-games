@@ -130,7 +130,14 @@
       "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
       "unityWebMayBeCardDirectLaunchFallback": true,
       "staleSharedRobloxTargetHomepageLinkForbidden": true,
-      "unityWebLegacyBuildCompatibility": true
+      "unityWebLegacyBuildCompatibility": true,
+      "playableWebCompanionButtonEnabled": true,
+      "playableWebCompanionButtonLabel": "웹 플레이",
+      "playableWebCompanionSource": "COMPANY_RUNTIME_GAME_CATALOG",
+      "playableWebCompanionRequiresPlayableAndArchive": true,
+      "playableWebCompanionRequiresExistingCanonicalIndex": true,
+      "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
+      "mainCatalogMayNotOverrideFresherCompanyRuntime": true
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",

@@ -130,8 +130,11 @@ test('homepage exposes Unity Web only as an optional same-project validation sur
   assert.match(renderer,/\['loader','data','framework','wasm'\]/);
   assert.match(renderer,/unityWebAvailable:true/);
   assert.match(renderer,/Unity Web · 개발중/);
-  assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|'';/);
-  assert.match(renderer,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|'';/);
+  assert.match(renderer,/function playableWebHref\(row\)/);
+  assert.match(renderer,/웹 플레이/);
+  assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
+  assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
+  assert.match(renderer,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
   assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
 });
 

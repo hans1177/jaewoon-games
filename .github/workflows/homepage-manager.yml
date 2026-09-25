@@ -190,9 +190,11 @@ jobs:
             echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
             echo 'HOMEPAGE_RUNTIME_SOURCE=COMPANY_RUNTIME'
+            echo 'HOMEPAGE_PUBLIC_STATUS_SYNC=YES' >> "$GITHUB_ENV"
             if [[ "${{ github.event_name }}" == 'workflow_run' ]]; then
-              echo 'HOMEPAGE_PUBLIC_STATUS_SYNC=YES' >> "$GITHUB_ENV"
               echo "HOMEPAGE_STATUS_SYNC_TRIGGER=${{ github.event.workflow_run.name }}_SUCCESS"
+            else
+              echo "HOMEPAGE_STATUS_SYNC_TRIGGER=${{ github.event_name }}_COMPANY_RUNTIME"
             fi
           else
             if [[ "${{ github.event_name }}" == 'workflow_run' ]]; then

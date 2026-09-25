@@ -136,6 +136,12 @@ function canonicalWebHref(row){
   const expected=`web-games/${id}`;
   return raw===expected?`/${expected}/`:'';
 }
+function playableWebHref(row){
+  const web=sourcesOf(row).web||{};
+  const playable=web.playable===true||row?.homepageWebPlayable===true;
+  const archive=web.archive===true||row?.hasWebArchive===true;
+  return activeLifecycle(row)&&playable&&archive?canonicalWebHref(row):'';
+}
 async function bindAvailableUnityWebSurfaces(catalog){
   if(platformExposure?.unityWebEnabled!==true||!Array.isArray(catalog?.games))return catalog;
   const probeFetch=async(url,options={})=>{
@@ -244,7 +250,8 @@ function platformLinks(game){
   const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||'').trim();
   const unity=String((up.publicRelease===true?up.publicUrl:up.internalUrl)||(game?.unityBuildVerified===true?game?.unityBuildUrl:'')||'').trim();
   const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebAvailable===true?String(game?.unityWebTestUrl||'').trim():'';
-  return {roblox,unity,unityWeb};
+  const web=playableWebHref(game);
+  return {roblox,unity,unityWeb,web};
 }
 function internalReleaseLinks(game){
   const links=platformLinks(game);
@@ -254,7 +261,8 @@ function internalReleaseLinks(game){
   return {
     roblox:roblox.internalReleaseReady===true||roblox.publicRelease===true?links.roblox:'',
     unity:unity.internalReleaseReady===true||unity.publicRelease===true?links.unity:'',
-    unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:''
+    unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:'',
+    web:links.web
   };
 }
 function hasInternalRelease(game){
@@ -283,7 +291,7 @@ function recentModificationRows(catalog){
 }
 function platformHref(game){
   const links=platformLinks(game);
-  return links.roblox||links.unity||links.unityWeb||'';
+  return links.roblox||links.unity||links.unityWeb||links.web||'';
 }
 function installStyles(){
   document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';
@@ -319,10 +327,11 @@ function buildCard(row){
     button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction'),
     platformExposure?.unityWebEnabled===true
       ?button(links.unityWeb,'Unity Web · 개발중','Unity Web · 빌드없음','webAction unityWebAction')
-      :''
+      :'',
+    links.web?button(links.web,'웹 플레이','웹 빌드없음','webAction webCompanionAction'):''
   ].join('');
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
-  const direct=links.roblox||links.unity||links.unityWeb||'';
+  const direct=links.roblox||links.unity||links.unityWeb||links.web||'';
   return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
