@@ -51,7 +51,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&/^[1-9][0-9]*$/.test(String(candidate?.universeId||''))
       &&/^[1-9][0-9]*$/.test(String(candidate?.placeId||''))
       &&Number(candidate?.versionNumber||0)>0
-      &&item?.robloxSharedTargetCurrent!==false
+      &&clean(candidate?.authority).startsWith('roblox-open-cloud-')
     );
     if(!exact)continue;
     const prior=item?.robloxInternalVibePlayEvidence||{};
@@ -95,6 +95,7 @@ export function createLocalStudioPlayEvidence({
     clean(item?.robloxSourceCommit)===sourceRevision
     &&clean(item?.robloxBuildArtifactIdentity)===artifactIdentity
     &&candidate?.published===true
+    &&clean(candidate?.authority).startsWith('roblox-open-cloud-')
     &&clean(candidate?.sourceRevision)===sourceRevision
     &&clean(candidate?.artifactIdentity)===artifactIdentity
     &&Number(candidate?.artifactRunId||0)===artifactRunId
@@ -105,25 +106,47 @@ export function createLocalStudioPlayEvidence({
   if(!exactCurrent)throw new Error('ROBLOX_STUDIO_LOCAL_CANDIDATE_STALE');
   if(clean(runtime?.authority)!=='vibe2-roblox-studio-runtime')throw new Error('ROBLOX_STUDIO_LOCAL_RUNTIME_AUTHORITY_INVALID');
 
-  const actions=Array.isArray(runtime?.actions)?runtime.actions:[];
-  const checkpoints=Array.isArray(runtime?.checkpoints)?runtime.checkpoints:[];
-  const errors=Array.isArray(runtime?.errors)?runtime.errors:[];
-  const required=checkpoints.filter(row=>row?.required!==false);
-  const dispatched=actions.some(row=>row?.dispatched===true&&row?.ok===true);
-  const requiredPass=required.length>0&&required.every(row=>row?.pass===true);
+  const actions=(Array.isArray(runtime?.actions)?runtime.actions:[]).map(row=>({
+    id:clean(row?.id),
+    type:clean(row?.type),
+    dispatched:row?.dispatched===true,
+    ok:row?.ok===true
+  })).filter(row=>row.id&&row.type);
+  const checkpoints=(Array.isArray(runtime?.checkpoints)?runtime.checkpoints:[]).map(row=>({
+    id:clean(row?.id),
+    name:clean(row?.name||row?.id),
+    required:row?.required!==false,
+    pass:row?.pass===true
+  })).filter(row=>row.id);
+  const errors=(Array.isArray(runtime?.errors)?runtime.errors:[]).map(row=>({
+    type:clean(row?.type||'runtime-error'),
+    actionId:clean(row?.actionId)||null
+  })).filter(row=>row.type);
+  const required=checkpoints.filter(row=>row.required!==false);
+  const dispatched=actions.some(row=>row.dispatched===true&&row.ok===true);
+  const studioCapability=runtime?.capabilities?.studioTestService===true;
+  const virtualInput=runtime?.capabilities?.virtualInput===true;
+  const actualPlay=studioCapability;
+  const requiredPass=required.length>0&&required.every(row=>row.pass===true);
   const pass=Boolean(
     studioStepSucceeded===true
+    &&actualPlay
     &&runtime?.runtimeVerified===true
-    &&runtime?.capabilities?.studioTestService===true
-    &&runtime?.capabilities?.virtualInput===true
+    &&virtualInput
     &&dispatched
     &&requiredPass
     &&errors.length===0
   );
+  const failureClass=pass?null
+    :errors.length?'STUDIO_RUNTIME_ERROR'
+    :required.some(row=>row.pass!==true)?'STUDIO_REQUIRED_CHECKPOINT_FAILURE'
+    :!dispatched?'STUDIO_INPUT_NOT_OBSERVED'
+    :'STUDIO_LOCAL_PLAY_FAILED';
   const learningSignals=[
     'roblox studio local runtime',
-    ...actions.filter(row=>row?.ok===true).map(row=>clean(row?.type||row?.id||'input')),
-    ...checkpoints.filter(row=>row?.pass===true).map(row=>clean(row?.name||row?.id||'checkpoint'))
+    ...actions.filter(row=>row.ok===true).map(row=>clean(row.type||row.id||'input')),
+    ...checkpoints.filter(row=>row.pass===true).map(row=>clean(row.name||row.id||'checkpoint')),
+    ...(errors.length?['debugging','runtime error']:[])
   ].filter(Boolean).slice(0,40);
 
   return{
@@ -133,9 +156,11 @@ export function createLocalStudioPlayEvidence({
       gameId:clean(item?.gameId),
       authority:'vibe2-roblox-studio-runtime',
       pass,
-      actualPlay:true,
+      actualPlay,
       runtimeVerified:runtime?.runtimeVerified===true,
-      learningReusable:pass||errors.length>0||required.some(row=>row?.pass!==true),
+      learningReusable:actualPlay&&(pass||errors.length>0||required.some(row=>row.pass!==true)),
+      infrastructureFailure:false,
+      failureClass,
       localPlaceFile:true,
       onlinePlaceDirectOpen:false,
       robloxPlayerAutomation:false,
@@ -148,18 +173,25 @@ export function createLocalStudioPlayEvidence({
       versionNumber,
       publishedCandidateCrossCheckPassed:true,
       publishedCandidateCrossCheckAuthority:'OPEN_CLOUD',
-      capabilities:runtime?.capabilities||{},
+      capabilities:{
+        studioTestService:studioCapability,
+        virtualInput
+      },
       actions,
       checkpoints,
       errors,
-      metrics:runtime?.metrics||{},
+      runtimeSummary:{
+        consoleErrorCount:Number(runtime?.metrics?.consoleErrorCount||0)
+      },
       learningSignals,
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
-      scenarioCoverage:['NEW_GAME_START'],
+      scenarioCoverage:[],
       scenarioCoveragePass:false,
       testedAt,
-      workflowRunId:Number(workflowRunId||0)
+      workflowRunId:Number(workflowRunId||0),
+      publicationAuthority:false,
+      publicationTargetDiscovery:false
     }
   };
 }
@@ -171,6 +203,8 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   item.robloxInternalVibePlayEvidence=result.evidence;
   item.robloxInternalPlaytestPassed=result.pass;
   item.robloxInternalPlaytestPassedAt=result.pass?result.evidence.testedAt:null;
+  item.robloxStudioLocalPlayRepairRequired=!result.pass;
+  item.robloxStudioLocalPlayInfrastructurePending=false;
   if(!result.pass){
     item.canonicalState='REPAIR_REQUIRED';
     item.robloxFailureStage='VIBE_INTERNAL_PLAY';
