@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-25T18:33:22.515Z",
+  "updatedAt": "2026-09-25T18:52:48.021Z",
   "games": [
     {
       "gameId": "cozy-island",
@@ -72,9 +72,9 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
-          "internalReleaseReady": false,
+          "internalReleaseReady": true,
           "internalReleasePublished": true,
           "internalPlaytestPassed": true,
           "externalExposureAllowed": false,
@@ -84,6 +84,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": true,
               "vibeScenarioCoverage": false,
@@ -243,6 +244,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": true,
               "vibeScenarioCoverage": false,
@@ -282,7 +284,8 @@
               "bug-2cfb0882ff23baaef682",
               "bug-c56861641c064996c2d1",
               "bug-6c53a36a6d111e2d487b",
-              "bug-f83e541f135414abb820"
+              "bug-f83e541f135414abb820",
+              "bug-8b468210dc1ff863a00f"
             ]
           },
           "publication": {
@@ -391,9 +394,9 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
-          "internalReleaseReady": false,
+          "internalReleaseReady": true,
           "internalReleasePublished": true,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
@@ -403,6 +406,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -562,6 +566,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -720,6 +725,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -878,6 +884,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -1036,6 +1043,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -1191,6 +1199,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -1346,6 +1355,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -1501,6 +1511,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -1656,6 +1667,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -1811,6 +1823,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -1966,6 +1979,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -2121,6 +2135,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -2276,6 +2291,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
@@ -2431,6 +2447,7 @@
             "pass": false,
             "checks": {
               "technical": false,
+              "realServerBoot": true,
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
