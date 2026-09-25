@@ -1,5 +1,5 @@
 // 파일명: tools/artbook-production-pipeline.mjs
-// 역할: 중앙 정책 COMPANY_FLOW.md에 따라 productionClass별 제작 파이프라인을 라우팅한다.
+// 역할: 중앙 머신 정책 company-learning/platform-release-roadmap.json에 따라 productionClass별 제작 파이프라인을 라우팅한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawn} from 'node:child_process';
@@ -72,7 +72,7 @@ function canReuseCompletedDesign(status){
   return fs.existsSync(path.join('design',gameId,d,'design-revised.json'));
 }
 
-console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);console.log(`PRODUCTION_CLASS=${productionClass}`);console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
+console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);console.log(`PRODUCTION_CLASS=${productionClass}`);console.log('POLICY_DOCUMENT=company-learning/platform-release-roadmap.json');
 await run('tools/artbook-fact-pack.mjs');
 if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   console.log('DEVELOPMENT_EXECUTION_MODE=DIRECT_NATIVE_DUAL_PLATFORM');
