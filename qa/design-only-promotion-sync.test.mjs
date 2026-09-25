@@ -114,6 +114,56 @@ test('minimum dual-platform design promotes immediately while strict review stay
   assert.equal(Object.hasOwn(state,'policyDocument'),false);
 });
 
+
+test('stale NOT_IN_CANONICAL_GAME_CATALOG pause is cleared when canonical catalog lifecycle is ACTIVE',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-stale-catalog-pause-'));
+  try{
+    base(root);
+    write(root,'game-seed-state.json',{version:1,seeds:[{
+      seedId:'SC',gameId:'catalog-active',gameName:'Catalog Active',status:'PAUSED',
+      pausedReason:'NOT_IN_CANONICAL_GAME_CATALOG',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'DEVELOPMENT_CONFIRMED',INITIAL_TARGET_PLATFORM:'ROBLOX'
+    }]});
+    write(root,'game-catalog.json',{version:1,games:[{
+      id:'catalog-active',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      canonical:{lifecycle:{state:'ACTIVE'}}
+    }]});
+    writeMinimumDesign(root,'catalog-active');
+
+    const result=promoteReadyDesignSeeds({root});
+    assert.deepEqual(result.reactivatedLegacyCatalogPauses,['catalog-active']);
+    assert.deepEqual(result.reconciledPromotedSeeds,['catalog-active']);
+    const seed=read(root,'game-seed-state.json').seeds[0];
+    assert.equal(seed.status,'ACTIVE');
+    assert.equal(Object.hasOwn(seed,'pausedReason'),false);
+    assert.equal(read(root,'development-queue.json').items.length,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('intentional PAUSED state is preserved even when canonical catalog lifecycle is ACTIVE',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-intentional-pause-'));
+  try{
+    base(root);
+    write(root,'game-seed-state.json',{version:1,seeds:[{
+      seedId:'SI',gameId:'intentional-pause',status:'PAUSED',
+      pausedReason:'OWNER_EXPLICIT_GAME_PAUSE',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'DEVELOPMENT_CONFIRMED',INITIAL_TARGET_PLATFORM:'ROBLOX'
+    }]});
+    write(root,'game-catalog.json',{version:1,games:[{
+      id:'intentional-pause',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      canonical:{lifecycle:{state:'ACTIVE'}}
+    }]});
+    writeMinimumDesign(root,'intentional-pause');
+
+    const result=promoteReadyDesignSeeds({root});
+    assert.deepEqual(result.reactivatedLegacyCatalogPauses,[]);
+    const seed=read(root,'game-seed-state.json').seeds[0];
+    assert.equal(seed.status,'PAUSED');
+    assert.equal(seed.pausedReason,'OWNER_EXPLICIT_GAME_PAUSE');
+    assert.equal(read(root,'development-queue.json').items.length,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('legacy Android preference maps to Unity but still starts both native lanes',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-platform-'));
   base(root);
