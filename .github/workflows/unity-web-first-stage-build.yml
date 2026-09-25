@@ -43,6 +43,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   build:
@@ -388,6 +389,16 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Fan verified Unity Web into exact Roblox and Unity development
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main             -f game_id="$GAME_ID"             -f trigger_source="UNITY_WEB_VERIFIED"
+          echo "UNITY_WEB_NATIVE_FANOUT=DISPATCHED:$GAME_ID"
+          echo 'UNITY_WEB_NATIVE_FANOUT_TARGETS=ROBLOX,UNITY'
 
       - name: Create verified Unity Web build PR
         if: github.event_name == 'push' || inputs.publish_to_main == true
