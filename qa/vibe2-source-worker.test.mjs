@@ -119,7 +119,9 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   assert.equal(result.presentationCandidateDelta.presentationPass,'ASSET_ADAPTATION');
   assert.deepEqual(result.changedFiles,[relative]);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
-  assert.match(candidate,/Color3\.fromRGB\(70,95,130\)/);\n  assert.match(candidate,/RenderStepped/);\n  assert.match(candidate,/enemyBody\.CFrame\s*=/);
+  assert.match(candidate,/Color3\.fromRGB\(70,95,130\)/);
+  assert.match(candidate,/RenderStepped/);
+  assert.match(candidate,/enemyBody\.CFrame\s*=/);
   assert.match(candidate,/local score = 0/);
 });
 
@@ -215,7 +217,9 @@ test('presentation recovery keeps the fourth slot after malformed focused output
   assert.equal(result.generation.attempts,4);
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.presentationCandidateDelta.pass,true);
-  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');\n  assert.match(candidate,/82,110,148/);\n  assert.match(candidate,/weapon\.Orientation\s*=/);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/82,110,148/);
+  assert.match(candidate,/weapon\.Orientation\s*=/);
 });
 
 test('presentation focused recovery prioritizes visual anchors and forbids marker-only repair',()=>{
