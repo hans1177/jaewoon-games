@@ -1,5 +1,5 @@
 {
-  "version": 369,
+  "version": 370,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -695,6 +695,18 @@
         "pushConflictRetriesUntilSuccessOrJobTimeout": true,
         "immutableWorkerArtifactReuseRequired": true,
         "unrelatedGameStatePreserved": true
+      },
+      "sourceRevisionReuse": {
+        "version": 1,
+        "sourceIdentityScope": "ROBLOX_GAME_SOURCE_PATH_CONTENT",
+        "unrelatedRepositoryCommitMustNotInvalidateSourceRevision": true,
+        "unchangedGameSourcePathPreservesBoundRevision": true,
+        "unchangedGameSourcePathPreservesBuildPreflightF0Evidence": true,
+        "exactSourceRevisionMayRemainOlderThanRepositoryHeadWhenPathDiffIsZero": true,
+        "releaseAncestryProofStillRequired": true,
+        "changedGameSourcePathRequiresNewRevisionAndDownstreamRevalidation": true,
+        "studioAssetRefreshOrKnownRepairDebtMayStillForceSourceWorker": true,
+        "buildOncePerSourceFingerprintRequired": true
       }
     },
     "candidateReleaseConcurrency": {
@@ -6806,6 +6818,16 @@
       "qualityGateWeakening": false,
       "runtimeStateLossForbidden": true,
       "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
+    },
+    "robloxUnchangedSourceRevisionReuse20260925": {
+      "id": "ROBLOX_UNCHANGED_SOURCE_REVISION_REUSE_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "HIGHER_LEVEL_SOURCE_BIND_ROUTING_COULD_REBIND_UNCHANGED_ROBLOX_GAME_PATHS_TO_EVERY_NEW_MAIN_COMMIT_AND_RESET_VALID_BUILD_PREFLIGHT_F0_EVIDENCE_FOR_UNRELATED_HOMEPAGE_OR_POLICY_COMMITS",
+      "resolution": "SOURCE_RECONCILIATION_SKIPS_WHEN_THE_BOUND_REVISION_TO_CURRENT_MAIN_DIFF_FOR_THE_EXACT_ROBLOX_GAME_PATH_IS_ZERO; PRESERVE_THE_EXISTING_BOUND_REVISION_AND_DOWNSTREAM_EXACT_EVIDENCE",
+      "qualityGateWeakening": false,
+      "changedSourceStillRevalidates": true,
+      "affectedTool": "tools/company-development-roblox-source-reconcile.mjs"
     }
   },
   "vibeExecutionLaneContract": {
