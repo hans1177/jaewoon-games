@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-25T18:19:25.315Z",
+  "updatedAt": "2026-09-25T18:33:18.786Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -320,8 +320,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T07:13:17.730Z",
-      "updatedAt": "2026-09-25T18:19:25.313Z",
-      "occurrenceCount": 209
+      "updatedAt": "2026-09-25T18:33:18.783Z",
+      "occurrenceCount": 210
     },
     {
       "id": "bug-ea186d71ff8c7f6300a7",
@@ -387,8 +387,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-09-25T18:19:25.313Z",
-      "occurrenceCount": 192
+      "updatedAt": "2026-09-25T18:33:18.783Z",
+      "occurrenceCount": 193
     },
     {
       "id": "bug-d9326601c4a0d6f105ea",
@@ -466,15 +466,17 @@
       "evidence": [
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"51eadc7b331419af8319c664c539023aed1e7403\",\"artifactIdentity\":\"sha256:eaac4b27b3cbef6b7a4498f01ddcc3e48fa3c1a71c38b15173a47e9b7881d5d2\",\"artifactRunId\":36167523434,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":23,\"workflowRunId\":36168235212,\"publishedAt\":\"2026-09-25T17:44:38.997Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"sourceRevision\":\"51eadc7b331419af8319c664c539023aed1e7403\",\"artifactIdentity\":\"sha256:eaac4b27b3cbef6b7a4498f01ddcc3e48fa3c1a71c38b15173a47e9b7881d5d2\",\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"expectedVersionNumber\":23,\"observedVersionNumber\":22,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":false,\"exactEngineVersion\":true,\"engineExecuted\":true,\"serverBootObserved\":false,\"blockers\":[\"exactVersion\",\"checkpointOrder\",\"checkpoint:SERVER_BOOT\",\"checkpoint:MODULE_GRAPH_READY\",\"checkpoint:WORLD_READY\",\"checkpoint:SPAWN_READY\",\"checkpoint:CHARACTER_READY\",\"checkpoint:GROUND_CONTACT\",\"checkpoint:CAMERA_READY\",\"checkpoint:INPUT_READY\",\"checkpoint:MOVEMENT_CONFIRMED\",\"checkpoint:REMOTE_ROUNDTRIP\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:SAVE_ROUNDTRIP\",\"checkpoint:MULTIPLAYER_SYNC\"],\"observedAt\":\"2026-09-25T18:18:06.864Z\",\"authority\":\"exact-engine-version-awaiting-real-server-boot\"}",
-        "runtime-observation-attempts:5"
+        "runtime-observation-attempts:5",
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"sourceRevision\":\"51eadc7b331419af8319c664c539023aed1e7403\",\"artifactIdentity\":\"sha256:eaac4b27b3cbef6b7a4498f01ddcc3e48fa3c1a71c38b15173a47e9b7881d5d2\",\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"expectedVersionNumber\":23,\"observedVersionNumber\":22,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":false,\"exactEngineVersion\":true,\"engineExecuted\":true,\"simulationRunning\":false,\"serverBootObserved\":false,\"blockers\":[\"exactVersion\",\"checkpointOrder\",\"checkpoint:SERVER_BOOT\",\"checkpoint:MODULE_GRAPH_READY\",\"checkpoint:WORLD_READY\",\"checkpoint:SPAWN_READY\",\"checkpoint:CHARACTER_READY\",\"checkpoint:GROUND_CONTACT\",\"checkpoint:CAMERA_READY\",\"checkpoint:INPUT_READY\",\"checkpoint:MOVEMENT_CONFIRMED\",\"checkpoint:REMOTE_ROUNDTRIP\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:SAVE_ROUNDTRIP\",\"checkpoint:MULTIPLAYER_SYNC\"],\"observedAt\":\"2026-09-25T18:30:14.930Z\",\"authority\":\"exact-engine-version-awaiting-real-server-boot\"}",
+        "runtime-observation-attempts:8"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "REAL_SERVER_RUNTIME_OBSERVATION_REQUIRED",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-25T18:19:25.313Z",
-      "updatedAt": "2026-09-25T18:19:25.313Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-09-25T18:33:18.783Z",
+      "occurrenceCount": 2
     }
   ]
 }
