@@ -8908,6 +8908,2248 @@
             "ollamaCacheHit": true,
             "ollamaRuntimeSource": "CACHE"
           }
+        },
+        {
+          "version": 16,
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "reservationId": "36193711704:1",
+          "variant": "primary",
+          "outcome": "PASS",
+          "blocker": "candidate-awaiting-qa-and-deployment",
+          "candidateBranch": "vibe2/candidate/ant-simulator-existing-web-assessment-v1-primary-36193711704-1",
+          "baseMainSha": "594e1ce6eabe58d1f778896f32b5bcb45cb764b3",
+          "candidateIdentity": {
+            "taskId": "ant-simulator-existing-web-assessment-v1",
+            "gameId": "ant-simulator",
+            "target": "web",
+            "sourceRoot": "web-games/ant-simulator",
+            "baseMainSha": "594e1ce6eabe58d1f778896f32b5bcb45cb764b3",
+            "manifestPath": "/tmp/vibe2-candidate-ant-simulator-existing-web-assessment-v1-primary-36193711704/.vibe2/candidates/ant-simulator-existing-web-assessment-v1/manifest.json"
+          },
+          "candidateFailure": null,
+          "evidence": [
+            "vibe2/candidate/ant-simulator-existing-web-assessment-v1-primary-36193711704-1",
+            "candidate-sha:083c00ab23e6813405db53dcf23c59bed61e5d1e",
+            "base-main:594e1ce6eabe58d1f778896f32b5bcb45cb764b3",
+            "incremental-qa-hash:e96e2a4c9af899c53740d1aef7319665cf9061d7c3d00f16a1236c6643f9ddd2",
+            "incremental-qa-cache:HIT",
+            "causal-replay-status:PLAN_ONLY",
+            "causal-replay-executed:NO",
+            "causal-replay-prepatch-reproduced:NO",
+            "game-repair-required:YES",
+            "game-repair-prepatch-reproduced:NO",
+            "game-repair-responsible-system:SAVE",
+            "game-repair-original-scenario:PENDING_RUNTIME_EVIDENCE",
+            "game-repair-invariants:PENDING_RUNTIME_EVIDENCE",
+            "game-repair-save-migration:PENDING_RUNTIME_EVIDENCE",
+            "game-repair-multiplayer-lifecycle:PENDING_AUTONOMOUS_HARNESS_EVIDENCE",
+            "game-repair-ready-for-fan-in:NO",
+            "game-repair-user-assistance-required:NO",
+            "game-repair-mode:FOCUSED_REPAIR",
+            "game-repair-repeat-count:0",
+            "architecture-drift-status:ANALYZED",
+            "architecture-drift-risk:LOW",
+            "architecture-drift-score:0",
+            "architecture-drift-signals:NONE",
+            "presentation-static-qa-status:NOT_REQUIRED",
+            "role-result:exploration:PASS",
+            "role-result:implementation:PASS",
+            "role-result:test:PASS",
+            "role-result:performance:PASS",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "coding-strategy:PRIMARY_RESPONSIBILITY_MINIMAL",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-generation-attempts:2",
+            "coding-generation-attempt-budget:4",
+            "coding-focused-final-retry:YES",
+            "coding-focused-replace-only:YES",
+            "coding-focused-minimal-json:YES",
+            "coding-context-mode:STANDARD_CONTEXT",
+            "coding-context-bytes:32488",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:3",
+            "coding-primary-targets:%5B%22applyDepositResult%22%2C%22connectRoom%22%2C%22begin%22%5D",
+            "coding-primary-systems:%5B%22SAVE%22%2C%22PLACEMENT%22%2C%22WORLD%22%2C%22COMBAT%22%2C%22AI%22%2C%22PROGRESSION%22%2C%22GOAL_STATE%22%2C%22CORE_STATE%22%2C%22INTERACTION%22%2C%22PRESENTATION%22%2C%22INPUT%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22SAVE%22%2C%22PRESENTATION%22%2C%22PLAYER%22%2C%22WORLD%22%2C%22INTERACTION%22%2C%22COMBAT%22%2C%22PLACEMENT%22%2C%22AI%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%5D",
+            "coding-semantic-system-budget:11",
+            "coding-semantic-diff-mode:OBSERVE_ONLY",
+            "coding-semantic-diff-pass:YES",
+            "coding-failure-fingerprint:web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|PLACEMENT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CONCEPT_DIRECTION|CORE_LOOP|ECONOMY|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_REPLICATION|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UEFN_REPLICATION|UEFN_RUNTIME|UI_STATE|UNITY_RUNTIME|WEB_RUNTIME",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_system_ai_66f247e678e51fa6dbfc877d%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_36ety1%22%2C%22CODE_PATTERN%3Apat_5c3wb1%22%2C%22CODE_PATTERN%3Apat_desch8%22%2C%22CODE_PATTERN%3Apat_k04lsk%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A92fb83ea92ed0720b0e4%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9c328ab0d2941e9c1b3c%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3Af472b70e86846f6460f2%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A0de29fd765422439deeb%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A09a44488217c1cb39ff9%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3Ac326dcaa9ac607946c22%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_c487582246e9035b791501b3%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_ca07155796f1d9843b59a64b%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_8f46ea8c8412790f7b83bfab%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_a670473591ad9b9fb242be1b%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_8d74f51489e0fcd3b8c02e18%22%5D",
+            "learning-primary-domains:%5B%22WEB_RUNTIME%22%5D",
+            "learning-secondary-domains:%5B%22ASSET_ADAPTATION%22%2C%22ASSET_PRODUCTION%22%2C%22COMBAT%22%2C%22CORE_LOOP%22%2C%22DEBUGGING%22%2C%22ECONOMY%22%5D",
+            "actions-run:36193711704",
+            "reservation-id:36193711704:1",
+            "variant:primary",
+            "shared-context-policy:436fc509b6293b39f23a68056e30abeb22b8fcc908a127b2d8d89db26de87e44",
+            "shared-context-log-map:cfd6aed163164f65fc51dada56851cc44222a1f6a0ef5f15e46bdb8735f4d6fe",
+            "shared-context-architecture:32f0ea9b1f30f2e27e86e4495c2df8c9412979b7612abf0a3384551443219172",
+            "shared-context-sync:PASS"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": true,
+            "taskId": "ant-simulator-existing-web-assessment-v1",
+            "packageId": "ant-simulator-wp-1mdmkq3",
+            "target": "web",
+            "sourceRoot": "web-games/ant-simulator",
+            "baseMainSha": "594e1ce6eabe58d1f778896f32b5bcb45cb764b3",
+            "responsibleFiles": [
+              "index.html"
+            ],
+            "impactFiles": [
+              "index.html"
+            ],
+            "contextFiles": [
+              "index.html"
+            ],
+            "relatedFiles": [],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "PARTIAL_REPAIR",
+              "confidence": "HIGH",
+              "reasons": [
+                "WORKING_GAMEPLAY_REUSABLE",
+                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 32488,
+                "sourceSha256": "2f694d3630cc913ad480c248d775c601aac0fefd6b263a29a2a7095719b4ee0d",
+                "validationScore": 0,
+                "approvedDesign": false,
+                "gameplaySignalCount": 6,
+                "gameplaySignals": {
+                  "input": true,
+                  "runtimeLoop": true,
+                  "mutableState": true,
+                  "gameplayOutcome": false,
+                  "progression": false,
+                  "combat": true,
+                  "spatial": true,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": false
+                },
+                "prototypeMarkerCount": 0,
+                "approvedScopeRequiredCount": 0,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 0,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "ant-simulator",
+              "sourceRoot": "web-games/ant-simulator",
+              "sourcePath": "web-games/ant-simulator/index.html",
+              "designBaselinePath": null
+            },
+            "fileDigests": [
+              {
+                "path": "index.html",
+                "hash": "2f694d3630cc913a",
+                "bytes": 32488
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "LOW",
+                "matched": [
+                  {
+                    "gameId": "ant-simulator",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "applyDepositResult",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_zprnu",
+                    "lastUpdatedAt": "2026-09-20T08:58:59.418Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "ant-simulator",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "connectRoom",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_zprnu",
+                    "lastUpdatedAt": "2026-09-20T08:58:59.418Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "ant-simulator",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "begin",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_zprnu",
+                    "lastUpdatedAt": "2026-09-20T08:58:59.418Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "ant-simulator",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "SAVE",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_zprnu",
+                    "lastUpdatedAt": "2026-09-20T08:58:59.418Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "ant-simulator",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "PLACEMENT",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_zprnu",
+                    "lastUpdatedAt": "2026-09-20T08:58:59.418Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "ant-simulator",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "WORLD",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_zprnu",
+                    "lastUpdatedAt": "2026-09-20T08:58:59.418Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "ant-simulator",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "COMBAT",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_zprnu",
+                    "lastUpdatedAt": "2026-09-20T08:58:59.418Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  }
+                ],
+                "focusedChecksAdded": [
+                  "HOTSPOT_RECHECK:SYMBOL:applyDepositResult",
+                  "HOTSPOT_RECHECK:SYMBOL:connectRoom",
+                  "HOTSPOT_RECHECK:SYMBOL:begin",
+                  "HOTSPOT_RECHECK:SYSTEM:SAVE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+                ],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "applyDepositResult",
+                "connectRoom",
+                "begin"
+              ],
+              "allowedResponsibleFiles": [
+                "index.html"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "showNotice",
+                "leaveRoom",
+                "remoteState",
+                "applyWorld",
+                "applyPlayerAttack",
+                "hitMe",
+                "hostGatherRequest",
+                "applyGatherResult",
+                "hostDepositRequest",
+                "applyDepositResult",
+                "syncPresence",
+                "updateMultiStatus",
+                "begin",
+                "updateHud",
+                "connectRoom",
+                "resetPlayer",
+                "PRESENTATION",
+                "CORE_STATE",
+                "WORLD",
+                "INTERACTION",
+                "COMBAT",
+                "SAVE",
+                "PLACEMENT",
+                "AI"
+              ],
+              "primarySystems": [
+                "SAVE",
+                "PLACEMENT",
+                "WORLD",
+                "COMBAT",
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "PRESENTATION",
+                "INPUT"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "SAVE",
+                "PRESENTATION",
+                "PLAYER",
+                "WORLD",
+                "INTERACTION",
+                "COMBAT",
+                "PLACEMENT",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY"
+              ],
+              "directDependentSystems": [
+                "PRESENTATION",
+                "CORE_STATE",
+                "WORLD",
+                "INTERACTION",
+                "COMBAT",
+                "SAVE",
+                "PLACEMENT",
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "INPUT"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "SAVE",
+                "PRESENTATION",
+                "PLAYER",
+                "WORLD",
+                "INTERACTION",
+                "COMBAT",
+                "PLACEMENT",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY"
+              ],
+              "ownedState": [
+                "multi",
+                "room",
+                "u",
+                "amount",
+                "state"
+              ],
+              "readState": [
+                "MULTI_SUPABASE_URL",
+                "MULTI_SUPABASE_KEY",
+                "multi",
+                "state",
+                "room",
+                "u",
+                "faction",
+                "now",
+                "payload",
+                "classId",
+                "p",
+                "amount"
+              ],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "SAVE_KEY:ant-sim-id",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBLE_FUNCTION:applyDepositResult",
+                "STATE_WRITE:amount",
+                "DOWNSTREAM:showNotice",
+                "DOWNSTREAM:updateHud",
+                "RESPONSIBLE_FUNCTION:connectRoom",
+                "STATE_WRITE:multi",
+                "STATE_WRITE:room",
+                "STATE_WRITE:u",
+                "DOWNSTREAM:leaveRoom",
+                "DOWNSTREAM:remoteState",
+                "DOWNSTREAM:applyWorld",
+                "RESPONSIBLE_FUNCTION:begin",
+                "STATE_WRITE:state",
+                "DOWNSTREAM:resetPlayer",
+                "DOWNSTREAM:connectRoom"
+              ],
+              "requiredObservableResult": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 개미 시뮬레이터\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONTEXT]\nrecipe=recombine_6ec1c65e2c18f12b\nsource_projects=external-commercial-afk-arena,external-commercial-among-us\nfeature_blend=idle-reward,offline-progress,upgrade-layer,claim-idempotency,persistent-growth,commercial-idle-runtime-architecture,lobby-flow,role-state\ntransformation=change-session-structure\nUse these as abstract design/implementation references only.\nCreate a new project-specific mechanic/constraint and new code/asset expression.\nDo not emit raw source files, raw asset bytes, logos, source-specific identifiers, or verbatim implementation.\nPreserve the current game identity, approved design, gameplay authority, save meaning, and all existing QA/runtime/regression gates.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "SAVE",
+                  "PLACEMENT",
+                  "WORLD",
+                  "COMBAT",
+                  "AI",
+                  "PROGRESSION",
+                  "GOAL_STATE",
+                  "CORE_STATE",
+                  "INTERACTION",
+                  "PRESENTATION",
+                  "INPUT"
+                ],
+                "preferredPrimarySymbols": [
+                  "applyDepositResult",
+                  "connectRoom",
+                  "begin"
+                ],
+                "maxSystemCount": 11,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "SAVE",
+                  "PRESENTATION",
+                  "PLAYER",
+                  "WORLD",
+                  "INTERACTION",
+                  "COMBAT",
+                  "PLACEMENT",
+                  "AI",
+                  "PROGRESSION",
+                  "ECONOMY"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": [
+                  "ant-sim-id"
+                ]
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_INPUT",
+                "MICRO_PRESENTATION",
+                "MICRO_WORLD",
+                "MICRO_COMBAT",
+                "MICRO_AI",
+                "MICRO_INTERACTION",
+                "MICRO_PROGRESSION",
+                "MICRO_PLACEMENT",
+                "MICRO_SAVE",
+                "MICRO_GOAL_STATE",
+                "HOTSPOT_RECHECK:SYMBOL:applyDepositResult",
+                "HOTSPOT_RECHECK:SYMBOL:connectRoom",
+                "HOTSPOT_RECHECK:SYMBOL:begin",
+                "HOTSPOT_RECHECK:SYSTEM:SAVE",
+                "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+                "HOTSPOT_RECHECK:SYSTEM:WORLD",
+                "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY",
+                "GAME_REPAIR_INVARIANT_VALIDATION",
+                "GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION",
+                "GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": false,
+                "nodeTestTargets": [],
+                "executable": false,
+                "mode": "PLAN_ONLY",
+                "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+                "diagnosticType": null,
+                "diagnosticFile": null,
+                "diagnosticLine": null,
+                "diagnosticNeedle": null,
+                "diagnosticMicroTask": null,
+                "verifiedResponsibleSystem": null,
+                "diagnosticVerifier": null,
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "gameRepair": {
+                "version": 1,
+                "required": true,
+                "failureStage": null,
+                "failureSignature": null,
+                "prePatchReproduced": false,
+                "responsibleSystem": "SAVE",
+                "responsibleFiles": [
+                  "index.html"
+                ],
+                "revisions": {
+                  "lastKnownGoodRevision": null,
+                  "firstBrokenRevision": null,
+                  "currentRevision": "594e1ce6eabe58d1f778896f32b5bcb45cb764b3",
+                  "historyAvailable": false
+                },
+                "originalScenarioReplay": {
+                  "required": true,
+                  "coveredByCausalReplay": false,
+                  "identicalOrEquivalentInputStateRequired": true,
+                  "testTargets": []
+                },
+                "invariants": {
+                  "required": true,
+                  "ids": [
+                    "STATE_OWNER_ONLY_WRITE",
+                    "NO_DUPLICATE_CAUSAL_REWARD",
+                    "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                    "GOAL_STATE_EXCLUSIVE",
+                    "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                    "INPUT_TO_STATE_CAUSALITY",
+                    "SAVE_SCHEMA_VERSIONED",
+                    "PLAYER_VITAL_BOUNDS",
+                    "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                    "PLACEMENT_OCCUPANCY_CONSISTENT",
+                    "PROGRESSION_REWARD_IDEMPOTENT",
+                    "NARRATIVE_KNOWLEDGE_CAUSAL",
+                    "NARRATIVE_STORY_TRANSITION_CAUSAL",
+                    "NARRATIVE_FACTION_RELATIONSHIP_CAUSAL",
+                    "NARRATIVE_PAYOFF_TRACKED",
+                    "NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY"
+                  ],
+                  "testTargets": []
+                },
+                "saveMigration": {
+                  "required": true,
+                  "stableKeys": [
+                    "ant-sim-id"
+                  ],
+                  "testTargets": []
+                },
+                "multiplayerLifecycle": {
+                  "required": true,
+                  "minimumPlayers": 2,
+                  "userAssistanceRequired": false,
+                  "manualOwnerParticipationMayNotBeRequiredForPass": true,
+                  "testTargets": [],
+                  "automation": {
+                    "required": true,
+                    "minimumSyntheticOrRealClients": 2,
+                    "machineDrivenScenarios": [
+                      "TWO_CLIENT_JOIN_AND_READY",
+                      "SIMULTANEOUS_CORE_ACTION",
+                      "SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE",
+                      "ONE_CLIENT_LEAVE",
+                      "ONE_CLIENT_REJOIN",
+                      "LATE_JOIN_STATE_RECONCILIATION",
+                      "AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC",
+                      "DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK"
+                    ],
+                    "deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable": true,
+                    "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": true,
+                    "unavailableAutomationAction": "KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION",
+                    "userReportedSuccessCannotReplaceMachineEvidence": true
+                  }
+                },
+                "repeatCount": 0,
+                "repairMode": "FOCUSED_REPAIR",
+                "sameApproachWithoutNewCausalEvidenceForbidden": false,
+                "impactRegressionRequired": true,
+                "fullRegressionFanInRequired": true,
+                "unchangedSourceRevalidationForbidden": true,
+                "directResponsibleSystemRepairRequired": true,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|PLACEMENT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CONCEPT_DIRECTION|CORE_LOOP|ECONOMY|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_REPLICATION|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UEFN_REPLICATION|UEFN_RUNTIME|UI_STATE|UNITY_RUNTIME|WEB_RUNTIME",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OWNED_STATE_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "applyDepositResult",
+                  "connectRoom",
+                  "begin"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "showNotice",
+                  "leaveRoom",
+                  "remoteState",
+                  "applyWorld",
+                  "applyPlayerAttack",
+                  "hitMe",
+                  "hostGatherRequest",
+                  "applyGatherResult",
+                  "hostDepositRequest",
+                  "applyDepositResult",
+                  "syncPresence",
+                  "updateMultiStatus",
+                  "begin",
+                  "updateHud",
+                  "connectRoom",
+                  "resetPlayer",
+                  "PRESENTATION",
+                  "CORE_STATE",
+                  "WORLD",
+                  "INTERACTION",
+                  "COMBAT",
+                  "SAVE",
+                  "PLACEMENT",
+                  "AI"
+                ],
+                "ownedState": [
+                  "multi",
+                  "room",
+                  "u",
+                  "amount",
+                  "state"
+                ],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_INPUT",
+                  "MICRO_PRESENTATION",
+                  "MICRO_WORLD",
+                  "MICRO_COMBAT",
+                  "MICRO_AI",
+                  "MICRO_INTERACTION",
+                  "MICRO_PROGRESSION",
+                  "MICRO_PLACEMENT",
+                  "MICRO_SAVE",
+                  "MICRO_GOAL_STATE",
+                  "HOTSPOT_RECHECK:SYMBOL:applyDepositResult",
+                  "HOTSPOT_RECHECK:SYMBOL:connectRoom",
+                  "HOTSPOT_RECHECK:SYMBOL:begin",
+                  "HOTSPOT_RECHECK:SYSTEM:SAVE",
+                  "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY",
+                  "GAME_REPAIR_INVARIANT_VALIDATION",
+                  "GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION",
+                  "GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "SAVE_KEY:ant-sim-id",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "NARRATIVE",
+                  "PLACEMENT",
+                  "SAVE",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "advanceNarrative(event,context)",
+                  "placeEntity(request)",
+                  "saveOrRestore(command)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT",
+                  "NARRATIVE_KNOWLEDGE_CAUSAL",
+                  "NARRATIVE_STORY_TRANSITION_CAUSAL",
+                  "NARRATIVE_FACTION_RELATIONSHIP_CAUSAL",
+                  "NARRATIVE_PAYOFF_TRACKED",
+                  "NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 45,
+                "edgeCount": 80,
+                "maxFunctionBodyBytes": 2108,
+                "maxCallsPerFunction": 12,
+                "maxCalledByPerFunction": 8,
+                "maxStateWritesPerFunction": 15,
+                "maxSystemsPerFunction": 8,
+                "multiWriterStateCount": 21,
+                "stateWriterLinkCount": 116,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 3,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 4
+              },
+              "responsibilityGraph": {
+                "nodeCount": 45,
+                "relevantNodes": [
+                  {
+                    "name": "showNotice",
+                    "systems": [
+                      "PRESENTATION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "connectRoom",
+                      "copyLink",
+                      "damagePlayer",
+                      "hostGatherRequest",
+                      "applyGatherResult",
+                      "hostDepositRequest",
+                      "applyDepositResult",
+                      "begin"
+                    ],
+                    "stateReads": [
+                      "t"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "resetPlayer",
+                    "systems": [
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "updatePlayer",
+                      "begin"
+                    ],
+                    "stateReads": [
+                      "factions",
+                      "state",
+                      "x",
+                      "c",
+                      "p",
+                      "faction",
+                      "classId",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "x",
+                      "c",
+                      "p",
+                      "classId",
+                      "y"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "updateHud",
+                    "systems": [
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "factionName",
+                      "className"
+                    ],
+                    "calledBy": [
+                      "damagePlayer",
+                      "hostGatherRequest",
+                      "applyGatherResult",
+                      "hostDepositRequest",
+                      "applyDepositResult",
+                      "update",
+                      "begin"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "a",
+                      "p",
+                      "faction",
+                      "classId"
+                    ],
+                    "stateWrites": [
+                      "a",
+                      "p",
+                      "faction"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "updateMultiStatus",
+                    "systems": [
+                      "CORE_STATE",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "isHost"
+                    ],
+                    "calledBy": [
+                      "syncPresence",
+                      "connectRoom",
+                      "leaveRoom"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "count",
+                      "room"
+                    ],
+                    "stateWrites": [
+                      "count"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "syncPresence",
+                    "systems": [
+                      "WORLD",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "updateMultiStatus"
+                    ],
+                    "calledBy": [
+                      "connectRoom"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "keys",
+                      "x",
+                      "a",
+                      "rows",
+                      "sorted"
+                    ],
+                    "stateWrites": [
+                      "multi",
+                      "x",
+                      "rows",
+                      "sorted"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "remoteState",
+                    "systems": [
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "connectRoom"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "p",
+                      "now"
+                    ],
+                    "stateWrites": [
+                      "p"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "applyWorld",
+                    "systems": [
+                      "WORLD",
+                      "INTERACTION",
+                      "COMBAT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "isHost"
+                    ],
+                    "calledBy": [
+                      "connectRoom"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "a",
+                      "food",
+                      "w"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "a",
+                      "food"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "hitMe",
+                    "systems": [
+                      "COMBAT",
+                      "INTERACTION"
+                    ],
+                    "calls": [
+                      "damagePlayer"
+                    ],
+                    "calledBy": [
+                      "connectRoom"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "p"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "applyPlayerAttack",
+                    "systems": [
+                      "COMBAT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "authoritative"
+                    ],
+                    "calledBy": [
+                      "connectRoom",
+                      "attack"
+                    ],
+                    "stateReads": [
+                      "state",
+                      "d",
+                      "x",
+                      "a",
+                      "p",
+                      "range",
+                      "best",
+                      "faction",
+                      "classId",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "d",
+                      "a",
+                      "p",
+                      "range",
+                      "best",
+                      "faction",
+                      "classId"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "connectRoom",
+                    "systems": [
+                      "SAVE",
+                      "PLACEMENT",
+                      "WORLD",
+                      "COMBAT",
+                      "AI",
+                      "PROGRESSION",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "showNotice",
+                      "leaveRoom",
+                      "remoteState",
+                      "applyWorld",
+                      "applyPlayerAttack",
+                      "hitMe",
+                      "hostGatherRequest",
+                      "applyGatherResult",
+                      "hostDepositRequest",
+                      "applyDepositResult",
+                      "syncPresence",
+                      "updateMultiStatus"
+                    ],
+                    "calledBy": [
+                      "begin"
+                    ],
+                    "stateReads": [
+                      "MULTI_SUPABASE_URL",
+                      "MULTI_SUPABASE_KEY",
+                      "multi",
+                      "state",
+                      "room",
+                      "u",
+                      "faction",
+                      "now",
+                      "payload",
+                      "classId"
+                    ],
+                    "stateWrites": [
+                      "multi",
+                      "room",
+                      "u"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "leaveRoom",
+                    "systems": [
+                      "PLACEMENT",
+                      "AI",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "updateMultiStatus"
+                    ],
+                    "calledBy": [
+                      "connectRoom"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "room",
+                      "u"
+                    ],
+                    "stateWrites": [
+                      "multi",
+                      "room",
+                      "u"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "hostGatherRequest",
+                    "systems": [
+                      "PROGRESSION",
+                      "INTERACTION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "authoritative",
+                      "nearestFood",
+                      "showNotice",
+                      "multiSend",
+                      "updateHud"
+                    ],
+                    "calledBy": [
+                      "connectRoom",
+                      "gatherFood"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "state",
+                      "x",
+                      "local",
+                      "food",
+                      "take",
+                      "amount",
+                      "classId",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "local",
+                      "food",
+                      "take",
+                      "amount",
+                      "classId"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "applyGatherResult",
+                    "systems": [
+                      "INTERACTION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "showNotice",
+                      "updateHud"
+                    ],
+                    "calledBy": [
+                      "connectRoom"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "state",
+                      "p",
+                      "amount"
+                    ],
+                    "stateWrites": [
+                      "amount"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "hostDepositRequest",
+                    "systems": [
+                      "PROGRESSION",
+                      "INTERACTION",
+                      "AI",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "authoritative",
+                      "multiSend",
+                      "showNotice",
+                      "updateHud"
+                    ],
+                    "calledBy": [
+                      "connectRoom",
+                      "depositFood"
+                    ],
+                    "stateReads": [
+                      "factions",
+                      "multi",
+                      "state",
+                      "x",
+                      "c",
+                      "local",
+                      "amount",
+                      "faction",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "c",
+                      "local",
+                      "amount",
+                      "faction"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "applyDepositResult",
+                    "systems": [
+                      "INTERACTION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "showNotice",
+                      "updateHud"
+                    ],
+                    "calledBy": [
+                      "connectRoom"
+                    ],
+                    "stateReads": [
+                      "multi",
+                      "state",
+                      "p",
+                      "amount"
+                    ],
+                    "stateWrites": [
+                      "amount"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "begin",
+                    "systems": [
+                      "AI",
+                      "INPUT",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "resetPlayer",
+                      "updateHud",
+                      "connectRoom",
+                      "showNotice",
+                      "factionName",
+                      "className"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "room",
+                      "faction",
+                      "classId"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "room"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "updateHud",
+                    "to": "factionName",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "updateHud",
+                    "to": "className",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "updateMultiStatus",
+                    "to": "isHost",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "syncPresence",
+                    "to": "updateMultiStatus",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyWorld",
+                    "to": "isHost",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hitMe",
+                    "to": "damagePlayer",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyPlayerAttack",
+                    "to": "authoritative",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "showNotice",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "leaveRoom",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "remoteState",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "applyWorld",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "applyPlayerAttack",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "hitMe",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "hostGatherRequest",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "applyGatherResult",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "hostDepositRequest",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "applyDepositResult",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "syncPresence",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "connectRoom",
+                    "to": "updateMultiStatus",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "leaveRoom",
+                    "to": "updateMultiStatus",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "copyLink",
+                    "to": "showNotice",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "damagePlayer",
+                    "to": "showNotice",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "damagePlayer",
+                    "to": "updateHud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostGatherRequest",
+                    "to": "authoritative",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostGatherRequest",
+                    "to": "nearestFood",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostGatherRequest",
+                    "to": "showNotice",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostGatherRequest",
+                    "to": "multiSend",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostGatherRequest",
+                    "to": "updateHud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyGatherResult",
+                    "to": "showNotice",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyGatherResult",
+                    "to": "updateHud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "gatherFood",
+                    "to": "hostGatherRequest",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostDepositRequest",
+                    "to": "authoritative",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostDepositRequest",
+                    "to": "multiSend",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostDepositRequest",
+                    "to": "showNotice",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hostDepositRequest",
+                    "to": "updateHud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyDepositResult",
+                    "to": "showNotice",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "applyDepositResult",
+                    "to": "updateHud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "depositFood",
+                    "to": "hostDepositRequest",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "attack",
+                    "to": "applyPlayerAttack",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "updatePlayer",
+                    "to": "resetPlayer",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 50,
+                "hardBlockers": [],
+                "issues": [
+                  {
+                    "code": "BROAD_STATE_MUTATION_RESPONSIBILITY",
+                    "severity": "WARN",
+                    "detail": "updateAuthority:15"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "multi:isHost,syncPresence,connectRoom,leaveRoom,updatePlayer"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "state:spawnWorld,resetPlayer,applyWorld,updatePlayer,loop,begin"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "d:resize,applyPlayerAttack,nearestFood,nearestPlayerTarget,updateAuthority,updatePlayer,joyMove"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "x:seeded,spawnWorld,resetPlayer,syncPresence,updateAuthority,updatePlayer,draw,joyMove"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "a:spawnWorld,updateHud,worldSnapshot,applyWorld,applyPlayerAttack,updateAuthority"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "c:resetPlayer,className,hostDepositRequest,depositFood,updateAuthority,drawAnt,drawQueen"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "p:resetPlayer,updateHud,remoteState,applyPlayerAttack,damagePlayer,gatherFood,depositFood,attack,updatePlayer,draw"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "classId:resetPlayer,applyPlayerAttack,hostGatherRequest,updateAuthority,updatePlayer,drawAnt"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "y:spawnWorld,resetPlayer,updateAuthority,updatePlayer,draw,joyMove"
+                  }
+                ]
+              },
+              "failureEvidence": [
+                "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+                "learning-motor-candidate-tournament:repeated-verified-failure",
+                "portfolio-decision:FOCUSED_REPAIR",
+                "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+                "game-repair-required:YES",
+                "game-repair-prepatch-reproduced:NO",
+                "game-repair-responsible-system:SAVE",
+                "game-repair-original-scenario:PENDING_RUNTIME_EVIDENCE",
+                "game-repair-invariants:PENDING_RUNTIME_EVIDENCE",
+                "game-repair-save-migration:PENDING_RUNTIME_EVIDENCE",
+                "game-repair-multiplayer-lifecycle:PENDING_AUTONOMOUS_HARNESS_EVIDENCE",
+                "game-repair-ready-for-fan-in:NO",
+                "game-repair-user-assistance-required:NO",
+                "game-repair-mode:FOCUSED_REPAIR",
+                "game-repair-repeat-count:0",
+                "coding-failure-fingerprint:web|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CONCEPT_DIRECTION|CORE_LOOP|ECONOMY|PERFORMANCE|PROGRESSION|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UEFN_RUNTIME|UNITY_RUNTIME|WEB_RUNTIME"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "511f0e8eace24c88c196996a",
+            "generatedAt": "2026-09-25T21:56:08.241Z",
+            "reusedFrom": ".vibe2/exploration.json"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+            "compiledStrategyHint": "CAUSAL_TRACE_FIRST",
+            "candidateVariant": "primary",
+            "generationAttemptBudget": 4,
+            "speculativeAttemptBudgetApplied": false,
+            "fullWebInitialSeedStrategy": false,
+            "fullWebInitialSeedTargetBytes": [],
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "applyDepositResult",
+              "connectRoom",
+              "begin"
+            ],
+            "primarySystems": [
+              "SAVE",
+              "PLACEMENT",
+              "WORLD",
+              "COMBAT",
+              "AI",
+              "PROGRESSION",
+              "GOAL_STATE",
+              "CORE_STATE",
+              "INTERACTION",
+              "PRESENTATION",
+              "INPUT"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "SAVE",
+              "PRESENTATION",
+              "PLAYER",
+              "WORLD",
+              "INTERACTION",
+              "COMBAT",
+              "PLACEMENT",
+              "AI",
+              "PROGRESSION",
+              "ECONOMY"
+            ],
+            "ownedState": [
+              "multi",
+              "room",
+              "u",
+              "amount",
+              "state"
+            ],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "SAVE",
+                "PLACEMENT",
+                "WORLD",
+                "COMBAT",
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "PRESENTATION",
+                "INPUT"
+              ],
+              "preferredPrimarySymbols": [
+                "applyDepositResult",
+                "connectRoom",
+                "begin"
+              ],
+              "maxSystemCount": 11,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "SAVE",
+                "PRESENTATION",
+                "PLAYER",
+                "WORLD",
+                "INTERACTION",
+                "COMBAT",
+                "PLACEMENT",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": [
+                "ant-sim-id"
+              ]
+            },
+            "semanticDiffEnforcement": {
+              "version": 1,
+              "mode": "OBSERVE_ONLY",
+              "hardGate": false,
+              "pass": true,
+              "confidence": "MEDIUM",
+              "developmentMode": "PRESERVE_PATCH",
+              "markerCount": 29,
+              "editCount": 1,
+              "touchedSystems": [],
+              "allowedSystems": [
+                "SAVE",
+                "PLACEMENT",
+                "WORLD",
+                "COMBAT",
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "PRESENTATION",
+                "INPUT"
+              ],
+              "unexpectedSystems": [],
+              "unprovenEditPaths": [],
+              "protectedSaveKeyCount": 1,
+              "saveKeyViolations": [],
+              "saveContractMutations": [],
+              "saveKeyMigrationAllowed": false,
+              "saveContractInvariantEnforced": false,
+              "violations": [],
+              "ambiguousClassificationObserved": true,
+              "writableScopeExpansionAllowed": false,
+              "authorityExpanded": false,
+              "diagnosticPostcondition": {
+                "required": false,
+                "pass": true,
+                "type": null,
+                "file": null,
+                "reason": null
+              },
+              "presentationDelta": {
+                "required": false,
+                "pass": true,
+                "presentationPass": null,
+                "changedVisualUnits": 0,
+                "files": [],
+                "reason": "NOT_REQUIRED"
+              },
+              "studioQualityDelta": {
+                "required": false,
+                "pass": true,
+                "phase": null,
+                "focusPillar": null,
+                "requiredSourceDeltaUnits": 0,
+                "sourceDeltaUnits": 0,
+                "requiredVisualUnits": 0,
+                "visualUnits": 0,
+                "reason": "NOT_REQUIRED"
+              }
+            },
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": false,
+              "nodeTestTargets": [],
+              "executable": false,
+              "mode": "PLAN_ONLY",
+              "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+              "diagnosticType": null,
+              "diagnosticFile": null,
+              "diagnosticLine": null,
+              "diagnosticNeedle": null,
+              "diagnosticMicroTask": null,
+              "verifiedResponsibleSystem": null,
+              "diagnosticVerifier": null,
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "requiredFocusedChecks": [
+              "OWNER_STATE_INVARIANTS",
+              "MICRO_CORE_STATE",
+              "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+              "MICRO_INPUT",
+              "MICRO_PRESENTATION",
+              "MICRO_WORLD",
+              "MICRO_COMBAT",
+              "MICRO_AI",
+              "MICRO_INTERACTION",
+              "MICRO_PROGRESSION",
+              "MICRO_PLACEMENT",
+              "MICRO_SAVE",
+              "MICRO_GOAL_STATE",
+              "HOTSPOT_RECHECK:SYMBOL:applyDepositResult",
+              "HOTSPOT_RECHECK:SYMBOL:connectRoom",
+              "HOTSPOT_RECHECK:SYMBOL:begin",
+              "HOTSPOT_RECHECK:SYSTEM:SAVE",
+              "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+              "HOTSPOT_RECHECK:SYSTEM:WORLD",
+              "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+              "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY",
+              "GAME_REPAIR_INVARIANT_VALIDATION",
+              "GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION",
+              "GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION"
+            ],
+            "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|PLACEMENT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CONCEPT_DIRECTION|CORE_LOOP|ECONOMY|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_REPLICATION|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UEFN_REPLICATION|UEFN_RUNTIME|UI_STATE|UNITY_RUNTIME|WEB_RUNTIME",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "contextFiles": 1,
+            "contextBytes": 32488,
+            "contextMode": "STANDARD_CONTEXT",
+            "contextPreferenceRequested": null,
+            "contextPreferenceApplied": false,
+            "focusedSymbolCount": 0,
+            "exactSourceWindows": false,
+            "fullFileContextFallback": false,
+            "fullWebExpansionStages": 0,
+            "fullWebExpansionDocumentSeedRecoveries": 0,
+            "fullWebClosedHtmlEarlyStop": false,
+            "fullWebFinalAdditiveExpansion": false,
+            "fullWebAdditiveAttemptCreditUsed": false,
+            "fullWebProgressCreditCount": 0,
+            "fullWebProgressCreditUsed": false,
+            "missingPathRecoveries": 0,
+            "baseAttemptBudget": 4,
+            "effectiveAttemptBudget": 4,
+            "fullWebRetryPromptCompacted": false,
+            "fullWebRetryPromptBytes": 0,
+            "fullWebFallbackBestPartialBytes": 0,
+            "intermediateGrowthBytes": [],
+            "intermediateGrowthTotalBytes": 0,
+            "repeatedIntermediateOutputs": 0,
+            "expansionStageTargets": [],
+            "generationAttempts": 2,
+            "generationRecoveryUsed": true,
+            "partialTimeoutRecovery": false,
+            "partialMalformedRecovery": false,
+            "streamedPartialEditRecovery": false,
+            "robloxFullGraphicsInitialPackage": false,
+            "focusedFirstEditEarlyStop": false,
+            "focusedFinalRetry": true,
+            "focusedReplaceOnly": true,
+            "focusedReplaceStringRecovery": false,
+            "focusedFirstAttemptFastPath": false,
+            "malformedFastEscalation": false,
+            "focusedReplaceAnchorRotations": 0,
+            "focusedReplaceNoOpCreditUsed": false,
+            "focusedMinimalJsonContract": true,
+            "candidateProducedFirstAttempt": false,
+            "deterministicDiagnosticRepair": false,
+            "deterministicDiagnosticType": null,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": true,
+            "incrementalQaPass": true,
+            "performanceSanityPass": true,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "PLAN_ONLY",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "ANALYZED",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "CANDIDATE_MANIFEST"
+          },
+          "presentationQuality": {
+            "required": false,
+            "pass": null,
+            "authorityExpanded": false,
+            "staticQaStatus": "NOT_REQUIRED",
+            "staticQaPass": "NONE",
+            "runtimeQaRequired": false,
+            "runtimeVisualComparison": null
+          },
+          "gameRepairQa": {
+            "status": "WAITING_EVIDENCE",
+            "required": true,
+            "failureStage": null,
+            "failureSignature": null,
+            "responsibleSystem": "SAVE",
+            "responsibleFiles": [
+              "index.html"
+            ],
+            "prePatchReproduced": false,
+            "originalScenarioReplay": "PENDING_RUNTIME_EVIDENCE",
+            "invariants": "PENDING_RUNTIME_EVIDENCE",
+            "invariantResults": [],
+            "saveMigration": "PENDING_RUNTIME_EVIDENCE",
+            "saveResults": [],
+            "multiplayerLifecycle": "PENDING_AUTONOMOUS_HARNESS_EVIDENCE",
+            "multiplayerResults": [],
+            "multiplayerAutomation": {
+              "userAssistanceRequired": false,
+              "minimumPlayers": 2,
+              "minimumSyntheticOrRealClients": 2,
+              "machineDrivenScenarios": [
+                "TWO_CLIENT_JOIN_AND_READY",
+                "SIMULTANEOUS_CORE_ACTION",
+                "SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE",
+                "ONE_CLIENT_LEAVE",
+                "ONE_CLIENT_REJOIN",
+                "LATE_JOIN_STATE_RECONCILIATION",
+                "AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC",
+                "DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK"
+              ],
+              "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": true
+            },
+            "repeatCount": 0,
+            "repairMode": "FOCUSED_REPAIR",
+            "revisions": {
+              "lastKnownGoodRevision": null,
+              "firstBrokenRevision": null,
+              "currentRevision": "594e1ce6eabe58d1f778896f32b5bcb45cb764b3"
+            },
+            "revisionComparison": "PARTIAL",
+            "readyForFanIn": false,
+            "fullRegressionStillRequired": true,
+            "unchangedSourceRevalidationForbidden": true,
+            "authorityExpanded": false
+          },
+          "specializedVerificationRequest": {
+            "version": 2,
+            "required": true,
+            "requestedMarkers": [
+              "VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS",
+              "VERIFIED_WORLD_ROUTE_NAVIGATION_PASS",
+              "VERIFIED_STREAMING_MOBILE_BUDGET_PASS",
+              "VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS",
+              "VERIFIED_WORLD_NARRATIVE_STATE_PASS"
+            ],
+            "target": "web",
+            "gameTargetEligible": true,
+            "blockedReason": null,
+            "nativeRuntimeRequired": false,
+            "focusedQaRequired": true,
+            "markerOnlyPassForbidden": true,
+            "requestAuthority": "VERIFICATION_REQUEST_ONLY_NOT_PASS"
+          },
+          "specializedVerificationQa": {
+            "status": "FOCUSED_STATIC_NOT_VERIFIED",
+            "requestedMarkers": [
+              "VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS",
+              "VERIFIED_WORLD_ROUTE_NAVIGATION_PASS",
+              "VERIFIED_STREAMING_MOBILE_BUDGET_PASS",
+              "VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS",
+              "VERIFIED_WORLD_NARRATIVE_STATE_PASS"
+            ],
+            "failedMarkers": [
+              "VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS",
+              "VERIFIED_WORLD_ROUTE_NAVIGATION_PASS",
+              "VERIFIED_STREAMING_MOBILE_BUDGET_PASS",
+              "VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS"
+            ],
+            "results": {
+              "VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS": {
+                "pass": false,
+                "checks": [
+                  {
+                    "name": "STRUCTURAL_SIGNAL_1",
+                    "pass": false
+                  },
+                  {
+                    "name": "STRUCTURAL_SIGNAL_2",
+                    "pass": true
+                  }
+                ],
+                "staticOnly": true
+              },
+              "VERIFIED_WORLD_ROUTE_NAVIGATION_PASS": {
+                "pass": false,
+                "checks": [
+                  {
+                    "name": "STRUCTURAL_SIGNAL_1",
+                    "pass": false
+                  },
+                  {
+                    "name": "STRUCTURAL_SIGNAL_2",
+                    "pass": true
+                  }
+                ],
+                "staticOnly": true
+              },
+              "VERIFIED_STREAMING_MOBILE_BUDGET_PASS": {
+                "pass": false,
+                "checks": [
+                  {
+                    "name": "STRUCTURAL_SIGNAL_1",
+                    "pass": false
+                  },
+                  {
+                    "name": "STRUCTURAL_SIGNAL_2",
+                    "pass": true
+                  }
+                ],
+                "staticOnly": true
+              },
+              "VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS": {
+                "pass": false,
+                "checks": [
+                  {
+                    "name": "STRUCTURAL_SIGNAL_1",
+                    "pass": false
+                  },
+                  {
+                    "name": "STRUCTURAL_SIGNAL_2",
+                    "pass": true
+                  }
+                ],
+                "staticOnly": true
+              },
+              "VERIFIED_WORLD_NARRATIVE_STATE_PASS": {
+                "pass": true,
+                "checks": [
+                  {
+                    "name": "STRUCTURAL_SIGNAL_1",
+                    "pass": true
+                  },
+                  {
+                    "name": "STRUCTURAL_SIGNAL_2",
+                    "pass": true
+                  }
+                ],
+                "staticOnly": true
+              }
+            },
+            "finalMarkerAuthority": "FAN_IN_ONLY",
+            "finalVerifiedMarkers": [],
+            "learningPromotionBlocked": true,
+            "gameReleaseBlockedBySpecializedQa": false,
+            "fullRegressionStillRequired": true,
+            "nativeRuntimeStillRequired": false,
+            "runtimeStillRequired": true,
+            "markerOnlyPassForbidden": true,
+            "authorityExpanded": false
+          },
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "PASS",
+            "test": "PASS",
+            "performance": "PASS",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "practiceArtifact": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/ant-simulator",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-4",
+                "value": "web-stage:WEB_BASE_IMPLEMENTATION",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-5",
+                "value": "supervised-web-build:required",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-6",
+                "value": "automatic-promotion:blocked-until-supervised-approval",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "save-compatibility",
+                "to": "WEB_BASE_IMPLEMENTATION",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 1
+              }
+            ],
+            "responsibility": {
+              "system": "SAVE_SYSTEM",
+              "confidence": 1,
+              "alternatives": [],
+              "basis": "WEIGHTED_SHADOW_HYPOTHESES",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SAVE_SYSTEM",
+              "confidence": 1,
+              "basis": "RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 6,
+                "recurrence": 2,
+                "sharedScope": 2,
+                "priority": 2,
+                "evidenceConfidence": 0.9
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [
+              "SUPERVISOR_PASS_REQUIRED_BUT_MISSING",
+              "SECURITY_POLICY_BLOCK"
+            ],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": "WEB_BASE_IMPLEMENTATION",
+              "responsibleSystem": "SAVE_SYSTEM",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": true,
+              "blocker": "SUPERVISOR_PASS_REQUIRED_BUT_MISSING"
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_c487582246e9035b791501b3",
+              "capability_ctrace_ca07155796f1d9843b59a64b",
+              "capability_ctrace_8f46ea8c8412790f7b83bfab",
+              "capability_ctrace_a670473591ad9b9fb242be1b",
+              "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_c487582246e9035b791501b3",
+              "capability_ctrace_ca07155796f1d9843b59a64b",
+              "capability_ctrace_8f46ea8c8412790f7b83bfab",
+              "capability_ctrace_a670473591ad9b9fb242be1b",
+              "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 306699,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
+              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
+              "EXPERIENCE:exp_system_ai_66f247e678e51fa6dbfc877d",
+              "EXPERIENCE:exp_i00mwv",
+              "CODE_PATTERN:pat_1dj8rdx",
+              "CODE_PATTERN:pat_1e917b8",
+              "CODE_PATTERN:pat_36ety1",
+              "CODE_PATTERN:pat_5c3wb1",
+              "CODE_PATTERN:pat_desch8",
+              "CODE_PATTERN:pat_k04lsk",
+              "PRACTICE_DISTILLED:practice-distilled:92fb83ea92ed0720b0e4",
+              "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c",
+              "PRACTICE_DISTILLED:practice-distilled:f472b70e86846f6460f2",
+              "PRACTICE_DISTILLED:practice-distilled:0de29fd765422439deeb",
+              "PRACTICE_DISTILLED:practice-distilled:09a44488217c1cb39ff9",
+              "PRACTICE_DISTILLED:practice-distilled:c326dcaa9ac607946c22",
+              "VERIFIED_CAPABILITY:capability_ctrace_c487582246e9035b791501b3",
+              "VERIFIED_CAPABILITY:capability_ctrace_ca07155796f1d9843b59a64b",
+              "VERIFIED_CAPABILITY:capability_ctrace_8f46ea8c8412790f7b83bfab",
+              "VERIFIED_CAPABILITY:capability_ctrace_a670473591ad9b9fb242be1b",
+              "VERIFIED_CAPABILITY:capability_ctrace_8d74f51489e0fcd3b8c02e18"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "workLock": {
+            "required": true,
+            "acquired": true,
+            "id": "wl-yjpvb6",
+            "reason": "existing-worker-task-lock",
+            "worker": "vibe2",
+            "baseSha": "594e1ce6eabe58d1f778896f32b5bcb45cb764b3",
+            "files": [
+              "web-games/ant-simulator/index.html"
+            ],
+            "releaseRule": "RELEASE_AFTER_FAN_IN_QA_OR_ABORT"
+          },
+          "metrics": {
+            "requestedMax": 256,
+            "effectiveMax": 256,
+            "reservationId": "36193711704:1",
+            "reservedAt": "2026-09-25T21:51:22Z",
+            "workerStartedAt": 1790373338466,
+            "workerFinishedAt": 1790373645165,
+            "checkoutMs": 3782,
+            "modelPrepMs": 3340,
+            "candidateMs": 273369,
+            "qaMs": 82,
+            "workerTotalMs": 306699,
+            "changedFileCount": 1,
+            "addedLineCount": 1,
+            "deletedLineCount": 1,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
         }
       ],
       "buildUpDirective": null,
