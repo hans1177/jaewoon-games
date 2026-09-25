@@ -284,10 +284,10 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(studioMcpBlock,/development-roblox-package-\$\{\{ matrix\.gameId \}\}/);
   assert.match(studioMcpBlock,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
   assert.match(studioMcpBlock,/Roblox\\mcp\.bat/);
-  assert.match(studioMcpBlock,/StudioMCP\.exe/);
-  assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
-  assert.match(studioMcpBlock,/\(\?im\)\^\\s\*else\\b/);
-  assert.match(studioMcpBlock,/%B\[\/\\\\\]\\\.\\\.\[\/\\\\\]StudioMCP\\\.exe/);
+  assert.match(studioMcpBlock,/ROBLOX_DOCUMENTED_MCP_BATCH/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WINDOWS_TRANSPORT=cmd\.exe \/c %LOCALAPPDATA%\\\\Roblox\\\\mcp\.bat/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_DIRECT_EXE_LAUNCH=NO/);
+  assert.doesNotMatch(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK|\$mcpCommand\s*=\s*\$mcpExe/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POLICY=PASS/);
@@ -315,9 +315,11 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/:available=/);
 });
 
-test('Windows Studio MCP transport keeps documented batch launch and supports installed official binary fallback',()=>{
-  assert.match(helper,/process\.platform==='win32'&&\/\\\.exe\$\/i\.test\(resolved\)\)return\{command:resolved,args:\[\]\}/);
-  assert.match(helper,/process\.platform==='win32'\)return\{command:'cmd\.exe',args:\['\/c',resolved\]\}/);
+test('Windows Studio MCP transport is the documented mcp.bat path only',()=>{
+  assert.match(helper,/ROBLOX_STUDIO_MCP_WINDOWS_DIRECT_EXE_FORBIDDEN/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_WINDOWS_DOCUMENTED_BATCH_REQUIRED/);
+  assert.match(helper,/return\{command:'cmd\.exe',args:\['\/c',resolved\]\}/);
+  assert.doesNotMatch(helper,/return\{command:resolved,args:\[\]\}/);
   assert.doesNotMatch(helper,/args:\['\/d','\/s','\/c',resolved\]/);
   assert.match(helper,/this\.stderrTail=\(this\.stderrTail\+value\)\.slice\(-6000\)/);
   assert.match(helper,/stderr=\$\{detail\}/);
@@ -341,10 +343,11 @@ test('Studio MCP failure evidence path is exported before the MCP process can fa
 });
 
 
-test('Studio MCP diagnostics expose installed version and available tool inventory on contract mismatch',()=>{
+test('Studio MCP diagnostics expose Studio version, documented Windows transport, and available tool inventory',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_PRODUCT_VERSION=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PRODUCT_VERSION=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WINDOWS_TRANSPORT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_LAUNCH_KIND=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_TOOL_MISSING:'\+name\+':available='\+available\.join\(','\)/);
 });
 
