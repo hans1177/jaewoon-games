@@ -1,6 +1,6 @@
 {
   "version": 29,
-  "updatedAt": "2026-09-25T03:47:49.173Z",
+  "updatedAt": "2026-09-25T04:08:42.290Z",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -186,7 +186,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "ROBLOX",
@@ -321,7 +321,7 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-22T16:29:04.244Z",
+      "updatedAt": "2026-09-25T04:08:42.290Z",
       "playModes": [
         "SINGLE",
         "COOP"
@@ -364,16 +364,16 @@
       "publishTestBuildWhenReady": true,
       "homepageWebPlayable": false,
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "homepageCategory": "design-only",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "주력 개발 · Roblox Headless FAST_MVP",
+      "homepageStage": "최소 Roblox/Unity 설계 보강 필요",
       "homepageRecentWork": "설계=코드 동기화 · RPG_HEROIC_PORTAL_FANTASY",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -514,7 +514,7 @@
         "ROBLOX": "roblox-games/daechung-rpg",
         "UNITY": "unity-games/daechung-rpg"
       },
-      "updatedAt": "2026-09-22T19:50:00+09:00",
+      "updatedAt": "2026-09-25T04:08:42.290Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 2,
       "playModes": [
@@ -535,7 +535,10 @@
       "designBaselineSource": "design/daechung-rpg/2026-09-22/design-revised.json",
       "aliases": [
         "대충 RPG"
-      ]
+      ],
+      "productionTier": 3,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "horror-escape-room",
@@ -551,15 +554,15 @@
       "hasWebArchive": false,
       "featured": true,
       "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "homepageCategory": "design-only",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-      "homepageStage": "주력 개발 · Roblox Headless FAST_MVP",
+      "homepageStage": "최소 Roblox/Unity 설계 보강 필요",
       "homepageRecentWork": "설계=코드 동기화 · 4대4 감염전 · REALISTIC_HUMANS_ABERRANT_MONSTERS",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -578,7 +581,7 @@
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
       "catalogOrder": 4,
-      "updatedAt": "2026-09-22T19:50:00+09:00",
+      "updatedAt": "2026-09-25T04:08:42.290Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -709,7 +712,10 @@
         }
       },
       "nameEnglish": "Midnight Infection [4v4]",
-      "internationalTitle": "Midnight Infection [4v4]"
+      "internationalTitle": "Midnight Infection [4v4]",
+      "productionTier": 3,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "amusement-tycoon",
@@ -735,7 +741,7 @@
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -867,7 +873,10 @@
         "ROBLOX": "roblox-games/amusement-tycoon",
         "UNITY": "unity-games/amusement-tycoon"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "bug-defense",
@@ -893,7 +902,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -1022,7 +1031,10 @@
         "ROBLOX": "roblox-games/bug-defense",
         "UNITY": "unity-games/bug-defense"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "line-defense",
@@ -1047,7 +1059,7 @@
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -1176,7 +1188,10 @@
         "ROBLOX": "roblox-games/line-defense",
         "UNITY": "unity-games/line-defense"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "village-dungeons",
@@ -1202,7 +1217,7 @@
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -1334,7 +1349,10 @@
         "ROBLOX": "roblox-games/village-dungeons",
         "UNITY": "unity-games/village-dungeons"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "fantasy-survival",
@@ -1495,8 +1513,9 @@
         "ROBLOX": "roblox-games/fantasy-survival",
         "UNITY": "unity-games/fantasy-survival"
       },
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2
     },
     {
       "id": "monster-adventure",
@@ -1522,7 +1541,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -1651,7 +1670,10 @@
         "ROBLOX": "roblox-games/monster-adventure",
         "UNITY": "unity-games/monster-adventure"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1678,7 +1700,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -1803,7 +1825,10 @@
         "ROBLOX": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "UNITY": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "seed-casual-realm-weaver",
@@ -1830,7 +1855,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -1955,7 +1980,10 @@
         "ROBLOX": "roblox-games/seed-casual-realm-weaver",
         "UNITY": "unity-games/seed-casual-realm-weaver"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "seed-idle-growth-rpg-crystal-bloom",
@@ -1982,7 +2010,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -2107,7 +2135,10 @@
         "ROBLOX": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
         "UNITY": "unity-games/seed-idle-growth-rpg-crystal-bloom"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "seed-puzzle-chromatic-cascade",
@@ -2134,7 +2165,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -2259,7 +2290,10 @@
         "ROBLOX": "roblox-games/seed-puzzle-chromatic-cascade",
         "UNITY": "unity-games/seed-puzzle-chromatic-cascade"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion",
@@ -2286,7 +2320,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -2417,7 +2451,10 @@
         "ROBLOX": "roblox-games/seed-single-defense-strat-celestial-bastion",
         "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -2444,7 +2481,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -2569,7 +2606,10 @@
         "ROBLOX": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "UNITY": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "survival",
@@ -2595,7 +2635,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -2720,7 +2760,10 @@
         "ROBLOX": "roblox-games/survival",
         "UNITY": "unity-games/survival"
       },
-      "updatedAt": "2026-09-22T16:29:04.244Z"
+      "updatedAt": "2026-09-25T04:08:42.290Z",
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "crystal-defense",
