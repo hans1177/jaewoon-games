@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "recordId": "fantasy-survival-unity-roblox-path-2026-09-20",
+  "recordType": "native-path",
+  "domain": "development",
+  "scope": {
+    "type": "GAME",
+    "id": "fantasy-survival",
+    "gameId": "fantasy-survival",
+    "platform": "CROSS_PLATFORM"
+  },
+  "timestamps": {
+    "createdAt": "2026-09-20T19:31:00Z",
+    "observedAt": "2026-09-20T19:31:00Z"
+  },
+  "provenance": {
+    "producer": "VIBE_NATIVE_SOURCE_BIND_REVIEW",
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "sourceRevision": "e095a8f71188ffdc8f97eaf909922d1d442ce249",
+    "artifactIdentity": "",
+    "sourceRefs": [
+      "game-catalog.json",
+      "tools/company-development-unity-bootstrap.mjs",
+      "tools/company-development-roblox-bootstrap.mjs",
+      "tools/vibe2-auto-planner.mjs",
+      "company-learning/platform-release-roadmap.json"
+    ],
+    "rebasedAt": "2026-09-20T21:03:00Z"
+  },
+  "status": "VERIFIED",
+  "retentionClass": "CANONICAL",
+  "data": {
+    "currentCatalogState": {
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "selectedPlatform": "UNITY",
+      "productionTarget": "unity-android",
+      "unityProjectPath": "",
+      "robloxProjectPath": ""
+    },
+    "unity": {
+      "canonicalProjectRoot": "unity-games/fantasy-survival",
+      "bootstrapOwner": "tools/company-development-unity-bootstrap.mjs",
+      "target": "unity-android",
+      "presentationEntryCandidates": [
+        "unity-games/fantasy-survival/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "gameplayCoreExpected": "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
+      "directAuthoring": [
+        "CSHARP_PROCEDURAL_MESH_AND_LOW_POLY_MODEL",
+        "CSHARP_RUNTIME_MATERIAL_AND_LIGHTING",
+        "CSHARP_PARTICLE_VFX_AND_TRAILS",
+        "CSHARP_RUNTIME_ANIMATION_AND_SECONDARY_MOTION",
+        "UGUI_RUNTIME_PRESENTATION"
+      ],
+      "dispatchPriority": "PRIMARY_SELECTED_PLATFORM"
+    },
+    "roblox": {
+      "canonicalProjectRoot": "roblox-games/fantasy-survival",
+      "bootstrapOwner": "tools/company-development-roblox-bootstrap.mjs",
+      "requiredGeneratedFiles": [
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/default.project.json"
+      ],
+      "directAuthoring": [
+        "LUAU_COMPOSED_LOW_POLY_MODEL",
+        "LUAU_MATERIAL_COLOR_AND_LIGHTING",
+        "LUAU_PARTICLE_BEAM_TRAIL_VFX",
+        "LUAU_RUNTIME_ANIMATION_AND_SECONDARY_MOTION",
+        "LUAU_UI_PRESENTATION"
+      ],
+      "dispatchPriority": "CONCURRENT_NATIVE_ASSET_AND_SOURCE_LANE_WHEN_ELIGIBLE"
+    },
+    "crossPlatformRules": {
+      "webIsGameplayAndArtDirectionReference": true,
+      "webSvgDirectReuseIntoNativeForbidden": true,
+      "nativeAssetsMustBePlatformNativeOrExplicitlyCompatible": true,
+      "rulesBalanceSaveProgressionMustBePreserved": true,
+      "catalogProjectPathMayBePublishedBeforeSourceExists": false,
+      "runtimeEvidenceCannotBeReplacedByWebEvidence": true
+    },
+    "currentDispatchState": "BLOCKED_BY_WEB_RUNTIME_PRESENTATION_GATE",
+    "blocker": "GRAPHICS_RECORD_REQUIRES_ACTUAL_WEB_MOBILE_RUNTIME_VISUAL_EVIDENCE",
+    "nextGate": "PASS_WEB_RUNTIME_PRESENTATION_THEN_RUN_CANONICAL_NATIVE_SOURCE_BIND"
+  },
+  "evidenceRefs": [
+    "PR:2166",
+    "PR:2225"
+  ],
+  "relatedFiles": [
+    "game-catalog.json",
+    "tools/company-development-unity-bootstrap.mjs",
+    "tools/company-development-roblox-bootstrap.mjs",
+    "tools/vibe2-auto-planner.mjs",
+    "company-learning/platform-release-roadmap.json"
+  ],
+  "supersedes": [],
+  "tags": [
+    "fantasy-survival",
+    "native",
+    "unity",
+    "roblox",
+    "source-bind",
+    "path-decision"
+  ]
+}
