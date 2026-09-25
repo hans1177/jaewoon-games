@@ -228,6 +228,8 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.doesNotMatch(studioMcpBlock,/RobloxPlayerBeta|RobloxPlayerLauncher|roblox:\/\//i);
   assert.doesNotMatch(studioMcpBlock,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
   assert.doesNotMatch(studioMcpBlock,/Get-Content 'C:\\\\actions-runner\\\\\.runner'|ConvertFrom-Json.*runnerMetadata/);
+  assert.doesNotMatch(studioMcpBlock,/platform-release-roadmap\.json['"]?\s+-Raw\s+\|\s+ConvertFrom-Json/);
+  assert.match(studioMcpBlock,/node -e "const r=require\('\.\/main\/company-learning\/platform-release-roadmap\.json'\)/);
   assert.doesNotMatch(studioMcpBlock,/--mode=mcp-run[\s\S]{0,500}(--place-id=|--universe-id=)/);
 });
 
