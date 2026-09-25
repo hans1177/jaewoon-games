@@ -74,12 +74,16 @@ test('Unity source drift invalidates readiness and returns the new game to Unity
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('already-started native games remain grandfathered and are never rewound to Unity Web floor',()=>{
-  const item={...baseItem('existing-game'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
-  const result=classifyUpperPlatformAdmission(item,{repoRoot:fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-grandfather-')),grandfatherGameIds:['existing-game']});
-  assert.equal(result.state,'UPPER_PLATFORM');
-  assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
-  assert.equal(result.grandfathered,true);
+test('already-started native games remain grandfathered from durable progress evidence without an explicit game allowlist',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-grandfather-'));
+  try{
+    const item={...baseItem('existing-game'),currentStep:'TARGET_PLATFORM_SOURCE_BIND',robloxFoundationF0Passed:true};
+    const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
+    assert.equal(result.grandfathered,true);
+    assert.equal(result.grandfatherSource,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('readiness must pass all seven domains and may never gain release authority',()=>{
@@ -111,28 +115,55 @@ test('readiness must pass all seven domains and may never gain release authority
 });
 
 
-test('native-started games outside the explicit grandfather list still enter Unity Web floor or bootstrap',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-non-grandfather-'));
+test('any durable native progress continues without backtracking, regardless of game id',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-native-progress-'));
   try{
-    const item={...baseItem('existing-other'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
-    let result=classifyUpperPlatformAdmission(item,{repoRoot:root,grandfatherGameIds:['cozy-island','daechung-rpg']});
-    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
-    assert.match(result.reason,/CANONICAL_UNITY_WEB_SOURCE_REQUIRED/);
+    for(const item of [
+      {...baseItem('existing-source'),robloxSourceCommit:'0123456789012345678901234567890123456789',robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'},
+      {...baseItem('existing-build'),robloxBuildOrPackagePassed:true},
+      {...baseItem('existing-runtime'),robloxRuntimeCandidateEvidence:{published:true}},
+      {...baseItem('existing-unity'),unityRuntimePassed:true},
+    ]){
+      const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+      assert.equal(result.state,'UPPER_PLATFORM');
+      assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
+      assert.equal(result.grandfathered,true);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
-    write(root,'unity-games/existing-other/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
-    result=classifyUpperPlatformAdmission(item,{repoRoot:root,grandfatherGameIds:['cozy-island','daechung-rpg']});
+test('a source bootstrap timestamp without an exact native source commit cannot bypass the Unity Web gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-bootstrap-only-'));
+  try{
+    const item={...baseItem('bootstrap-only'),robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'};
+    let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    write(root,'unity-games/bootstrap-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
+    result=classifyUpperPlatformAdmission(item,{repoRoot:root});
     assert.equal(result.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('only the owner-scoped cozy-island and daechung-rpg examples may grandfather native progress',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-owner-scope-'));
+test('a native-looking currentStep without durable evidence cannot bypass the Unity Web gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-step-only-'));
   try{
-    for(const gameId of ['cozy-island','daechung-rpg']){
-      const result=classifyUpperPlatformAdmission({...baseItem(gameId),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'},{repoRoot:root,grandfatherGameIds:['cozy-island','daechung-rpg']});
-      assert.equal(result.state,'UPPER_PLATFORM');
-      assert.equal(result.grandfathered,true);
-    }
+    const item={...baseItem('step-only'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
+    let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    write(root,'unity-games/step-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
+    result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UNITY_WEB_FLOOR');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('an explicit migration id without durable native progress cannot bypass the Unity Web gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-explicit-no-evidence-'));
+  try{
+    let result=classifyUpperPlatformAdmission(baseItem('listed-but-new'),{repoRoot:root,grandfatherGameIds:['listed-but-new']});
+    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    write(root,'unity-games/listed-but-new/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
+    result=classifyUpperPlatformAdmission(baseItem('listed-but-new'),{repoRoot:root,grandfatherGameIds:['listed-but-new']});
+    assert.equal(result.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
