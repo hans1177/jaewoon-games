@@ -299,6 +299,8 @@ fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify(
   unityPlatformProfile:profile,
   purpose:'UNITY_WEB_DEVELOPMENT_FLOOR',
   developmentFloor:true,
+  presentationState:'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP',
+  upperPlatformReady:false,
   releaseOrDeploymentAuthority:false,
   generatedAt:new Date().toISOString()
 },null,2)+'\n');
