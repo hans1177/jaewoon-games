@@ -251,6 +251,7 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
   assert.match(workflow,/studio-local-plan:[\s\S]*needs: runtime-foundation-qa[\s\S]*if: always\(\) && needs\.runtime-foundation-qa\.result != 'cancelled'/);
+  assert.match(workflow,/studio-mcp-auto-play:[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
   assert.match(workflow,/event_type = 'vibe2-fanin-refill'/);
   assert.match(workflow,/reason = 'roblox-official-studio-mcp-actual-play'/);
 });
