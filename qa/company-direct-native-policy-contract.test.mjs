@@ -120,7 +120,7 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   const gate=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
   const loop=gate.internalBuildupLoop;
   const hard=gate.externalPublicReleaseHardGate;
-  assert.equal(loop.status,'ACTIVE_EXECUTABLE_CONTRACT_WITH_ACTUAL_VIBE_PLAY_EXECUTOR_REQUIRED');
+  assert.equal(loop.status,'ACTIVE_EXECUTABLE_CONTRACT');
   assert.equal(loop.startsAfter,'INTERNAL_PLATFORM_RELEASE');
   assert.equal(loop.perpetual,true);
   assert.equal(loop.neverCompletes,true);
@@ -155,7 +155,11 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   const archGate=architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate;
   assert.equal(archLoop.perpetual,true);
   assert.equal(archLoop.continuesAfterPublicRelease,true);
-  assert.equal(archLoop.actualPlayExecutor,'PENDING_DIRECT_BINDING_TO_EXISTING_ROBLOX_RUNTIME_NO_SHADOW_PIPELINE');
+  assert.equal(archLoop.actualPlayExecutor,'.github/workflows/company-development-roblox-internal-vibe-play.yml');
+  assert.equal(loop.actualVibePlayExecutor,'.github/workflows/company-development-roblox-internal-vibe-play.yml');
+  assert.equal(loop.actualPlayerProcessRequired,true);
+  assert.equal(loop.actualInputRequired,true);
+  assert.equal(loop.distinctScreenChangeRequired,true);
   assert.equal(archGate.failClosed,true);
   assert.equal(archGate.actualVibePlayRequired,true);
   assert.equal(archGate.f9InternalReleaseCannotSetPublicReady,true);
@@ -182,4 +186,22 @@ test('every accepted Roblox buildup modification must rebuild before revalidatio
   assert.equal(a.rebuildAfterEveryAcceptedModification,true);
   assert.equal(a.staleArtifactReuseAfterSourceModification,false);
   assert.equal(a.revalidationInput,'NEWLY_REBUILT_EXACT_CANDIDATE_ONLY');
+});
+
+test('Roblox internal play owns gameplay-derived English-primary store presentation',()=>{
+  const gate=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
+  const store=gate.externalPublicReleaseHardGate.robloxStorePresentation;
+  assert.equal(store.title.primaryLanguage,'EN');
+  assert.equal(store.title.secondarySubtitleLanguage,'KO');
+  assert.equal(store.title.hierarchy,'ENGLISH_PRIMARY_KOREAN_SECONDARY');
+  assert.equal(store.iconAndThumbnail.source,'ACTUAL_INTERNAL_VIBE_PLAY_GAMEPLAY_FRAMES');
+  assert.equal(store.iconAndThumbnail.homepageCandidateCount,3);
+  assert.equal(store.iconAndThumbnail.genericSharedPlaceholderForbidden,true);
+  assert.equal(store.iconAndThumbnail.uploadVerificationRequired,true);
+  assert.ok(gate.externalPublicReleaseHardGate.requirements.includes('ROBLOX_BILINGUAL_TITLE_EVIDENCE_PASS'));
+  assert.ok(gate.externalPublicReleaseHardGate.requirements.includes('ROBLOX_ICON_AND_THUMBNAIL_UPLOAD_VERIFY_PASS'));
+  const a=architecture.releaseExposureLifecycle.robloxStorePresentation;
+  assert.equal(a.workflow,'.github/workflows/company-development-roblox-internal-vibe-play.yml');
+  assert.equal(a.thumbnailCandidateCount,3);
+  assert.equal(a.newRuntimeCandidateInvalidatesEvidence,true);
 });
