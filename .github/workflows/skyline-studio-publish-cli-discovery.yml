@@ -1,0 +1,71 @@
+name: Skyline Studio Publish CLI Discovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/skyline-studio-publish-cli-discovery.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skyline-studio-publish-cli-discovery
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    if: github.head_ref == 'diag/skyline-studio-publish-cli-20260917'
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 8
+    steps:
+      - name: Inspect authenticated Studio binary for publish/create CLI surfaces
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions\*\RobloxStudioBeta.exe') -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          Write-Host "ROBLOX_STUDIO_FILE_VERSION=$($studio.VersionInfo.FileVersion)"
+          Write-Host "ROBLOX_STUDIO_BINARY_BYTES=$($studio.Length)"
+          Write-Host 'ROBLOX_STUDIO_BINARY_INSPECTION=START'
+
+          $patterns = @(
+            'PublishPlace','PublishAs','PublishToRoblox','StudioPublishService','CreatePlace','CreateUniverse','CreateExperience',
+            'EditPlaceRevision','EditPlace','RunScript','StartServer','StartClient','localPlaceFile','placeId','universeId'
+          )
+          $remaining = @{}
+          foreach ($pattern in $patterns) { $remaining[$pattern] = $true }
+          $stream = [System.IO.File]::OpenRead($studio.FullName)
+          try {
+            $buffer = New-Object byte[] (4MB)
+            $carry = New-Object byte[] 512
+            $carryCount = 0
+            while (($read = $stream.Read($buffer,0,$buffer.Length)) -gt 0 -and $remaining.Count -gt 0) {
+              $combined = New-Object byte[] ($carryCount + $read)
+              if ($carryCount -gt 0) { [Array]::Copy($carry,0,$combined,0,$carryCount) }
+              [Array]::Copy($buffer,0,$combined,$carryCount,$read)
+              $ascii = [System.Text.Encoding]::ASCII.GetString($combined)
+              $unicode = [System.Text.Encoding]::Unicode.GetString($combined)
+              foreach ($pattern in @($remaining.Keys)) {
+                if (($ascii.IndexOf($pattern,[System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or ($unicode.IndexOf($pattern,[System.StringComparison]::OrdinalIgnoreCase) -ge 0)) {
+                  $remaining.Remove($pattern)
+                }
+              }
+              $carryCount = [Math]::Min($carry.Length,$combined.Length)
+              [Array]::Copy($combined,$combined.Length-$carryCount,$carry,0,$carryCount)
+            }
+          } finally {
+            $stream.Dispose()
+          }
+          $found = @()
+          foreach ($pattern in $patterns) {
+            $hit = -not $remaining.ContainsKey($pattern)
+            Write-Host "ROBLOX_STUDIO_BINARY_TOKEN_$($pattern.ToUpperInvariant())=$(if($hit){'YES'}else{'NO'})"
+            if ($hit) { $found += $pattern }
+          }
+          $files = Get-ChildItem $studio.Directory.FullName -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '(?i)publish|cloud|studio|place' } | Select-Object -ExpandProperty Name
+          foreach ($name in $files) { Write-Host "ROBLOX_STUDIO_RELATED_FILE=$name" }
+          Write-Host "ROBLOX_STUDIO_PUBLISH_CREATE_TOKEN_COUNT=$($found.Count)"
+          Write-Host 'ROBLOX_STUDIO_BINARY_INSPECTION=PASS'
