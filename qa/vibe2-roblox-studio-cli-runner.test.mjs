@@ -118,6 +118,16 @@ test('uncopylocked Studio copies separate edit-time identity evidence from play-
   assert.doesNotMatch(liveSmokeWorkflow, /vibe2-roblox-authorized-download-runner/);
 });
 
+test('Studio runtime captures console errors and exposes UI checkpoints', () => {
+  const runtimeModule = fs.readFileSync('tools/runtime/roblox/Vibe2AutoPlayer.luau', 'utf8');
+  assert.match(runtimeModule, /LogService\.MessageOut:Connect/);
+  assert.match(runtimeModule, /MessageType\.MessageError/);
+  assert.match(runtimeModule, /studio-console-error/);
+  assert.match(studioCliSource, /ui-text-fits/);
+  assert.match(studioCliSource, /TextFits/);
+  assert.match(studioCliSource, /ui-visible-elements/);
+});
+
 test('production Studio runtime can bind play evidence to the exact published place version', () => {
   assert.match(studioCliSource, /normalizedPlaceVersion/);
   assert.match(studioCliSource, /game\.PlaceVersion/);
