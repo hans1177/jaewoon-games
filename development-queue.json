@@ -498,7 +498,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T13:09:50.959Z",
+      "updatedAt": "2026-09-25T13:45:42.504Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -833,7 +833,7 @@
           {
             "type": "studio-mcp-infrastructure-or-runtime-error",
             "actionId": null,
-            "signature": "ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios,get_studio_state,start_stop_play,get_console_output,screen_capture,user_keyboard_input:available=:protocol=2024-11-05:server=RobloxStudio"
+            "signature": "MCP process exited code=1 signal=null stderr='else'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ� ��ġ ������ �ƴմϴ�. '\"%B/..\\StudioMCP.exe\"'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ� ��ġ ������ �ƴմϴ�. '))'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ� ��ġ ������ �ƴմϴ�."
           }
         ],
         "runtimeSummary": {
@@ -850,8 +850,8 @@
         "rawViewportIncluded": false,
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T13:09:50.959Z",
-        "workflowRunId": 36138676971,
+        "testedAt": "2026-09-25T13:45:42.504Z",
+        "workflowRunId": 36142793459,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -6272,7 +6272,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T13:43:49.171Z",
+  "updatedAt": "2026-09-25T13:45:42.504Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
