@@ -488,9 +488,15 @@ test('Roblox game source pushes route through exact changed-source sync instead 
 });
 
 
-test('exact Roblox runtime dispatch has an isolated workflow concurrency lane',()=>{
+test('exact Roblox dispatch stays per-game while batch runs do not serialize heavy execution',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const concurrency=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.workflowRunConcurrency;
+  assert.equal(concurrency.exactGameDispatchGroup,'PER_GAME_STABLE_GROUP');
+  assert.equal(concurrency.batchDispatchGroup,'UNIQUE_PER_WORKFLOW_RUN');
+  assert.equal(concurrency.batchRunsMayOverlap,true);
+  assert.equal(concurrency.sharedRuntimeWritersRemainSerialized,true);
+  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| format\('batch-\{0\}', github\.run_id\) \}\}/);
   assert.match(workflow,/source-bootstrap:[\s\S]*group: company-runtime-writer/);
   assert.match(workflow,/technical-persist:[\s\S]*group: company-runtime-writer/);
 });
