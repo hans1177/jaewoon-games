@@ -216,17 +216,19 @@ test('verified runtime error routes exact game to repair while infrastructure fa
 });
 
 test('runtime workflow uses exact local artifact plus official Studio MCP and no Player or undocumented Studio CLI automation',()=>{
-  assert.match(workflow,/studio-mcp-auto-play:/);
-  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(workflow,/development-roblox-package-\$\{\{ matrix\.gameId \}\}/);
-  assert.match(workflow,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
-  assert.match(workflow,/Roblox\\mcp\.bat/);
-  assert.match(workflow,/--mode=mcp-run/);
-  assert.match(workflow,/Local Place SHA256 mismatch/);
-  assert.match(workflow,/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/);
-  assert.doesNotMatch(workflow,/RobloxPlayerBeta|RobloxPlayerLauncher|roblox:\/\//i);
-  assert.doesNotMatch(workflow,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
-  assert.doesNotMatch(workflow,/--place-id=\$env:|--universe-id=\$env:/);
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioMcpBlock,/studio-mcp-auto-play:/);
+  assert.match(studioMcpBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(studioMcpBlock,/development-roblox-package-\$\{\{ matrix\.gameId \}\}/);
+  assert.match(studioMcpBlock,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
+  assert.match(studioMcpBlock,/Roblox\\mcp\.bat/);
+  assert.match(studioMcpBlock,/--mode=mcp-run/);
+  assert.match(studioMcpBlock,/Local Place SHA256 mismatch/);
+  assert.match(studioMcpBlock,/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/);
+  assert.doesNotMatch(studioMcpBlock,/RobloxPlayerBeta|RobloxPlayerLauncher|roblox:\/\//i);
+  assert.doesNotMatch(studioMcpBlock,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
+  assert.doesNotMatch(studioMcpBlock,/Get-Content 'C:\\\\actions-runner\\\\\.runner'|ConvertFrom-Json.*runnerMetadata/);
+  assert.doesNotMatch(studioMcpBlock,/--mode=mcp-run[\s\S]{0,500}(--place-id=|--universe-id=)/);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{

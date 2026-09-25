@@ -70,6 +70,10 @@ on:
       - 'qa/company-design-gate-scoring-v2.test.mjs'
       - 'qa/company-development-roblox-runtime.test.mjs'
       - 'qa/company-development-roblox-runtime-continuation.test.mjs'
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/company-development-roblox-studio-local-play.test.mjs'
+      - 'qa/company-development-roblox-post-runtime-qa.test.mjs'
       - 'qa/company-development-roblox-release-promotion.test.mjs'
       - 'qa/vibe2-handoff.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
@@ -126,6 +130,10 @@ on:
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/company-development-roblox-studio-local-play.test.mjs'
+      - 'qa/company-development-roblox-post-runtime-qa.test.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/homepage-test-candidate-sync.mjs'
@@ -215,6 +223,8 @@ jobs:
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
           node --check tools/company-development-roblox-source-reconcile.mjs
+          node --check tools/company-development-roblox-studio-local-play.mjs
+          node --test qa/company-development-roblox-studio-local-play.test.mjs qa/company-development-roblox-post-runtime-qa.test.mjs
           node --check tools/vibe2-post-release-focus.mjs
           node --check tools/homepage-test-candidate-sync.mjs
           node --check tools/company-status-sync.mjs
