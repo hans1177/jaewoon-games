@@ -162,3 +162,24 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   assert.equal(archGate.fixedDurationRequired,false);
   assert.equal(archGate.restrictedPublicTestRequired,false);
 });
+
+test('every accepted Roblox buildup modification must rebuild before revalidation and replay',()=>{
+  const loop=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalBuildupLoop;
+  assert.equal(loop.rebuildAfterEveryAcceptedModificationRequired,true);
+  assert.equal(loop.modifiedSourceMayNotReusePriorBuildArtifact,true);
+  assert.equal(loop.modifiedSourceInvalidatesAffectedPlayAndValidationEvidence,true);
+  assert.equal(loop.rebuildMustProduceNewExactCandidateBeforeRevalidation,true);
+  assert.equal(loop.revalidationMustBindToRebuiltCandidate,true);
+  assert.deepEqual(loop.rebuildSequence,[
+    'ACCEPTED_MODIFICATION_WRITTEN',
+    'PRIOR_AFFECTED_ARTIFACT_AND_PLAY_EVIDENCE_INVALIDATED',
+    'ROBLOX_PLATFORM_REBUILD',
+    'INTERNAL_REDEPLOY_EXACT_CANDIDATE',
+    'EXACT_CANDIDATE_REVALIDATION',
+    'VIBE_INTERNAL_PLAY'
+  ]);
+  const a=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
+  assert.equal(a.rebuildAfterEveryAcceptedModification,true);
+  assert.equal(a.staleArtifactReuseAfterSourceModification,false);
+  assert.equal(a.revalidationInput,'NEWLY_REBUILT_EXACT_CANDIDATE_ONLY');
+});
