@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
+import { unitySourceTreeSha256 } from '../tools/company-upper-platform-admission.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -1525,6 +1526,67 @@ public class Game:MonoBehaviour {
   assert.match(task.goal,/READINESS_DOMAIN:graphics/);
   assert.match(task.goal,/READINESS_DOMAIN:qa/);
   assert.match(task.goal,/7개 도메인이 모두 PASS하기 전에는 Roblox\/Unity 상위 플랫폼 개발 진입을 주장하지 않는다/);
+});
+
+
+test('readiness PASS hands Vibe development to both Roblox and Unity upper-platform sources',()=>{
+  const root=tempRepo();
+  const gameId='upper-ready-dual-native';
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
+    unityWebFirstStage:{
+      status:'OWNER_DIRECT_LOCKED',
+      scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+      developmentAdmissionAuthority:true,
+      validationSurfaceOnly:false
+    },
+    directNativeDualPlatformDevelopment:{
+      upperPlatformAdmissionMigration:{grandfatherGameIds:['cozy-island','daechung-rpg']}
+    }
+  },null,2),'utf8');
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','Game.cs'),'public class Game {}\n');
+  fs.writeFileSync(path.join(unityRoot,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  const treeSha=unitySourceTreeSha256(unityRoot);
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'upper-platform-development-readiness.json'),JSON.stringify({
+    version:1,gameId,state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
+    unitySourceTreeSha256:treeSha,releaseOrDeploymentAuthority:false,
+    criteria:{
+      design:{pass:true},code:{pass:true},graphics:{pass:true},webglBuild:{pass:true},
+      actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
+    }
+  },null,2));
+  fs.mkdirSync(path.join(root,'roblox-games',gameId),{recursive:true});
+  fs.writeFileSync(path.join(root,'roblox-games',gameId,'default.project.json'),'{}\n');
+  const projects=collectProjects(
+    {projects:[]},
+    {games:[{
+      id:gameId,name:'Upper Ready Dual Native',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE',
+      robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    root,
+    {items:[{
+      gameId,gameName:'Upper Ready Dual Native',
+      status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',selectedPlatform:'ROBLOX',
+      targetSourcePaths:{ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`}
+    }]}
+  ).filter(row=>row.gameId===gameId);
+  assert.deepEqual(projects.map(row=>row.engine).sort(),['roblox','unity']);
+  assert.equal(projects.every(row=>row.upperPlatformDevelopmentReady===true),true);
+  assert.equal(projects.some(row=>row.firstStageUnityWeb===true),false);
+  assert.equal(projects.find(row=>row.engine==='unity')?.source,'company-development-queue-upper-platform-unity');
+  assert.equal(projects.find(row=>row.engine==='roblox')?.source,'company-development-queue-upper-platform-roblox');
 });
 
 
