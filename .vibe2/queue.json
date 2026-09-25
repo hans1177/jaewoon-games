@@ -16987,6 +16987,41 @@
         "PRODUCTION_PASS_NO"
       ],
       "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-gap-character_voice-l1-g1",
+      "gameId": null,
+      "target": "web",
+      "department": "learning",
+      "type": "research",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=CHARACTER_VOICE_DRILL\ndomains=CHARACTER_VOICE\npracticeGeneration=1\npracticeMode=WEB_ARTIFACT\n소스 파일을 수정하지 않는다. 인물별 격식, 어휘, 문장 리듬, 감정 상태, 관계 변화, 알고 있는 정보 범위를 분리해 같은 말투로 붕괴하지 않게 한다. 원문 작가 스타일 모사는 하지 않는다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "sourceRoot": "learning-practice:gap-character_voice-l1",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:CHARACTER_VOICE_DRILL",
+        "practice-generation:1",
+        "learning-web-artifact-practice",
+        "practice-domain:CHARACTER_VOICE"
+      ],
+      "completionCriteria": [
+        "PRACTICE_WEB_ARTIFACT_VERIFIED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO"
+      ]
     }
   ]
 }
