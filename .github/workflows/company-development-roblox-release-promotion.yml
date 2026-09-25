@@ -458,8 +458,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
-          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            echo "ROBLOX_RELEASE_PERSIST_ATTEMPT=$attempt"
           node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
@@ -589,21 +593,22 @@ jobs:
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           NODE
-          git config user.name 'jaewoon-roblox-runtime'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+            git config user.name 'jaewoon-roblox-runtime'
+            git config user.email 'actions@users.noreply.github.com'
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_RELEASE_RUNTIME_PERSIST_NO_CHANGE=YES'
+              break
+            fi
             git commit -m 'runtime: persist Roblox private runtime candidate [skip ci]'
-            pushed=0
-            for attempt in 1 2 3; do
-              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
-              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-              sleep $((attempt*2))
-            done
-            test "$pushed" = '1'
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_RELEASE_PERSIST_PUSH=PASS:$attempt"
+              break
+            fi
+            echo "ROBLOX_RELEASE_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep 2
+          done
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
 
       - name: Dispatch existing game tester runtime foundation QA

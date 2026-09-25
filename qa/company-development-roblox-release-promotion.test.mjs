@@ -278,6 +278,19 @@ test('public release rejects static-only multiplayer evidence and requires the s
   assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));
 });
 
+test('private runtime candidate persist reapplies immutable result to latest runtime state until push succeeds',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  const start=workflow.indexOf('- name: Persist proven internal release state only');
+  const end=workflow.indexOf('- name: Dispatch existing game tester runtime foundation QA',start);
+  const persist=workflow.slice(start,end);
+  assert.match(persist,/while true; do/);
+  assert.match(persist,/ROBLOX_RELEASE_PERSIST_ATTEMPT=/);
+  assert.match(persist,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(persist,/ROBLOX_RELEASE_PERSIST_CONFLICT_RETRY=/);
+  assert.doesNotMatch(persist,/git rebase /);
+  assert.doesNotMatch(persist,/for attempt in 1 2 3/);
+});
+
 test('private runtime candidate deployment serializes only duplicate work for the same game',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/group: company-development-roblox-release-promotion-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);

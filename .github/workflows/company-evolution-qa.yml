@@ -284,6 +284,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/company-development-roblox-headless-fast-mvp.test.mjs
+          node --test qa/company-development-roblox-post-runtime-qa.test.mjs qa/company-development-roblox-release-promotion.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
