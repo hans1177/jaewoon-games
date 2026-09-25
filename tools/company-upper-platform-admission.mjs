@@ -50,10 +50,11 @@ export function discoverUnityWebBuildMethod(repoRoot,gameId){
 }
 
 export function nativeUpperPlatformAlreadyStarted(item={}){
-  const step=clean(item.currentStep).toUpperCase();
-  if(item.robloxFoundationF0Passed===true||item.robloxRuntimeCandidateEvidence?.published===true||item.robloxInternalReleasePublished===true)return true;
-  if(item.unityRuntimePassed===true||item.unityIndependentQaPassed===true||item.unityRegressionPassed===true)return true;
-  return step.startsWith('TARGET_PLATFORM_')&&step!=='TARGET_PLATFORM_SOURCE_BIND';
+  const robloxSourceBound=Boolean(clean(item.robloxSourceCommit))&&Boolean(item.robloxSourceBootstrapPassedAt);
+  const unitySourceBound=Boolean(clean(item.unitySourceCommit))&&Boolean(item.unitySourceBootstrapPassedAt);
+  if(robloxSourceBound||item.robloxBuildOrPackagePassed===true||item.robloxFoundationF0Passed===true||item.robloxRuntimeCandidateEvidence?.published===true||item.robloxInternalReleasePublished===true)return true;
+  if(unitySourceBound||item.unityBuildOrPackagePassed===true||item.unityBuildPassed===true||item.unityRuntimePassed===true||item.unityIndependentQaPassed===true||item.unityRegressionPassed===true)return true;
+  return false;
 }
 
 export function readUpperPlatformReadiness(repoRoot,gameId){
@@ -79,7 +80,8 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGam
   const targets=new Set(item.concurrentTargetPlatforms||[]);
   if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
   const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
-  if(grandfathered.has(gameId)&&nativeUpperPlatformAlreadyStarted(item))return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true};
+  const nativeStarted=nativeUpperPlatformAlreadyStarted(item);
+  if(nativeStarted)return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true,grandfatherSource:grandfathered.has(gameId)?'EXPLICIT_MIGRATION_LIST':'DURABLE_NATIVE_PROGRESS_EVIDENCE'};
   const readiness=readUpperPlatformReadiness(repoRoot,gameId);
   if(readiness.pass)return{gameId,state:'UPPER_PLATFORM',reason:'UPPER_PLATFORM_DEVELOPMENT_READY',grandfathered:false,readiness};
   const buildMethod=discoverUnityWebBuildMethod(repoRoot,gameId);
