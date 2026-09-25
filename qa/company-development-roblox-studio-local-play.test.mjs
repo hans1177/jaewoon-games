@@ -409,3 +409,11 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.equal(arch.assistantSettingsMutation,false);
   assert.equal(arch.guiToggleAutomation,false);
 });
+
+
+test('Studio MCP strategy matrix receives include rows only and never planner metadata axes',()=>{
+  const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioPlanBlock,/JSON\.stringify\(\{include:Array\.isArray\(x\.include\)\?x\.include:\[\]\}\)/);
+  assert.doesNotMatch(studioPlanBlock,/JSON\.stringify\(x\)\)"/);
+  assert.match(workflow,/matrix: \$\{\{ fromJSON\(needs\.studio-local-plan\.outputs\.matrix\) \}\}/);
+});
