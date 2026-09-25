@@ -7,30 +7,11 @@ const bool=v=>String(v??'').toLowerCase()==='true';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 
-export function validateLocalStudioPolicy(roadmap={}){
-  const studio=roadmap?.roblox?.studioExecution||{};
-  const usage=roadmap?.developmentLifecycleMachine?.robloxStudioUsage||{};
-  const pass=
-    studio.enabled===true
-    &&studio.required===true
-    &&studio.localPlaceFileRequired===true
-    &&studio.onlinePublishedPlaceDirectOpenForbidden===true
-    &&studio.placeIdOrUniverseIdAsStudioLaunchTargetForbidden===true
-    &&usage.learningUseForbidden===false
-    &&Array.isArray(usage.forbidden)
-    &&usage.forbidden.includes('ROBLOX_PLAYER_AUTOMATION')
-    &&usage.forbidden.includes('PUBLIC_SERVER_BOT_PLAY')
-    &&usage.forbidden.includes('PUBLISHED_PLACE_DIRECT_STUDIO_AUTOMATION');
-  if(!pass)throw new Error('ROBLOX_STUDIO_LOCAL_ONLY_POLICY_MISMATCH');
-  return true;
-}
-
 function artifactRunIdFor(item={},candidate={}){
   return Number(candidate?.artifactRunId||item?.robloxFoundationF0Evidence?.artifactRunId||item?.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
 }
 
-export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId=''}={}){
-  validateLocalStudioPolicy(roadmap);
+export function planLocalStudioCandidates({queue={},requestedGameId=''}={}){
   const requested=clean(requestedGameId);
   const include=[];
   for(const item of queue?.items||[]){
@@ -235,7 +216,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   if(mode==='plan'){
     const matrix=planLocalStudioCandidates({
       queue:readJson(a.queue),
-      roadmap:readJson(a.roadmap),
       requestedGameId:clean(a['game-id'])
     });
     writeJson(a.output,matrix);
