@@ -1,5 +1,5 @@
 {
-  "version": 187,
+  "version": 188,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1125,7 +1125,23 @@
         "sharedContextMustPassBeforeWork": true,
         "unsynchronizedWorkerAction": "INHIBIT_AND_REPLAN_OR_REQUEUE"
       },
-      "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING"
+      "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING",
+      "reserveConcurrency": {
+        "mode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "executionLanes": [
+          "GAME_PRIMARY",
+          "LEARNING_IDLE",
+          "RECOVERY_FAST",
+          "CONTROL_FAST"
+        ],
+        "crossLaneGlobalReserveLock": false,
+        "sameLaneReserveSerialization": true,
+        "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
+        "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5",
+        "workerDirectControlWrite": false,
+        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2"
+      }
     },
     "liveShadowRepairLoop": {
       "path": [
