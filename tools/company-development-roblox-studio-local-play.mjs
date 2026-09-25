@@ -493,7 +493,7 @@ export async function runOfficialStudioMcpPlay({
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,started=false;
   try{
     await client.connect();
-    const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input'];
+    const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation'];
     await client.waitForTools(requiredTools,{
       attempts:Math.max(1,Number(toolAttempts)||5),
       delayMs:Math.max(100,Number(toolDelayMs)||1000)
