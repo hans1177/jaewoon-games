@@ -3222,18 +3222,18 @@
     },
     "upperPlatformAdmissionMigration": {
       "existingNativeDevelopmentGrandfathered": true,
+      "grandfatherMode": "DURABLE_NATIVE_PROGRESS_EVIDENCE",
       "newNativeDevelopmentStartRequiresUnityWebReadiness": true,
+      "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true
     },
     "unityWebGrandfatherScope": {
-      "grandfatherGameIds": [
-        "cozy-island",
-        "daechung-rpg"
-      ],
-      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
-      "migrationMode": "NO_DEMOTION_OF_RELEASE_STATE_BUT_WEB_FLOOR_REQUIRED_BEFORE_NEW_UPPER_PLATFORM_PROGRESS"
+      "grandfatherMode": "DURABLE_NATIVE_PROGRESS_EVIDENCE",
+      "grandfatherGameIds": [],
+      "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
+      "migrationMode": "NO_DEMOTION_OR_BACKTRACKING_AFTER_DURABLE_NATIVE_PROGRESS; UNITY_WEB_FLOOR_REQUIRED_ONLY_BEFORE_NEW_UPPER_PLATFORM_ENTRY"
     },
     "orchestrationConcurrency": {
       "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.orchestrationConcurrency",
