@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, hydrateBuildUpQueueFromArtifacts } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -2490,6 +2490,72 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
   assert.equal(task.buildUpGoal,directive.thisLoopPrimaryGoal);
   assert.equal(task.buildUpSourceTree,directive.sourceTreeFingerprint);
   assert.equal(task.nextEscalationRequired,true);
+});
+
+test('BUILD_UP queue summary hydrates exact canonical directive artifact for planning',()=>{
+  const root=tempRepo();
+  const queueFile=path.join(root,'.vibe2','queue.json');
+  const directive={
+    directiveId:'demo-build-up-g2-exact',gameId:'demo',generation:2,
+    thisLoopPrimaryGoal:'현재 전투 선택을 더 깊게 만든다',
+    sourceTreeFingerprint:'source-tree-2',developmentDepth:2,escalationStage:'ROLE_DIFFERENTIATION',
+    expectedPlayerEffect:'전투 선택이 실제 다음 선택을 바꾼다',
+    effectivenessMeasurement:{classification:'EFFECT_CONFIRMED'},
+    nextActionDecision:{action:'MOVE_TO_NEXT_HIGHER_VALUE_GAP',reason:'confirmed'}
+  };
+  const history=path.join(root,'.vibe2','build-up-directives','demo','history');
+  fs.mkdirSync(history,{recursive:true});
+  fs.writeFileSync(path.join(history,'0002-'+directive.directiveId+'.json'),JSON.stringify(directive,null,2),'utf8');
+  const summary={maxConcurrentTasks:20,tasks:[{
+    id:'demo-existing',gameId:'demo',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Game.server.luau'],
+    goal:'existing work',status:'queued',buildUpDirectiveId:directive.directiveId,buildUpGeneration:2,
+    buildUpGoal:directive.thisLoopPrimaryGoal,buildUpSourceTree:directive.sourceTreeFingerprint,
+    developmentDepth:2,escalationStage:'ROLE_DIFFERENTIATION'
+  }]};
+  const hydrated=hydrateBuildUpQueueFromArtifacts(summary,queueFile);
+  assert.deepEqual(hydrated.tasks[0].buildUpDirective,directive);
+  assert.equal(hydrated.tasks[0].buildUpDirectiveId,directive.directiveId);
+});
+
+test('queued stale BUILD_UP directive rebinds to current source before reserve',()=>{
+  const root=tempRepo();
+  const gameId='stale-build-up';
+  const server=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(server,{recursive:true});
+  fs.writeFileSync(path.join(server,'Combat.server.luau'),'local function attack() return 1 end\n','utf8');
+  writeStudioDesign(root,gameId);
+  const oldDirective={
+    version:1,directiveId:gameId+'-build-up-g1-old',directiveFingerprint:'old-directive',
+    gameId,generation:1,developmentDepth:1,escalationStage:'FOUNDATION_COMPLETENESS',
+    primaryFocus:'CORE_FUN',thisLoopPrimaryGoal:'old goal',sourceTreeFingerprint:'old-source-tree',
+    expectedPlayerEffect:'old effect',effectivenessMeasurement:{classification:'UNKNOWN_RUNTIME_EFFECT'},
+    nextActionDecision:{action:'REQUEST_REQUIRED_RUNTIME_OBSERVATION',reason:'old'},
+    previousVersionDelta:{state:'NO_PREVIOUS_DIRECTIVE'},
+    allDomainImplementationDirectives:[],visualBuildUpDirective:{domains:{}},
+    gameplayImplementationDirectives:[],progressionContentWorldDirectives:[],uxInputDirectives:[],
+    preserveConstraints:[],acceptanceEvidence:[],nextEscalationCandidates:[]
+  };
+  const queued={
+    id:gameId+'-queued-v1',gameId,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/'+gameId,responsibleFiles:['roblox-games/'+gameId+'/server/Combat.server.luau'],
+    goal:'historical task goal\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid=old',releaseState:'development-confirmed',status:'queued',
+    buildUpDirective:oldDirective,buildUpDirectiveId:oldDirective.directiveId,buildUpGeneration:1,
+    buildUpGoal:oldDirective.thisLoopPrimaryGoal,buildUpSourceTree:oldDirective.sourceTreeFingerprint
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:'roblox-games/'+gameId,progress:80}]},
+    catalog:{games:[{id:gameId,name:'Stale Build Up',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[queued]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
+    planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  const rebound=result.queue.tasks[0];
+  assert.notEqual(rebound.buildUpDirectiveId,oldDirective.directiveId);
+  assert.equal(rebound.buildUpGeneration,2);
+  assert.equal(rebound.buildUpBindingState,'REBOUND_STALE');
+  assert.equal(rebound.buildUpFreshnessDecision,'STALE_REBOUND_TO_CURRENT_SOURCE');
+  assert.ok(rebound.evidence.includes('PRE_RESERVE_DIRECTIVE_BINDING_STATE:REBOUND_STALE'));
+  assert.equal((rebound.goal.match(/\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\]/g)||[]).length,1);
 });
 
 test('BUILD_UP backlog synchronization never rewrites already running work',()=>{
