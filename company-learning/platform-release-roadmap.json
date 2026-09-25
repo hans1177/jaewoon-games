@@ -1,5 +1,5 @@
 {
-  "version": 366,
+  "version": 365,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -3757,7 +3757,7 @@
         "VIBE3"
       ],
       "externalAiWorkerPolicy": {
-        "role": "VIBE_ORCHESTRATED_EXTERNAL_AI_EXECUTOR",
+        "role": "ASSIGNED_TASK_EXECUTOR_OR_AUTONOMOUS_CENTRAL_CONTRACT_WORKER",
         "maySelfPromoteToOrchestrator": false,
         "mayCreatePolicy": false,
         "mayExpandOwnScope": false,
@@ -3775,31 +3775,7 @@
         "securityStewardPreAcceptanceRequired": true,
         "hostileAttemptTerminatesAffectedExecutionContext": true,
         "hostileAttemptMayNotPublishCandidate": true,
-        "verifiedDefensiveLearningUsesExistingMotorOnly": true,
-        "executionRequiresVibeDelegation": true,
-        "allowedProviders": [
-          "GEMINI",
-          "OPENAI",
-          "ANTHROPIC",
-          "LOCAL_OLLAMA",
-          "OTHER_APPROVED_EXTERNAL_AI"
-        ],
-        "autonomousTaskCreationForbidden": true,
-        "autonomousScopeExpansionForbidden": true,
-        "delegationEvidenceRequired": true,
-        "delegationEvidencePrefix": "vibe-external-ai-delegation:",
-        "delegationMustBind": [
-          "TASK_ID",
-          "RESPONSIBLE_FILES_OR_READ_ONLY_SCOPE",
-          "GOAL",
-          "VERIFICATION"
-        ],
-        "noDelegationBehavior": "WAIT_FOR_VIBE_DELEGATION",
-        "vibeImplementationOwnershipPreserved": true,
-        "deterministicQaRemainsAuthority": true,
-        "vibeMayDelegateAutomatically": true,
-        "vibeShouldActivelyDelegateDisjointWork": true,
-        "delegationMayBeAutomaticFromVibePlanner": true
+        "verifiedDefensiveLearningUsesExistingMotorOnly": true
       },
       "reviewLoop": [
         "AUTONOMOUS_WORKERS_CONTINUE_FROM_CENTRAL_CONTRACT",
@@ -3900,7 +3876,7 @@
         "version": 1,
         "authority": "OWNER_DIRECTIVE_2026-09-19",
         "enabled": true,
-        "executionModel": "VIBE_ORCHESTRATED_EXTERNAL_AI_WORKERS",
+        "executionModel": "SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORKERS",
         "provider": "LOCAL_OLLAMA",
         "defaultModel": "qwen3:1.7b",
         "queueBranch": "vibe2-unreal-core",
@@ -3922,16 +3898,14 @@
         "parallelismPolicy": "DISJOINT_RESPONSIBLE_FILES_PARALLEL",
         "runtimeSchedule": "EVENT_PLUS_20_MINUTE_WATCHDOG",
         "taskSources": [
-          "VIBE_EXPLICIT_DELEGATION",
-          "VIBE_AUTOMATIC_DELEGATION"
+          "PRIMARY_AI_PRIORITY_DIRECTIVE",
+          "PORTFOLIO_WIDE_BOTTLENECK",
+          "ROADMAP_IMPLEMENTATION_GAP",
+          "RELEASE_PIPELINE_BLOCKER",
+          "HOMEPAGE_PUBLIC_SURFACE_BLOCKER",
+          "CI_QUEUE_QA_INFRASTRUCTURE_BLOCKER"
         ],
-        "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK",
-        "providerPolicy": "USE_GEMINI_AND_OTHER_APPROVED_EXTERNAL_AI_AGGRESSIVELY_FOR_DISJOINT_VIBE_DELEGATED_WORK",
-        "autonomousCentralContractWorkForbidden": true,
-        "vibeDelegationRequired": true,
-        "delegationEvidencePrefix": "vibe-external-ai-delegation:",
-        "vibeAutomaticDelegationAllowed": true,
-        "activeDelegationPreferred": true
+        "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK"
       },
       "internalVibeAiCollaboration": {
         "version": 1,
@@ -6881,24 +6855,6 @@
       "robloxPlayerAutomation": false,
       "publicServerBotPlay": false,
       "sharedSupersededCandidateCannotMintStudioActualPlayEvidence": true
-    },
-    "externalAiVibeDelegation20260925": {
-      "id": "EXTERNAL_AI_VIBE_ORCHESTRATED_DELEGATION_2026-09-25",
-      "documentedAt": "2026-09-25",
-      "authority": "OWNER_DIRECTIVE_2026-09-25",
-      "summary": "Vibe actively delegates parallel work to external AI providers including Gemini. External workers execute only the exact scope delegated by Vibe and cannot independently expand scope or create policy.",
-      "providers": [
-        "GEMINI",
-        "OPENAI",
-        "ANTHROPIC",
-        "LOCAL_OLLAMA",
-        "OTHER_APPROVED_EXTERNAL_AI"
-      ],
-      "vibeAutomaticDelegation": true,
-      "activeExternalAiUse": true,
-      "delegationEvidencePrefix": "vibe-external-ai-delegation:",
-      "deterministicQaAuthorityUnchanged": true,
-      "vibeImplementationOwnershipPreserved": true
     }
   },
   "vibeExecutionLaneContract": {
