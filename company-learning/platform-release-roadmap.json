@@ -4938,7 +4938,9 @@
       "unityWebDevelopmentFloorRequired": true,
       "unityWebGateRequiredForUpperPlatformStart": true,
       "upperPlatformStartOnlyAfterUnityWebReadinessPass": true,
-      "unityWebRunsBeforeUpperPlatformStart": true
+      "unityWebRunsBeforeUpperPlatformStart": true,
+      "existingNativeDevelopmentGrandfathered": true,
+      "newUpperPlatformStartRequiresUnityWebReadiness": true
     },
     "internalPlatformPlaytestDevelopment": {
       "version": 3,
@@ -7171,7 +7173,8 @@
         "PORTABILITY"
       ],
       "releaseOrDeploymentStage": false,
-      "implementationState": "CENTRAL_POLICY_AND_ARCHITECTURE_SYNC_FIRST_IMPLEMENTATION_NEXT"
+      "implementationState": "CENTRAL_POLICY_AND_ARCHITECTURE_SYNC_FIRST_IMPLEMENTATION_NEXT",
+      "existingNativeMigration": "GRANDFATHER_ALREADY_STARTED_NATIVE_DEVELOPMENT_NO_DEMOTION"
     }
   },
   "vibeExecutionLaneContract": {
@@ -21485,6 +21488,15 @@
       "passState": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "passAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
       "releaseOrDeploymentAuthority": false
+    },
+    "upperPlatformAdmissionMigration": {
+      "version": 1,
+      "existingNativeDevelopmentGrandfathered": true,
+      "newNativeDevelopmentStartRequiresUnityWebReadiness": true,
+      "existingInternalOrPublicReleaseNeverDemoted": true,
+      "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
+      "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true,
+      "rule": "DO_NOT_REWIND_ALREADY_STARTED_NATIVE_GAMES; REQUIRE_UNITY_WEB_READINESS_FOR_NEW_UPPER_PLATFORM_ENTRY"
     }
   },
   "centralDocumentation": {
