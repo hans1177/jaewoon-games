@@ -1,5 +1,5 @@
 {
-  "version": 186,
+  "version": 187,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3257,7 +3257,30 @@
         "resume": "AUTOMATIC_ON_NEXT_EXISTING_RUNTIME_QA_TRIGGER",
         "explicitDisabledState": "NO",
         "explicitDisabledExecution": "SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS",
-        "requiredToolHandshakeAuthority": true
+        "requiredToolHandshakeAuthority": true,
+        "staleMcpClientCleanup": true,
+        "staleMcpProcess": "StudioMCP",
+        "staleCleanupGuard": "NO_STUDIO_PROCESS_OR_AFTER_OWNED_STUDIO_CLOSE",
+        "unrelatedStudioTermination": false,
+        "restartOrdering": "STALE_MCP_CLEANUP_THEN_STUDIO_THEN_FRESH_MCP_CLIENT",
+        "reportedFailureClass": "STALE_MCP_SESSION_OR_DISABLED_STUDIO_MCP_REMAINS_INFRASTRUCTURE_PENDING"
+      },
+      "postReleaseFocusReserveGate": {
+        "producer": "tools/vibe2-post-release-focus.mjs",
+        "runtimeSource": "company-runtime:development-queue.json",
+        "queueSource": "vibe2-unreal-core:.vibe2/queue.json",
+        "beforeEveryReserve": true,
+        "queuedTaskMissingExactActualPlay": "BLOCK_WITH_AWAITING_ACTUAL_VIBE_INTERNAL_PLAY",
+        "exactActualPlayAppears": "REOPEN_BLOCKED_TASK_TO_QUEUED",
+        "runningTaskMutation": false,
+        "exactBinding": [
+          "gameId",
+          "sourceRevision",
+          "artifactIdentity",
+          "universeId",
+          "placeId",
+          "versionNumber"
+        ]
       }
     },
     "robloxExternalPublicReleaseHardGate": {
