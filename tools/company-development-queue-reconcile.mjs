@@ -255,6 +255,24 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
   removeLegacy(item);
   bindSaveContract(item,roadmap);
   restoreDedicatedTargetIdentity(item,{registry:dedicatedRegistry,gameId,stamp});
+  const internalReleaseAlreadyPublished=item?.robloxInternalReleasePublished===true
+    ||item?.robloxInternalReleaseEvidence?.published===true
+    ||(item?.robloxReleaseEvidence?.published===true&&item?.robloxExternalPublicReleaseConfirmed!==true);
+  const stalePreReleaseCanonicalState=[
+    'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    'F0_SOURCE_PREFLIGHT_PASSED',
+    'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED',
+    'ROBLOX_RUNTIME_ACCEPTANCE_PASSED',
+    'ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'
+  ].includes(upper(item?.canonicalState));
+  if(
+    internalReleaseAlreadyPublished
+    &&item?.robloxPublicRelease!==true
+    &&item?.robloxExternalPublicReleaseConfirmed!==true
+    &&(!clean(item?.canonicalState)||stalePreReleaseCanonicalState)
+  ){
+    item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+  }
   if(migrateSharedRobloxFallbackToDedicatedTarget(item)){
     item.updatedAt=stamp;
   }
