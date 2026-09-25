@@ -2576,6 +2576,35 @@ test('stale queued directive rebinds to the active shared generation before rese
   assert.ok(staleAfter.evidence.includes('build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION'));
 });
 
+test('failed and blocked resume candidates share one reconciled directive without changing task status',()=>{
+  const root=tempRepo();
+  const gameId='resume-build-up-siblings';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미'});
+  const base={
+    gameId,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:`roblox-games/${gameId}`,responsibleFiles:[`roblox-games/${gameId}/server/Combat.server.luau`],
+    releaseState:'development-confirmed'
+  };
+  const failed={...base,id:`${gameId}-failed`,goal:'resume failed implementation',status:'failed'};
+  const blocked={...base,id:`${gameId}-blocked`,goal:'resume blocked implementation',status:'blocked'};
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:'Resume Build Up Siblings',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[failed,blocked]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+  });
+  const rows=result.queue.tasks.filter(row=>row.gameId===gameId&&[failed.id,blocked.id].includes(row.id));
+  assert.equal(rows.length,2);
+  assert.equal(new Set(rows.map(row=>row.buildUpDirectiveId)).size,1);
+  assert.ok(rows[0].buildUpDirectiveId);
+  assert.equal(rows.find(row=>row.id===failed.id).status,'failed');
+  assert.equal(rows.find(row=>row.id===blocked.id).status,'blocked');
+  assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-pre-reserve-binding:CHECKED')));
+});
+
 test('queued directive older than a newer terminal generation is regenerated before reserve',()=>{
   const root=tempRepo();
   const gameId='terminal-stale-build-up';
