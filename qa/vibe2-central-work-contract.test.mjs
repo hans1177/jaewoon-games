@@ -26,10 +26,61 @@ function writePolicy(root,version=196,overrides={}){
     status:'OWNER_DIRECT_LOCKED',
     policySource:CANONICAL_VIBE_POLICY_PATH,
     ownerCanonicalRules:{"version":5,"authority":"OWNER_DIRECTIVE_TEST","constitutionalAuthority":"HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY","rule1Handling":"RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES","constitutionalBinding":{"version":1,"authority":"OWNER_DIRECTIVE_TEST","mode":"DYNAMIC_CANONICAL_RULE_AUTO_BIND","automaticContractBinding":true,"appliesToAllCurrentAndFutureRegisteredVibeWorkers":true,"appliesToAllInternalAiDepartmentsAndAutonomousSubsystems":true,"workerMayNotOptOut":true,"childContractMayNotOverride":true,"runtimeMayNotSilentlyAmend":true,"onlyOwnerDirectiveMayCreateAmendDisableOrRemoveCanonicalRule":true,"ruleDiscoveryKeyPattern":"rule<N>","ruleIdentityPattern":"RULE_<N>_*","orderResolution":"IMPLEMENTATION_ORDER_FIRST_THEN_NUMERIC_AUTO_APPEND","futureCanonicalRulesAutoBindWithoutWorkerCodeChange":true,"executionFingerprintMustIncludeEveryEnabledCanonicalRule":true,"sharedContextMustCompileEveryEnabledCanonicalRule":true,"centralWorkContractMustEmbedEveryEnabledCanonicalRule":true,"workerInstructionMustExposeOrderedCanonicalRules":true,"beforeWorkValidationRequired":true,"afterWorkValidationRequired":true,"staleConstitutionMayNotStartWork":true,"staleConstitutionMayNotCompleteWork":true,"missingOrInvalidBindingAction":"FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE","constitutionChangeInvalidatesActiveWorkerExecutionFingerprint":true,"subordinatePolicyCannotWeakenCanonicalRule":true,"executableEnforcer":"tools/company-constitution-enforcer.mjs","enforcerRequiredAtPolicyQa":true,"enforcerRequiredAt24hPlanner":true,"enforcerRequiredBeforeWorkerSourceWrite":true,"enforcerRequiredAfterWorkerExecution":true,"global24hStopOnConstitutionFailureForbidden":true,"constitutionViolationAction":"QUARANTINE_OR_REQUEUE_AFFECTED_SCOPE_RECOVER_REPLAN_CONTINUE_GLOBAL_24H","declarativeRuleEnforcementRequired":true,"ruleEnforcementSchemaVersion":1,"futureRuleWithoutMachineEnforcementAction":"FAIL_CLOSED_UNTIL_DECLARATIVE_ASSERTIONS_ARE_DEFINED","hardcodedRuleNumberBranchesForbidden":true,"genericRuleIterationRequired":true,"repositoryAssertions":[{"code":"TEST","operator":"FILE_EXISTS","expected":"package.json"}]},"rule1":{"id":"RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT","label":"제1규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"CONTINUE","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"rule2":{"id":"RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION","label":"제2규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"SECURE_AND_VERIFY","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"rule3":{"id":"RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE","label":"제3규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"LEARN","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"rule4":{"id":"RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION","label":"제4규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"EVOLVE","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"implementationOrder":["RULE_1","RULE_2","RULE_3","RULE_4"],"orderedImplementationRequired":true},
+    centralDocumentation:{
+      sourceOfTruth:CANONICAL_VIBE_POLICY_PATH+'#centralDocumentation',
+      canonicalSet:{
+        policy:CANONICAL_VIBE_POLICY_PATH,
+        logMap:'company-learning/company-log-map.json',
+        architectureMap:'company-learning/company-architecture-map.json',
+        securityPolicy:'company-learning/security-immune-system.json'
+      },
+      readOrder:[
+        CANONICAL_VIBE_POLICY_PATH,
+        'company-learning/company-log-map.json',
+        'company-learning/company-architecture-map.json',
+        'company-learning/security-immune-system.json'
+      ],
+      rules:{documentIsCode:true,centralPolicyOnlyCreatesPolicy:true},
+      synchronization:{
+        beforeWorkLoadAndValidateCanonicalSet:true,
+        afterWorkReloadAndValidateCanonicalSet:true,
+        vibeWorkerPreflightRequired:true,
+        currentMainPolicyShaBindingRequired:true,
+        documentHashesBoundToExecutionEvidence:true
+      },
+      machineProjectionSynchronization:{
+        centralPolicyIsOnlyMutablePolicySource:true,
+        architectureProjectionGeneratedAtRuntime:true,
+        workContractGeneratedFromSameProjection:true,
+        sharedContextGeneratedFromSameProjection:true
+      }
+    },
     developmentLifecycleMachine:{
       sharedWorkerContext:{
         requiredForAllWorkers:true,
         centralPolicy:CANONICAL_VIBE_POLICY_PATH,
+        logMap:'company-learning/company-log-map.json',
+        architectureMap:'company-learning/company-architecture-map.json',
+        securityPolicy:'company-learning/security-immune-system.json',
+        validator:'tools/company-shared-context.mjs',
+        qa:'qa/company-shared-context.test.mjs',
+        loadOrder:[
+          CANONICAL_VIBE_POLICY_PATH,
+          'company-learning/company-log-map.json',
+          'company-learning/company-architecture-map.json',
+          'company-learning/security-immune-system.json'
+        ],
+        bindSha256ToExecutionEvidence:true,
+        requiredLogMarkers:[
+          'WORKER_CONTEXT_POLICY_SHA256',
+          'WORKER_CONTEXT_LOG_MAP_SHA256',
+          'WORKER_CONTEXT_ARCHITECTURE_SHA256',
+          'WORKER_CONTEXT_SECURITY_POLICY_SHA256'
+        ],
+        centralDocumentationContract:CANONICAL_VIBE_POLICY_PATH+'#centralDocumentation',
+        codeChangeRequiresCentralDocumentationImpactReview:true,
+        documentationChangeRequiresImplementationImpactReview:true,
+        postCentralDocumentWriteSharedContextResyncRequired:true,
         beforeWorkRequired:true,
         afterWorkRequired:true,
         staleContextMayNotStartWork:true,
@@ -112,6 +163,14 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.required,true);
   assert.equal(contract.validAtCompile,true);
   assert.equal(contract.policy.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(contract.documentSynchronization.bindSha256ToExecutionEvidence,true);
+  assert.deepEqual(contract.documentSynchronization.readOrder,[
+    CANONICAL_VIBE_POLICY_PATH,
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ]);
+  assert.ok(contract.documentSynchronization.requiredLogMarkers.includes('WORKER_CONTEXT_SECURITY_POLICY_SHA256'));
   assert.equal(contract.constitution.automaticContractBinding,true);
   assert.equal(contract.constitution.appliesToAllCurrentAndFutureRegisteredVibeWorkers,true);
   assert.deepEqual(contract.constitution.orderedRuleIds,['RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT','RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION','RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE','RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION']);
@@ -154,6 +213,27 @@ test('central roadmap snapshot rejects execution authority expansion',()=>{
   const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
   assert.equal(snapshot.valid,false);
   assert.ok(snapshot.errors.includes('WORKER_CREATION_AUTHORITY'));
+});
+
+test('central documentation semantics participate in the Vibe execution fingerprint',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(before.valid,true);
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  const next=[
+    CANONICAL_VIBE_POLICY_PATH,
+    'company-learning/company-architecture-map.json',
+    'company-learning/company-log-map.json',
+    'company-learning/security-immune-system.json'
+  ];
+  document.centralDocumentation.readOrder=next;
+  document.developmentLifecycleMachine.sharedWorkerContext.loadOrder=next;
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,true);
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
 });
 
 test('central roadmap fingerprint is fail-closed when policy changes during work',()=>{
