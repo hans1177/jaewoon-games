@@ -386,5 +386,8 @@ test('post-runtime QA dispatches exact candidates to authenticated local Studio 
   assert.doesNotMatch(workflow,/scenarioCoveragePass:true/);
   assert.match(workflow,/candidate became stale before Studio launch/);
   assert.match(workflow,/candidate changed before Studio evidence persist/);
+  assert.match(workflow,/studio-learning-wake:/);
+  assert.match(workflow,/gh workflow run vibe2-24h-runner\.yml/);
+  assert.match(workflow,/ROBLOX_STUDIO_LEARNING_WAKE=DISPATCHED/);
 });
 
