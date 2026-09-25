@@ -47,6 +47,25 @@ test('technical pass becomes internal-release ready but never public by itself',
   assert.equal(g.publicReleaseReady,false);
 });
 
+test('real-server observation pending keeps Roblox internally ready but blocks public release',()=>{
+  const item={
+    ...technicalBase(),
+    robloxRuntimePassed:false,
+    robloxInternalReleaseReady:true,
+    robloxInternalReleasePublished:true,
+    robloxPublicReleaseRuntimeObservationPending:true,
+    robloxRuntimeFoundationEvidence:{serverBootObserved:false},
+    ...strictRobloxEvidence()
+  };
+  const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});
+  const p=r.state.games[0].platforms.find(x=>x.platform==='ROBLOX');
+  assert.equal(p.internalReleaseReady,true);
+  assert.equal(p.externalExposureState,'INTERNAL_ONLY');
+  assert.equal(p.publicReleaseReady,false);
+  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_TECHNICAL'));
+  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT'));
+});
+
 test('old internal playtest flag cannot bypass actual Vibe play and hard gate',()=>{
   const item={...technicalBase(),robloxInternalReleasePublished:true,robloxInternalPlaytestPassed:true};
   const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});

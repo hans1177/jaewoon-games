@@ -2307,6 +2307,32 @@ test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evol
 });
 
 
+test('Roblox public-only real-server observation does not stop independent Studio development work',()=>{
+  const root=tempRepo();
+  const gameId='roblox-public-server-observation';
+  fs.mkdirSync(path.join(root,'roblox-games',gameId),{recursive:true});
+  fs.writeFileSync(path.join(root,'roblox-games',gameId,'Game.server.luau'),'print("runtime")\n','utf8');
+  writeStudioDesign(root,gameId);
+  const project={
+    gameId,
+    name:'Roblox Public Server Observation',
+    engine:'roblox',
+    target:'roblox',
+    releaseState:'development-confirmed',
+    projectPath:`roblox-games/${gameId}`,
+    queueRobloxPublicReleaseRuntimeObservationPending:true,
+    queueRobloxPublicReleaseFailureSignature:'ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT',
+    queueRobloxFailureStage:'',
+    queueRobloxFailureSignature:'',
+    queueRoutingBlockers:[]
+  };
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.ok(task);
+  assert.equal(task.gameId,gameId);
+  assert.ok(task.evidence.includes('studio-quality-loop:v1'));
+  assert.doesNotMatch(task.goal,/repair.*server boot|real.server.*source.code defect/i);
+});
+
 test('Roblox queue projection uses Roblox design genre instead of generic catalog or Web genre',()=>{
   const root=tempRepo();
   const gameId='roblox-genre-source';

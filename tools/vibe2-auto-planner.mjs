@@ -246,6 +246,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
       queueRobloxFailureStage:clean(item?.robloxFailureStage||(executionEvidenceMatchesRoblox?executionEvidence.failureStage:'')),
       queueRobloxFailureSignature:clean(item?.robloxFailureSignature||(executionEvidenceMatchesRoblox?executionEvidence.failureSignature:'')),
+      queueRobloxPublicReleaseFailureSignature:clean(item?.robloxPublicReleaseFailureSignature),
+      queueRobloxPublicReleaseRuntimeObservationPending:item?.robloxPublicReleaseRuntimeObservationPending===true,
       queueRobloxSourceCommit:clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:'')),
       queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||(executionEvidenceMatchesRoblox?executionEvidence.artifactIdentity:'')),
       queueRobloxRuntimeObserved:runtimeObserved,
@@ -1553,8 +1555,8 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     clean(project?.developmentValidation?.nextAction),
     clean(project?.queueVibeWebImplementationReason),
     clean(project?.queueRobloxFailureStage),
-    clean(project?.queueRobloxFailureSignature),
-    ...(project?.queueRoutingBlockers||[])
+    ...(clean(project?.queueRobloxFailureSignature)==='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'?[]:[clean(project?.queueRobloxFailureSignature)]),
+    ...(project?.queueRoutingBlockers||[]).filter(value=>clean(value)!=='roblox-runtime-foundation-awaiting-real-server-boot')
   ].map(clean).filter(Boolean);
   const signalText=knownSignals.join(' | ').toLowerCase();
   let signalFocus=null;
