@@ -691,10 +691,11 @@ export function createLocalStudioPlayEvidence({
     &&errors.length===0
   );
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
-  const studioMcpServerEnablementRequired=errors.some(row=>
-    /ROBLOX_STUDIO_MCP_SETTING_ENABLE|ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(row.signature||'')
-    &&(/available=:/i.test(row.signature||'')||/SETTING_ENABLE/i.test(row.signature||''))
-  );
+  const studioMcpServerEnablementRequired=errors.some(row=>{
+    const signature=clean(row.signature||'');
+    return /ROBLOX_STUDIO_MCP_SETTING_ENABLE/i.test(signature)
+      ||(/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(signature)&&/stderrHint=MCP_SERVER_NOT_ENABLED/i.test(signature));
+  });
   const failureClass=pass?null
     :infrastructureFailure?'STUDIO_MCP_INFRASTRUCTURE_PENDING'
     :errors.length?'STUDIO_MCP_RUNTIME_ERROR'

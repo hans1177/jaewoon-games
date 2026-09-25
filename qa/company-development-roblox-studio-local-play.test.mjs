@@ -324,7 +324,7 @@ test('empty official Studio MCP tool inventory is persisted as an explicit one-t
   infra.metrics.distinctFrameChange=false;
   infra.errors=[{
     type:'studio-mcp-infrastructure-or-runtime-error',
-    signature:'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios:available=:protocol=2024-11-05:server=RobloxStudio'
+    signature:'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios:available=:protocol=2024-11-05:server=RobloxStudio:stderrHint=MCP_SERVER_NOT_ENABLED'
   }];
   const result=createLocalStudioPlayEvidence({
     item:item(),runtime:infra,expected,workflowRunId:44,studioStepSucceeded:false,
@@ -335,6 +335,27 @@ test('empty official Studio MCP tool inventory is persisted as an explicit one-t
   assert.equal(result.evidence.studioMcpServerEnablementRequired,true);
   assert.equal(result.evidence.operatorPrerequisite,'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT');
   assert.equal(result.evidence.learningReusable,false);
+});
+
+test('Studio tool provider timeout stays infrastructure-pending without falsely requiring the MCP setting toggle',()=>{
+  const infra=runtime();
+  infra.runtimeVerified=false;
+  infra.capabilities={officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false};
+  infra.actions=[];
+  infra.checkpoints=[];
+  infra.metrics.distinctFrameChange=false;
+  infra.errors=[{
+    type:'studio-mcp-infrastructure-or-runtime-error',
+    signature:'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios:available=:protocol=2024-11-05:server=RobloxStudio:stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'
+  }];
+  const result=createLocalStudioPlayEvidence({
+    item:item(),runtime:infra,expected,workflowRunId:45,studioStepSucceeded:false,
+    testedAt:'2026-09-25T09:15:00.000Z'
+  });
+  assert.equal(result.evidence.infrastructureFailure,true);
+  assert.equal(result.evidence.studioMcpServerEnablementRequired,false);
+  assert.equal(result.evidence.operatorPrerequisite,null);
+  assert.equal(result.evidence.failureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
 });
 
 test('runtime workflow uses exact local artifact plus official Studio MCP and no Player or undocumented Studio CLI automation',()=>{
@@ -409,6 +430,9 @@ test('Windows workflow uses documented mcp.bat only when its installed text is h
   assert.match(studioMcpBlock,/\$mcpBatchHealth = 'BROKEN_USE_OFFICIAL_EXE'/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_HEALTH=\$mcpBatchHealth/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
+  assert.match(studioMcpBlock,/Get-Process StudioMCP -ErrorAction SilentlyContinue/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STALE_OFFICIAL_PROCESS_REAPED=/);
+  assert.match(studioMcpBlock,/StartsWith\(\$officialVersionsRoot,\[System\.StringComparison\]::OrdinalIgnoreCase\)/);
 });
 
 
@@ -422,6 +446,11 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/available=:/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO/);
+  assert.match(studioMcpBlock,/stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT/);
+  assert.match(studioMcpBlock,/stderrHint=MCP_SERVER_NOT_ENABLED/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT=attempt=/);
+  assert.match(studioMcpBlock,/tool provider timed out after 3 clean Studio sessions/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_LOG_MATCH_COUNT=/);
   assert.doesNotMatch(studioMcpBlock,/ROBLOX_PLAYER_AUTOMATION=YES/);
   assert.match(studioMcpBlock,/WaitForInputIdle\(30000\)/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_GUI_READY=YES/);
