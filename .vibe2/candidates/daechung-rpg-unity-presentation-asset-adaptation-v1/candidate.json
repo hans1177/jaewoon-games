@@ -1,0 +1,14 @@
+{
+  "summary": "PrototypeAnimatedVisuals.cs 수정",
+  "expectedEffect": "원래 코드에서 특정 위치의 코드를 수정하여 테스트 및 실행 가능성 향상",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "                var x = column * frameWidth;",
+      "replace": "                var x = column * frameWidth;\n                var y = texture.height - ((row + 1) * frameHeight);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

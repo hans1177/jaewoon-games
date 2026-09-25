@@ -281,6 +281,7 @@ namespace JaewoonGames.DaechungRpg
                 var row = i / columns;
                 var x = column * frameWidth;
                 var y = texture.height - ((row + 1) * frameHeight);
+                var y = texture.height - ((row + 1) * frameHeight);
                 var rect = new Rect(x, y, frameWidth, frameHeight);
                 frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);
                 frames[i].name = $"{actorId}-{action}-{i:00}";
