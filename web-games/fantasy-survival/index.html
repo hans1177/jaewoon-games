@@ -1254,7 +1254,7 @@ const BESTIARY_INFO={
 const BOOK_LABELS={neutral:'중립',aggressive:'공격적',harmless:'무해',boss:'보스',records:'기록'};
 function unlockBestiary(id){
  if(!BESTIARY_INFO[id]||state.bestiary[id])return;
- state.bestiary[id]=true;state.dirty=true;showNotice((creatures[id]?.name||id)+' 도감 등록')
+ state.bestiary[id]=true;state.dirty=true;showNotice((creatures[id]?.name||id)+' 도감 등록');saveGame(false)
 }
 function bestiaryPortrait(id){
  const bg='<rect width="180" height="118" fill="#14231c"/><ellipse cx="90" cy="101" rx="74" ry="11" fill="#07100c" opacity=".65"/>';
