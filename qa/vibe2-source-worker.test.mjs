@@ -86,6 +86,76 @@ test('presentation delta failure is retryable source generation work',()=>{
   assert.equal(shouldRetryGenerationError(error),true);
 });
 
+
+test('Roblox full graphics domain recovery keeps a connected multi-edit package instead of collapsing to one edit',()=>{
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve full Roblox graphics and native motion without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau, shared/VisualStyle.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local character = workspace:FindFirstChild("Character")',
+    'local weapon = workspace:FindFirstChild("Sword")',
+    'local terrainRock = workspace:FindFirstChild("TerrainRock")',
+    'camera.FieldOfView = 70',
+    '=== FILE shared/VisualStyle.luau [EDITABLE] ===',
+    'local accent = Color3.fromRGB(20,30,40)',
+    'local material = Enum.Material.SmoothPlastic'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED:MISSING_WEAPON_EQUIPMENT,ENVIRONMENT_TERRAIN'),
+    responsibleFiles:['client/Game.client.luau','shared/VisualStyle.luau'],
+    attempt:3
+  });
+  assert.match(retry,/ROBLOX FULL GRAPHICS RECOVERY PACKAGE/i);
+  assert.match(retry,/connected edits\[\] package/i);
+  assert.match(retry,/distinct exact anchors/i);
+  assert.match(retry,/additional visual domains.*no upper limit/i);
+  assert.doesNotMatch(retry,/exactly one edit/i);
+});
+
+test('Roblox full graphics source worker switches to package recovery after a core-domain failure',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-full-graphics-package-recovery'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve full Roblox graphics and native motion without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const weak=path.join(cwd,'weak-visible.json');
+  const strong=path.join(cwd,'strong-package.json');
+  write(weak,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'
+  }]}));
+  write(strong,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:robloxFullGraphicsMotionPatch('74,102,138')
+  }]}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[weak,strong]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/EnemyBody/);
+  assert.match(candidate,/SwordEquipment/);
+  assert.match(candidate,/TerrainRockEnvironment/);
+  assert.match(candidate,/RenderStepped/);
+  assert.match(candidate,/enemyBody\.CFrame\s*=/);
+});
+
 test('Roblox presentation recovery reaches a real visual source delta on the focused retry',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
