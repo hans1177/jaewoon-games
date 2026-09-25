@@ -141,7 +141,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: vibe2-unreal-core
-          fetch-depth: 0
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
@@ -172,8 +172,8 @@ jobs:
 
           for attempt in 1 2 3 4 5; do
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/5"
-            git fetch origin main vibe2-unreal-core company-runtime --quiet
-            git fetch origin '+refs/heads/vibe2-learning-runtime:refs/remotes/origin/vibe2-learning-runtime' --quiet || true
+            git fetch origin '+refs/heads/main:refs/remotes/origin/main' '+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core' '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' --depth=2 --no-tags --quiet
+            git fetch origin '+refs/heads/vibe2-learning-runtime:refs/remotes/origin/vibe2-learning-runtime' --depth=2 --no-tags --quiet || true
             git reset --hard origin/vibe2-unreal-core
             rm -rf /tmp/vibe2-main
             git worktree prune
@@ -256,7 +256,7 @@ jobs:
               --output=/tmp/vibe3-roblox-distillation-ledger.json | tee /tmp/vibe3-roblox-distillation.log
 
             git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
-            git -C /tmp/vibe2-main fetch origin company-runtime --quiet
+            git -C /tmp/vibe2-main fetch origin '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' --depth=2 --no-tags --quiet
             for runtime_design_path in design game-seed-state.json; do
               if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
                 git -C /tmp/vibe2-main checkout origin/company-runtime -- "$runtime_design_path"
@@ -282,7 +282,7 @@ jobs:
                 git commit -m 'vibe2: checkpoint focused release caretakers [skip ci]'
                 git push origin HEAD:vibe2-unreal-core
                 echo 'VIBE2_FOCUSED_CARETAKER_CHECKPOINT=PUSHED'
-                git fetch origin vibe2-unreal-core --quiet
+                git fetch origin '+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core' --depth=2 --no-tags --quiet
               else
                 echo 'VIBE2_FOCUSED_CARETAKER_CHECKPOINT=UNCHANGED'
               fi
