@@ -449,7 +449,9 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
   assert.equal(runtime.continuous.atomicNeuronStream.taskMicroFanIn,true);
   assert.equal(runtime.continuous.atomicNeuronStream.speculativeVariantsJoinPerTask,true);
-  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_ONLY');
+  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS');
+  assert.equal(runtime.continuous.cohortFanInPressureIngressEnabled,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.logicalPerTaskVariantJoinStillRequiredWhenCoalesced,true);
   assert.equal(runtime.continuous.atomicNeuronStream.workerDirectControlWrite,false);
   assert.equal(runtime.continuous.atomicNeuronStream.universalActionableDomains,true);
   assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
