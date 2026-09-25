@@ -312,3 +312,33 @@ test('promotion runtime writer purges legacy feature freezes and internal queue 
     assert.equal(queue.automaticFeatureExpansionFreezeForbidden,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('promotion sync recovers exact private Roblox runtime candidate instead of regressing to source bind',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-runtime-checkpoint-'));
+  base(root);
+  write(root,'game-seed-state.json',{version:1,seeds:[{
+    seedId:'S7',gameId:'g7',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',INITIAL_TARGET_PLATFORM:'ROBLOX'
+  }]});
+  const source=writeMinimumDesign(root,'g7','2026-09-18');
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  write(root,'development-queue.json',{version:1,items:[{
+    gameId:'g7',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    minimumDesignContract:{pass:true,source},
+    currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+    canonicalState:'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    robloxSourceCommit:revision,
+    robloxBuildArtifactIdentity:artifact,
+    robloxRuntimeCandidateEvidence:{
+      published:true,sourceRevision:revision,artifactIdentity:artifact,versionNumber:9,
+      universeId:'1',placeId:'2'
+    }
+  }]});
+  promoteReadyDesignSeeds({root});
+  const item=read(root,'development-queue.json').items[0];
+  assert.equal(item.currentStep,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+  assert.equal(item.canonicalState,'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED');
+  assert.equal(item.robloxRuntimeCandidateEvidence.versionNumber,9);
+});
