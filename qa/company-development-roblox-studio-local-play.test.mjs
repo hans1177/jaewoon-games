@@ -293,3 +293,49 @@ test('automatic Roblox Studio MCP scans dedupe push noise while preserving exact
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
 });
+
+
+test('Studio MCP unavailable recovery restarts only the owned Studio process and MCP client without mutating settings',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioMcpBlock,/\$maxSessionAttempts = 3/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_RESTART=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
+  assert.match(studioMcpBlock,/--tool-attempts=5/);
+  assert.match(studioMcpBlock,/--tool-delay-ms=1000/);
+  assert.match(studioMcpBlock,/--timeout=15000/);
+  assert.match(studioMcpBlock,/Roblox\\AssistantSettings/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLED=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO/);
+  assert.doesNotMatch(studioMcpBlock,/Set-Content .*AssistantSettings|Out-File .*AssistantSettings|Remove-Item .*AssistantSettings/i);
+  assert.doesNotMatch(studioMcpBlock,/user_mouse_input[\s\S]{0,120}Manage MCP Servers|Enable Studio as MCP server/i);
+});
+
+test('MCP helper accepts bounded per-session readiness attempts from workflow arguments',()=>{
+  assert.match(helper,/toolAttempts=5,toolDelayMs=1000/);
+  assert.match(helper,/attempts:Math\.max\(1,Number\(toolAttempts\)\|\|5\)/);
+  assert.match(helper,/delayMs:Math\.max\(100,Number\(toolDelayMs\)\|\|1000\)/);
+  assert.match(helper,/toolAttempts:Number\(a\['tool-attempts'\]\|\|5\)/);
+  assert.match(helper,/toolDelayMs:Number\(a\['tool-delay-ms'\]\|\|1000\)/);
+});
+
+test('central Studio MCP recovery policy stays restart-only and fail-closed on infrastructure exhaustion',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const recovery=roadmap.roblox?.studioExecution?.mcpUnavailableRecovery||{};
+  assert.equal(recovery.mode,'OFFICIAL_RESTART_ONLY');
+  assert.equal(recovery.automaticSessionAttempts,3);
+  assert.equal(recovery.toolReadinessAttemptsPerSession,5);
+  assert.equal(recovery.assistantSettingsDiagnosticOnly,true);
+  assert.equal(recovery.assistantSettingsMutationForbidden,true);
+  assert.equal(recovery.guiToggleAutomationForbidden,true);
+  assert.equal(recovery.finalFailureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
+  assert.equal(recovery.infrastructureFailureMustNotBecomeGameFailure,true);
+  const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.mcpUnavailableRecovery||{};
+  assert.equal(arch.automaticSessionAttempts,3);
+  assert.equal(arch.ownedStudioRestart,true);
+  assert.equal(arch.mcpClientRestart,true);
+  assert.equal(arch.assistantSettingsReadOnlyDiagnostic,true);
+  assert.equal(arch.assistantSettingsMutation,false);
+  assert.equal(arch.guiToggleAutomation,false);
+});
