@@ -1,5 +1,5 @@
 {
-  "version": 365,
+  "version": 366,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -3757,7 +3757,7 @@
         "VIBE3"
       ],
       "externalAiWorkerPolicy": {
-        "role": "ASSIGNED_TASK_EXECUTOR_OR_AUTONOMOUS_CENTRAL_CONTRACT_WORKER",
+        "role": "VIBE_DELEGATED_EXTERNAL_AI_EXECUTOR",
         "maySelfPromoteToOrchestrator": false,
         "mayCreatePolicy": false,
         "mayExpandOwnScope": false,
@@ -3775,7 +3775,28 @@
         "securityStewardPreAcceptanceRequired": true,
         "hostileAttemptTerminatesAffectedExecutionContext": true,
         "hostileAttemptMayNotPublishCandidate": true,
-        "verifiedDefensiveLearningUsesExistingMotorOnly": true
+        "verifiedDefensiveLearningUsesExistingMotorOnly": true,
+        "executionRequiresVibeDelegation": true,
+        "allowedProviders": [
+          "GEMINI",
+          "OPENAI",
+          "ANTHROPIC",
+          "LOCAL_OLLAMA",
+          "OTHER_APPROVED_EXTERNAL_AI"
+        ],
+        "autonomousTaskCreationForbidden": true,
+        "autonomousScopeExpansionForbidden": true,
+        "delegationEvidenceRequired": true,
+        "delegationEvidencePrefix": "vibe-external-ai-delegation:",
+        "delegationMustBind": [
+          "TASK_ID",
+          "RESPONSIBLE_FILES_OR_READ_ONLY_SCOPE",
+          "GOAL",
+          "VERIFICATION"
+        ],
+        "noDelegationBehavior": "DO_NOT_EXECUTE_EXTERNAL_AI_WORK",
+        "vibeImplementationOwnershipPreserved": true,
+        "deterministicQaRemainsAuthority": true
       },
       "reviewLoop": [
         "AUTONOMOUS_WORKERS_CONTINUE_FROM_CENTRAL_CONTRACT",
@@ -3876,7 +3897,7 @@
         "version": 1,
         "authority": "OWNER_DIRECTIVE_2026-09-19",
         "enabled": true,
-        "executionModel": "SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORKERS",
+        "executionModel": "VIBE_DELEGATED_EXTERNAL_AI_WORKERS",
         "provider": "LOCAL_OLLAMA",
         "defaultModel": "qwen3:1.7b",
         "queueBranch": "vibe2-unreal-core",
@@ -3898,14 +3919,13 @@
         "parallelismPolicy": "DISJOINT_RESPONSIBLE_FILES_PARALLEL",
         "runtimeSchedule": "EVENT_PLUS_20_MINUTE_WATCHDOG",
         "taskSources": [
-          "PRIMARY_AI_PRIORITY_DIRECTIVE",
-          "PORTFOLIO_WIDE_BOTTLENECK",
-          "ROADMAP_IMPLEMENTATION_GAP",
-          "RELEASE_PIPELINE_BLOCKER",
-          "HOMEPAGE_PUBLIC_SURFACE_BLOCKER",
-          "CI_QUEUE_QA_INFRASTRUCTURE_BLOCKER"
+          "VIBE_EXPLICIT_DELEGATION"
         ],
-        "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK"
+        "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK",
+        "providerPolicy": "GEMINI_OR_OTHER_APPROVED_EXTERNAL_AI_MAY_EXECUTE_ONLY_VIBE_DELEGATED_TASKS",
+        "autonomousCentralContractWorkForbidden": true,
+        "vibeDelegationRequired": true,
+        "delegationEvidencePrefix": "vibe-external-ai-delegation:"
       },
       "internalVibeAiCollaboration": {
         "version": 1,
@@ -6855,6 +6875,22 @@
       "robloxPlayerAutomation": false,
       "publicServerBotPlay": false,
       "sharedSupersededCandidateCannotMintStudioActualPlayEvidence": true
+    },
+    "externalAiVibeDelegation20260925": {
+      "id": "EXTERNAL_AI_VIBE_DELEGATION_ONLY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "summary": "External AI providers including Gemini may be used as workers, but only for work explicitly delegated by Vibe. They cannot autonomously create tasks, expand scope, create policy, or self-accept.",
+      "providers": [
+        "GEMINI",
+        "OPENAI",
+        "ANTHROPIC",
+        "LOCAL_OLLAMA",
+        "OTHER_APPROVED_EXTERNAL_AI"
+      ],
+      "delegationEvidencePrefix": "vibe-external-ai-delegation:",
+      "deterministicQaAuthorityUnchanged": true,
+      "vibeImplementationOwnershipPreserved": true
     }
   },
   "vibeExecutionLaneContract": {
