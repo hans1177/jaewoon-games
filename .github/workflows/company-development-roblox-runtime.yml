@@ -152,13 +152,14 @@ jobs:
             const target=`roblox-games/${item.gameId}`;
             const reconciliationRow=reconciliationById.get(item.gameId);
             const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
+            const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             const f0FoundationRepair=!secondaryOwnerFocus
-              &&state==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'
+              &&item.robloxFoundationF0Passed!==true
               &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
               &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
-            if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId)&&!f0FoundationRepair)continue;
-            const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
-            if(fs.existsSync(target)&&!bootstrapFailed&&!existingSourceAssetRebind&&!f0FoundationRepair)continue;
+            const knownSourceRepairDebt=Boolean(bootstrapFailed)||f0FoundationRepair;
+            if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId)&&!knownSourceRepairDebt)continue;
+            if(fs.existsSync(target)&&!knownSourceRepairDebt&&!existingSourceAssetRebind)continue;
             rows.push({
               gameId:item.gameId,
               gameName:item.gameName||item.gameId,
@@ -169,6 +170,7 @@ jobs:
               secondaryOwnerFocus,
               existingSourceAssetRebind,
               foundationRepair:f0FoundationRepair,
+              knownSourceRepairDebt,
             });
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
