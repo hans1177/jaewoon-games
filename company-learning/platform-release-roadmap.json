@@ -1,5 +1,5 @@
 {
-  "version": 367,
+  "version": 368,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6163,7 +6163,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 4,
+    "version": 5,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6333,12 +6333,13 @@
         "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
         "reworkOrRevalidationScoresNotShownAsCurrent": false,
         "scoreRequiresSchema15": false,
-        "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST",
+        "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE",
         "unityWebQaPassRequiredForHomepageLink": false,
         "unityWebEvidenceFilesRequiredForHomepageLink": false,
         "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
         "unityWebMayBeCardDirectLaunchFallback": true,
-        "staleSharedRobloxTargetHomepageLinkForbidden": true
+        "staleSharedRobloxTargetHomepageLinkForbidden": true,
+        "unityWebLegacyBuildCompatibility": true
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6419,12 +6420,12 @@
         "bootSmoke": "PASS",
         "initialRealGameplayQa": "PASS"
       },
-      "homepageLinkGate": "DEPLOYABLE_BUNDLE_MANIFEST",
+      "homepageLinkGate": "DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE",
       "homepageLinkRequiresExistingIndex": true,
       "homepageLinkQaPassRequired": false,
       "homepageLinkEvidenceFilesRequired": false,
       "validationEvidenceStillRequiredForQaVerdict": true,
-      "homepageLinkRequiresDeployManifest": true,
+      "homepageLinkRequiresDeployManifest": false,
       "homepageLinkRequiredBundleComponents": [
         "loader",
         "data",
@@ -6432,7 +6433,16 @@
         "wasm"
       ],
       "developmentConfirmedHomepageExposureRequiredWhenDeployable": true,
-      "cardDirectLaunchFallbackAllowed": true
+      "cardDirectLaunchFallbackAllowed": true,
+      "homepageLinkRequiresDeployableBundle": true,
+      "homepageLinkAllowsUnityIndexBundleProbe": true,
+      "homepageLinkLegacyUnityBuildCompatibility": true,
+      "homepageLinkLegacyProbeRequiredBundleComponents": [
+        "loader",
+        "data",
+        "framework",
+        "wasm"
+      ]
     }
   },
   "longHorizonVision": {
@@ -6936,6 +6946,24 @@
       "developmentUnityWebDeployableBundleMayExpose": true,
       "unityWebDoesNotBecomeNativeReleaseEvidence": true,
       "nativeReleaseGatesUnchanged": true
+    },
+    "homepageUnityWebLegacyBundleProbe20260925": {
+      "id": "HOMEPAGE_UNITY_WEB_LEGACY_BUNDLE_PROBE_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Allow DEVELOPMENT_CONFIRMED homepage Unity Web links for older real Unity WebGL outputs that predate unity-web-deploy-manifest.json, but only after the page identifies Unity Web and the loader/data/framework/wasm bundle files all respond successfully.",
+      "codeBindings": [
+        "assets/homepage-enhancements.js",
+        "qa/company-homepage-runtime-propagation.test.mjs",
+        "qa/homepage-manager-publication-order.test.mjs",
+        "company-directive.json"
+      ],
+      "manifestPathPreferred": true,
+      "legacyUnityIndexProbeAllowed": true,
+      "genericWebArchiveCannotClaimUnityWeb": true,
+      "allFourUnityBundleGroupsRequired": true,
+      "qaVerdictAuthorityUnchanged": true,
+      "nativeReleaseGateUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
