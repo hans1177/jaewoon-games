@@ -398,11 +398,15 @@ test('Roblox compiler is admitted by native platform design and does not consume
   assert.ok(compiled.result.sharedConfig.includes('AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY"'));
 });
 
-test('central development orchestrator dispatches both native lanes without Web presentation gate',()=>{
+test('central development orchestrator gates new native lanes on Unity Web readiness',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/company-development-roblox-runtime\.yml/);
   assert.match(workflow,/company-development-unity-runtime\.yml/);
-  assert.match(workflow,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.match(workflow,/UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT/);
+  assert.match(workflow,/UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED/);
+  assert.match(workflow,/upper-platform-development-readiness\.json/);
+  assert.match(workflow,/READINESS_SOURCE_STALE/);
+  assert.match(workflow,/existingNativeDevelopmentGrandfathered|grandfatheredIds/);
   assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
