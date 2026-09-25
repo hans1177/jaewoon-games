@@ -26,6 +26,11 @@ on:
       - 'qa/unity-package-fatal-logcat.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty keeps the existing batch behavior.
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -72,13 +77,18 @@ jobs:
         id: queue
         env:
           GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
-          requested_ids=''
-          if [[ "$GITHUB_EVENT_NAME" == 'push' ]]; then
+          requested_ids="$REQUESTED_GAME_ID"
+          if [[ -n "$requested_ids" && ! "$requested_ids" =~ ^[a-z0-9][a-z0-9-]{1,80}$ ]]; then
+            echo "UNITY_REQUESTED_GAME_ID_INVALID=$requested_ids" >&2
+            exit 13
+          fi
+          if [[ -z "$requested_ids" && "$GITHUB_EVENT_NAME" == 'push' ]]; then
             requested_ids="$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '
               [.files[].filename
                 | if test("^\\.build-requests/unity/[^/]+\\.json$") then

@@ -22,8 +22,13 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: Optional game id for operator visibility; native lanes remain queue-authoritative
+        description: Optional exact game id. When set, dispatch only this game's Roblox and Unity lanes.
         required: false
+        type: string
+      trigger_source:
+        description: Optional orchestration source. UNITY_WEB_VERIFIED prevents recursive Unity Web redispatch.
+        required: false
+        default: MANUAL_OR_NATIVE
         type: string
 
 permissions:
@@ -73,6 +78,8 @@ jobs:
           const d=r.directNativeDualPlatformDevelopment||{};
           if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('DIRECT_NATIVE_OWNER_LOCK_REQUIRED');
           if(d.unityWebEnabled!==true||d.unityWebRequired!==false||d.unityWebGateRequired!==false||d.unityWebMode!=='VALIDATION_SURFACE_ONLY')throw new Error('UNITY_WEB_VALIDATION_SURFACE_CONTRACT_REQUIRED');
+          const fan=d.unityWebNativeFanOut||{};
+          if(fan.enabled!==true||fan.trigger!=='VERIFIED_UNITY_WEB_VALIDATION'||JSON.stringify(fan.targets)!==JSON.stringify(['ROBLOX','UNITY'])||fan.exactGameOnly!==true||fan.developmentAdmissionAuthority!==false||fan.recursiveUnityWebRedispatchForbidden!==true)throw new Error('UNITY_WEB_NATIVE_FANOUT_CONTRACT_REQUIRED');
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
           if(d.automaticPairing?.ROBLOX?.join(',')!=='ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY,ROBLOX')throw new Error('BIDIRECTIONAL_AUTO_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
@@ -90,6 +97,8 @@ jobs:
 
       - name: Resolve eligible native games
         id: plan
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -98,7 +107,10 @@ jobs:
           import path from 'node:path';
           import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('DIRECT_NATIVE_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
+            (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
@@ -141,6 +153,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`unity_web_ids=${webIds.join(',')}\n`);
           console.log(`DIRECT_NATIVE_ELIGIBLE_COUNT=${ids.length}`);
           console.log(`DIRECT_NATIVE_ELIGIBLE_IDS=${ids.join(',')||'NONE'}`);
+          console.log(`DIRECT_NATIVE_REQUESTED_GAME_ID=${requested||'BATCH'}`);
           console.log(`UNITY_WEB_VALIDATION_READY_IDS=${webIds.join(',')||'NONE'}`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
@@ -157,13 +170,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ELIGIBLE_IDS: ${{ needs.native-plan.outputs.eligible_ids }}
           UNITY_WEB_IDS: ${{ needs.native-plan.outputs.unity_web_ids }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          TRIGGER_SOURCE: ${{ inputs.trigger_source || 'MANUAL_OR_NATIVE' }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-          gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          if [ -n "$REQUESTED_GAME_ID" ]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+          else
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          fi
           web_count=0
-          if [ "$GITHUB_REF" = 'refs/heads/main' ] && [ -n "$UNITY_WEB_IDS" ]; then
+          if [ "$TRIGGER_SOURCE" != 'UNITY_WEB_VERIFIED' ] && [ "$GITHUB_REF" = 'refs/heads/main' ] && [ -n "$UNITY_WEB_IDS" ]; then
             IFS=',' read -ra web_ids <<< "$UNITY_WEB_IDS"
             for id in "${web_ids[@]}"; do
               [ -n "$id" ] || continue
@@ -179,6 +199,7 @@ jobs:
           echo 'ROBLOX_RUNTIME_DISPATCH=YES'
           echo 'UNITY_APP_RUNTIME_DISPATCH=YES'
           echo "UNITY_WEB_RUNTIME_DISPATCH_COUNT=$web_count"
-          echo 'UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE'
+          echo "DIRECT_NATIVE_TRIGGER_SOURCE=$TRIGGER_SOURCE"
+          echo 'UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE_WITH_NATIVE_FANOUT'
           echo 'BIDIRECTIONAL_AUTO_PAIR=YES'
           echo 'INTERNAL_RELEASE_FIRST=YES'

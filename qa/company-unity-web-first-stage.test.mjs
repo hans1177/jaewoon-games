@@ -75,3 +75,23 @@ test('Unity Web validation publication uses PR instead of direct main write',()=
   const ignore=fs.readFileSync(path.join(repo,'.gitignore'),'utf8');
   assert.match(ignore,/!web-games\/\*\/Build\/\*\*/);
 });
+
+
+test('verified Unity Web validation fans the exact game into Roblox and Unity native development',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const policy=JSON.parse(fs.readFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),'utf8'));
+  const fan=policy.directNativeDualPlatformDevelopment.unityWebNativeFanOut;
+  assert.equal(fan.enabled,true);
+  assert.equal(fan.trigger,'VERIFIED_UNITY_WEB_VALIDATION');
+  assert.deepEqual(fan.targets,['ROBLOX','UNITY']);
+  assert.equal(fan.exactGameOnly,true);
+  assert.equal(fan.developmentAdmissionAuthority,false);
+  assert.equal(fan.releaseAuthority,false);
+  assert.equal(fan.recursiveUnityWebRedispatchForbidden,true);
+  assert.match(workflow,/actions:\s*write/);
+  assert.match(workflow,/Fan verified Unity Web into exact Roblox and Unity development/);
+  assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
+  assert.match(workflow,/-f game_id="\$GAME_ID"/);
+  assert.match(workflow,/-f trigger_source="UNITY_WEB_VERIFIED"/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_FANOUT_TARGETS=ROBLOX,UNITY/);
+});

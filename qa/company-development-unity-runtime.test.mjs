@@ -197,6 +197,15 @@ test('checkpoint persistence accepts the actual upload-artifact extraction root'
   assert.match(workflowSource,/checkpoint queue directory missing after artifact extraction/);
 });
 
+test('Unity executor accepts exact game dispatch from the shared native orchestrator',()=>{
+  assert.match(workflowSource,/workflow_dispatch:\s*\n\s*inputs:\s*\n\s*game_id:/);
+  assert.match(workflowSource,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
+  assert.match(workflowSource,/requested_ids="\$REQUESTED_GAME_ID"/);
+  assert.match(workflowSource,/UNITY_REQUESTED_GAME_ID_INVALID=/);
+  assert.match(workflowSource,/requestedRows=requestedIds\.length\?rows\.filter\(row=>requestedSet\.has\(row\.gameId\)\):\[\]/);
+  assert.match(workflowSource,/UNITY_REQUESTED_GAME_IDS=/);
+});
+
 test('Unity platform executor remains event-driven with no periodic schedule of its own',()=>{
   assert.doesNotMatch(workflowSource,/^\s*schedule:/m);
   assert.doesNotMatch(workflowSource,/cron:/);
