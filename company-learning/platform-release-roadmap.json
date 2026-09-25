@@ -1,5 +1,5 @@
 {
-  "version": 373,
+  "version": 374,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1033,11 +1033,10 @@
         "settingEnablementEvidenceRequired": true,
         "confirmedEnabledState": "YES",
         "unconfirmedStates": [
-          "NO",
           "MISSING",
           "UNKNOWN"
         ],
-        "unconfirmedSettingAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT",
+        "unconfirmedSettingAction": "PROBE_OFFICIAL_MCP_REQUIRED_TOOLS_AND_FAIL_CLOSED_IF_HANDSHAKE_NOT_READY",
         "automaticSettingMutationForbidden": true,
         "manualPrerequisite": "ASSISTANT_MANAGE_MCP_SERVERS_ENABLE_STUDIO_AS_MCP_SERVER",
         "automaticResumeAfterPrerequisite": true,
@@ -1045,7 +1044,12 @@
           "NEXT_SCHEDULED_SCAN",
           "NEXT_MAIN_PUSH",
           "MANUAL_WORKFLOW_DISPATCH"
-        ]
+        ],
+        "settingEnablementAuthority": "READ_ONLY_SETTING_DIAGNOSTIC_OR_SUCCESSFUL_OFFICIAL_REQUIRED_TOOL_HANDSHAKE",
+        "explicitDisabledState": "NO",
+        "assistantSettingsDiagnosticAdvisoryWhenMissingOrUnknown": true,
+        "requiredToolHandshakeCanConfirmEnabledState": true,
+        "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT"
       }
     },
     "headlessValidation": {
