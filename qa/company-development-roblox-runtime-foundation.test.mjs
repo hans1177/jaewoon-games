@@ -366,3 +366,25 @@ test('shared FAST_MVP runtime QA keeps only newest shared candidate current and 
   assert.match(workflow,/if\(isSharedCandidate\(candidate\)&&item\.robloxSharedTargetCurrent===false\)return false/);
   assert.match(workflow,/ROBLOX_SHARED_TARGET_SUPERSEDED=/);
 });
+
+test('post-runtime QA dispatches exact candidates to authenticated local Studio and persists only sanitized actual play evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/studio-plan:/);
+  assert.match(workflow,/studio-auto-play:/);
+  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(workflow,/--place-version=\$env:PLACE_VERSION/);
+  assert.match(workflow,/ui-text-fits/);
+  assert.match(workflow,/ui-visible-elements/);
+  assert.match(workflow,/ROBLOX_STUDIO_UI_INPUT_ERROR_EXACT_EVIDENCE=PASS/);
+  assert.match(workflow,/robloxInternalVibePlayEvidence=\{version:2/);
+  assert.match(workflow,/actualPlay:true/);
+  assert.match(workflow,/learningReusable:true/);
+  assert.match(workflow,/rawSourceIncluded:false/);
+  assert.match(workflow,/rawGameplayValuesIncluded:false/);
+  assert.match(workflow,/scenarioCoverage:\['NEW_GAME_START'\]/);
+  assert.match(workflow,/scenarioCoveragePass:false/);
+  assert.doesNotMatch(workflow,/scenarioCoveragePass:true/);
+  assert.match(workflow,/candidate became stale before Studio launch/);
+  assert.match(workflow,/candidate changed before Studio evidence persist/);
+});
+
