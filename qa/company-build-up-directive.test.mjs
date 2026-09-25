@@ -71,6 +71,10 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.currentImplementationFindings.sourceAnchors.some(row=>row.symbol==='attack'));
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.length>=1);
   assert.equal(directive.responsibleSystemsAndFiles.exactSourceAnchorRequired,true);
+  assert.equal(directive.responsibleSystemsAndFiles.currentAndIntendedBehaviorRequiredPerPrimaryAnchor,true);
+  assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.currentBehavior||'').length>5));
+  assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.intendedBehavior||'').includes('primary goal')));
+  assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.observableAcceptance||'').includes(row.file)));
   assert.ok(directive.effectivenessMeasurement.expectedPlayerEffect.length>20);
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'NO_PREVIOUS_GENERATION');
   assert.equal(directive.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
@@ -227,4 +231,25 @@ test('failed previous generation keeps depth and routes next action to causal re
   assert.equal(second.developmentDepth,1);
   assert.equal(second.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
   assert.equal(second.nextActionDecision.action,'CAUSAL_REPAIR');
+});
+
+
+test('primary focus prioritizes core gameplay over generic presentation debt when both are evidenced',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/bug-defense',
+    sourceTreeFingerprint:'9'.repeat(64),
+    fileCount:2,
+    topFiles:[],
+    sourceAnchors:[],
+    signals:{combat:1,progression:1,ai:1,save:0,multiplayer:0,animation:0,vfx:0,camera:0,ui:0,lighting:0,primitive:20,todo:0,errorRecovery:0},
+    observations:['PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH','MOTION_IMPLEMENTATION_SPARSE']
+  };
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'bug-defense',
+    designRecord:design(),
+    sourceObservation,
+    qualitySignals:['combat decision gap','visual placeholder debt']
+  });
+  assert.equal(directive.primaryFocus,'CORE_FUN');
+  assert.match(directive.thisLoopPrimaryGoal,/입력→판단→상태 변화→피드백→다음 선택/);
 });
