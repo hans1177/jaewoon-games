@@ -1,5 +1,5 @@
 {
-  "version": 374,
+  "version": 375,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1013,10 +1013,14 @@
         "authority": "ROBLOX_OFFICIAL_MCP_TROUBLESHOOTING",
         "sequence": [
           "CAPTURE_ASSISTANT_MCP_SETTING_DIAGNOSTIC_READ_ONLY",
+          "WHEN_NO_STUDIO_PROCESS_EXISTS_TERMINATE_STALE_STUDIOMCP_CLIENT_PROCESS",
+          "LAUNCH_EXACT_LOCAL_PLACE_IN_STUDIO",
+          "START_FRESH_OFFICIAL_MCP_CLIENT",
           "SHORT_TOOL_READINESS_PROBE",
-          "CLOSE_OWNED_STUDIO_PROCESS",
+          "ON_FAILURE_CLOSE_OWNED_STUDIO_PROCESS",
+          "TERMINATE_STALE_STUDIOMCP_CLIENT_PROCESS_AFTER_OWNED_STUDIO_CLOSE",
           "RELAUNCH_EXACT_LOCAL_PLACE",
-          "RESTART_MCP_CLIENT",
+          "RESTART_FRESH_OFFICIAL_MCP_CLIENT",
           "REPROBE_REQUIRED_TOOLS"
         ],
         "automaticSessionAttempts": 3,
@@ -1049,7 +1053,12 @@
         "explicitDisabledState": "NO",
         "assistantSettingsDiagnosticAdvisoryWhenMissingOrUnknown": true,
         "requiredToolHandshakeCanConfirmEnabledState": true,
-        "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT"
+        "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT",
+        "staleMcpClientCleanupAllowed": true,
+        "staleMcpClientCleanupProcess": "StudioMCP",
+        "staleMcpClientCleanupGuard": "ONLY_WHEN_NO_ROBLOX_STUDIO_PROCESS_EXISTS_OR_AFTER_THIS_WORKFLOW_CLOSES_ITS_OWNED_STUDIO",
+        "unrelatedStudioProcessTerminationForbidden": true,
+        "reason": "ROBLOX_REPORTED_STALE_STUDIOMCP_SESSION_CAN_HIDE_NEW_STUDIO_INSTANCES"
       }
     },
     "headlessValidation": {
@@ -1277,7 +1286,8 @@
           "MINOR"
         ],
         "unverifiedPublicReplacementForbidden": true,
-        "verifiedResultLearningRequired": true
+        "verifiedResultLearningRequired": true,
+        "actualVibePlayRevalidatedBeforeReserve": true
       },
       "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
       "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_EXACT_DUPLICATE_OR_OVERLAPPING_RESPONSIBILITY_FOCUS_TASK_EXISTS",
@@ -1538,7 +1548,20 @@
       "syntheticPlayEvidenceForbidden": true,
       "fixedDurationOrElapsedTimeExitForbidden": true,
       "limitedPublicTestRequirement": false,
-      "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate"
+      "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
+      "staleQueuedFocusTaskGate": {
+        "version": 1,
+        "enabled": true,
+        "authority": "COMPANY_RUNTIME_EXACT_ACTUAL_VIBE_PLAY_EVIDENCE",
+        "appliesTo": "POST_RELEASE_FOCUSED_ROBLOX_TASKS_REQUIRING_ACTUAL_VIBE_PLAY",
+        "reconcileBeforeEveryReserve": true,
+        "missingOrStaleActualPlayAction": "BLOCK_QUEUED_FOCUS_TASK",
+        "blocker": "awaiting-actual-vibe-internal-play",
+        "exactEvidenceRequired": true,
+        "automaticReopenWhenExactActualPlayPassAppears": true,
+        "runningTaskMutationForbidden": true,
+        "gateWeakeningAllowed": false
+      }
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
