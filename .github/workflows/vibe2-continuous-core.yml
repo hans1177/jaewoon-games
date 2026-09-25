@@ -518,6 +518,8 @@ jobs:
         with:
           ref: vibe2-unreal-core
           fetch-depth: 1
+          sparse-checkout: |
+            .vibe2
 
       - name: Checkout pinned main contract
         uses: actions/checkout@v4
@@ -533,6 +535,8 @@ jobs:
           now="$(date +%s%3N)"
           start="$(cat /tmp/vibe2-worker-start-ms)"
           echo "ms=$((now-start))" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY'
+          echo 'VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT'
 
       - uses: actions/setup-node@v4
         with:
@@ -720,6 +724,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           command -v ollama >/dev/null
           nohup ollama serve > "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
           for i in $(seq 1 30); do
@@ -732,7 +737,7 @@ jobs:
           fi
           practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
           artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
-          node tools/vibe2-learning-practice-worker.mjs \
+          node "$contract_root/tools/vibe2-learning-practice-worker.mjs" \
             --order=/tmp/vibe2-work-order.json \
             --output=/tmp/vibe2-learning-practice-result.json \
             --artifact-dir="$artifact_dir"
@@ -740,7 +745,7 @@ jobs:
           if [ "$practice_route" = 'learning-web-artifact' ]; then
             test -s "$artifact_dir/index.html"
           fi
-          node tools/vibe2-practice-distillation.mjs \
+          node "$contract_root/tools/vibe2-practice-distillation.mjs" \
             --result=/tmp/vibe2-learning-practice-result.json \
             --order=/tmp/vibe2-work-order.json \
             --experience=.vibe2/experience.json \
@@ -800,7 +805,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/free-budget-telemetry.mjs \
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node "$contract_root/tools/free-budget-telemetry.mjs" \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
             --model-calls=1 \
