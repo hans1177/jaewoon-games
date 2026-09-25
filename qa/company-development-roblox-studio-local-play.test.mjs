@@ -38,7 +38,8 @@ function item(){
     robloxBuildOrPackagePassed:true,
     robloxBuildSourceRevision:source,
     robloxBuildArtifactIdentity:artifact,
-    robloxSharedTargetCurrent:false,
+    robloxSharedTargetCurrent:true,
+    robloxRuntimeFoundationPassed:true,
     robloxRuntimeCandidateEvidence:{
       sourceRevision:source,
       artifactIdentity:artifact,
@@ -149,6 +150,14 @@ test('verified Studio runtime error routes exact game to repair while remaining 
   assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
   assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_LOCAL_RUNTIME_ERROR');
   assert.deepEqual(applied.item.routingBlockers,['roblox-studio-local-play-repair-required']);
+});
+
+test('local Studio play is ordered after successful runtime foundation QA and exact candidate pass',()=>{
+  assert.match(workflow,/studio-local-plan:[\s\S]*needs: runtime-foundation-qa[\s\S]*if: needs\.runtime-foundation-qa\.result == 'success'/);
+  assert.equal((workflow.match(/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true;/g)||[]).length,1);
+  const candidate=item();
+  candidate.robloxRuntimeFoundationPassed=false;
+  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
 });
 
 test('company runtime QA uses local immutable Place artifact and never launches published Place directly in Studio',()=>{

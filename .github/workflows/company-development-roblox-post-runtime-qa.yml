@@ -455,7 +455,6 @@ jobs:
             item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
             item.robloxMobileControlUiPassed=result.f5InputCameraUiPassed===true;
             item.robloxMultiplayerQaPassed=result.f7MultiplayerFoundationPassed===true;
-            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const studioAssetRuntimeBindingPassed=studioAssetBindingRequired
               &&result.runtimeAcceptancePassed===true
               &&result.f5InputCameraUiPassed===true
@@ -679,7 +678,7 @@ jobs:
   studio-local-plan:
     name: plan exact local Studio playtests
     needs: runtime-foundation-qa
-    if: always() && needs.runtime-foundation-qa.result != 'cancelled'
+    if: needs.runtime-foundation-qa.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     outputs:

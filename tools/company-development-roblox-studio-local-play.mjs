@@ -41,6 +41,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const artifactRunId=artifactRunIdFor(item,candidate);
     const exact=Boolean(
       item?.robloxBuildOrPackagePassed===true
+      &&item?.robloxRuntimeFoundationPassed===true
       &&clean(item?.robloxBuildSourceRevision)===sourceRevision
       &&/^sha256:[0-9a-f]{64}$/i.test(artifactIdentity)
       &&candidate?.published===true
@@ -94,6 +95,7 @@ export function createLocalStudioPlayEvidence({
   const versionNumber=Number(expected?.versionNumber||0);
   const exactCurrent=Boolean(
     clean(item?.robloxSourceCommit)===sourceRevision
+    &&item?.robloxRuntimeFoundationPassed===true
     &&clean(item?.robloxBuildArtifactIdentity)===artifactIdentity
     &&candidate?.published===true
     &&item?.robloxSharedTargetCurrent!==false
