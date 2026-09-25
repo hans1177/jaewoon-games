@@ -11,6 +11,8 @@ on:
       - '.github/workflows/company-development-roblox-headless-fast-mvp.yml'
       - '.github/workflows/company-roblox-source-drift-sync.yml'
       - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-upper-platform-admission.mjs'
+      - 'qa/company-upper-platform-admission.test.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
@@ -76,9 +78,10 @@ jobs:
           node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/company-development-roblox-package.mjs
           node --check tools/company-selected-platform-router.mjs
+          node --check tools/company-upper-platform-admission.mjs
           node --check tools/vibe3-roblox-platform.mjs
           node --check tools/vibe3-roblox-learning-context.mjs
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-selected-platform-router.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-selected-platform-router.test.mjs qa/company-upper-platform-admission.test.mjs
 
       - name: Fetch current company runtime
         run: |
@@ -123,10 +126,12 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
           const reconciliationById=new Map((reconciliation||[]).map(row=>[row.gameId,row]));
           const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
@@ -140,6 +145,11 @@ jobs:
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const admission=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
+            if(admission.state!=='UPPER_PLATFORM'){
+              console.log('ROBLOX_NATIVE_ADMISSION_BLOCKED='+item.gameId+':'+admission.state+':'+admission.reason);
+              continue;
+            }
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;

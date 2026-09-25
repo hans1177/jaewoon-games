@@ -535,7 +535,7 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_TRANSPORT_FALLBACK=OFFICIAL_STUDIOMCP_EXE/);
   assert.match(studioMcpBlock,/\$attempt -gt 1 -and \$env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND/);
-  assert.match(studioMcpBlock,/\$attempt -gt 1\) -and \(\$mcpCommandForAttempt -eq \$env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND\)/);
+  assert.match(studioMcpBlock,/if \(\$attempt -gt 1 -and \$env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND\) \{[\s\S]{0,300}\$mcpCommandForAttempt = \$env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/);
   assert.match(studioMcpBlock,/available=:/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT/);
