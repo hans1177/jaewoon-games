@@ -105,6 +105,53 @@ function causalTaskContext(task={}){
   const priorFailedStrategyFingerprints=failedStrategyFingerprints(task);
   return{failureStage,failureSignature,retryCount,priorEvidence,priorFailedStrategyFingerprints};
 }
+
+function shouldUseDeepReasoning(task={}){
+  const evidence=unique(task.evidence);
+  return clean(task.taskType).toLowerCase()==='bottleneck-repair'
+    ||Number(task.retries||0)>0
+    ||task.sourceMutationRequired===true
+    ||evidence.some(x=>x==='system-ai-common-bottleneck:YES'
+      ||x.startsWith('system-ai-representative-canary:')
+      ||x==='primary-ai-collaboration-reason:COMMON_BOTTLENECK'
+      ||x==='primary-ai-collaboration-reason:SHARED_SYSTEM_AI_INFRASTRUCTURE');
+}
+function buildRepairCriticPrompt(task={},answer={},contexts=[]){
+  const causal=causalTaskContext(task),hypothesisPlan=systemAiHypothesisPlan(task);
+  const compactContext=contexts.slice(0,6).map(x=>({path:x.path,content:String(x.content||'').slice(0,6000)}));
+  return[
+    'You are the adversarial critic for a Vibe-directed bottleneck repair proposal.',
+    'Do not edit files directly. Evaluate whether the proposed causal hypothesis and repair strategy are actually supported by the supplied evidence.',
+    'Prefer the smallest assigned-file blast radius that can satisfy the exact verification.',
+    'Reject QA bypasses, fake PASS evidence, wrapper-only patches, authority expansion, unassigned files, and repeated failed strategies.',
+    'If the proposal is weak, return REVISE with a corrected revisedAnswer using the same implementation schema. If it is sound, return PASS.',
+    'Do not output private chain-of-thought. Return concise weak points and corrections only.',
+    'Schema: {"verdict":"PASS|REVISE","preferredStrategyId":"...","weakPoints":["..."],"requiredCorrections":["..."],"revisedAnswer":null}.',
+    'TASK ID: '+clean(task.id),
+    'FAILURE STAGE: '+(causal.failureStage||'UNSPECIFIED'),
+    'FAILURE SIGNATURE: '+(causal.failureSignature||'UNSPECIFIED'),
+    'RESPONSIBLE FILES: '+unique(task.responsibleFiles).join(', '),
+    'ACCEPTANCE: '+unique(task.acceptanceCriteria).join(' | '),
+    'FAILED STRATEGY FINGERPRINTS: '+(causal.priorFailedStrategyFingerprints.join(',')||'NONE'),
+    'HYPOTHESES: '+JSON.stringify(hypothesisPlan.hypotheses),
+    'RECENT EVIDENCE: '+causal.priorEvidence.join(' | '),
+    'PROPOSED ANSWER: '+JSON.stringify(answer),
+    'SCOPED CONTEXT: '+JSON.stringify(compactContext)
+  ].join('\n').slice(0,MAX_TOTAL_CONTEXT);
+}
+function normalizeRepairCritic(input={}){
+  const verdict=clean(input.verdict).toUpperCase();
+  if(!['PASS','REVISE'].includes(verdict))throw new Error('SYSTEM_AI_CRITIC_VERDICT_INVALID:'+verdict);
+  if(verdict==='REVISE'&&(!input.revisedAnswer||typeof input.revisedAnswer!=='object'))throw new Error('SYSTEM_AI_CRITIC_REVISED_ANSWER_REQUIRED');
+  return{
+    verdict,
+    preferredStrategyId:clean(input.preferredStrategyId)||null,
+    weakPoints:unique(input.weakPoints).slice(0,12),
+    requiredCorrections:unique(input.requiredCorrections).slice(0,12),
+    revisedAnswer:verdict==='REVISE'?input.revisedAnswer:null
+  };
+}
+
 function buildPrompt(task,contexts,learningContext={}){
   const learning=clean(learningContext.guidance),causal=causalTaskContext(task),hypothesisPlan=systemAiHypothesisPlan(task);
   const hypothesisRows=hypothesisPlan.hypotheses.map((row,index)=>`${index+1}. ${row.id} system=${row.system} confidence=${row.confidence.toFixed(2)} rejected=${row.rejected?'YES':'NO'} reason=${row.reason}`);
@@ -116,10 +163,11 @@ function buildPrompt(task,contexts,learningContext={}){
     'Solve the assigned root cause directly; do not add catch-and-ignore bypasses, fake PASS evidence, or wrapper-only patches.',
     'For recovery work, use the exact failure stage and failure signature as causal constraints. Do not repeat a previously failed repair strategy without new causal evidence.',
     'Before editing, compare multiple causal hypotheses against the supplied evidence. Explicitly reject contradicted hypotheses and repair only the strongest surviving hypothesis.',
+    'For bottleneck-repair, retry, common-bottleneck, or sourceMutationRequired work, include at least two distinct strategyOptions and select the minimum-blast-radius supported strategy.',
     'If a known-good revision is supplied, compare the failing responsibility area against that known-good reference before choosing a repair. If none is supplied, do not invent one.',
     'Preserve already verified checkpoints and change the responsible source before revalidating the same failure signature when sourceMutationRequired is true.',
     'Return compact JSON only. Do not use markdown or repeat unchanged file content.',
-    'Schema: {"summary":"...","selectedHypothesisId":"...","falsifiedHypothesisIds":["..."],"knownGoodComparison":"...","edits":[{"path":"...","find":"small exact unique text","replace":"replacement"}],"newFiles":[{"path":"...","content":"..."}],"recommendedTests":["..."],"risks":["..."]}.',
+    'Schema: {"summary":"...","selectedHypothesisId":"...","falsifiedHypothesisIds":["..."],"knownGoodComparison":"...","strategyOptions":[{"id":"...","summary":"...","risk":"LOW|MEDIUM|HIGH","files":["assigned/file"]}],"selectedStrategyId":"...","edits":[{"path":"...","find":"small exact unique text","replace":"replacement"}],"newFiles":[{"path":"...","content":"..."}],"recommendedTests":["..."],"risks":["..."]}.',
     'Keep find strings to the smallest unique blocks and keep prose concise so JSON cannot be truncated.',
     `TASK ID: ${clean(task.id)}`,
     `GOAL: ${clean(task.goal)}`,
