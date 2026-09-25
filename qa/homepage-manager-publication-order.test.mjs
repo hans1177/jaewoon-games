@@ -185,20 +185,22 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/data-direct-play|dataset\.directPlay/);
 });
 
-test('central development orchestrator dispatches Unity Web floor before new Roblox and Unity work',()=>{
+test('central development orchestrator runs Unity Web floor before new Roblox and Unity work without API dispatch',()=>{
   const development=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const admission=fs.readFileSync('tools/company-upper-platform-admission.mjs','utf8');
   assert.match(admission,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
   assert.match(admission,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
-  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_COUNT/);
+  assert.match(development,/eligible_json:/);
+  assert.match(development,/unity_web_json:/);
   assert.match(development,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS/);
-  assert.match(development,/UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT/);
+  assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
-  assert.match(development,/company-development-roblox-runtime\.yml/);
-  assert.match(development,/company-development-unity-runtime\.yml/);
-  assert.match(development,/UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED/);
+  assert.match(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(development,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
+  assert.doesNotMatch(development,/gh workflow run (?:company-development|unity-web)/);
   assert.doesNotMatch(development,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
