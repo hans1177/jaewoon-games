@@ -151,7 +151,6 @@ jobs:
           const requestedSet=new Set(requestedIds);
           const requestedRows=requestedIds.length?rows.filter(row=>requestedSet.has(row.gameId)):[];
           const canary=requestedRows.length?null:(canaryRequired?selectRepresentativeCanary(rows):null);
-          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const batchMax=Math.max(1,Math.min(256,Number(roadmap?.developmentSpeedExecution?.externalMatrixBatchMax||256)));
           const selected=requestedRows.length?requestedRows.slice(0,batchMax):(canary?[canary]:rows.slice(0,batchMax));
           const parallel=Math.max(1,Math.min(batchMax,selected.length||1));
