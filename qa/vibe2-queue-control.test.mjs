@@ -1373,7 +1373,7 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-test('24H plan uses optimistic writes while reserve stays serialized and fan-in stays run-unique',()=>{
+test('24H plan uses optimistic writes while reserve is lane-isolated and fan-in stays run-unique',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
@@ -1392,7 +1392,8 @@ test('24H plan uses optimistic writes while reserve stays serialized and fan-in 
   const reserveSteps=core.indexOf('\n    steps:',reserveStart);
   assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveSteps);
-  assert.match(reserveHeader,/group:[^\n]*vibe2-control-state-vibe2-unreal-core[^\n]*\n\s+cancel-in-progress: false\n\s+queue: max/);
+  assert.match(reserveHeader,/group:[^\n]*format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| 'game-primary'\)[^\n]*\n\s+cancel-in-progress: false\n\s+queue: max/);
+  assert.doesNotMatch(reserveHeader,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
 
   const fanInStart=core.indexOf('\n  fan_in:');
   const fanInSteps=core.indexOf('\n    steps:',fanInStart);
