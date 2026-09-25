@@ -142,31 +142,82 @@ function internalReleaseObserved(item={},candidate={}){
 export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId=''}={}){
   validateLocalStudioPolicy(roadmap);
   const requested=clean(requestedGameId);
+  const studioPolicy=roadmap?.roblox?.studioExecution||{};
+  const recovery=studioPolicy?.mcpUnavailableRecovery||{};
+  const historicalPrerequisiteReplayAllowed=
+    studioPolicy?.historicalExactPublishedArtifactAllowedForLocalActualPlay===true
+    &&recovery?.automaticResumeAfterPrerequisite===true;
   const include=[];
   for(const item of queue?.items||[]){
     if(requested&&clean(item?.gameId)!==requested)continue;
     if(clean(item?.status)==='DISABLED'||clean(item?.lifecycleState)==='DISABLED')continue;
+
     const candidate=item?.robloxRuntimeCandidateEvidence||{};
-    const sourceRevision=clean(item?.robloxSourceCommit);
-    const artifactIdentity=clean(item?.robloxBuildArtifactIdentity);
-    const artifactRunId=artifactRunIdFor(item,candidate);
-    const exact=Boolean(
-      item?.robloxBuildOrPackagePassed===true
-      &&clean(item?.robloxBuildSourceRevision)===sourceRevision
-      &&/^sha256:[0-9a-f]{64}$/i.test(artifactIdentity)
-      &&candidate?.published===true
-      &&clean(candidate?.sourceRevision)===sourceRevision
-      &&clean(candidate?.artifactIdentity)===artifactIdentity
-      &&Number(candidate?.artifactRunId||0)===artifactRunId
-      &&artifactRunId>0
+    const internal=item?.robloxInternalReleaseEvidence||{};
+    const prior=item?.robloxInternalVibePlayEvidence||{};
+    const currentSourceRevision=clean(item?.robloxSourceCommit);
+    const currentArtifactIdentity=clean(item?.robloxBuildArtifactIdentity);
+    const candidateSourceRevision=clean(candidate?.sourceRevision);
+    const candidateArtifactIdentity=clean(candidate?.artifactIdentity);
+    const candidateArtifactRunId=Number(candidate?.artifactRunId||0);
+
+    const candidateExact=Boolean(
+      candidate?.published===true
+      &&clean(candidate?.authority).startsWith('roblox-open-cloud-')
+      &&/^[0-9a-f]{40}$/i.test(candidateSourceRevision)
+      &&/^sha256:[0-9a-f]{64}$/i.test(candidateArtifactIdentity)
+      &&candidateArtifactRunId>0
       &&/^[1-9][0-9]*$/.test(String(candidate?.universeId||''))
       &&/^[1-9][0-9]*$/.test(String(candidate?.placeId||''))
       &&Number(candidate?.versionNumber||0)>0
-      &&clean(candidate?.authority).startsWith('roblox-open-cloud-')
+    );
+
+    const currentExact=Boolean(
+      candidateExact
+      &&item?.robloxBuildOrPackagePassed===true
+      &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
+      &&currentSourceRevision===candidateSourceRevision
+      &&currentArtifactIdentity===candidateArtifactIdentity
       &&internalReleaseObserved(item,candidate)
     );
-    if(!exact)continue;
-    const prior=item?.robloxInternalVibePlayEvidence||{};
+
+    const historicalInternalReleaseExact=Boolean(
+      internal?.published===true
+      &&clean(internal?.sourceRevision)===candidateSourceRevision
+      &&clean(internal?.artifactIdentity)===candidateArtifactIdentity
+      &&Number(internal?.artifactRunId||0)===candidateArtifactRunId
+      &&String(internal?.universeId||'')===String(candidate?.universeId||'')
+      &&String(internal?.placeId||'')===String(candidate?.placeId||'')
+      &&Number(internal?.versionNumber||0)===Number(candidate?.versionNumber||0)
+    );
+
+    const priorEnablementPrerequisiteExact=Boolean(
+      prior?.infrastructureFailure===true
+      &&clean(prior?.failureClass)==='STUDIO_MCP_INFRASTRUCTURE_PENDING'
+      &&prior?.studioMcpServerEnablementRequired===true
+      &&clean(prior?.operatorPrerequisite)==='ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT'
+      &&clean(prior?.sourceRevision)===candidateSourceRevision
+      &&clean(prior?.artifactIdentity)===candidateArtifactIdentity
+      &&Number(prior?.artifactRunId||0)===candidateArtifactRunId
+      &&String(prior?.universeId||'')===String(candidate?.universeId||'')
+      &&String(prior?.placeId||'')===String(candidate?.placeId||'')
+      &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
+    );
+
+    const infrastructurePrerequisiteReplay=Boolean(
+      !currentExact
+      &&historicalPrerequisiteReplayAllowed
+      &&candidateExact
+      &&historicalInternalReleaseExact
+      &&priorEnablementPrerequisiteExact
+    );
+
+    if(!currentExact&&!infrastructurePrerequisiteReplay)continue;
+
+    const sourceRevision=currentExact?currentSourceRevision:candidateSourceRevision;
+    const artifactIdentity=currentExact?currentArtifactIdentity:candidateArtifactIdentity;
+    const artifactRunId=candidateArtifactRunId;
+
     const alreadyObserved=Boolean(
       prior?.pass===true
       &&prior?.actualPlay===true
@@ -183,6 +234,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&Boolean(clean(prior?.testedAt))
     );
     if(alreadyObserved)continue;
+
     include.push({
       gameId:clean(item.gameId),
       sourceRevision,
@@ -192,16 +244,17 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       placeId:String(candidate.placeId),
       versionNumber:Number(candidate.versionNumber),
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
-      historicalExactPublishedArtifact:item?.robloxSharedTargetCurrent!==true
+      historicalExactPublishedArtifact:infrastructurePrerequisiteReplay||item?.robloxSharedTargetCurrent!==true,
+      infrastructurePrerequisiteReplay
     });
   }
+
   if(!requested&&include.length>1){
     const itemByGameId=new Map((queue?.items||[]).map(row=>[clean(row?.gameId),row]));
     const infrastructurePending=include.filter(row=>{
       const item=itemByGameId.get(row.gameId)||{};
       const prior=item?.robloxInternalVibePlayEvidence||{};
-      return item?.robloxFailureSignature==='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING'
-        &&prior?.infrastructureFailure===true
+      return prior?.infrastructureFailure===true
         &&prior?.failureClass==='STUDIO_MCP_INFRASTRUCTURE_PENDING'
         &&clean(prior?.sourceRevision)===row.sourceRevision
         &&clean(prior?.artifactIdentity)===row.artifactIdentity
@@ -230,7 +283,6 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
   }
   return{include,sharedInfrastructureCanary:false,deferredInfrastructureGameIds:[]};
 }
-
 function flattenText(value,out=[]){
   if(value==null)return out;
   if(typeof value==='string'){out.push(value);return out;}
@@ -645,16 +697,15 @@ export function createLocalStudioPlayEvidence({
   item={},runtime={},expected={},workflowRunId=0,studioStepSucceeded=true,testedAt=new Date().toISOString()
 }={}){
   const candidate=item?.robloxRuntimeCandidateEvidence||{};
+  const internalRelease=item?.robloxInternalReleaseEvidence||{};
   const sourceRevision=clean(expected?.sourceRevision);
   const artifactIdentity=clean(expected?.artifactIdentity);
   const artifactRunId=Number(expected?.artifactRunId||0);
   const universeId=String(expected?.universeId||'');
   const placeId=String(expected?.placeId||'');
   const versionNumber=Number(expected?.versionNumber||0);
-  const exactPublishedArtifact=Boolean(
-    clean(item?.robloxSourceCommit)===sourceRevision
-    &&clean(item?.robloxBuildArtifactIdentity)===artifactIdentity
-    &&candidate?.published===true
+  const candidateMatchesExpected=Boolean(
+    candidate?.published===true
     &&clean(candidate?.authority).startsWith('roblox-open-cloud-')
     &&clean(candidate?.sourceRevision)===sourceRevision
     &&clean(candidate?.artifactIdentity)===artifactIdentity
@@ -662,9 +713,28 @@ export function createLocalStudioPlayEvidence({
     &&String(candidate?.universeId||'')===universeId
     &&String(candidate?.placeId||'')===placeId
     &&Number(candidate?.versionNumber||0)===versionNumber
+  );
+  const currentSourceArtifactBinding=Boolean(
+    clean(item?.robloxSourceCommit)===sourceRevision
+    &&clean(item?.robloxBuildArtifactIdentity)===artifactIdentity
+  );
+  const currentExactPublishedArtifact=Boolean(
+    currentSourceArtifactBinding
+    &&candidateMatchesExpected
     &&internalReleaseObserved(item,candidate)
   );
-  if(!exactPublishedArtifact)throw new Error('ROBLOX_STUDIO_MCP_CANDIDATE_STALE');
+  const historicalExactPublishedArtifact=Boolean(
+    !currentSourceArtifactBinding
+    &&candidateMatchesExpected
+    &&internalRelease?.published===true
+    &&clean(internalRelease?.sourceRevision)===sourceRevision
+    &&clean(internalRelease?.artifactIdentity)===artifactIdentity
+    &&Number(internalRelease?.artifactRunId||0)===artifactRunId
+    &&String(internalRelease?.universeId||'')===universeId
+    &&String(internalRelease?.placeId||'')===placeId
+    &&Number(internalRelease?.versionNumber||0)===versionNumber
+  );
+  if(!currentExactPublishedArtifact&&!historicalExactPublishedArtifact)throw new Error('ROBLOX_STUDIO_MCP_CANDIDATE_STALE');
   if(clean(runtime?.authority)!=='roblox-official-studio-mcp-runtime')throw new Error('ROBLOX_STUDIO_MCP_RUNTIME_AUTHORITY_INVALID');
 
   const actions=(Array.isArray(runtime?.actions)?runtime.actions:[]).map(row=>({
@@ -753,6 +823,8 @@ export function createLocalStudioPlayEvidence({
       placeId,
       versionNumber,
       historicalSharedTargetExactArtifact:item?.robloxSharedTargetCurrent!==true,
+      historicalExactBuildReplay:historicalExactPublishedArtifact,
+      currentSourceArtifactBinding,
       currentPublishedRuntimeClaim:false,
       publishedCandidateCrossCheckPassed:true,
       publishedCandidateCrossCheckAuthority:'COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE',
@@ -782,7 +854,19 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   const item=(queue?.items||[]).find(row=>clean(row?.gameId)===clean(gameId));
   if(!item)throw new Error('ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:'+clean(gameId));
   const result=createLocalStudioPlayEvidence({item,runtime,expected,workflowRunId,studioStepSucceeded,testedAt});
+  const currentSourceArtifactBinding=result.evidence.currentSourceArtifactBinding===true;
+
   item.robloxInternalVibePlayEvidence=result.evidence;
+
+  if(!currentSourceArtifactBinding){
+    item.robloxInternalPlaytestPassed=false;
+    item.robloxInternalPlaytestPassedAt=null;
+    item.robloxStudioLocalPlayInfrastructurePending=result.evidence.infrastructureFailure===true;
+    item.updatedAt=result.evidence.testedAt;
+    queue.updatedAt=result.evidence.testedAt;
+    return{queue,item,result};
+  }
+
   item.robloxInternalPlaytestPassed=result.pass;
   item.robloxInternalPlaytestPassedAt=result.pass?result.evidence.testedAt:null;
   item.robloxStudioLocalPlayRepairRequired=!result.pass&&!result.evidence.infrastructureFailure;
@@ -813,7 +897,6 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   queue.updatedAt=result.evidence.testedAt;
   return{queue,item,result};
 }
-
 function args(argv=process.argv.slice(2)){
   const out={};
   for(const raw of argv){

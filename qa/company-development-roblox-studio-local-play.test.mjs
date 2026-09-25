@@ -29,7 +29,9 @@ function roadmap(){
       robloxPlayerAutomationForbidden:true,
       externalGuiAutomationForbidden:true,
       undocumentedStudioCliAutomationForbidden:true,
-      studioMcpTransport:'STDIO'
+      studioMcpTransport:'STDIO',
+      historicalExactPublishedArtifactAllowedForLocalActualPlay:true,
+      mcpUnavailableRecovery:{automaticResumeAfterPrerequisite:true}
     }},
     developmentLifecycleMachine:{robloxStudioUsage:{
       learningUseForbidden:false,
@@ -253,6 +255,72 @@ test('explicit game request bypasses shared Studio MCP infrastructure canary col
   assert.deepEqual(result.deferredInfrastructureGameIds,[]);
 });
 
+test('planner resumes MCP enablement prerequisite with the prior exact published artifact after current build pointers were invalidated',()=>{
+  const candidate=item();
+  candidate.robloxSourceCommit='c'.repeat(40);
+  candidate.robloxBuildOrPackagePassed=false;
+  candidate.robloxBuildSourceRevision=null;
+  candidate.robloxBuildArtifactIdentity=null;
+  candidate.robloxFailureSignature='ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING';
+  candidate.robloxInternalVibePlayEvidence={
+    version:2,
+    gameId:'g1',
+    pass:false,
+    actualPlay:false,
+    infrastructureFailure:true,
+    failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',
+    studioMcpServerEnablementRequired:true,
+    operatorPrerequisite:'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    artifactRunId:777,
+    universeId:'123',
+    placeId:'456',
+    versionNumber:9,
+    testedAt:'2026-09-25T09:00:00.000Z'
+  };
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].sourceRevision,source);
+  assert.equal(result.include[0].artifactIdentity,artifact);
+  assert.equal(result.include[0].artifactRunId,777);
+  assert.equal(result.include[0].infrastructurePrerequisiteReplay,true);
+});
+
+test('historical MCP prerequisite replay never overwrites the current rebuild-required source state',()=>{
+  const candidate=item();
+  candidate.robloxSourceCommit='c'.repeat(40);
+  candidate.robloxBuildOrPackagePassed=false;
+  candidate.robloxBuildSourceRevision=null;
+  candidate.robloxBuildArtifactIdentity=null;
+  candidate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+  candidate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+  candidate.robloxFailureStage='ROBLOX_BUILD_PACKAGE';
+  candidate.robloxFailureSignature='ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING';
+  candidate.routingBlockers=['roblox-build-package-revalidation-pending'];
+
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},
+    gameId:'g1',
+    runtime:runtime(),
+    expected,
+    workflowRunId:47,
+    studioStepSucceeded:true,
+    testedAt:'2026-09-25T09:25:00.000Z'
+  });
+
+  assert.equal(applied.result.pass,true);
+  assert.equal(applied.result.evidence.historicalExactBuildReplay,true);
+  assert.equal(applied.result.evidence.currentSourceArtifactBinding,false);
+  assert.equal(applied.item.robloxInternalPlaytestPassed,false);
+  assert.equal(applied.item.robloxStudioLocalPlayInfrastructurePending,false);
+  assert.equal(applied.item.currentStep,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+  assert.equal(applied.item.canonicalState,'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED');
+  assert.equal(applied.item.robloxFailureStage,'ROBLOX_BUILD_PACKAGE');
+  assert.equal(applied.item.robloxFailureSignature,'ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING');
+  assert.deepEqual(applied.item.routingBlockers,['roblox-build-package-revalidation-pending']);
+});
+
 test('verified official Studio MCP pass records actual play without claiming online runtime or public release',()=>{
   const result=createLocalStudioPlayEvidence({
     item:item(),runtime:runtime(),expected,workflowRunId:42,studioStepSucceeded:true,
@@ -267,6 +335,8 @@ test('verified official Studio MCP pass records actual play without claiming onl
   assert.equal(result.evidence.externalGuiAutomation,false);
   assert.equal(result.evidence.undocumentedStudioCliAutomation,false);
   assert.equal(result.evidence.historicalSharedTargetExactArtifact,true);
+  assert.equal(result.evidence.historicalExactBuildReplay,false);
+  assert.equal(result.evidence.currentSourceArtifactBinding,true);
   assert.equal(result.evidence.currentPublishedRuntimeClaim,false);
   assert.equal(result.evidence.runtimeSummary.distinctFrameChange,true);
   assert.equal(result.evidence.rawSourceIncluded,false);
