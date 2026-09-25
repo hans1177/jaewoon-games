@@ -197,3 +197,16 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.doesNotMatch(workflow,/webValidationRequired!==true/);
   assert.doesNotMatch(workflow,/musicValidationRequired!==true/);
 });
+
+
+test('queue reconcile treats Vibe queue telemetry as observational and never defers',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  assert.match(workflow,/ref=main/);
+  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_QUEUE_TELEMETRY_UNAVAILABLE/);
+  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_QUEUE_TELEMETRY_INVALID/);
+  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_RECONCILE/);
+  assert.doesNotMatch(workflow,/vibe2-unreal-core/);
+  assert.doesNotMatch(workflow,/DEFER_ACTIVE_GAME_WORK/);
+  assert.doesNotMatch(workflow,/DEFER_QUEUE_INVALID/);
+  assert.doesNotMatch(workflow,/DEFER_QUEUE_UNAVAILABLE/);
+});
