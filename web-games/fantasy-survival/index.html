@@ -2504,7 +2504,7 @@ function enemyHasBuiltInSpecial(type){
  return!!type&&!!(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial||type.templeSpearman||type.templeArcher||type.templeGuardian)
 }
 function enemyCanUseCommonSpecial(e){
- return!!e&&e.type.mood!=='harmless'&&!enemyHasBuiltInSpecial(e.type)&&e.type.id!=='crystalboarjunior'
+ return!!e&&e.type.mood!=='harmless'&&!enemyHasBuiltInSpecial(e.type)&&e.type.id!=='crystalboarjunior'&&!['flowergoblin','giantbee'].includes(e.type.id)
 }
 function showCommonEnemySpecial(e){
  if(e.playerTargetId&&e.playerTargetId!==multiplayer.playerId&&multiplayer.connected&&multiIsHost())multiSend('enemy-effect',{targetId:e.playerTargetId,kind:'heavy',sourceName:e.type.name});
