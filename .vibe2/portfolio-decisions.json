@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-09-25T20:23:12.035Z",
+  "generatedAt": "2026-09-25T21:30:17.879Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -16,36 +16,6 @@
         },
         "development": {
           "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 22
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "cozy-island",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 11,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
@@ -138,7 +108,7 @@
           "activeTasks": 13,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 28
+          "repeatedFailureSignal": 31
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -168,7 +138,7 @@
           "activeTasks": 6,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 30
+          "repeatedFailureSignal": 33
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -228,7 +198,37 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 28
+          "repeatedFailureSignal": 32
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "cozy-island",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 11,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 22
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -288,7 +288,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 28
+          "repeatedFailureSignal": 30
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -318,7 +318,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 26
+          "repeatedFailureSignal": 31
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -348,7 +348,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 22
+          "repeatedFailureSignal": 25
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -378,7 +378,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 26
+          "repeatedFailureSignal": 29
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -408,7 +408,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 30
+          "repeatedFailureSignal": 34
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -438,7 +438,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 29
+          "repeatedFailureSignal": 30
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -468,7 +468,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 29
+          "repeatedFailureSignal": 32
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -498,40 +498,10 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 28
+          "repeatedFailureSignal": 32
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "territory-war",
-      "decision": "CONTINUE",
-      "reason": "NORMAL_ACTIVE_DEVELOPMENT",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 0,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 0
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": false
         },
         "balance": {
           "structuralCoreFailure": false
