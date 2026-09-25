@@ -1,5 +1,5 @@
 {
-  "version": 179,
+  "version": 180,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3085,7 +3085,7 @@
     }
   },
   "releaseExposureLifecycle": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate",
     "sequence": [
       "MINIMUM_DESIGN_CONTRACT_READY",
@@ -3118,7 +3118,51 @@
     },
     "publicRelease": {
       "platformIndependent": true,
-      "onePlatformDoesNotWaitForOther": true
+      "onePlatformDoesNotWaitForOther": true,
+      "perpetualBuildupContinuesAfterPublicRelease": true
+    },
+    "robloxPerpetualInternalBuildup": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalBuildupLoop",
+      "startsAfter": "INTERNAL_PLATFORM_RELEASE",
+      "umbrellaState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "loop": [
+        "VIBE_INTERNAL_PLAY",
+        "VIBE2_EXISTING_CAUSAL_REPAIR_AND_DEVELOPMENT",
+        "ROBLOX_EXISTING_PLATFORM_REBUILD",
+        "ROBLOX_EXISTING_RUNTIME_QA_REGRESSION_REVALIDATION",
+        "VIBE_INTERNAL_PLAY"
+      ],
+      "perpetual": true,
+      "continuesAfterPublicRelease": true,
+      "actualPlayEvidenceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
+      "actualPlayExecutor": "PENDING_DIRECT_BINDING_TO_EXISTING_ROBLOX_RUNTIME_NO_SHADOW_PIPELINE",
+      "missingExecutor": "PUBLIC_RELEASE_FAIL_CLOSED_INTERNAL_BUILDUP_CONTINUES",
+      "focusFeeder": "tools/vibe2-post-release-focus.mjs",
+      "developmentScheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "developmentWorker": ".github/workflows/vibe2-continuous-core.yml",
+      "runtimeQa": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "finalRuntimeReview": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+      "exposureController": "tools/company-platform-exposure-control.mjs",
+      "noDurationExit": true,
+      "noLimitedPublicTestExit": true
+    },
+    "robloxExternalPublicReleaseHardGate": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
+      "controller": "tools/company-platform-exposure-control.mjs",
+      "runtimeState": "company-runtime:development-queue.json",
+      "exposureState": "vibe2-unreal-core:.vibe2/platform-exposure-state.json",
+      "failClosed": true,
+      "actualVibePlayRequired": true,
+      "gameCompletionRequired": true,
+      "platformRebuildAndAdaptationEvidenceRequired": true,
+      "stabilityEvidenceRequired": true,
+      "securityAndSaveMultiplayerEvidenceRequiredWhenApplicable": true,
+      "exactCandidateFinalRevalidationRequired": true,
+      "fixedDurationRequired": false,
+      "restrictedPublicTestRequired": false,
+      "f9InternalReleaseCannotSetPublicReady": true,
+      "passState": "PUBLIC_RELEASE_READY",
+      "explicitExternalPublicationEvidenceRequiredForPublicRelease": true
     }
   },
   "autonomousBottleneckRecovery": {
