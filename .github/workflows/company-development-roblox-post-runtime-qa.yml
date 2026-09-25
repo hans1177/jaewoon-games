@@ -730,7 +730,7 @@ jobs:
             --roadmap=company-learning/platform-release-roadmap.json \
             --game-id="$requested" \
             --output=/tmp/roblox-studio-mcp-matrix.json
-          matrix="$(node -e "const x=require('/tmp/roblox-studio-mcp-matrix.json');process.stdout.write(JSON.stringify(x))")"
+          matrix="$(node -e "const x=require('/tmp/roblox-studio-mcp-matrix.json');process.stdout.write(JSON.stringify({include:Array.isArray(x.include)?x.include:[]}))")"
           count="$(node -e "const x=require('/tmp/roblox-studio-mcp-matrix.json');process.stdout.write(String((x.include||[]).length))")"
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
           echo "count=$count" >> "$GITHUB_OUTPUT"
