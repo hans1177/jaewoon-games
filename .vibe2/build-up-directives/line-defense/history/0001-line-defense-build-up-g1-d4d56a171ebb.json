@@ -1,0 +1,1009 @@
+{
+  "version": 1,
+  "directiveId": "line-defense-build-up-g1-d4d56a171ebb",
+  "directiveFingerprint": "d4d56a171ebbd4985d1fc8a2e8452f2ed4e6ee8e6d46005a177550da846449c7",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
+  "gameId": "line-defense",
+  "gameName": "골목 군단 대전",
+  "generation": 1,
+  "developmentDepth": 1,
+  "escalationStage": "FOUNDATION_COMPLETENESS",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
+  "platform": "COMMON",
+  "sourceRoot": "unity-games/line-defense|roblox-games/line-defense|web-games/line-defense",
+  "sourceTreeFingerprint": "5acecafa696bfd9f7ae795823b873ca6b8a96f653cd70f5010585c806d440d1b",
+  "designFingerprint": "0af2994680eaff2c523b3a07d5c43f40715028f663c36e2693fefdbe2afc97de",
+  "gameIdentityAndNonNegotiables": {
+    "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
+    "coreFun": "매 웨이브마다 변화하는 적의 침공 경로를 관찰하고, 제한된 골목 자원을 활용하여 특정 유닛을 배치하거나 실시간으로 업그레이드 경로를 선택함으로써 즉각적인 전투력 변화와 방어 성공의 쾌감을 얻는 것입니다.",
+    "coreLoop": [
+      "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
+      "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
+      "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계"
+    ],
+    "signatureSystems": [
+      {
+        "name": "골목길 시너지 배치 시스템",
+        "purpose": "특정 골목 구역에 유닛을 인접하게 배치할 때 발생하는 시너지 효과를 통해 플레이어에게 공간 배치 기반의 깊이 있는 전략적 선택을 제공합니다.",
+        "playerChoice": "단순히 강한 유닛을 배치할 것인지, 아니면 시너지 효과를 극대화하기 위해 특정 속성의 유닛들을 좁은 골목에 밀집 배치할 것인지 선택합니다."
+      },
+      {
+        "name": "실시간 재화 순환 엔진",
+        "purpose": "전투 중 획득하는 자원의 가치를 실시간으로 변동시켜 플레이어가 자원 수집과 소비의 타이밍을 극적으로 조율하도록 만듭니다.",
+        "playerChoice": "자원을 즉시 소모하여 하급 유닛을 다수 소환할 것인지, 아니면 이자를 받기 위해 자원을 저축한 후 고성능 유닛을 한 번에 소환할 것인지 결정합니다."
+      }
+    ],
+    "progressionDirection": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.",
+    "multiplayerMode": "SINGLE",
+    "preserve": [
+      "CORE_IDENTITY",
+      "APPROVED_RULE_SEMANTICS",
+      "BALANCE_VALUES_UNLESS_AUTHORIZED",
+      "ECONOMY_MEANING_UNLESS_AUTHORIZED",
+      "SAVE_MEANING",
+      "NETWORK_AUTHORITY"
+    ]
+  },
+  "currentImplementationFindings": {
+    "sourceObservations": [
+      "CURRENT_SOURCE_FILES=6",
+      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
+      "VFX_IMPLEMENTATION_SPARSE",
+      "CURRENT_SOURCE_FILES=4",
+      "MOTION_IMPLEMENTATION_SPARSE",
+      "CURRENT_SOURCE_FILES=1",
+      "CAMERA_LANGUAGE_SPARSE"
+    ],
+    "signals": {
+      "combat": 155,
+      "progression": 91,
+      "ai": 24,
+      "save": 68,
+      "multiplayer": 11,
+      "animation": 6,
+      "vfx": 17,
+      "camera": 14,
+      "ui": 68,
+      "lighting": 11,
+      "primitive": 13,
+      "todo": 0,
+      "errorRecovery": 16
+    },
+    "topFiles": [
+      {
+        "file": "roblox-games/line-defense/server/Game.server.luau",
+        "score": 203
+      },
+      {
+        "file": "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs",
+        "score": 74
+      },
+      {
+        "file": "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
+        "score": 48
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "score": 47
+      },
+      {
+        "file": "roblox-games/line-defense/client/Game.client.luau",
+        "score": 39
+      },
+      {
+        "file": "roblox-games/line-defense/shared/GameConfig.luau",
+        "score": 36
+      },
+      {
+        "file": "roblox-games/line-defense/default.project.json",
+        "score": 2
+      },
+      {
+        "file": "unity-games/line-defense/Assets/Art/unity-web-floor-domain.json",
+        "score": 2
+      },
+      {
+        "file": "unity-games/line-defense/Assets/Animations/unity-web-floor-domain.json",
+        "score": 0
+      },
+      {
+        "file": "unity-games/line-defense/Assets/Materials/unity-web-floor-domain.json",
+        "score": 0
+      },
+      {
+        "file": "unity-games/line-defense/Assets/Prefabs/unity-web-floor-domain.json",
+        "score": 0
+      }
+    ]
+  },
+  "previousVersionDelta": {
+    "state": "NO_PREVIOUS_DIRECTIVE"
+  },
+  "playtestRuntimeFindings": {
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [
+      "roblox-dedicated-runtime-target-migration-pending"
+    ],
+    "runtimeObserved": false,
+    "runtimePassed": false,
+    "independentQaPassed": false,
+    "regressionPassed": false
+  },
+  "qualityGapMap": [
+    {
+      "domain": "CORE_FUN",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "COMBAT_OR_PRIMARY_INTERACTION",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "PLAYER_ACTIONS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "ENEMY_AI",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "BOSS_AND_SIGNATURE_MOMENTS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "PROGRESSION",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "GOALS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "REWARDS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "UNLOCKS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "QUESTS",
+      "state": "NOT_APPLICABLE",
+      "reason": "no quest/story objective signal in approved design"
+    },
+    {
+      "domain": "CONTENT_VARIETY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "WORLD_MAP_TOPOLOGY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "REGIONS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "LANDMARKS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "TRAVERSAL",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "ECONOMY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "INVENTORY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "CRAFTING",
+      "state": "NOT_APPLICABLE",
+      "reason": "no crafting signal in approved design"
+    },
+    {
+      "domain": "SAVE_AND_RECOVERY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "MULTIPLAYER_AND_SYNC",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design does not currently require multiplayer"
+    },
+    {
+      "domain": "INPUT",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "MOBILE_UX",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "ACCESSIBILITY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "TUTORIAL_ONBOARDING",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "DIFFICULTY_PACING",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "GAME_FEEL",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "SPAWN_ENCOUNTER_DIRECTOR",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "FAILURE_RESPAWN_CHECKPOINTS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "NPC_SOCIAL_BEHAVIOR",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "NARRATIVE_STORY",
+      "state": "NOT_APPLICABLE",
+      "reason": "no narrative or story signal in approved design"
+    },
+    {
+      "domain": "AUDIO_MUSIC_SFX",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "REPLAYABILITY_VARIATION",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "CHARACTER_VISUALS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ENEMY_VISUALS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "WEAPONS_AND_EQUIPMENT",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "BUILDINGS_AND_PROPS",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "PALETTE",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "LIGHTING",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "ANIMATION",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "SECONDARY_MOTION",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "VFX",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "CAMERA",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "UI_HUD",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "AUDIO_VISUAL_TIMING",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "ENVIRONMENTAL_MOTION",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "PERFORMANCE",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "RUNTIME_STABILITY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    },
+    {
+      "domain": "ERROR_RECOVERY",
+      "state": "EVALUATED",
+      "reason": "considered against current design and source"
+    }
+  ],
+  "allDomainImplementationDirectives": [
+    {
+      "domain": "CORE_FUN",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "골목길 시너지 배치 시스템가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "COMBAT_OR_PRIMARY_INTERACTION",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "골목길 시너지 배치 시스템의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PLAYER_ACTIONS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "플레이어의 주요 행동마다 사용 조건, 취소/실패 조건, 상태 변화, 쿨다운 또는 후딜, 화면/음향 피드백을 일관되게 연결하고 무의미한 중복 행동은 정리한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENEMY_AI",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 골목길 시너지 배치 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "BOSS_AND_SIGNATURE_MOMENTS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 실시간 재화 순환 엔진와 연결한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PROGRESSION",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "GOALS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 골목길 시너지 배치 시스템와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "REWARDS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "보상은 행동 난도·위험·시간·희소성과 연결하고, 획득 순간의 상태 변화와 피드백을 명확히 하며 다음 선택에 실제 영향을 주게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "UNLOCKS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "해금은 새 시스템/지역/행동/조합 중 의미 있는 선택을 열어야 하며 단순 아이콘 공개나 숫자 증가만으로 해금 완료를 주장하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "QUESTS",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 no quest/story objective signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "CONTENT_VARIETY",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "콘텐츠 변형은 이름/색/수치 복제 대신 행동 규칙·공간·자원·적 조합·진행 조건 중 최소 한 축을 바꾸어 새로운 판단을 만들게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "WORLD_MAP_TOPOLOGY",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "월드 구조는 시작점·안전/위험 구역·주요 동선·우회 경로·보상 지점·잠금/해금 연결을 읽을 수 있게 하고 막다른 빈 공간을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "REGIONS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "지역마다 지형, 적/상호작용, 자원, 위험, 조명/색, 이동 방식 중 여러 축이 달라 실제 플레이 역할이 구별되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "LANDMARKS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "TRAVERSAL",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "이동은 속도만이 아니라 지형·장애물·경로 선택·위험 회피와 연결하고 모바일 입력에서 의도한 방향/행동이 안정적으로 유지되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ECONOMY",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "INVENTORY",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "CRAFTING",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 no crafting signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "SAVE_AND_RECOVERY",
+      "state": "EVALUATED",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "세이브는 기존 키/의미를 보존하면서 진행·장비·해금 등 승인된 상태가 재접속 후 정확히 복구되고 중간 실패 시 안전한 fallback을 갖게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "MULTIPLAYER_AND_SYNC",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design does not currently require multiplayer. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "INPUT",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "핵심 행동마다 터치 우선 입력과 키보드/패드 대체 입력을 동일 게임 상태에 연결하고 중복 입력·길게 누름·드래그·취소 경계를 명확히 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "MOBILE_UX",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "작은 화면에서 핵심 HUD·조작·위험 경고·선택지가 손가락과 겹치지 않게 하고 safe area, 스크롤, 팝업 닫기, 가로/세로 대응을 실제 플레이 기준으로 정리한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ACCESSIBILITY",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "색만으로 상태를 구분하지 않고 형태/아이콘/텍스트/모션을 함께 쓰며, 중요한 피드백은 크기·대비·지속시간을 확보해 정보 누락을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "TUTORIAL_ONBOARDING",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "첫 플레이에서 골목길 시너지 배치 시스템의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "DIFFICULTY_PACING",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "초반 진입, 중반 선택 압박, 후반 숙련 요구가 갑자기 튀지 않게 적/자원/목표/보상의 복잡도를 단계적으로 올리고 실패 원인이 학습 가능한 형태로 보이게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "GAME_FEEL",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 골목길 시너지 배치 시스템에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SPAWN_ENCOUNTER_DIRECTOR",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "적·자원·이벤트·조우의 생성 위치/빈도/조합/안전거리/재생성 규칙을 지역 역할과 난이도에 맞추고 불공정한 즉시 피격·과밀·공백을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "FAILURE_RESPAWN_CHECKPOINTS",
+      "state": "EVALUATED",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "사망/실패/런 종료 시 손실·보존·체크포인트·리스폰 위치·재시작 시간을 명확히 하고 실패 후 다시 핵심 재미로 돌아가는 시간을 최소화한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "NPC_SOCIAL_BEHAVIOR",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "NARRATIVE_STORY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 no narrative or story signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "AUDIO_MUSIC_SFX",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "REPLAYABILITY_VARIATION",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "반복 플레이가 적용되는 게임이면 조우 조합·지역 경로·보상 선택·빌드/전략·이벤트 중 게임에 맞는 변주를 제공해 같은 정답만 반복되지 않게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "CHARACTER_VISUALS",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENEMY_VISUALS",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "WEAPONS_AND_EQUIPMENT",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "BUILDINGS_AND_PROPS",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PALETTE",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "LIGHTING",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ANIMATION",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SECONDARY_MOTION",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "VFX",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "CAMERA",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "UI_HUD",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "HUD는 현재 목표·체력/위험·핵심 자원·쿨다운/상태·다음 선택의 우선순위를 명확히 하고 게임 아트 언어와 일치하는 패널/아이콘/상태 피드백을 사용한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "AUDIO_VISUAL_TIMING",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENVIRONMENTAL_MOTION",
+      "state": "EVALUATED",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "세계에 맞는 바람/식생/물/빛/먼지/기계 등 미세 환경 움직임을 추가해 정적인 무대를 피하되 플레이 정보와 성능을 방해하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PERFORMANCE",
+      "state": "EVALUATED",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "RUNTIME_STABILITY",
+      "state": "EVALUATED",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ERROR_RECOVERY",
+      "state": "EVALUATED",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    }
+  ],
+  "detectedGaps": [
+    {
+      "domain": "CHARACTER_VISUALS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ENEMY_VISUALS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow or placeholder-heavy implementation"
+    }
+  ],
+  "primaryFocus": "STABILITY",
+  "thisLoopPrimaryGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"골목길 시너지 배치 시스템\"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.",
+  "gameplayImplementationDirectives": [
+    "골목길 시너지 배치 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
+    "실시간 재화 순환 엔진가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
+    "고유 시스템 골목길 시너지 배치 시스템, 실시간 재화 순환 엔진 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
+    "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
+  ],
+  "progressionContentWorldDirectives": [
+    "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
+    "새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.",
+    "맵/지역이 있는 게임은 동선·위험/보상·랜드마크·조우/자원 역할이 서로 구별되도록 유지하거나 강화한다."
+  ],
+  "visualBuildUpDirective": {
+    "artDirection": {
+      "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
+      "visualPurpose": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 플레이 판단과 골목길 시너지 배치 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
+      "distinctnessRule": "실시간 재화 순환 엔진와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
+      "placeholderDebt": "HIGH"
+    },
+    "domains": {
+      "CHARACTER": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
+      "ENEMY_CREATURE": "골목길 시너지 배치 시스템의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
+      "WEAPON_EQUIPMENT": "장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.",
+      "BUILDING_PROP": "상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.",
+      "ENVIRONMENT_TERRAIN": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
+      "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
+      "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
+      "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
+      "ANIMATION": "주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.",
+      "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
+      "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
+      "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
+      "UI_HUD": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
+      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
+      "ENVIRONMENTAL_MOTION": "정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.",
+      "SCENE_DENSITY": "빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.",
+      "LANDMARK_READABILITY": "플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다."
+    },
+    "requiredActorStates": [
+      "IDLE",
+      "LOCOMOTION",
+      "ATTACK_ANTICIPATION",
+      "IMPACT",
+      "RECOVERY",
+      "HIT_REACTION",
+      "DEATH"
+    ],
+    "completionRules": [
+      "ACTUAL_RENDERED_CHANGE_REQUIRED",
+      "MARKER_CONFIG_ATOM_ONLY_FORBIDDEN",
+      "COLOR_ONLY_NOT_FULL_IDENTITY_UPGRADE",
+      "PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP",
+      "BEFORE_AFTER_COMPARISON_REQUIRED"
+    ],
+    "focus": "STABILITY"
+  },
+  "uxInputDirectives": [
+    "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
+    "터치 입력은 실제 게임 상태 변화에 연결하고 키보드/검증용 우회 입력이 모바일 PASS를 대신하지 못하게 한다.",
+    "실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다."
+  ],
+  "platformAdaptationDirectives": {
+    "UNITY_WEB": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 canonical unity-games 소스에 구현하고 WebGL/브라우저 터치/카메라/렌더 비용을 맞춘다. 별도 Web 게임 코드베이스를 만들지 않는다.",
+    "ROBLOX": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 번역한다. Unity/Web 구현을 그대로 복사하지 않는다.",
+    "UNITY_APP": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 앱 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Unity Web과 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다."
+  },
+  "preserveConstraints": [
+    "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
+    "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
+    "멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다.",
+    "wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다."
+  ],
+  "responsibleSystemsAndFiles": {
+    "files": [
+      "roblox-games/line-defense/server/Game.server.luau",
+      "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
+      "web-games/line-defense/index.html",
+      "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
+      "roblox-games/line-defense/default.project.json",
+      "unity-games/line-defense/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/line-defense/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/line-defense/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/line-defense/Assets/Prefabs/unity-web-floor-domain.json"
+    ],
+    "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST"
+  },
+  "acceptanceEvidence": [
+    "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
+    "WORKFLOW_QA_HOMEPAGE_ONLY_CHANGE_DOES_NOT_COUNT",
+    "GAMEPLAY_CLAIM_REQUIRES_OBSERVABLE_GAME_STATE_DELTA",
+    "VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA",
+    "BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON",
+    "NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION",
+    "FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP"
+  ],
+  "nextEscalationCandidates": [
+    "DEEPEN_CORE_FUN_DECISION_DENSITY",
+    "RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE",
+    "CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST",
+    "OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED"
+  ],
+  "loopEscalation": {
+    "automatic": true,
+    "nextGeneration": 2,
+    "currentDevelopmentDepth": 1,
+    "nextDevelopmentDepth": 1,
+    "escalationStage": "FOUNDATION_COMPLETENESS",
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
+    "verifiedEvolution": false,
+    "reuseSameGoalWithoutNewEvidence": false,
+    "completedGoalBecomesBaseline": false
+  },
+  "coverage": {
+    "allDomainsConsidered": true,
+    "domainCount": 51,
+    "visualDomainCount": 17,
+    "notApplicable": [
+      "QUESTS",
+      "CRAFTING",
+      "MULTIPLAYER_AND_SYNC",
+      "NARRATIVE_STORY"
+    ]
+  },
+  "generatedAt": "2026-09-25T21:49:32.411Z"
+}
