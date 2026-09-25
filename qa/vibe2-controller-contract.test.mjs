@@ -128,7 +128,7 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignHardFailuresMax,0);
   assert.equal(runtime.continuous.studioQualityLoop.unverifiedDesignGameplayMutationForbidden,true);
   assert.equal(runtime.continuous.studioQualityLoop.runtimeDesignEvidenceAuthority,'company-runtime');
-  assert.equal(runtime.documentation.machineStateVersions.runtime,32);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,33);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
   assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
@@ -458,7 +458,7 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.ok(runtime.parallelismTelemetry.metrics.includes('verifiedCandidatesPerMinute'));
   assert.ok(runtime.parallelismTelemetry.metrics.includes('firstCandidatePassRatePct'));
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
-  assert.equal(runtime.continuous.refillMode,'task-micro-fanin-repository-dispatch-with-hourly-safety-net');
+  assert.equal(runtime.continuous.refillMode,'task-micro-fanin-repository-dispatch-with-five-minute-safety-net');
   assert.equal(runtime.continuous.slotRefillTrigger,'vibe2-neuron-complete');
   assert.equal(runtime.continuous.perWorkerCompletionSignalEnabled,true);
   assert.equal(runtime.continuous.perWorkerSlotRefillEnabled,false);
@@ -566,7 +566,7 @@ test('recovery-fast lane is event-driven and never directly consumes a game work
   assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
 });
 
-test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
+test('fan-in keeps a repository-dispatch fallback and five-minute safety net',()=>{
   assert(workflow.includes('Event-driven fan-in refill fallback'));
   assert(workflow.includes("event_type:'vibe2-fanin-refill'"));
   assert(workflow.includes('VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'));
@@ -575,7 +575,9 @@ test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
   assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
   assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
-  assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
+  assert.equal(runtime.continuous.wakeMode,'event-driven-plus-five-minute-safety-net');
+  assert(safetyNetWorkflow.includes("cron: '*/5 * * * *'"));
+  assert.equal(safetyNetWorkflow.includes("cron: '17 * * * *'"),false);
 });
 
 test('worker never mutates shared queue state and only emits an atomic completion event',()=>{
