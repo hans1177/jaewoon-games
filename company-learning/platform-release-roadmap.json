@@ -1,5 +1,5 @@
 {
-  "version": 365,
+  "version": 366,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -975,7 +975,9 @@
       "reEnabledAt": "2026-09-25",
       "previousRemovalAt": "2026-09-22T03:45:00+09:00",
       "authority": "OWNER_DIRECTIVE_2026-09-25",
-      "sharedPublishedTargetCurrentRequired": true
+      "sharedPublishedTargetCurrentRequired": true,
+      "requiresRuntimeFoundationQaSuccess": true,
+      "launchAfter": "ROBLOX_RUNTIME_FOUNDATION_QA_PASS"
     },
     "headlessValidation": {
       "version": 2,
@@ -3468,7 +3470,8 @@
       "publicationRoute": "OPEN_CLOUD",
       "publicationTargetDiscoveryFromStudioForbidden": true,
       "offlineBehavior": "QUEUE_LOCAL_STUDIO_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS",
-      "publishedCandidateMustNotBeSupersededSharedTarget": true
+      "publishedCandidateMustNotBeSupersededSharedTarget": true,
+      "runtimeFoundationQaPassRequiredBeforeStudioPlay": true
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -6855,6 +6858,14 @@
       "robloxPlayerAutomation": false,
       "publicServerBotPlay": false,
       "sharedSupersededCandidateCannotMintStudioActualPlayEvidence": true
+    },
+    "robloxStudioRuntimeFoundationOrdering20260925": {
+      "id": "ROBLOX_STUDIO_RUNTIME_FOUNDATION_ORDERING_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "rule": "LOCAL_STUDIO_ACTUAL_PLAY_REQUIRES_RUNTIME_FOUNDATION_QA_PASS",
+      "failureAction": "DO_NOT_QUEUE_OR_RUN_STUDIO_PLAY_WHEN_RUNTIME_FOUNDATION_QA_FAILS",
+      "implementation": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-plan"
     }
   },
   "vibeExecutionLaneContract": {
