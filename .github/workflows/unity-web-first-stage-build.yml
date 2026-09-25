@@ -620,7 +620,7 @@ jobs:
   repair-vibe2:
     name: Re-enter Vibe2 Unity Web causal repair
     needs: build
-    if: always() && needs.build.outputs.repair_required == 'true'
+    if: always() && (needs.build.outputs.repair_required == 'true' || needs.build.result == 'failure')
     permissions:
       contents: write
       actions: write
