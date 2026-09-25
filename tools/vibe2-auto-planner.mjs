@@ -1568,6 +1568,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
       developmentDepth:Number(directive.developmentDepth||1),
       escalationStage:clean(directive.escalationStage)||null,
+      buildUpNextAction:clean(directive?.nextActionDecision?.action)||null,
+      buildUpNextActionReason:clean(directive?.nextActionDecision?.reason)||null,
       nextEscalationRequired:true,
       evidence:[...new Set([
         ...(taskInput.evidence||[]),
@@ -1576,7 +1578,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
         'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
         'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
-      'build-up-next-vibe-action-reason:'+clean(directive.nextActionDecision?.reason),
+        'build-up-next-vibe-action-reason:'+clean(directive.nextActionDecision?.reason),
         'build-up-directive-reused-active-generation:YES',
         'build-up-directive-generation-fan-in:INCOMPLETE_NO_ESCALATION',
         'build-up-directive-id:'+directive.directiveId,
