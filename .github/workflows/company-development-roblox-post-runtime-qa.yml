@@ -853,7 +853,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $nonce = [Guid]::NewGuid().ToString('N')
-          node tools/vibe2-roblox-studio-cli-runner.mjs "--studio=$env:VIBE2_ROBLOX_STUDIO_PATH" "--scenario=$env:ROBLOX_STUDIO_SCENARIO" "--output=$env:ROBLOX_STUDIO_RESULT" "--nonce=$nonce" "--place-file=$env:ROBLOX_STUDIO_PLACE_FILE" --timeout=420000
+          node tools/vibe2-roblox-studio-cli-runner.mjs "--studio=$env:VIBE2_ROBLOX_STUDIO_PATH" "--scenario=$env:ROBLOX_STUDIO_SCENARIO" "--output=$env:ROBLOX_STUDIO_RESULT" "--nonce=$nonce" "--place-file=$env:ROBLOX_STUDIO_PLACE_FILE" --local-only=true --timeout=420000
           if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio API play failed' }
           Write-Host 'ROBLOX_STUDIO_ACTUAL_PLAY=PASS'
 
