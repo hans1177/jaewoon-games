@@ -690,6 +690,76 @@ test('spare adaptive worker slots are shared across high-risk tasks before a thi
   assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
 });
 
+test('runner pressure suppresses only optional speculative variants while preserving primary task coverage', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  queue=add(queue,'pressure-a','pressure-a','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
+  queue=add(queue,'pressure-b','pressure-b','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
+  const reserved=reserveVibeTaskBatch(queue,{
+    maxConcurrentTasks:4,
+    speculativeExpansionAllowed:false,
+    speculativeExpansionReason:'ADAPTIVE_RUNNER_PRESSURE'
+  });
+  assert.equal(reserved.tasks.length,2);
+  assert.equal(reserved.primaryTaskCount,2);
+  assert.equal(reserved.workerCount,2);
+  assert.equal(reserved.speculativeExpansionAllowed,false);
+  assert.equal(reserved.speculativeExpansionReason,'ADAPTIVE_RUNNER_PRESSURE');
+  assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[1,1]);
+  assert.ok(reserved.tasks.every(task=>task.neuronExpectedVariants===1));
+});
+
+test('reserve-batch reads adaptive runner pressure and restores speculation after pressure clears',()=>{
+  const makeFiles=(name,control)=>{
+    const dir=fs.mkdtempSync(path.join(os.tmpdir(),name));
+    const queueFile=path.join(dir,'queue.json');
+    const controlFile=path.join(dir,'control.json');
+    const batchFile=path.join(dir,'batch.json');
+    fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:4,tasks:[{
+      id:'risky-web',gameId:'risky-web',target:'web',department:'development',type:'implementation',
+      goal:'targeted runtime repair',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
+      sourceRoot:'web-games/risky-web',responsibleFiles:['index.html']
+    }]},null,2));
+    fs.writeFileSync(controlFile,JSON.stringify(control,null,2));
+    return{queueFile,controlFile,batchFile};
+  };
+
+  const pressured=makeFiles('vibe2-spec-pressure-',{
+    version:4,currentMax:4,lastDecision:'DOWN',lastReason:'FAILURE_RATE+RUNNER_CAPACITY',
+    lastTelemetry:{workerCount:4,effectiveMax:4,effectivePeakUtilizationPct:50,failureRatePct:50,pressureLevel:'HIGH',bottleneck:'SOURCE_CANDIDATE_GENERATION'}
+  });
+  const suppressed=runQueueCommand({
+    command:'reserve-batch',queue:pressured.queueFile,control:pressured.controlFile,lane:'game-primary',max:'4',min:'4',
+    'reservation-id':'pressure:1','reservation-run':'pressure','reserved-at':'2026-09-26T00:00:00Z',output:pressured.batchFile
+  });
+  const suppressedBatch=JSON.parse(fs.readFileSync(pressured.batchFile,'utf8'));
+  assert.equal(suppressed.speculativeExpansion.allowed,false);
+  assert.equal(suppressed.speculativeExpansionAllowed,false);
+  assert.equal(suppressed.tasks.length,1);
+  assert.equal(suppressed.matrix[0].speculativeVariants,1);
+  assert.equal(suppressedBatch.scheduler.primaryTaskCount,1);
+  assert.equal(suppressedBatch.scheduler.workerCount,1);
+  assert.equal(suppressedBatch.scheduler.speculativeExpansionAllowed,false);
+  assert.match(suppressedBatch.scheduler.speculativeExpansionReason,/ADAPTIVE_RUNNER_PRESSURE/);
+
+  const healthy=makeFiles('vibe2-spec-healthy-',{
+    version:4,currentMax:4,lastDecision:'UP',lastReason:'HEALTHY_FAST_RAMP',
+    lastTelemetry:{workerCount:4,effectiveMax:4,effectivePeakUtilizationPct:100,failureRatePct:0,pressureLevel:'LOW',bottleneck:'NONE'}
+  });
+  const restored=runQueueCommand({
+    command:'reserve-batch',queue:healthy.queueFile,control:healthy.controlFile,lane:'game-primary',max:'4',min:'4',
+    'reservation-id':'healthy:1','reservation-run':'healthy','reserved-at':'2026-09-26T00:01:00Z',output:healthy.batchFile
+  });
+  const healthyBatch=JSON.parse(fs.readFileSync(healthy.batchFile,'utf8'));
+  assert.equal(restored.speculativeExpansion.allowed,true);
+  assert.equal(restored.speculativeExpansionAllowed,true);
+  assert.equal(restored.tasks.length,1);
+  assert.equal(restored.matrix[0].speculativeVariants,3);
+  assert.equal(healthyBatch.scheduler.primaryTaskCount,1);
+  assert.equal(healthyBatch.scheduler.workerCount,3);
+  assert.equal(healthyBatch.scheduler.speculativeExpansionAllowed,true);
+  assert.equal(healthyBatch.scheduler.speculativeExpansionReason,'AVAILABLE');
+});
+
 test('neural worker sample is evaluated as one immutable atomic transaction', () => {
   const row={
     taskId:'atomic-neural',
