@@ -266,16 +266,42 @@ class McpStdioClient{
       this.pending.clear();
     });
     const result=await this.request('initialize',{
-      protocolVersion:'2025-11-25',
+      protocolVersion:'2024-11-05',
       capabilities:{},
       clientInfo:{name:'jaewoon-games-roblox-studio-mcp',version:'1.0.0'}
     });
-    this.protocolVersion=clean(result?.protocolVersion||'2025-11-25');
+    this.protocolVersion=clean(result?.protocolVersion||'2024-11-05');
     this.serverInfo=result?.serverInfo||{};
     this.notify('notifications/initialized',{});
+    return await this.refreshTools();
+  }
+  async refreshTools(){
     const listed=await this.request('tools/list',{});
+    this.tools.clear();
     for(const tool of listed?.tools||[])this.tools.set(clean(tool?.name),tool);
     return listed?.tools||[];
+  }
+  async waitForTools(requiredNames=[],{attempts=24,delayMs=1500}={}){
+    const required=[...new Set((requiredNames||[]).map(clean).filter(Boolean))];
+    let names=[];
+    for(let attempt=1;attempt<=Math.max(1,Number(attempts)||1);attempt++){
+      const listed=attempt===1&&this.tools.size?[...this.tools.values()]:await this.refreshTools();
+      names=(listed||[]).map(tool=>clean(tool?.name)).filter(Boolean);
+      const missing=required.filter(name=>!this.tools.has(name));
+      if(!missing.length){
+        console.log('ROBLOX_STUDIO_MCP_TOOLS_READY='+names.sort().join(','));
+        return names;
+      }
+      console.log('ROBLOX_STUDIO_MCP_TOOLS_WAIT='+attempt+':missing='+missing.join(',')+':available='+names.sort().join(','));
+      if(attempt<Math.max(1,Number(attempts)||1))await wait(Math.max(100,Number(delayMs)||1500));
+    }
+    const missing=required.filter(name=>!this.tools.has(name));
+    throw new Error(
+      'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing='+missing.join(',')
+      +':available='+names.sort().join(',')
+      +':protocol='+clean(this.protocolVersion)
+      +':server='+clean(this.serverInfo?.name)
+    );
   }
   onLine(line){
     let msg;try{msg=JSON.parse(line);}catch{return;}
@@ -341,8 +367,9 @@ export async function runOfficialStudioMcpPlay({
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,started=false;
   try{
-    const tools=await client.connect();
+    await client.connect();
     const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input'];
+    await client.waitForTools(requiredTools,{attempts:24,delayMs:1500});
     for(const name of requiredTools)client.tool(name);
     checkpoint('official-studio-mcp-connected',true);
 
