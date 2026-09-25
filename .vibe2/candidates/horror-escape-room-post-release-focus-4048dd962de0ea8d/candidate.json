@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "QACamera.install(C,gui,function()",
+      "replace": "QACamera.install(C,gui,function()\n local arena=workspace:FindFirstChild(\"MidnightArena\")\n if not arena or workspace:GetAttribute(\"MapReady\")~=true then return{}end\n local id=tostring(workspace:GetAttribute(\"CurrentMapId\")or\"SCHOOL\")\n if id==\"HOSPITAL\"then\n  return{\n   {label=\"horror-hospital-overview\",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),\n   {label=\"horror-hospital-emergency\",position=Vector3.new(-155,25,-45),lookAt=Vector3.new(-118,4,-82)),\n   {label=\"horror-hospital-morgue\",position=Vector3.new(-150,24,145),lookAt=Vector3.new(-118,4,108)),\n  }\n elseif id==\"THEME_PARK\"then\n  return{\n   {label=\"horror-park-overview\",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),\n   {label=\"horror-park-arcade\",position=Vector3.new(-154,24,-52),lookAt=Vector3.new(-118,4,-92)),\n   {label=\"horror-park-maintenance\",position=Vector3.new(154,24,145),lookAt=Vector3.new(118,4,108)),\n  }\n } else\n  return{\n   {label=\"horror-school-overview\",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),\n   {label=\"horror-school-library\",position=Vector3.new(-154,24,-40),lookAt=Vector3.new(-118,4,-70)),\n   {label=\"horror-school-auditorium\",position=Vector3.new(154,24,145),lookAt=Vector3.new(108,4,104)),\n  }\n }\n end\n end)\n"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
