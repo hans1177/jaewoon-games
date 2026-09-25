@@ -1543,7 +1543,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const retry=attempt>1;
     const robloxAssetAdaptationTask=!allowFullRewrite&&/Engine:\s*roblox/i.test(String(prompt??''))&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
     const priorFailureClass=generationFailureClass(lastError);
-    if(robloxAssetAdaptationTask&&ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(priorFailureClass))robloxFullGraphicsPackageActive=true;
+    const robloxFullGraphicsLateMalformedTrigger=robloxAssetAdaptationTask
+      &&priorFailureClass==='MALFORMED_OUTPUT'
+      &&attempt>=4;
+    if(robloxAssetAdaptationTask&&(ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(priorFailureClass)||robloxFullGraphicsLateMalformedTrigger))robloxFullGraphicsPackageActive=true;
     const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask
       &&robloxFullGraphicsPackageActive
       &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass);
