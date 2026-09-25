@@ -231,6 +231,19 @@ test('every accepted Roblox buildup modification must rebuild before revalidatio
 });
 
 
+test('native executors cannot bypass Unity Web upper-platform readiness',()=>{
+  const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
+  const roblox=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  for(const workflow of [unity,roblox]){
+    assert.match(workflow,/company-upper-platform-admission\.mjs/);
+    assert.match(workflow,/classifyUpperPlatformAdmission/);
+    assert.match(workflow,/grandfatherGameIds/);
+    assert.match(workflow,/admission\.state!=='UPPER_PLATFORM'/);
+  }
+  assert.match(unity,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
+  assert.match(roblox,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
+});
+
 test('Unity Web source bootstrap is fail-closed and excludes the two owner-grandfathered games',()=>{
   const workflow=fs.readFileSync('.github/workflows/unity-web-floor-source-bootstrap.yml','utf8');
   const generator=fs.readFileSync('tools/company-unity-web-floor-bootstrap.mjs','utf8');
