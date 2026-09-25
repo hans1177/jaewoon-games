@@ -56,6 +56,10 @@ test('verified exact Roblox Studio play evidence becomes reusable experience and
       actualPlay:true,
       runtimeVerified:true,
       learningReusable:true,
+      executionSurface:'LOCAL_IMMUTABLE_ARTIFACT',
+      immutableArtifactVerified:true,
+      publishedCandidateObserved:false,
+      automatedUserInput:false,
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
       sourceRevision:'a'.repeat(40),
@@ -63,11 +67,11 @@ test('verified exact Roblox Studio play evidence becomes reusable experience and
       universeId:'123',
       placeId:'456',
       versionNumber:7,
-      capabilities:{studioTestService:true,virtualInput:true},
-      actions:[{id:'move',type:'key',dispatched:true,ok:true}],
+      capabilities:{studioTestService:true,virtualInput:false,assertionOnly:true},
+      actions:[{id:'player',type:'expect',dispatched:false,ok:true}],
       checkpoints:[{id:'player',name:'player-present',required:true,pass:true}],
       errors:[],
-      learningSignals:['input','runtime','player'],
+      learningSignals:['assertion only','runtime','player'],
       workflowRunId:12345,
       testedAt:'2026-09-25T08:00:00.000Z'
     }
@@ -84,9 +88,11 @@ test('verified exact Roblox Studio play evidence becomes reusable experience and
   const stale=structuredClone(base);
   stale.robloxInternalVibePlayEvidence.versionNumber=6;
   assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[stale]}).records.length,0);
-  const noInput=structuredClone(base);
-  noInput.robloxInternalVibePlayEvidence.actions=[{id:'wait',type:'wait',dispatched:false,ok:true}];
-  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[noInput]}).records.length,0);
+  const withInput=structuredClone(base);
+  withInput.robloxInternalVibePlayEvidence.capabilities.virtualInput=true;
+  withInput.robloxInternalVibePlayEvidence.automatedUserInput=true;
+  withInput.robloxInternalVibePlayEvidence.actions=[{id:'move',type:'key',dispatched:true,ok:true}];
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[withInput]}).records.length,0);
 });
 
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
