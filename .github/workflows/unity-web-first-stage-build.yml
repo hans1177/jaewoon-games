@@ -475,7 +475,11 @@ jobs:
             &&Boolean(item.platformDesignProfiles?.UNITY?.source);
           const codePass=play.pass===true&&play.gameplay?.pass===true&&play.coreFun?.pass===true&&play.noCriticalRuntimeError===true;
           const graphicsCounts={Art:countFiles('Art'),Prefabs:countFiles('Prefabs'),Materials:countFiles('Materials'),Animations:countFiles('Animations')};
-          const graphicsPass=Object.values(graphicsCounts).filter(v=>v>0).length>=3
+          const floorSourceFile=path.join(project,'unity-web-floor-source.json');
+          let floorSource={};try{if(fs.existsSync(floorSourceFile))floorSource=JSON.parse(fs.readFileSync(floorSourceFile,'utf8'));}catch{}
+          const bootstrapGraphicsBlocked=floorSource?.presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'||floorSource?.upperPlatformReady===false;
+          const graphicsPass=!bootstrapGraphicsBlocked
+            &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
             &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png');
           const webglPass=build.bootSmoke==='PASS'
             &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
@@ -503,7 +507,7 @@ jobs:
           const criteria={
             design:{pass:designPass},
             code:{pass:codePass},
-            graphics:{pass:graphicsPass,assetCounts:graphicsCounts},
+            graphics:{pass:graphicsPass,assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
             webglBuild:{pass:Boolean(webglPass)},
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
