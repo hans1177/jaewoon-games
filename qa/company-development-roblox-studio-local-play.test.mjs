@@ -243,6 +243,15 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.doesNotMatch(studioMcpBlock,/--mode=mcp-run[\s\S]{0,500}(--place-id=|--universe-id=)/);
 });
 
+test('Studio MCP client negotiates Roblox protocol and waits for the official tool inventory to become ready',()=>{
+  assert.match(helper,/protocolVersion:'2024-11-05'/);
+  assert.match(helper,/async waitForTools\(requiredNames=\[\],\{attempts=24,delayMs=1500\}=\{\}\)/);
+  assert.match(helper,/await client\.waitForTools\(requiredTools,\{attempts:24,delayMs:1500\}\)/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_TOOLS_WAIT=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=/);
+  assert.match(helper,/:available=/);
+});
+
 test('Windows Studio MCP transport keeps documented batch launch and supports installed official binary fallback',()=>{
   assert.match(helper,/process\.platform==='win32'&&\/\\\.exe\$\/i\.test\(resolved\)\)return\{command:resolved,args:\[\]\}/);
   assert.match(helper,/process\.platform==='win32'\)return\{command:'cmd\.exe',args:\['\/c',resolved\]\}/);
