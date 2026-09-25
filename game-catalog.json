@@ -211,7 +211,6 @@
       "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
       "releaseStrategy": "FAST_MVP",
       "releasePrimaryPlatform": "ROBLOX",
-      "newFeatureExpansionFrozen": true,
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
@@ -4069,7 +4068,8 @@
     "publicationIdentityMustStayBoundToGameId": true,
     "ordering": "CANONICAL_STABLE",
     "orderField": "catalogOrder",
-    "orderContiguous": true
+    "orderContiguous": true,
+    "automaticFeatureExpansionFreezeForbidden": true
   },
   "permanentRemovalPolicy": {
     "version": 1,
