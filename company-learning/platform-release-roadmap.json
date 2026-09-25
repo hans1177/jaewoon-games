@@ -9,7 +9,7 @@
   ],
   "primaryPlatform": "ROBLOX",
   "currentPhase": "UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_UPPER_PLATFORM_DEVELOPMENT",
-  "priorityMeaning": "REQUEST_EITHER_ROBLOX_OR_UNITY_STARTS_BOTH_NATIVE_IMPLEMENTATIONS_FOR_THE_SAME_GAME",
+  "priorityMeaning": "UNITY_WEB_UPPER_PLATFORM_READINESS_PASS_STARTS_ROBLOX_AND_UNITY_NATIVE_IMPLEMENTATIONS_FOR_THE_SAME_GAME",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
     "UNITY": "ALWAYS_ALLOWED",
@@ -17,7 +17,7 @@
   },
   "crossPlatformDevelopmentLockedByPhase": false,
   "platformEntryGateAllowed": false,
-  "platformDevelopmentMayStartWithoutPriorPlatformCompletion": true,
+  "platformDevelopmentMayStartWithoutPriorPlatformCompletion": false,
   "platformReleaseMayProceedWhenOwnEvidencePasses": true,
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
@@ -1181,15 +1181,15 @@
       "firstWebGatePassSufficientForDevelopmentAdmission": false,
       "secondWebGateRunsSeparately": false,
       "secondWebGateCriteriaAuthority": "OWNER_DIRECTIVE",
-      "firstWebStageEngine": "DISABLED",
-      "unityTargetUsesSameCanonicalProject": false,
-      "robloxAndUefnFlowsUnchanged": false,
+      "firstWebStageEngine": "UNITY_WEB_FULL_DEVELOPMENT_FLOOR",
+      "unityTargetUsesSameCanonicalProject": true,
+      "robloxAndUefnFlowsUnchanged": true,
       "concurrentTargets": [
         "ROBLOX",
         "UNITY"
       ],
       "bidirectionalAutoPair": true,
-      "admissionGate": "MINIMUM_DESIGN_CONTRACT_READY",
+      "admissionGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "platformDesignProfilesRequired": true
     },
     "postReleaseFocusedDevelopment": {
@@ -4932,12 +4932,13 @@
       "webGateSkipped": false,
       "globalGameDevelopmentWindow": null,
       "unityWebDevelopmentLane": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
-      "unityWebRunsAlongsideNativeWhenBuildable": true,
-      "legacyWebAdmissionStageSkipped": true,
+      "unityWebRunsAlongsideNativeWhenBuildable": false,
+      "legacyWebAdmissionStageSkipped": false,
       "unityWebIsReleaseStage": false,
       "unityWebDevelopmentFloorRequired": true,
       "unityWebGateRequiredForUpperPlatformStart": true,
-      "upperPlatformStartOnlyAfterUnityWebReadinessPass": true
+      "upperPlatformStartOnlyAfterUnityWebReadinessPass": true,
+      "unityWebRunsBeforeUpperPlatformStart": true
     },
     "internalPlatformPlaytestDevelopment": {
       "version": 3,
@@ -20644,10 +20645,12 @@
     ],
     "autoPairRules": {
       "ROBLOX": [
+        "UNITY_WEB_FLOOR",
         "ROBLOX",
         "UNITY"
       ],
       "UNITY": [
+        "UNITY_WEB_FLOOR",
         "UNITY",
         "ROBLOX"
       ]
@@ -20692,10 +20695,12 @@
     "version": 4,
     "automaticPairing": {
       "ROBLOX": [
+        "UNITY_WEB_FLOOR",
         "ROBLOX",
         "UNITY"
       ],
       "UNITY": [
+        "UNITY_WEB_FLOOR",
         "UNITY",
         "ROBLOX"
       ]
@@ -21235,7 +21240,8 @@
             "failureAction": "QUARANTINE_SECURITY_RELEVANT_REPAIR_AND_ROUTE_EXISTING_SECURITY_RECOVERY"
           }
         }
-      }
+      },
+      "upperPlatformAdmissionRequires": "UPPER_PLATFORM_DEVELOPMENT_READY"
     },
     "development": {
       "concurrentTargets": [
