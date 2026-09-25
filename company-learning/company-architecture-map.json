@@ -1,5 +1,5 @@
 {
-  "version": 180,
+  "version": 181,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2839,6 +2839,37 @@
         "postNativeFinalReviewPreservesTaskStatusAndReleaseDecision": true,
         "candidateResultWorkflowMayInvokeFanInReviewButCannotMintMarker": true
       }
+    },
+    "robloxStudioVerifiedRuntimeIngress": {
+      "version": 1,
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.robloxStudioUsage",
+      "sourceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
+      "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-auto-play",
+      "executionHost": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_AUTHENTICATED",
+      "runtimeAuthority": "vibe2-roblox-studio-runtime",
+      "exactCandidateRequired": true,
+      "exactBindingFields": [
+        "sourceRevision",
+        "artifactIdentity",
+        "universeId",
+        "placeId",
+        "versionNumber"
+      ],
+      "runtimeRequirements": [
+        "StudioTestService",
+        "VirtualInput",
+        "required-checkpoint-pass",
+        "zero-runtime-errors"
+      ],
+      "canonicalIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience",
+      "canonicalExperienceStore": ".vibe2/experience.json",
+      "retrieval": "tools/vibe2-learning-motor.mjs#retrieveUnifiedLearning",
+      "reusePriority": "SAME_GAME_AND_SAME_FAILURE_BEFORE_CROSS_GAME",
+      "rawSourceDirectTraining": false,
+      "rawGameplayValuesDirectTraining": false,
+      "separateTrainer": false,
+      "separatePipeline": false,
+      "authorityExpansion": false
     }
   },
   "ownerRule2Topology": {
@@ -3135,7 +3166,7 @@
       "perpetual": true,
       "continuesAfterPublicRelease": true,
       "actualPlayEvidenceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
-      "actualPlayExecutor": "PENDING_DIRECT_BINDING_TO_EXISTING_ROBLOX_RUNTIME_NO_SHADOW_PIPELINE",
+      "actualPlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-auto-play",
       "missingExecutor": "PUBLIC_RELEASE_FAIL_CLOSED_INTERNAL_BUILDUP_CONTINUES",
       "focusFeeder": "tools/vibe2-post-release-focus.mjs",
       "developmentScheduler": ".github/workflows/vibe2-24h-runner.yml",
@@ -3148,7 +3179,10 @@
       "rebuildAfterEveryAcceptedModification": true,
       "staleArtifactReuseAfterSourceModification": false,
       "revalidationInput": "NEWLY_REBUILT_EXACT_CANDIDATE_ONLY",
-      "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY"
+      "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY",
+      "actualPlayExecution": "SELF_HOSTED_WINDOWS_STUDIO_TEST_SERVICE_PLUS_VIRTUAL_INPUT",
+      "learningReuse": "EXACT_CANDIDATE_VERIFIED_STUDIO_EVIDENCE_TO_EXISTING_LEARNING_MOTOR",
+      "headlessF0RemainsIndependent": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
