@@ -139,6 +139,37 @@ test('Roblox full graphics edit-match recovery keeps the connected package contr
   assert.doesNotMatch(retry,/exactly one edit/i);
 });
 
+test('Roblox full graphics domain recovery carries partial progress and prioritizes missing domains',()=>{
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve full Roblox graphics and native motion without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local character = workspace:FindFirstChild("Character")',
+    'local weapon = workspace:FindFirstChild("Sword")',
+    'local terrainRock = workspace:FindFirstChild("TerrainRock")',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  ].join('\n');
+  const previous=JSON.stringify({edits:[{
+    path:'client/Game.client.luau',
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:'local enemyBody = Instance.new("MeshPart")\\nlocal terrainRock = Instance.new("MeshPart")\\npanel.BackgroundColor3 = Color3.fromRGB(70,95,130)\\nRunService.RenderStepped:Connect(function(dt) enemyBody.CFrame = enemyBody.CFrame * CFrame.Angles(0,dt,0) end)'
+  }]});
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED:MISSING_WEAPON_EQUIPMENT'),
+    responsibleFiles:['client/Game.client.luau'],
+    attempt:4,
+    previousOutput:previous
+  });
+  assert.match(retry,/MISSING CORE VISUAL DOMAINS TO ADD FIRST: WEAPON_EQUIPMENT/i);
+  assert.match(retry,/PREVIOUS VALID PARTIAL ROBLOX GRAPHICS CANDIDATE/i);
+  assert.match(retry,/BEGIN_PREVIOUS_ROBLOX_GRAPHICS_CANDIDATE/i);
+  assert.match(retry,/enemyBody = Instance\.new/i);
+  assert.match(retry,/return a complete candidate against the ORIGINAL/i);
+});
+
 test('Roblox full graphics source worker switches to package recovery after a core-domain failure',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
