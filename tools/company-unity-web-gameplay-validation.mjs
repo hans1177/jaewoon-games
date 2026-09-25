@@ -104,10 +104,9 @@ try{
   const initialStateLine=markers.slice().reverse().find(x=>x.includes(' STATE '))||'';
   const initialState=parseState(initialStateLine);
 
-  await page.keyboard.press('Digit1');
-  await page.waitForTimeout(1500);
-  const enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
-  if(!enteredGameplay)throw new Error('UNITY_WEB_QA_GAMEPLAY_START_MISSING');
+  const canvas=page.locator('canvas').first();
+  const canvasBox=await canvas.boundingBox();
+  if(!canvasBox||canvasBox.width<1||canvasBox.height<1)throw new Error('UNITY_WEB_QA_CANVAS_BOUNDS_MISSING_FOR_TOUCH');
 
   const mobileTargetLine=markers.slice().reverse().find(x=>x.includes(' MOBILE_TARGET ')&&x.includes('role=action'))||'';
   const mobileTargetX=Number(mobileTargetLine.match(/\bx=([0-9.]+)/)?.[1]);
@@ -115,16 +114,29 @@ try{
   if(!mobileTargetLine||!Number.isFinite(mobileTargetX)||!Number.isFinite(mobileTargetY)||mobileTargetX<=0||mobileTargetX>=1||mobileTargetY<=0||mobileTargetY>=1){
     throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_TARGET_MISSING');
   }
-  const mobileMarkerStart=markers.length;
-  const canvasBox=await page.locator('canvas').first().boundingBox();
-  if(!canvasBox||canvasBox.width<1||canvasBox.height<1)throw new Error('UNITY_WEB_QA_CANVAS_BOUNDS_MISSING_FOR_TOUCH');
   const touchX=canvasBox.x+(canvasBox.width*mobileTargetX);
   const touchY=canvasBox.y+(canvasBox.height*mobileTargetY);
+
+  let gameplayStartInput='KEYBOARD_DIGIT1';
+  await canvas.focus();
+  await page.keyboard.press('Digit1');
+  await page.waitForTimeout(1200);
+  let enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+  if(!enteredGameplay){
+    gameplayStartInput='REAL_BROWSER_TOUCH_FALLBACK';
+    await page.touchscreen.tap(touchX,touchY);
+    await page.waitForTimeout(900);
+    enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+  }
+  if(!enteredGameplay)throw new Error('UNITY_WEB_QA_GAMEPLAY_START_MISSING');
+
+  const mobileMarkerStart=markers.length;
   await page.touchscreen.tap(touchX,touchY);
   await page.waitForTimeout(900);
   const mobileInputObserved=markers.slice(mobileMarkerStart).some(x=>x.includes(' MOBILE_INPUT ')&&x.includes('role=action')&&x.includes('status=PASS'));
   if(!mobileInputObserved)throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_NOT_OBSERVED');
 
+  await canvas.focus();
   for(let i=0;i<20&&!markers.some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
     await page.keyboard.press('Space');
     await page.waitForTimeout(250);
@@ -137,6 +149,7 @@ try{
   if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
   if(coreFunMarkers.length<1)throw new Error('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
 
+  await canvas.focus();
   await page.keyboard.press('KeyR');
   await page.waitForTimeout(2200);
   const safeReturnObserved=markers.some(x=>x.includes(' RETURN ')||x.includes(' RESET ')||(x.includes(' REGION ')&&x.includes('region=town')));
@@ -176,7 +189,7 @@ try{
     sourcePath:source,
     pass:true,
     boot:{pass:true},
-    input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved},
+    input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved,canvasFocusedBeforeKeyboard:true,gameplayStartInput},
     gameplay:{
       pass:true,
       gameplayStartObserved:true,
