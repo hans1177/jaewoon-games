@@ -26241,11 +26241,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_59a9df8e17b2aa4ec69ebb04",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-3125",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2d0ea70b8f11f9112871d2421243c71d3d7f151b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 3125,
+        "baseBranch": "main",
+        "headBranch": "chatgpt/fix-daechung-unity-web-mobile-target",
+        "baseSha": "2d0ea70b8f11f9112871d2421243c71d3d7f151b",
+        "headSha": "ff3d73b275e3bb337a8b72cd7e767f4678ea0db5",
+        "mergeCommitSha": "87fb56f000b238a5ab5c9807c6e16019b0a1e979",
+        "mergedAt": "2026-09-25T16:05:12Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c9686a42006d28f1efa436c77e1ef44dc160a81aa484e8b407d08f8e3bc969ba",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "chatgpt/fix-daechung-unity-web-mobile-target",
+        "candidateSha": "ff3d73b275e3bb337a8b72cd7e767f4678ea0db5"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 46,
+        "deletedLineCount": 17,
+        "changedFiles": [
+          "qa/daechung-rpg-safe-boot.test.mjs",
+          "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
+        ],
+        "codingRelevantFiles": [
+          "qa/daechung-rpg-safe-boot.test.mjs",
+          "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:3125",
+        "merge-commit:87fb56f000b238a5ab5c9807c6e16019b0a1e979",
+        "base-main:2d0ea70b8f11f9112871d2421243c71d3d7f151b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 211
+    "total": 212
   }
 }
