@@ -1,5 +1,5 @@
 {
-  "version": 171,
+  "version": 172,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3409,14 +3409,19 @@
       "includeAllInternalPlatformRelease": true,
       "internalPlatformReleaseCountsAsRelease": true,
       "oneLogicalCaretakerPerEligibleGame": true,
-      "primaryRunnerWhenWorkExists": 1,
+      "primaryRunnerWhenWorkExists": null,
       "burstWorkers": {
         "min": 2,
-        "max": 4,
-        "onlyIndependentHighValueWork": true
+        "max": null,
+        "onlyIndependentHighValueWork": true,
+        "externalCapacityOnlyBoundary": true
       },
       "stickyOwnership": true,
-      "unlimitedCausalRepair": true
+      "unlimitedCausalRepair": true,
+      "physicalWorkerPolicy": "MAXIMUM_SAFE_NON_OVERLAPPING_WORKERS",
+      "sameGameNonOverlappingPackagesParallel": true,
+      "sourceRootWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true
     }
   },
   "updatedAt": "2026-09-25",

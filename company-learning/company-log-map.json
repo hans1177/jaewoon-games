@@ -1,5 +1,5 @@
 {
-  "version": 53,
+  "version": 54,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1017,5 +1017,17 @@
     "internalConcurrencyCapForbidden": true,
     "externalProviderCapacityMayQueueWork": true,
     "queueingFromExternalCapacityIsNotGameQualityFailure": true
+  },
+  "focusedCaretakerMaximumParallelismContract": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.postReleaseFocusedDevelopment",
+    "logicalCaretakerPerGameMayRemain": true,
+    "logicalCaretakerDoesNotImposePhysicalWorkerCap": true,
+    "sameGameNonOverlappingPackagesParallel": true,
+    "sourceRootOrGameWideLockForbidden": true,
+    "responsibleFileConflictSerializationOnly": true,
+    "postReleaseFixedProtectedSlotForbidden": true,
+    "historicalMaintenanceInternalCap": null,
+    "externalCapacityOnlyBoundary": true
   }
 }

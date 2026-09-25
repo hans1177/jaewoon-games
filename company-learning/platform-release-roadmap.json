@@ -1,5 +1,5 @@
 {
-  "version": 355,
+  "version": 356,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1081,8 +1081,8 @@
       "state": "POST_RELEASE_FOCUSED_DEVELOPMENT",
       "scheduler": "vibe2-continuous-core",
       "queue": ".vibe2/queue.json",
-      "globalProtectedRunnerSlots": 1,
-      "activeTaskMaxPerProject": 1,
+      "globalProtectedRunnerSlots": null,
+      "activeTaskMaxPerProject": null,
       "workerRoute": "text-source-worker",
       "taskTarget": "roblox",
       "sourceRootPattern": "roblox-games/<gameId>",
@@ -1161,10 +1161,10 @@
         "verifiedResultLearningRequired": true
       },
       "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
-      "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_SAME_SOURCE_FOCUS_TASK_EXISTS",
+      "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_EXACT_DUPLICATE_OR_OVERLAPPING_RESPONSIBILITY_FOCUS_TASK_EXISTS",
       "nextCycleCondition": "NEW_MAIN_ROBLOX_SOURCE_TREE_AFTER_VERIFIED_PROMOTION",
       "protectedSlotEnforcer": "assets/vibe-continuous-queue.js",
-      "protectedSlotCount": 1,
+      "protectedSlotCount": null,
       "machinePriorityOrder": [
         "owner-directive",
         "post-release-focused-development",
@@ -1173,13 +1173,13 @@
         "reviewing",
         "other"
       ],
-      "schedulerGuarantee": "RESERVE_ONE_SHARED_ROBLOX_SUSTAINED_MAINTENANCE_SLOT_BEFORE_GENERAL_BATCH_SELECTION",
+      "schedulerGuarantee": "POST_RELEASE_PRIORITY_DOES_NOT_CREATE_FIXED_SLOT_OR_GAME_WIDE_LOCK; ALL_NON_OVERLAPPING_RESPONSIBILITIES_MAY_RUN_TO_EXTERNAL_CAPACITY",
       "learningRunsInParallel": true,
       "historicalDeploymentRecovery": {
         "enabled": true,
         "registry": "company-learning/roblox-sustained-maintenance.json",
         "protectedSlotSharedWithCurrentPostReleaseFocus": true,
-        "maxActiveHistoricalMaintenanceTasks": 1,
+        "maxActiveHistoricalMaintenanceTasks": null,
         "eligibility": [
           "actual-studio-runtime-pass",
           "post-runtime-independent-qa-pass",
@@ -1215,8 +1215,9 @@
       "burstWorkers": {
         "enabled": true,
         "min": 2,
-        "max": 4,
-        "onlyWhenIndependentHighValueWorkExists": true
+        "max": null,
+        "onlyWhenIndependentHighValueWorkExists": true,
+        "externalCapacityOnlyBoundary": true
       },
       "playtestReviewLoop": {
         "version": 1,
@@ -1404,7 +1405,11 @@
         "newPipeline": "SECOND_PLATFORM_GATE_PASS_PLUS_EXPLICIT_EXTERNAL_PUBLICATION_EVIDENCE",
         "legacyMigration": "PREEXISTING_VERIFIED_PUBLIC_RELEASE_REMAINS_ELIGIBLE",
         "internalPlatformRelease": "NOT_ELIGIBLE"
-      }
+      },
+      "internalParallelCap": null,
+      "sameGameNonOverlappingFocusPackagesParallel": true,
+      "responsibilityConflictIsOnlyGameLocalSerialization": true,
+      "sourceRootOrGameWideFocusLockForbidden": true
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -1669,8 +1674,8 @@
         "platform": "ROBLOX",
         "entryStage": "POST_RELEASE_FOCUSED_DEVELOPMENT",
         "exactPublishedReleaseRequired": true,
-        "dedicatedProtectedRunnerSlots": 1,
-        "activeTaskMaxPerProject": 1,
+        "dedicatedProtectedRunnerSlots": null,
+        "activeTaskMaxPerProject": null,
         "continuousRefill": true,
         "scheduler": ".github/workflows/vibe2-24h-runner.yml",
         "worker": ".github/workflows/vibe2-continuous-core.yml",
@@ -1691,7 +1696,10 @@
           "release-evidence-no-longer-matches-current-source"
         ],
         "noSafeWorkAction": "REASSESS_AND_CREATE_NEXT_VERIFIED_GAP",
-        "publicRepublishAutomatic": false
+        "publicRepublishAutomatic": false,
+        "internalParallelCap": null,
+        "sameGameNonOverlappingPackagesParallel": true,
+        "sourceRootWideLockForbidden": true
       },
       "verifiedLearningMaxUse": {
         "required": true,
@@ -3304,7 +3312,8 @@
       "burstWorkers": {
         "enabled": true,
         "min": 2,
-        "max": 4
+        "max": null,
+        "externalCapacityOnlyBoundary": true
       },
       "focusSource": "OWNER_DIRECTIVE_OR_OWNER_EDIT",
       "ownerFocusPreemptsGeneralDevelopment": true,
@@ -3327,7 +3336,9 @@
         "platformPriorityTierUnchanged": true,
         "neuralExecutionAuthorityChange": false,
         "source": "OWNER_DIRECTIVE_2026-09-20"
-      }
+      },
+      "physicalWorkerCap": null,
+      "sameGameNonOverlappingPackagesParallel": true
     },
     "ownerWebEditPropagation": {
       "version": 1,
@@ -4532,7 +4543,7 @@
       "caretakerMode": "PER_GAME_PERSISTENT",
       "oneLogicalCaretakerPerEligibleGame": true,
       "caretakerStickyOwnership": true,
-      "physicalRunnerPolicy": "ONE_PRIMARY_WHEN_WORK_EXISTS",
+      "physicalRunnerPolicy": "MAXIMUM_SAFE_NON_OVERLAPPING_WORKERS",
       "idleBehavior": "RETURN_PHYSICAL_SLOT_KEEP_LOGICAL_OWNERSHIP",
       "workerFailureHandoff": "REPLACE_WORKER_AND_RESUME_EXACT_CHECKPOINT",
       "taskPriority": "critical",
@@ -4540,12 +4551,17 @@
       "burstWorkers": {
         "enabled": true,
         "min": 2,
-        "max": 4,
-        "onlyWhenIndependentHighValueWorkExists": true
+        "max": null,
+        "onlyWhenIndependentHighValueWorkExists": true,
+        "externalCapacityOnlyBoundary": true
       },
       "appliesBeforePublicRelease": true,
       "preservesExistingPostReleaseCaretaker": true,
-      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_INTERNAL_OR_PUBLIC_RELEASED"
+      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_INTERNAL_OR_PUBLIC_RELEASED",
+      "internalPhysicalWorkerCap": null,
+      "sameGameNonOverlappingPackagesParallel": true,
+      "sourceRootWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true
     },
     "directNativeDualPlatformDevelopment": {
       "required": true,
@@ -19352,7 +19368,11 @@
           "LEARN_VERIFIED_RESULT",
           "CREATE_NEXT_CAUSAL_GAP"
         ],
-        "noSafeGapAction": "REASSESS_RUNTIME_AND_VERIFIED_LEARNING_THEN_CREATE_NEXT_SAFE_GAP"
+        "noSafeGapAction": "REASSESS_RUNTIME_AND_VERIFIED_LEARNING_THEN_CREATE_NEXT_SAFE_GAP",
+        "physicalWorkerCap": null,
+        "sameGameNonOverlappingPackagesParallel": true,
+        "sourceRootWideLockForbidden": true,
+        "responsibleFileConflictSerializationOnly": true
       },
       "qaEvolution": {
         "enabled": true,
