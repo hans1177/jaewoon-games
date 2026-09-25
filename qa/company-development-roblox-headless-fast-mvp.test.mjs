@@ -132,3 +132,12 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
   assert.match(workflow,/group: company-development-roblox-f0-source-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
 });
+
+test('F0 planner uses central Roblox validation mode and does not require a queue-local robloxValidationMode cache',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.ok(workflow.includes("const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));"));
+  assert.ok(workflow.includes("const canonicalRobloxValidationMode=String(roadmap.roblox?.validationMode||'').trim();"));
+  assert.ok(workflow.includes("if(canonicalRobloxValidationMode!=='HEADLESS_FAST_MVP')throw new Error('ROBLOX_F0_CANONICAL_VALIDATION_MODE_INVALID:'+canonicalRobloxValidationMode);"));
+  assert.ok(workflow.includes('ROBLOX_F0_CANONICAL_VALIDATION_MODE='));
+  assert.doesNotMatch(workflow,/item\.robloxValidationMode/);
+});
