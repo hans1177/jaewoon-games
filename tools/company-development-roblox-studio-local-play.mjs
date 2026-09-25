@@ -569,8 +569,26 @@ export async function runOfficialStudioMcpPlay({
     for(const name of requiredTools)client.tool(name);
     checkpoint('official-studio-mcp-connected',true);
 
-    const list=await client.call('list_roblox_studios',{});
-    const studio=chooseStudio(list,expectedStudioName);
+    let studio=null;
+    let studioListResult=null;
+    const studioAttachAttempts=20;
+    for(let attempt=1;attempt<=studioAttachAttempts;attempt++){
+      studioListResult=await client.call('list_roblox_studios',{});
+      const studios=collectStudios(studioListResult,[]);
+      const unique=[...new Map(studios.map(x=>[x.studioId,x])).values()];
+      console.log('ROBLOX_STUDIO_MCP_STUDIO_ATTACH_WAIT='+attempt+':connected='+unique.length);
+      if(unique.length){
+        studio=chooseStudio(studioListResult,expectedStudioName);
+        console.log(
+          'ROBLOX_STUDIO_MCP_STUDIO_ATTACHED='
+          +clean(studio?.name||'LOCAL_STUDIO')
+          +':placeId='+(clean(studio?.placeId)||'LOCAL')
+        );
+        break;
+      }
+      if(attempt<studioAttachAttempts)await wait(1000);
+    }
+    if(!studio)throw new Error('ROBLOX_STUDIO_MCP_NO_STUDIO_AFTER_ATTACH_WAIT');
     studioId=studio.studioId;
     checkpoint('local-studio-selected',Boolean(studioId));
 

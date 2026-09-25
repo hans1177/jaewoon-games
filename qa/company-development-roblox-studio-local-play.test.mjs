@@ -511,6 +511,20 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/STUDIO_PROXY_CONNECTION/);
 });
 
+test('Studio MCP waits for a connected Studio after tool inventory becomes ready',()=>{
+  assert.match(helper,/const studioAttachAttempts=20/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_STUDIO_ATTACH_WAIT=/);
+  assert.match(helper,/connected='\+unique\.length/);
+  assert.match(helper,/if\(attempt<studioAttachAttempts\)await wait\(1000\)/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_NO_STUDIO_AFTER_ATTACH_WAIT/);
+  const toolsReadyAt=helper.indexOf("await client.waitForTools(requiredTools");
+  const attachWaitAt=helper.indexOf("const studioAttachAttempts=20");
+  const stateReadAt=helper.indexOf("const stateTool=client.tool('get_studio_state')");
+  assert.ok(toolsReadyAt>0);
+  assert.ok(attachWaitAt>toolsReadyAt);
+  assert.ok(stateReadAt>attachWaitAt);
+});
+
 test('Windows Studio MCP transport keeps documented batch launch and supports installed official binary fallback',()=>{
   assert.match(helper,/process\.platform==='win32'&&\/\\\.exe\$\/i\.test\(resolved\)\)return\{command:resolved,args:\[\]\}/);
   assert.match(helper,/process\.platform==='win32'\)return\{command:'cmd\.exe',args:\['\/c',resolved\]\}/);
