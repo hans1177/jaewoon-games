@@ -1,5 +1,5 @@
 {
-  "version": 365,
+  "version": 366,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6074,7 +6074,8 @@
       "gameCardActions": {
         "order": [
           "ROBLOX",
-          "UNITY"
+          "UNITY",
+          "UNITY_WEB"
         ],
         "webAlwaysVisible": false,
         "concurrentPlatformSlotsVisible": true,
@@ -6082,7 +6083,11 @@
         "platformAvailableShelfRequiresInternalRelease": true,
         "unavailablePlatformState": "DEVELOPMENT_DISABLED_BUTTON",
         "verifiedTestBuildAloneIsNotInternalRelease": true,
-        "staleOrPrePropagationPlatformBuildMustNotActivate": true
+        "staleOrPrePropagationPlatformBuildMustNotActivate": true,
+        "unityWebDevelopmentActionEnabled": true,
+        "unityWebDevelopmentActionLabel": "Unity Web · 개발중",
+        "unityWebMayBeDirectLaunchFallback": true,
+        "staleSharedRobloxTargetMayNotActivate": true
       },
       "recentUpdates": {
         "enabled": true,
@@ -6104,7 +6109,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 3,
+    "version": 4,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6276,7 +6281,10 @@
         "scoreRequiresSchema15": false,
         "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST",
         "unityWebQaPassRequiredForHomepageLink": false,
-        "unityWebEvidenceFilesRequiredForHomepageLink": false
+        "unityWebEvidenceFilesRequiredForHomepageLink": false,
+        "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
+        "unityWebMayBeCardDirectLaunchFallback": true,
+        "staleSharedRobloxTargetHomepageLinkForbidden": true
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6368,7 +6376,9 @@
         "data",
         "framework",
         "wasm"
-      ]
+      ],
+      "developmentConfirmedHomepageExposureRequiredWhenDeployable": true,
+      "cardDirectLaunchFallbackAllowed": true
     }
   },
   "longHorizonVision": {
@@ -6855,6 +6865,23 @@
       "robloxPlayerAutomation": false,
       "publicServerBotPlay": false,
       "sharedSupersededCandidateCannotMintStudioActualPlayEvidence": true
+    },
+    "homepageInternalLinkSafetyAndUnityWeb20260925": {
+      "id": "HOMEPAGE_INTERNAL_LINK_SAFETY_AND_UNITY_WEB_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Suppress superseded shared Roblox targets from owner-facing homepage play links and expose deployable Unity Web validation builds for DEVELOPMENT_CONFIRMED cards, including direct-card fallback when no current native link exists.",
+      "codeBindings": [
+        "tools/company-homepage-platform-exposure-sync.mjs",
+        "assets/homepage-enhancements.js",
+        "qa/company-homepage-runtime-propagation.test.mjs",
+        "qa/homepage-manager-publication-order.test.mjs",
+        "company-directive.json"
+      ],
+      "staleSharedRobloxTargetCannotActivateHomepageLink": true,
+      "developmentUnityWebDeployableBundleMayExpose": true,
+      "unityWebDoesNotBecomeNativeReleaseEvidence": true,
+      "nativeReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {

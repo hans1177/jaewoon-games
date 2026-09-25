@@ -87,6 +87,8 @@ test('homepage shows only Roblox and Unity app native release actions',()=>{
   assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','출시 게임'/);
   assert.match(homepage,/robloxAction/);
   assert.match(homepage,/unityAction/);
+  assert.match(homepage,/unityWebAction/);
+  assert.match(homepage,/Unity Web · 개발중/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
   assert.doesNotMatch(homepage,/Web 플레이|Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
@@ -120,7 +122,8 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/internalReleaseReady===true/);
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
-  assert.match(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
+  assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
+  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
@@ -372,6 +375,17 @@ test('Unity Web homepage links require a deployable bundle manifest, not QA gate
   assert.equal(surface.homepageLinkQaPassRequired,false);
   assert.equal(surface.homepageLinkEvidenceFilesRequired,false);
   assert.equal(surface.validationEvidenceStillRequiredForQaVerdict,true);
+  assert.equal(display.webTestButtonEnabled,true);
+  assert.equal(display.webTestButtonLabel,'Unity Web · 개발중');
+  assert.equal(display.webAndPlatformTestButtonsMustBeSeparate,true);
+  assert.equal(display.unityWebDevelopmentCardExposureRequiredWhenDeployable,true);
+  assert.equal(display.unityWebMayBeCardDirectLaunchFallback,true);
+  assert.equal(display.staleSharedRobloxTargetHomepageLinkForbidden,true);
+  assert.equal(surface.developmentConfirmedHomepageExposureRequiredWhenDeployable,true);
+  assert.equal(surface.cardDirectLaunchFallbackAllowed,true);
+  const directiveDisplay=directive.homepageOperations?.developmentProgressDisplay||{};
+  assert.equal(directiveDisplay.webTestButtonEnabled,true);
+  assert.equal(directiveDisplay.webAndPlatformTestButtonsMustBeSeparate,true);
 });
 test('platform availability requires explicit internal release evidence from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');

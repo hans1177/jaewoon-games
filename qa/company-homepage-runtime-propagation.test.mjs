@@ -80,6 +80,30 @@ test('homepage Roblox link prefers the dedicated canonical publication target ov
   assert.match(snap.centralPolicyFingerprint,/^[a-f0-9]{64}$/);
 });
 
+test('homepage suppresses superseded shared Roblox targets until a dedicated current target exists',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const snap=buildHomepagePlatformExposure({
+    policy,
+    catalog:{games:[{id:'bug-defense',name:'곤충 디펜스'}]},
+    queue:{items:[{
+      gameId:'bug-defense',
+      gameName:'곤충 디펜스',
+      robloxProjectPath:'roblox-games/bug-defense',
+      robloxInternalReleaseReady:true,
+      robloxInternalReleasePublished:true,
+      robloxSharedTargetCurrent:false,
+      robloxPublicationTarget:{placeId:'112507741861842',universeId:'10766974456',verified:true,source:'owner-pinned-open-cloud-target'},
+      robloxReleaseEvidence:{placeId:'112507741861842',published:true,publicRelease:false}
+    }]}
+  });
+  const roblox=snap.games[0].platforms.find(row=>row.platform==='ROBLOX');
+  assert.equal(roblox.placeId,null);
+  assert.equal(roblox.internalUrl,null);
+  assert.equal(roblox.internalReleaseReady,false);
+  assert.equal(roblox.publicReleaseReady,false);
+  assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
+});
+
 test('homepage exposes Unity Web only as an optional same-project validation surface',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
@@ -100,6 +124,8 @@ test('homepage exposes Unity Web only as an optional same-project validation sur
   assert.match(renderer,/fetch\(`\$\{href\}index\.html\?ts=/);
   assert.match(renderer,/unityWebAvailable:true/);
   assert.match(renderer,/Unity Web · 개발중/);
+  assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|'';/);
+  assert.match(renderer,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|'';/);
   assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
 });
 
