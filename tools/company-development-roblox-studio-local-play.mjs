@@ -499,7 +499,8 @@ function mcpCommandArgs(command=''){
 }
 
 export async function runOfficialStudioMcpPlay({
-  mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000
+  mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
+  settingState='',settingCandidatePathCount=-1
 }={}){
   const launch=mcpCommandArgs(mcpCommand);
   const client=new McpStdioClient({...launch,timeoutMs});
@@ -608,7 +609,19 @@ export async function runOfficialStudioMcpPlay({
     if(output)writeJson(output,result);
     return result;
   }catch(error){
-    errors.push({type:'studio-mcp-infrastructure-or-runtime-error',actionId:null,signature:clean(error?.message||error).slice(0,500)});
+    let signature=clean(error?.message||error).slice(0,500);
+    const settingUnknown=clean(settingState).toUpperCase()==='UNKNOWN';
+    const noSettingCandidates=Number(settingCandidatePathCount)===0;
+    if(
+      /ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(signature)
+      &&/stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT/i.test(signature)
+      &&settingUnknown
+      &&noSettingCandidates
+    ){
+      signature=(signature+':settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY').slice(0,500);
+      console.log('ROBLOX_STUDIO_MCP_SETTING_HINT=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY');
+    }
+    errors.push({type:'studio-mcp-infrastructure-or-runtime-error',actionId:null,signature});
     if(started&&studioId&&client.tools.has('start_stop_play')){
       try{const tool=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(tool.inputSchema||{},studioId,false));}catch{}
     }
@@ -694,7 +707,8 @@ export function createLocalStudioPlayEvidence({
   const studioMcpServerEnablementRequired=errors.some(row=>{
     const signature=clean(row.signature||'');
     return /ROBLOX_STUDIO_MCP_SETTING_ENABLE/i.test(signature)
-      ||(/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(signature)&&/stderrHint=MCP_SERVER_NOT_ENABLED/i.test(signature));
+      ||(/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(signature)&&/stderrHint=MCP_SERVER_NOT_ENABLED/i.test(signature))
+      ||(/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(signature)&&/settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY/i.test(signature));
   });
   const failureClass=pass?null
     :infrastructureFailure?'STUDIO_MCP_INFRASTRUCTURE_PENDING'
@@ -842,7 +856,9 @@ async function main(){
       expectedStudioName:clean(a['studio-name']),
       timeoutMs:Number(a.timeout||45000),
       toolAttempts:Number(a['tool-attempts']||5),
-      toolDelayMs:Number(a['tool-delay-ms']||1000)
+      toolDelayMs:Number(a['tool-delay-ms']||1000),
+      settingState:clean(a['setting-state']),
+      settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1)
     });
     console.log('ROBLOX_STUDIO_MCP_RUNTIME='+(result.runtimeVerified?'PASS':'FAIL'));
     return;
