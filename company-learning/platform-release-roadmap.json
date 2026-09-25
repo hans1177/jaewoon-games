@@ -4460,7 +4460,21 @@
         "noDurationExit": true,
         "noElapsedDayOrHourExit": true,
         "noLimitedOrRestrictedPublicTestExit": true,
-        "externalPublicReleaseEvaluationRunsBesideLoop": true
+        "externalPublicReleaseEvaluationRunsBesideLoop": true,
+        "rebuildAfterEveryAcceptedModificationRequired": true,
+        "modifiedSourceMayNotReusePriorBuildArtifact": true,
+        "modifiedSourceInvalidatesAffectedPlayAndValidationEvidence": true,
+        "rebuildMustProduceNewExactCandidateBeforeRevalidation": true,
+        "revalidationMustBindToRebuiltCandidate": true,
+        "loopBackRequiresRebuiltCandidatePass": true,
+        "rebuildSequence": [
+          "ACCEPTED_MODIFICATION_WRITTEN",
+          "PRIOR_AFFECTED_ARTIFACT_AND_PLAY_EVIDENCE_INVALIDATED",
+          "ROBLOX_PLATFORM_REBUILD",
+          "INTERNAL_REDEPLOY_EXACT_CANDIDATE",
+          "EXACT_CANDIDATE_REVALIDATION",
+          "VIBE_INTERNAL_PLAY"
+        ]
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
@@ -4544,7 +4558,9 @@
           "placeIdRequired": true,
           "versionNumberRequired": true,
           "allEvidenceMustReferenceSameCandidate": true,
-          "changedRelevantSourceRequiresAffectedEvidenceRevalidation": true
+          "changedRelevantSourceRequiresAffectedEvidenceRevalidation": true,
+          "changedRelevantSourceRequiresNewBuildBeforeAffectedEvidenceRevalidation": true,
+          "staleBuildEvidenceCannotSatisfyPublicGate": true
         },
         "passState": "PUBLIC_RELEASE_READY",
         "publicationRequiresExplicitExternalPublicationEvidenceAfterPass": true,
