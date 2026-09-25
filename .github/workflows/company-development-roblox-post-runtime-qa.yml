@@ -766,11 +766,8 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          $roadmap = Get-Content 'main/company-learning/platform-release-roadmap.json' -Raw | ConvertFrom-Json
-          if ($roadmap.roblox.studioExecution.officialStudioMcpOnly -ne $true) { throw 'official Studio MCP policy missing' }
-          if ($roadmap.roblox.studioExecution.robloxPlayerAutomationForbidden -ne $true) { throw 'Roblox Player automation must remain forbidden' }
-          if ($roadmap.roblox.studioExecution.undocumentedStudioCliAutomationForbidden -ne $true) { throw 'undocumented Studio CLI automation must remain forbidden' }
-          if ($roadmap.roblox.studioExecution.localPlaceFileRequired -ne $true) { throw 'local exact Place artifact policy missing' }
+          & node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8').replace(/^\\uFEFF/,''));const s=r?.roblox?.studioExecution||{};const ok=s.officialStudioMcpOnly===true&&s.robloxPlayerAutomationForbidden===true&&s.undocumentedStudioCliAutomationForbidden===true&&s.externalGuiAutomationForbidden===true&&s.localPlaceFileRequired===true;if(!ok){console.error('ROBLOX_STUDIO_MCP_POLICY_MISMATCH');process.exit(1)}console.log('ROBLOX_STUDIO_MCP_POLICY=PASS')"
+          if ($LASTEXITCODE -ne 0) { throw 'official Studio MCP policy validation failed' }
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio MCP runner must be Windows' }
           $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Directory -ErrorAction SilentlyContinue |
             Sort-Object LastWriteTime -Descending |
