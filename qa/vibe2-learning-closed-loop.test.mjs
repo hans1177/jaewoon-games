@@ -118,6 +118,10 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.learningUseForbidden,false);
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.exactCandidateRequired,true);
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.separateTrainer,false);
+  assert.equal(roadmap.roblox?.studioExecution?.automatedUserInputForbidden,true);
+  assert.equal(roadmap.roblox?.studioExecution?.executionSurface,'LOCAL_IMMUTABLE_ARTIFACT');
+  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.automatedUserInputForbidden,true);
+  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.executionSurface,'LOCAL_IMMUTABLE_ARTIFACT');
   assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-auto-play');
 });
 
