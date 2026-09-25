@@ -1,0 +1,401 @@
+name: Company Roblox Actual Vibe Internal Play
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-roblox-internal-vibe-play.yml'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'qa/company-development-roblox-internal-vibe-play.test.mjs'
+  schedule:
+    - cron: '11,26,41,56 * * * *'
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact internal-release Roblox gameId. Shared targets must be the current live version.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: company-roblox-actual-vibe-internal-play
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  plan:
+    name: select exact currently playable internal release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run: ${{ steps.target.outputs.run }}
+      game_id: ${{ steps.target.outputs.game_id }}
+      source_revision: ${{ steps.target.outputs.source_revision }}
+      artifact_identity: ${{ steps.target.outputs.artifact_identity }}
+      universe_id: ${{ steps.target.outputs.universe_id }}
+      place_id: ${{ steps.target.outputs.place_id }}
+      version_number: ${{ steps.target.outputs.version_number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+
+      - name: Select exact live candidate
+        id: target
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const validId=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
+          const rows=(q.items||[]).filter(item=>{
+            const c=item.robloxRuntimeCandidateEvidence||{};
+            const t=item.robloxPublicationTarget||{};
+            const play=item.robloxInternalVibePlayEvidence||{};
+            const internal=item.robloxInternalReleasePublished===true||item.robloxInternalReleaseEvidence?.published===true;
+            const exact=c.published===true
+              &&c.sourceRevision===item.robloxSourceCommit
+              &&c.artifactIdentity===item.robloxBuildArtifactIdentity
+              &&validId(c.universeId)&&validId(c.placeId)&&Number(c.versionNumber)>0
+              &&String(c.universeId)===String(t.universeId||'')
+              &&String(c.placeId)===String(t.placeId||'');
+            const alreadyPlayed=play.pass===true&&play.actualPlay===true
+              &&play.sourceRevision===item.robloxSourceCommit
+              &&play.artifactIdentity===item.robloxBuildArtifactIdentity
+              &&String(play.universeId||'')===String(c.universeId||'')
+              &&String(play.placeId||'')===String(c.placeId||'')
+              &&Number(play.versionNumber||0)===Number(c.versionNumber||0);
+            return internal&&exact&&!alreadyPlayed
+              &&item.currentStep==='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'
+              &&item.robloxFailureSignature==='ROBLOX_INTERNAL_VIBE_PLAY_PENDING';
+          });
+          const allCurrent=(q.items||[]).filter(item=>{
+            const c=item.robloxRuntimeCandidateEvidence||{};
+            return c.published===true&&validId(c.universeId)&&validId(c.placeId)&&Number(c.versionNumber)>0;
+          });
+          const maxByTarget=new Map();
+          for(const item of allCurrent){
+            const c=item.robloxRuntimeCandidateEvidence;
+            const key=String(c.universeId)+'/'+String(c.placeId);
+            maxByTarget.set(key,Math.max(Number(c.versionNumber),Number(maxByTarget.get(key)||0)));
+          }
+          const playable=rows.filter(item=>{
+            const c=item.robloxRuntimeCandidateEvidence;
+            const t=item.robloxPublicationTarget||{};
+            if(t.dedicated===true&&t.shared!==true)return true;
+            const key=String(c.universeId)+'/'+String(c.placeId);
+            return item.robloxSharedTargetCurrent===true||Number(c.versionNumber)===Number(maxByTarget.get(key)||0);
+          }).sort((a,b)=>{
+            const ac=a.robloxSharedTargetCurrent===true?1:0,bc=b.robloxSharedTargetCurrent===true?1:0;
+            if(ac!==bc)return bc-ac;
+            return Number(b.robloxRuntimeCandidateEvidence?.versionNumber||0)-Number(a.robloxRuntimeCandidateEvidence?.versionNumber||0);
+          });
+          const item=requested?playable.find(x=>x.gameId===requested):playable[0];
+          const put=(k,v)=>fs.appendFileSync(process.env.GITHUB_OUTPUT,k+'='+String(v??'')+'\n');
+          if(!item){
+            put('run','false');
+            console.log('ROBLOX_ACTUAL_VIBE_PLAY=NO_CURRENT_PENDING_RELEASE');
+            process.exit(0);
+          }
+          const c=item.robloxRuntimeCandidateEvidence;
+          put('run','true');
+          put('game_id',item.gameId);
+          put('source_revision',item.robloxSourceCommit);
+          put('artifact_identity',item.robloxBuildArtifactIdentity);
+          put('universe_id',c.universeId);
+          put('place_id',c.placeId);
+          put('version_number',Number(c.versionNumber));
+          console.log('ROBLOX_ACTUAL_VIBE_PLAY_TARGET='+item.gameId+':v'+Number(c.versionNumber));
+          NODE
+
+  player:
+    name: actual Roblox Player play and evidence persist
+    needs: plan
+    if: needs.plan.outputs.run == 'true'
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 12
+    env:
+      GAME_ID: ${{ needs.plan.outputs.game_id }}
+      SOURCE_REVISION: ${{ needs.plan.outputs.source_revision }}
+      ARTIFACT_IDENTITY: ${{ needs.plan.outputs.artifact_identity }}
+      UNIVERSE_ID: ${{ needs.plan.outputs.universe_id }}
+      PLACE_ID: ${{ needs.plan.outputs.place_id }}
+      VERSION_NUMBER: ${{ needs.plan.outputs.version_number }}
+    steps:
+      - name: Checkout current machine contract
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify Player-only execution contract
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Player runner must be Windows' }
+          if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
+            throw 'ROBLOX_STUDIO_PROCESS_PRESENT_PLAYER_ONLY_EXECUTION_REQUIRED'
+          }
+          $roots=@(
+            (Join-Path $env:LOCALAPPDATA 'Roblox\Versions'),
+            (Join-Path $env:PROGRAMFILES 'Roblox\Versions')
+          ) | Where-Object { $_ -and (Test-Path $_) }
+          $player=$null
+          foreach($root in $roots){
+            $candidate=Get-ChildItem $root -Directory -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime -Descending |
+              ForEach-Object { Join-Path $_.FullName 'RobloxPlayerBeta.exe' } |
+              Where-Object { Test-Path $_ } |
+              Select-Object -First 1
+            if($candidate){$player=$candidate;break}
+          }
+          if(-not $player){throw 'ROBLOX_PLAYER_NOT_INSTALLED'}
+          "ROBLOX_PLAYER_PATH=$player" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'ROBLOX_ACTUAL_VIBE_PLAY_SURFACE=ROBLOX_PLAYER'
+          Write-Host 'ROBLOX_STUDIO_AUTOMATION=FORBIDDEN'
+
+      - name: Play exact private build with real input
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+          Add-Type -AssemblyName Microsoft.VisualBasic
+          Add-Type @'
+          using System;
+          using System.Runtime.InteropServices;
+          public static class VibeKeyInput {
+            [DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);
+          }
+          '@
+
+          $startedAt=(Get-Date).ToUniversalTime()
+          $nonce=[Guid]::NewGuid().ToString('N')
+          $launchData=@{mode='vibe-internal-play';gameId=$env:GAME_ID;nonce=$nonce}|ConvertTo-Json -Compress
+          $encoded=[uri]::EscapeDataString($launchData)
+          $uri="roblox://placeId=$($env:PLACE_ID)&launchData=$encoded"
+          $evidenceFile=Join-Path $env:RUNNER_TEMP 'roblox-internal-vibe-play.json'
+          $frameDir=Join-Path $env:RUNNER_TEMP 'roblox-internal-vibe-play-frames'
+          if(Test-Path $frameDir){Remove-Item -Recurse -Force $frameDir}
+          New-Item -ItemType Directory -Path $frameDir | Out-Null
+
+          $beforeIds=@(Get-Process RobloxPlayerBeta -ErrorAction SilentlyContinue | ForEach-Object Id)
+          Start-Process $uri
+          $player=$null
+          for($i=0;$i -lt 90;$i++){
+            $player=Get-Process RobloxPlayerBeta -ErrorAction SilentlyContinue |
+              Where-Object { $beforeIds -notcontains $_.Id } |
+              Sort-Object StartTime -Descending |
+              Select-Object -First 1
+            if($player){break}
+            Start-Sleep -Seconds 1
+          }
+          if(-not $player){throw 'ROBLOX_PLAYER_DID_NOT_START'}
+
+          for($i=0;$i -lt 60 -and $player.MainWindowHandle -eq 0;$i++){
+            Start-Sleep -Milliseconds 500
+            $player.Refresh()
+          }
+          if($player.MainWindowHandle -eq 0){throw 'ROBLOX_PLAYER_WINDOW_NOT_READY'}
+          if(-not [Microsoft.VisualBasic.Interaction]::AppActivate($player.Id)){throw 'ROBLOX_PLAYER_WINDOW_ACTIVATE_FAILED'}
+          Start-Sleep -Seconds 18
+
+          function Capture-Frame([string]$name){
+            $bounds=[System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+            $bmp=New-Object System.Drawing.Bitmap $bounds.Width,$bounds.Height
+            $g=[System.Drawing.Graphics]::FromImage($bmp)
+            try{$g.CopyFromScreen($bounds.Location,[System.Drawing.Point]::Empty,$bounds.Size)}finally{$g.Dispose()}
+            $file=Join-Path $frameDir ($name+'.png')
+            $bmp.Save($file,[System.Drawing.Imaging.ImageFormat]::Png)
+            $bmp.Dispose()
+            return $file
+          }
+          function Key-Hold([byte]$vk,[int]$ms){
+            [VibeKeyInput]::keybd_event($vk,0,0,[UIntPtr]::Zero)
+            Start-Sleep -Milliseconds $ms
+            [VibeKeyInput]::keybd_event($vk,0,2,[UIntPtr]::Zero)
+            Start-Sleep -Milliseconds 350
+          }
+
+          $frames=@()
+          $frames+=Capture-Frame '00-ready'
+          Key-Hold 0x57 1300
+          $frames+=Capture-Frame '01-forward'
+          Key-Hold 0x41 800
+          $frames+=Capture-Frame '02-left'
+          Key-Hold 0x44 1200
+          $frames+=Capture-Frame '03-right'
+          Key-Hold 0x20 120
+          $frames+=Capture-Frame '04-jump'
+          Start-Sleep -Seconds 3
+
+          $hashes=@($frames|ForEach-Object{(Get-FileHash $_ -Algorithm SHA256).Hash.ToLowerInvariant()})
+          $distinct=@($hashes|Select-Object -Unique).Count
+          $player.Refresh()
+          $alive=-not $player.HasExited
+          $logRoot=Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          $recentLogs=@()
+          if(Test-Path $logRoot){
+            $recentLogs=@(Get-ChildItem $logRoot -File -Filter '*.log' -ErrorAction SilentlyContinue |
+              Where-Object { $_.LastWriteTimeUtc -ge $startedAt.AddMinutes(-1) } |
+              Sort-Object LastWriteTimeUtc -Descending |
+              Select-Object -First 4)
+          }
+          $errorLines=@()
+          foreach($log in $recentLogs){
+            $errorLines+=@(Select-String -Path $log.FullName -Pattern 'Unhandled exception|Access violation|CrashReporter' -SimpleMatch:$false -ErrorAction SilentlyContinue |
+              Select-Object -First 10 | ForEach-Object Line)
+          }
+          $passed=$alive -and $distinct -ge 2 -and $frames.Count -ge 5
+          $evidence=[ordered]@{
+            version=1
+            authority='roblox-player-vibe-internal-play'
+            gameId=$env:GAME_ID
+            platform='ROBLOX'
+            actualPlay=$true
+            inputBased=$true
+            pass=$passed
+            sourceRevision=$env:SOURCE_REVISION
+            artifactIdentity=$env:ARTIFACT_IDENTITY
+            universeId=$env:UNIVERSE_ID
+            placeId=$env:PLACE_ID
+            versionNumber=[int]$env:VERSION_NUMBER
+            playerProcess='RobloxPlayerBeta.exe'
+            studioAutomation=$false
+            launchSurface='ROBLOX_DEEP_LINK'
+            launchNonce=$nonce
+            actions=@('MOVE_FORWARD','MOVE_LEFT','MOVE_RIGHT','JUMP')
+            actionCount=4
+            frameCount=$frames.Count
+            distinctFrameCount=$distinct
+            frameHashes=$hashes
+            playerAliveAfterActions=$alive
+            crashSignatureCount=$errorLines.Count
+            crashSignatures=$errorLines
+            scenarioCoverage=@('NEW_GAME_START','BASIC_MOVEMENT_INPUT')
+            scenarioCoveragePass=$false
+            publicReleaseEvidence=$false
+            startedAt=$startedAt.ToString('o')
+            completedAt=(Get-Date).ToUniversalTime().ToString('o')
+          }
+          $evidence|ConvertTo-Json -Depth 8 | Out-File -FilePath $evidenceFile -Encoding utf8
+          "ROBLOX_VIBE_PLAY_EVIDENCE_FILE=$evidenceFile" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          try{if(-not $player.HasExited){Stop-Process -Id $player.Id -Force -ErrorAction SilentlyContinue}}catch{}
+          if(-not $passed){throw "ROBLOX_ACTUAL_VIBE_PLAY_FAILED:frames=$distinct alive=$alive"}
+          Write-Host "ROBLOX_ACTUAL_VIBE_PLAY=PASS:$env:GAME_ID"
+          Write-Host "ROBLOX_ACTUAL_VIBE_PLAY_DISTINCT_FRAMES=$distinct"
+
+      - name: Persist exact actual-play evidence
+        working-directory: runtime
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          git fetch --no-tags origin $env:COMPANY_RUNTIME_BRANCH
+          git reset --hard "origin/$env:COMPANY_RUNTIME_BRANCH"
+          $env:EVIDENCE_FILE=$env:ROBLOX_VIBE_PLAY_EVIDENCE_FILE
+          node -e @'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const e=JSON.parse(fs.readFileSync(process.env.EVIDENCE_FILE,'utf8').replace(/^\uFEFF/,''));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('ROBLOX_VIBE_PLAY_QUEUE_ITEM_MISSING');
+          const c=item.robloxRuntimeCandidateEvidence||{};
+          const exact=e.pass===true&&e.actualPlay===true&&e.inputBased===true
+            &&e.sourceRevision===item.robloxSourceCommit
+            &&e.artifactIdentity===item.robloxBuildArtifactIdentity
+            &&String(e.universeId)===String(c.universeId||'')
+            &&String(e.placeId)===String(c.placeId||'')
+            &&Number(e.versionNumber)===Number(c.versionNumber||0);
+          if(!exact)throw new Error('ROBLOX_VIBE_PLAY_EXACT_CANDIDATE_MISMATCH');
+          const maxSameTarget=Math.max(...(q.items||[]).map(x=>{
+            const r=x.robloxRuntimeCandidateEvidence||{};
+            return r.published===true&&String(r.universeId||'')===String(c.universeId||'')&&String(r.placeId||'')===String(c.placeId||'')
+              ?Number(r.versionNumber||0):0;
+          }));
+          const target=item.robloxPublicationTarget||{};
+          const dedicated=target.dedicated===true&&target.shared!==true;
+          if(!dedicated&&item.robloxSharedTargetCurrent!==true&&Number(c.versionNumber)!==maxSameTarget){
+            throw new Error('ROBLOX_VIBE_PLAY_SHARED_TARGET_NOT_CURRENT');
+          }
+          const stamp=new Date().toISOString();
+          item.robloxInternalVibePlayEvidence={...e,exactCandidate:true,verifiedAt:stamp};
+          item.robloxInternalPlaytestPassed=true;
+          item.robloxLastSuccessfulStage='VIBE_INTERNAL_PLAY';
+          item.robloxFailureStage=null;
+          item.robloxFailureSignature=null;
+          item.routingBlockers=[];
+          item.robloxPublicReleaseReady=false;
+          item.robloxPublicRelease=false;
+          item.robloxReleaseClaim=false;
+          item.updatedAt=stamp;
+          q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          console.log('ROBLOX_INTERNAL_VIBE_PLAY_EVIDENCE=PERSISTED:'+item.gameId);
+          console.log('ROBLOX_PUBLIC_RELEASE_READY=NO');
+          '@
+          if($LASTEXITCODE -ne 0){throw 'Roblox actual-play evidence persist failed'}
+          git config user.name 'jaewoon-roblox-vibe-play'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if(git diff --cached --quiet){
+            Write-Host 'ROBLOX_INTERNAL_VIBE_PLAY_STATE_CHANGE=NO'
+            exit 0
+          }
+          git commit -m "runtime: persist actual Roblox Player Vibe play $env:GAME_ID [skip ci]"
+          $pushed=$false
+          for($attempt=1;$attempt -le 5;$attempt++){
+            git push origin "HEAD:$env:COMPANY_RUNTIME_BRANCH"
+            if($LASTEXITCODE -eq 0){$pushed=$true;break}
+            git fetch --no-tags origin $env:COMPANY_RUNTIME_BRANCH
+            git rebase "origin/$env:COMPANY_RUNTIME_BRANCH"
+            if($LASTEXITCODE -ne 0){git rebase --abort;throw 'runtime rebase failed'}
+            Start-Sleep -Seconds ($attempt*2)
+          }
+          if(-not $pushed){throw 'runtime push failed'}
+          Write-Host 'ROBLOX_INTERNAL_VIBE_PLAY_STATE_CHANGE=YES'
+
+      - name: Trigger existing 24H repair and development loop
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference='Stop'
+          $headers=@{
+            Accept='application/vnd.github+json'
+            Authorization="Bearer $env:GH_TOKEN"
+            'X-GitHub-Api-Version'='2022-11-28'
+          }
+          $body=@{
+            event_type='vibe2-fanin-refill'
+            client_payload=@{
+              source_run="$env:GITHUB_RUN_ID"
+              source_task="$env:GAME_ID"
+              source_outcome='VERIFIED'
+              reason='roblox-actual-vibe-internal-play'
+            }
+          }|ConvertTo-Json -Depth 5
+          Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
+          Write-Host "ROBLOX_ACTUAL_VIBE_PLAY_REFILL_DISPATCHED=$env:GAME_ID"
