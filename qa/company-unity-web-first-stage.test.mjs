@@ -29,11 +29,16 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     const req=JSON.parse(fs.readFileSync(path.join(tmp,'.build-requests','unity-web','sample-game.json'),'utf8'));
     assert.equal(req.projectPath,'unity-games/sample-game');
     assert.equal(req.outputRoot,'web-games/sample-game');
-    assert.equal(req.kind,'UNITY_WEB_VALIDATION_BUILD');
+    assert.equal(req.kind,'UNITY_WEB_DEVELOPMENT_FLOOR_BUILD');
     assert.equal(req.fullGameplayPassAuthority,false);
+    assert.equal(req.requestEvidenceOnly,true);
     assert.equal(req.nativeGateAuthority,false);
+    assert.equal(req.developmentAdmissionAuthority,false);
+    assert.equal(req.upperPlatformReadinessRequired,true);
+    assert.equal(req.upperPlatformReadinessEvidence,'web-games/sample-game/upper-platform-development-readiness.json');
+    assert.equal(req.releaseAuthority,false);
     assert.equal(req.homepageTestSurface,true);
-    assert.equal(req.postGatePlatformPipelineChanged,false);
+    assert.equal(req.postGateAction,'EVALUATE_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_START_ROBLOX_UNITY');
   } finally {
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
@@ -63,9 +68,9 @@ test('Unity technical prototype is rejected as canonical first-stage source',()=
   }
 });
 
-test('Unity Web validation publication uses PR instead of direct main write',()=>{
+test('Unity Web readiness publication uses PR instead of direct main write',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
-  assert.match(workflow,/Create verified Unity Web build PR/);
+  assert.match(workflow,/Create verified Unity Web readiness PR/);
   assert.match(workflow,/gh pr create/);
   assert.match(workflow,/UNITY_WEB_DIRECT_MAIN_WRITE=NO/);
   assert.equal(workflow.includes(['git','push','origin','HEAD:main'].join(' ')),false);
@@ -77,21 +82,21 @@ test('Unity Web validation publication uses PR instead of direct main write',()=
 });
 
 
-test('verified Unity Web validation fans the exact game into Roblox and Unity native development',()=>{
+test('Unity Web build never directly fans out; main-bound readiness evidence owns upper-platform admission',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const policy=JSON.parse(fs.readFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),'utf8'));
   const fan=policy.directNativeDualPlatformDevelopment.unityWebNativeFanOut;
   assert.equal(fan.enabled,true);
-  assert.equal(fan.trigger,'VERIFIED_UNITY_WEB_VALIDATION');
+  assert.equal(fan.trigger,'UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN');
   assert.deepEqual(fan.targets,['ROBLOX','UNITY']);
   assert.equal(fan.exactGameOnly,true);
-  assert.equal(fan.developmentAdmissionAuthority,false);
+  assert.equal(fan.developmentAdmissionAuthority,true);
   assert.equal(fan.releaseAuthority,false);
-  assert.equal(fan.recursiveUnityWebRedispatchForbidden,true);
-  assert.match(workflow,/actions:\s*write/);
-  assert.match(workflow,/Fan verified Unity Web into exact Roblox and Unity development/);
-  assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
-  assert.match(workflow,/-f game_id="\$GAME_ID"/);
-  assert.match(workflow,/-f trigger_source="UNITY_WEB_VERIFIED"/);
-  assert.match(workflow,/UNITY_WEB_NATIVE_FANOUT_TARGETS=ROBLOX,UNITY/);
+  assert.equal(fan.directDispatchFromUnityWebBuildForbidden,true);
+  assert.equal(fan.sourceTreeExactMatchRequired,true);
+  assert.match(workflow,/Evaluate upper-platform development readiness/);
+  assert.match(workflow,/upper-platform-development-readiness\.json/);
+  assert.match(workflow,/Create verified Unity Web readiness PR/);
+  assert.doesNotMatch(workflow,/Fan verified Unity Web into exact Roblox and Unity development/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
 });
