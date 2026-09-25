@@ -128,8 +128,10 @@ test('Studio actual-play policy is official MCP only and forbids Player, GUI mac
   }
 });
 
-test('planner selects exact internally released artifact even when shared target was later superseded',()=>{
+test('planner selects exact internally released artifact during parallel foundation revalidation even when shared target was later superseded',()=>{
   const candidate=item();
+  candidate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+  candidate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
   assert.equal(candidate.robloxRuntimeFoundationPassed,false);
   assert.equal(candidate.robloxSharedTargetCurrent,false);
   const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
@@ -137,6 +139,41 @@ test('planner selects exact internally released artifact even when shared target
   assert.equal(result.include[0].artifactRunId,777);
   assert.equal(result.include[0].historicalExactPublishedArtifact,true);
 });
+
+test('planner excludes only explicit disabled games rather than using currentStep as the post-release play authority',()=>{
+  const foundation=item();
+  foundation.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+  foundation.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+  const finalReview=item();
+  finalReview.gameId='g2';
+  finalReview.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+  finalReview.robloxRuntimeCandidateEvidence={...finalReview.robloxRuntimeCandidateEvidence,placeId:'457'};
+  finalReview.robloxInternalReleaseEvidence={...finalReview.robloxInternalReleaseEvidence,placeId:'457'};
+  const disabled=item();
+  disabled.gameId='g3';
+  disabled.status='DISABLED';
+  disabled.robloxRuntimeCandidateEvidence={...disabled.robloxRuntimeCandidateEvidence,placeId:'458'};
+  disabled.robloxInternalReleaseEvidence={...disabled.robloxInternalReleaseEvidence,placeId:'458'};
+  const result=planLocalStudioCandidates({queue:{items:[foundation,finalReview,disabled]},roadmap:roadmap()});
+  assert.deepEqual(result.include.map(row=>row.gameId).sort(),['g1','g2']);
+});
+
+test('central contract makes actual play evidence-gated and parallel to foundation revalidation after internal release',()=>{
+  const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
+  assert.equal(loop.actualVibePlayEligibility,'INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
+  assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
+  assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
+  assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
+  const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
+  assert.equal(arch.actualPlayPlannerEligibility,'INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
+  assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
+  assert.equal(arch.explicitDisabledGameEligible,false);
+});
+
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
   const candidate=item();
