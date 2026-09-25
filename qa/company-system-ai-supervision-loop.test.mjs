@@ -250,7 +250,7 @@ test('Primary AI security recovery assignment requires exact explicit approval a
   assert.ok(dispatched.systemAi.tasks[0].evidence.includes('recovery-queue:recovery-security-123'));
 });
 
-test('security recovery reserve repairs historical superseded dependency before reservation',()=>{
+test('security recovery reserve removes historical superseded cross-scope dependency before reservation',()=>{
   const queue={tasks:[
     {id:'repair-a',status:'done',taskType:'bottleneck-repair',goal:'repair',responsibleFiles:['tools/repair.mjs'],createdAt:'2026-09-23T00:00:00Z'},
     {id:'repair-old',status:'cancelled',taskType:'bottleneck-repair',goal:'repair',responsibleFiles:['tools/repair.mjs'],blocker:'system-ai-duplicate-repair-superseded',lastOutcome:'SUPERSEDED_DUPLICATE_WORK',evidence:['system-ai-duplicate-repair-superseded-by:repair-a'],createdAt:'2026-09-23T00:01:00Z'},
@@ -258,10 +258,12 @@ test('security recovery reserve repairs historical superseded dependency before 
   ]};
   const result=reserveSecurityRecoveryTask(queue,{id:'security-task',reservationId:'security:1',at:Date.parse('2026-09-23T00:10:00Z')});
   assert.equal(result.rewired,1);
+  assert.equal(result.scopeReconciled,1);
   assert.deepEqual(result.reserved.map(x=>x.id),['security-task']);
   const task=result.queue.tasks.find(x=>x.id==='security-task');
-  assert.deepEqual(task.dependencies,['repair-a']);
+  assert.deepEqual(task.dependencies,[]);
   assert.equal(task.status,'running');
+  assert.ok(task.evidence.includes('system-ai-cross-scope-canary-dependency-removed:YES'));
 });
 
 test('Primary AI security recovery assignment is never invoked automatically by system or security workflows',()=>{
