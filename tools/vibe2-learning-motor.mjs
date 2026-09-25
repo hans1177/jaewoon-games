@@ -2078,6 +2078,170 @@ export function mergeVerifiedSpecializedQueueExperienceMemory(experienceInput={}
   };
 }
 
+
+function verifiedRobloxStudioPlayBinding(item={}){
+  const evidence=item?.robloxInternalVibePlayEvidence||{};
+  const candidate=item?.robloxRuntimeCandidateEvidence||item?.robloxInternalReleaseEvidence||{};
+  const actions=Array.isArray(evidence?.actions)?evidence.actions:[];
+  const checkpoints=Array.isArray(evidence?.checkpoints)?evidence.checkpoints:[];
+  const requiredCheckpoints=checkpoints.filter(row=>row?.required!==false);
+  const errors=Array.isArray(evidence?.errors)?evidence.errors:[];
+  const sourceRevision=clean(item?.robloxSourceCommit);
+  const artifactIdentity=clean(item?.robloxBuildArtifactIdentity);
+  const artifactRunId=Number(item?.robloxFoundationF0Evidence?.artifactRunId||candidate?.artifactRunId||0);
+  const exactArtifact=Boolean(
+    sourceRevision&&artifactIdentity&&artifactRunId>0
+    &&clean(evidence?.sourceRevision)===sourceRevision
+    &&clean(evidence?.artifactIdentity)===artifactIdentity
+    &&Number(evidence?.artifactRunId||0)===artifactRunId
+    &&clean(candidate?.sourceRevision)===sourceRevision
+    &&clean(candidate?.artifactIdentity)===artifactIdentity
+    &&Number(candidate?.artifactRunId||0)===artifactRunId
+  );
+  const publishedCrossCheck=Boolean(
+    candidate?.published===true
+    &&/^[1-9]\d*$/.test(String(candidate?.universeId||''))
+    &&/^[1-9]\d*$/.test(String(candidate?.placeId||''))
+    &&Number(candidate?.versionNumber||0)>0
+    &&evidence?.publishedCandidateCrossCheckPassed===true
+    &&clean(evidence?.publishedCandidateCrossCheckAuthority)==='OPEN_CLOUD'
+    &&String(evidence?.universeId||'')===String(candidate?.universeId||'')
+    &&String(evidence?.placeId||'')===String(candidate?.placeId||'')
+    &&Number(evidence?.versionNumber||0)===Number(candidate?.versionNumber||0)
+  );
+  const trustedObservation=Boolean(
+    evidence?.actualPlay===true
+    &&evidence?.localPlaceFile===true
+    &&evidence?.onlinePlaceDirectOpen===false
+    &&evidence?.robloxPlayerAutomation===false
+    &&evidence?.rawSourceIncluded===false
+    &&evidence?.rawGameplayValuesIncluded===false
+    &&clean(evidence?.authority)==='vibe2-roblox-studio-runtime'
+    &&exactArtifact
+    &&publishedCrossCheck
+    &&evidence?.capabilities?.studioTestService===true
+  );
+  const pass=Boolean(
+    trustedObservation
+    &&evidence?.pass===true
+    &&evidence?.runtimeVerified===true
+    &&evidence?.learningReusable===true
+    &&evidence?.capabilities?.virtualInput===true
+    &&actions.some(row=>row?.dispatched===true&&row?.ok===true)
+    &&requiredCheckpoints.length>0
+    &&requiredCheckpoints.every(row=>row?.pass===true)
+    &&errors.length===0
+  );
+  const verifiedFailure=Boolean(
+    trustedObservation
+    &&!pass
+    &&(
+      errors.length>0
+      ||requiredCheckpoints.some(row=>row?.pass!==true)
+    )
+  );
+  return{pass,verifiedFailure,trustedObservation,evidence,candidate,actions,checkpoints,requiredCheckpoints,sourceRevision,artifactIdentity,artifactRunId,exactArtifact,publishedCrossCheck};
+}
+function verifiedRobloxStudioReusablePatterns(binding={}){
+  const evidence=binding?.evidence||{};
+  const semanticText=[
+    'roblox studio local runtime virtual input actual play',
+    ...(evidence?.learningSignals||[]),
+    ...(binding?.actions||[]).filter(row=>row?.ok===true).flatMap(row=>[row?.id,row?.type]),
+    ...(binding?.checkpoints||[]).filter(row=>row?.pass===true).flatMap(row=>[row?.id,row?.name])
+  ].map(clean).filter(Boolean).join(' ');
+  const domains=uniq(inferDomains(semanticText,'roblox')).filter(domain=>MASTERY_DOMAINS.includes(domain));
+  return uniq(domains.map(domain=>'verified-studio-local-play:'+lower(domain).replaceAll('_','-')));
+}
+export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
+  const records=[];
+  for(const item of companyQueueInput?.items||companyQueueInput?.projects||[]){
+    const gameId=clean(item?.gameId||item?.id);
+    if(!gameId)continue;
+    const binding=verifiedRobloxStudioPlayBinding(item);
+    if(!binding.pass&&!binding.verifiedFailure)continue;
+    const evidence=binding.evidence;
+    const patterns=verifiedRobloxStudioReusablePatterns(binding);
+    const failedCheckpoints=binding.requiredCheckpoints.filter(row=>row?.pass!==true).map(row=>clean(row?.name||row?.id)).filter(Boolean);
+    const errorTypes=(Array.isArray(evidence?.errors)?evidence.errors:[]).map(row=>clean(row?.type||row?.name||'runtime-error')).filter(Boolean);
+    const failureCause=uniq([...errorTypes,...failedCheckpoints]).join(' | ');
+    if(binding.pass&&!patterns.length)continue;
+    if(binding.verifiedFailure&&!failureCause)continue;
+    const runIdentity=clean(evidence?.runId)||clean(evidence?.workflowRunId)||[
+      binding.sourceRevision,binding.artifactIdentity,String(binding.artifactRunId)
+    ].join('|');
+    const outcome=binding.pass?'PASS':'FAIL';
+    const outcomeId='roblox_studio_local_play_'+hash([
+      gameId,binding.sourceRevision,binding.artifactIdentity,String(binding.artifactRunId),runIdentity,outcome,failureCause
+    ].join('|'));
+    const baseEvidence=[
+      'roblox-studio-local-runtime:'+(binding.pass?'PASS':'FAIL'),
+      'roblox-studio-local-exact-artifact:PASS',
+      'published-candidate-crosscheck:OPEN_CLOUD',
+      'roblox-player-automation:NO',
+      'online-place-direct-open:NO',
+      'raw-source-stored:NO',
+      'raw-gameplay-values-stored:NO',
+      'source-revision:'+binding.sourceRevision,
+      'artifact-id:'+binding.artifactIdentity,
+      'artifact-run-id:'+String(binding.artifactRunId),
+      'roblox-studio-local-outcome-id:'+outcomeId,
+      ...(clean(evidence?.workflowRunId)?['actions-run:'+clean(evidence.workflowRunId)]:[])
+    ];
+    records.push({
+      id:outcomeId,
+      gameId,
+      engine:'roblox',
+      departments:['development','qa','learning'],
+      taskType:'roblox-studio-local-internal-play',
+      problem:'exact local Roblox build artifact runtime behavior must be observed through StudioTestService and VirtualInput',
+      goal:'reuse only verified local Roblox Studio play behavior and checkpoint outcomes for future Roblox development',
+      change:binding.pass?patterns.join(' | '):'verified local Studio runtime failure captured for causal repair',
+      outcome,
+      failureCause:binding.pass?'':failureCause,
+      qa:['ROBLOX_STUDIO_TEST_SERVICE','LOCAL_EXACT_ARTIFACT_BINDING','OPEN_CLOUD_PUBLISHED_CANDIDATE_CROSSCHECK',...(binding.pass?['VIRTUAL_INPUT']:[])],
+      build:binding.artifactIdentity,
+      evidence:baseEvidence,
+      reusablePatterns:binding.pass?patterns:[],
+      avoidPatterns:binding.pass?[]:uniq([...patterns,...errorTypes.map(x=>'verified-studio-error:'+lower(x).replace(/[^a-z0-9-]+/g,'-'))]),
+      verified:true,
+      reusable:true,
+      confirmations:1,
+      createdAt:clean(evidence?.testedAt)||clean(evidence?.observedAt)||null,
+      lastVerifiedAt:clean(evidence?.testedAt)||clean(evidence?.observedAt)||null
+    });
+  }
+  return{
+    version:1,
+    kind:'verified-roblox-studio-local-play-experience',
+    records,
+    positive:records.filter(row=>upper(row.outcome)==='PASS').length,
+    negative:records.filter(row=>upper(row.outcome)==='FAIL').length,
+    authority:'local-exact-artifact-studio-runtime-to-existing-learning-motor-only'
+  };
+}
+export function mergeVerifiedRobloxStudioPlayExperienceMemory(experienceInput={},companyQueueInput={}){
+  const current=createVibeExperienceMemory(experienceInput);
+  const extracted=collectVerifiedRobloxStudioPlayExperience(companyQueueInput);
+  const persistedOutcomeTokens=new Set(
+    (current.records||[])
+      .flatMap(row=>row?.evidence||[])
+      .map(clean)
+      .filter(value=>value.startsWith('roblox-studio-local-outcome-id:'))
+  );
+  const fresh=extracted.records.filter(row=>!persistedOutcomeTokens.has('roblox-studio-local-outcome-id:'+clean(row.id)));
+  if(!fresh.length)return{memory:current,changed:false,added:0,positive:0,negative:0,candidates:extracted.records.length};
+  const memory=createVibeExperienceMemory({records:[...(current.records||[]),...fresh]});
+  return{
+    memory,
+    changed:true,
+    added:fresh.length,
+    positive:fresh.filter(row=>upper(row.outcome)==='PASS').length,
+    negative:fresh.filter(row=>upper(row.outcome)==='FAIL').length,
+    candidates:extracted.records.length
+  };
+}
+
 function lastGraphicsEvolutionMarker(evidence=[],prefix=''){
   return (evidence||[]).map(clean).filter(value=>value.startsWith(prefix)).at(-1)?.slice(prefix.length)||'';
 }
@@ -2134,8 +2298,11 @@ export function applyVerifiedGraphicsEvolutionOutcomes(stateInput={},queueInput=
 
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
   const specializedExperience=mergeVerifiedSpecializedQueueExperienceMemory(experienceInput,queueInput);
+  const studioExperience=mergeVerifiedRobloxStudioPlayExperienceMemory(specializedExperience.memory,companyQueueInput);
+  const studioExtracted=collectVerifiedRobloxStudioPlayExperience(companyQueueInput);
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
-  const specializedApplied=applyVerifiedSpecializedQueueOutcomes(applied.state,queueInput);
+  const studioApplied=applyVerifiedExperienceToMastery(applied.state,studioExtracted);
+  const specializedApplied=applyVerifiedSpecializedQueueOutcomes(studioApplied.state,queueInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(specializedApplied.state,codePatternsInput);
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
   const calibrationApplied=applyVerifiedCodingCalibration(strategyApplied.state,queueInput);
@@ -2145,13 +2312,14 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const constitution=buildCodingConstitution(graphicsApplied.state);
   graphicsApplied.state.codingConstitution=constitution;
   graphicsApplied.state.updatedAt=new Date().toISOString();
-  const benchmark=buildBenchmarkLadder(graphicsApplied.state,specializedExperience.memory,companyQueueInput);
+  const benchmark=buildBenchmarkLadder(graphicsApplied.state,studioExperience.memory,companyQueueInput);
   const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark);
   const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
     state:graphicsApplied.state,
-    addedExperience:applied.added,
+    addedExperience:(applied.added||0)+(studioApplied.added||0),
+    addedRobloxStudioVerifiedOutcomes:studioApplied.added||0,
     addedSpecializedVerifiedOutcomes:specializedApplied.added||0,
     specializedVerifiedPositiveOutcomes:specializedApplied.positive||0,
     specializedVerifiedNegativeOutcomes:specializedApplied.negative||0,
@@ -2172,12 +2340,17 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     codingConstitutionRuleCount:constitution.rules.length,
     benchmark,
     idlePractice,
-    experience:specializedExperience.memory,
+    experience:studioExperience.memory,
+    experienceChanged:specializedExperience.changed===true||studioExperience.changed===true,
     specializedExperienceChanged:specializedExperience.changed===true,
+    studioExperienceChanged:studioExperience.changed===true,
+    studioExperiencePersisted:studioExperience.added||0,
+    studioExperiencePersistedPositive:studioExperience.positive||0,
+    studioExperiencePersistedNegative:studioExperience.negative||0,
     specializedExperiencePersisted:specializedExperience.added||0,
     specializedExperiencePersistedPositive:specializedExperience.positive||0,
     specializedExperiencePersistedNegative:specializedExperience.negative||0,
-    handoffs:buildWebRobloxHandoffs(companyQueueInput,specializedExperience.memory,practice.queue,roadmapInput),
+    handoffs:buildWebRobloxHandoffs(companyQueueInput,studioExperience.memory,practice.queue,roadmapInput),
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
     idlePracticeTaskAdded:practice.added,
@@ -2199,7 +2372,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
   const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{})});
   writeJson(stateFile,result.state);
-  if(result.specializedExperienceChanged) writeJson(experienceFile,result.experience);
+  if(result.experienceChanged) writeJson(experienceFile,result.experience);
   if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
@@ -2207,6 +2380,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_LEARNING_MOTOR=PASS`);
   console.log(`VIBE2_MASTERY_NEW_EXPERIENCE=${result.addedExperience}`);
   console.log(`VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED=${result.specializedExperiencePersisted||0}`);
+  console.log(`VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=${result.studioExperiencePersisted||0}`);
+  console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_OUTCOMES_ADDED=${result.addedRobloxStudioVerifiedOutcomes||0}`);
+  console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_FAILURES_PERSISTED=${result.studioExperiencePersistedNegative||0}`);
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
