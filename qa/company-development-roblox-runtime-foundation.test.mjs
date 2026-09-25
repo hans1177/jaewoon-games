@@ -367,16 +367,27 @@ test('shared FAST_MVP runtime QA keeps only newest shared candidate current and 
   assert.match(workflow,/ROBLOX_SHARED_TARGET_SUPERSEDED=/);
 });
 
-test('post-runtime QA dispatches exact candidates to authenticated local Studio and persists only sanitized actual play evidence',()=>{
+test('post-runtime QA uses assertion-only local immutable Studio artifacts and persists sanitized play evidence',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/studio-plan:/);
   assert.match(workflow,/studio-auto-play:/);
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(workflow,/--place-version=\$env:PLACE_VERSION/);
+  assert.match(workflow,/actions\/download-artifact@v4/);
+  assert.match(workflow,/development-roblox-package-/);
+  assert.match(workflow,/immutable Roblox artifact SHA256 mismatch/);
+  assert.match(workflow,/--place-file=\$env:ROBLOX_STUDIO_PLACE_FILE/);
+  assert.doesNotMatch(workflow,/--place-id=\$env:PLACE_ID/);
+  assert.doesNotMatch(workflow,/--place-version=\$env:PLACE_VERSION/);
+  assert.doesNotMatch(workflow,/type='key'|type='click'/);
   assert.match(workflow,/ui-text-fits/);
   assert.match(workflow,/ui-visible-elements/);
-  assert.match(workflow,/ROBLOX_STUDIO_UI_INPUT_ERROR_EXACT_EVIDENCE=PASS/);
-  assert.match(workflow,/robloxInternalVibePlayEvidence=\{version:2/);
+  assert.match(workflow,/ROBLOX_STUDIO_ASSERTION_ONLY_UI_ERROR_EVIDENCE=PASS/);
+  assert.match(workflow,/robloxInternalVibePlayEvidence=\{version:3/);
+  assert.match(workflow,/executionSurface:'LOCAL_IMMUTABLE_ARTIFACT'/);
+  assert.match(workflow,/immutableArtifactVerified:true/);
+  assert.match(workflow,/publishedCandidateObserved:false/);
+  assert.match(workflow,/automatedUserInput:false/);
+  assert.match(workflow,/virtualInput:false/);
   assert.match(workflow,/actualPlay:true/);
   assert.match(workflow,/learningReusable:true/);
   assert.match(workflow,/rawSourceIncluded:false/);
