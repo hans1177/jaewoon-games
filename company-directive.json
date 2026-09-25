@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 73,
+  "revision": 74,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -913,7 +913,12 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "graphicsFailureBlocksOnlyAffectedGraphicsResponsibilities": true,
     "runtimeOrReleaseFailureBlocksPromotionNotIndependentDevelopment": true,
-    "automaticGameWideFeatureFreezeForbidden": true
+    "automaticGameWideFeatureFreezeForbidden": true,
+    "defaultRequestedConcurrentGameTasks": 256,
+    "externalMatrixBatchMax": 256,
+    "verifiedExternalPressureMayTemporarilyReduceWorkers": true,
+    "recoverToExternalCapacityAfterPressure": true,
+    "internalRampUpStepsForbidden": true
   },
   "stageGateScoringV2": {
     "version": 2,
