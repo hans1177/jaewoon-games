@@ -7,6 +7,12 @@ on:
       - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
       - 'tools/company-development-roblox-runtime-foundation.mjs'
       - 'qa/company-development-roblox-runtime-foundation.test.mjs'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/company-development-roblox-studio-local-play.test.mjs'
+      - 'qa/fixtures/company-roblox-studio-local-play-scenario.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/canonical-learning-pipeline.json'
       - 'roblox-games/.company-runtime-trigger'
   workflow_dispatch:
     inputs:
@@ -670,3 +676,226 @@ jobs:
             echo "ROBLOX_F9_DISPATCHED=$id"
           done < /tmp/roblox-f9-ids
 
+  studio-local-plan:
+    name: plan exact local Studio playtests
+    needs: runtime-foundation-qa
+    if: always() && needs.runtime-foundation-qa.result != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      count: ${{ steps.plan.outputs.count }}
+    steps:
+      - name: Checkout current canonical implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout latest canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Select exact local build artifacts needing Studio play
+        id: plan
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C ../runtime fetch --no-tags origin company-runtime
+          git -C ../runtime reset --hard origin/company-runtime
+          requested="$REQUESTED_GAME_ID"
+          if [ -z "$requested" ] && [ "$EVENT_NAME" = 'push' ] && [ -f roblox-games/.company-runtime-trigger ]; then
+            requested="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | tr -d '[:space:]')"
+          fi
+          node tools/company-development-roblox-studio-local-play.mjs \
+            --mode=plan \
+            --queue=../runtime/development-queue.json \
+            --roadmap=company-learning/platform-release-roadmap.json \
+            --game-id="$requested" \
+            --output=/tmp/roblox-studio-local-matrix.json
+          matrix="$(node -e "const x=require('/tmp/roblox-studio-local-matrix.json');process.stdout.write(JSON.stringify(x))")"
+          count="$(node -e "const x=require('/tmp/roblox-studio-local-matrix.json');process.stdout.write(String((x.include||[]).length))")"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_STUDIO_LOCAL_PLAN_COUNT=$count"
+
+  studio-local-auto-play:
+    name: Studio local actual play ${{ matrix.gameId }}
+    needs: studio-local-plan
+    if: needs.studio-local-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.studio-local-plan.outputs.matrix) }}
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 15
+    steps:
+      - name: Checkout central policy and helper
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout existing Vibe2 Studio control tooling
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          path: control
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify local-only Studio policy and authenticated runner
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $roadmap = Get-Content 'main/company-learning/platform-release-roadmap.json' -Raw | ConvertFrom-Json
+          if ($roadmap.roblox.studioExecution.localPlaceFileRequired -ne $true) { throw 'local Studio place-file policy missing' }
+          if ($roadmap.roblox.studioExecution.onlinePublishedPlaceDirectOpenForbidden -ne $true) { throw 'online published Place must remain forbidden' }
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          node -e "import('./control/tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p)})"
+          if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
+          Write-Host 'ROBLOX_STUDIO_LOCAL_RUNNER=PASS'
+
+      - name: Download exact immutable Roblox build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: development-roblox-package-${{ matrix.gameId }}
+          path: ${{ runner.temp }}/company-roblox-studio-package
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ matrix.artifactRunId }}
+
+      - name: Bind Studio launch to the exact local Place file
+        shell: powershell
+        env:
+          EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-package'
+          $places = @(Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "Expected exactly one local Place artifact, found $($places.Count)" }
+          $hash = (Get-FileHash -Path $places[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $expected = ([string]$env:EXPECTED_ARTIFACT).ToLowerInvariant()
+          if ("sha256:$hash" -ne $expected) { throw "Local Place SHA256 mismatch: sha256:$hash != $expected" }
+          "VIBE2_LOCAL_PLACE_FILE=$($places[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_LOCAL_ARTIFACT_BIND=PASS:$hash"
+
+      - name: Run actual local Studio play with official Studio APIs only
+        id: studio_play
+        shell: powershell
+        continue-on-error: true
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $scenario = (Resolve-Path 'main/qa/fixtures/company-roblox-studio-local-play-scenario.json').Path
+          $result = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-runtime.json'
+          $nonce = '${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.gameId }}'
+          $runnerArgs = @(
+            "--scenario=$scenario",
+            "--output=$result",
+            "--nonce=$nonce",
+            "--place-file=$env:VIBE2_LOCAL_PLACE_FILE",
+            '--local-only=true',
+            '--module-file=control/tools/runtime/roblox/Vibe2AutoPlayer.luau',
+            '--timeout=180000'
+          )
+          & node 'control/tools/vibe2-roblox-studio-cli-runner.mjs' @runnerArgs
+          if ($LASTEXITCODE -ne 0) { throw 'local Roblox Studio play runner failed before verifiable runtime evidence' }
+          "VIBE2_STUDIO_RUNTIME_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Persist exact local Studio play evidence
+        if: always()
+        shell: powershell
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+          ARTIFACT_RUN_ID: ${{ matrix.artifactRunId }}
+          UNIVERSE_ID: ${{ matrix.universeId }}
+          PLACE_ID: ${{ matrix.placeId }}
+          VERSION_NUMBER: ${{ matrix.versionNumber }}
+          STUDIO_STEP_SUCCEEDED: ${{ steps.studio_play.outcome == 'success' }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:VIBE2_STUDIO_RUNTIME_RESULT -or -not (Test-Path $env:VIBE2_STUDIO_RUNTIME_RESULT)) {
+            throw 'Studio local play produced no runtime evidence; infrastructure failures are not game learning'
+          }
+          git -C runtime fetch --no-tags origin company-runtime
+          if ($LASTEXITCODE -ne 0) { throw 'company-runtime refresh failed' }
+          git -C runtime reset --hard origin/company-runtime
+          if ($LASTEXITCODE -ne 0) { throw 'company-runtime reset failed' }
+          $persistArgs = @(
+            '--mode=persist',
+            '--queue=runtime/development-queue.json',
+            "--runtime=$env:VIBE2_STUDIO_RUNTIME_RESULT",
+            "--game-id=$env:GAME_ID",
+            "--source-revision=$env:SOURCE_REVISION",
+            "--artifact-identity=$env:ARTIFACT_IDENTITY",
+            "--artifact-run-id=$env:ARTIFACT_RUN_ID",
+            "--universe-id=$env:UNIVERSE_ID",
+            "--place-id=$env:PLACE_ID",
+            "--version-number=$env:VERSION_NUMBER",
+            "--workflow-run-id=${{ github.run_id }}",
+            "--studio-step-succeeded=$env:STUDIO_STEP_SUCCEEDED"
+          )
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio local play evidence validation failed' }
+
+          git -C runtime config user.name 'jaewoon-roblox-studio-local'
+          git -C runtime config user.email 'actions@users.noreply.github.com'
+          git -C runtime add development-queue.json
+          git -C runtime diff --cached --check
+          if ($LASTEXITCODE -ne 0) { throw 'runtime evidence diff check failed' }
+          git -C runtime diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git -C runtime commit -m 'runtime: persist exact local Roblox Studio play [skip ci]'
+            if ($LASTEXITCODE -ne 0) { throw 'runtime evidence commit failed' }
+            $pushed = $false
+            for ($attempt=1; $attempt -le 3; $attempt++) {
+              git -C runtime push origin HEAD:company-runtime
+              if ($LASTEXITCODE -eq 0) { $pushed = $true; break }
+              git -C runtime fetch --no-tags origin company-runtime
+              if ($LASTEXITCODE -ne 0) { throw 'runtime refresh after push conflict failed' }
+              git -C runtime rebase origin/company-runtime
+              if ($LASTEXITCODE -ne 0) { git -C runtime rebase --abort; throw 'runtime rebase failed' }
+              Start-Sleep -Seconds ($attempt * 2)
+            }
+            if (-not $pushed) { throw 'runtime evidence push failed' }
+          } else {
+            Write-Host 'ROBLOX_STUDIO_LOCAL_RUNTIME_STATE_CHANGE=NO'
+          }
+
+          $latest = Get-Content 'runtime/development-queue.json' -Raw | ConvertFrom-Json
+          $row = @($latest.items | Where-Object { $_.gameId -eq $env:GAME_ID })[0]
+          if ($null -eq $row -or $row.robloxInternalVibePlayEvidence.pass -ne $true) {
+            throw "ROBLOX_STUDIO_LOCAL_PLAY_FAILED:$env:GAME_ID"
+          }
+          Write-Host "ROBLOX_STUDIO_LOCAL_PLAY_PASS=$env:GAME_ID"
