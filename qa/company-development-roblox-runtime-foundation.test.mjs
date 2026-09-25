@@ -288,6 +288,20 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
 });
 
+test('runtime QA distinguishes exact engine version awaiting a real server boot from an actually stale deployment',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const exactEngineVersionAwaitingRealServerBoot=/);
+ assert.match(workflow,/engineProbe\?\.engineExecuted===true/);
+ assert.match(workflow,/engineProbe\?\.exactPlace===true/);
+ assert.match(workflow,/engineProbe\?\.exactVersion===true/);
+ assert.match(workflow,/engineProbe\?\.serverBootObserved!==true/);
+ assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT/);
+ assert.match(workflow,/roblox-runtime-foundation-awaiting-real-server-boot/);
+ assert.match(workflow,/exact-engine-version-awaiting-real-server-boot/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=/);
+ assert.match(workflow,/authority:exactEngineVersionAwaitingRealServerBoot/);
+});
+
 test('runtime QA preserves exact permission evidence instead of misclassifying stale sentinel as executor failure',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/roblox-open-cloud-engine-probes\.json/);
