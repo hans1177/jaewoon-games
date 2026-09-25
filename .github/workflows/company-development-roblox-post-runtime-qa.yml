@@ -1059,6 +1059,9 @@ jobs:
           Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED_COUNT=$([int]$postLaunch.enabledCount)"
           Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_DISABLED_COUNT=$([int]$postLaunch.disabledCount)"
           Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATHS=$(@($postLaunch.candidatePaths) -join ',')"
+          "VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED=$([string]$postLaunch.state)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT=$([int]$postLaunch.candidatePathCount)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT=$([int]$postLaunch.candidatePathCount)"
           Write-Host 'ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_MUTATION=NO'
 
       - name: Run actual local play through official Studio MCP
@@ -1090,7 +1093,9 @@ jobs:
               "--output=$result",
               '--timeout=15000',
               '--tool-attempts=5',
-              '--tool-delay-ms=1000'
+              '--tool-delay-ms=1000',
+              "--setting-state=$env:VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED",
+              "--setting-candidate-path-count=$env:VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT"
             )
             & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
             if ($LASTEXITCODE -eq 0) {
@@ -1105,14 +1110,18 @@ jobs:
               if ($LASTEXITCODE -ne 0) { throw 'Studio MCP failure evidence parse failed' }
               $requiredToolsEmpty = ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')
               $mcpServerNotEnabled = $failureSignature -match 'stderrHint=MCP_SERVER_NOT_ENABLED'
+              $emptyAssistantSettingsAfterReady = $failureSignature -match 'settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY'
               $toolProviderTimeout = $failureSignature -match 'stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'
               if ($requiredToolsEmpty -and $toolProviderTimeout) {
                 $toolProviderTimeoutObserved = $true
                 Write-Host "ROBLOX_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT=attempt=$attempt"
               }
-              if (($attempt -gt 1) -and ($mcpCommandForAttempt -eq $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) -and $requiredToolsEmpty -and $mcpServerNotEnabled) {
+              if ($requiredToolsEmpty -and ($mcpServerNotEnabled -or $emptyAssistantSettingsAfterReady)) {
                 $enablementRequired = $true
                 Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT'
+                if ($emptyAssistantSettingsAfterReady) {
+                  Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE_EVIDENCE=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY'
+                }
                 Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
                 break
               }

@@ -358,6 +358,27 @@ test('Studio tool provider timeout stays infrastructure-pending without falsely 
   assert.equal(result.evidence.failureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
 });
 
+test('tool-provider timeout with empty Assistant settings after Assistant readiness becomes the explicit MCP enablement prerequisite',()=>{
+  const infra=runtime();
+  infra.runtimeVerified=false;
+  infra.capabilities={officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false};
+  infra.actions=[];
+  infra.checkpoints=[];
+  infra.metrics.distinctFrameChange=false;
+  infra.errors=[{
+    type:'studio-mcp-infrastructure-or-runtime-error',
+    signature:'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios:available=:protocol=2024-11-05:server=RobloxStudio:stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT:settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY'
+  }];
+  const result=createLocalStudioPlayEvidence({
+    item:item(),runtime:infra,expected,workflowRunId:46,studioStepSucceeded:false,
+    testedAt:'2026-09-25T09:20:00.000Z'
+  });
+  assert.equal(result.evidence.infrastructureFailure,true);
+  assert.equal(result.evidence.studioMcpServerEnablementRequired,true);
+  assert.equal(result.evidence.operatorPrerequisite,'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT');
+  assert.equal(result.evidence.learningReusable,false);
+});
+
 test('runtime workflow uses exact local artifact plus official Studio MCP and no Player or undocumented Studio CLI automation',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/studio-mcp-auto-play:/);
@@ -402,6 +423,9 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/ROBLOX_STUDIO_MCP_STDERR_REDACTED=/);
   assert.match(helper,/stderrHint=/);
   assert.match(helper,/STUDIO_TOOL_PROVIDER_TIMEOUT/);
+  assert.match(helper,/ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY/);
+  assert.match(helper,/settingState:clean\(a\['setting-state'\]\)/);
+  assert.match(helper,/settingCandidatePathCount:Number\(a\['setting-candidate-path-count'\]\?\?-1\)/);
   assert.match(helper,/timed out waiting for tools to become available/);
   assert.match(helper,/NO_ACTIVE_STUDIO/);
   assert.match(helper,/MCP_SERVER_NOT_ENABLED/);
@@ -543,6 +567,13 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED_COUNT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATHS=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT=/);
+  assert.match(studioMcpBlock,/VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED=/);
+  assert.match(studioMcpBlock,/VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT=/);
+  assert.match(studioMcpBlock,/--setting-state=/);
+  assert.match(studioMcpBlock,/--setting-candidate-path-count=/);
+  assert.match(studioMcpBlock,/ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE_EVIDENCE=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_MUTATION=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=/);
