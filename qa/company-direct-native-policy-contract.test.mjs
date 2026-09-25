@@ -36,8 +36,9 @@ test('canonical policy routes new Roblox and Unity work through the Unity Web re
   assert.equal(fan?.sourceTreeExactMatchRequired,true);
   assert.equal(fan?.nativeEvidenceStillRequired,true);
   assert.equal(direct.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
-  assert.deepEqual(direct.upperPlatformAdmissionMigration?.grandfatherGameIds,['cozy-island','daechung-rpg']);
-  assert.equal(direct.upperPlatformAdmissionMigration?.allOtherDevelopmentConfirmedMustRunUnityWebFloor,true);
+  assert.equal(direct.upperPlatformAdmissionMigration?.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  assert.deepEqual(direct.upperPlatformAdmissionMigration?.grandfatherGameIds,[]);
+  assert.equal(direct.upperPlatformAdmissionMigration?.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
   assert.equal(direct.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,true);
   assert.equal(direct.orchestrationConcurrency?.globalSerializationForbidden,true);
   assert.equal(direct.orchestrationConcurrency?.distinctGamesParallel,true);
@@ -255,7 +256,9 @@ test('native executors cannot bypass Unity Web upper-platform readiness',()=>{
   }
   assert.match(unity,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
   assert.match(roblox,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,['cozy-island','daechung-rpg']);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,[]);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
 });
 
 test('Unity Web source bootstrap is fail-closed and excludes the two owner-grandfathered games',()=>{
