@@ -6,24 +6,29 @@ const hasKorean=v=>/[\u3131-\u318E\uAC00-\uD7A3]/.test(clean(v));
 const readJson=(f,fallback={})=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{return fallback;}};
 const args=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));
 const uniq=a=>[...new Set(a.map(clean).filter(Boolean))];
+const slugTitle=v=>clean(v).split('-').filter(Boolean).map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join(' ');
+const stripMarketing=v=>clean(v).replace(/^\[[^\]]+\]\s*/,'').replace(/\s*[:|—-]\s+.*$/,'').trim();
 
-export function resolveRobloxBilingualTitle({launch={},catalogEntry={},maxCodepoints=50}={}){
-  const english=uniq([
+export function resolveRobloxBilingualTitle({launch={},catalogEntry={},gameId='',maxCodepoints=50}={}){
+  const englishCandidates=uniq([
     launch.robloxTitleEnglish,launch.gameTitleEn,launch.gameNameEnglish,
-    catalogEntry.nameEnglish,catalogEntry.internationalTitle
-  ]).find(hasEnglish)||'';
-  const korean=uniq([
+    catalogEntry.nameEnglish,catalogEntry.internationalTitle,
+    slugTitle(gameId||launch.gameId||catalogEntry.id)
+  ]).filter(hasEnglish);
+  const koreanCandidates=uniq([
     launch.robloxTitleKorean,launch.gameTitleKo,launch.gameName,
     catalogEntry.name,catalogEntry?.canonical?.identity?.name
-  ]).find(hasKorean)||'';
+  ]).filter(hasKorean);
+  const english=englishCandidates[0]||'';
+  const korean=koreanCandidates[0]||'';
   if(!english)throw new Error('ROBLOX_BILINGUAL_TITLE_ENGLISH_MISSING');
   if(!korean)throw new Error('ROBLOX_BILINGUAL_TITLE_KOREAN_MISSING');
 
+  const shortEnglish=uniq(englishCandidates.map(stripMarketing));
+  const shortKorean=uniq(koreanCandidates.map(stripMarketing));
   const candidates=uniq([
-    `${english} | ${korean}`,
-    `${clean(launch.gameTitleEn)} | ${clean(launch.gameTitleKo)}`,
-    `${clean(launch.gameNameEnglish)} | ${clean(launch.gameName)}`,
-    `${clean(catalogEntry.nameEnglish||catalogEntry.internationalTitle)} | ${clean(catalogEntry.name||catalogEntry?.canonical?.identity?.name)}`
+    ...englishCandidates.flatMap(en=>koreanCandidates.map(ko=>`${en} | ${ko}`)),
+    ...shortEnglish.flatMap(en=>shortKorean.map(ko=>`${en} | ${ko}`))
   ]).filter(x=>!x.startsWith(' | ')&&!x.endsWith(' | '));
   const displayName=candidates.find(x=>Array.from(x).length<=maxCodepoints);
   if(!displayName)throw new Error('ROBLOX_BILINGUAL_TITLE_TOO_LONG_NEEDS_EXPLICIT_SHORT_TITLE');
@@ -32,7 +37,7 @@ export function resolveRobloxBilingualTitle({launch={},catalogEntry={},maxCodepo
 }
 
 export function resolveRobloxStoreCreativeSpec({launch={},catalogEntry={},marketing={},gameId=''}={}){
-  const title=resolveRobloxBilingualTitle({launch,catalogEntry});
+  const title=resolveRobloxBilingualTitle({launch,catalogEntry,gameId});
   const identity=clean(
     launch.designContract?.graphicsConcept||
     launch.artDirection||
