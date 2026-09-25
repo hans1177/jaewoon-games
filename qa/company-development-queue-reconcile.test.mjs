@@ -222,3 +222,40 @@ test('reconcile trigger bursts serialize instead of cancelling the running state
   assert.equal(state?.cancelRunningReconcileOnNewTrigger,false);
   assert.equal(state?.repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation,true);
 });
+
+
+test('queue reconcile restores exact private Roblox candidate checkpoint instead of source-bind regression',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-runtime-checkpoint-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'runtime-checkpoint',name:'Runtime Checkpoint',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'runtime-checkpoint',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    const source=writeDesign(root,'runtime-checkpoint');
+    const revision='c'.repeat(40),artifact='sha256:'+'d'.repeat(64);
+    write(root,'development-queue.json',{items:[{
+      gameId:'runtime-checkpoint',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      canonicalState:'PENDING_DUAL_NATIVE_SOURCE_BIND',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      minimumDesignContract:{pass:true,source},
+      robloxSourceCommit:revision,
+      robloxBuildArtifactIdentity:artifact,
+      robloxRuntimeCandidateEvidence:{
+        published:true,sourceRevision:revision,artifactIdentity:artifact,
+        versionNumber:12,universeId:'1',placeId:'2'
+      }
+    }]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.currentStep,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+    assert.equal(item.canonicalState,'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED');
+    assert.equal(item.robloxRuntimeCandidateEvidence.versionNumber,12);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
