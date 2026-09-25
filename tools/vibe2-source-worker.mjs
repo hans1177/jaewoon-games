@@ -769,7 +769,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     .slice(0,14)
     .map(row=>`${clean(row.domain)}[${clean(row.priority)}]=${clean(row.directive)}`)
     .filter(Boolean);
-  const sourceAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'}`).filter(Boolean);
+  const sourceAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'} CURRENT=${clean(row?.currentBehavior||row?.context)||'UNKNOWN'} INTENDED=${clean(row?.intendedBehavior)||'FOLLOW_PRIMARY_GOAL'} ACCEPT=${clean(row?.observableAcceptance)||'REAL_SOURCE_AND_EFFECT_DELTA'}`).filter(Boolean);
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
