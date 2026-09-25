@@ -3381,6 +3381,17 @@
         "studioMcpActualPlayEvidencePreservedWhilePending": true,
         "fakeRuntimeFoundationPromotionForbidden": true,
         "observationRetry": "UNLIMITED_OBSERVATION",
+        "developmentBlocking": false,
+        "internalQaBlocking": false,
+        "internalRegressionBlocking": false,
+        "internalReleaseBlocking": false,
+        "externalPublicReleaseBlocking": true,
+        "internalReleaseUsesExplicitObservationDeferredEvidence": true,
+        "runtimePassTruthRemainsFalseUntilRealServerBootEvidence": true,
+        "exactPrivateRuntimeFailureInternalFlowBlocking": false,
+        "exactPrivateRuntimeFailureExternalPublicReleaseBlocking": true,
+        "truthPreservingInternalContinuationFlagsRequired": true,
+        "sameGameIndependentDevelopmentContinues": true,
         "playerAutomation": false,
         "publishedPlaceDirectStudioAutomation": false
       }
