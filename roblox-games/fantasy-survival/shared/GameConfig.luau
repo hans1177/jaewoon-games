@@ -80,6 +80,29 @@ local Config = {
     { Id = "scope-coreloop-2-6c927cfa40", Label = "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.", Kind = "PROGRESSION", Order = 5, LearningPattern = "persistent-growth" },
     { Id = "scope-mobileux-5acfb2eaa6", Label = "가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃.", Kind = "COMBAT", Order = 6, LearningPattern = "commercial-idle-runtime-architecture" },
   },
+  -- STUDIO_ASSET_BINDING_BEGIN
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 1,
+    LibraryVersion = 16,
+    Source = "company-asset-library.json#baseMaterialLibrary",
+    AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    RecipeId = "NORMAL_VARIANT",
+    ProductionVerified = false,
+    RuntimeVerificationRequired = true,
+    Families = {
+      UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" },
+      ENVIRONMENT = { "TREE_TRUNK_THICK", "TREE_CROWN_ROUND", "ROCK_MEDIUM", "ROAD_DIRT" },
+      BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
+      PROP = { "CHEST", "CRATE", "LAMP" },
+      MATERIAL = { "WOOD", "STONE", "METAL" },
+      VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
+      CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
+      CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+    },
+  },
+  -- STUDIO_ASSET_BINDING_END
 }
 
 return table.freeze(Config)
