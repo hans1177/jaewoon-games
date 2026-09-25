@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1vq59z1",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "baseSha": "ea01478dbdaf293950e135f56060d35bd6df0b69",
+      "acquiredAt": "2026-09-25T21:36:00.919Z",
+      "expiresAt": "2026-09-25T22:21:00.919Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
