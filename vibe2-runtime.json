@@ -413,7 +413,7 @@
       "taskMicroFanIn": true,
       "speculativeVariantsJoinPerTask": true,
       "refillAfterTaskMicroFanIn": true,
-      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
+      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS",
       "workerDirectControlWrite": false,
       "sourceAndFileConflictLocksPreserved": false,
       "pressureFloor": 4,
@@ -455,7 +455,8 @@
       "sourceRootWideLocksForbidden": true,
       "liveRunnerQueuePressureCoalescing": true,
       "cohortFanInConsumesCoalescedResults": true,
-      "coalescedCompletionIsNotFailure": true
+      "coalescedCompletionIsNotFailure": true,
+      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -549,7 +550,8 @@
       "resultLossForbidden": true,
       "workerDirectControlWrite": false,
       "immediateDispatchResumesWhenPressureClears": true
-    }
+    },
+    "cohortFanInPressureIngressEnabled": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
