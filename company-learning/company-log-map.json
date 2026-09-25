@@ -1,5 +1,5 @@
 {
-  "version": 61,
+  "version": 62,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -321,12 +321,26 @@
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerContextLogContract": {
-    "version": 1,
+    "version": 2,
     "documentIsCode": true,
     "roadmapPolicyHashRequired": true,
     "securityPolicyHashRequired": true,
     "launcherValidationRequired": true,
-    "completionMustUseSameValidatedContext": true
+    "completionMustUseSameValidatedContext": true,
+    "canonicalDocumentHashesRequired": [
+      "policySha256",
+      "logMapSha256",
+      "architectureSha256",
+      "securityPolicySha256"
+    ],
+    "vibeCandidateEvidenceMarkersRequired": [
+      "shared-context-policy",
+      "shared-context-log-map",
+      "shared-context-architecture",
+      "shared-context-security",
+      "shared-context-sync:PASS"
+    ],
+    "allCanonicalDocumentHashesMustBeBoundToExecutionEvidence": true
   },
   "dualNativeCorrelation": {
     "gameKey": "GAME_ID",

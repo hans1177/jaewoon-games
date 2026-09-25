@@ -19,6 +19,7 @@ function workerExecutionPolicyProjection(policy={}){
   const architectureProjection=compileCentralArchitectureProjection(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const live=shared?.liveMainFreshness||{};
+  const centralDocumentation=policy?.centralDocumentation||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
   const primaryCollaboration=policy?.developmentLifecycleMachine?.primaryAiOrchestration?.internalVibeAiCollaboration||{};
   const role=orchestration?.assistantRole||{};
@@ -43,9 +44,20 @@ function workerExecutionPolicyProjection(policy={}){
     sharedWorkerContext:{
       requiredForAllWorkers:shared.requiredForAllWorkers===true,
       centralPolicy:clean(shared.centralPolicy)||null,
+      logMap:clean(shared.logMap)||null,
+      architectureMap:clean(shared.architectureMap)||null,
+      securityPolicy:clean(shared.securityPolicy)||null,
+      loadOrder:uniq(shared.loadOrder||[]),
+      validator:clean(shared.validator)||null,
+      qa:clean(shared.qa)||null,
+      bindSha256ToExecutionEvidence:shared.bindSha256ToExecutionEvidence===true,
+      requiredLogMarkers:uniq(shared.requiredLogMarkers||[]),
+      centralDocumentationContract:clean(shared.centralDocumentationContract)||null,
+      codeChangeRequiresCentralDocumentationImpactReview:shared.codeChangeRequiresCentralDocumentationImpactReview===true,
+      documentationChangeRequiresImplementationImpactReview:shared.documentationChangeRequiresImplementationImpactReview===true,
+      postCentralDocumentWriteSharedContextResyncRequired:shared.postCentralDocumentWriteSharedContextResyncRequired===true,
       beforeWorkRequired:shared.beforeWorkRequired===true,
       afterWorkRequired:shared.afterWorkRequired===true,
-      bindSha256ToExecutionEvidence:shared.bindSha256ToExecutionEvidence===true,
       completionRequiresSharedContextSync:shared.completionRequiresSharedContextSync===true,
       runtimeMayNotCreatePolicy:shared.runtimeMayNotCreatePolicy===true,
       aiMayNotExpandOwnAuthority:shared.aiMayNotExpandOwnAuthority===true,
@@ -63,6 +75,14 @@ function workerExecutionPolicyProjection(policy={}){
         fetchOrValidationFailure:clean(live.fetchOrValidationFailure)||null,
         fingerprintMismatch:clean(live.fingerprintMismatch)||null
       }
+    },
+    centralDocumentation:{
+      sourceOfTruth:clean(centralDocumentation.sourceOfTruth)||null,
+      canonicalSet:centralDocumentation.canonicalSet||{},
+      readOrder:uniq(centralDocumentation.readOrder||[]),
+      rules:centralDocumentation.rules||{},
+      synchronization:centralDocumentation.synchronization||{},
+      machineProjectionSynchronization:centralDocumentation.machineProjectionSynchronization||{}
     },
     primaryAiInternalVibeCollaboration:{
       scope:clean(primaryCollaboration.scope)||null,
@@ -113,6 +133,7 @@ function policyValidationErrors(policy={}){
   const constitution=compileOwnerCanonicalConstitution(policy);
   const architectureProjection=compileCentralArchitectureProjection(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
+  const centralDocumentation=policy?.centralDocumentation||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
   const collaboration=policy?.developmentLifecycleMachine?.primaryAiOrchestration?.internalVibeAiCollaboration||{};
   const role=orchestration?.assistantRole||{};
@@ -124,6 +145,25 @@ function policyValidationErrors(policy={}){
   if(clean(policy.policySource)!==CANONICAL_VIBE_POLICY_PATH)errors.push('POLICY_SOURCE');
   if(shared.requiredForAllWorkers!==true)errors.push('SHARED_CONTEXT_REQUIRED');
   if(clean(shared.centralPolicy)!==CANONICAL_VIBE_POLICY_PATH)errors.push('SHARED_CONTEXT_POLICY');
+  const canonicalSet=centralDocumentation?.canonicalSet||{};
+  if(clean(centralDocumentation.sourceOfTruth)!==CANONICAL_VIBE_POLICY_PATH+'#centralDocumentation')errors.push('CENTRAL_DOCUMENTATION_SOURCE');
+  if(clean(shared.logMap)!==clean(canonicalSet.logMap))errors.push('SHARED_CONTEXT_LOG_MAP');
+  if(clean(shared.architectureMap)!==clean(canonicalSet.architectureMap))errors.push('SHARED_CONTEXT_ARCHITECTURE_MAP');
+  if(clean(shared.securityPolicy)!==clean(canonicalSet.securityPolicy))errors.push('SHARED_CONTEXT_SECURITY_POLICY');
+  if(JSON.stringify(shared.loadOrder||[])!==JSON.stringify(centralDocumentation.readOrder||[]))errors.push('SHARED_CONTEXT_READ_ORDER');
+  if(shared.bindSha256ToExecutionEvidence!==true)errors.push('SHARED_CONTEXT_HASH_BINDING');
+  for(const marker of ['WORKER_CONTEXT_POLICY_SHA256','WORKER_CONTEXT_LOG_MAP_SHA256','WORKER_CONTEXT_ARCHITECTURE_SHA256','WORKER_CONTEXT_SECURITY_POLICY_SHA256']){
+    if(!(shared.requiredLogMarkers||[]).includes(marker))errors.push('SHARED_CONTEXT_REQUIRED_MARKER:'+marker);
+  }
+  if(clean(shared.centralDocumentationContract)!==CANONICAL_VIBE_POLICY_PATH+'#centralDocumentation')errors.push('SHARED_CONTEXT_CENTRAL_DOCUMENTATION_CONTRACT');
+  if(shared.codeChangeRequiresCentralDocumentationImpactReview!==true)errors.push('CODE_CHANGE_DOCUMENTATION_IMPACT_REVIEW');
+  if(shared.documentationChangeRequiresImplementationImpactReview!==true)errors.push('DOCUMENTATION_CHANGE_IMPLEMENTATION_IMPACT_REVIEW');
+  if(shared.postCentralDocumentWriteSharedContextResyncRequired!==true)errors.push('POST_DOCUMENT_WRITE_SHARED_CONTEXT_RESYNC');
+  if(centralDocumentation?.synchronization?.beforeWorkLoadAndValidateCanonicalSet!==true)errors.push('CENTRAL_DOCUMENTATION_BEFORE_WORK_SYNC');
+  if(centralDocumentation?.synchronization?.afterWorkReloadAndValidateCanonicalSet!==true)errors.push('CENTRAL_DOCUMENTATION_AFTER_WORK_SYNC');
+  if(centralDocumentation?.synchronization?.vibeWorkerPreflightRequired!==true)errors.push('CENTRAL_DOCUMENTATION_VIBE_PREFLIGHT');
+  if(centralDocumentation?.synchronization?.currentMainPolicyShaBindingRequired!==true)errors.push('CENTRAL_DOCUMENTATION_MAIN_BINDING');
+  if(centralDocumentation?.synchronization?.documentHashesBoundToExecutionEvidence!==true)errors.push('CENTRAL_DOCUMENTATION_HASH_EVIDENCE');
   if(shared.beforeWorkRequired!==true)errors.push('BEFORE_WORK_SYNC');
   if(shared.afterWorkRequired!==true)errors.push('AFTER_WORK_SYNC');
   if(shared.staleContextMayNotStartWork!==true)errors.push('STALE_START_BLOCK');
@@ -274,6 +314,7 @@ export function compileVibeCentralWorkContract({
   const constitution=compileOwnerCanonicalConstitution(policy);
   const architectureProjection=compileCentralArchitectureProjection(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
+  const centralDocumentation=policy?.centralDocumentation||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
   const boundary=orchestration?.executionBoundary||{};
   const supervised=supervisionContract?.required===true;
@@ -356,6 +397,18 @@ export function compileVibeCentralWorkContract({
       status:source.status||null,
       policySource:source.policySource||null,
       syncMode:source.syncMode||null
+    },
+    documentSynchronization:{
+      sourceOfTruth:clean(centralDocumentation.sourceOfTruth)||null,
+      canonicalSet:centralDocumentation.canonicalSet||{},
+      readOrder:uniq(centralDocumentation.readOrder||[]),
+      validator:clean(shared.validator)||null,
+      qa:clean(shared.qa)||null,
+      bindSha256ToExecutionEvidence:shared.bindSha256ToExecutionEvidence===true,
+      requiredLogMarkers:uniq(shared.requiredLogMarkers||[]),
+      beforeWorkRequired:shared.beforeWorkRequired===true,
+      afterWorkRequired:shared.afterWorkRequired===true,
+      postCentralDocumentWriteSharedContextResyncRequired:shared.postCentralDocumentWriteSharedContextResyncRequired===true
     },
     workRequest:{
       workKey,
@@ -447,6 +500,7 @@ export function compiledWorkContractGuidance(contract={}){
     `architecture-projection-sha256=${contract.architectureProjection?.fingerprint||'missing'}; source=${contract.architectureProjection?.sourceOfTruth||CANONICAL_VIBE_POLICY_PATH}`,
     contract.architectureProjection?.nativeFoundation?.version?`native-foundation=V${contract.architectureProjection.nativeFoundation.version}; owner=${contract.architectureProjection.nativeFoundation.executionOwner||'UNKNOWN'}; required=${(contract.architectureProjection.nativeFoundation.requiredFoundationLayers||[]).join(',')||'NONE'}`:'',
     `policy=${contract.policy?.path||CANONICAL_VIBE_POLICY_PATH}; version=${contract.policy?.version??'unknown'}; sha256=${contract.policy?.fingerprint||'missing'}; execution-sha256=${contract.policy?.executionFingerprint||'missing'}`,
+    `central-doc-read-order=${(contract.documentSynchronization?.readOrder||[]).join(' > ')||'MISSING'}; hash-binding=${contract.documentSynchronization?.bindSha256ToExecutionEvidence===true?'ALL_CANONICAL_DOCS':'MISSING'}`,
     contract.freshness?.liveMainRequired===true?`live-main-ref=${contract.freshness?.liveMainRef||'origin/main'}; refresh-before-check=YES`:'',
     `work-key=${request.workKey||'NONE'}; next-gate=${request.nextGate||'NONE'}; dedupe-key=${request.dedupeKey||'NONE'}`,
     `exact-writable-files=${(contract.writableScope?.exactResponsibleFiles||[]).join(', ')||'NONE'}`,
