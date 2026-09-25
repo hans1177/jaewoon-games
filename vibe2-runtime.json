@@ -1,5 +1,5 @@
 {
-  "version": 32,
+  "version": 33,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 32,
+      "runtime": 33,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -173,14 +173,14 @@
     "enabled": true,
     "strategy": "atomic-neuron-dag-sharded-work-stealing",
     "singleLongRunningJob": false,
-    "wakeMode": "event-driven-plus-hourly-safety-net",
-    "wakeCron": "17 * * * *",
+    "wakeMode": "event-driven-plus-five-minute-safety-net",
+    "wakeCron": "*/5 * * * *",
     "scheduleBecomesActiveOnDefaultBranchIntegration": true,
     "maxTaskRetries": 2,
     "maxWorkMinutes": 22,
     "maxModelCallsPerWorker": 4,
     "dispatchNextWhenCapacityOpens": true,
-    "refillMode": "task-micro-fanin-repository-dispatch-with-hourly-safety-net",
+    "refillMode": "task-micro-fanin-repository-dispatch-with-five-minute-safety-net",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,

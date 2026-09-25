@@ -1,5 +1,5 @@
 {
-  "version": 194,
+  "version": 195,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4194,7 +4194,9 @@
     "learningSignalGenerationNeverStops": true,
     "queuedLearningPersistsAcrossCapacityPressure": true,
     "nextCycleDispatchUnconditional": true,
-    "hourlySafetyNet": true,
+    "hourlySafetyNet": false,
+    "fiveMinuteSafetyNet": true,
+    "safetyNetCron": "*/5 * * * *",
     "separateLearningPipelineForbidden": true
   },
   "narrativeStoryTopology": {
