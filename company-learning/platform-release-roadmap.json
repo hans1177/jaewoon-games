@@ -1,5 +1,5 @@
 {
-  "version": 367,
+  "version": 368,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -655,6 +655,25 @@
         "sourceRevisionArtifactIdentityAndArtifactRunMustRemainExact": true,
         "candidateDeploymentMayNotInferRuntimePassFromF0": true,
         "failClosedOnCentralModeOrF0EvidenceMismatch": true
+      },
+      "privateRuntimeCandidateRetry": {
+        "version": 1,
+        "pendingState": {
+          "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+          "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+          "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+          "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+        },
+        "retryWakeSource": "CANONICAL_ROBLOX_RUNTIME_WORKFLOW",
+        "retryMayRunWhenTechnicalTargetCountIsZero": true,
+        "retryScansAllExactF0PassedPendingCandidates": true,
+        "duplicatePerGameDispatchSerializedByReleaseWorkflow": true,
+        "existingPublishedExactCandidateSkipsIdempotently": true,
+        "oneSharedFallbackCandidatePerWake": true,
+        "exactPerGamePublicationTargetsMayDispatchInParallel": true,
+        "retryUntilPublishedOrVerifiedDifferentRootCause": true,
+        "runtimePassStillRequiresActualRuntimeEvidence": true,
+        "shadowPipelineForbidden": true
       }
     },
     "candidateReleaseConcurrency": {
@@ -6746,6 +6765,16 @@
       "qualityGateWeakening": false,
       "actualRuntimeStillRequiredAfterCandidateDeployment": true,
       "affectedWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml"
+    },
+    "robloxPrivateRuntimeCandidateRetry20260925": {
+      "id": "ROBLOX_PRIVATE_RUNTIME_CANDIDATE_RETRY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "A_PRIVATE_RUNTIME_CANDIDATE_DISPATCH_THAT_FAILED_ON_A_FIXED_GATE_HAD_NO_CANONICAL_RETRY_WAKE_ON_LATER_ROBLOX_RUNTIME_RUNS_WHEN_TECHNICAL_TARGET_COUNT_WAS_ZERO",
+      "resolution": "EVERY_CANONICAL_ROBLOX_RUNTIME_RUN_SCANS_ALL_EXACT_F0_PASSED_PRIVATE_RUNTIME_PENDING_CANDIDATES_AND_REDISPATCHES_IDEMPOTENTLY; PER_GAME_RELEASE_CONCURRENCY_PREVENTS_DUPLICATE_HEAVY_WORK",
+      "qualityGateWeakening": false,
+      "runtimeEvidenceRulesChanged": false,
+      "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
     }
   },
   "vibeExecutionLaneContract": {
