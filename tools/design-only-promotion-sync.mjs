@@ -14,6 +14,7 @@ const clean=v=>String(v??'').trim();
 const nowIso=()=>new Date().toISOString();
 const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLATFORM||'',seed)||'ROBLOX';
 const directNativeSourcePaths=gameId=>({ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`});
+const DEDICATED_TARGET_REGISTRY='roblox-dedicated-targets.json';
 const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
   'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
   'webEvidenceMayReplaceNativePlatformEvidence','webBeforeTargetPlatformByDefault','webSourcePath','webFirstGatePassed',
@@ -82,6 +83,43 @@ function recoverExactPrivateRuntimeCheckpoint(item,design){
     &&Number(candidate.versionNumber)>0;
   if(!exact)return null;
   return{currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
+}
+function validDedicatedTarget(target={}){
+  return target?.dedicated===true
+    &&target?.shared!==true
+    &&/^[1-9][0-9]*$/.test(clean(target?.universeId))
+    &&/^[1-9][0-9]*$/.test(clean(target?.placeId));
+}
+function dedicatedTargetFromRegistry(registry={},gameId=''){
+  const rows=Array.isArray(registry?.targets)?registry.targets:[];
+  const target=rows.find(row=>clean(row?.gameId)===clean(gameId));
+  return validDedicatedTarget(target)?target:null;
+}
+function restoreDedicatedTargetIdentity(item,{registry,gameId,stamp}){
+  const target=dedicatedTargetFromRegistry(registry,gameId);
+  if(!target)return false;
+  if(validDedicatedTarget(item?.robloxPublicationTarget))return false;
+  item.robloxPublicationTarget={
+    version:3,
+    gameId,
+    universeId:clean(target.universeId),
+    placeId:clean(target.placeId),
+    verified:target.verified!==false,
+    verifiedAt:target.verifiedAt||target.lastVerifiedAt||null,
+    lastVerifiedAt:target.lastVerifiedAt||target.verifiedAt||null,
+    source:clean(target.source)||'company-runtime-dedicated-target-registry',
+    authority:'roblox-canonical-publication-target',
+    dedicated:true,
+    shared:false,
+    visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+    internalOnly:true,
+    publicDiscoveryAllowed:false,
+    bootstrapState:clean(target.bootstrapState)||'PUBLISHED_PRIVATE',
+  };
+  item.robloxSharedTargetCurrent=false;
+  item.robloxFastMvpSupersededBy=null;
+  item.robloxDedicatedTargetRegistryBinding={version:1,source:DEDICATED_TARGET_REGISTRY,restoredAt:stamp};
+  return true;
 }
 function directQueueProgressIsCurrent(item,design){
   return item?.minimumDesignContract?.pass===true
@@ -186,7 +224,7 @@ function demoteStaleAdmission({seed,queue,portfolio,catalog,gameId,reason,stamp}
     updatedAt:stamp
   });removeLegacyWebAdmissionFields(game);}
 }
-function syncReadyMirrors({seed,design,portfolio,catalog,queue,stamp}){
+function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry,stamp}){
   const gameId=clean(seed.gameId);
   const selectedPlatform=selectedPlatformOf(seed);
   const paths=directNativeSourcePaths(gameId);
@@ -269,6 +307,7 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,stamp}){
   let item=(queue.items||[]).find(row=>clean(row?.gameId)===gameId);
   if(!item){item={};queue.items.push(item);}
   bindDirectNativeQueueItem(item,{seed,design,stamp});
+  restoreDedicatedTargetIdentity(item,{registry:dedicatedRegistry,gameId,stamp});
   return wasConfirmed?'reconciled':'promoted';
 }
 
@@ -287,6 +326,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const portfolio=readJson(portfolioPath,{version:1,projects:[]});
   const catalog=readJson(catalogPath,{version:1,games:[]});
   const queue=readJson(queuePath,{version:1,items:[]});
+  const dedicatedRegistry=readJson(p(DEDICATED_TARGET_REGISTRY),{version:1,targets:[]});
   state.seeds ||= []; portfolio.projects ||= []; catalog.games ||= []; queue.items ||= [];
 
   const stamp=nowIso();
@@ -323,7 +363,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       continue;
     }
 
-    const outcome=syncReadyMirrors({seed,design,portfolio,catalog,queue,stamp});
+    const outcome=syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry,stamp});
     if(outcome==='promoted')promoted.push(gameId); else reconciled.push(gameId);
   }
 
