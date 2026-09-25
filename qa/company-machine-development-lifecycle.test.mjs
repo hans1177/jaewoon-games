@@ -41,17 +41,18 @@ assert.equal(lifecycle.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(lifecycle.humanDocumentRequired,false);
 assert.equal(lifecycle.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
 assert.deepEqual(lifecycle.stages,[
-  'MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME',
-  'TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE',
-  'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE','POST_RELEASE_FOCUSED_DEVELOPMENT'
+  'MINIMUM_DESIGN_CONTRACT_READY','UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT','UNITY_WEBGL_BUILD',
+  'UNITY_WEB_ACTUAL_BROWSER_PLAY','UNITY_WEB_INDEPENDENT_QA','UNITY_WEB_REGRESSION','UPPER_PLATFORM_DEVELOPMENT_READY',
+  'ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION',
+  'INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE','POST_RELEASE_FOCUSED_DEVELOPMENT'
 ]);
 
 const work=lifecycle.machineWorkInstruction;
 assert.equal(work.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(work.humanDocumentRequired,false);
 assert.equal(work.sourceOfTruth,'company-learning/platform-release-roadmap.json');
-assert.equal(work.version,2);
-assert.equal(work.objective,'USE_VERIFIED_LEARNING_TO_CONTINUE_ONE_GAME_FROM_MINIMUM_SHARED_DESIGN_TO_ROBLOX_AND_UNITY_NATIVE_INTERNAL_RELEASE_PLAYTEST_AND_POST_RELEASE_COMPLETENESS');
+assert.equal(work.version,3);
+assert.equal(work.objective,'USE_VERIFIED_LEARNING_TO_ADVANCE_ONE_GAME_FROM_MINIMUM_SHARED_DESIGN_THROUGH_A_FULL_UNITY_WEB_DEVELOPMENT_FLOOR, THEN START_ROBLOX_AND_UNITY_UPPER_PLATFORM DEVELOPMENT ONLY AFTER UPPER_PLATFORM_DEVELOPMENT_READY');
 for(const step of [
   'LOAD_APPROVED_PLATFORM_GENRE_AND_MINIMUM_DESIGN_BASELINE',
   'LOAD_CURRENT_PROJECT_STATE_AND_EXISTING_NATIVE_SOURCES',
@@ -100,21 +101,21 @@ assert.match(work.completionRule,/NEVER_TREAT_INTERNAL_RELEASE_AS_COMPLETION/);
 assert.match(work.completionRule,/CONTINUE_INTERNAL_PLAYTEST_REPAIR_UNTIL_PLATFORM_ACCEPTANCE/);
 
 const continuation=lifecycle.machineOnlyProjectContinuation;
-assert.equal(continuation.version,2);
+assert.equal(continuation.version,3);
 assert.equal(continuation.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(continuation.humanDocumentRequired,false);
 assert.equal(continuation.sourceOfTruth,'company-learning/platform-release-roadmap.json');
-assert.equal(continuation.objective,'MINIMUM_SHARED_DESIGN_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION_THEN_INTERNAL_PLAYTEST_AND_POST_RELEASE_FOCUSED_DEVELOPMENT');
+assert.equal(continuation.objective,'MINIMUM_SHARED_DESIGN_THEN_UNITY_WEB_FULL_DEVELOPMENT_FLOOR_THEN_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION');
 assert.equal(Object.hasOwn(continuation,'webBaseImplementation'),false);
 assert.equal(Object.hasOwn(lifecycle,'webToPlatformHandoff'),false);
 assert.equal(Object.hasOwn(lifecycle,'webFirstImplementation'),false);
 assert.equal(Object.hasOwn(lifecycle,'missingWebBaselinePlanning'),false);
-assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface.requiredForDevelopmentAdmission,false);
+assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface.requiredForDevelopmentAdmission,true);
 assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface.requiredForNativeRuntimePass,false);
-assert.equal(continuation.nativePlatformContinuation.startsFromSharedMinimumDesign,true);
+assert.equal(continuation.nativePlatformContinuation.startsFromSharedMinimumDesign,false);\nassert.equal(continuation.nativePlatformContinuation.startsAfterUpperPlatformDevelopmentReady,true);
 assert.equal(continuation.nativePlatformContinuation.concurrentRobloxUnity,true);
 assert.equal(continuation.nativePlatformContinuation.secondImplementationContinuesFromWebBase,false);
-assert.equal(continuation.nativePlatformContinuation.webHandoffRequired,false);
+assert.equal(continuation.nativePlatformContinuation.webHandoffRequired,true);
 assert.deepEqual(continuation.nativePlatformContinuation.supported,['ROBLOX','UNITY']);
 assert.equal(continuation.nativePlatformContinuation.platformProfilesRequired,true);
 assert.equal(continuation.nativePlatformContinuation.nativeRuntimeEvidenceRequired,true);
@@ -152,8 +153,8 @@ assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.ok(bootstrap.includes('PolicySource = "company-learning/platform-release-roadmap.json"'));
-assert.equal(lifecycle.directNativeDualPlatformDevelopment.webStageSkipped,true);
-assert.equal(lifecycle.directNativeDualPlatformDevelopment.webGateSkipped,true);
+assert.equal(lifecycle.directNativeDualPlatformDevelopment.webStageSkipped,false);
+assert.equal(lifecycle.directNativeDualPlatformDevelopment.webGateSkipped,false);
 
 const focus=lifecycle.postReleaseFocusedDevelopment;
 assert.equal(focus.enabled,true);
@@ -335,9 +336,9 @@ assert.equal(multiverse.multiverseExpansion.newExpressionRequired,true);
 for(const key of ['project-id','parent-project-or-seed','approved-platform-and-genre-lock','verified-learning-context','source-provenance']){
   assert(multiverse.multiverseExpansion.eachBranchRequires.includes(key),key);
 }
-assert.equal(multiverse.lifecycleBinding.webFirstExecutableBase,'WEB_BASE_IMPLEMENTATION');
-assert.equal(multiverse.lifecycleBinding.webBaselineGate,'WEB_DEVELOPMENT_BASELINE_READY');
-assert.equal(multiverse.lifecycleBinding.nativeContinuation,'TARGET_PLATFORM_SOURCE_BIND');
+assert.equal(multiverse.lifecycleBinding.webFirstExecutableBase,'UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT');
+assert.equal(multiverse.lifecycleBinding.webBaselineGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+assert.equal(multiverse.lifecycleBinding.nativeContinuation,'ROBLOX_UNITY_NATIVE_SOURCE_BIND');
 assert.equal(multiverse.lifecycleBinding.robloxPostReleaseFocus,'POST_RELEASE_FOCUSED_DEVELOPMENT');
 assert.equal(multiverse.lifecycleBinding.robloxProtectedRunnerSlots,1);
 assert.equal(multiverse.lifecycleBinding.webBaseContinuesIntoNative,true);
