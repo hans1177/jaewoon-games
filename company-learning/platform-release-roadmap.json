@@ -1,5 +1,5 @@
 {
-  "version": 380,
+  "version": 381,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -847,7 +847,17 @@
     "graphicsQaFailureDoesNotSerializeUnrelatedSameGameDevelopment": true,
     "defaultRequestedParallelism": 256,
     "verifiedExternalPressureMayTemporarilyDownshift": true,
-    "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true
+    "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true,
+    "globalHeavyExecutionSerializationForbidden": true,
+    "globalOrchestrationSerializationForbidden": true,
+    "longRunningNativeBuildMayNotBlockUnityWebDevelopment": true,
+    "longRunningRuntimeOrQaMayNotBlockIndependentGameDevelopment": true,
+    "runtimeWaitMustReleaseIndependentDevelopmentCapacity": true,
+    "distinctGamesMustRemainParallel": true,
+    "sameGameIndependentNonOverlappingWorkMustRemainParallel": true,
+    "sharedStateSerializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
+    "sharedStateWriteMayNotHoldHeavyExecutionCapacity": true,
+    "externalProviderCapacityIsOnlyHeavyExecutionSerializationBoundary": true
   },
   "phases": [
     {
@@ -21592,6 +21602,18 @@
       ],
       "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
       "existingNativeRuntimeQaRepairMayContinueForGrandfatheredOnly": true
+    },
+    "orchestrationConcurrency": {
+      "version": 1,
+      "globalSerializationForbidden": true,
+      "distinctGamesParallel": true,
+      "unityWebAndNativeParallelWhenIndependent": true,
+      "longRunningNativeMayNotBlockUnityWebFloor": true,
+      "longRunningUnityWebMayNotBlockOtherGames": true,
+      "sameGameIndependentNonOverlappingPackagesParallel": true,
+      "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT",
+      "sharedStateWriteMustReleaseHeavyExecutionCapacity": true,
+      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
     }
   },
   "centralDocumentation": {
