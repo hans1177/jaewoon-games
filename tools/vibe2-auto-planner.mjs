@@ -14,6 +14,8 @@ import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neur
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-context.mjs';
 import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
+import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
+import { robloxBuildProfileFromBaseline } from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -147,7 +149,7 @@ export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd())
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
 function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
 
-function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
+export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
 for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:[]){
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
@@ -214,6 +216,12 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const queueRobloxRoot=posix(item?.robloxProjectPath||item?.targetSourcePaths?.ROBLOX||(queueTarget==='ROBLOX'?item?.targetSourcePath:''));
   if(queueTarget==='ROBLOX'||/^roblox-games\//.test(queueRobloxRoot)){
     const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
+    const minimumDesign=latestMinimumDesign(repoRoot,id);
+    let robloxDesignProfile={};
+    if(minimumDesign?.record){
+      try{robloxDesignProfile=robloxBuildProfileFromBaseline(minimumDesign.record);}
+      catch{robloxDesignProfile={};}
+    }
     const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
     const executionEvidenceMatchesRoblox=!executionPlatform||executionPlatform==='ROBLOX';
     const runtimeObserved=(executionEvidenceMatchesRoblox&&executionRuntimeObserved)||item?.robloxRuntimePassed===true;
@@ -236,6 +244,10 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
       queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
       queueRobloxInternalReleaseArtifact:clean(item?.robloxInternalReleaseEvidence?.artifactIdentity),
+      genre:clean(robloxDesignProfile.genre),
+      subgenre:clean(robloxDesignProfile.subgenre),
+      playMode:clean(robloxDesignProfile.playMode),
+      robloxDesignProfileSource:minimumDesign?.file||null,
       companyDevelopmentQueueSource:true
     };
     if(existingRoblox)Object.assign(existingRoblox,queuePatch,{projectPath:root,releaseState:'development-confirmed'});
