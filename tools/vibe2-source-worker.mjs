@@ -769,12 +769,17 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     .slice(0,14)
     .map(row=>`${clean(row.domain)}[${clean(row.priority)}]=${clean(row.directive)}`)
     .filter(Boolean);
+  const sourceAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'}`).filter(Boolean);
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     `whyNow=${clean(d.primaryGoalReason)}`,
+    `sourceAnchors=${sourceAnchors.join(' | ')||'EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR'}`,
+    `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
+    `previousEffectiveness=${clean(d?.effectivenessMeasurement?.previousGeneration?.classification)||'NO_PREVIOUS_GENERATION'}`,
+    `nextVibeAction=${clean(d?.nextActionDecision?.action)||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'}`,
     `gameplay=${(d.gameplayImplementationDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     `priorityDomains=${priorityDomains.join(' | ')}`,
     `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
@@ -783,6 +788,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
     `preserve=${(d.preserveConstraints||[]).map(clean).filter(Boolean).join(' | ')}`,
     `acceptance=${(d.acceptanceEvidence||[]).map(clean).filter(Boolean).join(' | ')}`,
+    'The first coherent edit should target one of the exact sourceAnchors when it is inside Allowed edit paths. Do not invent a wrapper or unrelated helper while the anchored responsibility remains unchanged.',
+    'The implementation must pursue expectedPlayerEffect; a source delta by itself is not proof that the directive worked.',
     `nextEscalation=${(d.nextEscalationCandidates||[]).map(clean).filter(Boolean).join(' | ')}`,
     'Do not replace this game-specific directive with a generic genre task. Implement only the parts owned by Allowed edit paths in this worker; other non-overlapping directive responsibilities remain for sibling workers.',
     '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
