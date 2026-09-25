@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "local function render()\n  status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\n  status.TextColor3 = Color3.fromRGB(220, 232, 250)\n  status.TextScaled = false\n  status.Parent = root\n\n  status.Text = string.format(\"Score %d · Lv %d · Progress %d · HP %d · Wave %d\", player:GetAttribute(\"Score\") or 0, player:GetAttribute(\"Level\") or 1, player:GetAttribute(\"Progress\") or 0, player:GetAttribute(\"Health\") or 100, player:GetAttribute(\"Wave\") or 1)\n\n  for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\n  render()\n\n  if #Config.Actions > 0 then\n    ContextActionService:BindAction(\"VibePrimaryAction\", function(_, inputState)\n      if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n      return Enum.ContextActionResult.Sink\n    end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\n  end\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
