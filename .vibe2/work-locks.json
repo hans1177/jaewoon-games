@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1mw7bf0",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
-      ],
-      "baseSha": "b672d697e7fc8033126a5204822ef6bcf76fba6b",
-      "acquiredAt": "2026-09-25T20:38:54.291Z",
-      "expiresAt": "2026-09-25T21:23:54.291Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-8r4s3t",
       "worker": "vibe2",
       "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
@@ -226,6 +207,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:cozy-island-studio-evolution-presentation-v1"
+      ]
+    },
+    {
+      "id": "wl-si20oo",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-roblox-second-gate-rebuild-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau"
+      ],
+      "baseSha": "07bd3991e6496656c16d4ad8ba3c94caeeeb27c8",
+      "acquiredAt": "2026-09-25T21:24:42.737Z",
+      "expiresAt": "2026-09-25T22:09:42.737Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
