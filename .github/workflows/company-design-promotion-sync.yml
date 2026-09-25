@@ -160,7 +160,7 @@ jobs:
           fi
           echo 'PUBLIC_MAIN_WRITE=NO'
 
-      - name: Dispatch Roblox and Unity native development together
+      - name: Dispatch native development and immediate Vibe planner refill
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -168,6 +168,10 @@ jobs:
           set -euo pipefail
           gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
           gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY'
+          echo 'VERIFIED_DESIGN_VIBE_REFILL_DISPATCH=YES'
+          echo 'VERIFIED_DESIGN_VIBE_REFILL_SCHEDULER=vibe2-24h-runner.yml'
+          echo 'VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES'
           echo 'UNITY_WEB_PROMOTION_GATE=NO'
           echo 'ONE_PLATFORM_REQUEST_STARTS_BOTH=YES'

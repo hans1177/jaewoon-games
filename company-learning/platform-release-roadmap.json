@@ -1,5 +1,5 @@
 {
-  "version": 361,
+  "version": 362,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -21217,7 +21217,7 @@
     }
   },
   "continuousGameplaySystemEvolutionContract": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-25",
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "intent": "GAME_MUST_KEEP_ADVANCING_TOWARD_AND_BEYOND_APPROVED_DESIGN_COMPLETENESS_WHILE_PRESENTATION_EVOLVES_IN_PARALLEL",
@@ -21282,7 +21282,20 @@
       "unverifiedDesignAction": "CONTINUE_CANONICAL_DESIGN_CYCLE_WHILE_SAFE_PRESENTATION_USABILITY_STABILITY_WORK_MAY_CONTINUE",
       "designRuntimeTelemetryFailureAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
       "activeGameWorkDoesNotDeferDesignGeneration": true,
-      "queueTelemetryIsNotDesignAuthority": true
+      "queueTelemetryIsNotDesignAuthority": true,
+      "verifiedDesignResumeTrigger": "IMMEDIATE_EXISTING_VIBE_SCHEDULER_WAKE_AFTER_PROMOTION_RUNTIME_PERSIST",
+      "resumeSchedulerBinding": ".github/workflows/vibe2-24h-runner.yml",
+      "resumeDispatchCondition": "AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS",
+      "resumeUsesExistingCanonicalSchedulerOnly": true,
+      "resumeShadowPipelineForbidden": true,
+      "resumeSequence": [
+        "PERSIST_VERIFIED_DESIGN_TO_COMPANY_RUNTIME",
+        "RUN_EXISTING_DESIGN_PROMOTION_RECONCILIATION",
+        "PERSIST_DEVELOPMENT_CONFIRMED_RUNTIME_STATE",
+        "WAKE_EXISTING_VIBE2_24H_RUNNER",
+        "PLANNER_OVERLAYS_COMPANY_RUNTIME_DESIGN_AND_SEED_STATE",
+        "CORE_FUN_AND_PROGRESSION_BECOME_IMMEDIATELY_ELIGIBLE"
+      ]
     },
     "simultaneousLanes": {
       "required": [
