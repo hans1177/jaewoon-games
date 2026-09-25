@@ -79,6 +79,19 @@ function activeSeedById(seedState={}){
   }
   return map;
 }
+function recoverExactPrivateRuntimeCheckpoint(item,design){
+  const priorDesignSource=clean(item?.minimumDesignContract?.source||item?.designBaselineSource);
+  if(priorDesignSource&&priorDesignSource!==clean(design?.file))return null;
+  const step=upper(item?.currentStep),state=upper(item?.canonicalState);
+  if(step&&step!=='TARGET_PLATFORM_SOURCE_BIND'&&state!=='PENDING_DUAL_NATIVE_SOURCE_BIND')return null;
+  const candidate=item?.robloxRuntimeCandidateEvidence||{};
+  const exact=candidate?.published===true
+    &&clean(candidate.sourceRevision)===clean(item?.robloxSourceCommit)
+    &&clean(candidate.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+    &&Number(candidate.versionNumber)>0;
+  if(!exact)return null;
+  return{currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
+}
 function progressMatchesDesign(item,design){
   return item?.minimumDesignContract?.pass===true
     &&clean(item?.minimumDesignContract?.source)===clean(design?.file)
@@ -100,6 +113,7 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,stamp}){
   const selected=resolveSelectedPlatform(seed,game,oldItem)||'ROBLOX';
   const paths=directPaths(gameId);
   const preserve=progressMatchesDesign(oldItem,design);
+  const recoveredProgress=recoverExactPrivateRuntimeCheckpoint(oldItem,design);
   const item={...oldItem};
   Object.assign(item,{
     gameId,
@@ -136,8 +150,8 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,stamp}){
       UNITY:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'
     },
     externalReleasePolicy:'PLATFORM_INDEPENDENT_AFTER_OWN_QA',
-    currentStep:preserve?item.currentStep:'TARGET_PLATFORM_SOURCE_BIND',
-    canonicalState:preserve?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    currentStep:recoveredProgress?.currentStep||(preserve?item.currentStep:'TARGET_PLATFORM_SOURCE_BIND'),
+    canonicalState:recoveredProgress?.canonicalState||(preserve?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_DUAL_NATIVE_SOURCE_BIND'),
     enqueuedAt:item.enqueuedAt||stamp
   });
   removeLegacy(item);

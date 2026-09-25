@@ -321,3 +321,74 @@ test('every rebuilt Roblox candidate invalidates prior Vibe play and external-pu
     /item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/
   ]) assert.match(candidate,pattern);
 });
+
+
+test('shared FAST_MVP target selects the newest current runtime candidate and preserves completed evidence on rotation',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/robloxRuntimeCandidateEvidence\?\.published===true/);
+  assert.match(candidate,/robloxSharedTargetCurrent===false/);
+  assert.match(candidate,/\.sort\(\(a,b\)=>Number\(b\.robloxRuntimeCandidateEvidence\?\.versionNumber/);
+  assert.match(candidate,/ROBLOX_RELEASE_SHARED_FALLBACK_CAPACITY_BUSY/);
+  assert.match(candidate,/sharedRotation=headlessCanonical===true/);
+  const start=candidate.indexOf('if(sharedRotation){');
+  const end=candidate.indexOf('item.robloxSharedTargetCurrent=true;',start);
+  assert.ok(start>0&&end>start);
+  const rotation=candidate.slice(start,end);
+  assert.match(rotation,/other\.robloxSharedTargetCurrent=false/);
+  assert.match(rotation,/other\.robloxFastMvpSupersededBy=item\.gameId/);
+  assert.doesNotMatch(rotation,/other\.robloxRuntimePassed=false/);
+  assert.doesNotMatch(rotation,/other\.robloxRuntimeFoundationEvidence=null/);
+  assert.doesNotMatch(rotation,/other\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+});
+
+
+test('shared runtime target rotation waits for exact Vibe play on the occupied candidate',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/const occupiedPlay=occupied\?\.robloxInternalVibePlayEvidence\|\|\{\}/);
+  assert.match(candidate,/occupiedPlay\.pass===true/);
+  assert.match(candidate,/occupiedPlay\.actualPlay===true/);
+  assert.match(candidate,/occupiedPlay\.sourceRevision/);
+  assert.match(candidate,/occupiedPlay\.artifactIdentity/);
+  assert.match(candidate,/occupiedPlay\.universeId/);
+  assert.match(candidate,/occupiedPlay\.placeId/);
+  assert.match(candidate,/occupiedPlay\.versionNumber/);
+  assert.match(candidate,/if\(occupied&&!occupiedVibePlayComplete\)/);
+});
+
+
+test('canonical Roblox rebuild flow provisions and reuses a dedicated private target before runtime candidate publish',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/name: Ensure game-specific private Roblox target/);
+  assert.match(candidate,/createRobloxDedicatedExperience/);
+  assert.match(candidate,/configureRobloxExperience/);
+  assert.match(candidate,/ensureRobloxExperiencePrivate/);
+  assert.match(candidate,/source:'canonical-dedicated-open-cloud-bootstrap'/);
+  assert.match(candidate,/bootstrapState:'CREATED_PRIVATE_UNPUBLISHED'/);
+  assert.match(candidate,/persistedTarget\.dedicated===true/);
+  assert.match(candidate,/bootstrapState\|\|''\)\.toUpperCase\(\)==='CREATED_PRIVATE_UNPUBLISHED'/);
+  assert.match(candidate,/dedicated:dedicatedTarget/);
+  assert.match(candidate,/shared:dedicatedTarget\?false/);
+});
+
+test('an old shared candidate cannot suppress redeploy to a newly reserved dedicated target',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/const publicationTarget=item\.robloxPublicationTarget\|\|\{\}/);
+  assert.match(candidate,/String\(item\.robloxRuntimeCandidateEvidence\?\.universeId\|\|''\)===String\(publicationTarget\.universeId\|\|''\)/);
+  assert.match(candidate,/String\(item\.robloxRuntimeCandidateEvidence\?\.placeId\|\|''\)===String\(publicationTarget\.placeId\|\|''\)/);
+});
+
+test('internal Roblox modification loop keeps the canonical modify check rebuild redeploy revalidate order',()=>{
+  const drift=fs.readFileSync('tools/company-roblox-source-drift-sync.mjs','utf8');
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  const qa=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(drift,/validateExistingRobloxSourceTree/);
+  assert.match(drift,/robloxBuildOrPackagePassed:false/);
+  assert.match(drift,/robloxRuntimePassed:false/);
+  assert.match(drift,/robloxInternalReleaseReady:false/);
+  assert.match(drift,/ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING/);
+  assert.match(runtime,/company-development-roblox-headless-fast-mvp\.yml/);
+  assert.match(candidate,/Publish exact F0-passed package as private runtime candidate/);
+  assert.match(qa,/validateRobloxRuntimeFoundationEvidence/);
+  assert.match(candidate,/item\.robloxInternalVibePlayEvidence=null/);
+});

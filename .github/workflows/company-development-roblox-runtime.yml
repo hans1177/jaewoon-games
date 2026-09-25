@@ -1268,10 +1268,17 @@ jobs:
             const revision=String(x.robloxSourceCommit||'').trim();
             const artifact=String(x.robloxBuildArtifactIdentity||'').trim();
             const candidate=x.robloxRuntimeCandidateEvidence||{};
+            const publicationTarget=x.robloxPublicationTarget||{};
+            const publicationTargetBound=/^[1-9][0-9]*$/.test(String(publicationTarget.universeId||''))
+              &&/^[1-9][0-9]*$/.test(String(publicationTarget.placeId||''));
             const exactCurrentCandidate=candidate.published===true
               &&candidate.sourceRevision===revision
               &&candidate.artifactIdentity===artifact
-              &&Number(candidate.versionNumber)>0;
+              &&Number(candidate.versionNumber)>0
+              &&(!publicationTargetBound||(
+                String(candidate.universeId||'')===String(publicationTarget.universeId||'')
+                &&String(candidate.placeId||'')===String(publicationTarget.placeId||'')
+              ));
             const pending=String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
               &&x.robloxFoundationF0Passed===true
               &&x.robloxBuildPreflightPassed===true
@@ -1284,7 +1291,11 @@ jobs:
               &&!exactCurrentCandidate;
             if(!pending)continue;
             pendingCount++;
-            const exactTarget=(x.robloxPublicationTarget?.verified===true&&valid(x.robloxPublicationTarget))
+            const exactTarget=((x.robloxPublicationTarget?.verified===true
+                ||(x.robloxPublicationTarget?.dedicated===true
+                  &&x.robloxPublicationTarget?.shared!==true
+                  &&String(x.robloxPublicationTarget?.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED'))
+                &&valid(x.robloxPublicationTarget))
               ||(x.robloxInternalReleaseEvidence?.published===true&&valid(x.robloxInternalReleaseEvidence))
               ||(x.robloxReleaseEvidence?.published===true&&valid(x.robloxReleaseEvidence));
             if(exactTarget){console.log(x.gameId);continue;}

@@ -353,3 +353,16 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.equal(parallel.serverBootEvidenceReuse.reuseOnlyWhenExactCandidateUnchanged,true);
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
 });
+
+
+test('shared FAST_MVP runtime QA keeps only newest shared candidate current and skips superseded versions',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/const sharedCurrent=\(q\.items\|\|\[\]\)/);
+  assert.match(workflow,/robloxRuntimeCandidateEvidence\?\.versionNumber\|\|0\)-Number\(a\.robloxRuntimeCandidateEvidence\?\.versionNumber/);
+  assert.match(workflow,/const actualCurrent=sharedCurrent\[0\]\|\|null/);
+  assert.match(workflow,/item\.robloxSharedTargetCurrent=false/);
+  assert.match(workflow,/item\.robloxFastMvpSupersededBy=actualCurrent\?\.gameId\|\|null/);
+  assert.match(workflow,/roblox-shared-runtime-target-capacity-republish-required/);
+  assert.match(workflow,/if\(isSharedCandidate\(candidate\)&&item\.robloxSharedTargetCurrent===false\)return false/);
+  assert.match(workflow,/ROBLOX_SHARED_TARGET_SUPERSEDED=/);
+});

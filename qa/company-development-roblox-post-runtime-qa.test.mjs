@@ -94,3 +94,13 @@ test('two-client one-sync is the shared internal and public release gate',()=>{
   assert.match(workflow,/item\.robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
   assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
 });
+
+
+test('shared fallback QA only probes the one current candidate and marks older duplicate-current entries superseded',()=>{
+  assert.match(workflow,/sharedFastMvpRotationAllowed/);
+  assert.match(workflow,/item\.robloxSharedTargetCurrent===false/);
+  assert.match(workflow,/ROBLOX_SHARED_TARGET_SUPERSEDED=/);
+  assert.match(workflow,/item\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(workflow,/ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING/);
+  assert.match(workflow,/roblox-shared-runtime-target-capacity-republish-required/);
+});

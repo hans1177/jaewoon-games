@@ -58,6 +58,134 @@ jobs:
           set -euo pipefail
           node --test qa/company-development-roblox-release-promotion.test.mjs qa/vibe3-roblox-platform.test.mjs
 
+      - name: Ensure game-specific private Roblox target
+        id: dedicated_target
+        continue-on-error: true
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {
+            createRobloxDedicatedExperience,
+            configureRobloxExperience,
+            ensureRobloxExperiencePrivate,
+          } from './tools/company-roblox-dedicated-experience.mjs';
+
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const pending=(q.items||[]).find(row=>
+            row.robloxFoundationF0Passed===true
+            &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+            &&row.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
+          );
+          const gameId=requested||String(pending?.gameId||'').trim();
+          const item=(q.items||[]).find(row=>row.gameId===gameId);
+          if(!item)throw new Error('ROBLOX_DEDICATED_TARGET_ITEM_MISSING:'+gameId);
+          const valid=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
+          const current=item.robloxPublicationTarget||{};
+          const dedicated=current.dedicated===true
+            &&current.shared!==true
+            &&valid(current.universeId)
+            &&valid(current.placeId);
+          if(dedicated){
+            console.log('ROBLOX_DEDICATED_TARGET_REUSE='+gameId);
+            process.exit(0);
+          }
+          const created=await createRobloxDedicatedExperience({
+            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            cookie:'',
+          });
+          await configureRobloxExperience({
+            universeId:created.universeId,
+            name:String(item.gameName||gameId),
+            description:'Private internal build for '+String(item.gameName||gameId)+'. Managed by the canonical Roblox development flow.',
+            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            cookie:'',
+          });
+          await ensureRobloxExperiencePrivate({
+            universeId:created.universeId,
+            apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            cookie:'',
+          });
+          const result={
+            version:1,
+            gameId,
+            universeId:String(created.universeId),
+            placeId:String(created.placeId),
+            dedicated:true,
+            shared:false,
+            private:true,
+            source:'canonical-dedicated-open-cloud-bootstrap',
+            createdAt:new Date().toISOString(),
+          };
+          fs.writeFileSync('/tmp/roblox-dedicated-target.json',JSON.stringify(result,null,2)+'\n');
+          console.log('ROBLOX_DEDICATED_TARGET_CREATED='+gameId+':'+result.universeId+'/'+result.placeId);
+          NODE
+
+      - name: Persist dedicated private target reservation
+        if: steps.dedicated_target.outcome == 'success'
+        working-directory: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-dedicated-target.json || { echo 'ROBLOX_DEDICATED_TARGET_RESERVATION=REUSE_OR_NONE'; exit 0; }
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const r=JSON.parse(fs.readFileSync('/tmp/roblox-dedicated-target.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===r.gameId);
+          if(!item)throw new Error('dedicated target queue item missing: '+r.gameId);
+          const stamp=new Date().toISOString();
+          item.robloxPublicationTarget={
+            version:3,
+            gameId:r.gameId,
+            universeId:String(r.universeId),
+            placeId:String(r.placeId),
+            verified:false,
+            verifiedAt:null,
+            lastVerifiedAt:null,
+            source:'canonical-dedicated-open-cloud-bootstrap',
+            authority:'roblox-canonical-publication-target',
+            dedicated:true,
+            shared:false,
+            visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+            internalOnly:true,
+            publicDiscoveryAllowed:false,
+            bootstrapState:'CREATED_PRIVATE_UNPUBLISHED',
+            reservedAt:stamp,
+          };
+          item.robloxSharedTargetCurrent=false;
+          item.robloxFastMvpSupersededBy=null;
+          item.updatedAt=stamp;
+          q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          git diff --cached --quiet && exit 0
+          git commit -m 'runtime: reserve dedicated private Roblox target [skip ci]'
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'ROBLOX_DEDICATED_TARGET_RESERVATION=PERSISTED'
+
       - name: Resolve exact canonical release target
         id: target
         working-directory: main
@@ -95,10 +223,13 @@ jobs:
           const f0EvidenceMode=String(item.robloxFoundationF0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();
           const headlessMode=canonicalRobloxValidationMode==='HEADLESS_FAST_MVP'&&f0EvidenceMode==='HEADLESS_SOURCE_PREFLIGHT_F0';
           const artifactRunId=Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||item.robloxRuntimeEvidence?.artifactRunId||0);
+          const publicationTarget=item.robloxPublicationTarget||{};
           const currentCandidate=item.robloxRuntimeCandidateEvidence?.published===true
             &&item.robloxRuntimeCandidateEvidence?.sourceRevision===revision
             &&item.robloxRuntimeCandidateEvidence?.artifactIdentity===artifact
-            &&Number(item.robloxRuntimeCandidateEvidence?.versionNumber)>0;
+            &&Number(item.robloxRuntimeCandidateEvidence?.versionNumber)>0
+            &&String(item.robloxRuntimeCandidateEvidence?.universeId||'')===String(publicationTarget.universeId||'')
+            &&String(item.robloxRuntimeCandidateEvidence?.placeId||'')===String(publicationTarget.placeId||'');
           if(currentCandidate){
             put('skip','true');put('skip_reason','runtime-candidate-already-deployed');
             console.log(`ROBLOX_RUNTIME_CANDIDATE_ALREADY_DEPLOYED=${gameId}`);
@@ -145,7 +276,17 @@ jobs:
           const evidenceTarget=targetEvidence?.publicationTarget||{};
           const ownerPinned=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
           const exactCandidates=[
-            {source:'company-runtime-publication-target',target:persistedTarget,valid:validIds(persistedTarget)&&persistedTarget.verified===true},
+            {
+              source:'company-runtime-publication-target',
+              target:persistedTarget,
+              valid:validIds(persistedTarget)&&(
+                persistedTarget.verified===true
+                ||(persistedTarget.dedicated===true
+                  &&persistedTarget.shared!==true
+                  &&persistedTarget.internalOnly===true
+                  &&String(persistedTarget.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED')
+              )
+            },
             {source:'company-runtime-prior-release',target:priorPublishedTarget,valid:validIds(priorPublishedTarget)},
             {source:'known-good-runtime-evidence',target:evidenceTarget,valid:validIds(evidenceTarget)},
           ].filter(row=>row.valid);
@@ -167,17 +308,44 @@ jobs:
           const selected=candidates[0];
           const universeId=String(selected.target.universeId).trim();
           const placeId=String(selected.target.placeId).trim();
-          let sharedRotation=false;
-          if(selected.source==='owner-pinned-open-cloud-target'){
-            const occupied=(q.items||[]).find(row=>
-              row.gameId!==gameId
-              &&row.robloxInternalReleaseEvidence?.published===true
-              &&String(row.robloxInternalReleaseEvidence?.universeId||'').trim()===universeId
-              &&String(row.robloxInternalReleaseEvidence?.placeId||'').trim()===placeId
-              &&row.robloxSharedTargetCurrent!==false
+          const ownerPinnedUniverse=String(ownerPinned.universeId||'').trim();
+          const ownerPinnedPlace=String(ownerPinned.placeId||'').trim();
+          const selectedUsesSharedFallback=ownerPinned.enabled===true
+            &&ownerPinned.sharedFastMvpRotationAllowed===true
+            &&universeId===ownerPinnedUniverse
+            &&placeId===ownerPinnedPlace
+            &&(
+              selected.source==='owner-pinned-open-cloud-target'
+              ||String(persistedTarget.source||'').trim()==='owner-pinned-open-cloud-target'
             );
-            sharedRotation=item.releaseStrategy==='FAST_MVP'&&ownerPinned.sharedFastMvpRotationAllowed===true;
-            if(occupied&&!sharedRotation)throw new Error(`ROBLOX_RELEASE_SHARED_FALLBACK_OCCUPIED:${gameId}:${occupied.gameId}`);
+          let sharedRotation=false;
+          if(selectedUsesSharedFallback){
+            const occupied=(q.items||[])
+              .filter(row=>{
+                if(row.gameId===gameId||row.robloxSharedTargetCurrent===false)return false;
+                const current=row.robloxRuntimeCandidateEvidence?.published===true
+                  ?row.robloxRuntimeCandidateEvidence
+                  :(row.robloxInternalReleaseEvidence?.published===true?row.robloxInternalReleaseEvidence:null);
+                return current
+                  &&String(current.universeId||'').trim()===universeId
+                  &&String(current.placeId||'').trim()===placeId;
+              })
+              .sort((a,b)=>Number(b.robloxRuntimeCandidateEvidence?.versionNumber||b.robloxInternalReleaseEvidence?.versionNumber||0)
+                -Number(a.robloxRuntimeCandidateEvidence?.versionNumber||a.robloxInternalReleaseEvidence?.versionNumber||0))[0];
+            sharedRotation=headlessCanonical===true;
+            const occupiedCandidate=occupied?.robloxRuntimeCandidateEvidence||occupied?.robloxInternalReleaseEvidence||occupied?.robloxReleaseEvidence||{};
+            const occupiedPlay=occupied?.robloxInternalVibePlayEvidence||{};
+            const occupiedVibePlayComplete=occupiedPlay.pass===true
+              &&occupiedPlay.actualPlay===true
+              &&String(occupiedPlay.sourceRevision||'')===String(occupied?.robloxSourceCommit||'')
+              &&String(occupiedPlay.artifactIdentity||'')===String(occupied?.robloxBuildArtifactIdentity||'')
+              &&String(occupiedPlay.universeId||'')===String(occupiedCandidate.universeId||'')
+              &&String(occupiedPlay.placeId||'')===String(occupiedCandidate.placeId||'')
+              &&Number(occupiedPlay.versionNumber||0)>0
+              &&Number(occupiedPlay.versionNumber)===Number(occupiedCandidate.versionNumber||0);
+            if(occupied&&!occupiedVibePlayComplete){
+              throw new Error(`ROBLOX_RELEASE_SHARED_FALLBACK_CAPACITY_BUSY:${gameId}:${occupied.gameId}`);
+            }
             if(occupied&&sharedRotation)console.log(`ROBLOX_FAST_MVP_SHARED_TARGET_ROTATE=${occupied.gameId}->${gameId}`);
           }
           for(const candidate of candidates.slice(1)){
@@ -487,20 +655,28 @@ jobs:
           if(!preserveExistingVisibility&&visibilityIntent!=='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE')throw new Error('release visibility intent changed');
           if(sharedRotation){
             for(const other of q.items||[]){
-              if(other.gameId===item.gameId)continue;
-              const prior=other.robloxInternalReleaseEvidence||{};
-              if(prior.published===true&&String(prior.universeId||'')===universeId&&String(prior.placeId||'')===placeId){
+              if(other.gameId===item.gameId||other.robloxSharedTargetCurrent===false)continue;
+              const prior=other.robloxRuntimeCandidateEvidence?.published===true
+                ?other.robloxRuntimeCandidateEvidence
+                :(other.robloxInternalReleaseEvidence?.published===true?other.robloxInternalReleaseEvidence:null);
+              if(prior&&String(prior.universeId||'')===universeId&&String(prior.placeId||'')===placeId){
                 other.robloxSharedTargetCurrent=false;
                 other.robloxFastMvpSupersededBy=item.gameId;
-                other.robloxInternalReleaseReady=false;
+                if(other.robloxRuntimeCandidateEvidence&&typeof other.robloxRuntimeCandidateEvidence==='object'){
+                  other.robloxRuntimeCandidateEvidence={...other.robloxRuntimeCandidateEvidence,current:false,supersededAt:stamp,supersededBy:item.gameId};
+                }
                 other.updatedAt=stamp;
               }
             }
           }
           item.robloxSharedTargetCurrent=true;
           item.robloxFastMvpSupersededBy=null;
+          const dedicatedTarget=existingTarget.dedicated===true
+            ||targetSource==='canonical-dedicated-open-cloud-bootstrap'
+            ||String(existingTarget.source||'')==='canonical-dedicated-open-cloud-bootstrap'
+            ||String(existingTarget.source||'')==='owner-dedicated-github-bootstrap';
           item.robloxPublicationTarget={
-            version:2,
+            version:3,
             gameId:item.gameId,
             universeId,
             placeId,
@@ -509,9 +685,12 @@ jobs:
             lastVerifiedAt:stamp,
             source:existingTarget.source||targetSource||'proven-open-cloud-internal-release',
             authority:'roblox-canonical-publication-target',
+            dedicated:dedicatedTarget,
+            shared:dedicatedTarget?false:(existingTarget.shared===true),
             visibilityIntent,
             internalOnly:!preserveExistingVisibility,
             publicDiscoveryAllowed:preserveExistingVisibility?null:false,
+            bootstrapState:'PUBLISHED_PRIVATE',
           };
           item.robloxRuntimeCandidateEvidence={
             version:1,

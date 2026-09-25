@@ -93,9 +93,18 @@ jobs:
             if(fs.existsSync(triggerPath))requested=String(fs.readFileSync(triggerPath,'utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
           }
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
+          const sharedUniverse=String(sharedTarget.universeId||'').trim();
+          const sharedPlace=String(sharedTarget.placeId||'').trim();
+          const sharedRotationEnabled=sharedTarget.enabled===true&&sharedTarget.sharedFastMvpRotationAllowed===true;
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
             const c=item.robloxRuntimeCandidateEvidence||{};
+            if(sharedRotationEnabled
+              &&String(c.universeId||'').trim()===sharedUniverse
+              &&String(c.placeId||'').trim()===sharedPlace
+              &&item.robloxSharedTargetCurrent===false)return false;
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
             const runtime=item.robloxRuntimeFoundationEvidence||{};
@@ -175,19 +184,66 @@ jobs:
           console.log('ROBLOX_FOUNDATION_REQUESTED_GAME_ID='+(requested||'ALL_PENDING'));
           const queuePath='../runtime/development-queue.json';
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
+          const sharedUniverse=String(sharedTarget.universeId||'').trim();
+          const sharedPlace=String(sharedTarget.placeId||'').trim();
+          const sharedRotationEnabled=sharedTarget.enabled===true
+            &&sharedTarget.sharedFastMvpRotationAllowed===true
+            &&/^[1-9][0-9]*$/.test(sharedUniverse)
+            &&/^[1-9][0-9]*$/.test(sharedPlace);
+          const isSharedCandidate=(candidate={})=>sharedRotationEnabled
+            &&String(candidate.universeId||'').trim()===sharedUniverse
+            &&String(candidate.placeId||'').trim()===sharedPlace;
+          let changed=false,passed=0,pending=0,failed=0;
+          if(sharedRotationEnabled){
+            const sharedCurrent=(q.items||[])
+              .filter(item=>item.robloxSharedTargetCurrent!==false&&item.robloxRuntimeCandidateEvidence?.published===true&&isSharedCandidate(item.robloxRuntimeCandidateEvidence))
+              .sort((a,b)=>Number(b.robloxRuntimeCandidateEvidence?.versionNumber||0)-Number(a.robloxRuntimeCandidateEvidence?.versionNumber||0)
+                ||String(b.robloxRuntimeCandidateEvidence?.publishedAt||'').localeCompare(String(a.robloxRuntimeCandidateEvidence?.publishedAt||'')));
+            const actualCurrent=sharedCurrent[0]||null;
+            for(const item of sharedCurrent.slice(1)){
+              item.robloxSharedTargetCurrent=false;
+              item.robloxFastMvpSupersededBy=actualCurrent?.gameId||null;
+              if(item.robloxRuntimeCandidateEvidence&&typeof item.robloxRuntimeCandidateEvidence==='object'){
+                item.robloxRuntimeCandidateEvidence={
+                  ...item.robloxRuntimeCandidateEvidence,
+                  current:false,
+                  supersededAt:new Date().toISOString(),
+                  supersededBy:actualCurrent?.gameId||null,
+                };
+              }
+              if(item.robloxRuntimePassed!==true&&item.robloxFinalReviewPassed!==true){
+                item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+                item.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
+                item.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+                item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
+                item.routingBlockers=['roblox-shared-runtime-target-capacity-republish-required'];
+              }
+              item.updatedAt=new Date().toISOString();
+              changed=true;
+              console.log('ROBLOX_SHARED_TARGET_SUPERSEDED='+item.gameId+':current='+(actualCurrent?.gameId||'NONE'));
+            }
+            if(actualCurrent&&actualCurrent.robloxSharedTargetCurrent!==true){
+              actualCurrent.robloxSharedTargetCurrent=true;
+              actualCurrent.robloxFastMvpSupersededBy=null;
+              actualCurrent.updatedAt=new Date().toISOString();
+              changed=true;
+            }
+          }
           const probePath='/tmp/roblox-open-cloud-engine-probes.json';
           const probeRows=fs.existsSync(probePath)?JSON.parse(fs.readFileSync(probePath,'utf8')):[];
           const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
             const candidate=item.robloxRuntimeCandidateEvidence||{};
+            if(isSharedCandidate(candidate)&&item.robloxSharedTargetCurrent===false)return false;
             return candidate.published===true
               &&item.robloxFoundationF0Passed===true
               &&item.robloxInternalReleaseReady!==true
               &&item.robloxPublicRelease!==true
               &&['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
           });
-          let changed=false,passed=0,pending=0,failed=0;
           const f9Ids=[];
           const stamp=new Date().toISOString();
 
