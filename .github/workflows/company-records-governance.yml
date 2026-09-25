@@ -34,7 +34,7 @@ permissions:
 
 concurrency:
   group: company-records-governance-${{ github.ref }}-${{ github.event_name }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   records-governance:
@@ -45,7 +45,7 @@ jobs:
       - name: Checkout governed revision
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Validate record tooling syntax
         run: |

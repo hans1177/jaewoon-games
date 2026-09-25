@@ -1,5 +1,5 @@
 {
-  "version": 352,
+  "version": 359,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -570,7 +570,14 @@
         "fullRuntimeAcceptanceEvidenceMayBeReused": true,
         "newSourceArtifactOrPlaceVersionInvalidatesReuse": true,
         "runtimeEvidenceFabricationForbidden": true
-      }
+      },
+      "sameGameMultipleIndependentPackagesParallel": true,
+      "sourceRootWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true,
+      "graphicsAndGameplayParallelWhenResponsibilitiesDoNotOverlap": true,
+      "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
+      "defaultRequestedGameWorkers": 256,
+      "recoverToExternalProviderBoundaryAfterPressure": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -825,7 +832,15 @@
     "totalWorkItemLimit": null,
     "totalWorkItemLimitMeaning": "UNBOUNDED_TOTAL_WORK; EXTERNAL_MATRIX_BATCH_MAX_IS_ONLY_A_CURRENT_EXECUTION_WINDOW",
     "priorityOnlyChangesOrderNotWorkExistence": true,
-    "verifiedCheckpointMustGenerateNextCausalOpportunity": true
+    "verifiedCheckpointMustGenerateNextCausalOpportunity": true,
+    "sameGameNonOverlappingWorkMaxParallel": true,
+    "sourceRootWideLockForbidden": true,
+    "responsibleFileConflictOnlySerialization": true,
+    "releaseOrRuntimeWaitDoesNotConsumeIndependentDevelopmentCapacity": true,
+    "graphicsQaFailureDoesNotSerializeUnrelatedSameGameDevelopment": true,
+    "defaultRequestedParallelism": 256,
+    "verifiedExternalPressureMayTemporarilyDownshift": true,
+    "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true
   },
   "phases": [
     {
@@ -1066,8 +1081,8 @@
       "state": "POST_RELEASE_FOCUSED_DEVELOPMENT",
       "scheduler": "vibe2-continuous-core",
       "queue": ".vibe2/queue.json",
-      "globalProtectedRunnerSlots": 1,
-      "activeTaskMaxPerProject": 1,
+      "globalProtectedRunnerSlots": null,
+      "activeTaskMaxPerProject": null,
       "workerRoute": "text-source-worker",
       "taskTarget": "roblox",
       "sourceRootPattern": "roblox-games/<gameId>",
@@ -1146,10 +1161,10 @@
         "verifiedResultLearningRequired": true
       },
       "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
-      "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_SAME_SOURCE_FOCUS_TASK_EXISTS",
+      "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_EXACT_DUPLICATE_OR_OVERLAPPING_RESPONSIBILITY_FOCUS_TASK_EXISTS",
       "nextCycleCondition": "NEW_MAIN_ROBLOX_SOURCE_TREE_AFTER_VERIFIED_PROMOTION",
       "protectedSlotEnforcer": "assets/vibe-continuous-queue.js",
-      "protectedSlotCount": 1,
+      "protectedSlotCount": null,
       "machinePriorityOrder": [
         "owner-directive",
         "post-release-focused-development",
@@ -1158,13 +1173,13 @@
         "reviewing",
         "other"
       ],
-      "schedulerGuarantee": "RESERVE_ONE_SHARED_ROBLOX_SUSTAINED_MAINTENANCE_SLOT_BEFORE_GENERAL_BATCH_SELECTION",
+      "schedulerGuarantee": "POST_RELEASE_PRIORITY_DOES_NOT_CREATE_FIXED_SLOT_OR_GAME_WIDE_LOCK; ALL_NON_OVERLAPPING_RESPONSIBILITIES_MAY_RUN_TO_EXTERNAL_CAPACITY",
       "learningRunsInParallel": true,
       "historicalDeploymentRecovery": {
         "enabled": true,
         "registry": "company-learning/roblox-sustained-maintenance.json",
         "protectedSlotSharedWithCurrentPostReleaseFocus": true,
-        "maxActiveHistoricalMaintenanceTasks": 1,
+        "maxActiveHistoricalMaintenanceTasks": null,
         "eligibility": [
           "actual-studio-runtime-pass",
           "post-runtime-independent-qa-pass",
@@ -1200,8 +1215,9 @@
       "burstWorkers": {
         "enabled": true,
         "min": 2,
-        "max": 4,
-        "onlyWhenIndependentHighValueWorkExists": true
+        "max": null,
+        "onlyWhenIndependentHighValueWorkExists": true,
+        "externalCapacityOnlyBoundary": true
       },
       "playtestReviewLoop": {
         "version": 1,
@@ -1389,7 +1405,11 @@
         "newPipeline": "SECOND_PLATFORM_GATE_PASS_PLUS_EXPLICIT_EXTERNAL_PUBLICATION_EVIDENCE",
         "legacyMigration": "PREEXISTING_VERIFIED_PUBLIC_RELEASE_REMAINS_ELIGIBLE",
         "internalPlatformRelease": "NOT_ELIGIBLE"
-      }
+      },
+      "internalParallelCap": null,
+      "sameGameNonOverlappingFocusPackagesParallel": true,
+      "responsibilityConflictIsOnlyGameLocalSerialization": true,
+      "sourceRootOrGameWideFocusLockForbidden": true
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -1654,8 +1674,8 @@
         "platform": "ROBLOX",
         "entryStage": "POST_RELEASE_FOCUSED_DEVELOPMENT",
         "exactPublishedReleaseRequired": true,
-        "dedicatedProtectedRunnerSlots": 1,
-        "activeTaskMaxPerProject": 1,
+        "dedicatedProtectedRunnerSlots": null,
+        "activeTaskMaxPerProject": null,
         "continuousRefill": true,
         "scheduler": ".github/workflows/vibe2-24h-runner.yml",
         "worker": ".github/workflows/vibe2-continuous-core.yml",
@@ -1676,7 +1696,10 @@
           "release-evidence-no-longer-matches-current-source"
         ],
         "noSafeWorkAction": "REASSESS_AND_CREATE_NEXT_VERIFIED_GAP",
-        "publicRepublishAutomatic": false
+        "publicRepublishAutomatic": false,
+        "internalParallelCap": null,
+        "sameGameNonOverlappingPackagesParallel": true,
+        "sourceRootWideLockForbidden": true
       },
       "verifiedLearningMaxUse": {
         "required": true,
@@ -3289,7 +3312,8 @@
       "burstWorkers": {
         "enabled": true,
         "min": 2,
-        "max": 4
+        "max": null,
+        "externalCapacityOnlyBoundary": true
       },
       "focusSource": "OWNER_DIRECTIVE_OR_OWNER_EDIT",
       "ownerFocusPreemptsGeneralDevelopment": true,
@@ -3312,7 +3336,9 @@
         "platformPriorityTierUnchanged": true,
         "neuralExecutionAuthorityChange": false,
         "source": "OWNER_DIRECTIVE_2026-09-20"
-      }
+      },
+      "physicalWorkerCap": null,
+      "sameGameNonOverlappingPackagesParallel": true
     },
     "ownerWebEditPropagation": {
       "version": 1,
@@ -4517,7 +4543,7 @@
       "caretakerMode": "PER_GAME_PERSISTENT",
       "oneLogicalCaretakerPerEligibleGame": true,
       "caretakerStickyOwnership": true,
-      "physicalRunnerPolicy": "ONE_PRIMARY_WHEN_WORK_EXISTS",
+      "physicalRunnerPolicy": "MAXIMUM_SAFE_NON_OVERLAPPING_WORKERS",
       "idleBehavior": "RETURN_PHYSICAL_SLOT_KEEP_LOGICAL_OWNERSHIP",
       "workerFailureHandoff": "REPLACE_WORKER_AND_RESUME_EXACT_CHECKPOINT",
       "taskPriority": "critical",
@@ -4525,12 +4551,17 @@
       "burstWorkers": {
         "enabled": true,
         "min": 2,
-        "max": 4,
-        "onlyWhenIndependentHighValueWorkExists": true
+        "max": null,
+        "onlyWhenIndependentHighValueWorkExists": true,
+        "externalCapacityOnlyBoundary": true
       },
       "appliesBeforePublicRelease": true,
       "preservesExistingPostReleaseCaretaker": true,
-      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_INTERNAL_OR_PUBLIC_RELEASED"
+      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_INTERNAL_OR_PUBLIC_RELEASED",
+      "internalPhysicalWorkerCap": null,
+      "sameGameNonOverlappingPackagesParallel": true,
+      "sourceRootWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true
     },
     "directNativeDualPlatformDevelopment": {
       "required": true,
@@ -6523,6 +6554,36 @@
       "implementationBreadthAdded": true,
       "perpetualLoopAdded": true,
       "transientWorkLockRequeueAdded": true
+    },
+    "continuousGameplayEvolution20260925": {
+      "id": "CONTINUOUS_GAMEPLAY_SYSTEM_EVOLUTION_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Requires the planner to load each game's latest revised design and keep CORE_FUN and PROGRESSION advancing in parallel with presentation and other independent quality lanes.",
+      "codeBindings": [
+        "tools/vibe2-auto-planner.mjs",
+        "vibe2-runtime.json",
+        "qa/vibe2-auto-planner.test.mjs"
+      ],
+      "sourceRootWideLocksRemainForbidden": true,
+      "protectedGameplaySemanticsRemainLocked": true
+    },
+    "continuousGameplayEvolutionMissingDesignAutoCreate20260925": {
+      "id": "CONTINUOUS_GAMEPLAY_MISSING_DESIGN_AUTO_CREATE_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Active or rebuild games without a usable design are automatically enrolled into the existing GAME_SEED -> design cycle -> strict review -> promotion pipeline instead of remaining designless or receiving generic gameplay guesses.",
+      "existingPipelineReuseRequired": true,
+      "shadowPipelineForbidden": true,
+      "gameplayDevelopmentResumesAfterVerifiedDesign": true
+    },
+    "continuousGameplayVerifiedDesignRuntimeOverlay20260925": {
+      "id": "CONTINUOUS_GAMEPLAY_VERIFIED_DESIGN_RUNTIME_OVERLAY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Gameplay evolution consumes company-runtime design evidence and authorizes CORE_FUN/PROGRESSION only from a fresh verified design baseline; safe non-gameplay lanes remain parallel while design is incomplete.",
+      "strictPassMinimum": 80,
+      "sourceRootWideLocksRemainForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -10929,31 +10990,34 @@
       "schedulerAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
       "globalActiveWorkerBarrier": false,
       "freeSlotRefillWhileOtherIndependentWorkersActive": true,
-      "sourceAndFileConflictProtectionStillRequired": true,
+      "sourceAndFileConflictProtectionStillRequired": false,
       "queueReserveBatchIsCapacityAuthority": true,
       "learningIdleStillRequiresIdleGameWave": true,
       "gameStudyStillRequiresIdleGameWave": true,
       "phase2NeuralExecutionAuthority": true,
       "externalProviderAndPlanningBound": 256,
-      "refillFormula": "MAX(0, CURRENT_ADAPTIVE_GAME_PRIMARY_TARGET - ACTIVE_GAME_WORKERS)",
-      "observedExample": "TARGET_20_ACTIVE_12=>REFILL_8; TARGET_64_ACTIVE_40=>REFILL_24",
-      "adaptiveBackpressureMayLowerBelow20": false,
-      "rationale": "GAME_PRIMARY is an atomic event-driven task stream, not a fixed execution wave. Independent tasks refill immediately after per-task variant micro-fan-in; source/file locks and release QA remain preserved. Baseline and pressure floor stay 20, healthy saturation expands 20→32→64→128→256, and 256 is only the current external provider boundary.",
+      "refillFormula": "MAX(0, EXTERNAL_CAPACITY_TARGET - ACTIVE_GAME_WORKERS) WITH TEMPORARY VERIFIED_PROVIDER_PRESSURE_DOWNSHIFT_ONLY",
+      "observedExample": "TARGET_256_ACTIVE_180=>REFILL_76; VERIFIED_EXTERNAL_PRESSURE_MAY_TEMPORARILY_LOWER_TARGET",
+      "adaptiveBackpressureMayLowerBelow20": true,
+      "rationale": "GAME_PRIMARY requests the current external provider/planning boundary by default. Independent tasks refill immediately after per-task micro-fan-in; source-root locks are forbidden and only overlapping responsible-file writes or brief atomic shared-state mutation serialize. Verified external provider or runner pressure may temporarily reduce active workers, then recovery returns to the external boundary.",
       "gamePrimaryAdaptiveSteps": [
+        4,
+        8,
+        16,
         20,
         32,
         64,
         128,
         256
       ],
-      "gamePrimaryBaselineTarget": 20,
-      "gamePrimaryAdaptiveMinimum": 20,
+      "gamePrimaryBaselineTarget": 256,
+      "gamePrimaryAdaptiveMinimum": 4,
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryFixedInternalCap": null,
       "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
       "ownerUnlimitedConcurrencyDirective": "2026-09-20",
-      "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING",
-      "adaptiveBackpressureMayRaiseGamePrimaryAbove20": true,
+      "authorityChange": "MAXIMUM_SAFE_EXTERNAL_CAPACITY_DEFAULT_WITH_VERIFIED_PRESSURE_ONLY_DOWNSHIFT",
+      "adaptiveBackpressureMayRaiseGamePrimaryAbove20": false,
       "fixedWaveBarrier": false,
       "completionEvent": "vibe2-neuron-complete",
       "taskMicroFanIn": true,
@@ -10961,7 +11025,14 @@
       "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
       "neuralAuthorityScope": "GATED_EXISTING_SCHEDULER_ONLY",
       "runtimeResultIngress": true,
-      "shadowFallbackPreserved": true
+      "shadowFallbackPreserved": true,
+      "responsibleFileConflictProtectionStillRequired": true,
+      "sourceRootWideLockForbidden": true,
+      "defaultRequestedParallelism": 256,
+      "recoverToExternalBoundaryAfterPressure": true,
+      "defaultStartsAtExternalBoundary": true,
+      "verifiedExternalPressureOnlyDownshift": true,
+      "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true
     },
     "liveShadowObservation": {
       "observedAt": "2026-09-20",
@@ -18846,7 +18917,7 @@
         "RELEASE_CONFIRMED"
       ],
       "ownerResetIsPriorityNotExclusive": true,
-      "sameGameExecution": "SERIALIZED_NO_CANCEL",
+      "sameGameExecution": "PARALLEL_NON_OVERLAPPING_RESPONSIBILITIES",
       "distinctGamesMayRunParallel": true,
       "globalCancelInProgress": false,
       "designOnlyMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE",
@@ -18875,7 +18946,15 @@
         "runtimeOwner": ".github/workflows/unity-web-first-stage-build.yml",
         "nativeReleaseGate": false,
         "developmentAdmissionGate": false
-      }
+      },
+      "sameGameSourceRootExclusiveLock": false,
+      "sameGameResponsibleFileConflictSerializes": true,
+      "sameGameIndependentPackagesParallel": true,
+      "gameWideLockForbidden": true,
+      "failureIsolation": "LANE_LOCAL_UNLESS_DIRECT_DEPENDENCY_OR_SHARED_ACCEPTANCE_REQUIRES_FAN_IN",
+      "graphicsFailureMayNotBlockIndependentGameplayProgressionSystemDevelopment": true,
+      "runtimeFailureMayNotBlockIndependentSourceDevelopment": true,
+      "externalCapacityOnlyParallelBoundary": true
     },
     "canonicalDepartments": [
       "planning",
@@ -19319,7 +19398,11 @@
           "LEARN_VERIFIED_RESULT",
           "CREATE_NEXT_CAUSAL_GAP"
         ],
-        "noSafeGapAction": "REASSESS_RUNTIME_AND_VERIFIED_LEARNING_THEN_CREATE_NEXT_SAFE_GAP"
+        "noSafeGapAction": "REASSESS_RUNTIME_AND_VERIFIED_LEARNING_THEN_CREATE_NEXT_SAFE_GAP",
+        "physicalWorkerCap": null,
+        "sameGameNonOverlappingPackagesParallel": true,
+        "sourceRootWideLockForbidden": true,
+        "responsibleFileConflictSerializationOnly": true
       },
       "qaEvolution": {
         "enabled": true,
@@ -21036,7 +21119,23 @@
       "sameResponsibleFileConcurrentWriteForbidden": true,
       "fanInSerializesOnlySharedAcceptanceAndReleaseMutation": true,
       "runtimeWaitReleasesGeneralDevelopmentCapacity": true,
-      "externalProviderCapacityIsBoundaryNotArtificialInternalCap": true
+      "externalProviderCapacityIsBoundaryNotArtificialInternalCap": true,
+      "sameGameNonOverlappingPackagesParallelByDefault": true,
+      "sourceRootExclusiveLockForbidden": true,
+      "permanentGameWideWriteLockForbidden": true,
+      "responsibleFileWriteConflictIsPrimarySerializationBoundary": true,
+      "sharedAtomicStateMutationMaySerializeBrieflyForIntegrity": true,
+      "laneFailureIsolation": {
+        "enabled": true,
+        "presentationOrGraphicsFailureBlocksOnlyAffectedPresentationResponsibilities": true,
+        "runtimeOrReleaseFailureBlocksPromotionAndAffectedRuntimeResponsibilitiesOnly": true,
+        "independentCoreFunProgressionUsabilityStabilityWorkContinues": true,
+        "releaseBarrierMayNotBecomeGameDevelopmentBarrier": true,
+        "unrelatedFailureMayNotCreateSameGameGlobalLock": true
+      },
+      "automaticFeatureExpansionFreezeForbidden": true,
+      "featureDevelopmentMayPauseOnlyForExplicitOwnerInstructionOrDirectDependencyConflict": true,
+      "internalConcurrencyCap": null
     },
     "implementationBreadth": {
       "designIsMinimumMeaningAndConstraintContractNotImplementationCeiling": true,
@@ -21079,6 +21178,149 @@
       "preserveLearningSignal": true,
       "doNotRecordFailureCause": true,
       "reason": "SOURCE_ROOT_OR_FILE_LOCK_CONTENTION_IS_SCHEDULING_NOT_GAME_QUALITY_FAILURE"
+    }
+  },
+  "continuousGameplaySystemEvolutionContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-25",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "intent": "GAME_MUST_KEEP_ADVANCING_TOWARD_AND_BEYOND_APPROVED_DESIGN_COMPLETENESS_WHILE_PRESENTATION_EVOLVES_IN_PARALLEL",
+    "appliesTo": [
+      "ROBLOX",
+      "UNITY",
+      "WEB_VALIDATION_SURFACE_WHEN_IT_IS_THE_ACTIVE_IMPLEMENTATION_SURFACE"
+    ],
+    "designContext": {
+      "requiredForGameplayEvolution": true,
+      "canonicalDiscoveryRoot": "design/<gameId>/<latest-date>/",
+      "preferredFiles": [
+        "design-revised.json",
+        "design-disposition.json",
+        "cycle-status.json",
+        "core-artbook.json"
+      ],
+      "latestRevisedDesignMustBeLoadedBeforeCoreFunOrProgressionTaskGeneration": true,
+      "taskMustCarryDesignContextEvidence": true,
+      "genericQualityGapWithoutAvailableDesignContextForbiddenForCoreFunAndProgression": true,
+      "missingDesignAction": "AUTO_ENROLL_EXISTING_GAME_IN_CANONICAL_GAME_SEED_AND_DESIGN_PIPELINE",
+      "missingDesignMustNotRemainPassive": true,
+      "autoCreateDesign": true,
+      "autoCreateUsesExistingPipelineOnly": true,
+      "autoCreatePipeline": [
+        "DETECT_ACTIVE_OR_REBUILD_CATALOG_GAME_WITHOUT_USABLE_DESIGN",
+        "ENSURE_EXISTING_GAME_GAME_SEED_IN_GAME_SEED_STATE",
+        "NORMALIZE_GAME_SEED_WITH_EXISTING_COMPANY_SEED_CONTRACT",
+        "RUN_COMPANY_SEED_DESIGN_RUNTIME",
+        "RUN_COMPANY_DESIGN_CYCLE",
+        "RUN_STRICT_DESIGN_REVIEW",
+        "PROMOTE_ONLY_AFTER_EXISTING_DESIGN_GATES",
+        "RESUME_CORE_FUN_AND_PROGRESSION_DEVELOPMENT_FROM_VERIFIED_DESIGN"
+      ],
+      "autoCreateBindings": {
+        "intake": "tools/company-all-games-design-reset.mjs --auto-missing-design-intake",
+        "seedContract": "tools/company-game-seed-contract.mjs",
+        "seedNormalizer": "tools/company-design-seed-normalize.mjs",
+        "designRuntime": ".github/workflows/company-seed-design-runtime.yml",
+        "designCycle": "tools/company-design-cycle.mjs",
+        "promotion": ".github/workflows/company-design-promotion-sync.yml"
+      },
+      "newShadowDesignPipelineForbidden": true,
+      "missingDesignMayNotBeSolvedByGenericGameplayGuess": true,
+      "presentationAndStabilityMayContinueInParallelWhileDesignIsBeingCreatedWhenSafe": true,
+      "coreFunAndProgressionResumeImmediatelyAfterVerifiedDesign": true,
+      "gameplayEvolutionDesignAuthority": "LATEST_VERIFIED_DESIGN",
+      "verifiedDesignDefinition": {
+        "baselineGateState": "DESIGN_BASELINE_READY",
+        "baselineGateReady": true,
+        "strictDesignVerdict": "PASS",
+        "strictDesignMinimumScore": 80,
+        "strictDesignHardFailuresMax": 0,
+        "postResetFreshnessRequiredWhenGameIsInCurrentOwnerResetSet": true
+      },
+      "runtimeEvidenceAuthority": "company-runtime",
+      "plannerRuntimeOverlayRequired": [
+        "design",
+        "game-seed-state.json"
+      ],
+      "usableButUnverifiedDesignDoesNotAuthorizeCoreFunOrProgressionMutation": true,
+      "unverifiedDesignAction": "CONTINUE_CANONICAL_DESIGN_CYCLE_WHILE_SAFE_PRESENTATION_USABILITY_STABILITY_WORK_MAY_CONTINUE"
+    },
+    "simultaneousLanes": {
+      "required": [
+        "CORE_FUN",
+        "PROGRESSION",
+        "PRESENTATION",
+        "USABILITY",
+        "STABILITY"
+      ],
+      "presentationMayNotMonopolizeDevelopment": true,
+      "coreFunAndProgressionMustRemainEligibleWhilePresentationWorkExists": true,
+      "graphicsAndGameplayParallelWhenResponsibleFilesDoNotOverlap": true,
+      "sameGameIndependentSystemsParallel": true,
+      "sourceRootOrGameWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true,
+      "runtimeOrGraphicsFailureBlocksOnlyAffectedResponsibilities": true
+    },
+    "gameplayAdvance": {
+      "coreFun": {
+        "mustGroundIn": [
+          "content.coreFun",
+          "content.coreLoop",
+          "content.signatureSystems"
+        ],
+        "requirement": "ADVANCE_REAL_PLAYER_ACTION_DECISION_FEEDBACK_AND_GAME_STATE_NOT_MARKERS_OR_DESCRIPTIONS"
+      },
+      "progression": {
+        "mustGroundIn": [
+          "content.progressionDirection",
+          "content.coreLoop",
+          "content.signatureSystems"
+        ],
+        "requirement": "ADVANCE_REAL_REWARD_UNLOCK_GOAL_WAVE_QUEST_INVENTORY_ECONOMY_OR_CONTENT_DEPTH_WHEN_PRESENT_IN_APPROVED_DESIGN"
+      },
+      "systemDepth": {
+        "designIsMinimumMeaningAndConstraintNotImplementationQuantityCeiling": true,
+        "mayDeepenExistingApprovedSystems": true,
+        "mayAddConnectedImplementationDepthWithoutChangingProtectedGameMeaning": true,
+        "protectedWithoutOwnerOrApprovedDesignAuthority": [
+          "CORE_IDENTITY",
+          "BALANCE_VALUES",
+          "ECONOMY_MEANING",
+          "SAVE_SCHEMA",
+          "NETWORK_AUTHORITY",
+          "APPROVED_RULE_SEMANTICS"
+        ]
+      }
+    },
+    "taskGeneration": {
+      "designSpecificGoalTextRequired": true,
+      "designSpecificEvidenceRequired": true,
+      "responsibleFilesMustBeSelectedByPillarAndDesignIntent": true,
+      "oneGenericCrossGameGoalForAllTitlesForbidden": true,
+      "perVerifiedCycleMustAttemptCoreFunAndProgressionAlongsidePresentationWhenSafe": true,
+      "terminalCompletionStateForbidden": true,
+      "nextVerifiedGapCycleRequired": true
+    },
+    "verification": {
+      "realSourceDeltaRequired": true,
+      "coreFunAndProgressionRequireGameplaySourceDelta": true,
+      "presentationRequiresVisibleRuntimeDelta": true,
+      "markerOnlyOrCommentOnlyPassForbidden": true,
+      "taskMustStateWhichApprovedDesignElementAdvanced": true,
+      "runtimeOrDeterministicGameplayQaRequiredWhenBehaviorChanges": true,
+      "beforeAfterOrBaselineComparisonRequired": true,
+      "saveAndGameplaySemanticRegressionForbidden": true
+    },
+    "bindings": {
+      "planner": "tools/vibe2-auto-planner.mjs",
+      "runtime": "vibe2-runtime.json",
+      "queue": "assets/vibe-continuous-queue.js",
+      "incrementalQa": "tools/vibe2-incremental-qa.mjs",
+      "tests": [
+        "qa/vibe2-auto-planner.test.mjs",
+        "qa/vibe2-controller-contract.test.mjs"
+      ],
+      "runtimeDesignEvidence": "company-runtime:design/<gameId>/<date>"
     }
   }
 }

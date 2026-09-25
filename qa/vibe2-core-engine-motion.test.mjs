@@ -127,17 +127,20 @@ test('queue priority is owner directive then release state then task priority', 
   assert.equal(afterOwner.next.selected[0].id, 'release-web');
 });
 
-test('running task allows another independent source root but blocks its own root', () => {
+test('running task permits same-root disjoint work and serializes only overlapping responsible files', () => {
   let queue = createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
-    { id:'release', gameId:'release', sourceRoot:'web-games/release', target:'web', goal:'출시확정 유지보수', releaseState:'release-confirmed' },
-    { id:'same-root', gameId:'release', sourceRoot:'web-games/release', target:'web', goal:'같은 루트 후속 작업', releaseState:'development-confirmed' },
-    { id:'dev', gameId:'dev', sourceRoot:'unity-games/dev', target:'unity', goal:'개발확정 작업', releaseState:'development-confirmed' }
+    { id:'release', gameId:'release', sourceRoot:'web-games/release', responsibleFiles:['web-games/release/game.js'], target:'web', goal:'출시확정 유지보수', releaseState:'release-confirmed' },
+    { id:'same-root-disjoint', gameId:'release', sourceRoot:'web-games/release', responsibleFiles:['web-games/release/ui.js'], target:'web', goal:'같은 루트 비충돌 작업', releaseState:'development-confirmed' },
+    { id:'same-file-conflict', gameId:'release', sourceRoot:'web-games/release', responsibleFiles:['web-games/release/game.js'], target:'web', goal:'같은 책임 파일 충돌 작업', releaseState:'development-confirmed' },
+    { id:'dev', gameId:'dev', sourceRoot:'unity-games/dev', responsibleFiles:['unity-games/dev/Assets/Scripts/Game.cs'], target:'unity', goal:'개발확정 작업', releaseState:'development-confirmed' }
   ]});
   queue = beginVibeQueueTask(queue, 'release').queue;
   const next = selectVibeQueueBatch(queue);
   assert.equal(next.selected.some(task=>task.id==='dev'), true);
-  assert.equal(next.selected.some(task=>task.id==='same-root'), false);
-  assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-root'), true);
+  assert.equal(next.selected.some(task=>task.id==='same-root-disjoint'), true);
+  assert.equal(next.selected.some(task=>task.id==='same-file-conflict'), false);
+  assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-file-conflict'&&row.reason==='responsible-file-conflict'), true);
+  assert.equal(next.deferredConflicts.some(row=>row.reason==='source-root-conflict'), false);
 });
 
 test('protected or paid autonomous work remains blocked while web maintenance is eligible', () => {

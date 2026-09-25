@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -41,6 +41,26 @@ function tempRepo() {
   }
   writeDevelopmentBaseline(root);
   return root;
+}
+function writeStudioDesign(root,gameId,overrides={}){
+  const dir=path.join(root,'design',gameId,'2026-09-25');
+  fs.mkdirSync(dir,{recursive:true});
+  const content={
+    identity:`${gameId} 고유 플레이 정체성`,
+    coreFun:'적의 위협을 읽고 핵심 행동을 선택해 실제 전투 상태를 바꾸는 재미',
+    coreLoop:['위협과 목표를 읽고 행동을 선택한다','실제 입력으로 적·월드·자원 상태를 바꾼다','결과와 보상으로 다음 목표와 전략을 갱신한다'],
+    signatureSystems:[
+      {name:'combat-counterplay',purpose:'적 유형에 맞춘 실제 전투 선택',playerChoice:'공격·회피·배치 중 상황에 맞는 대응을 선택'},
+      {name:'progression-loop',purpose:'전투 결과가 다음 선택을 확장',playerChoice:'보상으로 다음 목표나 성장 경로를 고른다'}
+    ],
+    progressionDirection:'핵심 행동의 성공 결과가 다음 목표·보상·해금·콘텐츠 선택으로 연결된다.',
+    ...overrides
+  };
+  const file=path.join(dir,'design-revised.json');
+  fs.writeFileSync(file,JSON.stringify({version:1,gameId,date:'2026-09-25',status:'DESIGN_BASELINE_CANDIDATE',content},null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'cycle-status.json'),JSON.stringify({gameId,status:'COMPLETE',baselineGate:{state:'DESIGN_BASELINE_READY',ready:true,blockers:[],checkedAt:'2026-09-25T00:00:00Z'}},null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'strict-design-review.json'),JSON.stringify({gameId,verdict:'PASS',totalScore:90,hardFailures:[],reviewedAt:'2026-09-25T00:00:00Z'},null,2),'utf8');
+  return file;
 }
 const status={projects:[{gameId:'demo',ownerDecision:'PASS',target:'unity-android',projectPath:'unity-games/demo',progress:80}]};
 const catalog={games:[
@@ -139,6 +159,7 @@ test('queued low-value micro diagnostics are consolidated so studio presentation
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  writeStudioDesign(root,gameId);
   const validationDir=path.join(root,'design',gameId,'2026-09-24');
   fs.mkdirSync(validationDir,{recursive:true});
   fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
@@ -728,7 +749,7 @@ test('planner never selects Unity project without owner PASS',()=>{
   assert.equal(result.reason,'NO_CONFIRMED_PRODUCTION_PROJECT');
 });
 
-test('active source root is skipped while another project can be planned',()=>{
+test('active source root does not block same-game non-overlapping planning',()=>{
   const root=tempRepo();
   const mixedCatalog={games:[
     {id:'demo',homepageCategory:'release-confirmed'},
@@ -736,11 +757,12 @@ test('active source root is skipped while another project can be planned',()=>{
   ]};
   const result=planVibe2AutonomousTasks({
     status,catalog:mixedCatalog,
-    queue:{maxConcurrentTasks:4,tasks:[{id:'demo-active',gameId:'demo',sourceRoot:'unity-games/demo',target:'unity',goal:'active',releaseState:'release-confirmed',status:'running'}]},
+    queue:{maxConcurrentTasks:4,tasks:[{id:'demo-active',gameId:'demo',sourceRoot:'unity-games/demo',target:'unity',goal:'active',releaseState:'release-confirmed',status:'running',responsibleFiles:['unity-games/demo/Assets/Scripts/Active.cs']}]},
     repoRoot:root,maxConcurrentTasks:4
   });
-  assert.equal(result.tasks.some(t=>t.gameId==='demo'),false);
+  assert.equal(result.tasks.some(t=>t.gameId==='demo'),true);
   assert.equal(result.tasks.some(t=>t.gameId==='dev-web'),true);
+  assert.equal(result.tasks.filter(t=>t.gameId==='demo').every(task=>!(task.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/Active.cs')),true);
 });
 
 test('development web is assessed before deterministic diagnostics',()=>{
@@ -808,9 +830,16 @@ test('completed Unity package is never recreated after completion and tiny seed 
   const unityOnlyCatalog={games:[{id:'demo',homepageCategory:'release-confirmed'}]};
   const first=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
-  assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
-  assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
-  assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
+  const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
+  const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
+  assert.equal(autoExpanded||parallelPackage,true);
+  if(autoExpanded){
+    assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
+    assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
+  }else{
+    assert.equal(parallelPackage,true);
+    assert.equal(first.packages[0].accepted,true);
+  }
   const done={...first.task,status:'verified',result:'PASS'};
   const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
@@ -981,6 +1010,7 @@ test('verified studio quality package advances to a new large studio cycle inste
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  writeStudioDesign(root,gameId);
   const project={gameId,name:'Studio Repeat Cycle',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
   const first=findStudioContinuousImprovementTask(project,root,{tasks:[]});
   assert.ok(first);
@@ -1075,7 +1105,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.equal(first.taskWorkUnits,7);
   assert.equal(first.studioQualityEvolution?.cycle,1);
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
-  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,6);
+  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,null);
   assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
   working={...working,tasks:working.tasks.map(row=>
@@ -2070,4 +2100,91 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
   assert.ok(studio.evidence.includes('runtime-neural-event-outcome:PASS'));
   assert.ok(studio.evidence.includes('runtime-neural-event-authority:SHADOW'));
   assert.ok(studio.evidence.some(value=>value.startsWith('neural-event-shadow:')));
+});
+
+
+test('studio evolution emits all five quality pillars for one game',()=>{
+  const root=tempRepo();
+  const gameId='parallel-studio';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.mkdirSync(path.join(source,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(source,'client','Visual.client.luau'),'local camera = workspace.CurrentCamera\n','utf8');
+  fs.writeFileSync(path.join(source,'client','Input.client.luau'),'local input = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'local combat = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Progression.server.luau'),'local progression = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'shared','Save.luau'),'local save = {}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 웨이브를 읽고 전투 행동을 선택해 방어 상태를 바꾸는 재미',progressionDirection:'웨이브 보상으로 다음 방어 선택과 해금을 확장한다.'});
+  const project={gameId,name:'Parallel Studio',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
+  assert.equal(tasks.length,5);
+  assert.deepEqual(new Set(tasks.map(row=>row.studioQualityEvolution.focusPillar)),new Set(['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']));
+  assert.ok(tasks.every(row=>row.responsibleFiles.length>0&&row.responsibleFiles.length<=2));
+  const core=tasks.find(row=>row.studioQualityEvolution.focusPillar==='CORE_FUN');
+  const progression=tasks.find(row=>row.studioQualityEvolution.focusPillar==='PROGRESSION');
+  assert.equal(core.studioQualityEvolution.designGrounded,true);
+  assert.equal(core.studioQualityEvolution.designVerified,true);
+  assert.equal(core.studioQualityEvolution.strictDesignScore,90);
+  assert.equal(progression.studioQualityEvolution.designGrounded,true);
+  assert.ok(core.studioQualityEvolution.designSource.endsWith('/design-revised.json'));
+  assert.match(core.goal,/적 웨이브를 읽고 전투 행동을 선택/);
+  assert.match(progression.goal,/웨이브 보상으로 다음 방어 선택과 해금을 확장/);
+  assert.ok(core.evidence.some(value=>value.startsWith('studio-quality-design-source:')));
+  assert.equal(core.studioQualityEvolution.requiredConnectedImprovements.max,null);
+});
+
+test('failed studio pillar creates a repair generation without globally blocking the game',()=>{
+  const root=tempRepo();
+  const gameId='repair-parallel';
+  const source=path.join(root,'web-games',gameId);
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'index.html'),'<!doctype html><canvas id="game"></canvas>','utf8');
+  writeStudioDesign(root,gameId);
+  const project={gameId,name:'Repair Parallel',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  const next=findStudioContinuousImprovementTask(project,root,{tasks:[{...first,status:'failed',blocker:'test-failure'}]},'CORE_FUN');
+  assert.ok(next);
+  assert.match(next.id,/-v2$/);
+  assert.equal(next.studioQualityEvolution.phase,'REPAIR');
+});
+
+
+test('missing design suppresses generic CORE_FUN and PROGRESSION guesses while safe lanes remain eligible',()=>{
+  const root=tempRepo();
+  const gameId='missing-design-game';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.writeFileSync(path.join(source,'client','Visual.client.luau'),'local visual = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'client','Input.client.luau'),'local input = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Game.server.luau'),'local game = {}\n','utf8');
+  const project={gameId,name:'Missing Design',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN'),null);
+  assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION'),null);
+  const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
+  assert.deepEqual(new Set(tasks.map(row=>row.studioQualityEvolution.focusPillar)),new Set(['PRESENTATION','USABILITY','STABILITY']));
+  assert.ok(tasks.every(row=>row.studioQualityEvolution.designContextAvailable===false));
+});
+
+
+test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evolution',()=>{
+  const root=tempRepo();
+  const gameId='unverified-design-game';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'local combat = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'client','Visual.client.luau'),'local visual = {}\n','utf8');
+  const dir=path.join(root,'design',gameId,'2026-09-25');
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'design-revised.json'),JSON.stringify({
+    gameId,content:{identity:'구체적인 설계 후보 정체성',coreFun:'실제 전투 선택이 상태를 바꾸는 재미',coreLoop:['위협 읽기','전투 행동','결과로 다음 선택'],signatureSystems:[],progressionDirection:'성장'}
+  },null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'cycle-status.json'),JSON.stringify({gameId,baselineGate:{state:'DESIGN_BASELINE_READY',ready:true}},null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'strict-design-review.json'),JSON.stringify({gameId,verdict:'REVISE',totalScore:91,hardFailures:['CORE_FUN_WEAK'],reviewedAt:'2026-09-25T00:00:00Z'},null,2),'utf8');
+  const project={gameId,name:'Unverified Design',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN'),null);
+  assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION'),null);
+  assert.ok(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION'));
 });

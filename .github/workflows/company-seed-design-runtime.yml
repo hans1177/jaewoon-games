@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-all-games-design-reset.mjs'
+      - 'game-catalog.json'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'tools/company-design-checkpoint-recovery.mjs'
@@ -138,6 +140,13 @@ jobs:
           console.log(`OWNER_ACTIVE_DESIGN_RESET_IDS=${active.map(x=>x.gameId).join(',')}`);
           NODE
 
+      - name: Auto-enroll active games missing design into canonical GAME_SEED intake
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-all-games-design-reset.mjs --auto-missing-design-intake
+          echo 'MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
+
       - name: Validate shared worker policy log and architecture context
         run: |
           node --check tools/company-shared-context.mjs
@@ -184,9 +193,12 @@ jobs:
             return status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true;
           };
           const active=(state.seeds||[]).filter(designReviewEligible);
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
-          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
           const latestStrictPassFor=(seed)=>{
+            const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed.gameId));
             if(!fs.existsSync(gameRoot))return null;
             try{
@@ -390,6 +402,15 @@ jobs:
         env:
           GAME_ID: ${{ matrix.target.game_id }}
 
+      - name: Ensure target missing-design GAME_SEED exists
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-all-games-design-reset.mjs --auto-missing-design-intake --game-id="$GAME_ID"
+          echo 'TARGET_MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
+
       - name: Normalize target GAME_SEED contract
         env:
           GAME_ID: ${{ matrix.target.game_id }}
@@ -413,7 +434,10 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';
           const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const designReviewEligible=x=>{const status=String(x?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||x?.promotion?.strictDesignReviewContinuesInParallel===true);};const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&designReviewEligible(x));
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
+          const resetAt=resetGameIds.has(gameId)?resetTimestamp:0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           let strictPass=false,latestPassAt=0;
           const gameRoot=path.join('design',gameId);
@@ -1143,8 +1167,9 @@ jobs:
             .filter(game=>['ACTIVE','REBUILD'].includes(String(game.lifecycleState||'ACTIVE').toUpperCase()))
             .map(game=>String(game.id||'').trim())
             .filter(Boolean));
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
-          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
           const designReviewEligible=seed=>{
             const status=String(seed?.status||'').trim().toUpperCase();
             return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);
@@ -1153,6 +1178,8 @@ jobs:
           for(const seed of state.seeds||[]){
             const gameId=String(seed?.gameId||'').trim();
             if(!canonical.has(gameId)||!designReviewEligible(seed))continue;
+            const resetAt=resetGameIds.has(gameId)?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const root=path.join('design',gameId);
             const dates=fs.existsSync(root)?fs.readdirSync(root,{withFileTypes:true})
               .filter(entry=>entry.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(entry.name))
@@ -1230,11 +1257,15 @@ jobs:
           const branch=process.env.COMPANY_RUNTIME_BRANCH;
           const show=file=>execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
           const state=JSON.parse(show('game-seed-state.json'));let count=0;
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
-          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
           const designReviewEligible=seed=>{const status=String(seed?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);};
           for(const seed of state.seeds||[]){
             if(!designReviewEligible(seed))continue;
+            const gameId=String(seed?.gameId||'').trim();
+            const resetAt=resetGameIds.has(gameId)?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             let passed=false;
             try{
               const tree=execFileSync('git',['ls-tree','-r','--name-only',`origin/${branch}`,`design/${seed.gameId}`],{encoding:'utf8',maxBuffer:32*1024*1024}).split(/\r?\n/).filter(Boolean);

@@ -43,7 +43,7 @@ function focusReleaseKind(item={},exposure={},roadmap={}){
 }
 function postReleaseEligible(item={},exposure={},roadmap={}){return Boolean(focusReleaseKind(item,exposure,roadmap));}
 function selectRecipe(recombination={},gameId='',treeSha=''){const recipes=Array.isArray(recombination.recipes)?recombination.recipes.filter(r=>Array.isArray(r.sourceProjects)&&new Set(r.sourceProjects.map(clean).filter(Boolean)).size>=2):[];if(!recipes.length)return null;const preferred=recipes.filter(r=>!r.sourceProjects.map(clean).includes(clean(gameId))),pool=preferred.length?preferred:recipes,n=parseInt(treeSha.slice(0,8),16);return pool[Number.isFinite(n)?n%pool.length:0]||null;}
-function activeFocusGameIds(queue={}){return new Set((queue.tasks||[]).filter(t=>t.postReleaseFocused===true&&['queued','running'].includes(clean(t.status).toLowerCase())).map(t=>clean(t.gameId)).filter(Boolean));}
+
 function historicalMaintenanceItem(entry={}){const e=entry.evidence||{};return entry.maintenanceEligible===true&&entry.currentReleaseClaim===false&&clean(entry.gameId)&&posix(entry.sourceRoot)==='roblox-games/'+clean(entry.gameId)&&e.actualStudioRuntime===true&&e.postRuntimeIndependentQa===true&&e.regression===true&&e.publicationTargetObserved===true&&clean(e.universeId)&&clean(e.placeId);}
 export function buildHistoricalPostReleaseFocusTask({entry,repoRoot='.',roadmap={},recombination={},existingTasks=[]}={}){
   if(!historicalMaintenanceItem(entry)||permanentlyRemoved(roadmap,entry?.gameId))return null;
@@ -78,15 +78,12 @@ export function buildPostReleaseFocusTask({item,repoRoot='.',roadmap={},recombin
 }
 export function feedPostReleaseFocus({roadmapFile='company-learning/platform-release-roadmap.json',companyRuntimeQueueFile='',historicalRegistryFile='',queueFile='.vibe2/queue.json',recombinationFile='',exposureFile='',repoRoot='.'}={}){
   const roadmap=readJson(roadmapFile,{}),runtimeQueue=readJson(companyRuntimeQueueFile,{items:[]}),historicalRegistry=readJson(historicalRegistryFile,{assets:[]}),queue=readJson(queueFile,{tasks:[]}),recombination=readJson(recombinationFile,{recipes:[]}),exposure=readJson(exposureFile,{games:[]});
-  const activeGames=activeFocusGameIds(queue);
   const rank=item=>Number(item?.ownerPrimaryRank||Number.MAX_SAFE_INTEGER);
   const candidates=(runtimeQueue.items||[])
     .filter(item=>postReleaseEligible(item,exposure,roadmap)&&!permanentlyRemoved(roadmap,item.gameId))
     .sort((a,b)=>rank(a)-rank(b)||clean(a.gameId).localeCompare(clean(b.gameId)));
   const addedTasks=[];
-  let sawActiveCaretaker=false;
   for(const item of candidates){
-    if(activeGames.has(clean(item.gameId))){sawActiveCaretaker=true;continue;}
     const task=buildPostReleaseFocusTask({
       item,repoRoot,roadmap,recombination,
       existingTasks:[...(queue.tasks||[]),...addedTasks],
@@ -102,11 +99,10 @@ export function feedPostReleaseFocus({roadmapFile='company-learning/platform-rel
   const historical=(historicalRegistry.assets||[]).filter(entry=>historicalMaintenanceItem(entry)&&!permanentlyRemoved(roadmap,entry.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
   let task=null;
   for(const entry of historical){
-    if(activeGames.has(clean(entry.gameId))){sawActiveCaretaker=true;continue;}
     task=buildHistoricalPostReleaseFocusTask({entry,repoRoot,roadmap,recombination,existingTasks:queue.tasks||[]});
     if(task)break;
   }
-  if(!task)return{added:false,reason:sawActiveCaretaker?'CARETAKER_ALREADY_ACTIVE_FOR_GAME':candidates.length?'NO_NEW_SOURCE_CYCLE':historical.length?'NO_NEW_HISTORICAL_SOURCE_CYCLE':'NO_RELEASED_OR_HISTORICAL_ROBLOX',queue};
+  if(!task)return{added:false,reason:candidates.length?'NO_NEW_SOURCE_CYCLE':historical.length?'NO_NEW_HISTORICAL_SOURCE_CYCLE':'NO_RELEASED_OR_HISTORICAL_ROBLOX',queue};
   const next={...queue,tasks:[...(queue.tasks||[]),task]};writeJson(queueFile,next);return{added:true,reason:'HISTORICAL_ROBLOX_MAINTENANCE_QUEUED',task,tasks:[task],queue:next};
 }
 function main(){const a=parseArgs(),result=feedPostReleaseFocus({roadmapFile:clean(a.roadmap)||'company-learning/platform-release-roadmap.json',companyRuntimeQueueFile:clean(a['company-runtime-queue']),historicalRegistryFile:clean(a['historical-registry']),queueFile:clean(a.queue)||'.vibe2/queue.json',recombinationFile:clean(a.recombination),exposureFile:clean(a.exposure),repoRoot:clean(a.root)||'.'});console.log('VIBE2_POST_RELEASE_FOCUS_ADDED='+(result.added?'YES':'NO'));console.log('VIBE2_POST_RELEASE_FOCUS_REASON='+result.reason);console.log('VIBE2_POST_RELEASE_FOCUS_TASK='+(result.task?.id||'NONE'));console.log('VIBE2_POST_RELEASE_FOCUS_TASK_COUNT='+Number(result.tasks?.length||(result.task?1:0)));console.log('VIBE2_POST_RELEASE_HISTORICAL='+(result.task?.historicalDeploymentRecovery===true?'YES':'NO'));}

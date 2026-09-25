@@ -237,3 +237,23 @@ test('design engine expires checkpointed 429 quarantine at provider retry window
   assert.match(artbookPipeline,/aborted due to timeout\|timed out\|AbortError\|TimeoutError/);
   assert.doesNotMatch(artbookPipeline,/aborted due to timeout\|timeout\|timed out/);
 });
+
+
+test('missing designs are automatically enrolled into the existing GAME_SEED design runtime',()=>{
+  const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
+  assert.ok(triggerSection.includes("- 'tools/company-all-games-design-reset.mjs'"));
+  assert.ok(triggerSection.includes("- 'game-catalog.json'"));
+  assert.match(workflow,/Auto-enroll active games missing design into canonical GAME_SEED intake/);
+  assert.match(workflow,/node tools\/company-all-games-design-reset\.mjs --auto-missing-design-intake/);
+  assert.match(workflow,/Ensure target missing-design GAME_SEED exists/);
+  assert.match(workflow,/--auto-missing-design-intake --game-id="\$GAME_ID"/);
+  assert.match(workflow,/MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE/);
+});
+
+
+test('owner all-games reset freshness applies only to the reset gameIds, not every game',()=>{
+  assert.match(workflow,/const resetGameIds=new Set\(\(Array\.isArray\(state\?\.ownerAllGamesDesignReset\?\.gameIds\)/);
+  assert.match(workflow,/const resetAt=resetGameIds\.has\(String\(seed\?\.gameId\|\|''\)\.trim\(\)\)\?resetTimestamp:0/);
+  assert.match(workflow,/const resetAt=resetGameIds\.has\(gameId\)\?resetTimestamp:0/);
+  assert.doesNotMatch(workflow,/const resetAt=Date\.parse\(state\?\.ownerAllGamesDesignReset\?\.updatedAt/);
+});

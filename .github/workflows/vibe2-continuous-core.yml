@@ -47,8 +47,8 @@ env:
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
-  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'
-  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '20'
+  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
+  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -275,6 +275,14 @@ jobs:
             # until a later fan-in callback even though company-runtime already has actionable work.
             git fetch origin company-runtime --quiet
             git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            git -C /tmp/vibe2-main fetch origin company-runtime --quiet
+            for runtime_design_path in design game-seed-state.json; do
+              if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
+                git -C /tmp/vibe2-main checkout origin/company-runtime -- "$runtime_design_path"
+                git -C /tmp/vibe2-main reset -- "$runtime_design_path" >/dev/null 2>&1 || true
+              fi
+            done
+            echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
             echo "VIBE2_RESERVE_RUNTIME_SYNC_SOURCE=company-runtime:$callback_kind"
 
             # Released Roblox caretakers and active repair work are refilled from the same canonical
@@ -1723,6 +1731,14 @@ jobs:
 
           git fetch origin company-runtime --quiet
           git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            git -C /tmp/vibe2-main fetch origin company-runtime --quiet
+            for runtime_design_path in design game-seed-state.json; do
+              if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
+                git -C /tmp/vibe2-main checkout origin/company-runtime -- "$runtime_design_path"
+                git -C /tmp/vibe2-main reset -- "$runtime_design_path" >/dev/null 2>&1 || true
+              fi
+            done
+            echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
           pushed=0
           state_write='NO'
           for attempt in 1 2 3 4 5; do

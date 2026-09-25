@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 72,
-  "updatedAt": "2026-09-24",
+  "revision": 79,
+  "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -871,7 +871,12 @@
     "unity-web-pass-or-failure-never-substitutes-or-blocks-native-runtime-qa-release-evidence",
     "existing-web-archives-remain-readable-but-create-no-development-authority",
     "vibe2-vibe3-own-native-game-source-implementation-and-post-release-development",
-    "final-presentation-rejects-placeholder-monsters-context-mismatch-backgrounds-and-color-only-enemy-variants"
+    "final-presentation-rejects-placeholder-monsters-context-mismatch-backgrounds-and-color-only-enemy-variants",
+    "same-game-independent-non-overlapping-development-packages-run-in-parallel",
+    "source-root-wide-development-locks-are-forbidden",
+    "only-responsible-file-conflicts-or-brief-atomic-shared-state-mutations-may-serialize-development",
+    "graphics-presentation-runtime-or-release-failures-must-remain-lane-local-unless-a-direct-dependency-requires-fan-in",
+    "internal-artificial-development-concurrency-caps-are-forbidden-and-external-capacity-is-the-only-heavy-execution-boundary"
   ],
   "homepageTesting": {
     "minimumWebStrictScore": 80,
@@ -885,10 +890,10 @@
     "nativeReleaseAuthority": false
   },
   "productionThroughput": {
-    "concurrentGameWipTarget": 20,
-    "concurrentGameWipMax": 20,
-    "concurrentGameWipScope": "GLOBAL_SELECTED_PLATFORM_DEVELOPMENT",
-    "webValidationParallelismControlledSeparately": true,
+    "concurrentGameWipTarget": null,
+    "concurrentGameWipMax": null,
+    "concurrentGameWipScope": "EXTERNAL_CAPACITY_ONLY_MAXIMUM_SAFE_PARALLELISM",
+    "webValidationParallelismControlledSeparately": false,
     "runtimeCapacityMayReduceActiveWorkers": true,
     "optimizationBudget": {
       "blockingBudgetMinutes": 10,
@@ -901,7 +906,25 @@
       "designWorkflowTimeoutMinutes": 45,
       "singleModelCallTimeoutSeconds": 150,
       "designSchemaAttemptsMax": 2
-    }
+    },
+    "sameGameIndependentPackagesParallel": true,
+    "sourceRootExclusiveLockForbidden": true,
+    "responsibleFileWriteConflictSerializes": true,
+    "internalArtificialConcurrencyCapsForbidden": true,
+    "graphicsFailureBlocksOnlyAffectedGraphicsResponsibilities": true,
+    "runtimeOrReleaseFailureBlocksPromotionNotIndependentDevelopment": true,
+    "automaticGameWideFeatureFreezeForbidden": true,
+    "defaultRequestedConcurrentGameTasks": 256,
+    "externalMatrixBatchMax": 256,
+    "verifiedExternalPressureMayTemporarilyReduceWorkers": true,
+    "recoverToExternalCapacityAfterPressure": true,
+    "internalRampUpStepsForbidden": true,
+    "minimumAdaptiveWorkerFloor": 4,
+    "staleOrMissingPressureEvidenceResetsTo": 256,
+    "postReleaseFocusedInternalCap": null,
+    "ownerFocusedInternalCap": null,
+    "sameGameFocusedIndependentPackagesParallel": true,
+    "logicalCaretakerDoesNotLimitPhysicalParallelism": true
   },
   "stageGateScoringV2": {
     "version": 2,
@@ -1032,7 +1055,12 @@
       "requiredForDevelopmentAdmission": false,
       "requiredForNativeRuntimePass": false,
       "requiredForInternalRelease": false
-    }
+    },
+    "noArtificialSameGamePackageCap": true,
+    "sourceRootExclusiveLockForbidden": true,
+    "sameGameNonOverlappingPackagesParallel": true,
+    "responsibleFileConflictSerializationOnly": true,
+    "externalCapacityOnlyParallelBoundary": true
   },
   "highEndVisualProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
@@ -1314,5 +1342,30 @@
     "nativeTargetProofTraceRequired": true,
     "webPositiveExemptFromNativeEngineQa": true,
     "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
+  },
+  "continuousGameplaySystemEvolution": {
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract",
+    "enabled": true,
+    "latestRevisedDesignContextRequiredForCoreFunAndProgression": true,
+    "coreFunAndProgressionRunAlongsidePresentationWhenResponsibilitiesDoNotOverlap": true,
+    "presentationMayNotMonopolizeDevelopment": true,
+    "genericDesignAgnosticCoreFunOrProgressionTaskForbiddenWhenDesignExists": true,
+    "designIsImplementationQuantityCeiling": false,
+    "sourceRootOrGameWideLockForbidden": true,
+    "responsibleFileConflictSerializationOnly": true,
+    "terminalCompletionStateForbidden": true,
+    "missingDesignAutoCreate": true,
+    "missingDesignIntake": "CANONICAL_GAME_SEED_AND_DESIGN_PIPELINE",
+    "missingDesignPassiveWaitForbidden": true,
+    "shadowDesignPipelineForbidden": true,
+    "safePresentationAndStabilityMayContinueDuringDesignGeneration": true,
+    "coreFunAndProgressionResumeAfterVerifiedDesign": true,
+    "gameplayDesignAuthority": "LATEST_VERIFIED_DESIGN",
+    "verifiedDesignRequiresBaselineReady": true,
+    "verifiedDesignStrictPassMinimum": 80,
+    "verifiedDesignHardFailuresMax": 0,
+    "companyRuntimeDesignOverlayRequired": true,
+    "companyRuntimeSeedStateOverlayRequired": true,
+    "unverifiedDesignMayNotAuthorizeCoreFunOrProgression": true
   }
 }

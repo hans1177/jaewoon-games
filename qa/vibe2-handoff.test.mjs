@@ -108,7 +108,9 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P1_CAPTURE_LIVE_VERIFIED_RUNTIME_FAIL_REQUEUE:')));
   assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P2_VERIFIED_THROUGHPUT_OPTIMIZATION:')));
   assert.equal(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P0_FIX_')),false);
-  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('PRESSURE_MUST_NOT_LOWER_GAME_PRIMARY_BELOW_20'));
+  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('SOURCE_ROOT_AND_GAME_WIDE_DEVELOPMENT_LOCKS_MUST_NEVER_BE_REINTRODUCED'));
+  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('ONLY_OVERLAPPING_RESPONSIBLE_FILE_WRITES_OR_BRIEF_ATOMIC_SHARED_STATE_MUTATIONS_MAY_SERIALIZE'));
+  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('GAME_PRIMARY_REQUESTS_256_BY_DEFAULT; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_4; RECOVER_TO_256_WHEN_PRESSURE_CLEARS'));
   assert.ok(snapshot.nextWorkerContinuation.successEvidence.includes('FINAL_VARIANT_REPORTS_TASK_MICRO_FANIN_COMPLETE_AND_SLOT_RELEASE'));
   assert.ok(snapshot.workState.taskCount > 0);
 });

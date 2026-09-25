@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-queue-control.test.mjs
-// 역할: DAG/shard/source-lock/work-stealing/backpressure/speculative fan-in 큐 계약을 검증한다.
+// 역할: DAG/shard/responsible-file-conflict/work-stealing/backpressure/speculative fan-in 큐 계약을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -551,14 +551,16 @@ test('same source root may fan out when responsibility files are concrete and di
   assert.equal(reserved.tasks.length,2);
 });
 
-test('same source root remains exclusive when responsibility files overlap or are unspecified', () => {
+test('same source root never creates a game-wide lock; only overlapping responsibility files serialize', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
   queue=add(queue,'a','same','web',{responsibleFiles:['shared.js']});
   queue=add(queue,'b','same','web',{responsibleFiles:['shared.js']});
   queue=add(queue,'c','same','web');
   const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
-  assert.equal(reserved.tasks.length,1);
-  assert.ok(reserved.selection.deferredConflicts.some(row=>row.reason==='responsible-file-conflict'||row.reason==='source-root-conflict'));
+  assert.equal(reserved.tasks.length,2);
+  assert.ok(reserved.tasks.some(row=>row.id==='c'));
+  assert.ok(reserved.selection.deferredConflicts.some(row=>row.reason==='responsible-file-conflict'));
+  assert.equal(reserved.selection.deferredConflicts.some(row=>row.reason==='source-root-conflict'),false);
 });
 
 test('DAG dependency starts only after predecessor PASS', () => {
@@ -572,18 +574,18 @@ test('DAG dependency starts only after predecessor PASS', () => {
   assert.equal(next.selected[0].id,'after');
 });
 
-test('awaiting QA holds its source root but does not block independent work', () => {
+test('awaiting QA holds only its responsible file and same-game disjoint work continues', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
-  queue=add(queue,'first','game-a','unity');
-  queue=add(queue,'same-next','game-a','unity');
-  queue=add(queue,'other','game-b','web');
-  let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
-  assert.deepEqual(new Set(reserved.tasks.map(t=>t.id)),new Set(['first','other']));
+  queue=add(queue,'first','game-a','unity',{responsibleFiles:['Assets/Scripts/Combat.cs']});
+  queue=add(queue,'same-next','game-a','unity',{responsibleFiles:['Assets/Scripts/Progression.cs']});
+  queue=add(queue,'other','game-b','web',{responsibleFiles:['index.html']});
+  let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1});
+  assert.deepEqual(reserved.tasks.map(t=>t.id),['first']);
   queue=markVibeTaskAwaiting(reserved.queue,{taskId:'first',blocker:'candidate-awaiting-qa-and-deployment'});
-  let done=settleVibeTask(queue,{taskId:'other',outcome:'PASS'}).queue;
-  const next=selectVibeQueueBatch(done,{maxConcurrentTasks:4});
-  assert.equal(next.selected.some(t=>t.id==='same-next'),false);
-  assert.equal(next.stopReason,'ONLY_CONFLICTING_WORK_AVAILABLE');
+  const next=selectVibeQueueBatch(queue,{maxConcurrentTasks:4});
+  assert.equal(next.selected.some(t=>t.id==='same-next'),true);
+  assert.equal(next.selected.some(t=>t.id==='other'),true);
+  assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-next'),false);
 });
 
 test('completed single worker releases capacity before fan-in without dropping source locks or adding QA pressure', () => {
@@ -1507,4 +1509,30 @@ test('non-empty malformed queue remains fail-closed instead of being silently re
   fs.writeFileSync(queueFile,'{"version":5,','utf8');
   assert.throws(()=>runQueueCommand({command:'summary',queue:queueFile}));
   assert.equal(fs.readFileSync(queueFile,'utf8'),'{"version":5,');
+});
+
+
+test('studio quality normalization preserves unbounded max and verified design authority',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[{
+    id:'verified-design-core-v1',gameId:'verified-design',target:'roblox',sourceRoot:'roblox-games/verified-design',
+    department:'development',type:'implementation',goal:'verified design core',responsibleFiles:['server/Combat.server.luau'],
+    studioQualityEvolution:{
+      version:2,cycle:1,phase:'BUILD_UP',focusPillar:'CORE_FUN',baselineId:'source:roblox-games/verified-design',
+      designSource:'design/verified-design/2026-09-25/design-revised.json',designGrounded:true,designVerified:true,designContextAvailable:true,strictDesignScore:91,
+      approvedDesignElements:{identity:'identity',coreFun:'combat',coreLoop:['read','act','advance'],signatureSystems:[{name:'combat',purpose:'counterplay',playerChoice:'attack'}],progressionDirection:'advance'},
+      designIsImplementationCeiling:false,requiredConnectedImprovements:{min:3,max:null},realSourceDeltaRequired:true,
+      gameplaySourceDeltaRequired:true,visibleRenderDeltaRequired:false,protectedRegressionForbidden:true,nextCycleRequired:true
+    }
+  }]});
+  const contract=queue.tasks[0].studioQualityEvolution;
+  assert.equal(contract.requiredConnectedImprovements.min,3);
+  assert.equal(contract.requiredConnectedImprovements.max,null);
+  assert.equal(contract.designGrounded,true);
+  assert.equal(contract.designVerified,true);
+  assert.equal(contract.designContextAvailable,true);
+  assert.equal(contract.strictDesignScore,91);
+  assert.equal(contract.designSource,'design/verified-design/2026-09-25/design-revised.json');
+  assert.equal(contract.gameplaySourceDeltaRequired,true);
+  assert.deepEqual(contract.approvedDesignElements.coreLoop,['read','act','advance']);
+  assert.equal(contract.approvedDesignElements.signatureSystems[0].name,'combat');
 });
