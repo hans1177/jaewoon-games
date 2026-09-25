@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 11,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -211,8 +211,7 @@
     "platformEvidenceIndependent": true,
     "acceptedSources": [
       "VERIFIED_ROBLOX_RUNTIME_QA_REGRESSION",
-      "VERIFIED_UNITY_APP_RUNTIME_QA_REGRESSION",
-      "VERIFIED_ROBLOX_STUDIO_LOCAL_EXACT_BUILD_PLAY"
+      "VERIFIED_UNITY_APP_RUNTIME_QA_REGRESSION"
     ],
     "commonPortablePatterns": [
       "CORE_LOOP_IMPLEMENTATION",
@@ -242,9 +241,7 @@
     "onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate": true,
     "verifiedPatternsFeedExistingCanonicalTrainingSamples": true,
     "verifiedPatternsFeedSharedV3Memory": true,
-    "separatePlatformShadowPipelineForbidden": true,
-    "robloxStudioLocalPlayEvidenceCanFeedReuse": true,
-    "robloxStudioLocalPlayEvidenceCannotSatisfyOpenCloudRuntimeGate": true
+    "separatePlatformShadowPipelineForbidden": true
   },
   "sourceOfTruth": "company-learning/platform-release-roadmap.json#canonicalLearningChain",
   "policyAuthority": false,
@@ -352,7 +349,7 @@
     "verifiedProjectOutcomeRequiredForPositiveLearning": true,
     "existingThresholdsHoldoutCanaryUnchanged": true
   },
-  "updatedAt": "2026-09-25",
+  "updatedAt": "2026-09-24",
   "verifiedSpecializedQueueEvidenceIngress": {
     "enabled": true,
     "authority": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
@@ -408,51 +405,5 @@
       "specialized-negative-authority:FAN_IN_RUNTIME_FAILURE"
     ],
     "focusedStaticNotVerifiedIsNotRuntimeFailure": true
-  },
-  "robloxStudioVerifiedLearning": {
-    "version": 1,
-    "enabled": true,
-    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.robloxStudioUsage",
-    "sourceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
-    "requiredAuthority": "vibe2-roblox-studio-runtime",
-    "localPlaceFileRequired": true,
-    "onlinePublishedPlaceDirectOpenForbidden": true,
-    "robloxPlayerAutomationForbidden": true,
-    "exactArtifactRequired": true,
-    "exactArtifactFields": [
-      "sourceRevision",
-      "artifactIdentity",
-      "artifactRunId"
-    ],
-    "publishedCandidateCrossCheckFields": [
-      "universeId",
-      "placeId",
-      "versionNumber"
-    ],
-    "publishedCandidateCrossCheckAuthority": "OPEN_CLOUD",
-    "requiredCapabilities": [
-      "studioTestService",
-      "virtualInput"
-    ],
-    "requiredObservedBehavior": [
-      "AT_LEAST_ONE_DISPATCHED_INPUT",
-      "AT_LEAST_ONE_REQUIRED_CHECKPOINT",
-      "ALL_REQUIRED_CHECKPOINTS_PASS",
-      "ZERO_RUNTIME_ERRORS"
-    ],
-    "rawSourceIncludedRequired": false,
-    "rawGameplayValuesIncludedRequired": false,
-    "canonicalIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience",
-    "canonicalExperienceStore": ".vibe2/experience.json",
-    "canonicalRetrieval": "tools/vibe2-learning-motor.mjs#retrieveUnifiedLearning",
-    "feedsCanonicalTrainingSamplesOnlyThroughExistingVerifiedDistillationChain": true,
-    "directRawTelemetryTraining": false,
-    "directRawSourceTraining": false,
-    "separatePipelineForbidden": true,
-    "separateTrainerForbidden": true,
-    "onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate": true,
-    "studioEvidenceCannotPublishOrDiscoverPublicationTarget": true,
-    "supersededSharedTargetEvidenceRejected": true,
-    "publishedCandidateMustBeCurrentWhenShared": true
   }
 }
