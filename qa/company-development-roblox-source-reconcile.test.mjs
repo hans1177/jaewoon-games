@@ -146,6 +146,41 @@ test('bound Roblox games re-enter reconciliation only when their own source tree
   }
 });
 
+
+test('SOURCE_BIND routing preserves existing exact Roblox evidence when only unrelated repository files changed',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-bind-unchanged-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    initGitRepo(tmp);
+    const boundRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    fs.writeFileSync(path.join(tmp,'homepage-only.txt'),'unrelated change\n');
+    execFileSync('git',['add','homepage-only.txt'],{cwd:tmp});
+    execFileSync('git',['commit','-m','unrelated repository change'],{cwd:tmp,stdio:'ignore'});
+    const currentRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={
+      ...staleItem(),
+      robloxSourceCommit:boundRevision,
+      robloxBuildOrPackagePassed:true,
+      robloxBuildSourceRevision:boundRevision,
+      robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+      robloxBuildPreflightPassed:true,
+      robloxFoundationF0Passed:true,
+    };
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:currentRevision,
+      loadBaseline:()=>baseline,
+      assetLibrary:companyAssetLibrary,
+    });
+    assert.equal(rows.length,0,'unchanged exact game path must not be rebound to unrelated main revision');
+    assert.notEqual(boundRevision,currentRevision);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('Roblox runtime source rebind atomically invalidates stale downstream evidence',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(workflow,/Revalidate exact-main Roblox source already merged/);
