@@ -535,22 +535,22 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T16:11:07.632Z",
-      "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
-      "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
+      "updatedAt": "2026-09-25T16:23:35.186Z",
+      "robloxSourceCommit": "a6e70ed3eae33f9c298675a8a2441eb68602776c",
+      "robloxSourceBootstrapPassedAt": "2026-09-25T16:23:35.186Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
-      "robloxBuildArtifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
-      "robloxBuildPassedAt": "2026-09-25T07:10:43.327Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-25T07:10:43.327Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -662,7 +662,7 @@
         "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -770,7 +770,7 @@
       "robloxF9ReleaseRegressionPassed": false,
       "robloxF9ReleaseRegressionEvidence": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxInternalReleaseReady": true,
+      "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": "2026-09-25T07:11:09.865Z",
       "robloxInternalReleaseEvidence": {
         "version": 3,
@@ -799,11 +799,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-studio-mcp-infrastructure-pending"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -814,7 +814,7 @@
         "capturedAt": "2026-09-25T07:09:56.124Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
@@ -960,8 +960,14 @@
       },
       "robloxDedicatedExperiencePublished": true,
       "robloxDedicatedExperiencePublishedAt": "2026-09-25T14:08:10.303Z",
-      "robloxFastMvpPublished": true,
-      "robloxFastMvpPublishedAt": "2026-09-25T14:08:10.303Z"
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
+      "robloxHeadlessPassedAt": null,
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
+        "newSourceRevision": "a6e70ed3eae33f9c298675a8a2441eb68602776c",
+        "invalidatedAt": "2026-09-25T16:23:35.186Z"
+      }
     },
     {
       "gameId": "horror-escape-room",
@@ -6402,7 +6408,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T16:11:07.632Z",
+  "updatedAt": "2026-09-25T16:23:35.186Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
