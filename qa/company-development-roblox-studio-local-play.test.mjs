@@ -288,9 +288,9 @@ test('Studio MCP diagnostics expose installed version and available tool invento
 });
 
 
-test('automatic Roblox Studio MCP scans dedupe push noise while preserving exact-game and scheduled isolation',()=>{
+test('automatic Roblox Studio MCP scans supersede stale pushes while preserving exact-game and scheduled isolation',()=>{
   assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'schedule' && 'scheduled-scan'\) \|\| \(github\.event_name == 'workflow_dispatch' && 'manual-scan'\) \|\| 'automatic-scan' \}\}/);
-  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/cancel-in-progress: \${\{ github\.event_name == 'push' \}\}/);
   assert.match(workflow,/scheduled-scan/);
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
