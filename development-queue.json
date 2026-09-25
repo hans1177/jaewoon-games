@@ -847,8 +847,8 @@
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": true,
         "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
-        "studioMcpServerEnablementRequired": false,
-        "operatorPrerequisite": null,
+        "studioMcpServerEnablementRequired": true,
+        "operatorPrerequisite": "ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT",
         "localPlaceFile": true,
         "officialStudioMcp": true,
         "onlinePlaceDirectOpen": false,
@@ -863,8 +863,6 @@
         "placeId": "126302702438348",
         "versionNumber": 22,
         "historicalSharedTargetExactArtifact": true,
-        "historicalExactBuildReplay": false,
-        "currentSourceArtifactBinding": true,
         "currentPublishedRuntimeClaim": false,
         "publishedCandidateCrossCheckPassed": true,
         "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
@@ -881,7 +879,7 @@
           {
             "type": "studio-mcp-infrastructure-or-runtime-error",
             "actionId": null,
-            "signature": "MCP_RUN_DID_NOT_PRODUCE_EVIDENCE"
+            "signature": "ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios,get_studio_state,start_stop_play,get_console_output,screen_capture,user_keyboard_input,user_mouse_input,character_navigation:available=:protocol=2024-11-05:server=RobloxStudio:stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT:settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY"
           }
         ],
         "runtimeSummary": {
@@ -898,10 +896,12 @@
         "rawViewportIncluded": false,
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T16:49:10.890Z",
-        "workflowRunId": 36162579697,
+        "testedAt": "2026-09-25T16:11:07.632Z",
+        "workflowRunId": 36158793991,
         "publicationAuthority": false,
-        "publicationTargetDiscovery": false
+        "publicationTargetDiscovery": false,
+        "historicalExactBuildReplay": false,
+        "currentSourceArtifactBinding": true
       },
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
