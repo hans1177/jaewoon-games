@@ -90,7 +90,10 @@ jobs:
           const revision=String(item.robloxSourceCommit||'').trim();
           const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
-          const headlessMode=item.robloxValidationMode==='HEADLESS_FAST_MVP';
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const canonicalRobloxValidationMode=String(roadmap?.roblox?.validationMode||'').trim().toUpperCase();
+          const f0EvidenceMode=String(item.robloxFoundationF0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();
+          const headlessMode=canonicalRobloxValidationMode==='HEADLESS_FAST_MVP'&&f0EvidenceMode==='HEADLESS_SOURCE_PREFLIGHT_F0';
           const artifactRunId=Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||item.robloxRuntimeEvidence?.artifactRunId||0);
           const currentCandidate=item.robloxRuntimeCandidateEvidence?.published===true
             &&item.robloxRuntimeCandidateEvidence?.sourceRevision===revision
@@ -123,6 +126,10 @@ jobs:
             &&item.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
             &&item.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
           const canonical=commonCanonical&&headlessCanonical;
+          console.log(`ROBLOX_RELEASE_CANONICAL_VALIDATION_MODE=${canonicalRobloxValidationMode||'MISSING'}`);
+          console.log(`ROBLOX_RELEASE_F0_EVIDENCE_MODE=${f0EvidenceMode||'MISSING'}`);
+          console.log(`ROBLOX_RELEASE_COMMON_CANONICAL=${commonCanonical?'YES':'NO'}`);
+          console.log(`ROBLOX_RELEASE_HEADLESS_CANONICAL=${headlessCanonical?'YES':'NO'}`);
           if(!canonical)throw new Error(`ROBLOX_RELEASE_CANONICAL_GATE_BLOCKED:${gameId}`);
 
           const validIds=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim());
@@ -136,7 +143,6 @@ jobs:
             &&Number(row.artifactRunId)===artifactRunId
           );
           const evidenceTarget=targetEvidence?.publicationTarget||{};
-          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const ownerPinned=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
           const exactCandidates=[
             {source:'company-runtime-publication-target',target:persistedTarget,valid:validIds(persistedTarget)&&persistedTarget.verified===true},
