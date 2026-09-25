@@ -302,7 +302,14 @@ class McpStdioClient{
     });
   }
   notify(method,params={}){this.send({jsonrpc:'2.0',method,params});}
-  tool(name){const t=this.tools.get(name);if(!t)throw new Error('ROBLOX_STUDIO_MCP_TOOL_MISSING:'+name);return t;}
+  tool(name){
+    const t=this.tools.get(name);
+    if(!t){
+      const available=[...this.tools.keys()].sort();
+      throw new Error('ROBLOX_STUDIO_MCP_TOOL_MISSING:'+name+':available='+available.join(','));
+    }
+    return t;
+  }
   async call(name,args={}){
     const result=await this.request('tools/call',{name,arguments:args});
     if(result?.isError===true)throw new Error(`ROBLOX_STUDIO_MCP_TOOL_ERROR:${name}:${flattenText(result).join(' | ').slice(0,1000)}`);
