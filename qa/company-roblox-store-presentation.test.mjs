@@ -41,3 +41,26 @@ test('thumbnail compositor requires three distinct gameplay frames and emits 3 c
   assert.match(src,/\(1920,1080\)/);
   assert.match(src,/\(512,512\)/);
 });
+
+test('missing explicit English title falls back to gameId English slug',()=>{
+  const r=resolveRobloxBilingualTitle({
+    gameId:'bug-defense',
+    launch:{gameName:'곤충 디펜스'}
+  });
+  assert.equal(r.displayName,'Bug Defense | 곤충 디펜스');
+  assert.equal(r.verifiedBilingual,true);
+});
+
+test('long marketing tags are removed before failing the Roblox title length contract',()=>{
+  const r=resolveRobloxBilingualTitle({
+    gameId:'cozy-island',
+    launch:{
+      robloxTitleEnglish:'[ISLAND CONQUEST] Cozy Island: Build a Tiny Kingdom',
+      robloxTitleKorean:'[섬 정복] 포근섬: 작은 왕국 키우기',
+      gameTitleEn:'Cozy Island: Build a Tiny Kingdom',
+      gameTitleKo:'포근섬: 작은 왕국 키우기'
+    }
+  });
+  assert.match(r.displayName,/^Cozy Island \| 포근섬$/);
+  assert.ok(Array.from(r.displayName).length<=50);
+});
