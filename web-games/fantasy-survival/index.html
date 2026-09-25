@@ -863,7 +863,8 @@ function grantCropLoot(type){
  addInv(cropItemId(type),2);addInv(cropSeedId(type),1);showNotice((type==='carrot'?'당근':'야채')+' 수확 · 2개 + 씨앗 1개');state.dirty=true;updateHud();renderPanel()
 }
 function harvestCrop(c){
- if(!c)return;const remain=(Number(c.readyAt)||0)-Date.now();if(remain>0){showNotice('아직 자라는 중 · '+Math.ceil(remain/1000)+'초');return}
+ if(!c)return;if(state.area!=='surface'||dist(state.player.x,state.player.y,c.x,c.y)>140){showNotice('작물 가까이 가야 수확할 수 있어');return}
+ const remain=(Number(c.readyAt)||0)-Date.now();if(remain>0){showNotice('아직 자라는 중 · '+Math.ceil(remain/1000)+'초');return}
  if(multiplayer.connected&&!multiIsHost()){multiSend('crop-harvest',{id:c.id,targetId:multiplayer.playerId});return}
  const i=state.crops.findIndex(v=>v.id===c.id);if(i<0)return;const type=state.crops[i].type;state.crops.splice(i,1);grantCropLoot(type);if(multiplayer.connected)multiplayer.worldAt=0;saveGame(false)
 }
@@ -879,7 +880,8 @@ function grantSnowOutpostLoot(){
  showNotice('설원 상자 · 야채 10개 · 꿩고기 5개');state.dirty=true;updateHud();saveGame(false)
 }
 function openSnowOutpostChest(index){
- const o=SNOW_OUTPOSTS[index];if(!o)return;if(state.snowChests[index]){showNotice('빈 상자야');return}
+ const o=SNOW_OUTPOSTS[index];if(!o)return;if(state.area!=='surface'||dist(state.player.x,state.player.y,o.chest.x,o.chest.y)>150){showNotice('상자 가까이 가야 열 수 있어');return}
+ if(state.snowChests[index]){showNotice('빈 상자야');return}
  if(multiplayer.connected&&!multiIsHost()){multiSend('snow-chest-open',{index,targetId:multiplayer.playerId});return}
  state.snowChests[index]=true;grantSnowOutpostLoot();if(multiplayer.connected)multiplayer.worldAt=0
 }
