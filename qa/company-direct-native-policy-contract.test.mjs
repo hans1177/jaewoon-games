@@ -36,8 +36,9 @@ test('canonical policy routes new Roblox and Unity work through the Unity Web re
   assert.equal(fan?.sourceTreeExactMatchRequired,true);
   assert.equal(fan?.nativeEvidenceStillRequired,true);
   assert.equal(direct.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
-  assert.deepEqual(direct.upperPlatformAdmissionMigration?.grandfatherGameIds,['cozy-island','daechung-rpg']);
+  assert.deepEqual(direct.upperPlatformAdmissionMigration?.grandfatherGameIds,['cozy-island','daechung-rpg','horror-escape-room']);
   assert.equal(direct.upperPlatformAdmissionMigration?.allOtherDevelopmentConfirmedMustRunUnityWebFloor,true);
+  assert.equal(direct.upperPlatformAdmissionMigration?.releasedGameEvidenceOverridesMissingGrandfatherList,true);
   assert.equal(direct.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,true);
   assert.equal(direct.orchestrationConcurrency?.globalSerializationForbidden,true);
   assert.equal(direct.orchestrationConcurrency?.distinctGamesParallel,true);
@@ -255,14 +256,15 @@ test('native executors cannot bypass Unity Web upper-platform readiness',()=>{
   }
   assert.match(unity,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
   assert.match(roblox,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,['cozy-island','daechung-rpg']);
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,['cozy-island','daechung-rpg','horror-escape-room']);
 });
 
-test('Unity Web source bootstrap is fail-closed and excludes the two owner-grandfathered games',()=>{
+test('Unity Web source bootstrap is fail-closed for central grandfather scope and existing native releases',()=>{
   const workflow=fs.readFileSync('.github/workflows/unity-web-floor-source-bootstrap.yml','utf8');
   const generator=fs.readFileSync('tools/company-unity-web-floor-bootstrap.mjs','utf8');
-  assert.match(workflow,/cozy-island/);
-  assert.match(workflow,/daechung-rpg/);
+  assert.match(workflow,/platform-release-roadmap\.json/);
+  assert.match(workflow,/upperPlatformAdmissionMigration\?\.grandfatherGameIds/);
+  assert.match(workflow,/UNITY_WEB_BOOTSTRAP_EXISTING_NATIVE_RELEASE_FORBIDDEN/);
   assert.match(workflow,/UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN/);
   assert.match(workflow,/company-unity-web-floor-bootstrap\.mjs/);
   assert.match(workflow,/git add "unity-games\/\$id"/);

@@ -1,5 +1,5 @@
 {
-  "version": 381,
+  "version": 382,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -7260,10 +7260,12 @@
       "authority": "OWNER_DIRECTIVE_2026-09-26",
       "grandfatherGameIds": [
         "cozy-island",
-        "daechung-rpg"
+        "daechung-rpg",
+        "horror-escape-room"
       ],
       "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
-      "releaseOrDeploymentAuthority": false
+      "releaseOrDeploymentAuthority": false,
+      "existingReleasedGamePreservation": "RUNTIME_RELEASE_EVIDENCE_ALWAYS_WINS_OVER_LIST_OMISSION"
     }
   },
   "vibeExecutionLaneContract": {
@@ -21589,19 +21591,21 @@
       "releaseOrDeploymentAuthority": false
     },
     "upperPlatformAdmissionMigration": {
-      "version": 2,
+      "version": 3,
       "existingNativeDevelopmentGrandfathered": true,
       "newNativeDevelopmentStartRequiresUnityWebReadiness": true,
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true,
-      "rule": "ONLY_COZY_ISLAND_AND_DAECHUNG_RPG_KEEP_GRANDFATHERED_NATIVE_PROGRESS; ALL_OTHER_DEVELOPMENT_CONFIRMED_GAMES_ENTER_UNITY_WEB_FLOOR",
+      "rule": "EXISTING_INTERNAL_OR_PUBLIC_NATIVE_RELEASE_IS_ALWAYS_PRESERVED; EXPLICIT_GRANDFATHER_IDS_MAY_PRESERVE_OTHER_PRE_GATE_NATIVE_PROGRESS; ALL_OTHER_DEVELOPMENT_CONFIRMED_GAMES_ENTER_UNITY_WEB_FLOOR",
       "grandfatherGameIds": [
         "cozy-island",
-        "daechung-rpg"
+        "daechung-rpg",
+        "horror-escape-room"
       ],
       "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
-      "existingNativeRuntimeQaRepairMayContinueForGrandfatheredOnly": true
+      "existingNativeRuntimeQaRepairMayContinueForGrandfatheredOnly": true,
+      "releasedGameEvidenceOverridesMissingGrandfatherList": true
     },
     "orchestrationConcurrency": {
       "version": 1,
