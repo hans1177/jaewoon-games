@@ -285,9 +285,10 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(studioMcpBlock,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
   assert.match(studioMcpBlock,/Roblox\\mcp\.bat/);
   assert.match(studioMcpBlock,/StudioMCP\.exe/);
-  assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
-  assert.match(studioMcpBlock,/\(\?im\)\^\\s\*else\\b/);
-  assert.match(studioMcpBlock,/%B\[\/\\\\\]\\\.\\\.\[\/\\\\\]StudioMCP\\\.exe/);
+  assert.match(studioMcpBlock,/ROBLOX_DOCUMENTED_MCP_BATCH/);
+  assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING/);
+  assert.doesNotMatch(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
+  assert.doesNotMatch(studioMcpBlock,/knownBrokenBatch|batchText = Get-Content \$mcpBat/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POLICY=PASS/);
@@ -321,6 +322,17 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
   assert.doesNotMatch(helper,/args:\['\/d','\/s','\/c',resolved\]/);
   assert.match(helper,/this\.stderrTail=\(this\.stderrTail\+value\)\.slice\(-6000\)/);
   assert.match(helper,/stderr=\$\{detail\}/);
+});
+
+test('Windows workflow prefers Roblox documented mcp.bat whenever it exists',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const batCheck=studioMcpBlock.indexOf("if (Test-Path $mcpBat)");
+  const documented=studioMcpBlock.indexOf("$mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'");
+  const exeFallback=studioMcpBlock.indexOf("OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING");
+  assert.ok(batCheck>0);
+  assert.ok(documented>batCheck);
+  assert.ok(exeFallback>documented);
+  assert.doesNotMatch(studioMcpBlock,/knownBrokenBatch|OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{

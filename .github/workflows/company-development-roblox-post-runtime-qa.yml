@@ -793,18 +793,14 @@ jobs:
             throw 'Official Roblox Studio MCP launcher and StudioMCP.exe not found'
           }
 
-          $mcpCommand = $mcpBat
-          $mcpLaunchKind = 'ROBLOX_GENERATED_MCP_BATCH'
           if (Test-Path $mcpBat) {
-            $batchText = Get-Content $mcpBat -Raw -ErrorAction SilentlyContinue
-            $knownBrokenBatch = ($batchText -match '(?im)^\s*else\b') -or ($batchText -match '(?i)%B[/\\]\.\.[/\\]StudioMCP\.exe') -or ($batchText -match '(?m)\)\s*\r?\n\s*else\s*\(')
-            if ($knownBrokenBatch -and $mcpExe -and (Test-Path $mcpExe)) {
-              $mcpCommand = $mcpExe
-              $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH'
-            }
+            $mcpCommand = $mcpBat
+            $mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'
           } elseif ($mcpExe -and (Test-Path $mcpExe)) {
             $mcpCommand = $mcpExe
             $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING'
+          } else {
+            throw 'Official Roblox Studio MCP launcher unavailable'
           }
 
           if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
