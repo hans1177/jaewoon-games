@@ -152,6 +152,49 @@ test('Roblox full graphics first source-worker attempt completes as a full packa
   assert.match(candidate,/weapon\.Orientation\s*=/);
 });
 
+test('Roblox full graphics keeps package mode after repeated no-op failures',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-full-graphics-package-state'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve full Roblox graphics and native motion without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const weak1=path.join(cwd,'noop-1.json');
+  const weak2=path.join(cwd,'noop-2.json');
+  const strong=path.join(cwd,'strong-package.json');
+  const noOp={edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  }]};
+  write(weak1,JSON.stringify(noOp));
+  write(weak2,JSON.stringify(noOp));
+  write(strong,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:robloxFullGraphicsMotionPatch('112,142,178')
+  }]}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[weak1,weak2,strong]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.generation.robloxFullGraphicsInitialPackage,true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/SwordEquipment/);
+  assert.match(candidate,/TerrainRockEnvironment/);
+  assert.match(candidate,/RenderStepped/);
+});
+
 test('Roblox full graphics domain recovery keeps a connected multi-edit package instead of collapsing to one edit',()=>{
   const prompt=[
     '[PRESENTATION_PASS:ASSET_ADAPTATION]',
