@@ -1,5 +1,5 @@
 {
-  "version": 183,
+  "version": 184,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2891,7 +2891,10 @@
       "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true,
       "mcpOfficialBinaryFallbackWindows": "%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe",
       "generatedBatchRewrite": false,
-      "thirdPartyBridge": false
+      "thirdPartyBridge": false,
+      "infrastructureRecovery": "OFFICIAL_STUDIO_AND_MCP_CLIENT_RESTART_ONLY",
+      "assistantSettingsMutation": false,
+      "guiToggleAutomation": false
     }
   },
   "ownerRule2Topology": {
@@ -3227,7 +3230,19 @@
       "windowsMcpPrimaryLauncher": "%LOCALAPPDATA%\\Roblox\\mcp.bat",
       "windowsMcpOfficialBinaryFallback": "%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe",
       "generatedBatchBrokenOrStaleAction": "DIRECT_OFFICIAL_STUDIOMCP_EXE_NO_BATCH_REWRITE",
-      "thirdPartyMcpBridge": false
+      "thirdPartyMcpBridge": false,
+      "mcpUnavailableRecovery": {
+        "executor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
+        "helper": "tools/company-development-roblox-studio-local-play.mjs",
+        "automaticSessionAttempts": 3,
+        "perSessionToolProbe": "5_ATTEMPTS_X_1000MS",
+        "ownedStudioRestart": true,
+        "mcpClientRestart": true,
+        "assistantSettingsReadOnlyDiagnostic": true,
+        "assistantSettingsMutation": false,
+        "guiToggleAutomation": false,
+        "finalState": "STUDIO_MCP_INFRASTRUCTURE_PENDING"
+      }
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",

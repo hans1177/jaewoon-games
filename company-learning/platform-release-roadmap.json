@@ -1,5 +1,5 @@
 {
-  "version": 371,
+  "version": 372,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1007,7 +1007,30 @@
       "generatedBatchFallbackAction": "USE_INSTALLED_OFFICIAL_STUDIOMCP_EXE_DIRECTLY",
       "generatedBatchRewriteForbidden": true,
       "thirdPartyMcpBridgeForbidden": true,
-      "fallbackMustRemainInsideRobloxInstalledVersions": true
+      "fallbackMustRemainInsideRobloxInstalledVersions": true,
+      "mcpUnavailableRecovery": {
+        "mode": "OFFICIAL_RESTART_ONLY",
+        "authority": "ROBLOX_OFFICIAL_MCP_TROUBLESHOOTING",
+        "sequence": [
+          "CAPTURE_ASSISTANT_MCP_SETTING_DIAGNOSTIC_READ_ONLY",
+          "SHORT_TOOL_READINESS_PROBE",
+          "CLOSE_OWNED_STUDIO_PROCESS",
+          "RELAUNCH_EXACT_LOCAL_PLACE",
+          "RESTART_MCP_CLIENT",
+          "REPROBE_REQUIRED_TOOLS"
+        ],
+        "automaticSessionAttempts": 3,
+        "toolReadinessAttemptsPerSession": 5,
+        "toolReadinessDelayMs": 1000,
+        "assistantSettingsDiagnosticOnly": true,
+        "assistantSettingsMutationForbidden": true,
+        "guiToggleAutomationForbidden": true,
+        "externalGuiAutomationForbidden": true,
+        "robloxPlayerAutomationForbidden": true,
+        "thirdPartyBridgeForbidden": true,
+        "finalFailureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "infrastructureFailureMustNotBecomeGameFailure": true
+      }
     },
     "headlessValidation": {
       "version": 2,
@@ -4610,7 +4633,10 @@
         "rawViewportDirectLearningForbidden": true,
         "actualVibePlayTransport": "OFFICIAL_STUDIO_MCP_STDIO_ROBLOX_BATCH_WITH_INSTALLED_STUDIOMCP_EXE_FALLBACK",
         "generatedBatchRepairPolicy": "DO_NOT_REWRITE_USE_OFFICIAL_INSTALLED_STUDIOMCP_EXE_FALLBACK",
-        "thirdPartyMcpBridgeForbidden": true
+        "thirdPartyMcpBridgeForbidden": true,
+        "studioMcpUnavailableRecovery": "RESTART_OWNED_STUDIO_AND_MCP_CLIENT_UP_TO_3_SESSIONS_THEN_KEEP_INFRASTRUCTURE_PENDING",
+        "studioMcpAssistantSettingMutationForbidden": true,
+        "studioMcpGuiToggleAutomationForbidden": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
