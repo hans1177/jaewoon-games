@@ -1318,8 +1318,3 @@ jobs:
             Write-Host "ROBLOX_STUDIO_MCP_PROCESS_REAPED=$ownedId"
           }
 
-          $ErrorActionPreference = 'Continue'
-          if ($env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
-            Stop-Process -Id ([int]$env:VIBE2_STUDIO_PROCESS_ID) -Force -ErrorAction SilentlyContinue
-            Write-Host "ROBLOX_STUDIO_MCP_PROCESS_REAPED=$env:VIBE2_STUDIO_PROCESS_ID"
-          }
