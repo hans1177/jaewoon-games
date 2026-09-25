@@ -414,11 +414,25 @@ class McpStdioClient{
       if(attempt<Math.max(1,Number(attempts)||1))await wait(Math.max(100,Number(delayMs)||1500));
     }
     const missing=required.filter(name=>!this.tools.has(name));
+    const stderrRaw=clean(this.stderrTail).replace(/\s+/g,' ');
+    const stderrRedacted=stderrRaw
+      .replace(/[A-Za-z]:\\\\Users\\\\[^\\\\]+/gi,'%USERPROFILE%')
+      .replace(/[A-Za-z]:\/Users\/[^/]+/gi,'%USERPROFILE%')
+      .slice(-1200);
+    const stderrLower=stderrRedacted.toLowerCase();
+    const stderrHint=!stderrRedacted?'EMPTY'
+      :/no studio|unable to find an active studio|studio[^.]{0,80}(?:not available|unavailable|not connected)/i.test(stderrRedacted)?'NO_ACTIVE_STUDIO'
+      :/enable studio as mcp|mcp[^.]{0,80}(?:disabled|not enabled)/i.test(stderrRedacted)?'MCP_SERVER_NOT_ENABLED'
+      :/websocket|connection refused|failed to connect|connection closed/i.test(stderrLower)?'STUDIO_PROXY_CONNECTION'
+      :'NONEMPTY';
+    console.log('ROBLOX_STUDIO_MCP_STDERR_HINT='+stderrHint);
+    if(stderrRedacted)console.log('ROBLOX_STUDIO_MCP_STDERR_REDACTED='+stderrRedacted);
     throw new Error(
       'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing='+missing.join(',')
       +':available='+names.sort().join(',')
       +':protocol='+clean(this.protocolVersion)
       +':server='+clean(this.serverInfo?.name)
+      +':stderrHint='+stderrHint
     );
   }
   onLine(line){
