@@ -4007,7 +4007,12 @@
       "coding_negative_j3rmi2",
       "coding_negative_k5xkgh",
       "coding_negative_z7t7l2",
-      "coding_negative_14qbbds"
+      "coding_negative_14qbbds",
+      "coding_negative_6l87ok",
+      "coding_negative_yjw5nx",
+      "coding_negative_1v6wkoq",
+      "coding_negative_ggwu1g",
+      "coding_negative_jyseiq"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -5212,7 +5217,7 @@
         "verifiedApplications": 216,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 477,
-        "verifiedFailures": 710,
+        "verifiedFailures": 715,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -5271,13 +5276,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 139,
-            "verifiedFailures": 369,
+            "verifiedFailures": 372,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 334,
             "totalContextBytes": 4377796,
             "lastEvidence": "coding_nwrwl2",
-            "lastFailureEvidence": "coding_negative_z7t7l2",
-            "lastUpdatedAt": "2026-09-25T20:41:59.632Z"
+            "lastFailureEvidence": "coding_negative_1v6wkoq",
+            "lastUpdatedAt": "2026-09-25T20:56:47.117Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -7038,21 +7043,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 17,
+            "verifiedFailures": 18,
             "games": {},
             "targets": {},
             "failureGames": {
-              "daechung-rpg": 17
+              "daechung-rpg": 18
             },
             "failureTargets": {
-              "unity": 17
+              "unity": 18
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 17
+              "INCREMENTAL_QA": 18
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_z7t7l2",
-            "lastUpdatedAt": "2026-09-25T20:41:59.632Z"
+            "lastFailureEvidence": "coding_negative_6l87ok",
+            "lastUpdatedAt": "2026-09-25T20:56:47.115Z"
           },
           "web|NO_OP|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CONCEPT_DIRECTION|CORE_LOOP|ECONOMY|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_REPLICATION|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UEFN_REPLICATION|UEFN_RUNTIME|UI_STATE|UNITY_RUNTIME|WEB_RUNTIME": {
             "verifiedApplications": 0,
@@ -7209,21 +7214,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 7,
+            "verifiedFailures": 8,
             "games": {},
             "targets": {},
             "failureGames": {
-              "bug-defense": 7
+              "bug-defense": 8
             },
             "failureTargets": {
-              "roblox": 7
+              "roblox": 8
             },
             "failureClasses": {
-              "EDIT_MATCH": 7
+              "EDIT_MATCH": 7,
+              "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_124wh4",
-            "lastUpdatedAt": "2026-09-25T02:56:21.148Z"
+            "lastFailureEvidence": "coding_negative_yjw5nx",
+            "lastUpdatedAt": "2026-09-25T20:56:47.116Z"
           },
           "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS": {
             "verifiedApplications": 0,
@@ -7479,28 +7485,48 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 2,
+            "verifiedFailures": 4,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 1,
-              "line-defense": 1
+              "cozy-island": 2,
+              "line-defense": 2
             },
             "failureTargets": {
-              "roblox": 2
+              "roblox": 4
             },
             "failureClasses": {
-              "EDIT_MATCH": 2
+              "EDIT_MATCH": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_14qbbds",
-            "lastUpdatedAt": "2026-09-25T20:41:59.635Z"
+            "lastFailureEvidence": "coding_negative_jyseiq",
+            "lastUpdatedAt": "2026-09-25T20:56:47.120Z"
+          },
+          "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-idle-growth-rpg-crystal-bloom": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1v6wkoq",
+            "lastUpdatedAt": "2026-09-25T20:56:47.117Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_nwrwl2",
-        "lastFailureEvidence": "coding_negative_14qbbds",
-        "lastUpdatedAt": "2026-09-25T20:41:59.635Z"
+        "lastFailureEvidence": "coding_negative_jyseiq",
+        "lastUpdatedAt": "2026-09-25T20:56:47.120Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 557,
@@ -11950,7 +11976,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-25T20:41:59.651Z",
+    "lastBuiltAt": "2026-09-25T20:56:47.138Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -17779,5 +17805,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-25T20:41:59.651Z"
+  "updatedAt": "2026-09-25T20:56:47.138Z"
 }
