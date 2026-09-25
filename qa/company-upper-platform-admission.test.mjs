@@ -118,7 +118,7 @@ test('any durable native progress continues without backtracking, regardless of 
     for(const item of [
       {...baseItem('existing-source'),robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'},
       {...baseItem('existing-build'),robloxBuildOrPackagePassed:true},
-      {...baseItem('existing-runtime'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'},
+      {...baseItem('existing-runtime'),robloxRuntimeCandidateEvidence:{published:true}},
       {...baseItem('existing-unity'),unityRuntimePassed:true},
     ]){
       const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
@@ -126,6 +126,18 @@ test('any durable native progress continues without backtracking, regardless of 
       assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
       assert.equal(result.grandfathered,true);
     }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('a native-looking currentStep without durable evidence cannot bypass the Unity Web gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-step-only-'));
+  try{
+    const item={...baseItem('step-only'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
+    let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    write(root,'unity-games/step-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
+    result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
