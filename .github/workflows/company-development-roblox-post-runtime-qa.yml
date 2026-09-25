@@ -793,9 +793,13 @@ jobs:
             throw 'Official Roblox Studio MCP launcher and StudioMCP.exe not found'
           }
 
+          $mcpFallbackCommand = ''
           if (Test-Path $mcpBat) {
             $mcpCommand = $mcpBat
             $mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'
+            if ($mcpExe -and (Test-Path $mcpExe)) {
+              $mcpFallbackCommand = $mcpExe
+            }
           } elseif ($mcpExe -and (Test-Path $mcpExe)) {
             $mcpCommand = $mcpExe
             $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING'
@@ -880,6 +884,7 @@ jobs:
 
           "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcpCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND=$mcpFallbackCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $studioVersion = (Get-Item $studio).VersionInfo.ProductVersion
           $mcpVersion = if ($mcpExe -and (Test-Path $mcpExe)) { (Get-Item $mcpExe).VersionInfo.ProductVersion } else { 'NONE' }
@@ -935,13 +940,19 @@ jobs:
           "VIBE2_STUDIO_RUNTIME_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $maxSessionAttempts = 3
           $success = $false
+          $enablementRequired = $false
 
           for ($attempt = 1; $attempt -le $maxSessionAttempts; $attempt++) {
             if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
+            $mcpCommandForAttempt = $env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND
+            if ($attempt -gt 1 -and $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) {
+              $mcpCommandForAttempt = $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND
+              Write-Host "ROBLOX_STUDIO_MCP_TRANSPORT_FALLBACK=OFFICIAL_STUDIOMCP_EXE:attempt=$attempt"
+            }
             Write-Host "ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=$attempt/$maxSessionAttempts"
             $runnerArgs = @(
               '--mode=mcp-run',
-              "--mcp-command=$env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND",
+              "--mcp-command=$mcpCommandForAttempt",
               "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
               "--output=$result",
               '--timeout=15000',
@@ -955,7 +966,17 @@ jobs:
               break
             }
 
-            if (Test-Path $result) { Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result" }
+            if (Test-Path $result) {
+              Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result"
+              $failureSignature = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));process.stdout.write(String(r?.errors?.[0]?.signature||''))" $result).Trim()
+              if ($LASTEXITCODE -ne 0) { throw 'Studio MCP failure evidence parse failed' }
+              if (($mcpCommandForAttempt -eq $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) -and ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')) {
+                $enablementRequired = $true
+                Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT'
+                Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
+                break
+              }
+            }
             if ($attempt -ge $maxSessionAttempts) { break }
 
             Write-Host "ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt"
@@ -973,6 +994,9 @@ jobs:
 
           if (-not $success) {
             Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED"
+            if ($enablementRequired) {
+              throw 'official Roblox Studio MCP tools unavailable; enable Studio as MCP server in Assistant'
+            }
             throw 'official Roblox Studio MCP play failed after 3 official restart sessions'
           }
           Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=PASS'
