@@ -834,10 +834,17 @@ jobs:
           Write-Host "ROBLOX_STUDIO_MCP_SETTING_PARSE_ERROR_COUNT=$parseErrorCount"
           Write-Host 'ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO'
 
-          $settingBlocked = $settingState -in @('NO','MISSING')
+          $settingConfirmed = $settingState -eq 'YES'
+          $settingBlocked = -not $settingConfirmed
+          "setting_confirmed=$($settingConfirmed.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "setting_blocked=$($settingBlocked.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           if ($settingBlocked) {
             $blockedResult = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
+            $settingSignature = if ($settingState -in @('NO','MISSING')) {
+              "ROBLOX_STUDIO_MCP_SETTING_ENABLE_REQUIRED:$settingState"
+            } else {
+              "ROBLOX_STUDIO_MCP_SETTING_ENABLE_NOT_CONFIRMED:$settingState"
+            }
             @{
               version = 1
               authority = 'roblox-official-studio-mcp-runtime'
@@ -854,7 +861,7 @@ jobs:
               errors = @(@{
                 type = 'studio-mcp-infrastructure-or-runtime-error'
                 actionId = $null
-                signature = "ROBLOX_STUDIO_MCP_SETTING_ENABLE_REQUIRED:$settingState"
+                signature = $settingSignature
               })
               metrics = @{
                 distinctFrameChange = $false
@@ -866,6 +873,8 @@ jobs:
             } | ConvertTo-Json -Depth 8 | Out-File -FilePath $blockedResult -Encoding utf8
             "VIBE2_STUDIO_RUNTIME_RESULT=$blockedResult" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             Write-Host "ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_IN_STUDIO_ASSISTANT_UI:$settingState"
+            Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
+            Write-Host 'ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=SKIPPED_UNTIL_SETTING_CONFIRMED'
           }
 
           "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
