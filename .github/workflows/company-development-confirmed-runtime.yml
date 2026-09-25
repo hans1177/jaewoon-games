@@ -19,6 +19,10 @@ on:
       - 'company-learning/company-architecture-map.json'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-minimum-design-contract.test.mjs'
+      - '.github/workflows/unity-web-first-stage-build.yml'
+      - 'tools/company-unity-web-gameplay-validation.mjs'
+      - 'unity-games/**'
+      - 'web-games/**/upper-platform-development-readiness.json'
   workflow_dispatch:
     inputs:
       game_id:
@@ -26,7 +30,7 @@ on:
         required: false
         type: string
       trigger_source:
-        description: Optional orchestration source. UNITY_WEB_VERIFIED prevents recursive Unity Web redispatch.
+        description: Optional orchestration source for diagnostics; native admission is decided only by durable readiness evidence or grandfathered native progress.
         required: false
         default: MANUAL_OR_NATIVE
         type: string
@@ -76,17 +80,18 @@ jobs:
           import fs from 'node:fs';
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const d=r.directNativeDualPlatformDevelopment||{};
-          if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('DIRECT_NATIVE_OWNER_LOCK_REQUIRED');
-          if(d.unityWebEnabled!==true||d.unityWebRequired!==false||d.unityWebGateRequired!==false||d.unityWebMode!=='VALIDATION_SURFACE_ONLY')throw new Error('UNITY_WEB_VALIDATION_SURFACE_CONTRACT_REQUIRED');
+          if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('UPPER_PLATFORM_OWNER_LOCK_REQUIRED');
+          if(d.unityWebEnabled!==true||d.unityWebRequired!==true||d.unityWebGateRequired!==true||d.unityWebMode!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR')throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT_REQUIRED');
+          const gate=d.upperPlatformDevelopmentReadinessGate||{};
+          if(gate.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate.allCriteriaRequired!==true||JSON.stringify(gate.targets)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('UPPER_PLATFORM_READINESS_GATE_REQUIRED');
           const fan=d.unityWebNativeFanOut||{};
-          if(fan.enabled!==true||fan.trigger!=='VERIFIED_UNITY_WEB_VALIDATION'||JSON.stringify(fan.targets)!==JSON.stringify(['ROBLOX','UNITY'])||fan.exactGameOnly!==true||fan.developmentAdmissionAuthority!==false||fan.recursiveUnityWebRedispatchForbidden!==true)throw new Error('UNITY_WEB_NATIVE_FANOUT_CONTRACT_REQUIRED');
+          if(fan.enabled!==true||fan.trigger!=='UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN'||JSON.stringify(fan.targets)!==JSON.stringify(['ROBLOX','UNITY'])||fan.developmentAdmissionAuthority!==true||fan.directDispatchFromUnityWebBuildForbidden!==true||fan.sourceTreeExactMatchRequired!==true)throw new Error('UPPER_PLATFORM_MAIN_HANDOFF_CONTRACT_REQUIRED');
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
-          if(d.automaticPairing?.ROBLOX?.join(',')!=='ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY,ROBLOX')throw new Error('BIDIRECTIONAL_AUTO_PAIR_REQUIRED');
+          if(d.automaticPairing?.ROBLOX?.join(',')!=='UNITY_WEB_FLOOR,ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY_WEB_FLOOR,UNITY,ROBLOX')throw new Error('UNITY_WEB_THEN_BIDIRECTIONAL_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
           if(d.canonicalDevelopmentAdmissionAuthority!==true)throw new Error('DIRECT_NATIVE_ADMISSION_AUTHORITY_REQUIRED');
-          if(d.legacyWebFirstFallbackForbidden!==true)throw new Error('LEGACY_WEB_FIRST_FALLBACK_FORBIDDEN');
           if(d.strictDesignScoreRequiredForDevelopmentAdmission!==false)throw new Error('STRICT_DESIGN_ADMISSION_FORBIDDEN');
-          console.log('DIRECT_NATIVE_MACHINE_CONTRACT=PASS');
+          console.log('UPPER_PLATFORM_MACHINE_CONTRACT=PASS');
           NODE
 
       - name: Fetch queue authority
