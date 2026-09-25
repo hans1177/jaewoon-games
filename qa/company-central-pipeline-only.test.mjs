@@ -40,6 +40,7 @@ test('central production runtime gates new Roblox and Unity work on Unity Web re
   for(const file of centralWorkflows)assert.equal(exists(file),true,file+' must exist');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  const admission=read('tools/company-upper-platform-admission.mjs');
   const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
   const direct=roadmap.directNativeDualPlatformDevelopment;
@@ -64,8 +65,8 @@ test('central production runtime gates new Roblox and Unity work on Unity Web re
   assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_COUNT/);
   assert.match(development,/UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT/);
   assert.match(development,/UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED/);
-  assert.match(development,/upper-platform-development-readiness\.json/);
-  assert.match(development,/READINESS_SOURCE_STALE/);
+  assert.match(admission,/upper-platform-development-readiness\.json/);
+  assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(development,/INTERNAL_RELEASE_FIRST=YES/);
   assert.doesNotMatch(development,/company-development-web-bootstrap\.mjs/);
   assert.doesNotMatch(development,/company-development-web-gameplay-validation\.mjs/);
