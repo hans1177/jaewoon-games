@@ -249,6 +249,10 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
   assert.doesNotMatch(helper,/args:\['\/d','\/s','\/c',resolved\]/);
   assert.match(helper,/this\.stderrTail=\(this\.stderrTail\+value\)\.slice\(-6000\)/);
   assert.match(helper,/stderr=\$\{detail\}/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_TOOL_INVENTORY_ATTEMPT=/);
+  assert.match(helper,/for\(let attempt=1;attempt<=12;attempt\+\+\)/);
+  assert.match(helper,/if\(this\.tools\.has\('list_roblox_studios'\)\)break/);
+  assert.match(helper,/await wait\(2000\)/);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
