@@ -237,6 +237,24 @@
       "UNITY"
     ],
     "upperPlatformStartAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
-    "unityWebReleaseStage": false
+    "unityWebReleaseStage": false,
+    "unityWebRepairOwner": "tools/vibe2-auto-planner.mjs",
+    "unityWebRepairEngine": "EXISTING_VIBE2_VIBE3_DEVELOPMENT_ENGINE",
+    "unityWebRepairWriteBoundary": "unity-games/<gameId>/",
+    "unityWebRepairEvidence": [
+      "web-games/<gameId>/upper-platform-development-readiness.json",
+      "unity-games/<gameId>/unity-web-floor-source.json"
+    ],
+    "unityWebRepairFlow": [
+      "READ_FAILED_READINESS_DOMAINS",
+      "REPAIR_CODE_AND_GRAPHICS_IN_CANONICAL_UNITY_SOURCE",
+      "REBUILD_WEBGL",
+      "REPLAY_ACTUAL_BROWSER",
+      "INDEPENDENT_QA",
+      "REGRESSION",
+      "REEVALUATE_UPPER_PLATFORM_READINESS"
+    ],
+    "unityWebRepairMayModifyPolicy": false,
+    "unityWebRepairMayWeakenQa": false
   }
 }
