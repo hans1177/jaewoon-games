@@ -4588,10 +4588,14 @@
               "EN",
               "KO"
             ],
-            "displayFormat": "<ENGLISH_TITLE> | <KOREAN_TITLE>",
+            "displayFormat": "<ENGLISH_PRIMARY_TITLE> | <KOREAN_SUBTITLE>",
             "sameMeaningRequired": true,
             "genericPlaceholderTitleForbidden": true,
-            "exactUploadedValueVerificationRequired": true
+            "exactUploadedValueVerificationRequired": true,
+            "primaryLanguage": "EN",
+            "secondarySubtitleLanguage": "KO",
+            "hierarchy": "ENGLISH_PRIMARY_KOREAN_SECONDARY",
+            "koreanMustNotReplaceEnglishPrimary": true
           },
           "iconAndThumbnail": {
             "dedicatedPerGameCreativeRequired": true,
@@ -4615,7 +4619,28 @@
               "universe.place:write",
               "universe.thumbnail:write",
               "universe.thumbnail:read"
-            ]
+            ],
+            "referenceStrategy": {
+              "mode": "STRUCTURAL_BENCHMARK_NO_COPYING",
+              "referenceTraits": [
+                "ONE_DOMINANT_HERO_ENEMY_OR_OBJECT",
+                "CORE_ACTION_READABLE_IMMEDIATELY",
+                "HIGH_FOREGROUND_BACKGROUND_CONTRAST",
+                "SIMPLE_BACKGROUND_HIERARCHY",
+                "STRONG_SILHOUETTE_AT_SMALL_CARD_SIZE",
+                "MINIMAL_NON_GAMEPLAY_TEXT",
+                "GENRE_MOOD_VISIBLE_WITHOUT_EXPLANATION"
+              ],
+              "copyingOtherGameArtCharactersLogosOrCompositionForbidden": true
+            },
+            "homepageCandidateCount": 3,
+            "candidatesMustUseDistinctVerifiedGameplayFrames": true,
+            "personalizationEligibleCandidateRange": [
+              2,
+              5
+            ],
+            "preferredInitialActiveCount": 3,
+            "eachCandidateMustRepresentDifferentCoreMoment": true
           }
         }
       }
