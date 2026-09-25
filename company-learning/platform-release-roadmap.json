@@ -4476,8 +4476,8 @@
           "VIBE_INTERNAL_PLAY"
         ],
         "actualVibePlayExecutor": ".github/workflows/company-development-roblox-internal-vibe-play.yml",
-        "actualVibePlayExecutionSurface": "AUTHENTICATED_WINDOWS_ROBLOX_PLAYER",
-        "actualPlayerProcessRequired": true,
+        "actualVibePlayExecutionSurface": "ROBLOX_STUDIO_ONLY",
+        "actualPlayerProcessRequired": false,
         "actualInputRequired": true,
         "distinctScreenChangeRequired": true,
         "actualPlayFramesFeedStoreCreative": true,
@@ -4488,8 +4488,13 @@
           "actualGameplayFrameRequired": true,
           "genericSharedPlaceholderForbidden": true,
           "refreshAfterRebuild": true,
-          "staleStoreEvidenceInvalidatedByNewCandidate": true
-        }
+          "staleStoreEvidenceInvalidatedByNewCandidate": true,
+          "sharedInternalTargetMutationForbidden": true,
+          "dedicatedGameTargetRequiredForRobloxMutation": true
+        },
+        "studioTestServiceRequired": true,
+        "virtualInputRequired": true,
+        "publishedRobloxPlayerAutomationForbidden": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
@@ -4611,7 +4616,12 @@
             "uploadRequired": true,
             "uploadVerificationRequired": true,
             "runtimeEvidenceField": "robloxStorePresentationEvidence",
-            "currentSharedTargetOwnershipRequiredBeforeMutation": true
+            "currentSharedTargetOwnershipRequiredBeforeMutation": true,
+            "sharedInternalTargetMutationForbidden": true,
+            "dedicatedGameTargetRequiredForUpload": true,
+            "thumbnailUploadApi": "POST /legacy-game-internationalization/v1/game-thumbnails/games/{gameId}/language-codes/{languageCode}/image",
+            "iconUploadApi": "POST /legacy-game-internationalization/v1/game-icon/games/{gameId}/language-codes/{languageCode}",
+            "apiKeyAuthRequired": true
           }
         }
       }
