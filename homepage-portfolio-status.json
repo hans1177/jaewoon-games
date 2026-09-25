@@ -4,15 +4,15 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-09-25T04:07:14.624Z",
+  "generatedAt": "2026-09-25T04:26:28.714Z",
   "counts": {
     "ACCELERATE": 0,
-    "CONTINUE": 2,
-    "FOCUSED_REPAIR": 15,
+    "CONTINUE": 1,
+    "FOCUSED_REPAIR": 14,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
-    "PENDING": 0
+    "PENDING": 2
   },
   "games": [
     {
@@ -52,16 +52,7 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "daechung-rpg",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "horror-escape-room",
+      "gameId": "line-defense",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -160,13 +151,22 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "line-defense",
-      "decision": "CONTINUE",
-      "label": "정상개발",
-      "priorityRank": 2,
+      "gameId": "daechung-rpg",
+      "decision": "PENDING",
+      "label": "판정 대기",
+      "priorityRank": 6,
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+      "authority": "PENDING_AUTOMATION"
+    },
+    {
+      "gameId": "horror-escape-room",
+      "decision": "PENDING",
+      "label": "판정 대기",
+      "priorityRank": 6,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PENDING_AUTOMATION"
     }
   ]
 }
