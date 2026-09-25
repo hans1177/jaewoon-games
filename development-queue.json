@@ -432,7 +432,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T08:30:30.672Z",
+      "updatedAt": "2026-09-25T09:30:24.110Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -693,10 +693,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "ACTUAL_VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
       "routingBlockers": [
-        "roblox-internal-vibe-play-pending"
+        "roblox-studio-mcp-infrastructure-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -726,7 +726,69 @@
       },
       "robloxReleaseVersionNumber": 18,
       "robloxPublicRelease": false,
-      "robloxInternalVibePlayEvidence": null,
+      "robloxInternalVibePlayEvidence": {
+        "version": 2,
+        "gameId": "daechung-rpg",
+        "authority": "roblox-official-studio-mcp-runtime",
+        "pass": false,
+        "actualPlay": false,
+        "runtimeVerified": false,
+        "learningReusable": false,
+        "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
+        "infrastructureFailure": true,
+        "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "localPlaceFile": true,
+        "officialStudioMcp": true,
+        "onlinePlaceDirectOpen": false,
+        "robloxPlayerAutomation": false,
+        "externalGuiAutomation": false,
+        "undocumentedStudioCliAutomation": false,
+        "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
+        "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
+        "artifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
+        "artifactRunId": 36106173538,
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "versionNumber": 18,
+        "historicalSharedTargetExactArtifact": true,
+        "currentPublishedRuntimeClaim": false,
+        "publishedCandidateCrossCheckPassed": true,
+        "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
+        "capabilities": {
+          "officialStudioMcp": false,
+          "playMode": false,
+          "mcpInput": false,
+          "screenCapture": false,
+          "consoleCapture": false
+        },
+        "actions": [],
+        "checkpoints": [],
+        "errors": [
+          {
+            "type": "studio-mcp-infrastructure-or-runtime-error",
+            "actionId": null,
+            "signature": "MCP_RUN_DID_NOT_PRODUCE_EVIDENCE"
+          }
+        ],
+        "runtimeSummary": {
+          "consoleErrorCount": 1,
+          "distinctFrameChange": false
+        },
+        "learningSignals": [
+          "roblox official studio mcp local runtime",
+          "debugging",
+          "runtime error"
+        ],
+        "rawSourceIncluded": false,
+        "rawGameplayValuesIncluded": false,
+        "rawViewportIncluded": false,
+        "scenarioCoverage": [],
+        "scenarioCoveragePass": false,
+        "testedAt": "2026-09-25T09:30:24.110Z",
+        "workflowRunId": 36118612069,
+        "publicationAuthority": false,
+        "publicationTargetDiscovery": false
+      },
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
       "robloxSecurityReleaseEvidence": null,
@@ -749,7 +811,11 @@
         "internalReleasePreserved": true,
         "updatedAt": "2026-09-25T08:30:30.672Z"
       },
-      "robloxInternalReleasePublished": true
+      "robloxInternalReleasePublished": true,
+      "robloxInternalPlaytestPassed": false,
+      "robloxInternalPlaytestPassedAt": null,
+      "robloxStudioLocalPlayRepairRequired": false,
+      "robloxStudioLocalPlayInfrastructurePending": true
     },
     {
       "gameId": "horror-escape-room",
@@ -6140,7 +6206,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T09:29:23.732Z",
+  "updatedAt": "2026-09-25T09:30:24.110Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
