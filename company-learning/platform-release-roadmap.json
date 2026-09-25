@@ -1,5 +1,5 @@
 {
-  "version": 369,
+  "version": 370,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6125,21 +6125,25 @@
         "safetyBypassForbidden": true
       },
       "gameCardPlatforms": {
-        "web": "DISABLED_FOR_NEW_DEVELOPMENT",
+        "web": "PLAYABLE_COMPANION_LINK_ONLY_NOT_DEVELOPMENT_AUTHORITY",
         "concurrent": [
           "ROBLOX",
           "UNITY"
         ],
-        "visibility": "ROBLOX_UNITY_ONLY",
+        "visibility": "ROBLOX_UNITY_PLUS_VERIFIED_PLAYABLE_WEB_COMPANION",
         "releasedLinkBehavior": "SHOW_DIRECT_LINK_WHEN_VERIFIED",
         "unreleasedBehavior": "SHOW_DEVELOPMENT_STATE",
-        "selectedPlatformDoesNotHideOtherTracks": true
+        "selectedPlatformDoesNotHideOtherTracks": true,
+        "playableWebCompanionRequiresRuntimeCatalog": true,
+        "playableWebCompanionRequiresCanonicalIndex": true,
+        "playableWebCompanionDoesNotClaimNativeRelease": true
       },
       "gameCardActions": {
         "order": [
           "ROBLOX",
           "UNITY",
-          "UNITY_WEB"
+          "UNITY_WEB",
+          "WEB_COMPANION"
         ],
         "webAlwaysVisible": false,
         "concurrentPlatformSlotsVisible": true,
@@ -6151,7 +6155,14 @@
         "unityWebDevelopmentActionEnabled": true,
         "unityWebDevelopmentActionLabel": "Unity Web · 개발중",
         "unityWebMayBeDirectLaunchFallback": true,
-        "staleSharedRobloxTargetMayNotActivate": true
+        "staleSharedRobloxTargetMayNotActivate": true,
+        "playableWebCompanionActionEnabled": true,
+        "playableWebCompanionActionLabel": "웹 플레이",
+        "playableWebCompanionSource": "COMPANY_RUNTIME_GAME_CATALOG",
+        "playableWebCompanionRequiresPlayableAndArchive": true,
+        "playableWebCompanionRequiresExistingCanonicalIndex": true,
+        "playableWebCompanionMayBeDirectLaunchFallback": true,
+        "playableWebCompanionDoesNotClaimRelease": true
       },
       "recentUpdates": {
         "enabled": true,
@@ -6173,7 +6184,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 5,
+    "version": 6,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6349,7 +6360,14 @@
         "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
         "unityWebMayBeCardDirectLaunchFallback": true,
         "staleSharedRobloxTargetHomepageLinkForbidden": true,
-        "unityWebLegacyBuildCompatibility": true
+        "unityWebLegacyBuildCompatibility": true,
+        "playableWebCompanionButtonEnabled": true,
+        "playableWebCompanionButtonLabel": "웹 플레이",
+        "playableWebCompanionSource": "COMPANY_RUNTIME_GAME_CATALOG",
+        "playableWebCompanionRequiresPlayableAndArchive": true,
+        "playableWebCompanionRequiresExistingCanonicalIndex": true,
+        "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
+        "mainCatalogMayNotOverrideFresherCompanyRuntime": true
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6453,6 +6471,13 @@
         "framework",
         "wasm"
       ]
+    },
+    "runtimeCatalogPublication": {
+      "source": "company-runtime:game-catalog.json",
+      "target": "main:game-catalog.json",
+      "onEverySuccessfulNonPrHomepageSync": true,
+      "sourceIsAuthoritative": true,
+      "staleMainFallbackForbiddenWhenRuntimeAvailable": true
     }
   },
   "longHorizonVision": {
@@ -6974,6 +6999,26 @@
       "allFourUnityBundleGroupsRequired": true,
       "qaVerdictAuthorityUnchanged": true,
       "nativeReleaseGateUnchanged": true
+    },
+    "homepageServerGameLinkSync20260925": {
+      "id": "HOMEPAGE_SERVER_GAME_LINK_SYNC_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Mirror the freshest company-runtime catalog on every non-PR homepage sync and expose canonical playable web companions alongside native and Unity Web links without granting Web native release authority.",
+      "codeBindings": [
+        "assets/homepage-enhancements.js",
+        "tools/homepage-manager.mjs",
+        ".github/workflows/homepage-manager.yml",
+        "qa/homepage-manager-publication-order.test.mjs",
+        "qa/company-homepage-runtime-propagation.test.mjs",
+        "company-directive.json"
+      ],
+      "serverRuntimeCatalogAuthority": true,
+      "playableWebCompanionLinkEnabled": true,
+      "genericExistingFileAloneCannotActivate": true,
+      "catalogPlayableArchiveAndCanonicalIndexRequired": true,
+      "nativeReleaseAuthorityUnchanged": true,
+      "buildersUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
