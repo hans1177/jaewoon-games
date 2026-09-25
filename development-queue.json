@@ -630,7 +630,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T17:47:13.105Z",
+      "updatedAt": "2026-09-25T18:02:21.322Z",
       "robloxSourceCommit": "51eadc7b331419af8319c664c539023aed1e7403",
       "robloxSourceBootstrapPassedAt": "2026-09-25T17:30:08.745Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -838,14 +838,45 @@
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "sourceRevision": "51eadc7b331419af8319c664c539023aed1e7403",
+        "artifactIdentity": "sha256:eaac4b27b3cbef6b7a4498f01ddcc3e48fa3c1a71c38b15173a47e9b7881d5d2",
+        "universeId": "10767445769",
+        "placeId": "126302702438348",
+        "expectedVersionNumber": 23,
+        "observedVersionNumber": 22,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": false,
+        "blockers": [
+          "exactVersion",
+          "checkpointOrder",
+          "checkpoint:SERVER_BOOT",
+          "checkpoint:MODULE_GRAPH_READY",
+          "checkpoint:WORLD_READY",
+          "checkpoint:SPAWN_READY",
+          "checkpoint:CHARACTER_READY",
+          "checkpoint:GROUND_CONTACT",
+          "checkpoint:CAMERA_READY",
+          "checkpoint:INPUT_READY",
+          "checkpoint:MOVEMENT_CONFIRMED",
+          "checkpoint:REMOTE_ROUNDTRIP",
+          "checkpoint:CORE_LOOP_READY",
+          "checkpoint:SAVE_ROUNDTRIP",
+          "checkpoint:MULTIPLAYER_SYNC"
+        ],
+        "observedAt": "2026-09-25T18:02:21.322Z",
+        "authority": "stale-runtime-sentinel-observation"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -867,9 +898,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureStage": null,
-      "robloxFailureSignature": null,
-      "routingBlockers": [],
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "routingBlockers": [
+        "roblox-runtime-foundation-stale-version"
+      ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1126,7 +1159,8 @@
         "previousSourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
         "newSourceRevision": "51eadc7b331419af8319c664c539023aed1e7403",
         "invalidatedAt": "2026-09-25T17:30:08.745Z"
-      }
+      },
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-25T18:02:21.322Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -6562,7 +6596,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T17:59:27.393Z",
+  "updatedAt": "2026-09-25T18:02:21.322Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
