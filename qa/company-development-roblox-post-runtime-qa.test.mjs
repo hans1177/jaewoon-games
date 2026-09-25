@@ -83,11 +83,12 @@ test('stale published Roblox version preserves the exact failed stage and retrie
 });
 
 
-test('exact Roblox foundation QA is isolated per game and cannot globally serialize multiplayer verification',()=>{
-  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id/);
-  assert.match(workflow,/scheduled-scan/);
-  assert.match(workflow,/manual-scan/);
-  assert.doesNotMatch(workflow,/group: company-development-roblox-runtime-foundation-qa\s*\n/);
+test('exact Roblox foundation QA keeps manual per-game isolation while deduping automatic all-pending scans',()=>{
+  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ github\.event_name == 'workflow_dispatch' && \(inputs\.game_id \|\| 'manual-scan'\) \|\| 'automatic-scan' \}\}/);
+  assert.match(workflow,/inputs\.game_id \|\| 'manual-scan'/);
+  assert.match(workflow,/'automatic-scan'/);
+  assert.match(workflow,/strategy:[\s\S]{0,180}fail-fast: false[\s\S]{0,180}matrix:/);
+  assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
   assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
