@@ -1,5 +1,5 @@
 {
-  "version": 193,
+  "version": 194,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4448,7 +4448,7 @@
       ],
       "flow": [
         "LOAD_VERIFIED_DESIGN_AND_IDENTITY",
-        "INSPECT_CURRENT_GAME_SOURCE",
+        "INSPECT_CURRENT_GAME_SOURCE_AND_EXTRACT_EXACT_RESPONSIBLE_SYMBOL_ANCHORS",
         "COMPARE_PREVIOUS_VERIFIED_GAME_VERSION",
         "CONSUME_LATEST_PLAYTEST_RUNTIME_QA_EVIDENCE",
         "CLASSIFY_ALL_GAMEPLAY_WORLD_VISUAL_UX_STABILITY_DOMAINS",
@@ -4456,10 +4456,15 @@
         "CALCULATE_VERIFIED_LOOP_DEVELOPMENT_DEPTH",
         "SELECT_HIGHEST_VALUE_GAME_SPECIFIC_GOAL",
         "GENERATE_DETAILED_GAMEPLAY_WORLD_VISUAL_UX_PLATFORM_DIRECTIVES",
+        "RECONCILE_EXISTING_QUEUED_OR_RESUMED_TASK_TO_CURRENT_DIRECTIVE_BEFORE_RESERVE",
         "FAN_OUT_SAME_COMMON_GOAL_TO_UNITY_WEB_ROBLOX_UNITY_APP",
+        "CAPTURE_EXPECTED_PLAYER_EFFECT_AND_CURRENT_BASELINE",
         "IMPLEMENT_IN_EXISTING_RESPONSIBLE_SYSTEMS",
         "IMPACT_SCOPED_QA_AND_RUNTIME_OBSERVATION_WHEN_REQUIRED",
+        "MEASURE_SOURCE_RUNTIME_AND_PLAYER_VALUE_EFFECT",
+        "CLASSIFY_DIRECTIVE_EFFECTIVENESS",
         "COMPARE_TO_PREVIOUS_VERIFIED_BASELINE",
+        "VIBE_SELECT_NEXT_ACTION_FROM_VERIFIED_EFFECT_AND_DEFERRED_GAPS",
         "PROMOTE_VERIFIED_RESULT_TO_NEXT_BASELINE",
         "GENERATE_NEXT_ESCALATED_NON_REPEATING_DIRECTIVE"
       ],
@@ -4493,7 +4498,75 @@
       "generatedEvidenceMetadataExcludedFromEvolutionFingerprint": true,
       "generationFanInBeforeEscalation": true,
       "activeSiblingTaskPreventsGenerationAdvance": true,
-      "failedSiblingTaskPreventsGenerationAdvance": true
+      "failedSiblingTaskPreventsGenerationAdvance": true,
+      "sourceSpecificityTopology": {
+        "generator": "tools/company-build-up-directive.mjs",
+        "input": "CURRENT_GAME_SOURCE",
+        "extracts": [
+          "RESPONSIBLE_FILES",
+          "FUNCTIONS_AND_METHODS_WHEN_DISCOVERABLE",
+          "CLASSES_OR_COMPONENTS_WHEN_DISCOVERABLE",
+          "STATE_MACHINES_AND_STATE_TRANSITIONS_WHEN_DISCOVERABLE",
+          "EVENT_HANDLERS_AND_RUNTIME_ENTRY_POINTS_WHEN_DISCOVERABLE",
+          "SCENES_PREFABS_OR_PLATFORM_OBJECTS_WHEN_APPLICABLE"
+        ],
+        "primaryGoalRequiresExactCurrentSourceAnchor": true,
+        "genericTopFileRankingAloneInsufficient": true,
+        "readOnlyInspectionBeforeDirectiveGeneration": true
+      },
+      "executionTimeDirectiveBinding": {
+        "scheduler": "EXISTING_VIBE_QUEUE_RESERVE_WORKER_PATH",
+        "planner": "tools/vibe2-auto-planner.mjs",
+        "workerConsumer": "tools/vibe2-source-worker.mjs",
+        "bindPoints": [
+          "TASK_CREATION",
+          "PRE_RESERVE_RECONCILIATION",
+          "REQUEUE_OR_RESUME"
+        ],
+        "existingQueuedTaskWithoutDirective": "ATTACH_CURRENT_COMPATIBLE_DIRECTIVE_BEFORE_EXECUTION",
+        "activeReservationDirectiveImmutable": true,
+        "inFlightTaskSilentDirectiveSwapForbidden": true,
+        "sameGenerationSiblingDirectiveExact": true,
+        "newQueueOrSchedulerCreated": false
+      },
+      "effectMeasurementTopology": {
+        "before": [
+          "DIRECTIVE_EXPECTED_PLAYER_EFFECT",
+          "SOURCE_TREE_FINGERPRINT",
+          "RELEVANT_BASELINE_QA_OR_RUNTIME_STATE"
+        ],
+        "after": [
+          "CHANGED_GAME_FILES",
+          "POST_CHANGE_SOURCE_TREE_FINGERPRINT",
+          "RELEVANT_QA_OR_RUNTIME_RESULT",
+          "OBSERVED_PLAYER_VALUE_EFFECT"
+        ],
+        "classifies": [
+          "EFFECT_CONFIRMED",
+          "PARTIAL_EFFECT",
+          "NO_MEANINGFUL_EFFECT",
+          "REGRESSION",
+          "UNKNOWN_RUNTIME_EFFECT"
+        ],
+        "noEffectCannotAdvanceDepth": true,
+        "runtimeUnknownCannotBecomeConfirmedEffect": true
+      },
+      "nextActionController": {
+        "authority": "VIBE_DIRECTOR_ONLY",
+        "runsAfter": "GENERATION_FAN_IN_AND_EFFECT_CLASSIFICATION",
+        "usesExistingPlanner": true,
+        "newAiRoleCreated": false,
+        "actions": [
+          "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+          "MOVE_TO_NEXT_HIGHER_VALUE_GAP",
+          "CAUSAL_REPAIR",
+          "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+          "OPTIMIZE_VERIFIED_BOTTLENECK",
+          "MAINTAIN_VERIFIED_BASELINE_WHILE_WAITING_FOR_REQUIRED_EXTERNAL_EVIDENCE"
+        ],
+        "parallelSafeLanesRemainEligible": true,
+        "securityQaReleaseAuthorityUnchanged": true
+      }
     }
   },
   "nonblockingCoordinationTelemetryTopology": {
