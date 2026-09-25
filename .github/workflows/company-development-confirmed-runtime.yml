@@ -100,7 +100,7 @@ jobs:
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
 
-      - name: Resolve eligible native games
+      - name: Resolve Unity Web floor and upper-platform eligibility
         id: plan
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
@@ -110,35 +110,31 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
+          import crypto from 'node:crypto';
           import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
-          if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('DIRECT_NATIVE_REQUESTED_GAME_ID_INVALID:'+requested);
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
-          for(const item of rows){
-            if(item.minimumDesignContract?.pass!==true)throw new Error('MINIMUM_DESIGN_CONTRACT_REQUIRED:'+item.gameId);
-            const profiles=item.platformDesignProfiles||{};
-            if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)throw new Error('DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED:'+item.gameId);
-            const targets=new Set(item.concurrentTargetPlatforms||[]);
-            if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error('DUAL_NATIVE_TARGETS_REQUIRED:'+item.gameId);
-            if(item.webValidationRequired===true)throw new Error('LEGACY_WEB_GATE_ACTIVE:'+item.gameId);
-          }
+          const treeHash=root=>{
+            if(!fs.existsSync(root))return null;
+            const files=[];
+            const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,e.name);const rel=path.relative(root,full).replaceAll('\\','/');if(e.isDirectory()){if(rel==='Library'||rel.startsWith('Library/')||rel==='Temp'||rel.startsWith('Temp/'))continue;walk(full);}else if(e.isFile())files.push(rel);}};
+            walk(root);files.sort();
+            const hash=crypto.createHash('sha256');
+            for(const rel of files){hash.update(rel);hash.update('\0');hash.update(fs.readFileSync(path.join(root,rel)));hash.update('\0');}
+            return hash.digest('hex');
+          };
           const discoverBuildWeb=gameId=>{
             const editor=path.join('unity-games',gameId,'Assets','Editor');
             if(!fs.existsSync(editor))return null;
             const files=[];
-            const walk=dir=>{
-              for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
-                const full=path.join(dir,entry.name);
-                if(entry.isDirectory())walk(full);
-                else if(entry.isFile()&&entry.name.endsWith('.cs'))files.push(full);
-              }
-            };
+            const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory())walk(full);else if(entry.isFile()&&entry.name.endsWith('.cs'))files.push(full);}};
             walk(editor);
             const methods=[];
             for(const file of files){
@@ -151,60 +147,104 @@ jobs:
             const unique=[...new Set(methods)];
             return unique.length===1?unique[0]:null;
           };
-          const ids=rows.map(row=>row.gameId);
-          const webIds=ids.filter(id=>discoverBuildWeb(id));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible_count=${ids.length}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible_ids=${ids.join(',')}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`unity_web_ids=${webIds.join(',')}\n`);
-          console.log(`DIRECT_NATIVE_ELIGIBLE_COUNT=${ids.length}`);
-          console.log(`DIRECT_NATIVE_ELIGIBLE_IDS=${ids.join(',')||'NONE'}`);
-          console.log(`DIRECT_NATIVE_REQUESTED_GAME_ID=${requested||'BATCH'}`);
-          console.log(`UNITY_WEB_VALIDATION_READY_IDS=${webIds.join(',')||'NONE'}`);
+          const nativeAlreadyStarted=item=>{
+            const step=String(item.currentStep||'').toUpperCase();
+            if(item.robloxFoundationF0Passed===true||item.robloxRuntimeCandidateEvidence?.published===true||item.robloxInternalReleasePublished===true)return true;
+            if(item.unityRuntimePassed===true||item.unityIndependentQaPassed===true||item.unityRegressionPassed===true)return true;
+            return step.startsWith('TARGET_PLATFORM_')&&step!=='TARGET_PLATFORM_SOURCE_BIND';
+          };
+          const readinessFor=gameId=>{
+            const file=path.join('web-games',gameId,'upper-platform-development-readiness.json');
+            if(!fs.existsSync(file))return{pass:false,reason:'READINESS_EVIDENCE_MISSING'};
+            const data=JSON.parse(fs.readFileSync(file,'utf8'));
+            const currentTree=treeHash(path.join('unity-games',gameId));
+            if(data.pass!==true||data.state!=='UPPER_PLATFORM_DEVELOPMENT_READY')return{pass:false,reason:'READINESS_NOT_PASS'};
+            if(!currentTree||data.unitySourceTreeSha256!==currentTree)return{pass:false,reason:'READINESS_SOURCE_STALE'};
+            return{pass:true,reason:'READY',data,currentTree};
+          };
+          const nativeIds=[],webIds=[],blockedIds=[],grandfatheredIds=[];
+          for(const item of rows){
+            if(item.minimumDesignContract?.pass!==true)throw new Error('MINIMUM_DESIGN_CONTRACT_REQUIRED:'+item.gameId);
+            const profiles=item.platformDesignProfiles||{};
+            if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)throw new Error('DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED:'+item.gameId);
+            const targets=new Set(item.concurrentTargetPlatforms||[]);
+            if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error('DUAL_NATIVE_TARGETS_REQUIRED:'+item.gameId);
+            if(nativeAlreadyStarted(item)){
+              nativeIds.push(item.gameId);grandfatheredIds.push(item.gameId);continue;
+            }
+            const ready=readinessFor(item.gameId);
+            if(ready.pass){nativeIds.push(item.gameId);continue;}
+            if(discoverBuildWeb(item.gameId)){webIds.push(item.gameId);continue;}
+            blockedIds.push(item.gameId);
+            console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+ready.reason+':BUILD_WEB_UNAVAILABLE');
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
+          console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
+          console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
+          console.log('UNITY_WEB_FLOOR_IDS='+(webIds.join(',')||'NONE'));
+          console.log('UPPER_PLATFORM_GRANDFATHERED_IDS='+(grandfatheredIds.join(',')||'NONE'));
+          console.log('UPPER_PLATFORM_BLOCKED_IDS='+(blockedIds.join(',')||'NONE'));
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
 
   dispatch-native:
-    name: Dispatch Roblox and Unity app lanes
+    name: Dispatch ready Roblox and Unity app lanes
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Dispatch both native runtimes
+      - name: Dispatch upper-platform runtimes
         env:
           GH_TOKEN: ${{ github.token }}
           ELIGIBLE_IDS: ${{ needs.native-plan.outputs.eligible_ids }}
-          UNITY_WEB_IDS: ${{ needs.native-plan.outputs.unity_web_ids }}
-          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
-          TRIGGER_SOURCE: ${{ inputs.trigger_source || 'MANUAL_OR_NATIVE' }}
         shell: bash
         run: |
           set -euo pipefail
-          if [ -n "$REQUESTED_GAME_ID" ]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
-            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
-          else
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-          fi
-          web_count=0
-          if [ "$TRIGGER_SOURCE" != 'UNITY_WEB_VERIFIED' ] && [ "$GITHUB_REF" = 'refs/heads/main' ] && [ -n "$UNITY_WEB_IDS" ]; then
-            IFS=',' read -ra web_ids <<< "$UNITY_WEB_IDS"
-            for id in "${web_ids[@]}"; do
-              [ -n "$id" ] || continue
-              gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
-                -f game_id="$id" \
-                -f project_path="unity-games/$id" \
-                -f source_commit="$GITHUB_SHA" \
-                -f publish_to_main=true
-              web_count=$((web_count+1))
-            done
-          fi
-          echo "DIRECT_NATIVE_IDS=$ELIGIBLE_IDS"
+          IFS=',' read -ra ids <<< "$ELIGIBLE_IDS"
+          count=0
+          for id in "${ids[@]}"; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            count=$((count+1))
+          done
+          echo "UPPER_PLATFORM_DISPATCH_COUNT=$count"
+          echo "UPPER_PLATFORM_IDS=$ELIGIBLE_IDS"
           echo 'ROBLOX_RUNTIME_DISPATCH=YES'
           echo 'UNITY_APP_RUNTIME_DISPATCH=YES'
-          echo "UNITY_WEB_RUNTIME_DISPATCH_COUNT=$web_count"
-          echo "DIRECT_NATIVE_TRIGGER_SOURCE=$TRIGGER_SOURCE"
-          echo 'UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE_WITH_NATIVE_FANOUT'
-          echo 'BIDIRECTIONAL_AUTO_PAIR=YES'
+          echo 'UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED'
           echo 'INTERNAL_RELEASE_FIRST=YES'
+
+  dispatch-unity-web-floor:
+    name: Dispatch Unity Web development floor
+    needs: native-plan
+    if: needs.native-plan.outputs.unity_web_ids != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch WebGL development-floor builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UNITY_WEB_IDS: ${{ needs.native-plan.outputs.unity_web_ids }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          IFS=',' read -ra ids <<< "$UNITY_WEB_IDS"
+          count=0
+          for id in "${ids[@]}"; do
+            [ -n "$id" ] || continue
+            gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
+              -f game_id="$id" \
+              -f project_path="unity-games/$id" \
+              -f source_commit="$GITHUB_SHA" \
+              -f publish_to_main=true
+            count=$((count+1))
+          done
+          echo "UNITY_WEB_FLOOR_DISPATCH_COUNT=$count"
+          echo "UNITY_WEB_FLOOR_IDS=$UNITY_WEB_IDS"
+          echo 'UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT'
+
