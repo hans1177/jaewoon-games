@@ -126,6 +126,15 @@ test('architecture and runtime execute Unity Web readiness before new upper-plat
   assert.match(runtime,/UNITY_WEB_FLOOR_DISPATCH_COUNT=/);
   assert.match(runtime,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
   assert.match(runtime,/unity-web-floor-source-bootstrap\.yml/);
+  assert.match(runtime,/retry_workflow_dispatch\(\)/);
+  assert.match(runtime,/GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_RETRY=/);
+  assert.match(runtime,/GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_EXHAUSTED=/);
+  assert.match(runtime,/API rate limit exceeded/);
+  assert.match(runtime,/secondary rate limit/);
+  assert.match(runtime,/retry_workflow_dispatch company-development-roblox-runtime\.yml/);
+  assert.match(runtime,/retry_workflow_dispatch company-development-unity-runtime\.yml/);
+  assert.match(runtime,/retry_workflow_dispatch unity-web-first-stage-build\.yml/);
+  assert.match(runtime,/retry_workflow_dispatch unity-web-floor-source-bootstrap\.yml/);
   assert.match(runtime,/grandfatherGameIds/);
   assert.match(runtime,/company-development-roblox-runtime\.yml/);
   assert.match(runtime,/company-development-unity-runtime\.yml/);
