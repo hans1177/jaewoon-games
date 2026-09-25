@@ -20,16 +20,18 @@
     "robloxUnauthorizedCopyDownload": false,
     "robloxStudioRunnerMustBeExplicitlyReady": true,
     "externalRobloxActiveAutomation": false,
-    "externalCopyEnabledRobloxAutomation": true,
+    "externalCopyEnabledRobloxAutomation": false,
     "clientLocalLearning": false,
     "learningInputs": {
-      "studioRuntime": false,
+      "studioRuntime": true,
       "ownedOrAuthorizedSourceStructure": true,
       "webRuntimeObservation": true,
       "ciQaRegressionEvidence": true,
       "playTelemetry": true,
       "ownerDirectiveFeedback": true,
-      "rawExternalSourceMemory": false
+      "rawExternalSourceMemory": false,
+      "studioRuntimeScope": "VERIFIED_STUDIO_RUNTIME_EVIDENCE_ONLY",
+      "rawStudioSourceMemory": false
     },
     "robloxMaterialCollector": {
       "enabled": false,
@@ -128,13 +130,7 @@
       "sourceRoot": ".vibe2/authorized-roblox-source/potion-shop-demo",
       "runnerReady": false,
       "command": "node",
-      "commandArgs": [
-        "tools/vibe2-roblox-studio-cli-runner.mjs",
-        "--place-id=14215142052",
-        "--copy-permission=creator-enabled-place-copying",
-        "--permission-evidence=https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo",
-        "--source-root=.vibe2/authorized-roblox-source/potion-shop-demo"
-      ],
+      "commandArgs": [],
       "timeoutMs": 240000,
       "priority": "normal",
       "tags": [
@@ -146,7 +142,9 @@
         "authorized-source-distillation",
         "production-priority-session-safe"
       ],
-      "disabledReason": "24h-learning-roblox-studio-forbidden"
+      "disabledReason": "online-published-place-studio-automation-forbidden",
+      "onlinePublishedPlaceStudioAutomationForbidden": true,
+      "localPlaceFileRequiredForAnyFutureStudioReactivation": true
     }
   ]
 }

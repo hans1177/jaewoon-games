@@ -1,11 +1,12 @@
 -- 파일명: tools/runtime/roblox/Vibe2AutoPlayer.luau
--- 역할: Roblox Studio 테스트 안에서 StudioTestService + VirtualInput으로 실제 입력을 보낸다.
--- 사용 조건: Studio 전용. published experience에서 PASS 증거로 사용하지 않는다.
+-- 역할: Roblox Studio 테스트 안에서 StudioTestService 기반 검증을 실행한다. VirtualInput은 명시적 시나리오에서만 생성한다.
+-- 사용 조건: Studio 전용. production 자동검증은 사용자 입력 시뮬레이션 없이 assertion-only 모드로 실행한다.
 
 local UserInputService = game:GetService("UserInputService")
 local StudioTestService = game:GetService("StudioTestService")
 local HttpService = game:GetService("HttpService")
 local EncodingService = game:GetService("EncodingService")
+local LogService = game:GetService("LogService")
 
 local Vibe2AutoPlayer = {}
 
@@ -32,9 +33,20 @@ function Vibe2AutoPlayer.Run(scenario, options)
         error("VIBE2 nonce required")
     end
 
-    local virtualInput = UserInputService:CreateVirtualInput()
-    if not virtualInput then
-        error("VirtualInput unavailable")
+    local inputRequired = false
+    for _, action in ipairs(scenario.actions or {}) do
+        local kind = string.lower(tostring(action.type or ""))
+        if kind == "key" or kind == "click" then
+            inputRequired = true
+            break
+        end
+    end
+    local virtualInput = nil
+    if inputRequired then
+        virtualInput = UserInputService:CreateVirtualInput()
+        if not virtualInput then
+            error("VirtualInput unavailable")
+        end
     end
 
     local result = {
@@ -45,9 +57,12 @@ function Vibe2AutoPlayer.Run(scenario, options)
         runtimeVerified = true,
         capabilities = {
             studioTestService = StudioTestService ~= nil,
-            virtualInput = true,
+            virtualInput = inputRequired,
         },
         place = game.Name,
+        universeId = tostring(game.GameId),
+        placeId = tostring(game.PlaceId),
+        placeVersion = tonumber(game.PlaceVersion),
         actions = {},
         checkpoints = {},
         errors = {},
@@ -60,6 +75,12 @@ function Vibe2AutoPlayer.Run(scenario, options)
     local started = nowMs()
     local firstInput = nil
     local verifier = options.verify
+    local runtimeErrors = {}
+    local logConnection = LogService.MessageOut:Connect(function(message, messageType)
+        if messageType == Enum.MessageType.MessageError then
+            append(runtimeErrors, tostring(message))
+        end
+    end)
 
     for index, action in ipairs(scenario.actions or {}) do
         local id = tostring(action.id or ("action-" .. index))
@@ -118,6 +139,13 @@ function Vibe2AutoPlayer.Run(scenario, options)
         end
     end
 
+    if logConnection then
+        logConnection:Disconnect()
+    end
+    for _, message in ipairs(runtimeErrors) do
+        append(result.errors, { type = "studio-console-error", message = message })
+    end
+    result.metrics.consoleErrorCount = #runtimeErrors
     if firstInput ~= nil then
         result.metrics.timeToFirstActionMs = math.max(0, firstInput - started)
     end

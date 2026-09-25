@@ -9,12 +9,6 @@
       "ms": 900
     },
     {
-      "id": "real-input",
-      "type": "key",
-      "key": "Tab",
-      "holdMs": 80
-    },
-    {
       "id": "loaded",
       "type": "expect",
       "name": "Studio play mode is loaded",
@@ -26,5 +20,9 @@
       "name": "Studio play mode player exists",
       "expression": "player-present"
     }
-  ]
+  ],
+  "metadata": {
+    "automationMode": "STUDIO_TEST_SERVICE_ASSERTION_ONLY",
+    "automatedUserInput": false
+  }
 }

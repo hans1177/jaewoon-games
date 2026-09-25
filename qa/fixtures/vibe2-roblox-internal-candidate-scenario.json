@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "engine": "roblox",
+  "timeoutMs": 90000,
+  "actions": [
+    {
+      "id": "settle",
+      "type": "wait",
+      "ms": 1200
+    },
+    {
+      "id": "loaded",
+      "type": "expect",
+      "name": "candidate game loaded",
+      "expression": "game-loaded"
+    },
+    {
+      "id": "player",
+      "type": "expect",
+      "name": "local player exists",
+      "expression": "player-present"
+    },
+    {
+      "id": "gui",
+      "type": "expect",
+      "name": "game UI has visible runtime elements",
+      "expression": "ui-visible-elements"
+    },
+    {
+      "id": "ui-text",
+      "type": "expect",
+      "name": "visible UI text fits its bounds",
+      "expression": "ui-text-fits",
+      "required": false
+    },
+    {
+      "id": "move-forward",
+      "type": "key",
+      "key": "W",
+      "holdMs": 500
+    },
+    {
+      "id": "jump",
+      "type": "key",
+      "key": "Space",
+      "holdMs": 120
+    },
+    {
+      "id": "post-input-settle",
+      "type": "wait",
+      "ms": 600
+    },
+    {
+      "id": "player-after-input",
+      "type": "expect",
+      "name": "player remains alive in play session after real input",
+      "expression": "player-present"
+    }
+  ]
+}

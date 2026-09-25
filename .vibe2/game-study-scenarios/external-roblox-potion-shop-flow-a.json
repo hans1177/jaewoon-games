@@ -9,12 +9,6 @@
       "ms": 1800
     },
     {
-      "id": "real-key-input",
-      "type": "key",
-      "key": "P",
-      "holdMs": 90
-    },
-    {
       "id": "loaded-place",
       "type": "expect",
       "name": "Roblox place loaded in Studio play mode",
@@ -37,6 +31,8 @@
     "source": "Roblox Creator Hub Potion Shop Demo",
     "placeId": "14215142052",
     "copyPermission": "creator-enabled-place-copying",
-    "permissionEvidence": "https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo"
+    "permissionEvidence": "https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo",
+    "automationMode": "STUDIO_TEST_SERVICE_ASSERTION_ONLY",
+    "automatedUserInput": false
   }
 }
