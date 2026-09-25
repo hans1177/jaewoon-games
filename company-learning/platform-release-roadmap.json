@@ -4540,11 +4540,21 @@
           "EXACT_CANDIDATE_REVALIDATION",
           "VIBE_INTERNAL_PLAY"
         ],
-        "actualVibePlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play",
-        "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_LOCAL_PLACE_FILE_STUDIO_TEST_SERVICE_PLUS_VIRTUAL_INPUT",
-        "actualVibePlayPublishedPlaceDirectAutomation": false,
-        "actualVibePlayLearningReuse": "VERIFIED_LOCAL_EXACT_BUILD_ONLY",
-        "publishedCandidateIdentityCrossCheck": "OPEN_CLOUD_ONLY",
+        "actualVibePlayExecutor": ".github/workflows/company-development-roblox-internal-vibe-play.yml",
+        "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_PLAYER_PUBLISHED_PRIVATE_PLACE_PLUS_REAL_KEY_INPUT_AND_FRAME_CHANGE",
+        "actualVibePlaySurface": "ROBLOX_PLAYER",
+        "robloxStudioAutomationForActualVibePlay": false,
+        "actualVibePlayPublishedPlaceDirectAutomation": true,
+        "evidenceRequirements": {
+          "realInput": true,
+          "runtimeFrameChange": true,
+          "exactCandidateBinding": true,
+          "playerProcessAliveAfterActions": true,
+          "studioAutomationForbidden": true,
+          "genericMovementPlayDoesNotSatisfyPublicScenarioCoverage": true
+        },
+        "actualVibePlayLearningReuse": "VERIFIED_EXACT_PUBLISHED_BUILD_PLAYER_EVIDENCE_ONLY",
+        "publishedCandidateIdentityCrossCheck": "COMPANY_RUNTIME_EXACT_SOURCE_ARTIFACT_TARGET_VERSION",
         "rawStudioSourceDirectLearningForbidden": true,
         "rawGameplayValuesDirectLearningForbidden": true
       },
