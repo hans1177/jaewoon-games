@@ -598,7 +598,7 @@
         "UNITY_PLATFORM_PROFILE_READY",
         "PLATFORM_PROFILES_DISTINCT"
       ],
-      "readyState": "MINIMUM_DESIGN_READY_FOR_UNITY_WEB_FLOOR",
+      "readyState": "MINIMUM_DESIGN_READY",
       "longLivedPromotionGate": false
     },
     "DEVELOPMENT_CONFIRMED": {
@@ -779,7 +779,7 @@
       "developmentAdmissionUsesStrictScore": false,
       "hardDesignFailuresCreateParallelRepair": true
     },
-    "roadmapPhaseEntryGatesForbidden": true,
+    "roadmapPhaseEntryGatesForbidden": false,
     "platformDevelopmentMayStartWithoutPriorPlatformCompletion": false,
     "platformReleaseMayProceedWhenItsOwnEvidenceGatesPass": true,
     "currentExperiencePhase": "ROBLOX_UNITY_DIRECT_NATIVE_INTERNAL_RELEASE_AND_PLAYTEST",
@@ -788,13 +788,16 @@
     "parallelLearningPipelineAllowed": false,
     "webCompanionStrategy": {
       "status": "DEPRECATED_COMPATIBILITY_ALIAS",
-      "role": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
-      "requiredAcross": [],
-      "requiredForDevelopmentAdmission": false,
+      "role": "UNITY_WEB_UPPER_PLATFORM_PREDEVELOPMENT_FLOOR",
+      "requiredAcross": [
+        "DEVELOPMENT_CONFIRMED_NEW_UPPER_PLATFORM_ENTRY"
+      ],
+      "requiredForDevelopmentAdmission": true,
       "requiredForRelease": false,
       "nativeProjectRemainsCanonicalForPlatformRelease": true,
       "verifiedBuildMayExposeHomepageTestLink": true,
-      "missingBuildDoesNotBlockNative": true
+      "missingBuildDoesNotBlockNative": false,
+      "missingBuildAction": "REPAIR_REQUIRED_BEFORE_UPPER_PLATFORM_DEVELOPMENT"
     },
     "ROBLOX": {
       "role": "EQUAL_PRIMARY_SUPPORTED_PLATFORM",
@@ -828,8 +831,9 @@
       },
       "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE": {
         "defaultPriority": 1,
-        "entryGate": false,
-        "status": "ACTIVE"
+        "entryGate": true,
+        "status": "ACTIVE",
+        "entryGateAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY"
       },
       "FORTNITE_UEFN_EXPANSION": {
         "defaultPriority": 3,
@@ -856,7 +860,8 @@
       "seed-roblox-battleground-fight-welcome-to-bloxburg",
       "seed-roblox-obby-party-minigam-tower-of-hell"
     ],
-    "directNativeSourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment"
+    "directNativeSourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
+    "upperPlatformDevelopmentAdmissionGate": "UPPER_PLATFORM_DEVELOPMENT_READY"
   },
   "learning": {
     "webGameEvidence": {
