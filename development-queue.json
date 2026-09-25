@@ -1022,7 +1022,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T15:34:00.989Z",
+      "updatedAt": "2026-09-25T16:06:46.838Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1331,8 +1331,8 @@
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": true,
         "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
-        "studioMcpServerEnablementRequired": false,
-        "operatorPrerequisite": null,
+        "studioMcpServerEnablementRequired": true,
+        "operatorPrerequisite": "ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT",
         "localPlaceFile": true,
         "officialStudioMcp": true,
         "onlinePlaceDirectOpen": false,
@@ -1363,7 +1363,7 @@
           {
             "type": "studio-mcp-infrastructure-or-runtime-error",
             "actionId": null,
-            "signature": "ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios,get_studio_state,start_stop_play,get_console_output,screen_capture,user_keyboard_input,user_mouse_input,character_navigation:available=:protocol=2024-11-05:server=RobloxStudio:stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT"
+            "signature": "ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios,get_studio_state,start_stop_play,get_console_output,screen_capture,user_keyboard_input,user_mouse_input,character_navigation:available=:protocol=2024-11-05:server=RobloxStudio:stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT:settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY"
           }
         ],
         "runtimeSummary": {
@@ -1380,8 +1380,8 @@
         "rawViewportIncluded": false,
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T15:34:00.989Z",
-        "workflowRunId": 36153981709,
+        "testedAt": "2026-09-25T16:06:46.838Z",
+        "workflowRunId": 36158038168,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -6402,7 +6402,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T16:02:53.011Z",
+  "updatedAt": "2026-09-25T16:06:46.838Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
