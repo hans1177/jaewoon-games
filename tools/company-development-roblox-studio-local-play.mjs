@@ -558,7 +558,7 @@ export function createLocalStudioPlayEvidence({
       currentPublishedRuntimeClaim:false,
       publishedCandidateCrossCheckPassed:true,
       publishedCandidateCrossCheckAuthority:'COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE',
-      capabilities:{officialStudioMcp,playMode,mcpInput,screenCapture,consoleCapture},
+      capabilities:{officialStudioMcp:officialMcp,playMode,mcpInput,screenCapture,consoleCapture},
       actions,
       checkpoints,
       errors,
