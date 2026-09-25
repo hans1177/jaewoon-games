@@ -1,5 +1,5 @@
 {
-  "version": 190,
+  "version": 191,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3226,6 +3226,29 @@
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true
+    },
+    "unityWebGrandfatherScope": {
+      "grandfatherGameIds": [
+        "cozy-island",
+        "daechung-rpg"
+      ],
+      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
+      "migrationMode": "NO_DEMOTION_OF_RELEASE_STATE_BUT_WEB_FLOOR_REQUIRED_BEFORE_NEW_UPPER_PLATFORM_PROGRESS"
+    },
+    "orchestrationConcurrency": {
+      "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.orchestrationConcurrency",
+      "globalSerializationForbidden": true,
+      "distinctGamesParallel": true,
+      "unityWebNativeIndependentExecutionParallel": true,
+      "nativeRuntimeWaitCannotBlockUnityWeb": true,
+      "unityWebRuntimeWaitCannotBlockOtherGames": true,
+      "sameGameIndependentNonOverlappingPackagesParallel": true,
+      "serializationAllowedOnlyFor": [
+        "ATOMIC_SHARED_STATE_WRITE",
+        "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT"
+      ],
+      "sharedStateCriticalSectionMayNotEncloseHeavyExecution": true,
+      "externalProviderCapacityOnlyHeavyExecutionBoundary": true
     }
   },
   "releaseExposureLifecycle": {
@@ -4046,7 +4069,11 @@
       "responsibleFileExclusive": true,
       "sharedAtomicStateCriticalSectionOnly": true,
       "sameGameIndependentPackagesParallel": true,
-      "externalCapacityOnlyBoundary": true
+      "externalCapacityOnlyBoundary": true,
+      "globalOrchestrationSerializationForbidden": true,
+      "longRunningNativeMayNotBlockUnityWeb": true,
+      "longRunningUnityWebMayNotBlockOtherGames": true,
+      "sharedAtomicStateCriticalSectionMayNotEncloseHeavyExecution": true
     },
     "designOnly": {
       "execution": "tools/artbook-production-pipeline.mjs -> tools/company-design-cycle.mjs",
