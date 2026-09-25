@@ -1,5 +1,5 @@
 {
-  "version": 378,
+  "version": 379,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1591,7 +1591,13 @@
           "TARGET_PLATFORM_REGRESSION",
           "POST_RELEASE_FOCUSED_DEVELOPMENT",
           "DESIGN_AUTHORING",
-          "DESIGN_REPAIR"
+          "DESIGN_REPAIR",
+          "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
+          "UNITY_WEBGL_BUILD",
+          "UNITY_WEB_ACTUAL_BROWSER_PLAY",
+          "UNITY_WEB_INDEPENDENT_QA",
+          "UNITY_WEB_REGRESSION",
+          "UPPER_PLATFORM_DEVELOPMENT_READY"
         ],
         "forbiddenResponsibilities": [
           "DESIGN_INDEPENDENT_LEAD_REVIEW",
@@ -1768,21 +1774,21 @@
       "verifiedMasteryGrowthUnbounded": true
     },
     "machineOnlyProjectContinuation": {
-      "version": 2,
+      "version": 3,
       "authority": "MACHINE_EXECUTION_CONTRACT",
       "humanDocumentRequired": false,
       "sourceOfTruth": "company-learning/platform-release-roadmap.json",
-      "objective": "MINIMUM_SHARED_DESIGN_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION_THEN_INTERNAL_PLAYTEST_AND_POST_RELEASE_FOCUSED_DEVELOPMENT",
+      "objective": "MINIMUM_SHARED_DESIGN_THEN_UNITY_WEB_FULL_DEVELOPMENT_FLOOR_THEN_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION",
       "nativePlatformContinuation": {
         "selectedPlatformSource": "design-revised.json#content.platformProfiles",
         "supported": [
           "ROBLOX",
           "UNITY"
         ],
-        "startsFromSharedMinimumDesign": true,
+        "startsFromSharedMinimumDesign": false,
         "concurrentRobloxUnity": true,
         "secondImplementationContinuesFromWebBase": false,
-        "webHandoffRequired": false,
+        "webHandoffRequired": true,
         "platformProfilesRequired": true,
         "platformNativeExpansionRequired": true,
         "nativeRuntimeEvidenceRequired": true,
@@ -1790,7 +1796,11 @@
         "preserveApprovedScope": true,
         "silentScopeDropForbidden": true,
         "verifiedLearningReuseRequired": true,
-        "onePlatformFailureDoesNotCancelOther": true
+        "onePlatformFailureDoesNotCancelOther": true,
+        "startsAfterUpperPlatformDevelopmentReady": true,
+        "upperPlatformReadinessRequiredForNewNativeStart": true,
+        "existingNativeDevelopmentGrandfathered": true,
+        "webHandoffMeaning": "UPPER_PLATFORM_DEVELOPMENT_READY_EVIDENCE_FROM_SAME_CANONICAL_UNITY_SOURCE"
       },
       "robloxContinuation": {
         "target": "ROBLOX",
@@ -1808,14 +1818,17 @@
           "roblox-performance",
           "roblox-independent-qa",
           "roblox-regression"
-        ]
+        ],
+        "upperPlatformReadinessRequiredForNewStart": true
       },
       "unityContinuation": {
         "target": "UNITY",
         "sourceRoot": "unity-games/<gameId>",
         "continueFromSharedMinimumDesign": true,
         "verifiedLearningReuseRequired": true,
-        "platformNativeRuntimeEvidenceRequired": true
+        "platformNativeRuntimeEvidenceRequired": true,
+        "upperPlatformReadinessRequiredForNewStart": true,
+        "canonicalUnitySourceCarriesForwardFromWebFloor": true
       },
       "postReleaseFocusedDevelopment": {
         "platform": "ROBLOX",
@@ -1866,12 +1879,34 @@
           "TARGET_PLATFORM_INDEPENDENT_QA",
           "TARGET_PLATFORM_REGRESSION",
           "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-          "POST_RELEASE_FOCUSED_DEVELOPMENT"
+          "POST_RELEASE_FOCUSED_DEVELOPMENT",
+          "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
+          "UNITY_WEBGL_BUILD",
+          "UNITY_WEB_ACTUAL_BROWSER_PLAY",
+          "UNITY_WEB_INDEPENDENT_QA",
+          "UNITY_WEB_REGRESSION",
+          "UPPER_PLATFORM_DEVELOPMENT_READY"
         ],
         "sameGameHighestPriority": true,
         "crossGameTransformativeRecombinationAllowed": true,
         "learningMayExpandAuthority": false,
         "learningMayReplaceNativeVerification": false
+      },
+      "unityWebDevelopmentFloor": {
+        "requiredForNewUpperPlatformEntry": true,
+        "canonicalSourceRoot": "unity-games/<gameId>",
+        "buildOutputRoot": "web-games/<gameId>",
+        "requiredStages": [
+          "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
+          "UNITY_WEBGL_BUILD",
+          "UNITY_WEB_ACTUAL_BROWSER_PLAY",
+          "UNITY_WEB_INDEPENDENT_QA",
+          "UNITY_WEB_REGRESSION"
+        ],
+        "readinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+        "failureState": "REPAIR_REQUIRED",
+        "passAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
+        "releaseAuthority": false
       }
     },
     "intentAmplificationMultiverse": {
@@ -1920,9 +1955,9 @@
         "branchMayReturnVerifiedLessonsToCanonicalLearning": true
       },
       "lifecycleBinding": {
-        "webFirstExecutableBase": "WEB_BASE_IMPLEMENTATION",
-        "webBaselineGate": "WEB_DEVELOPMENT_BASELINE_READY",
-        "nativeContinuation": "TARGET_PLATFORM_SOURCE_BIND",
+        "webFirstExecutableBase": "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
+        "webBaselineGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+        "nativeContinuation": "ROBLOX_UNITY_NATIVE_SOURCE_BIND",
         "nativeRuntime": "TARGET_PLATFORM_RUNTIME",
         "robloxPostReleaseFocus": "POST_RELEASE_FOCUSED_DEVELOPMENT",
         "robloxProtectedRunnerSlots": 1,
@@ -4964,7 +4999,7 @@
       "webStageSkipped": false,
       "webGateSkipped": false,
       "globalGameDevelopmentWindow": null,
-      "unityWebDevelopmentLane": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
+      "unityWebDevelopmentLane": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
       "unityWebRunsAlongsideNativeWhenBuildable": false,
       "legacyWebAdmissionStageSkipped": false,
       "unityWebIsReleaseStage": false,
@@ -7206,8 +7241,9 @@
         "PORTABILITY"
       ],
       "releaseOrDeploymentStage": false,
-      "implementationState": "CENTRAL_POLICY_AND_ARCHITECTURE_SYNC_FIRST_IMPLEMENTATION_NEXT",
-      "existingNativeMigration": "GRANDFATHER_ALREADY_STARTED_NATIVE_DEVELOPMENT_NO_DEMOTION"
+      "implementationState": "CENTRAL_POLICY_ARCHITECTURE_AND_EXECUTOR_BOUND",
+      "existingNativeMigration": "GRANDFATHER_ALREADY_STARTED_NATIVE_DEVELOPMENT_NO_DEMOTION",
+      "migration": "NEW_NATIVE_ENTRY_GATED_EXISTING_NATIVE_PROGRESS_PRESERVED"
     }
   },
   "vibeExecutionLaneContract": {
@@ -21439,13 +21475,14 @@
       "nativeDevelopmentAdmissionAuthority": true,
       "nativeRuntimeGateAuthority": false,
       "nativeReleaseGateAuthority": false,
-      "oneLaneFailureDoesNotCancelNativeDevelopment": true,
-      "missingOrFailedBuildAction": "REPAIR_OR_REQUEUE_UNITY_WEB_LANE_WITHOUT_BLOCKING_NATIVE_LANES",
+      "oneLaneFailureDoesNotCancelNativeDevelopment": false,
+      "missingOrFailedBuildAction": "REPAIR_REQUIRED_BEFORE_UPPER_PLATFORM_DEVELOPMENT",
       "homepageTestAccessMayExposeVerifiedBuild": true,
       "homepageTestAccessIsNotDeploymentOrReleaseAuthority": true,
       "readinessFailNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
       "readinessPassNextAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
-      "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate"
+      "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
+      "oneLaneFailureMigrationMeaning": "DOES_NOT_CANCEL_ALREADY_STARTED_GRANDFATHERED_NATIVE_DEVELOPMENT; DOES_BLOCK_NEW_UPPER_PLATFORM_ENTRY"
     },
     "upperPlatformAdmission": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "upperPlatformDevelopmentReadinessGate": {
