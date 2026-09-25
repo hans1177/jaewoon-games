@@ -810,6 +810,25 @@ jobs:
             throw 'Runner has an existing Roblox Studio process; refusing ambiguous MCP attachment'
           }
 
+          $settingState = 'UNKNOWN'
+          $settingsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\AssistantSettings'
+          if (Test-Path $settingsRoot) {
+            $settingsFiles = @(Get-ChildItem $settingsRoot -File -Filter '*.json' -ErrorAction SilentlyContinue)
+            foreach ($settingsFile in $settingsFiles) {
+              try {
+                $settingsJson = Get-Content $settingsFile.FullName -Raw -ErrorAction Stop | ConvertFrom-Json
+                $enabled = $settingsJson.'mcp-server'.enabled
+                if ($enabled -eq $true) { $settingState = 'YES'; break }
+                if ($enabled -eq $false -and $settingState -eq 'UNKNOWN') { $settingState = 'NO' }
+              } catch {
+                Write-Host "ROBLOX_STUDIO_MCP_SETTING_PARSE_SKIPPED=$($settingsFile.Name)"
+              }
+            }
+          }
+          "VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED=$settingState" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_ENABLED=$settingState"
+          Write-Host 'ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO'
+
           "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcpCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -862,17 +881,47 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $result = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
           "VIBE2_STUDIO_RUNTIME_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          $runnerArgs = @(
-            '--mode=mcp-run',
-            "--mcp-command=$env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND",
-            "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
-            "--output=$result",
-            '--timeout=60000'
-          )
-          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
-          if ($LASTEXITCODE -ne 0) {
+          $maxSessionAttempts = 3
+          $success = $false
+
+          for ($attempt = 1; $attempt -le $maxSessionAttempts; $attempt++) {
+            if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
+            Write-Host "ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=$attempt/$maxSessionAttempts"
+            $runnerArgs = @(
+              '--mode=mcp-run',
+              "--mcp-command=$env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND",
+              "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
+              "--output=$result",
+              '--timeout=15000',
+              '--tool-attempts=5',
+              '--tool-delay-ms=1000'
+            )
+            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
+            if ($LASTEXITCODE -eq 0) {
+              $success = $true
+              Write-Host "ROBLOX_STUDIO_MCP_SESSION_RECOVERY=PASS_ATTEMPT_$attempt"
+              break
+            }
+
             if (Test-Path $result) { Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result" }
-            throw 'official Roblox Studio MCP play failed before verified runtime evidence'
+            if ($attempt -ge $maxSessionAttempts) { break }
+
+            Write-Host "ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt"
+            if ($env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
+              Stop-Process -Id ([int]$env:VIBE2_STUDIO_PROCESS_ID) -Force -ErrorAction SilentlyContinue
+            }
+            Start-Sleep -Seconds 2
+            if (-not (Test-Path $env:VIBE2_LOCAL_PLACE_FILE)) { throw 'Exact local Place artifact disappeared before MCP recovery restart' }
+            $studioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
+            $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
+            "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=$($studioProcess.Id)"
+            Start-Sleep -Seconds 15
+          }
+
+          if (-not $success) {
+            Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED"
+            throw 'official Roblox Studio MCP play failed after 3 official restart sessions'
           }
           Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=PASS'
 
