@@ -1,5 +1,5 @@
 // 파일명: tools/company-development-unity-web-worker.mjs
-// 역할: DEVELOPMENT_CONFIRMED Unity 원본의 비차단 WebGL validation surface 준비와 child build 결과를 판정한다.
+// 역할: DEVELOPMENT_CONFIRMED Unity Web development-floor의 호환 준비/child 결과를 판정한다. 상위 플랫폼 진입 권한은 main-bound readiness evidence에만 있다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -18,9 +18,9 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true})
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'game';
 const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const contract=policy?.unityWebFirstStage;
-if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='VALIDATION_SURFACE_ONLY'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==false)throw new Error('UNITY_WEB_VALIDATION_SURFACE_POLICY_MISSING');
+if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==true||contract?.validationSurfaceOnly!==false)throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_POLICY_MISSING');
 if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
-if(contract?.postUnityWebGatePipelineUnchanged!==true)throw new Error('POST_UNITY_WEB_PIPELINE_MUST_REMAIN_UNCHANGED');
+if(contract?.upperPlatformDevelopmentReadinessGate!=='company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate')throw new Error('UPPER_PLATFORM_READINESS_GATE_BINDING_REQUIRED');
 
 function discoverBuildMethod(sourceRoot){
   const editorRoot=path.join(sourceRoot,'Assets','Editor');
@@ -240,9 +240,14 @@ if(mode==='result'){
           buildEvidence:build,
           deployBundle,
           gameplayEvidence:qa,
-          validationSurfaceOnly:true,
+          validationSurfaceOnly:false,
+          compatibilityEvidenceOnly:true,
           nativeGateAuthority:false,
-          postUnityWebGatePipelineUnchanged:true,
+          developmentAdmissionAuthority:false,
+          upperPlatformReadinessRequired:true,
+          upperPlatformReadinessEvidence:`web-games/${gameId}/upper-platform-development-readiness.json`,
+          releaseAuthority:false,
+          postGateAction:'EVALUATE_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_START_ROBLOX_UNITY',
           generatedAt:stamp,
         };
         const evidenceOut=path.join(persistRoot,evidenceRelative);
