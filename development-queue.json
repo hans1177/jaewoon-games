@@ -5238,10 +5238,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T07:10:43.327Z",
+      "updatedAt": "2026-09-25T07:11:09.865Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -5429,7 +5429,25 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "platform": "ROBLOX",
+        "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
+        "artifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
+        "artifactRunId": 36106173538,
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 18,
+        "workflowRunId": 36106325077,
+        "publishedAt": "2026-09-25T07:11:09.865Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -5459,11 +5477,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -5474,7 +5492,32 @@
         "capturedAt": "2026-09-25T07:09:56.124Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true
+      "robloxExactRevisionPassed": true,
+      "robloxSharedTargetCurrent": true,
+      "robloxFastMvpSupersededBy": null,
+      "robloxPublicationTarget": {
+        "version": 2,
+        "gameId": "daechung-rpg",
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "verified": true,
+        "verifiedAt": "2026-09-25T07:11:09.865Z",
+        "lastVerifiedAt": "2026-09-25T07:11:09.865Z",
+        "source": "owner-pinned-open-cloud-target",
+        "authority": "roblox-canonical-publication-target",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false
+      },
+      "robloxReleaseVersionNumber": 18,
+      "robloxPublicRelease": false,
+      "robloxInternalVibePlayEvidence": null,
+      "robloxGameCompletionEvidence": null,
+      "robloxPlatformAdaptationEvidence": null,
+      "robloxSecurityReleaseEvidence": null,
+      "robloxPresentationCompletionEvidence": null,
+      "robloxReleaseStabilityEvidence": null,
+      "robloxPublicReleaseFinalEvidence": null
     },
     {
       "gameId": "horror-escape-room",
@@ -5771,7 +5814,7 @@
       "robloxExactRevisionPassed": true
     }
   ],
-  "updatedAt": "2026-09-25T07:10:43.327Z",
+  "updatedAt": "2026-09-25T07:11:09.865Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
