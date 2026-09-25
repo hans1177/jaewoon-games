@@ -535,22 +535,22 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
       "updatedAt": "2026-09-25T16:36:44.715Z",
-      "robloxSourceCommit": "f8175f99eedbb4e7ee70f4f97063bfab238ed0e7",
-      "robloxSourceBootstrapPassedAt": "2026-09-25T16:36:44.715Z",
+      "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
+      "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
+      "robloxBuildArtifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
+      "robloxBuildPassedAt": "2026-09-25T07:10:43.327Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-09-25T07:10:43.327Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -662,7 +662,7 @@
         "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpPassed": true,
       "robloxHeadlessFastMvpEvidence": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -770,7 +770,7 @@
       "robloxF9ReleaseRegressionPassed": false,
       "robloxF9ReleaseRegressionEvidence": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxInternalReleaseReady": false,
+      "robloxInternalReleaseReady": true,
       "robloxInternalReleaseAt": "2026-09-25T07:11:09.865Z",
       "robloxInternalReleaseEvidence": {
         "version": 3,
@@ -799,11 +799,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-studio-mcp-infrastructure-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -814,7 +814,7 @@
         "capturedAt": "2026-09-25T07:09:56.124Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
@@ -960,14 +960,8 @@
       },
       "robloxDedicatedExperiencePublished": true,
       "robloxDedicatedExperiencePublishedAt": "2026-09-25T14:08:10.303Z",
-      "robloxFastMvpPublished": false,
-      "robloxFastMvpPublishedAt": null,
-      "robloxHeadlessPassedAt": null,
-      "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "a6e70ed3eae33f9c298675a8a2441eb68602776c",
-        "newSourceRevision": "f8175f99eedbb4e7ee70f4f97063bfab238ed0e7",
-        "invalidatedAt": "2026-09-25T16:36:44.715Z"
-      }
+      "robloxFastMvpPublished": true,
+      "robloxFastMvpPublishedAt": "2026-09-25T14:08:10.303Z"
     },
     {
       "gameId": "horror-escape-room",
