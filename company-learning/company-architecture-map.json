@@ -1,5 +1,5 @@
 {
-  "version": 191,
+  "version": 192,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3210,7 +3210,11 @@
       "repairPolicyWriteAllowed": false,
       "repairHomepageWriteAllowed": false,
       "repairQaWeakeningAllowed": false,
-      "postRepairExecutor": ".github/workflows/company-development-confirmed-runtime.yml"
+      "postRepairExecutor": ".github/workflows/company-development-confirmed-runtime.yml",
+      "preReadinessFailureWriter": "tools/company-unity-web-floor-runtime-persist.mjs",
+      "preReadinessFailureStore": "company-runtime:development-queue.json",
+      "repairableFailureWake": ".github/workflows/vibe2-24h-runner.yml",
+      "infrastructureFailureState": "INFRASTRUCTURE_PENDING"
     },
     "upperPlatformTargets": [
       "ROBLOX",
@@ -3748,7 +3752,7 @@
       "shadowRepairPipeline": false
     }
   },
-  "updatedAt": "2026-09-26T01:00:00+09:00",
+  "updatedAt": "2026-09-26T01:07:00+09:00",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -4097,7 +4101,9 @@
       "unityWebReadinessPassDispatch": "ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT",
       "unityWebReadinessFailure": "REPAIR_REQUIRED_TO_VIBE_CAUSAL_DEVELOPMENT",
       "unityWebRepairOwner": "tools/vibe2-auto-planner.mjs",
-      "unityWebRepairSourceBoundary": "unity-games/<gameId>/"
+      "unityWebRepairSourceBoundary": "unity-games/<gameId>/",
+      "unityWebFailureWriter": "tools/company-unity-web-floor-runtime-persist.mjs",
+      "unityWebRepairWake": ".github/workflows/vibe2-24h-runner.yml"
     },
     "revisions": {
       "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
