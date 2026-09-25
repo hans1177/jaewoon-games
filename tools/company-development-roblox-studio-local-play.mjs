@@ -453,8 +453,11 @@ function chooseStudio(listResult,expectedName=''){
 function mcpCommandArgs(command=''){
   const resolved=clean(command);
   if(!resolved)throw new Error('ROBLOX_STUDIO_MCP_COMMAND_MISSING');
-  if(process.platform==='win32'&&/\.exe$/i.test(resolved))return{command:resolved,args:[]};
-  if(process.platform==='win32')return{command:'cmd.exe',args:['/c',resolved]};
+  if(process.platform==='win32'){
+    if(/\.exe$/i.test(resolved))throw new Error('ROBLOX_STUDIO_MCP_WINDOWS_DIRECT_EXE_FORBIDDEN');
+    if(!/mcp\.bat$/i.test(resolved))throw new Error('ROBLOX_STUDIO_MCP_WINDOWS_DOCUMENTED_BATCH_REQUIRED');
+    return{command:'cmd.exe',args:['/c',resolved]};
+  }
   return{command:resolved,args:[]};
 }
 
