@@ -115,31 +115,60 @@ test('DESIGN_ONLY is transient until the minimum dual-platform design contract i
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
 });
 
-test('Unity Web is the browser validation surface of the same canonical Unity project',()=>{
-  const development=directive.classes.DEVELOPMENT_CONFIRMED;
-  assert.equal(development.unityWebValidationSurface?.enabled,true);
-  assert.equal(development.unityWebValidationSurface?.optional,true);
-  assert.equal(development.unityWebValidationSurface?.canonicalSourceRoot,'unity-games/<gameId>/');
-  assert.equal(development.unityWebValidationSurface?.outputRoot,'web-games/<gameId>/');
-  assert.equal(development.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
-  assert.equal(development.unityWebValidationSurface?.nativeGateAuthority,false);
+test('Unity Web uses the full development QA loop without deployment or release stages',()=>{
+  const lane=roadmap.directNativeDualPlatformDevelopment?.unityWebDevelopmentLane;
+  const expectedFlow=[
+    'CODE_DEVELOPMENT',
+    'GRAPHICS_MOTION_AUDIO_PRESENTATION_DEVELOPMENT',
+    'UNITY_WEBGL_BUILD',
+    'ACTUAL_BROWSER_PLAY',
+    'INDEPENDENT_QA',
+    'REGRESSION',
+    'CAUSAL_REPAIR_AND_REBUILD',
+    'CONTINUOUS_BUILD_UP',
+  ];
+  assert.equal(lane?.enabled,true);
+  assert.equal(lane?.role,'FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT');
+  assert.equal(lane?.canonicalSourceRoot,'unity-games/<gameId>/');
+  assert.equal(lane?.outputRoot,'web-games/<gameId>/');
+  assert.equal(lane?.sameCanonicalUnityProjectRequired,true);
+  assert.equal(lane?.separateWebGameplayCodebaseForbidden,true);
+  assert.deepEqual(lane?.developmentFlow,expectedFlow);
+  assert.equal(lane?.sameDevelopmentQualityContractAsNative,true);
+  assert.equal(lane?.codeDevelopmentRequired,true);
+  assert.equal(lane?.graphicsAndMotionDevelopmentRequired,true);
+  assert.equal(lane?.actualBrowserPlayRequired,true);
+  assert.equal(lane?.independentQaRequired,true);
+  assert.equal(lane?.regressionRequired,true);
+  assert.equal(lane?.continuousLoop,true);
+  assert.equal(lane?.regressionPassNextAction,'NEXT_UNITY_WEB_DEVELOPMENT_FLOOR');
+  assert.equal(lane?.passIsCheckpointNotTerminal,true);
+  assert.equal(lane?.deploymentStage,false);
+  assert.equal(lane?.deploymentPromotion,false);
+  assert.equal(lane?.internalReleaseStage,false);
+  assert.equal(lane?.publicReleaseStage,false);
+  assert.equal(lane?.releasePromotionStage,false);
+  assert.equal(lane?.nativeDevelopmentAdmissionAuthority,false);
+  assert.equal(lane?.nativeReleaseGateAuthority,false);
+  assert.equal(roadmap.unityWebFirstStage?.scope,'FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT');
+  assert.equal(roadmap.unityWebFirstStage?.validationSurfaceOnly,false);
+  assert.equal(roadmap.unityWebFirstStage?.developmentLane,true);
+  assert.equal(roadmap.unityWebFirstStage?.build?.automatedBuildRequired,true);
+  assert.equal(roadmap.unityWebFirstStage?.build?.deploymentRequired,false);
+  assert.equal(roadmap.webCompanion?.role,'UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS');
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWeb,'FULL_DEVELOPMENT_QA_LOOP_NO_RELEASE');
+  assert.deepEqual(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.developmentFlow,expectedFlow);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.deploymentStage,false);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.internalReleaseStage,false);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.publicReleaseStage,false);
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.regressionPassNextAction,'NEXT_UNITY_WEB_DEVELOPMENT_FLOOR');
+  assert.equal(architecture.departmentTopology?.unityWebRole,'FULL_DEVELOPMENT_QA_LOOP_NO_RELEASE');
+  assert.equal(architecture.departmentRuntimeTopology?.developmentConfirmed?.unityWebDevelopmentRole,'FULL_DEVELOPMENT_QA_LOOP_NO_RELEASE');
+  assert.equal(architecture.developmentPipeline?.unityWebDevelopmentLane?.deploymentAndReleaseOmitted,true);
+  assert.equal(roadmap.changeRecord?.unityWebFullDevelopmentLoop20260925?.implementationState,'CENTRAL_POLICY_AND_ARCHITECTURE_SYNC_FIRST_IMPLEMENTATION_NEXT');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
   assert.equal(directive.production.webCompanion?.legacyDirectWebAuthoring,false);
-  assert.equal(directive.production.webCompanion?.canonicalSource,'UNITY_PROJECT_WHEN_UNITY_WEB_AVAILABLE');
-  assert.ok(directive.gameSeed.derivedProductionRequirements.includes('UNITY_WEB_VALIDATION_SURFACE_WHEN_BUILDABLE'));
-  assert.ok(!directive.gameSeed.derivedProductionRequirements.includes('MANDATORY_WEB_GAME_COMPANION'));
-  assert.equal(roadmap.unityWebFirstStage?.enabled,true);
-  assert.equal(roadmap.unityWebFirstStage?.validationSurfaceOnly,true);
-  assert.equal(roadmap.unityWebFirstStage?.developmentAdmissionAuthority,false);
-  assert.equal(architecture.concurrentPlatformDevelopment?.unityWeb,'VALIDATION_SURFACE_ONLY');
-  assert.equal(architecture.homepagePipeline?.unityWebDisabled,false);
-  assert.equal(architecture.homepagePipeline?.webPlaySurfaceDisabled,false);
-  assert.match(designCycle,/unityWebValidationSurfaceContract/);
-  assert.equal(roadmap.directNativeDualPlatformDevelopment?.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
   assert.match(nativeDevelopmentWorkflow,/gh workflow run unity-web-first-stage-build\.yml/);
-  assert.match(nativeDevelopmentWorkflow,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
-  assert.match(unityRuntimeWorkflow,/UNITY_WEB_VALIDATION=NON_BLOCKING_SEPARATE_WORKFLOW/);
-  assert.doesNotMatch(unityRuntimeWorkflow,/UNITY_WEB_VALIDATION=DISABLED/);
-  assert.match(unityWebWorkflow,/Unity WebGL Validation Surface Build/);
   assert.match(unityWebWorkflow,/canonicalGameSourceRoot!=='unity-games\/<gameId>\/'/);
 });
 
