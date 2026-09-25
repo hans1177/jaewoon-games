@@ -1,5 +1,5 @@
 {
-  "version": 352,
+  "version": 353,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -570,7 +570,12 @@
         "fullRuntimeAcceptanceEvidenceMayBeReused": true,
         "newSourceArtifactOrPlaceVersionInvalidatesReuse": true,
         "runtimeEvidenceFabricationForbidden": true
-      }
+      },
+      "sameGameMultipleIndependentPackagesParallel": true,
+      "sourceRootWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true,
+      "graphicsAndGameplayParallelWhenResponsibilitiesDoNotOverlap": true,
+      "releaseQaFailureIsLaneLocalUntilSharedFanIn": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -825,7 +830,12 @@
     "totalWorkItemLimit": null,
     "totalWorkItemLimitMeaning": "UNBOUNDED_TOTAL_WORK; EXTERNAL_MATRIX_BATCH_MAX_IS_ONLY_A_CURRENT_EXECUTION_WINDOW",
     "priorityOnlyChangesOrderNotWorkExistence": true,
-    "verifiedCheckpointMustGenerateNextCausalOpportunity": true
+    "verifiedCheckpointMustGenerateNextCausalOpportunity": true,
+    "sameGameNonOverlappingWorkMaxParallel": true,
+    "sourceRootWideLockForbidden": true,
+    "responsibleFileConflictOnlySerialization": true,
+    "releaseOrRuntimeWaitDoesNotConsumeIndependentDevelopmentCapacity": true,
+    "graphicsQaFailureDoesNotSerializeUnrelatedSameGameDevelopment": true
   },
   "phases": [
     {
@@ -18846,7 +18856,7 @@
         "RELEASE_CONFIRMED"
       ],
       "ownerResetIsPriorityNotExclusive": true,
-      "sameGameExecution": "SERIALIZED_NO_CANCEL",
+      "sameGameExecution": "PARALLEL_NON_OVERLAPPING_RESPONSIBILITIES",
       "distinctGamesMayRunParallel": true,
       "globalCancelInProgress": false,
       "designOnlyMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE",
@@ -18875,7 +18885,15 @@
         "runtimeOwner": ".github/workflows/unity-web-first-stage-build.yml",
         "nativeReleaseGate": false,
         "developmentAdmissionGate": false
-      }
+      },
+      "sameGameSourceRootExclusiveLock": false,
+      "sameGameResponsibleFileConflictSerializes": true,
+      "sameGameIndependentPackagesParallel": true,
+      "gameWideLockForbidden": true,
+      "failureIsolation": "LANE_LOCAL_UNLESS_DIRECT_DEPENDENCY_OR_SHARED_ACCEPTANCE_REQUIRES_FAN_IN",
+      "graphicsFailureMayNotBlockIndependentGameplayProgressionSystemDevelopment": true,
+      "runtimeFailureMayNotBlockIndependentSourceDevelopment": true,
+      "externalCapacityOnlyParallelBoundary": true
     },
     "canonicalDepartments": [
       "planning",
@@ -21036,7 +21054,23 @@
       "sameResponsibleFileConcurrentWriteForbidden": true,
       "fanInSerializesOnlySharedAcceptanceAndReleaseMutation": true,
       "runtimeWaitReleasesGeneralDevelopmentCapacity": true,
-      "externalProviderCapacityIsBoundaryNotArtificialInternalCap": true
+      "externalProviderCapacityIsBoundaryNotArtificialInternalCap": true,
+      "sameGameNonOverlappingPackagesParallelByDefault": true,
+      "sourceRootExclusiveLockForbidden": true,
+      "permanentGameWideWriteLockForbidden": true,
+      "responsibleFileWriteConflictIsPrimarySerializationBoundary": true,
+      "sharedAtomicStateMutationMaySerializeBrieflyForIntegrity": true,
+      "laneFailureIsolation": {
+        "enabled": true,
+        "presentationOrGraphicsFailureBlocksOnlyAffectedPresentationResponsibilities": true,
+        "runtimeOrReleaseFailureBlocksPromotionAndAffectedRuntimeResponsibilitiesOnly": true,
+        "independentCoreFunProgressionUsabilityStabilityWorkContinues": true,
+        "releaseBarrierMayNotBecomeGameDevelopmentBarrier": true,
+        "unrelatedFailureMayNotCreateSameGameGlobalLock": true
+      },
+      "automaticFeatureExpansionFreezeForbidden": true,
+      "featureDevelopmentMayPauseOnlyForExplicitOwnerInstructionOrDirectDependencyConflict": true,
+      "internalConcurrencyCap": null
     },
     "implementationBreadth": {
       "designIsMinimumMeaningAndConstraintContractNotImplementationCeiling": true,

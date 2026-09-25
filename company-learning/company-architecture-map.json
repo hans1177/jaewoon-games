@@ -1,5 +1,5 @@
 {
-  "version": 170,
+  "version": 171,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3732,10 +3732,16 @@
     "launcher": ".github/workflows/artbook-free-department-bots.yml",
     "targetResolver": "FULL_CANONICAL_PORTFOLIO_WITH_EXACT_PUSH_TARGETING",
     "concurrency": {
-      "perGame": "SERIALIZED",
+      "perGame": "MAX_PARALLEL_NON_OVERLAPPING_RESPONSIBILITIES",
       "cancelInProgress": false,
       "distinctGamesParallel": true,
-      "globalCancellationGroup": false
+      "globalCancellationGroup": false,
+      "sourceRootExclusive": false,
+      "sourceRootWideLockForbidden": true,
+      "responsibleFileExclusive": true,
+      "sharedAtomicStateCriticalSectionOnly": true,
+      "sameGameIndependentPackagesParallel": true,
+      "externalCapacityOnlyBoundary": true
     },
     "designOnly": {
       "execution": "tools/artbook-production-pipeline.mjs -> tools/company-design-cycle.mjs",
@@ -3761,6 +3767,12 @@
       "nativeDelegate": "da19705e37720bfb78494a62aca7b1922c2ac298",
       "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
       "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
+    },
+    "failureIsolation": {
+      "graphicsOrPresentation": "BLOCK_AFFECTED_PRESENTATION_RESPONSIBILITIES_ONLY",
+      "runtimeOrRelease": "BLOCK_PROMOTION_AND_AFFECTED_RUNTIME_RESPONSIBILITIES_ONLY",
+      "gameplayProgressionUsabilityStability": "CONTINUE_WHEN_RESPONSIBLE_FILES_AND_DEPENDENCIES_DO_NOT_CONFLICT",
+      "sameGameGlobalFailureLockForbidden": true
     }
   },
   "centralPolicyExecution": {
@@ -3946,7 +3958,12 @@
       "sameResponsibleFileWrite": false,
       "globalStageBarrier": false,
       "runtimeWaitReleasesCapacity": true,
-      "fanInOnlySharedAcceptanceSerialization": true
+      "fanInOnlySharedAcceptanceSerialization": true,
+      "sameGameIndependentNonOverlappingPackages": true,
+      "sourceRootWideLock": false,
+      "responsibleFileWriteConflictSerializes": true,
+      "laneLocalFailureIsolation": true,
+      "externalCapacityOnlyBoundary": true
     },
     "qaEfficiency": {
       "incrementalFirst": true,
