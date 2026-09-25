@@ -65,6 +65,8 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: bash
         run: |
           set -euo pipefail
@@ -88,7 +90,10 @@ jobs:
           );
           const gameId=requested||String(pending?.gameId||'').trim();
           const item=(q.items||[]).find(row=>row.gameId===gameId);
-          if(!item)throw new Error('ROBLOX_DEDICATED_TARGET_ITEM_MISSING:'+gameId);
+          if(!item){
+            console.log('ROBLOX_DEDICATED_TARGET=NO_PENDING_GAME');
+            process.exit(0);
+          }
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
           const current=item.robloxPublicationTarget||{};
           const dedicated=current.dedicated===true
@@ -99,21 +104,22 @@ jobs:
             console.log('ROBLOX_DEDICATED_TARGET_REUSE='+gameId);
             process.exit(0);
           }
+          const cookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
           const created=await createRobloxDedicatedExperience({
             apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
-            cookie:'',
+            cookie,
           });
           await configureRobloxExperience({
             universeId:created.universeId,
             name:String(item.gameName||gameId),
             description:'Private internal build for '+String(item.gameName||gameId)+'. Managed by the canonical Roblox development flow.',
             apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
-            cookie:'',
+            cookie,
           });
           await ensureRobloxExperiencePrivate({
             universeId:created.universeId,
             apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
-            cookie:'',
+            cookie,
           });
           const result={
             version:1,
@@ -203,18 +209,23 @@ jobs:
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requestedGameId=String(process.env.REQUESTED_GAME_ID||'').trim();
           const pending=(q.items||[]).find(row=>
-            row.releaseStrategy==='FAST_MVP'
+            String(row.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
             &&row.robloxFoundationF0Passed===true
+            &&row.robloxBuildPreflightPassed===true
+            &&row.robloxBuildOrPackagePassed===true
             &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
             &&row.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
-            &&!(row.robloxRuntimeCandidateEvidence?.published===true
-              &&row.robloxRuntimeCandidateEvidence?.sourceRevision===row.robloxSourceCommit
-              &&row.robloxRuntimeCandidateEvidence?.artifactIdentity===row.robloxBuildArtifactIdentity)
           );
           const gameId=requestedGameId||String(pending?.gameId||'').trim();
+          const put=(key,value)=>fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${String(value??'')}\n`);
+          if(!gameId){
+            put('skip','true');
+            put('skip_reason','no-pending-runtime-candidate');
+            console.log('ROBLOX_RELEASE_TARGET=NO_PENDING_GAME');
+            process.exit(0);
+          }
           const item=(q.items||[]).find(row=>row.gameId===gameId);
           if(!item)throw new Error(`ROBLOX_RELEASE_TARGET_NOT_FOUND:${gameId}`);
-          const put=(key,value)=>fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${String(value??'')}\n`);
           const revision=String(item.robloxSourceCommit||'').trim();
           const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');

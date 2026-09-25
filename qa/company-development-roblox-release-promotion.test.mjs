@@ -392,3 +392,23 @@ test('internal Roblox modification loop keeps the canonical modify check rebuild
   assert.match(qa,/validateRobloxRuntimeFoundationEvidence/);
   assert.match(candidate,/item\.robloxInternalVibePlayEvidence=null/);
 });
+
+
+test('push-triggered candidate deployment selects any canonical pending Roblox candidate without legacy releaseStrategy',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/String\(row\.productionClass\|\|''\)\.toUpperCase\(\)==='DEVELOPMENT_CONFIRMED'/);
+  assert.match(candidate,/row\.robloxFoundationF0Passed===true/);
+  assert.match(candidate,/row\.robloxBuildPreflightPassed===true/);
+  assert.match(candidate,/row\.robloxBuildOrPackagePassed===true/);
+  assert.doesNotMatch(candidate,/row\.releaseStrategy==='FAST_MVP'/);
+  assert.match(candidate,/skip_reason','no-pending-runtime-candidate'|no-pending-runtime-candidate/);
+});
+
+test('dedicated target bootstrap may use existing Roblox security credential only for Experience setup while package publish remains Open Cloud',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/ROBLOX_ROBLOSECURITY: \$\{\{ secrets\.ROBLOX_ROBLOSECURITY \}\}/);
+  assert.match(candidate,/ROBLOX_SECURITY_COOKIE: \$\{\{ secrets\.ROBLOX_SECURITY_COOKIE \}\}/);
+  assert.match(candidate,/const cookie=String\(process\.env\.ROBLOX_ROBLOSECURITY\|\|process\.env\.ROBLOX_SECURITY_COOKIE\|\|''\)/);
+  assert.match(candidate,/createRobloxDedicatedExperience\([\s\S]*cookie/);
+  assert.match(candidate,/publishRobloxPlace\(\{plan,retryDelaysMs:\[\]\}\)/);
+});
