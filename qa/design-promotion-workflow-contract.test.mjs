@@ -61,3 +61,36 @@ test('promotion dispatches both native lanes and does not use Unity Web as a pro
   assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NO/);
   assert.match(promotion,/ONE_PLATFORM_REQUEST_STARTS_BOTH=YES/);
 });
+
+
+test('verified design promotion wakes the existing Vibe scheduler only after runtime persistence',()=>{
+  const persistIndex=promotion.indexOf('- name: Persist promoted state to company runtime branch');
+  const dispatchIndex=promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill');
+  assert.ok(persistIndex>=0&&dispatchIndex>persistIndex);
+  assert.match(promotion,/permissions:[\s\S]*actions: write/);
+  assert.match(promotion,/gh workflow run vibe2-24h-runner\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(promotion,/VERIFIED_DESIGN_VIBE_REFILL_DISPATCH=YES/);
+  assert.match(promotion,/VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES/);
+});
+
+test('central gameplay evolution policy binds verified design resume to the canonical Vibe scheduler',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const design=roadmap?.continuousGameplaySystemEvolutionContract?.designContext||{};
+  assert.equal(design.coreFunAndProgressionResumeImmediatelyAfterVerifiedDesign,true);
+  assert.equal(design.verifiedDesignResumeTrigger,'IMMEDIATE_EXISTING_VIBE_SCHEDULER_WAKE_AFTER_PROMOTION_RUNTIME_PERSIST');
+  assert.equal(design.resumeSchedulerBinding,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(design.resumeDispatchCondition,'AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS');
+  assert.equal(design.resumeUsesExistingCanonicalSchedulerOnly,true);
+  assert.equal(design.resumeShadowPipelineForbidden,true);
+});
+
+test('architecture projects verified design resume without a shadow pipeline',()=>{
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const resume=architecture?.continuousGameplaySystemEvolutionTopology?.verifiedDesignResume||{};
+  assert.equal(resume.promotionRuntime,'.github/workflows/company-design-promotion-sync.yml');
+  assert.equal(resume.scheduler,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(resume.condition,'AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS');
+  assert.equal(resume.mode,'WAKE_EXISTING_CANONICAL_VIBE_SCHEDULER');
+  assert.deepEqual(resume.plannerRuntimeOverlay,['company-runtime:design','company-runtime:game-seed-state.json']);
+  assert.equal(resume.shadowPipelineCreated,false);
+});
