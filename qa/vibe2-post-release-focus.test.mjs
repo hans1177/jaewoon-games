@@ -71,7 +71,7 @@ function setup(){
   assert.equal(first.queue.tasks.length,1);
   const second=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
   assert.equal(second.added,false);
-  assert.equal(second.reason,'CARETAKER_ALREADY_ACTIVE_FOR_GAME');
+  assert.equal(second.reason,'NO_NEW_SOURCE_CYCLE');
   assert.equal(JSON.parse(fs.readFileSync(queueFile,'utf8')).tasks.length,1);
 }
 
@@ -186,7 +186,9 @@ function setup(){
   assert.deepEqual(focus.machinePriorityOrder.slice(0,3),['owner-directive','post-release-focused-development','release-confirmed']);
   assert.equal(focus.learningRunsInParallel,true);
   assert.equal(focus.historicalDeploymentRecovery.enabled,true);
-  assert.equal(focus.historicalDeploymentRecovery.maxActiveHistoricalMaintenanceTasks,1);
+  assert.equal(focus.historicalDeploymentRecovery.maxActiveHistoricalMaintenanceTasks,null);
+  assert.equal(focus.sourceRootOrGameWideFocusLockForbidden,true);
+  assert.equal(focus.sameGameNonOverlappingFocusPackagesParallel,true);
   assert.equal(focus.historicalDeploymentRecovery.currentReleaseClaimMustNotBeInvented,true);
   assert.equal(focus.historicalDeploymentRecovery.automaticRepublish,false);
   assert.equal(focus.playtestReviewLoop.feedbackIsAdvisoryOnly,true);

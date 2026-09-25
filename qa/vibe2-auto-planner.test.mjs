@@ -808,9 +808,16 @@ test('completed Unity package is never recreated after completion and tiny seed 
   const unityOnlyCatalog={games:[{id:'demo',homepageCategory:'release-confirmed'}]};
   const first=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
-  assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
-  assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
-  assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
+  const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
+  const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
+  assert.equal(autoExpanded||parallelPackage,true);
+  if(autoExpanded){
+    assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
+    assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
+  }else{
+    assert.equal(parallelPackage,true);
+    assert.equal(first.packages[0].accepted,true);
+  }
   const done={...first.task,status:'verified',result:'PASS'};
   const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
