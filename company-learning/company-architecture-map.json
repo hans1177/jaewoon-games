@@ -3148,7 +3148,8 @@
       "rebuildAfterEveryAcceptedModification": true,
       "staleArtifactReuseAfterSourceModification": false,
       "revalidationInput": "NEWLY_REBUILT_EXACT_CANDIDATE_ONLY",
-      "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY"
+      "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY",
+      "storePresentationRefresh": "ON_REBUILD_WHEN_TITLE_OR_VISUAL_IDENTITY_OR_REPRESENTATIVE_GAMEPLAY_CHANGED"
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -3169,6 +3170,26 @@
       "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
       "staleBuildEvidenceRejected": true,
       "changedSourceRequiresRebuildBeforeGateReevaluation": true
+    },
+    "robloxStorePresentation": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate.robloxStorePresentation",
+      "titleSource": "roblox-games/<gameId>/launch-mvp.json",
+      "titleResolver": "tools/company-roblox-store-presentation.mjs",
+      "titleFormat": "ENGLISH | KOREAN",
+      "creativeDirectionSource": "company-learning/marketing/<gameId>/latest.json#creative.thumbnailDirection",
+      "creativeOutputRoot": "roblox-games/<gameId>/store-presentation/",
+      "thumbnailProduction": "CURRENT_GAME_IDENTITY_PLUS_VERIFIED_GAMEPLAY_FRAME",
+      "iconProduction": "CURRENT_GAME_IDENTITY_PLUS_VERIFIED_GAMEPLAY_FRAME",
+      "uploadOwner": ".github/workflows/company-development-roblox-release-promotion.yml",
+      "uploadApi": "ROBLOX_OPEN_CLOUD",
+      "requiredScopes": [
+        "universe.place:write",
+        "universe.thumbnail:write",
+        "universe.thumbnail:read"
+      ],
+      "publicGateEvidence": "company-runtime:development-queue.json#robloxStorePresentationEvidence",
+      "runtimeCandidateFailureIsolation": true,
+      "externalPublicReleaseBlocking": true
     }
   },
   "autonomousBottleneckRecovery": {
