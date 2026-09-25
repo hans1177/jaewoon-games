@@ -1590,6 +1590,55 @@ test('readiness PASS hands Vibe development to both Roblox and Unity upper-platf
 });
 
 
+test('company-runtime Unity Web workflow failure becomes a causal Vibe repair task',()=>{
+  const root=tempRepo();
+  const gameId='unity-web-runtime-failure';
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    unityWebFirstStage:{
+      status:'OWNER_DIRECT_LOCKED',
+      scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+      developmentAdmissionAuthority:true,
+      validationSurfaceOnly:false
+    },
+    directNativeDualPlatformDevelopment:{
+      upperPlatformAdmissionMigration:{grandfatherGameIds:['cozy-island','daechung-rpg']}
+    }
+  },null,2));
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','Game.cs'),`
+using UnityEngine;
+public class Game:MonoBehaviour {
+  void Awake(){ Debug.Log("JAEWOON_UNITY_WEB_QA BOOT status=PASS"); Debug.Log("JAEWOON_UNITY_WEB_QA STATE progress=0"); Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=0.4 y=0.8"); }
+  void Action(){ Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT role=action status=PASS"); Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN status=PASS"); }
+}`);
+  fs.writeFileSync(path.join(unityRoot,'Assets','Editor','Build.cs'),'public static class Build { public static void BuildWeb(){} }\n');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Runtime Failure',productionClass:'DEVELOPMENT_CONFIRMED',homepageCategory:'development-confirmed',lifecycleState:'ACTIVE'}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Runtime Failure',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',selectedPlatform:'UNITY',
+      unityWebDevelopmentFloorState:'REPAIR_REQUIRED',
+      unityWebFailureRepairable:true,
+      unityWebFailureStage:'Run Unity Web actual browser play',
+      unityWebFailureSignature:'UNITY_WEB_FLOOR_RUN_UNITY_WEB_ACTUAL_BROWSER_PLAY'
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId&&(row.evidence||[]).includes('unity-web-repair-required'));
+  assert.ok(task);
+  assert.ok(task.evidence.includes('unity-web-runtime-failure:UNITY_WEB_FLOOR_RUN_UNITY_WEB_ACTUAL_BROWSER_PLAY'));
+  assert.match(task.goal,/RUNTIME_FAILURE:Run Unity Web actual browser play:UNITY_WEB_FLOOR_RUN_UNITY_WEB_ACTUAL_BROWSER_PLAY/);
+});
+
+
 function verifiedPresentationFoundation(project,root){
   const tasks=[];
   for(let i=0;i<7;i++){
