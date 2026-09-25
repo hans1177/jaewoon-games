@@ -1,3 +1,4 @@
+// CI_ONLY_LATEST_MAIN_WEB_SMOKE_REVALIDATION
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
