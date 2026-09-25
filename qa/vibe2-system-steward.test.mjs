@@ -16,7 +16,7 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
     controlInput:{currentMax:4,lastUpdatedAt:'2026-09-19T09:00:00Z'}
   });
   assert.equal(result.action,'RECOVER_STALE_RUNNING_RESERVATION');
-  assert.deepEqual(result.actions,['RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE','RESET_STALE_PARALLELISM_PRESSURE','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256']);
+  assert.deepEqual(result.actions,['RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE','RESET_INVALID_PARALLELISM_STATE','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256']);
   assert.equal(result.queue.maxConcurrentTasks,256);
   assert.equal(result.control.currentMax,256);
   assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');
@@ -41,7 +41,7 @@ test('steward resumes safe development failure with unlimited causal repair with
 });
 
 test('steward expires stale valid backpressure back to 256 while keeping 256 as external boundary',()=>{
-  const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[]},controlInput:{currentMax:32,lastUpdatedAt:'2026-09-19T09:00:00Z'}});
+  const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[]},controlInput:{currentMax:32,lastDecision:'DOWN',lastReason:'RUNNER_QUEUE_WAIT',lastUpdatedAt:'2026-09-19T09:00:00Z',lastTelemetry:{runId:'pressure-1',pressureLevel:'HIGH',queueWaitP95Ms:45000}}});
   assert.equal(result.action,'RESET_STALE_PARALLELISM_PRESSURE'); assert.equal(result.control.currentMax,256); assert.equal(result.control.lastDecision,'RESET');
   assert.equal(result.control.lastReason,'SYSTEM_STEWARD_STALE_TELEMETRY_RESET_TO_256');
   assert.equal(result.queue.maxConcurrentTasks,256);
@@ -72,11 +72,22 @@ test('steward accepts a fresh verified-pressure downshift as a valid v4 adaptive
   const result=runSystemStewardState({
     now:'2026-09-19T12:00:00Z',
     queueInput:{maxConcurrentTasks:256,tasks:[{id:'dev',gameId:'g',target:'web',goal:'x',status:'queued'}]},
-    controlInput:{version:4,currentMax:20,lastDecision:'DOWN',lastReason:'RUNNER_QUEUE_WAIT',lastUpdatedAt:'2026-09-19T11:59:00Z'}
+    controlInput:{version:4,currentMax:20,lastDecision:'DOWN',lastReason:'RUNNER_QUEUE_WAIT',lastUpdatedAt:'2026-09-19T11:59:00Z',lastTelemetry:{runId:'pressure-2',pressureLevel:'HIGH',queueWaitP95Ms:45000}}
   });
   assert.equal(result.control.currentMax,20);
   assert.equal(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'),false);
   assert.equal(result.actions.includes('RESET_STALE_PARALLELISM_PRESSURE'),false);
+});
+
+test('steward rejects a fresh lower adaptive step without verified pressure evidence',()=>{
+  const result=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    queueInput:{maxConcurrentTasks:256,tasks:[]},
+    controlInput:{version:4,currentMax:20,lastDecision:'HOLD',lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  assert.equal(result.control.currentMax,256);
+  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V4_PARALLELISM_STATE_RESET_TO_256');
+  assert.ok(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
 });
 
 test('steward does not consume a repair on external wait work',()=>{
