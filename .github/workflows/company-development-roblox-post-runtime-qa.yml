@@ -959,6 +959,7 @@ jobs:
           $expected = ([string]$env:EXPECTED_ARTIFACT).ToLowerInvariant()
           if ("sha256:$hash" -ne $expected) { throw "Local Place SHA256 mismatch: sha256:$hash != $expected" }
 
+          $assistantWarmStarted = [DateTime]::UtcNow
           $warmStudioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -PassThru
           Write-Host "ROBLOX_STUDIO_MCP_WARM_PROCESS_ID=$($warmStudioProcess.Id)"
           try {
@@ -970,7 +971,26 @@ jobs:
           } catch {
             Write-Host 'ROBLOX_STUDIO_MCP_WARM_GUI_READY=UNAVAILABLE_CONTINUE'
           }
-          Start-Sleep -Seconds 6
+
+          $assistantReady = $false
+          for ($probe = 1; $probe -le 30; $probe++) {
+            $recentStudioLogs = @(Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\logs') -File -Filter '*.log' -ErrorAction SilentlyContinue |
+              Where-Object { $_.LastWriteTimeUtc -ge $assistantWarmStarted.AddSeconds(-2) } |
+              Sort-Object LastWriteTimeUtc -Descending |
+              Select-Object -First 4)
+            foreach ($logFile in $recentStudioLogs) {
+              if (Select-String -Path $logFile.FullName -Pattern 'AssistantVersion:|Running plugin sabuiltin_Assistant\.rbxm' -Quiet -ErrorAction SilentlyContinue) {
+                $assistantReady = $true
+                break
+              }
+            }
+            if ($assistantReady) { break }
+            Start-Sleep -Seconds 1
+          }
+          if (-not $assistantReady) {
+            throw 'Roblox Studio Assistant did not finish loading before exact Place attach'
+          }
+          Write-Host 'ROBLOX_STUDIO_MCP_WARM_ASSISTANT_READY=YES'
 
           $warmDiag = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-setting-warm.json'
           $warmDiagArgs = @(
@@ -1094,6 +1114,7 @@ jobs:
             Start-Sleep -Seconds 2
             if (-not (Test-Path $env:VIBE2_LOCAL_PLACE_FILE)) { throw 'Exact local Place artifact disappeared before MCP recovery restart' }
 
+            $retryAssistantWarmStarted = [DateTime]::UtcNow
             $warmStudioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -PassThru
             Write-Host "ROBLOX_STUDIO_MCP_RETRY_WARM_PROCESS_ID=$($warmStudioProcess.Id):attempt=$attempt"
             try {
@@ -1105,7 +1126,26 @@ jobs:
             } catch {
               Write-Host "ROBLOX_STUDIO_MCP_RETRY_WARM_GUI_READY=UNAVAILABLE_CONTINUE:attempt=$attempt"
             }
-            Start-Sleep -Seconds 6
+
+            $retryAssistantReady = $false
+            for ($probe = 1; $probe -le 30; $probe++) {
+              $recentStudioLogs = @(Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\logs') -File -Filter '*.log' -ErrorAction SilentlyContinue |
+                Where-Object { $_.LastWriteTimeUtc -ge $retryAssistantWarmStarted.AddSeconds(-2) } |
+                Sort-Object LastWriteTimeUtc -Descending |
+                Select-Object -First 4)
+              foreach ($logFile in $recentStudioLogs) {
+                if (Select-String -Path $logFile.FullName -Pattern 'AssistantVersion:|Running plugin sabuiltin_Assistant\.rbxm' -Quiet -ErrorAction SilentlyContinue) {
+                  $retryAssistantReady = $true
+                  break
+                }
+              }
+              if ($retryAssistantReady) { break }
+              Start-Sleep -Seconds 1
+            }
+            if (-not $retryAssistantReady) {
+              throw "Roblox Studio Assistant did not finish loading before MCP retry Place attach: attempt=$attempt"
+            }
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_WARM_ASSISTANT_READY=YES:attempt=$attempt"
 
             $retryDiag = Join-Path $env:RUNNER_TEMP "roblox-studio-mcp-setting-retry-$attempt.json"
             $retryDiagArgs = @(
