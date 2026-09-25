@@ -89,6 +89,13 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.doesNotMatch(manage,/cp \/tmp\/homepage-runtime\/runtime-game-catalog\.json game-catalog\.json/);
 });
 
+test('homepage live runtime state bypasses the PWA cache',()=>{
+  const sw=fs.readFileSync('sw.js','utf8');
+  assert.match(sw,/const CACHE_NAME='jaewoon-pwa-v25'/);
+  for(const path of ['homepage-platform-exposure','homepage-portfolio-status','test-game-candidates'])assert.ok(sw.includes(path),`service worker network-only list missing ${path}`);
+  assert.ok(sw.includes('/assets\\/homepage-enhancements\\.js'), 'homepage renderer must stay network-only');
+});
+
 test('homepage shows native, Unity Web, and server-catalog playable web actions',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
