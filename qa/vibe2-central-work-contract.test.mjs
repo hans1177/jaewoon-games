@@ -203,6 +203,19 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.authorityExpanded,false);
 });
 
+test('Vibe candidate evidence binds all four canonical document hashes',()=>{
+  const workflow=fs.readFileSync(path.resolve(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  const logMap=JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'company-learning/company-log-map.json'),'utf8'));
+  assert.match(workflow,/shared-context-policy:/);
+  assert.match(workflow,/shared-context-log-map:/);
+  assert.match(workflow,/shared-context-architecture:/);
+  assert.match(workflow,/shared-context-security:/);
+  assert.deepEqual(logMap.workerContextLogContract.canonicalDocumentHashesRequired,[
+    'policySha256','logMapSha256','architectureSha256','securityPolicySha256'
+  ]);
+  assert.equal(logMap.workerContextLogContract.allCanonicalDocumentHashesMustBeBoundToExecutionEvidence,true);
+});
+
 test('central roadmap snapshot rejects execution authority expansion',()=>{
   const root=tempRoot();
   writePolicy(root,196);
