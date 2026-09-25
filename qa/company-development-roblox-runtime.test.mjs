@@ -507,3 +507,24 @@ test('territory-war exact source honors approved competitive multiplayer profile
   assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
   assert.match(client,/OnClientEvent/);
 });
+
+
+test('Roblox fused happy path reuses the exact package through shared preflight and F0',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const architecture=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
+  const fusion=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.happyPathStageFusion;
+  assert.equal(fusion.buildOncePerSourceFingerprintRequired,true);
+  assert.equal(fusion.sameExactPackageArtifactReusedForF0,true);
+  assert.equal(fusion.duplicateRojoRebuildOnUnchangedHappyPathForbidden,true);
+  assert.equal(fusion.separateContinuationWorkflowRole,'RECOVERY_AND_EXISTING_PENDING_STATE_ONLY');
+  assert.equal(architecture.developmentPipeline.robloxHappyPathStageFusion.sameWorkerHappyPath,true);
+  assert.match(workflow,/ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED/);
+  assert.match(workflow,/Run fused shared-model build preflight/);
+  assert.match(workflow,/ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE/);
+  assert.match(workflow,/--rebuilt-artifact-identity="\$artifact_identity"/);
+  assert.match(workflow,/ROBLOX_FUSED_PRIVATE_RUNTIME_DISPATCH=/);
+  assert.match(workflow,/queue\.robloxTechnicalParallelism=null/);
+  assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=2/);
+  assert.match(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR/);
+});

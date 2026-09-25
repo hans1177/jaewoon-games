@@ -1,5 +1,5 @@
 {
-  "version": 362,
+  "version": 363,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -577,7 +577,27 @@
       "graphicsAndGameplayParallelWhenResponsibilitiesDoNotOverlap": true,
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
-      "recoverToExternalProviderBoundaryAfterPressure": true
+      "recoverToExternalProviderBoundaryAfterPressure": true,
+      "happyPathStageFusion": {
+        "version": 1,
+        "scope": "ROBLOX_EXACT_PACKAGE_SHARED_MODEL_PREFLIGHT_F0",
+        "samePerGameWorkerMayExecuteSequentialStages": true,
+        "stageOrderPreserved": [
+          "EXACT_SOURCE_ROJO_PACKAGE",
+          "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
+          "F0_SOURCE_PREFLIGHT"
+        ],
+        "buildOncePerSourceFingerprintRequired": true,
+        "sameExactPackageArtifactReusedForF0": true,
+        "duplicateRojoRebuildOnUnchangedHappyPathForbidden": true,
+        "separateContinuationWorkflowRole": "RECOVERY_AND_EXISTING_PENDING_STATE_ONLY",
+        "successfulF0MayDispatchPrivateRuntimeCandidateDirectly": true,
+        "sharedModelGatePreserved": true,
+        "officialLuauCompileGatePreserved": true,
+        "exactArtifactBindingPreserved": true,
+        "failureRoutesToExactFailedStage": true,
+        "externalProviderCapacityRemainsOnlyHeavyExecutionBoundary": true
+      }
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -6604,6 +6624,22 @@
       "problem": "WORKFLOW_RUN_TRIGGER_BURSTS_COULD_CANCEL_THE_RUNNING_COMPANY_RUNTIME_RECONCILE_BEFORE_PERSIST",
       "resolution": "SERIALIZE_RECONCILE_STATE_WRITES_WITHOUT_CANCEL_IN_PROGRESS; SUBSEQUENT_TRIGGERS_QUEUE",
       "affectedWorkflow": ".github/workflows/company-development-queue-reconcile.yml"
+    },
+    "robloxPackagePreflightF0Fusion20260925": {
+      "id": "ROBLOX_PACKAGE_PREFLIGHT_F0_FUSION_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "ROBLOX_EXACT_PACKAGE_SUCCESS_WAS_FOLLOWED_BY_A_SECOND_WORKFLOW_CHECKOUT_MODEL_PREP_AND_F0_REPACKAGE_CYCLE_BEFORE_RUNTIME_CANDIDATE_DISPATCH",
+      "resolution": "KEEP_THE_EXISTING_STAGE_ORDER_AND_GATES_BUT_EXECUTE_PACKAGE_SHARED_MODEL_PREFLIGHT_AND_F0_IN_THE_SAME_PER_GAME_WORKER_REUSING_THE_EXACT_PACKAGE_IDENTITY; KEEP_CONTINUATION_AND_HEADLESS_WORKFLOWS_AS_RECOVERY_FOR_EXISTING_OR_FAILED_STAGE_STATE",
+      "qualityGatesWeakened": false,
+      "runtimeEvidenceRulesChanged": false,
+      "buildOncePerSourceFingerprintPreserved": true,
+      "existingRecoveryPipelinesPreserved": true,
+      "affectedWorkflows": [
+        ".github/workflows/company-development-roblox-runtime.yml",
+        ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        ".github/workflows/company-development-roblox-headless-fast-mvp.yml"
+      ]
     }
   },
   "vibeExecutionLaneContract": {

@@ -1,5 +1,5 @@
 {
-  "version": 178,
+  "version": 179,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3422,6 +3422,22 @@
       "sameGameNonOverlappingPackagesParallel": true,
       "sourceRootWideLockForbidden": true,
       "responsibleFileConflictSerializationOnly": true
+    },
+    "robloxHappyPathStageFusion": {
+      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.happyPathStageFusion",
+      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
+      "primaryWorkflow": ".github/workflows/company-development-roblox-runtime.yml",
+      "recoveryWorkflow": ".github/workflows/company-development-roblox-runtime-continuation.yml",
+      "f0RecoveryWorkflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+      "stages": [
+        "EXACT_SOURCE_ROJO_PACKAGE",
+        "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
+        "F0_SOURCE_PREFLIGHT"
+      ],
+      "sameWorkerHappyPath": true,
+      "sameExactPackageArtifactReuse": true,
+      "directPrivateRuntimeDispatchAfterF0": true,
+      "gatesPreserved": true
     }
   },
   "updatedAt": "2026-09-25",
