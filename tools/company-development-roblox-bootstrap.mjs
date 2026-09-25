@@ -244,7 +244,7 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
   return output;
 }
 
-export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={}}={}){
+export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false}={}){
   const profile=robloxBuildProfileFromBaseline(baseline);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
   if(studioAssets.applied!==true)throw new Error('ROBLOX_STUDIO_ASSET_LIBRARY_NOT_READY');
@@ -254,20 +254,120 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   for(const file of [configFile,clientFile,serverFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
-  const serverBefore=fs.readFileSync(serverFile,'utf8');
-  const afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
-  const afterClient=bindExistingClientStudioAssets(beforeClient);
+  const beforeServer=fs.readFileSync(serverFile,'utf8');
+  let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
+  let afterClient=bindExistingClientStudioAssets(beforeClient);
+  let afterServer=beforeServer;
+
+  if(foundationRepair===true){
+    if(!/MobileFirst\s*=\s*true/.test(afterConfig)){
+      if(!/Platform\s*=\s*["']ROBLOX["']\s*,?/.test(afterConfig))throw new Error('EXISTING_FOUNDATION_CONFIG_PLATFORM_ANCHOR_MISSING');
+      afterConfig=afterConfig.replace(/(Platform\s*=\s*["']ROBLOX["']\s*,?)/, '$1\n  MobileFirst = true,');
+    }
+
+    if(!/native-foundation-sentinel-v1/.test(afterServer)){
+      afterServer += `
+
+-- native-foundation-sentinel-v1
+local nativeFoundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
+if nativeFoundationRemote and not nativeFoundationRemote:IsA("RemoteEvent") then
+  nativeFoundationRemote:Destroy()
+  nativeFoundationRemote = nil
+end
+if not nativeFoundationRemote then
+  nativeFoundationRemote = Instance.new("RemoteEvent")
+  nativeFoundationRemote.Name = "RuntimeFoundationReport"
+  nativeFoundationRemote.Parent = ReplicatedStorage
+end
+local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
+if not nativeFoundationSpawn then
+  nativeFoundationSpawn = Instance.new("SpawnLocation")
+  nativeFoundationSpawn.Name = "NativeFoundationSpawn"
+  nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
+  nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
+  nativeFoundationSpawn.Neutral = true
+  nativeFoundationSpawn.Parent = workspace
+end
+local function bindNativeFoundationCharacter(character)
+  local humanoid = character:WaitForChild("Humanoid")
+  local rootPart = character:WaitForChild("HumanoidRootPart")
+  rootPart.Anchored = false
+  humanoid.PlatformStand = false
+  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
+  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
+  character:SetAttribute("MOVEMENT_CONFIRMED", true)
+end
+local function bindNativeFoundationPlayer(player)
+  if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end
+  player.CharacterAdded:Connect(bindNativeFoundationCharacter)
+end
+Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
+for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
+  task.defer(bindNativeFoundationPlayer, nativeFoundationPlayer)
+end
+nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
+  if typeof(signal) ~= "string" then return end
+  player:SetAttribute("NativeFoundationReadyAt", os.time())
+end)
+game:BindToClose(function() end)
+`;
+    }
+
+    if(!/RuntimeFoundationReport/.test(afterClient)||!/CameraSubject/.test(afterClient)||!/TouchEnabled/.test(afterClient)){
+      afterClient += `
+
+-- native-foundation-sentinel-v1 client readiness
+local nativeFoundationInput = game:GetService("UserInputService")
+local nativeTouchEnabled = nativeFoundationInput.TouchEnabled
+local nativeFoundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
+local nativeFoundationCamera = workspace.CurrentCamera
+local function reportNativeFoundationReady()
+  local character = player.Character or player.CharacterAdded:Wait()
+  local humanoid = character:WaitForChild("Humanoid")
+  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
+    nativeFoundationRemote:FireServer("CAMERA_READY")
+  end
+  nativeFoundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
+end
+task.defer(reportNativeFoundationReady)
+`;
+    }
+  }
+
   if(!/StudioAssets\s*=\s*\{/.test(afterConfig)||!/BindingVersion\s*=\s*1/.test(afterConfig)||!afterConfig.includes(`LibraryVersion = ${Number(studioAssets.libraryVersion||0)}`))throw new Error('EXISTING_STUDIO_ASSET_CONFIG_VERIFY_FAILED');
   if(!/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/.test(afterClient)||!/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(afterClient)||!/StudioAssetFramePanel/.test(afterClient))throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
+  if(foundationRepair===true){
+    const combined=afterServer+'\n'+afterClient;
+    for(const [token,re] of Object.entries({
+      sentinel:/native-foundation-sentinel-v1/,
+      foundationRemote:/RuntimeFoundationReport/,
+      spawn:/SpawnLocation/,
+      rootPart:/HumanoidRootPart/,
+      ground:/GROUND_CONTACT/,
+      movement:/MOVEMENT_CONFIRMED/,
+      physics:/\.Anchored\s*=\s*false[\s\S]*PlatformStand\s*=\s*false/,
+      raycast:/Raycast\s*\(/,
+      camera:/CameraSubject/,
+      touch:/TouchEnabled/,
+      bindClose:/BindToClose\s*\(/,
+    }))if(!re.test(combined))throw new Error('EXISTING_FOUNDATION_REPAIR_VERIFY_FAILED:'+token);
+  }
+
   fs.writeFileSync(configFile,afterConfig,'utf8');
   fs.writeFileSync(clientFile,afterClient,'utf8');
-  if(fs.readFileSync(serverFile,'utf8')!==serverBefore)throw new Error('EXISTING_STUDIO_ASSET_SERVER_MUTATION_FORBIDDEN');
+  fs.writeFileSync(serverFile,afterServer,'utf8');
+  const changedFiles=[configFile,clientFile,serverFile].filter(file=>{
+    if(file===configFile)return afterConfig!==beforeConfig;
+    if(file===clientFile)return afterClient!==beforeClient;
+    return afterServer!==beforeServer;
+  });
   return Object.freeze({
     existingSourcePreserved:true,
-    changedFiles:Object.freeze([configFile,clientFile].filter((file,index)=>index===0?afterConfig!==beforeConfig:afterClient!==beforeClient)),
+    changedFiles:Object.freeze(changedFiles),
     studioAssets,
+    foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
-    serverSourceChanged:false,
+    serverSourceChanged:afterServer!==beforeServer,
   });
 }
 function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
