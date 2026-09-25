@@ -438,7 +438,7 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   const reserveBlock=workflow.slice(reserveStart,reserveEnd);
   assert(workflow.includes('repository_dispatch:'));
   assert(workflow.includes('types: [vibe2-neuron-complete, vibe2-fanin-refill]'));
-  assert(workflow.includes('Dispatch atomic neuron completion'));
+  assert(workflow.includes('Dispatch or coalesce atomic neuron completion'));
   assert(workflow.includes("event_type:'vibe2-neuron-complete'"));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'));
@@ -449,7 +449,9 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
   assert.equal(runtime.continuous.atomicNeuronStream.taskMicroFanIn,true);
   assert.equal(runtime.continuous.atomicNeuronStream.speculativeVariantsJoinPerTask,true);
-  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_ONLY');
+  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS');
+  assert.equal(runtime.continuous.cohortFanInPressureIngressEnabled,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.logicalPerTaskVariantJoinStillRequiredWhenCoalesced,true);
   assert.equal(runtime.continuous.atomicNeuronStream.workerDirectControlWrite,false);
   assert.equal(runtime.continuous.atomicNeuronStream.universalActionableDomains,true);
   assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
@@ -467,6 +469,30 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(workflow.includes('VIBE2_SPECULATIVE_EXPANSION_REASON='));
   assert(workflow.includes('VIBE2_PRIMARY_TASK_COUNT='));
   assert(workflow.includes('VIBE2_SPECULATIVE_WORKER_COUNT='));
+  assert(workflow.includes('Dispatch or coalesce atomic neuron completion'));
+  assert(workflow.includes('actions/runs?per_page=100'));
+  assert(workflow.includes("new Set(['queued','pending','requested'])"));
+  assert(workflow.includes("String(row.id||'')!==currentRun"));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'));
+  assert(workflow.includes('VIBE2_LIVE_RUNNER_QUEUE_PRESSURE='));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'));
+  assert(workflow.indexOf('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN') < workflow.lastIndexOf("https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"));
+  assert(workflow.includes('pattern: vibe2-result-*'));
+  assert(workflow.includes('merge-multiple: true'));
+  assert.equal(runtime.continuous.perWorkerCompletionSignalPressureAware,true);
+  assert.equal(runtime.continuous.liveRunnerQueuePressureObservation.enabled,true);
+  assert.deepEqual(runtime.continuous.liveRunnerQueuePressureObservation.statuses,['queued','pending','requested']);
+  assert.equal(runtime.continuous.liveRunnerQueuePressureObservation.readOnly,true);
+  assert.equal(runtime.continuous.liveRunnerQueuePressureObservation.failOpenToExistingImmediateDispatch,true);
+  assert.equal(runtime.continuous.callbackCoalescing.enabled,true);
+  assert.equal(runtime.continuous.callbackCoalescing.fallbackConsumer,'EXISTING_COHORT_FAN_IN');
+  assert.equal(runtime.continuous.callbackCoalescing.resultLossForbidden,true);
+  assert.equal(runtime.continuous.callbackCoalescing.workerDirectControlWrite,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.liveRunnerQueuePressureCoalescing,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInConsumesCoalescedResults,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.coalescedCompletionIsNotFailure,true);
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,false);
@@ -986,6 +1012,21 @@ test('every non-neuron reserve ingress syncs current company runtime before plan
   assert.doesNotMatch(block,/if \[ "\$callback_kind" = 'fanin' \]; then/);
 });
 
+
+test('worker control checkout is state-only and worker executables come from the pinned main contract',()=>{
+  const workerStart=workflow.indexOf('\n  worker:\n');
+  const checkoutStart=workflow.indexOf('- name: Checkout Vibe2 control line',workerStart);
+  const checkoutEnd=workflow.indexOf('- name: Checkout pinned main contract',checkoutStart);
+  const checkout=workflow.slice(checkoutStart,checkoutEnd);
+  assert.ok(workerStart>=0&&checkoutStart>workerStart&&checkoutEnd>checkoutStart);
+  assert.match(checkout,/fetch-depth: 1/);
+  assert.match(checkout,/sparse-checkout:\s*\|\s*\n\s*\.vibe2/);
+  assert.match(workflow,/VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY/);
+  assert.match(workflow,/VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT/);
+  assert.match(workflow,/node "\$contract_root\/tools\/vibe2-learning-practice-worker\.mjs"/);
+  assert.match(workflow,/node "\$contract_root\/tools\/vibe2-practice-distillation\.mjs"/);
+  assert.match(workflow,/node "\$contract_root\/tools\/free-budget-telemetry\.mjs"/);
+});
 
 test('24h scheduler fetches only required shallow refs before planning',()=>{
   const start=safetyNetWorkflow.indexOf('- name: Checkout Vibe2 control branch');

@@ -413,7 +413,7 @@
       "taskMicroFanIn": true,
       "speculativeVariantsJoinPerTask": true,
       "refillAfterTaskMicroFanIn": true,
-      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
+      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS",
       "workerDirectControlWrite": false,
       "sourceAndFileConflictLocksPreserved": false,
       "pressureFloor": 4,
@@ -452,7 +452,11 @@
       "runtimeResultExistingTaskRequeueRequiresUnambiguousTarget": true,
       "runtimeResultNewTaskCreationAllowed": false,
       "responsibleFileConflictLocksPreserved": true,
-      "sourceRootWideLocksForbidden": true
+      "sourceRootWideLocksForbidden": true,
+      "liveRunnerQueuePressureCoalescing": true,
+      "cohortFanInConsumesCoalescedResults": true,
+      "coalescedCompletionIsNotFailure": true,
+      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -524,7 +528,30 @@
       "writableScopeExpansionAllowed": false,
       "missingPathRecoveryTelemetry": "codingMethod.missingPathRecoveries"
     },
-    "slotRefillResponsibleFileLocksHeldUntilFanIn": true
+    "slotRefillResponsibleFileLocksHeldUntilFanIn": true,
+    "perWorkerCompletionSignalPressureAware": true,
+    "liveRunnerQueuePressureObservation": {
+      "enabled": true,
+      "source": "GITHUB_ACTIONS_RUN_LIST",
+      "statuses": [
+        "queued",
+        "pending",
+        "requested"
+      ],
+      "readOnly": true,
+      "failOpenToExistingImmediateDispatch": true
+    },
+    "callbackCoalescing": {
+      "enabled": true,
+      "trigger": "LIVE_RUNNER_QUEUE_PRESSURE_GT_0",
+      "action": "KEEP_IMMUTABLE_WORKER_ARTIFACT_AND_SKIP_NEW_NEURON_CALLBACK_WORKFLOW",
+      "fallbackConsumer": "EXISTING_COHORT_FAN_IN",
+      "taskFailure": false,
+      "resultLossForbidden": true,
+      "workerDirectControlWrite": false,
+      "immediateDispatchResumesWhenPressureClears": true
+    },
+    "cohortFanInPressureIngressEnabled": true
   },
   "adaptiveBackpressure": {
     "enabled": true,

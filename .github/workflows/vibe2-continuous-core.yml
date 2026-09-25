@@ -518,6 +518,8 @@ jobs:
         with:
           ref: vibe2-unreal-core
           fetch-depth: 1
+          sparse-checkout: |
+            .vibe2
 
       - name: Checkout pinned main contract
         uses: actions/checkout@v4
@@ -533,6 +535,8 @@ jobs:
           now="$(date +%s%3N)"
           start="$(cat /tmp/vibe2-worker-start-ms)"
           echo "ms=$((now-start))" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY'
+          echo 'VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT'
 
       - uses: actions/setup-node@v4
         with:
@@ -720,6 +724,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           command -v ollama >/dev/null
           nohup ollama serve > "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
           for i in $(seq 1 30); do
@@ -732,7 +737,7 @@ jobs:
           fi
           practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
           artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
-          node tools/vibe2-learning-practice-worker.mjs \
+          node "$contract_root/tools/vibe2-learning-practice-worker.mjs" \
             --order=/tmp/vibe2-work-order.json \
             --output=/tmp/vibe2-learning-practice-result.json \
             --artifact-dir="$artifact_dir"
@@ -740,7 +745,7 @@ jobs:
           if [ "$practice_route" = 'learning-web-artifact' ]; then
             test -s "$artifact_dir/index.html"
           fi
-          node tools/vibe2-practice-distillation.mjs \
+          node "$contract_root/tools/vibe2-practice-distillation.mjs" \
             --result=/tmp/vibe2-learning-practice-result.json \
             --order=/tmp/vibe2-work-order.json \
             --experience=.vibe2/experience.json \
@@ -800,7 +805,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/free-budget-telemetry.mjs \
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node "$contract_root/tools/free-budget-telemetry.mjs" \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
             --model-calls=1 \
@@ -1548,7 +1554,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Dispatch atomic neuron completion
+      - name: Dispatch or coalesce atomic neuron completion
         if: steps.result.outputs.file != '' && env.VIBE2_EXECUTION_LANE != 'learning-idle'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1560,6 +1566,43 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          # Live runner pressure is read-only. When GitHub Actions already has queued/pending/requested
+          # work, keep this immutable worker result artifact and let the existing cohort fan-in consume
+          # it instead of creating another repository_dispatch workflow. Observation failure is fail-open
+          # to the pre-existing immediate callback behavior so result delivery never depends on telemetry.
+          queue_pressure=0
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
+            --output /tmp/vibe2-live-actions-runs.json; then
+            queue_pressure="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-live-actions-runs.json','utf8'));
+          const currentRun=String(process.env.GITHUB_RUN_ID||'');
+          const pressureStates=new Set(['queued','pending','requested']);
+          const pressure=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==currentRun &&
+            pressureStates.has(String(row.status||'').toLowerCase())
+          ).length;
+          process.stdout.write(String(pressure));
+          NODE
+            )"
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'
+          else
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'
+            queue_pressure=0
+          fi
+          echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
+
+          if [ "${queue_pressure:-0}" -gt 0 ]; then
+            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
+            echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
+            exit 0
+          fi
+
           payload="$(node <<'NODE'
           const payload={
             event_type:'vibe2-neuron-complete',
