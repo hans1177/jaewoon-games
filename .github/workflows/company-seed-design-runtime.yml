@@ -301,10 +301,12 @@ jobs:
           const preservationSeed=seed=>seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&String(seed?.OWNER_REBUILD_MODE||'').trim().toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE'&&String(seed?.productionClass||'DESIGN_ONLY').trim().toUpperCase()==='DESIGN_ONLY';
           const activeResetSeeds=active.filter(seed=>activeResetIds.has(String(seed?.gameId||'').trim()));
           const activeResetPending=activeResetSeeds.filter(seed=>designEvolutionDueFor(seed).due);
+          const ownerResetPriority=seed=>activeResetIds.has(String(seed?.gameId||'').trim())?0:1;
           const eligible=preservationOnly
             ? active.filter(preservationSeed)
-            : (activeResetPending.length?activeResetSeeds:active);
+            : active;
           const pending=eligible.filter(seed=>designEvolutionDueFor(seed).due).sort((a,b)=>
+            ownerResetPriority(a)-ownerResetPriority(b)||
             Number(strictPassFor(a))-Number(strictPassFor(b))||
             platformPriority(a)-platformPriority(b)||
             deterministicCheckpointPriority(a)-deterministicCheckpointPriority(b)||
@@ -325,6 +327,7 @@ jobs:
           console.log(`pending_total=${pending.length}`);
           console.error(`OWNER_ACTIVE_DESIGN_RESET_TARGETS=${activeResetSeeds.length}`);
           console.error(`OWNER_ACTIVE_DESIGN_RESET_PENDING=${activeResetPending.length}`);
+          console.error('OWNER_RESET_SCHEDULING=PRIORITY_NOT_EXCLUSIVE');
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
           console.error(`GAME_SEED_DESIGN_PENDING_TOTAL=${pending.length}`);
           console.error(`GAME_DESIGN_ENGINE_CANARY=${canaryVerified?'VERIFIED':'REQUIRED'}`);
