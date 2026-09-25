@@ -468,6 +468,12 @@ test('Roblox source and package workers avoid full repository history checkout',
 
 test('Roblox runtime persist writers refetch and reapply instead of using a cancellable global writer lock',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
+  assert.equal(execution.sharedStateWriteCriticalSectionOnly,'COMPANY_RUNTIME_SHARED_JSON_COMMIT_MAY_SERIALIZE_BRIEFLY_FOR_INTEGRITY');
+  assert.equal(execution.sharedStateWriteSerializationMayNotSerializeHeavyCheckoutBuildRuntimeOrQa,true);
+  assert.equal(execution.sourceRootWideLockForbidden,true);
+  assert.equal(execution.responsibleFileConflictSerializationOnly,true);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/ROBLOX_SOURCE_PERSIST_ATTEMPT=/);
   assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
@@ -494,6 +500,12 @@ test('Roblox game source pushes route through exact changed-source sync instead 
 
 test('exact Roblox dispatch stays per-game while batch runs and runtime writers avoid global serialization',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
+  assert.equal(execution.gameLevelExecution,'PARALLEL_BY_DEFAULT');
+  assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
+  assert.equal(execution.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
+  assert.equal(execution.defaultRequestedGameWorkers,256);
   assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| format\('batch-\{0\}', github\.run_id\) \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
@@ -519,6 +531,11 @@ test('territory-war exact source honors approved competitive multiplayer profile
 
 test('Roblox fused happy path reuses the exact package through shared preflight and F0',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  assert.equal(roadmap.developmentSpeedExecution.buildOncePerSourceFingerprint,true);
+  assert.equal(roadmap.developmentSpeedExecution.sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression,true);
+  assert.equal(roadmap.developmentSpeedExecution.successfulStageEvidenceReusableWhenSourceFingerprintStillMatches,true);
+  assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
   assert.match(workflow,/ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED/);
   assert.match(workflow,/Run fused shared-model build preflight/);
   assert.match(workflow,/ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE/);
@@ -533,6 +550,12 @@ test('Roblox fused happy path reuses the exact package through shared preflight 
 test('Roblox F0 integrity failure reenters the canonical source worker without weakening gates',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const repair=roadmap.directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair;
+  assert.ok(repair.requiredFlow.includes('MODIFY_EXISTING_RESPONSIBLE_SYSTEM_DIRECTLY'));
+  assert.ok(repair.requiredFlow.includes('RERUN_ORIGINAL_FAILURE_SCENARIO'));
+  assert.equal(repair.repairCompletion.wrapperOverrideOrShadowRepairForbidden,true);
+  assert.equal(repair.repeatedFailureEscalation.noArtificialRetryCap,true);
   assert.match(workflow,/f0FoundationRepair/);
   assert.match(workflow,/foundationRepair:f0FoundationRepair/);
   assert.match(workflow,/--foundation-repair="\$FOUNDATION_REPAIR"/);
@@ -593,6 +616,10 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
 
 test('known Roblox source repair debt outranks reconciliation pass and canonical-state rewrites',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const repair=roadmap.directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair;
+  assert.equal(repair.priority,'STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION');
+  assert.equal(repair.repeatedFailureEscalation.repeatedSameApproachWithoutNewCausalEvidenceForbidden,true);
   assert.match(workflow,/const bootstrapFailed=secondaryOwnerFocus\?item\.ownerFocusRobloxSourceBootstrapFailedAt:item\.robloxSourceBootstrapFailedAt/);
   assert.match(workflow,/item\.robloxFoundationF0Passed!==true/);
   assert.match(workflow,/const knownSourceRepairDebt=Boolean\(bootstrapFailed\)\|\|f0FoundationRepair/);
@@ -603,6 +630,10 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
 
 test('pending private runtime candidates retry even when technical target count is zero',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
+  assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateDeploymentParallel,true);
   assert.match(workflow,/name: Dispatch pending private runtime candidates[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
