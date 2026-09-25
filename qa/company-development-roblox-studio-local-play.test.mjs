@@ -224,6 +224,39 @@ test('planner collapses repeated shared Studio MCP infrastructure failures to on
   assert.deepEqual(result.deferredInfrastructureGameIds,['g1','g3']);
 });
 
+test('shared Studio MCP enablement prerequisite pins one stable canary instead of rotating across games',()=>{
+  const rows=['g3','g1','g2'].map((gameId,index)=>{
+    const candidate=item();
+    candidate.gameId=gameId;
+    candidate.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
+    candidate.robloxInternalVibePlayEvidence={
+      version:2,
+      gameId,
+      pass:false,
+      actualPlay:false,
+      infrastructureFailure:true,
+      failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',
+      sourceRevision:source,
+      artifactIdentity:artifact,
+      artifactRunId:777,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:9,
+      testedAt:['2026-09-25T09:00:00.000Z','2026-09-25T09:03:00.000Z','2026-09-25T09:01:00.000Z'][index]
+    };
+    if(gameId==='g3'||gameId==='g1'){
+      candidate.robloxInternalVibePlayEvidence.studioMcpServerEnablementRequired=true;
+      candidate.robloxInternalVibePlayEvidence.operatorPrerequisite='ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT';
+    }
+    return candidate;
+  });
+  const result=planLocalStudioCandidates({queue:{items:rows},roadmap:roadmap()});
+  assert.equal(result.sharedInfrastructureCanary,true);
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].gameId,'g1');
+  assert.deepEqual(result.deferredInfrastructureGameIds,['g2','g3']);
+});
+
 test('explicit game request bypasses shared Studio MCP infrastructure canary collapsing',()=>{
   const rows=['g1','g2'].map(gameId=>{
     const candidate=item();
