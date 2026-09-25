@@ -16,6 +16,7 @@ import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-contex
 import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxBuildProfileFromBaseline } from './company-development-roblox-bootstrap.mjs';
+import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -170,8 +171,18 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     queueRuntimeIndependentQaPassed:executionEvidence.independentQaPassed===true,
     queueRuntimeRegressionPassed:executionEvidence.regressionPassed===true
   }:{};
-  const firstStagePolicy=centralPresentationPolicy(repoRoot)?.unityWebFirstStage||{};
-  const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY'&&firstStagePolicy?.appliesToAllGames===true;
+  const centralPolicy=centralPresentationPolicy(repoRoot)||{};
+  const firstStagePolicy=centralPolicy?.unityWebFirstStage||{};
+  const legacyUnityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'
+    &&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY'
+    &&firstStagePolicy?.appliesToAllGames===true;
+  const unityWebDevelopmentFloor=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'
+    &&clean(firstStagePolicy?.scope)==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
+    &&firstStagePolicy?.developmentAdmissionAuthority===true
+    &&firstStagePolicy?.validationSurfaceOnly===false;
+  const grandfatherIds=new Set((centralPolicy?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[]).map(clean).filter(Boolean));
+  const unityWebGrandfathered=unityWebDevelopmentFloor&&grandfatherIds.has(id)&&nativeUpperPlatformAlreadyStarted(item);
+  const unityWebFirstStage=(legacyUnityWebFirstStage||unityWebDevelopmentFloor)&&!unityWebGrandfathered;
   if(unityWebFirstStage){
     const root=`unity-games/${id}`;
     const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
@@ -187,6 +198,9 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueWebFinalContentDepthLastAttemptAt:clean(item?.webFinalContentDepthLastAttemptAt),
       firstStageUnityWeb:true,
       firstStageEngine:'UNITY_WEB',
+      unityWebDevelopmentFloor:unityWebDevelopmentFloor,
+      unityWebPolicyScope:clean(firstStagePolicy?.scope),
+      upperPlatformReadinessRequired:unityWebDevelopmentFloor,
       postWebSelectedPlatform:clean(item?.selectedPlatform||item?.targetPlatform),
       companyDevelopmentQueueSource:true
     };
@@ -795,6 +809,12 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
   if(project.firstStageUnityWeb!==true||project.releaseState!=='development-confirmed')return null;
   const root=posix(project.projectPath);
   if(root!==`unity-games/${project.gameId}`)return null;
+  const readiness=readUpperPlatformReadiness(repoRoot,project.gameId);
+  if(readiness.pass===true)return null;
+  const readinessReason=clean(readiness.reason)||'READINESS_EVIDENCE_MISSING';
+  const floorSource=readJson(sourceFile(repoRoot,`${root}/unity-web-floor-source.json`),{});
+  const bootstrapGraphicsBlocked=floorSource?.presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'||floorSource?.upperPlatformReady===false;
+  const multiplayerRepairRequired=readiness?.data?.criteria?.qa?.multiplayerRequired===true&&readiness?.data?.criteria?.qa?.multiplayerPass!==true;
   const coreRel=`${root}/Assets/Scripts/GameCore.cs`;
   const runtimeRel=`${root}/Assets/Scripts/RuntimeBootstrap.cs`;
   const projectVersionRel=`${root}/ProjectSettings/ProjectVersion.txt`;
@@ -856,25 +876,46 @@ Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 
     return out;
   }
 
-  if(repairState||!buildWebReady||!qaReady){
+  if(repairState||!buildWebReady||!qaReady||readiness.pass!==true){
     const id=nextCausalGenerationId(queue,`${project.gameId}-unity-web-repair`);if(!id)return null;
     const reasons=[
       repairState?'company-runtime:WEB_VIBE_REPAIR_REQUIRED':'',
       !buildWebReady?'BUILD_WEB_METHOD_MISSING':'',
-      !qaReady?'UNITY_WEB_QA_CONTRACT_MISSING':''
+      !qaReady?'UNITY_WEB_QA_CONTRACT_MISSING':'',
+      readiness.pass!==true?'UPPER_PLATFORM_READINESS:'+readinessReason:'',
+      bootstrapGraphicsBlocked?'GRAPHICS_BUILDUP_REQUIRED':'',
+      multiplayerRepairRequired?'MULTIPLAYER_2PLUS_AUTHORITATIVE_SYNC_REQUIRED':''
     ].filter(Boolean).join('|');
-    const goal=`[UNITY_WEB_REPAIR] 게임: ${project.name||project.gameId}
-기존 unity-games/${project.gameId}/ 프로젝트를 직접 읽고 1차 Unity Web 실패 원인만 수정한다. 기존 게임 규칙·수치·저장·핵심 루프를 임의로 바꾸지 않는다.
-필수 수리 근거: ${reasons||'runtime-validation-repair'}.
-RuntimeBootstrap의 실제 입력/게임 함수와 JAEWOON_UNITY_WEB_QA 증거를 일치시키고 Web Build가 실제 프로젝트를 빌드하도록 유지한다.
-MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 상태 변화와 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
-QA 마커만 추가하고 화면/상태가 변하지 않는 가짜 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const files=[coreRel,runtimeRel].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+    const goal=`[UNITY_WEB_DEVELOPMENT_FLOOR_REPAIR] 게임: ${project.name||project.gameId}
+기존 unity-games/${project.gameId}/ canonical Unity 프로젝트를 직접 읽고 UPPER_PLATFORM_DEVELOPMENT_READY 실패 원인을 실제 코드·그래픽에서 수정한다. 기존 게임 규칙·수치·저장·핵심 루프를 임의로 바꾸지 않는다.
+필수 수리 근거: ${reasons||'UPPER_PLATFORM_READINESS_REPAIR'}.
+코드: 시작→플레이→진행/보상→종료 또는 재시도 핵심 루프가 실제 상태 변화로 이어지고 치명 오류·진행 소프트락이 없어야 한다.
+그래픽: 캐릭터/적/환경/장비 정체성이 실제 화면에서 구분되어야 하고 placeholder primitive 중심 표현은 완성으로 인정하지 않는다. 최소 2.5D/3D 공간 표현, 실제 모션/애니메이션/VFX를 게임 상태에 연결한다.
+브라우저: WebGL 빌드 후 실제 모바일 브라우저 입력·핵심 행동·진행·저장복구가 다시 검증 가능해야 한다.
+QA: Independent QA와 Regression을 약화하지 않는다. 설계상 멀티가 필요하면 실제 2명 이상 상태 동기화와 authoritative sync 증거 없이는 PASS 처리하지 않는다.
+MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
+UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+    const scriptsDir=sourceFile(repoRoot,`${root}/Assets/Scripts`);
+    const files=[];
+    const collectScripts=dir=>{
+      if(!fs.existsSync(dir))return;
+      for(const entry of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+        const full=path.join(dir,entry.name);
+        if(entry.isDirectory())collectScripts(full);
+        else if(entry.isFile()&&entry.name.endsWith('.cs'))files.push(posix(path.relative(repoRoot,full)));
+      }
+    };
+    collectScripts(scriptsDir);
+    if(!files.length)for(const relative of [coreRel,runtimeRel])if(fs.existsSync(sourceFile(repoRoot,relative)))files.push(relative);
     if(!files.length)return null;
     const out=task(id,{...project,engine:'unity',target:'unity'},goal,files,'owner-immediate','medium',[
       'owner-directive:webgame-first',
       'web-stage:WEB_REPAIR',
       'unity-web-first-stage',
+      'unity-web-development-floor:v1',
+      'upper-platform-readiness:'+readinessReason,
+      bootstrapGraphicsBlocked?'graphics-buildup-required':'graphics-buildup-evaluate',
+      multiplayerRepairRequired?'multiplayer-2plus-authoritative-sync-required':'multiplayer-gate-context-evaluated',
       'company-runtime-state:'+clean(project.queueCanonicalState||'UNKNOWN'),
       'preserve-existing-game'
     ]);
