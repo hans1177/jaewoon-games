@@ -260,19 +260,19 @@ function qualitySignalText(values=[]){return uniq(values).join(' | ').toLowerCas
 function focusFromSignals({signals=[],source={}}={}){
   const text=qualitySignalText(signals);
   if(/crash|runtime|error|softlock|save|desync|broken|exception/.test(text))return'STABILITY';
-  if(/visual|graphic|render|animation|vfx|camera|lighting|material|silhouette|environment|placeholder/.test(text))return'PRESENTATION';
+  if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
   if(/progress|reward|unlock|quest|goal|economy|content/.test(text))return'PROGRESSION';
   if(/mobile|touch|input|ui|hud|readability|navigation|accessib/.test(text))return'USABILITY';
-  if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
+  if(/visual|graphic|render|animation|vfx|camera|lighting|material|silhouette|environment|placeholder/.test(text))return'PRESENTATION';
   const s=source?.signals||{};
-  if(Number(s.primitive||0)>8||Number(s.animation||0)<2||Number(s.vfx||0)<2)return'PRESENTATION';
-  if(Number(s.progression||0)<4)return'PROGRESSION';
   if(Number(s.ai||0)<2||Number(s.combat||0)<5)return'CORE_FUN';
+  if(Number(s.progression||0)<4)return'PROGRESSION';
+  if(Number(s.primitive||0)>8||Number(s.animation||0)<2||Number(s.vfx||0)<2)return'PRESENTATION';
   return'USABILITY';
 }
 
 function nextFocus({preferred='CORE_FUN',previous={}}={}){
-  const order=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
+  const order=['CORE_FUN','PROGRESSION','USABILITY','PRESENTATION','STABILITY'];
   const prior=clean(previous?.primaryFocus).toUpperCase();
   if(!prior||prior!==preferred)return preferred;
   const index=order.indexOf(prior);
@@ -484,7 +484,7 @@ export function directivePrompt(d={}){
   if(!d?.directiveId)return'';
   const visual=Object.entries(d.visualBuildUpDirective?.domains||{}).map(([k,v])=>`- ${k}: ${v}`).join('\n');
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,14).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
-  const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'}`).join('\n');
+  const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
@@ -562,6 +562,13 @@ export function buildGameSpecificBuildUpDirective({
   const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8);
   const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
   const expectedEffect=expectedPlayerEffect({focus,identity,anchor,secondary});
+  const sourceResponsibilities=primarySourceAnchors.map(row=>Object.freeze({
+    ...row,
+    currentBehavior:clean(row.context)||`현재 ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} 구현을 소스에서 관찰함`,
+    intendedBehavior:`${focus} primary goal "${goal}"에 맞춰 ${row.symbol||'이 책임 영역'}의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 "${expectedEffect}"가 되게 한다.`,
+    whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
+    observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
+  }));
   const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus});
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
@@ -642,7 +649,7 @@ export function buildGameSpecificBuildUpDirective({
       '멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다.',
       'wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.'
     ],
-    responsibleSystemsAndFiles:{files:topFiles,sourceAnchors:primarySourceAnchors,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST',exactSourceAnchorRequired:true},
+    responsibleSystemsAndFiles:{files:topFiles,sourceAnchors:sourceResponsibilities,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST',exactSourceAnchorRequired:true,currentAndIntendedBehaviorRequiredPerPrimaryAnchor:true},
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
     nextActionDecision,
     acceptanceEvidence:acceptance,
