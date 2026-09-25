@@ -121,7 +121,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.launchInput,'LOCAL_EXACT_BUILD_PLACE_FILE_ONLY');
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.onlinePlaceIdLaunchForbidden,true);
   assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.separateTrainer,false);
-  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play');
+  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.actualPlayExecutor,'.github/workflows/company-development-roblox-internal-vibe-play.yml');
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
