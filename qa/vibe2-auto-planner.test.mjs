@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -2206,4 +2206,50 @@ test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evol
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN'),null);
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION'),null);
   assert.ok(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION'));
+});
+
+
+test('Roblox queue projection uses Roblox design genre instead of generic catalog or Web genre',()=>{
+  const root=tempRepo();
+  const gameId='roblox-genre-source';
+  fs.mkdirSync(path.join(root,'roblox-games',gameId),{recursive:true});
+  writeStudioDesign(root,gameId,{
+    failureRetryRisk:{failureStates:['defeat','timeout'],retryFlow:'restart the current session with preserved progression',riskPressure:'enemy pressure rises by wave',recoveryRules:'persistent unlocks remain'},
+    multiplayerMode:'SINGLE',
+    technicalAssumptions:['server authoritative state remains separate from presentation','save schema meaning remains stable across native implementations'],
+    robloxBuildProfile:{
+      version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',
+      declaredGameCategory:'PUZZLE',genre:'Strategy',subgenre:'Tower Defense',playMode:'SINGLE',
+      multiplayerRequired:false,coopImplementationRequired:false,competitiveImplementationRequired:false,
+      networkingRequired:false,multiplayerQaRequired:false,minimumParticipantsForRequiredQa:1,
+      displayLabelKo:'전략 · 타워 디펜스'
+    },
+    platformProfiles:{
+      ROBLOX:{
+        platform:'ROBLOX',inputModel:'Roblox mobile touch keyboard and gamepad controls',sessionModel:'short Roblox defense sessions with rapid restart',multiplayerRuntime:'server authoritative Roblox state even in solo sessions',performanceBudget:'bounded Roblox mobile enemy and effect budget',uiUx:'Roblox touch safe defense HUD and placement controls',saveAndNetwork:'DataStore backed progression with server validation',platformContentAdaptation:'Roblox tower defense placement lanes and avatar scale',internalReleaseTarget:'Private Roblox owner playtest experience',validationEvidence:'exact Roblox source artifact runtime QA and regression evidence'
+      },
+      UNITY:{
+        platform:'UNITY',inputModel:'Unity mobile touch and gamepad controls',sessionModel:'mobile app defense sessions with suspend resume',multiplayerRuntime:'local authoritative solo runtime for the initial mobile build',performanceBudget:'Android thermal memory and GPU budget',uiUx:'Unity safe area defense HUD and touch placement',saveAndNetwork:'versioned local save with validated migration',platformContentAdaptation:'Unity mobile scene and prefab tower defense adaptation',internalReleaseTarget:'Internal Android test build',validationEvidence:'installed Android runtime QA and regression evidence'
+      }
+    }
+  });
+  const projects=collectProjects(
+    {projects:[]},
+    {games:[{
+      id:gameId,name:'Roblox Genre Source',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',genre:['Puzzle'],gameCategory:'PUZZLE',
+      robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    root,
+    {items:[{
+      gameId,gameName:'Roblox Genre Source',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',robloxProjectPath:`roblox-games/${gameId}`
+    }]}
+  );
+  const project=projects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+  assert.ok(project);
+  assert.equal(project.genre,'Strategy');
+  assert.equal(project.subgenre,'Tower Defense');
+  assert.equal(project.playMode,'SINGLE');
+  assert.match(project.robloxDesignProfileSource,/design\/roblox-genre-source\/2026-09-25\/design-revised\.json$/);
 });
