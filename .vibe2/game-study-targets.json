@@ -23,13 +23,15 @@
     "externalCopyEnabledRobloxAutomation": true,
     "clientLocalLearning": false,
     "learningInputs": {
-      "studioRuntime": false,
+      "studioRuntime": true,
       "ownedOrAuthorizedSourceStructure": true,
       "webRuntimeObservation": true,
       "ciQaRegressionEvidence": true,
       "playTelemetry": true,
       "ownerDirectiveFeedback": true,
-      "rawExternalSourceMemory": false
+      "rawExternalSourceMemory": false,
+      "studioRuntimeScope": "VERIFIED_STUDIO_RUNTIME_EVIDENCE_ONLY",
+      "rawStudioSourceMemory": false
     },
     "robloxMaterialCollector": {
       "enabled": false,
