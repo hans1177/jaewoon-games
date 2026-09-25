@@ -156,7 +156,7 @@ test('Open Cloud engine probe binds exact place version without granting runtime
  assert.doesNotMatch(body.script,/MULTIPLAYER_SYNC.*true|runtimeAcceptancePassed|robloxRuntimePassed/);
 });
 
-test('Open Cloud engine probe waits for the real place server boot without fabricating foundation evidence',async()=>{
+test('Open Cloud engine probe records headless Luau execution without pretending it is a live simulation',async()=>{
  const calls=[];
  const responses=[
   {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
@@ -165,15 +165,19 @@ test('Open Cloud engine probe waits for the real place server boot without fabri
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=0'},
-   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=false'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'},
   ]}]}}
  ];
  const fetchImpl=async(url,init={})=>{calls.push({url,init});const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
  const r=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2});
- assert.equal(r.serverBootObserved,true);
+ assert.equal(r.simulationRunning,false);
+ assert.equal(r.serverBootObserved,false);
  const body=JSON.parse(calls[0].init.body);
- assert.match(body.script,/for _=1,16 do if foundationServerBoot then break end; task\.wait\(0\.5\)/);
+ assert.match(body.script,/RunService:IsRunning\(\)/);
+ assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING/);
  assert.match(body.script,/Foundation_SERVER_BOOT/);
+ assert.doesNotMatch(body.script,/task\.wait\(0\.5\)/);
  assert.doesNotMatch(body.script,/SetAttribute\("Foundation_SERVER_BOOT",true\)/);
  assert.doesNotMatch(body.script,/MULTIPLAYER_SYNC.*true|runtimeAcceptancePassed|robloxRuntimePassed/);
 });
