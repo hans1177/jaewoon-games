@@ -706,8 +706,9 @@ function presentationWorkerGuidance(order = {}) {
     '표현 계층은 save key, 진행도, 데미지, 쿨다운, 이동 속도, 보상, 드랍률, authoritative hit timing을 임의 변경하지 않는다.',
     '새 wrapper/override/shadow pipeline으로 덮지 말고 기존 책임 시스템을 직접 정리한다.',
     'ASSET_ADAPTATION에서 Unity는 C# 기반 저폴리 조립 모델·재질·조명·VFX·모션/UI를, Roblox는 Luau 기반 조립 모델·Material/Color·Particle/Beam/Trail·모션/UI를 실제 게임 화면에 구현할 수 있다.',
-    'Roblox ASSET_ADAPTATION은 캐릭터/적, 무기/장비, 환경/지형, 재질·색·스타일의 4개 핵심 시각 도메인을 모두 실제 source delta로 구현해야 한다. 3개만 채우는 부분 그래픽 패치는 완료가 아니다.',
-    'Roblox ASSET_ADAPTATION의 모션은 필수다. TweenService, RenderStepped/Heartbeat, Animator/AnimationTrack, Motor6D/Bone/CFrame 등 실제 네이티브 모션 경로를 기존 visual owner에 적용해야 하며 정적 색상/UI 변경만으로 완료할 수 없다.',
+    'Roblox ASSET_ADAPTATION은 캐릭터/적, 무기/장비, 환경/지형, 재질·색·스타일의 핵심 시각 도메인을 모두 실제 source delta로 구현해야 한다. 이들은 최소 필수 코어이며 총 시각 도메인 수의 상한이 아니다. UI/VFX/조명/소품/카메라 등 필요한 추가 도메인은 제한 없이 함께 개선할 수 있다.',
+    'Roblox ASSET_ADAPTATION은 첫 후보부터 완성형 그래픽 edits[] 패키지로 생성한다. 서로 다른 exact anchor를 여러 개 사용해도 되며, 한 개 micro-patch로 축소하지 않는다. 단일 edit를 쓸 수 있는 경우는 그 replace 하나가 모든 최소 필수 코어 도메인과 필수 모션을 실제 실행 코드로 함께 충족할 때뿐이다.',
+    'Roblox ASSET_ADAPTATION의 모션은 필수다. TweenService, RenderStepped/Heartbeat, Animator/AnimationTrack, Motor6D/Bone과 CFrame/Transform/Position/Orientation 실제 변화 등 네이티브 모션 경로를 기존 visual owner에 적용해야 하며 정적 색상/UI 변경만으로 완료할 수 없다.',
     '단일 primitive, 이름만 바꾼 기본 Part/GameObject, 검증용 임시 도형은 최종 그래픽 완료로 인정하지 않는다. 여러 의미 있는 파트와 Style Lock을 사용해 게임 정체성이 보이는 결과를 만든다.',
     '하이엔드 기본값은 플레이어/적/NPC/무기/아이템/건축/지형/배경/식생/소품/UI/VFX까지 목적 있는 에셋을 실제 게임에 적용하는 것이다.',
     '그래픽 작업의 외부 단위는 GRAPHICS_PRODUCTION 하나다. 캐릭터/환경/애니메이션/VFX/조명/UI를 별도 최상위 그래픽 작업으로 분리하지 말고 내부 단계로 처리한 뒤 같은 루트로 fan-in 한다.',
@@ -1727,6 +1728,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         speculativeFocusedRetryCredit=true;
         console.log(`VIBE2_SPECULATIVE_FOCUSED_RETRY_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}:${failureClass}`);
       }
+      const robloxFullGraphicsRecoveryRetry=!allowFullRewrite
+        &&robloxAssetAdaptationTask
+        &&['ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','TIMEOUT','MALFORMED_OUTPUT','EDIT_MATCH'].includes(failureClass)
+        &&attempt<configuredBaseMaxAttempts;
+      if(robloxFullGraphicsRecoveryRetry)console.log(`VIBE2_ROBLOX_FULL_GRAPHICS_RECOVERY_RETRY=${attempt}->${attempt+1}:${candidateVariant}:${failureClass}`);
       const presentationRecoveryRetry=!allowFullRewrite&&presentationPatchDeltaObserved&&focusedFinalRetryAllowed(error)&&attempt<configuredBaseMaxAttempts;
       let presentationPatchDeltaCreditRetry=false;
       if(!allowFullRewrite&&presentationPatchDeltaObserved&&focusedFinalRetryAllowed(error)&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts&&!presentationPatchDeltaCreditUsed){
@@ -1782,7 +1788,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
