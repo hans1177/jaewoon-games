@@ -275,13 +275,24 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   state.seeds ||= []; portfolio.projects ||= []; catalog.games ||= []; queue.items ||= [];
 
   const stamp=nowIso();
-  const promoted=[],reconciled=[],demoted=[],skipped=[];
+  const catalogById=new Map(catalog.games.map(game=>[clean(game?.id),game]).filter(([gameId])=>gameId));
+  const promoted=[],reconciled=[],demoted=[],skipped=[],reactivatedLegacyCatalogPauses=[];
   const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
   const resetIds=new Set(Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds.map(String):[]);
 
   for(const seed of state.seeds){
-    if(clean(seed?.status).toUpperCase()!=='ACTIVE')continue;
     const gameId=clean(seed?.gameId); if(!gameId)continue;
+    const seedStatus=clean(seed?.status).toUpperCase();
+    const pausedReason=clean(seed?.pausedReason).toUpperCase();
+    const catalogGame=catalogById.get(gameId);
+    const catalogLifecycle=clean(catalogGame?.canonical?.lifecycle?.state||catalogGame?.lifecycleState).toUpperCase();
+    if(seedStatus==='PAUSED'&&pausedReason==='NOT_IN_CANONICAL_GAME_CATALOG'&&catalogLifecycle==='ACTIVE'){
+      seed.status='ACTIVE';
+      delete seed.pausedReason;
+      seed.updatedAt=stamp;
+      reactivatedLegacyCatalogPauses.push(gameId);
+    }
+    if(clean(seed?.status).toUpperCase()!=='ACTIVE')continue;
     const currentClass=clean(seed?.productionClass).toUpperCase();
     if(currentClass==='RELEASE_CONFIRMED'){skipped.push({gameId,reason:'ALREADY_RELEASED'});continue;}
 
@@ -323,6 +334,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     reconciledPromotedSeeds:reconciled,
     demoted,
     skipped,
+    reactivatedLegacyCatalogPauses,
     queueCount:queue.items.length,
     directNativeDual:true
   };
@@ -334,6 +346,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_CONFIRMED_RECONCILED=${result.reconciledPromotedSeeds.join(',')||'NONE'}`);
   console.log(`STALE_DEVELOPMENT_CONFIRMED_DEMOTED=${result.demoted.join(',')||'NONE'}`);
+  console.log(`STALE_CATALOG_PAUSES_REACTIVATED=${result.reactivatedLegacyCatalogPauses.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
   console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   console.log('STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE');
