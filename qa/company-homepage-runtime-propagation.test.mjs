@@ -99,7 +99,7 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
   const roblox=snap.games[0].platforms.find(row=>row.platform==='ROBLOX');
   assert.equal(roblox.placeId,null);
   assert.equal(roblox.internalUrl,null);
-  assert.equal(roblox.internalReleaseReady,false);
+  assert.equal(roblox.internalReleaseReady,true);
   assert.equal(roblox.publicReleaseReady,false);
   assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
 });
@@ -121,8 +121,10 @@ test('homepage exposes Unity Web only as an optional same-project validation sur
   assert.match(renderer,/bindAvailableUnityWebSurfaces\(catalog\)/);
   assert.match(renderer,/projectPath===`unity-games\/\$\{id\}`/);
   assert.match(renderer,/href=`\/web-games\/\$\{id\}\//);
-  assert.match(renderer,/fetch\(`\$\{href\}index\.html\?ts=/);
+  assert.match(renderer,/probeFetch\(`\$\{href\}index\.html\?ts=/);
   assert.match(renderer,/bundleGroupsFromUnityIndex/);
+  assert.match(renderer,/renderCatalog\(catalog\);/);
+  assert.match(renderer,/setTimeout\(\(\)=>controller\.abort\(\),2500\)/);
   assert.match(renderer,/Unity Web Player\|unity-container\|createUnityInstance\|\\\.loader\\\.js/);
   assert.match(renderer,/method:'HEAD'/);
   assert.match(renderer,/\['loader','data','framework','wasm'\]/);

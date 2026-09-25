@@ -78,6 +78,7 @@ const exposureLabelOf=id=>({INTERNAL_ONLY:'내부전용',PUBLIC_RELEASE_READY:'�
 const platformReleaseLabel=p=>{
   if(p?.publicRelease===true||p?.publicReleaseState==='PUBLIC_RELEASE')return'공개출시';
   if(p?.publicReleaseReady===true||p?.publicReleaseState==='PUBLIC_RELEASE_READY')return'공개출시 준비';
+  if(p?.internalReleaseReady===true&&p?.internalLinkSuppressedReason)return'내부출시 · 링크이전중';
   if(p?.internalReleaseReady===true)return'내부출시';
   return p?.developmentState==='NATIVE_DEVELOPMENT'?'개발중':'준비중';
 };
@@ -137,6 +138,12 @@ function canonicalWebHref(row){
 }
 async function bindAvailableUnityWebSurfaces(catalog){
   if(platformExposure?.unityWebEnabled!==true||!Array.isArray(catalog?.games))return catalog;
+  const probeFetch=async(url,options={})=>{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),2500);
+    try{return await fetch(url,{...options,signal:controller.signal});}
+    finally{clearTimeout(timer);}
+  };
   const candidates=catalog.games.filter(game=>{
     const id=gameIdOf(game);
     const unity=sourcesOf(game).unity||{};
@@ -165,12 +172,12 @@ async function bindAvailableUnityWebSurfaces(catalog){
     const id=gameIdOf(game),href=`/web-games/${id}/`,stamp=Date.now();
     if(!id)return;
     try{
-      const indexResponse=await fetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
+      const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
       if(!indexResponse.ok)return;
       const html=await indexResponse.text();
       let complete=false;
       try{
-        const manifestResponse=await fetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
+        const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
         if(manifestResponse.ok){
           const manifest=await manifestResponse.json();
           const groups=manifest?.requiredGroups||{};
@@ -185,7 +192,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
         const groups=bundleGroupsFromUnityIndex(html);
         if(looksLikeUnity&&['loader','data','framework','wasm'].every(key=>Boolean(groups[key]))){
           const probes=await Promise.all(['loader','data','framework','wasm'].map(key=>
-            fetch(`${bundleUrl(href,groups[key])}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null)
+            probeFetch(`${bundleUrl(href,groups[key])}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null)
           ));
           complete=probes.every(response=>response?.ok===true);
         }
@@ -405,11 +412,20 @@ async function refresh(){
     if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
-    const boundCatalog=await bindAvailableUnityWebSurfaces(catalog);
-    const sig=JSON.stringify([boundCatalog,status,testManifest,portfolioStatus,platformExposure]);
-    if(sig!==lastSignature){updateLiveSummary(boundCatalog,status);buildFocus(boundCatalog,status);buildGameCenter(boundCatalog,status);buildRecentUpdates(boundCatalog);lastSignature=sig;}
+    const renderCatalog=currentCatalog=>{
+      const sig=JSON.stringify([currentCatalog,status,testManifest,portfolioStatus,platformExposure]);
+      if(sig===lastSignature)return;
+      updateLiveSummary(currentCatalog,status);
+      buildFocus(currentCatalog,status);
+      buildGameCenter(currentCatalog,status);
+      buildRecentUpdates(currentCatalog);
+      lastSignature=sig;
+    };
+    renderCatalog(catalog);
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
+    const boundCatalog=await bindAvailableUnityWebSurfaces(catalog);
+    renderCatalog(boundCatalog);
   }finally{refreshInFlight=false;}
 }
 function main(){
