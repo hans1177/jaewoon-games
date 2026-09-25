@@ -1,11 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {
   validateLocalStudioPolicy,
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult
 } from '../tools/company-development-roblox-studio-local-play.mjs';
+
+const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
@@ -128,3 +131,17 @@ test('verified Studio runtime error routes exact game to repair while remaining 
   assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_LOCAL_RUNTIME_ERROR');
   assert.deepEqual(applied.item.routingBlockers,['roblox-studio-local-play-repair-required']);
 });
+
+test('company runtime QA uses local immutable Place artifact and never launches published Place directly in Studio',()=>{
+  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(workflow,/development-roblox-package-\$\{\{ matrix\.gameId \}\}/);
+  assert.match(workflow,/run-id: \$\{\{ matrix\.artifactRunId \}\}/);
+  assert.match(workflow,/--place-file=\$env:VIBE2_LOCAL_PLACE_FILE/);
+  assert.match(workflow,/--local-only=true/);
+  assert.doesNotMatch(workflow,/--place-id=\$env:/);
+  assert.doesNotMatch(workflow,/--universe-id=\$env:/);
+  assert.doesNotMatch(workflow,/RobloxPlayerBeta|RobloxPlayerLauncher|roblox-player/i);
+  assert.match(workflow,/Local Place SHA256 mismatch/);
+  assert.match(workflow,/company-development-roblox-studio-local-play\.mjs/);
+});
+
