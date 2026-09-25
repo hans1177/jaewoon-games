@@ -987,6 +987,21 @@ test('every non-neuron reserve ingress syncs current company runtime before plan
 });
 
 
+test('worker control checkout is state-only and worker executables come from the pinned main contract',()=>{
+  const workerStart=workflow.indexOf('\n  worker:\n');
+  const checkoutStart=workflow.indexOf('- name: Checkout Vibe2 control line',workerStart);
+  const checkoutEnd=workflow.indexOf('- name: Checkout pinned main contract',checkoutStart);
+  const checkout=workflow.slice(checkoutStart,checkoutEnd);
+  assert.ok(workerStart>=0&&checkoutStart>workerStart&&checkoutEnd>checkoutStart);
+  assert.match(checkout,/fetch-depth: 1/);
+  assert.match(checkout,/sparse-checkout:\s*\|\s*\n\s*\.vibe2/);
+  assert.match(workflow,/VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY/);
+  assert.match(workflow,/VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT/);
+  assert.match(workflow,/node "\$contract_root\/tools\/vibe2-learning-practice-worker\.mjs"/);
+  assert.match(workflow,/node "\$contract_root\/tools\/vibe2-practice-distillation\.mjs"/);
+  assert.match(workflow,/node "\$contract_root\/tools\/free-budget-telemetry\.mjs"/);
+});
+
 test('24h scheduler fetches only required shallow refs before planning',()=>{
   const start=safetyNetWorkflow.indexOf('- name: Checkout Vibe2 control branch');
   const end=safetyNetWorkflow.indexOf('- uses: actions/setup-node@v4',start);
