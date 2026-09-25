@@ -247,16 +247,22 @@ function keyboardArgs(schema,studioId,key){
 class McpStdioClient{
   constructor({command,args=[],env=process.env,timeoutMs=30000}={}){
     this.command=command;this.args=args;this.env=env;this.timeoutMs=timeoutMs;
-    this.child=null;this.nextId=1;this.pending=new Map();this.tools=new Map();this.protocolVersion='';this.serverInfo={};
+    this.child=null;this.nextId=1;this.pending=new Map();this.tools=new Map();this.protocolVersion='';this.serverInfo={};this.stderrTail='';
   }
   async connect(){
     this.child=spawn(this.command,this.args,{stdio:['pipe','pipe','pipe'],windowsHide:true,env:this.env,shell:false});
     this.child.stderr.setEncoding('utf8');
-    this.child.stderr.on('data',chunk=>{if(process.env.ACTIONS_STEP_DEBUG==='true')process.stderr.write(chunk);});
+    this.child.stderr.on('data',chunk=>{
+      const value=String(chunk||'');
+      this.stderrTail=(this.stderrTail+value).slice(-6000);
+      if(process.env.ACTIONS_STEP_DEBUG==='true')process.stderr.write(value);
+    });
     const rl=readline.createInterface({input:this.child.stdout,crlfDelay:Infinity});
     rl.on('line',line=>this.onLine(line));
     this.child.on('exit',(code,signal)=>{
-      for(const {reject,timer} of this.pending.values()){clearTimeout(timer);reject(new Error(`MCP process exited code=${code} signal=${signal}`));}
+      const detail=clean(this.stderrTail).replace(/\s+/g,' ').slice(-2000);
+      const suffix=detail?` stderr=${detail}`:'';
+      for(const {reject,timer} of this.pending.values()){clearTimeout(timer);reject(new Error(`MCP process exited code=${code} signal=${signal}${suffix}`));}
       this.pending.clear();
     });
     const result=await this.request('initialize',{
@@ -321,7 +327,7 @@ function chooseStudio(listResult,expectedName=''){
 function mcpCommandArgs(command=''){
   const resolved=clean(command);
   if(!resolved)throw new Error('ROBLOX_STUDIO_MCP_COMMAND_MISSING');
-  if(process.platform==='win32')return{command:'cmd.exe',args:['/d','/s','/c',resolved]};
+  if(process.platform==='win32')return{command:'cmd.exe',args:['/c',resolved]};
   return{command:resolved,args:[]};
 }
 
