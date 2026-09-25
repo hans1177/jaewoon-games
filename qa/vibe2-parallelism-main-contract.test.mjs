@@ -74,6 +74,8 @@ test('PARALLELISM_CONTRACT_GATE keeps GAME_PRIMARY internally unbounded and bind
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '20'"));
   assert.ok(core.includes('VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'));
   assert.ok(core.includes('vibe2-queue-control.mjs reserve-batch'));
+  assert.ok(core.includes("format('vibe2-control-state-{0}-{1}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary', github.run_id)"));
+  assert.ok(!core.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   assert.ok(core.includes('fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"'));
   assert.equal(wave.gamePrimaryFixedInternalCap,null);
   assert.equal(wave.telemetryDenominator,'CURRENT_ATOMIC_RESERVATION_CAP');
