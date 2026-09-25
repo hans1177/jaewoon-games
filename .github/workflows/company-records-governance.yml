@@ -45,7 +45,7 @@ jobs:
       - name: Checkout governed revision
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Validate record tooling syntax
         run: |
