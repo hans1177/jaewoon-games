@@ -1200,6 +1200,40 @@ jobs:
 
           if (-not $success) {
             Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED"
+
+            $finalDiag = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-setting-final.json'
+            $finalDiagArgs = @(
+              '--mode=diagnose-setting',
+              "--settings-root=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT",
+              "--output=$finalDiag"
+            )
+            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @finalDiagArgs
+            if ($LASTEXITCODE -ne 0) { throw 'Studio MCP final read-only setting diagnostic failed' }
+            $finalSetting = Get-Content $finalDiag -Raw | ConvertFrom-Json
+            $finalState = [string]$finalSetting.state
+            $finalCandidatePathCount = [int]$finalSetting.candidatePathCount
+            $finalEnabledCount = [int]$finalSetting.enabledCount
+            Write-Host "ROBLOX_STUDIO_MCP_FINAL_SETTING_ENABLED=$finalState"
+            Write-Host "ROBLOX_STUDIO_MCP_FINAL_SETTING_ENABLED_COUNT=$finalEnabledCount"
+            Write-Host "ROBLOX_STUDIO_MCP_FINAL_SETTING_CANDIDATE_PATH_COUNT=$finalCandidatePathCount"
+            Write-Host 'ROBLOX_STUDIO_MCP_FINAL_SETTING_MUTATION=NO'
+
+            $readOnlyEnablementAbsent = (
+              $toolProviderTimeoutObserved
+              -and $finalEnabledCount -eq 0
+              -and $finalCandidatePathCount -eq 0
+              -and $finalState -in @('MISSING','UNKNOWN')
+            )
+            if ($readOnlyEnablementAbsent) {
+              $enablementRequired = $true
+              "VIBE2_ROBLOX_STUDIO_MCP_ENABLEMENT_REQUIRED=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+              Write-Host "ROBLOX_STUDIO_MCP_ENABLEMENT_EVIDENCE=ABSENT_AFTER_ASSISTANT_READY:$finalState"
+              Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT'
+              Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
+            } else {
+              "VIBE2_ROBLOX_STUDIO_MCP_ENABLEMENT_REQUIRED=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+
             if ($toolProviderTimeoutObserved) {
               $studioLogsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
               $latestStudioLog = Get-ChildItem $studioLogsRoot -File -Filter '*.log' -ErrorAction SilentlyContinue |
@@ -1293,7 +1327,8 @@ jobs:
             "--place-id=$env:PLACE_ID",
             "--version-number=$env:VERSION_NUMBER",
             "--workflow-run-id=${{ github.run_id }}",
-            "--studio-step-succeeded=$env:STUDIO_STEP_SUCCEEDED"
+            "--studio-step-succeeded=$env:STUDIO_STEP_SUCCEEDED",
+            "--studio-mcp-server-enablement-required=$env:VIBE2_ROBLOX_STUDIO_MCP_ENABLEMENT_REQUIRED"
           )
           & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
           if ($LASTEXITCODE -ne 0) { throw 'Studio MCP play evidence validation failed' }
