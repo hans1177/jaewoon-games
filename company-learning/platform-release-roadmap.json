@@ -1,5 +1,5 @@
 {
-  "version": 358,
+  "version": 359,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6576,6 +6576,14 @@
       "existingPipelineReuseRequired": true,
       "shadowPipelineForbidden": true,
       "gameplayDevelopmentResumesAfterVerifiedDesign": true
+    },
+    "continuousGameplayVerifiedDesignRuntimeOverlay20260925": {
+      "id": "CONTINUOUS_GAMEPLAY_VERIFIED_DESIGN_RUNTIME_OVERLAY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Gameplay evolution consumes company-runtime design evidence and authorizes CORE_FUN/PROGRESSION only from a fresh verified design baseline; safe non-gameplay lanes remain parallel while design is incomplete.",
+      "strictPassMinimum": 80,
+      "sourceRootWideLocksRemainForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -21219,7 +21227,23 @@
       "newShadowDesignPipelineForbidden": true,
       "missingDesignMayNotBeSolvedByGenericGameplayGuess": true,
       "presentationAndStabilityMayContinueInParallelWhileDesignIsBeingCreatedWhenSafe": true,
-      "coreFunAndProgressionResumeImmediatelyAfterVerifiedDesign": true
+      "coreFunAndProgressionResumeImmediatelyAfterVerifiedDesign": true,
+      "gameplayEvolutionDesignAuthority": "LATEST_VERIFIED_DESIGN",
+      "verifiedDesignDefinition": {
+        "baselineGateState": "DESIGN_BASELINE_READY",
+        "baselineGateReady": true,
+        "strictDesignVerdict": "PASS",
+        "strictDesignMinimumScore": 80,
+        "strictDesignHardFailuresMax": 0,
+        "postResetFreshnessRequiredWhenGameIsInCurrentOwnerResetSet": true
+      },
+      "runtimeEvidenceAuthority": "company-runtime",
+      "plannerRuntimeOverlayRequired": [
+        "design",
+        "game-seed-state.json"
+      ],
+      "usableButUnverifiedDesignDoesNotAuthorizeCoreFunOrProgressionMutation": true,
+      "unverifiedDesignAction": "CONTINUE_CANONICAL_DESIGN_CYCLE_WHILE_SAFE_PRESENTATION_USABILITY_STABILITY_WORK_MAY_CONTINUE"
     },
     "simultaneousLanes": {
       "required": [
@@ -21295,7 +21319,8 @@
       "tests": [
         "qa/vibe2-auto-planner.test.mjs",
         "qa/vibe2-controller-contract.test.mjs"
-      ]
+      ],
+      "runtimeDesignEvidence": "company-runtime:design/<gameId>/<date>"
     }
   }
 }

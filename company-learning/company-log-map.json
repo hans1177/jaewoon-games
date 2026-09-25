@@ -1,5 +1,5 @@
 {
-  "version": 56,
+  "version": 57,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1050,5 +1050,19 @@
     "genericGameplayGuessForbidden": true,
     "existingPipelineReuseRequired": true,
     "shadowPipelineForbidden": true
+  },
+  "verifiedDesignGameplayAuthorityContract": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.designContext",
+    "runtimeAuthority": "company-runtime",
+    "requiredEvidence": [
+      "DESIGN_BASELINE_READY",
+      "STRICT_DESIGN_PASS_SCORE_GTE_80",
+      "NO_STRICT_HARD_FAILURES"
+    ],
+    "currentOwnerResetGamesRequirePostResetFreshEvidence": true,
+    "plannerMustOverlayRuntimeDesignEvidence": true,
+    "coreFunOrProgressionWithoutVerifiedDesignForbidden": true,
+    "safeParallelLanesRemainLive": true
   }
 }

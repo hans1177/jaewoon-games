@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 78,
+  "revision": 79,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1359,6 +1359,13 @@
     "missingDesignPassiveWaitForbidden": true,
     "shadowDesignPipelineForbidden": true,
     "safePresentationAndStabilityMayContinueDuringDesignGeneration": true,
-    "coreFunAndProgressionResumeAfterVerifiedDesign": true
+    "coreFunAndProgressionResumeAfterVerifiedDesign": true,
+    "gameplayDesignAuthority": "LATEST_VERIFIED_DESIGN",
+    "verifiedDesignRequiresBaselineReady": true,
+    "verifiedDesignStrictPassMinimum": 80,
+    "verifiedDesignHardFailuresMax": 0,
+    "companyRuntimeDesignOverlayRequired": true,
+    "companyRuntimeSeedStateOverlayRequired": true,
+    "unverifiedDesignMayNotAuthorizeCoreFunOrProgression": true
   }
 }

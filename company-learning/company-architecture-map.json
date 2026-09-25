@@ -1,5 +1,5 @@
 {
-  "version": 174,
+  "version": 175,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4019,6 +4019,18 @@
     ],
     "missingDesignIntakeTool": "tools/company-all-games-design-reset.mjs --auto-missing-design-intake",
     "newDesignPipelineCreated": false,
-    "reusesCanonicalDesignRuntime": true
+    "reusesCanonicalDesignRuntime": true,
+    "designRuntimeAuthority": "company-runtime",
+    "plannerRuntimeOverlay": [
+      "company-runtime:design",
+      "company-runtime:game-seed-state.json"
+    ],
+    "verifiedDesignGate": "DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE",
+    "unverifiedDesignGameplayMutation": false,
+    "safeParallelLanesDuringDesign": [
+      "PRESENTATION",
+      "USABILITY",
+      "STABILITY"
+    ]
   }
 }
