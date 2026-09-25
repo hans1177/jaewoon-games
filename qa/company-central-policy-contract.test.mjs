@@ -52,6 +52,36 @@ test('platform-release-roadmap is the single machine execution policy source',()
     'tools/apply-common-development-quality-policy.mjs'
   ]) assert.equal(fs.existsSync(path.join(repoRoot,removed)),false,removed);
 });
+
+test('executable company code cannot reference removed legacy policy mirrors',()=>{
+  const legacyNames=[
+    'COMPANY_FLOW.md',
+    'company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md',
+    'company-learning/PLATFORM_RELEASE_ROADMAP.md',
+    'company-learning/PRIMARY_THREE_FAST_MVP.md',
+    'company-learning/UNITY_WEB_FIRST_STAGE.md',
+    'company-learning/VIBE3_ENGINE.md',
+  ];
+  const executableRoots=['.github/workflows','tools','assets'];
+  const files=[];
+  const walk=dir=>{
+    if(!fs.existsSync(dir))return;
+    for(const name of fs.readdirSync(dir)){
+      const full=path.join(dir,name);
+      const stat=fs.statSync(full);
+      if(stat.isDirectory())walk(full);
+      else if(/\.(?:mjs|js|cjs|yml|yaml|json)$/.test(name))files.push(full);
+    }
+  };
+  for(const root of executableRoots)walk(path.join(repoRoot,root));
+  for(const file of files){
+    const body=fs.readFileSync(file,'utf8');
+    for(const legacy of legacyNames){
+      assert.equal(body.includes(legacy),false,`${path.relative(repoRoot,file)} references removed legacy policy ${legacy}`);
+    }
+  }
+});
+
 test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and selected-platform policy',()=>{
   assert.equal(directive.gameSeed.enabled,true);
   assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
