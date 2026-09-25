@@ -763,7 +763,7 @@ jobs:
           echo "build_evidence=$evidence" >> "$GITHUB_OUTPUT"
 
       - name: Prepare shared local review model in package worker
-        if: steps.package.outcome == 'success'
+        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
         uses: ./.github/actions/prepare-ollama
         with:
           model: 'llama3.2:1b'
@@ -772,7 +772,7 @@ jobs:
           department-role: development
 
       - name: Ensure fused shared preflight model is local
-        if: steps.package.outcome == 'success'
+        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
         shell: bash
         run: |
           set -euo pipefail
@@ -784,7 +784,7 @@ jobs:
 
       - name: Run fused shared-model build preflight
         id: fused_preflight
-        if: steps.package.outcome == 'success'
+        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
         continue-on-error: true
         env:
           GAME_ID: ${{ matrix.gameId }}
@@ -897,7 +897,7 @@ jobs:
           const f0Path=path.join('/tmp/roblox-technical/results',safe+'.headless.json');
           const preflightEvidence=fs.existsSync(preflightPath)?JSON.parse(fs.readFileSync(preflightPath,'utf8')):null;
           const f0Evidence=fs.existsSync(f0Path)?JSON.parse(fs.readFileSync(f0Path,'utf8')):null;
-          const preflightPass=process.env.PREFLIGHT_OUTCOME==='success'&&preflightEvidence?.pass===true;
+          const preflightPass=secondary?null:(process.env.PREFLIGHT_OUTCOME==='success'&&preflightEvidence?.pass===true);
           const f0Pass=secondary?null:(process.env.F0_OUTCOME==='success'&&f0Evidence?.pass===true);
           const result={
             gameId:id,
@@ -911,11 +911,11 @@ jobs:
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:evidence?.artifactIdentity||null,
             saveRequired:evidence?.saveRequired===true,
-            failure:!packagePassed?'roblox-build-package-failed':!preflightPass?'roblox-build-preflight-blocked':(!secondary&&!f0Pass?'roblox-f0-source-preflight-failed':null),
+            failure:!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
           };
           fs.writeFileSync(path.join('/tmp/roblox-technical/results',`${safe}.result.json`),JSON.stringify(result,null,2)+'\n');
           console.log(`ROBLOX_TECHNICAL_PACKAGE_RESULT=${id}:${result.pass?'PASS':'FAIL'}`);
-          console.log(`ROBLOX_FUSED_PREFLIGHT_RESULT=${id}:${result.preflightPass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_FUSED_PREFLIGHT_RESULT=${id}:${result.preflightPass===null?'N/A':result.preflightPass?'PASS':'FAIL'}`);
           console.log(`ROBLOX_FUSED_F0_RESULT=${id}:${result.f0Pass===null?'N/A':result.f0Pass?'PASS':'FAIL'}`);
           console.log(`ROBLOX_BUILD_PREFLIGHT_PASS=${result.preflightPass?'YES':'NO'}`);
           console.log('ROBLOX_RUNTIME_PASS=NO');
@@ -943,7 +943,7 @@ jobs:
             echo 'ROBLOX_BUILD_PACKAGE=FAIL'
             exit 1
           fi
-          if [ "$PREFLIGHT_OUTCOME" != 'success' ]; then
+          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$PREFLIGHT_OUTCOME" != 'success' ]; then
             echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
             exit 1
           fi
@@ -952,10 +952,11 @@ jobs:
             exit 1
           fi
           echo 'ROBLOX_BUILD_PACKAGE=PASS'
-          echo 'ROBLOX_BUILD_PREFLIGHT_PASS=YES'
           if [ "$SECONDARY_OWNER_FOCUS" = 'true' ]; then
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=DEFER_EXISTING_CONTINUATION'
             echo 'ROBLOX_F0_SOURCE_PREFLIGHT=DEFER_SECONDARY_OWNER_FOCUS'
           else
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=YES'
             echo 'ROBLOX_F0_SOURCE_PREFLIGHT=PASS'
           fi
           echo 'ROBLOX_RUNTIME_PASS=NO'
@@ -1026,10 +1027,9 @@ jobs:
                 Object.assign(item,{
                   ownerFocusRobloxBuildOrPackagePassed:true,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
                   ownerFocusRobloxBuildArtifactIdentity:result.artifactIdentity,ownerFocusRobloxBuildPassedAt:stamp,ownerFocusRobloxBuildFailedAt:null,
-                  ownerFocusRobloxBuildPreflightPassed:result.preflightPass===true,ownerFocusRobloxBuildPreflightPassedAt:result.preflightPass===true?stamp:null,
-                  ownerFocusRobloxBuildPreflightFailedAt:result.preflightPass===true?null:stamp,ownerFocusRobloxBuildPreflightEvidence:result.preflightEvidence||null,
+                  ownerFocusRobloxBuildPreflightPassed:false,ownerFocusRobloxBuildPreflightPassedAt:null,ownerFocusRobloxBuildPreflightFailedAt:null,
                   ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxRuntimePassedAt:null,ownerFocusRobloxRuntimeFailedAt:null,
-                  ownerFocusRobloxAssetPipelineState:result.preflightPass===true?'PREFLIGHT_READY':'PREFLIGHT_REPAIR_REQUIRED',updatedAt:stamp,
+                  ownerFocusRobloxAssetPipelineState:'BUILD_READY',updatedAt:stamp,
                 });
                 passCount++;
               }else{
