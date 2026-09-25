@@ -210,10 +210,11 @@ test('native routing does not wait for optional Unity Web build',()=>{
   assert.doesNotMatch(source,/needs:.*web-gate/);
   const robloxAt=source.indexOf('gh workflow run company-development-roblox-runtime.yml');
   const unityAt=source.indexOf('gh workflow run company-development-unity-runtime.yml');
-  const webAt=source.indexOf('if [ "$GITHUB_REF" = \'refs\/heads\/main\' ] && [ -n "$UNITY_WEB_IDS" ]');
+  const webDispatchAt=source.indexOf('gh workflow run unity-web-first-stage-build.yml');
   assert.ok(robloxAt>0);
   assert.ok(unityAt>robloxAt);
-  assert.ok(webAt>unityAt);
+  assert.ok(webDispatchAt>unityAt);
+  assert.match(source,/TRIGGER_SOURCE.*UNITY_WEB_VERIFIED/);
   assert.match(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
 });
 
