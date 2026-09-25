@@ -113,3 +113,19 @@ if #Config.Actions > 0 then
     return Enum.ContextActionResult.Sink
   end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)
 end
+
+
+-- native-foundation-sentinel-v1 client readiness
+local nativeFoundationInput = game:GetService("UserInputService")
+local nativeTouchEnabled = nativeFoundationInput.TouchEnabled
+local nativeFoundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
+local nativeFoundationCamera = workspace.CurrentCamera
+local function reportNativeFoundationReady()
+  local character = player.Character or player.CharacterAdded:Wait()
+  local humanoid = character:WaitForChild("Humanoid")
+  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
+    nativeFoundationRemote:FireServer("CAMERA_READY")
+  end
+  nativeFoundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
+end
+task.defer(reportNativeFoundationReady)
