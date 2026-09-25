@@ -2564,6 +2564,42 @@ test('stale queued directive rebinds to the active shared generation before rese
   assert.ok(staleAfter.evidence.includes('build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION'));
 });
 
+test('queued directive older than a newer terminal generation is regenerated before reserve',()=>{
+  const root=tempRepo();
+  const gameId='terminal-stale-build-up';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미'});
+  const project={gameId,name:'Terminal Stale Build Up',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.equal(first.buildUpGeneration,1);
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil and enemy.Health > 0 end\n','utf8');
+  const second=findStudioContinuousImprovementTask(
+    {...project,queueRuntimeObserved:true,queueRuntimePassed:true},
+    root,
+    {tasks:[{...first,status:'verified'}]},
+    'CORE_FUN'
+  );
+  assert.equal(second.buildUpGeneration,2);
+  const terminal={...second,id:`${gameId}-terminal-g2`,status:'verified'};
+  const stale={...first,id:`${gameId}-stale-g1`,status:'queued',goal:'historical base goal\n\n'+first.goal.split('\n\n').slice(-1)[0]};
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[terminal,stale]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.buildUpDirectiveBackfillCount,1);
+  const refreshed=result.queue.tasks.find(row=>row.id===stale.id);
+  assert.equal(refreshed.buildUpGeneration,3);
+  assert.notEqual(refreshed.buildUpDirectiveId,stale.buildUpDirectiveId);
+  assert.ok(refreshed.evidence.includes('build-up-directive-stale-refresh:queued-existing-work'));
+  assert.ok(refreshed.evidence.includes('build-up-directive-freshness:REGENERATED_AFTER_NEWER_TERMINAL_GENERATION'));
+  assert.equal((refreshed.goal.match(/\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\]/g)||[]).length,1);
+});
+
 test('BUILD_UP backlog synchronization never rewrites already running work',()=>{
   const root=tempRepo();
   const gameId='running-build-up';
