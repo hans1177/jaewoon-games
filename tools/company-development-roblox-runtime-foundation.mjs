@@ -103,7 +103,9 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLACE="..tostring(game.PlaceId))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_VERSION="..tostring(game.PlaceVersion))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
-    'print("JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT="..tostring(workspace:GetAttribute("Foundation_SERVER_BOOT")==true))',
+    'local foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true',
+    'for _=1,16 do if foundationServerBoot then break end; task.wait(0.5); foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true end',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT="..tostring(foundationServerBoot))',
   ].join(';');
   const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
   const decode=async(response,label)=>{
