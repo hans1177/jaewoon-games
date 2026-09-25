@@ -1,5 +1,5 @@
 {
-  "version": 387,
+  "version": 388,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3179,7 +3179,20 @@
               "attempt": 2,
               "result": "PASS"
             }
-          }
+          },
+          "currentExecutionInfrastructureBottleneck": "ATOMIC_NEURON_CALLBACK_WORKFLOW_BURST_WHILE_GITHUB_ACTIONS_RUNNER_QUEUE_IS_PRESSURED",
+          "runnerPressureCallbackCoalescing": "IMPLEMENTATION_IN_PROGRESS",
+          "runnerPressureCallbackCoalescingRule": "IF_RECENT_REPOSITORY_ACTIONS_HAVE_QUEUED_PENDING_OR_REQUESTED_RUNS, DO_NOT CREATE_ANOTHER_ATOMIC_NEURON_CALLBACK_WORKFLOW; KEEP_THE_IMMUTABLE_WORKER_RESULT_ARTIFACT_AND_LET_EXISTING_COHORT_FAN_IN_CONSUME_IT; WHEN_QUEUE_PRESSURE_CLEARS, RESUME_IMMEDIATE_CALLBACK",
+          "runnerPressureCallbackCoalescingPreserves": [
+            "WORKER_RESULT_ARTIFACT",
+            "COHORT_FAN_IN",
+            "TASK_OUTCOME",
+            "INCREMENTAL_QA",
+            "FULL_REGRESSION",
+            "SECURITY_GATE",
+            "RELEASE_GATE"
+          ],
+          "runnerPressureCallbackCoalescingWorkerDirectControlWrite": false
         },
         "incidentHistory": [
           {
@@ -7363,6 +7376,30 @@
         "companyEvolutionQa": 36200348264,
         "securityImmune": 36200348267
       }
+    },
+    "runnerPressureCallbackCoalescing20260926": {
+      "id": "RUNNER_PRESSURE_CALLBACK_COALESCING_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "STOP_PRIMARY_AND_SPECULATIVE_WORKER_COMPLETIONS_FROM_CREATING_A_CALLBACK_WORKFLOW_BURST_WHEN_GITHUB_ACTIONS_IS_ALREADY_QUEUED",
+      "existingArchitectureOnly": true,
+      "shadowPipelineCreated": false,
+      "newWorkflowCreated": false,
+      "livePressureSource": "READ_ONLY_GITHUB_ACTIONS_RUN_LIST_WITH_EXISTING_WORKFLOW_TOKEN",
+      "trigger": "AT_LEAST_ONE_RECENT_REPOSITORY_WORKFLOW_RUN_STATUS_IS_QUEUED_PENDING_OR_REQUESTED",
+      "pressureAction": "COALESCE_THIS_WORKER_RESULT_TO_EXISTING_COHORT_FAN_IN",
+      "healthyAction": "DISPATCH_EXISTING_VIBE2_NEURON_COMPLETE_EVENT",
+      "failOpenIfPressureObservationUnavailable": true,
+      "immutableArtifactRequired": true,
+      "resultLossForbidden": true,
+      "directWorkerControlWriteForbidden": true,
+      "authorityChange": "NONE",
+      "bindings": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-controller-contract.test.mjs",
+        "company-learning/company-architecture-map.json",
+        "company-learning/company-log-map.json"
+      ],
+      "implementationState": "IMPLEMENTATION_IN_PROGRESS"
     }
   },
   "vibeExecutionLaneContract": {
@@ -7399,7 +7436,17 @@
       ],
       "speculativeSuppressionPrimaryTaskReductionForbidden": true,
       "speculativeSuppressionTaskMicroFanInPreserved": true,
-      "speculativeSuppressionAutomaticRecovery": true
+      "speculativeSuppressionAutomaticRecovery": true,
+      "liveRunnerQueuePressureCoalescing": true,
+      "liveRunnerQueuePressureSignal": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
+      "atomicCompletionCallbackPolicy": "IMMEDIATE_WHEN_RUNNER_QUEUE_HEALTHY; COALESCE_IMMUTABLE_RESULT_TO_EXISTING_COHORT_FAN_IN_WHEN_LIVE_RUNNER_QUEUE_PRESSURE_EXISTS",
+      "coalescedResultArtifactRequired": true,
+      "coalescedResultConsumedByExistingCohortFanIn": true,
+      "coalescedResultMayNotBeDroppedOrTreatedAsFailure": true,
+      "coalescingDoesNotChangeQaReleaseOrSecurityAuthority": true,
+      "coalescingDoesNotGrantWorkerControlBranchWrite": true,
+      "coalescingCreatesNoNewWorkflowOrScheduler": true,
+      "automaticImmediateCallbackRecoveryWhenPressureClears": true
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
