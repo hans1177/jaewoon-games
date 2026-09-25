@@ -98,7 +98,7 @@ jobs:
             if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error(`dual native target pair missing: ${seed.gameId}`);
             if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
             if(item.platformDesignProfiles?.UNITY?.jsonPointer!=='/content/platformProfiles/UNITY')throw new Error(`Unity platform profile missing: ${seed.gameId}`);
-            if(item.webValidationRequired!==false||item.musicValidationRequired!==false)throw new Error(`legacy Web gate still active: ${seed.gameId}`);
+            if(Object.hasOwn(item,'webValidationRequired')||Object.hasOwn(item,'musicValidationRequired'))throw new Error(`legacy Web gate key still present: ${seed.gameId}`);
             if(String(item.currentStep||'')!=='TARGET_PLATFORM_SOURCE_BIND')throw new Error(`native source bind not active: ${seed.gameId}`);
             const project=(portfolio.projects||[]).find(row=>row.slug===seed.gameId);
             if(project?.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);

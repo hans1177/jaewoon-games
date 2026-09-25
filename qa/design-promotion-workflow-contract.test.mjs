@@ -42,6 +42,8 @@ test('promotion persists only runtime state while machine policy comes from main
   assert.match(promotion,/for attempt in 1 2 3; do/);
   assert.match(promotion,/git fetch origin ['"]\+refs\/heads\/main:refs\/remotes\/origin\/main['"] ['"]\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH['"] --depth=2 --no-tags --quiet/);
   assert.match(promotion,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(promotion,/Object\.hasOwn\(item,'webValidationRequired'\)\|\|Object\.hasOwn\(item,'musicValidationRequired'\)/);
+  assert.doesNotMatch(promotion,/item\.webValidationRequired!==false\|\|item\.musicValidationRequired!==false/);
   const calls=promotion.match(/node tools\/design-only-promotion-sync\.mjs/g)||[];
   assert.ok(calls.length>=2);
   assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json tools\/design-only-promotion-sync\.mjs/);
