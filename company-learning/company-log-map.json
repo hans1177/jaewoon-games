@@ -1,5 +1,5 @@
 {
-  "version": 62,
+  "version": 63,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1180,5 +1180,22 @@
     "optimizationLaneActivityMustRemainObservable": true,
     "unrelatedProcedureSkipIsNotFailure": true,
     "relevantSecurityFindingStillRequiresExistingQuarantineEvidence": true
+  },
+  "vibeRunnerPressureSpeculativeRelief": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerPressureSpeculativeRelief20260926",
+    "requiredMarkers": [
+      "VIBE2_SPECULATIVE_EXPANSION=ENABLED",
+      "VIBE2_SPECULATIVE_EXPANSION=SUPPRESSED_RUNNER_PRESSURE"
+    ],
+    "schedulerEvidence": [
+      "primaryTaskCount",
+      "workerCount",
+      "speculativeExpansionAllowed",
+      "speculativeExpansionReason"
+    ],
+    "primaryCoverageMustRemainUnchangedWhenSuppressed": true,
+    "suppressionIsNotFailure": true,
+    "automaticRecoveryExpected": true
   }
 }
