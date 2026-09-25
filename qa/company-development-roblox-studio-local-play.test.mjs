@@ -7,6 +7,8 @@ import {
   validateLocalStudioPolicy,
   detectStudioMcpAssistantSetting,
   collectStudios,
+  collectStudioConsoleEntries,
+  classifyStudioConsoleOutput,
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult
@@ -508,6 +510,49 @@ test('Studio inventory parser accepts current id and studio instance id response
   assert.deepEqual(legacy,[{studioId:'studio-legacy',name:'legacy',placeId:''}]);
 });
 
+test('Studio console classification blocks MessageError but keeps warnings and stack markers non-blocking',()=>{
+  const warningOnly={
+    content:[{
+      type:'text',
+      text:[
+        JSON.stringify({message:'Infinite yield possible on ReplicatedStorage:WaitForChild("X")',messageType:2,timestamp:1}),
+        JSON.stringify({message:'Stack Begin',messageType:0,timestamp:2}),
+        JSON.stringify({message:'Stack End',messageType:0,timestamp:3})
+      ].join('\n')
+    }]
+  };
+  const warningResult=classifyStudioConsoleOutput(warningOnly);
+  assert.equal(warningResult.errors.length,0);
+  assert.equal(warningResult.warningCount,1);
+  assert.equal(warningResult.structuredEntryCount,3);
+
+  const realError={
+    content:[{
+      type:'text',
+      text:JSON.stringify({message:'Game.server.luau:42: attempt to index nil with Health',messageType:3,timestamp:4})
+    }]
+  };
+  const errorResult=classifyStudioConsoleOutput(realError);
+  assert.equal(errorResult.errors.length,1);
+  assert.match(errorResult.errors[0].signature,/attempt to index nil/i);
+  assert.equal(errorResult.warningCount,0);
+
+  const unknownStrong={
+    content:[{type:'text',text:JSON.stringify({message:'Script Runtime Error: unhandled exception',messageType:null})}]
+  };
+  assert.equal(classifyStudioConsoleOutput(unknownStrong).errors.length,1);
+});
+
+test('Studio console parser accepts line-delimited structured console output',()=>{
+  const entries=collectStudioConsoleEntries({
+    content:[{type:'text',text:'{"message":"hello","messageType":0}\n{"message":"warn","messageType":"MessageWarning"}'}]
+  });
+  assert.deepEqual(entries.map(row=>({message:row.message,messageType:row.messageType})),[
+    {message:'hello',messageType:0},
+    {message:'warn',messageType:2}
+  ]);
+});
+
 test('Studio MCP CLI fails closed when runtime checkpoints are not verified and prints structured checkpoint diagnostics',()=>{
   assert.match(helper,/ROBLOX_STUDIO_MCP_CHECKPOINTS=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_ACTIONS=/);
@@ -516,6 +561,9 @@ test('Studio MCP CLI fails closed when runtime checkpoints are not verified and 
   assert.match(helper,/ROBLOX_STUDIO_MCP_VIEWPORT_CHANGED=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_CONSOLE_ERROR_COUNT=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_CONSOLE_DIAGNOSTIC=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_CONSOLE_STRUCTURED_ENTRY_COUNT=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_CONSOLE_WARNING_COUNT=/);
+  assert.doesNotMatch(helper,/const errorPatterns=\[[\s\S]{0,250}Stack Begin/);
   assert.match(helper,/for\(let offset=-2;offset<=4;offset\+\+\)/);
   assert.match(helper,/\.slice\(0,700\)/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_RUNTIME_NOT_VERIFIED:failed=/);

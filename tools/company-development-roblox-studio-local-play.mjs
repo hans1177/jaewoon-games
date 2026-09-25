@@ -350,6 +350,95 @@ export function collectStudios(value,out=[]){
 function hash(value){
   return crypto.createHash('sha256').update(typeof value==='string'?value:JSON.stringify(value)).digest('hex');
 }
+function normalizeConsoleMessageType(value){
+  if(typeof value==='number'&&Number.isFinite(value))return value;
+  const text=clean(value).toLowerCase();
+  if(!text)return null;
+  if(text==='3'||text==='messageerror'||text==='error'||text.endsWith('.messageerror'))return 3;
+  if(text==='2'||text==='messagewarning'||text==='warning'||text==='warn'||text.endsWith('.messagewarning'))return 2;
+  if(text==='1'||text==='messageinfo'||text==='info'||text.endsWith('.messageinfo'))return 1;
+  if(text==='0'||text==='messageoutput'||text==='output'||text.endsWith('.messageoutput'))return 0;
+  return null;
+}
+
+export function collectStudioConsoleEntries(value,out=[]){
+  if(value==null)return out;
+  if(Array.isArray(value)){for(const item of value)collectStudioConsoleEntries(item,out);return out;}
+  if(typeof value==='string'){
+    const text=clean(value);
+    if(!text)return out;
+    const candidates=text.split(/\r?\n/).map(line=>clean(line)).filter(Boolean);
+    for(const candidate of candidates){
+      if(!(candidate.startsWith('{')||candidate.startsWith('[')))continue;
+      try{collectStudioConsoleEntries(JSON.parse(candidate),out);}catch{}
+    }
+    return out;
+  }
+  if(typeof value==='object'){
+    if(typeof value.message==='string'){
+      out.push({
+        message:clean(value.message),
+        messageType:normalizeConsoleMessageType(value.messageType??value.message_type??value.level??value.type),
+        timestamp:Number(value.timestamp??value.ts??0)||0
+      });
+    }
+    for(const [key,child] of Object.entries(value)){
+      if(key==='message'||key==='messageType'||key==='message_type'||key==='timestamp'||key==='ts')continue;
+      collectStudioConsoleEntries(child,out);
+    }
+  }
+  return out;
+}
+
+export function classifyStudioConsoleOutput(consoleResult){
+  const structuredRaw=collectStudioConsoleEntries(consoleResult,[]);
+  const structured=[];
+  const seen=new Set();
+  for(const entry of structuredRaw){
+    const key=String(entry.messageType)+'|'+entry.message;
+    if(!entry.message||seen.has(key))continue;
+    seen.add(key);
+    structured.push(entry);
+  }
+
+  const errors=[];
+  let warningCount=0;
+  const addError=message=>{
+    const signature=clean(message).replace(/\s+/g,' ').slice(0,500);
+    if(signature&&!errors.some(row=>row.signature===signature)){
+      errors.push({type:'studio-console-error',actionId:null,signature});
+    }
+  };
+
+  for(const entry of structured){
+    if(entry.messageType===3)addError(entry.message);
+    else if(entry.messageType===2)warningCount++;
+  }
+
+  const fallbackText=flattenText(consoleResult,[]).join('\n');
+  const strongFallbackPatterns=[
+    /Script Runtime Error/i,
+    /attempt to index nil/i,
+    /unhandled exception/i
+  ];
+  if(structured.length===0||structured.some(entry=>entry.messageType==null)){
+    const unknownText=structured.length
+      ?structured.filter(entry=>entry.messageType==null).map(entry=>entry.message).join('\n')
+      :fallbackText;
+    for(const re of strongFallbackPatterns){
+      const match=unknownText.match(re);
+      if(match)addError(match[0]);
+    }
+  }
+
+  return{
+    errors,
+    warningCount,
+    structuredEntryCount:structured.length,
+    consoleText:fallbackText
+  };
+}
+
 
 function schemaProps(schema={}){return schema?.properties&&typeof schema.properties==='object'?schema.properties:{};}
 function schemaRequired(schema={}){return Array.isArray(schema?.required)?schema.required:[];}
@@ -646,8 +735,9 @@ export async function runOfficialStudioMcpPlay({
     consoleResult=await client.call('get_console_output',consoleArgs);
     checkpoint('console-output-captured',true);
 
-    const consoleText=flattenText(consoleResult,[]).join('\n');
-    const errorPatterns=[
+    const consoleClassification=classifyStudioConsoleOutput(consoleResult);
+    const consoleText=consoleClassification.consoleText;
+    const diagnosticPatterns=[
       /Script Runtime Error/i,
       /Stack Begin/i,
       /attempt to index nil/i,
@@ -657,7 +747,7 @@ export async function runOfficialStudioMcpPlay({
     const consoleLines=consoleText.split(/\r?\n/).map(line=>clean(line)).filter(Boolean);
     const diagnosticIndexes=new Set();
     for(let index=0;index<consoleLines.length;index++){
-      if(errorPatterns.some(re=>re.test(consoleLines[index]))){
+      if(diagnosticPatterns.some(re=>re.test(consoleLines[index]))){
         for(let offset=-2;offset<=4;offset++){
           const target=index+offset;
           if(target>=0&&target<consoleLines.length)diagnosticIndexes.add(target);
@@ -672,8 +762,9 @@ export async function runOfficialStudioMcpPlay({
       const safe=line.replace(/\s+/g,' ').slice(0,700);
       console.log('ROBLOX_STUDIO_MCP_CONSOLE_DIAGNOSTIC='+safe);
     }
-    const matched=errorPatterns.filter(re=>re.test(consoleText)).map(re=>re.source);
-    for(const pattern of matched)errors.push({type:'studio-console-error',actionId:null,signature:pattern});
+    console.log('ROBLOX_STUDIO_MCP_CONSOLE_STRUCTURED_ENTRY_COUNT='+consoleClassification.structuredEntryCount);
+    console.log('ROBLOX_STUDIO_MCP_CONSOLE_WARNING_COUNT='+consoleClassification.warningCount);
+    for(const row of consoleClassification.errors)errors.push(row);
     checkpoint('no-release-blocking-runtime-errors',errors.length===0);
 
     await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));
@@ -706,7 +797,9 @@ export async function runOfficialStudioMcpPlay({
         beforeFrameCount:beforeImages.length,
         afterFrameCount:afterImages.length,
         distinctFrameChange:checkpoints.find(x=>x.id==='viewport-changed-after-input')?.pass===true,
-        consoleErrorCount:errors.length
+        consoleErrorCount:errors.length,
+        consoleWarningCount:consoleClassification.warningCount,
+        consoleStructuredEntryCount:consoleClassification.structuredEntryCount
       },
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
