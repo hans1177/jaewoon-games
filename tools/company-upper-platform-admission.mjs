@@ -50,10 +50,9 @@ export function discoverUnityWebBuildMethod(repoRoot,gameId){
 }
 
 export function nativeUpperPlatformAlreadyStarted(item={}){
-  const step=clean(item.currentStep).toUpperCase();
   if(Boolean(item.robloxSourceBootstrapPassedAt)||item.robloxBuildOrPackagePassed===true||item.robloxFoundationF0Passed===true||item.robloxRuntimeCandidateEvidence?.published===true||item.robloxInternalReleasePublished===true)return true;
   if(Boolean(item.unitySourceBootstrapPassedAt)||item.unityBuildOrPackagePassed===true||item.unityBuildPassed===true||item.unityRuntimePassed===true||item.unityIndependentQaPassed===true||item.unityRegressionPassed===true)return true;
-  return step.startsWith('TARGET_PLATFORM_')&&step!=='TARGET_PLATFORM_SOURCE_BIND';
+  return false;
 }
 
 export function readUpperPlatformReadiness(repoRoot,gameId){
