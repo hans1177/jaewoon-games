@@ -1,5 +1,5 @@
 {
-  "version": 198,
+  "version": 199,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -409,7 +409,25 @@
     },
     "internalWorkerCountLimit": null,
     "externalMatrixBatchMax": 256,
-    "strategyMaxParallel": null
+    "strategyMaxParallel": null,
+    "bottleneckReasoning": {
+      "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.primaryAiOrchestration.externalAiWorkerPool.bottleneckReasoning",
+      "sensor": "tools/company-system-ai-bottleneck-sensor.mjs",
+      "worker": "tools/company-system-ai-worker.mjs",
+      "workflow": ".github/workflows/company-system-ai-workers.yml",
+      "hardRepairMode": "PLANNER_CRITIC_IMPLEMENTER",
+      "sameLocalModelAllowed": true,
+      "rawPrivateReasoningStored": false,
+      "conciseDecisionEvidenceStored": true,
+      "sensorRecommendationFeedsReservation": true,
+      "representativeCanaryFirst": true,
+      "failedStrategyMemory": "failed-strategy-fingerprint:*",
+      "rejectedHypothesisMemory": "hypothesis-rejected:*",
+      "deterministicVerificationAuthority": true,
+      "workerSelfAcceptance": false,
+      "taskCreationAuthority": "EXISTING_VIBE_RECOVERY_OR_PRIMARY_AI",
+      "authorityChange": "NONE"
+    }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerSynchronization": {
@@ -3473,8 +3491,10 @@
     "sequence": [
       "FAILURE_OR_STALL_EVENT",
       "RECOVERY_ESCALATION",
+      "BOTTLENECK_SENSOR_IMPACT_AND_CANARY_SELECTION",
       "RECOVERY_QUEUE",
       "VIBE2_VIBE3_OR_SYSTEM_AI_DISPATCH",
+      "DEEP_CAUSAL_PLAN_AND_CRITIC_WHEN_HARD_REPAIR",
       "RESPONSIBLE_FILE_REPAIR",
       "EXACT_STAGE_REVALIDATION",
       "INDEPENDENT_QA_AND_REGRESSION_WHEN_APPLICABLE",
@@ -3508,6 +3528,14 @@
         "VERIFY_CHANGED_REVISION",
         "RESUME_PIPELINE"
       ]
+    },
+    "deepReasoningBinding": {
+      "policy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.autonomousBottleneckRecovery.deepReasoningExecution",
+      "sensorRecommendationConsumption": ".github/workflows/company-system-ai-workers.yml",
+      "workerDeliberation": "tools/company-system-ai-worker.mjs",
+      "failureFeedback": "tools/company-system-ai-queue.mjs",
+      "noShadowPipeline": true,
+      "noNewAuthority": true
     }
   },
   "learningRetrievalRouting": {
