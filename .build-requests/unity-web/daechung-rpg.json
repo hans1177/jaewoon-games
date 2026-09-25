@@ -1,13 +1,14 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_FIRST_STAGE_BUILD",
-  "requestId": "unity-web-daechung-rpg-homepage-exposure-rebuild-20260925",
+  "requestId": "unity-web-daechung-rpg-upper-platform-readiness-20260926",
   "gameId": "daechung-rpg",
   "projectPath": "unity-games/daechung-rpg",
   "buildMethod": "JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.BuildWeb",
-  "sourceCommit": "352762a5c5e257b8ca42f41cdcb8b38c2354b23b",
+  "sourceCommit": "5e4211ac756f57f7f851e7676ae90bd44221fa71",
   "outputRoot": "web-games/daechung-rpg",
-  "purpose": "REBUILD_COMPLETE_DEPLOYABLE_WEBGL_BUNDLE_FOR_DEVELOPMENT_HOMEPAGE_EXPOSURE",
-  "fullGameplayPassAuthority": false,
-  "postGatePlatformPipelineChanged": false
+  "purpose": "VERIFY_UNITY_WEB_FULL_DEVELOPMENT_FLOOR_AND_UPPER_PLATFORM_READINESS",
+  "fullGameplayPassAuthority": true,
+  "postGatePlatformPipelineChanged": true,
+  "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY"
 }
