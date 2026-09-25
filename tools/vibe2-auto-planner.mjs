@@ -1891,6 +1891,13 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   };
   const terminalStatuses=new Set(['verified','done','completed','failed','error','rejected','cancelled','superseded']);
   const tasks=[...(queue?.tasks||[])];
+  const canonicalByGameId=new Map();
+  for(const row of tasks){
+    const gameId=clean(row?.gameId),directive=row?.buildUpDirective;
+    if(!gameId||!clean(directive?.directiveId)||terminalStatuses.has(clean(row?.status).toLowerCase()))continue;
+    const current=canonicalByGameId.get(gameId);
+    if(!current||Number(directive?.generation||0)>Number(current?.generation||0))canonicalByGameId.set(gameId,directive);
+  }
   let changed=0,mutated=0,attached=0,rebound=0,designPending=0,checked=0;
   const preReserveStatuses=new Set(['queued','failed','blocked']);
   for(let index=0;index<tasks.length;index+=1){
@@ -1901,7 +1908,10 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     checked+=1;
     const history=tasks.filter((row,rowIndex)=>rowIndex!==index&&clean(row?.gameId)===gameId&&clean(row?.buildUpDirective?.directiveId));
     const byGeneration=(a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0);
-    const activeCanonical=history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())).sort(byGeneration)[0]||null;
+    const mappedCanonical=canonicalByGameId.get(gameId)||null;
+    const activeCanonical=mappedCanonical
+      ?{buildUpDirective:mappedCanonical,status:'queued'}
+      :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())).sort(byGeneration)[0]||null;
     const latestHistorical=history.slice().sort(byGeneration)[0]||null;
     const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
     const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
@@ -1909,6 +1919,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
     if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
       candidate=bindSharedBuildUpDirective(item,activeCanonical.buildUpDirective);
+      canonicalByGameId.set(gameId,activeCanonical.buildUpDirective);
       if(!currentId){
         candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
       }
@@ -1924,6 +1935,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,{...queue,tasks},verifiedDesign);
         if(clean(candidate?.buildUpDirective?.directiveId)){
           attached+=1;changed+=1;
+          canonicalByGameId.set(gameId,candidate.buildUpDirective);
           freshness='CURRENT_OR_RECONCILED';
           candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
         }else{
@@ -1942,6 +1954,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         const refreshed=attachGameSpecificBuildUpDirective(item,project,repoRoot,queueWithoutCurrent,verifiedDesign);
         if(clean(refreshed?.buildUpDirective?.directiveId)){
           candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
+          canonicalByGameId.set(gameId,refreshed.buildUpDirective);
           candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),...(refreshed.evidence||[]),'build-up-directive-stale-refresh:queued-existing-work'])]};
           rebound+=1;changed+=1;
           freshness='REGENERATED_AFTER_NEWER_TERMINAL_GENERATION';
