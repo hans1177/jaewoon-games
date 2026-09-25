@@ -1,5 +1,5 @@
 {
-  "version": 372,
+  "version": 373,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1029,7 +1029,23 @@
         "robloxPlayerAutomationForbidden": true,
         "thirdPartyBridgeForbidden": true,
         "finalFailureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
-        "infrastructureFailureMustNotBecomeGameFailure": true
+        "infrastructureFailureMustNotBecomeGameFailure": true,
+        "settingEnablementEvidenceRequired": true,
+        "confirmedEnabledState": "YES",
+        "unconfirmedStates": [
+          "NO",
+          "MISSING",
+          "UNKNOWN"
+        ],
+        "unconfirmedSettingAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT",
+        "automaticSettingMutationForbidden": true,
+        "manualPrerequisite": "ASSISTANT_MANAGE_MCP_SERVERS_ENABLE_STUDIO_AS_MCP_SERVER",
+        "automaticResumeAfterPrerequisite": true,
+        "resumeTriggers": [
+          "NEXT_SCHEDULED_SCAN",
+          "NEXT_MAIN_PUSH",
+          "MANUAL_WORKFLOW_DISPATCH"
+        ]
       }
     },
     "headlessValidation": {
@@ -4636,7 +4652,11 @@
         "thirdPartyMcpBridgeForbidden": true,
         "studioMcpUnavailableRecovery": "RESTART_OWNED_STUDIO_AND_MCP_CLIENT_UP_TO_3_SESSIONS_THEN_KEEP_INFRASTRUCTURE_PENDING",
         "studioMcpAssistantSettingMutationForbidden": true,
-        "studioMcpGuiToggleAutomationForbidden": true
+        "studioMcpGuiToggleAutomationForbidden": true,
+        "studioMcpSettingEnablementRequired": true,
+        "studioMcpUnconfirmedSettingIsInfrastructureNotGameFailure": true,
+        "studioMcpUnconfirmedSettingMayNotConsumePlayRetry": true,
+        "studioMcpAutomaticSettingMutationForbidden": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
