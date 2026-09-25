@@ -87,6 +87,41 @@ test('presentation delta failure is retryable source generation work',()=>{
 });
 
 
+test('Roblox full graphics first pass starts with a compact connected package prompt',()=>{
+  const editableBody=[
+    'local character = workspace:FindFirstChild("Character")',
+    'local weapon = workspace:FindFirstChild("Sword")',
+    'local terrainRock = workspace:FindFirstChild("TerrainRock")',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    ...Array.from({length:180},(_,i)=>'local visualLine'+i+' = '+i)
+  ].join('\n');
+  const readOnlyBody=Array.from({length:700},(_,i)=>'local readonlyLine'+i+' = '+i).join('\n');
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve full Roblox graphics and native motion without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    editableBody,
+    '=== FILE server/Readonly.server.luau [READ-ONLY IMPACT CONTEXT] ===',
+    readOnlyBody
+  ].join('\n');
+  const compact=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    responsibleFiles:['client/Game.client.luau'],
+    attempt:1,
+    robloxGraphicsInitial:true,
+    robloxFullGraphicsPackageActive:true
+  });
+  assert.ok(Buffer.byteLength(compact,'utf8')<Buffer.byteLength(prompt,'utf8')*0.55);
+  assert.match(compact,/ROBLOX FULL GRAPHICS INITIAL PACKAGE/i);
+  assert.match(compact,/ROBLOX FULL GRAPHICS RECOVERY PACKAGE/i);
+  assert.match(compact,/connected edits\[\] package/i);
+  assert.match(compact,/EXACT FIND ANCHOR OPTIONS/i);
+  assert.doesNotMatch(compact,/server\/Readonly\.server\.luau/);
+  assert.doesNotMatch(compact,/exactly one edit/i);
+});
+
 test('Roblox full graphics domain recovery keeps a connected multi-edit package instead of collapsing to one edit',()=>{
   const prompt=[
     '[PRESENTATION_PASS:ASSET_ADAPTATION]',
