@@ -1,5 +1,5 @@
 {
-  "version": 364,
+  "version": 365,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -924,18 +924,45 @@
         "sharedFastMvpSupersededField": "robloxFastMvpSupersededBy",
         "internalReleaseVisibilityRequired": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE"
       },
-      "studioRuntimeRequired": false,
+      "studioRuntimeRequired": true,
       "publicationTargetFromStudioForbidden": true
     },
     "validationMode": "HEADLESS_FAST_MVP",
     "studioExecution": {
-      "enabled": false,
-      "required": false,
-      "workflowUseForbidden": true,
-      "qaEvidenceAuthorityForbidden": true,
+      "version": 2,
+      "enabled": true,
+      "required": true,
+      "workflowUseForbidden": false,
+      "qaEvidenceAuthorityForbidden": false,
       "universeOrPlaceIdDiscoveryForbidden": true,
-      "removedAt": "2026-09-22T03:45:00+09:00",
-      "authority": "OWNER_DIRECTIVE_2026-09-22"
+      "publicationAuthority": false,
+      "publicationTargetDiscoveryForbidden": true,
+      "executionRole": "INTERNAL_AUTOMATED_PLAYTEST_AND_VERIFIED_LEARNING_EVIDENCE",
+      "requiredRunnerLabels": [
+        "self-hosted",
+        "Windows",
+        "X64",
+        "roblox-studio-authenticated"
+      ],
+      "exactCandidateBindingRequired": true,
+      "exactCandidateFields": [
+        "sourceRevision",
+        "artifactIdentity",
+        "universeId",
+        "placeId",
+        "versionNumber"
+      ],
+      "studioTestServiceRequired": true,
+      "virtualInputRequired": true,
+      "rawSourceDirectLearningForbidden": true,
+      "rawGameplayValuesDirectLearningForbidden": true,
+      "verifiedSemanticLearningReuseAllowed": true,
+      "actualPlayEvidenceField": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
+      "canonicalLearningIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience",
+      "publicationRoute": "OPEN_CLOUD",
+      "reEnabledAt": "2026-09-25",
+      "previousRemovalAt": "2026-09-22T03:45:00+09:00",
+      "authority": "OWNER_DIRECTIVE_2026-09-25"
     },
     "headlessValidation": {
       "version": 2,
@@ -1496,7 +1523,9 @@
         "providerOutageMayStopLearning": false,
         "verifiedEvidenceRequiredForCanonicalLearning": true,
         "unverifiedModelOutputMayPromoteDirectly": false,
-        "robloxStudioAllowedFor24hLearning": false
+        "robloxStudioAllowedFor24hLearning": true,
+        "robloxStudioLearningScope": "VERIFIED_EXACT_CANDIDATE_PLAY_EVIDENCE_ONLY",
+        "robloxStudioRawSourceOrRawGameplayValuesDirectTraining": false
       },
       "providerFailureSubstitution": {
         "version": 1,
@@ -3388,22 +3417,38 @@
       "saveCompatibilityCheckRequiredOnAffectedGame": true
     },
     "robloxStudioUsage": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-19",
-      "learningUseForbidden": true,
-      "generalPracticeUseForbidden": true,
-      "role": "RUNTIME_EVIDENCE_ONLY",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "learningUseForbidden": false,
+      "generalPracticeUseForbidden": false,
+      "role": "RUNTIME_EVIDENCE_AND_VERIFIED_LEARNING_INPUT",
       "allowed": [
+        "AUTOMATED_INTERNAL_PLAYTEST",
+        "VIRTUAL_INPUT_RUNTIME",
         "REPLICATION_RUNTIME",
         "DATASTORE_RUNTIME",
         "REMOTE_RUNTIME",
         "MULTIPLAYER_RUNTIME",
         "PHYSICS_OR_ENGINE_RUNTIME",
+        "VERIFIED_SEMANTIC_LEARNING_REUSE",
         "OTHER_STUDIO_ONLY_EVIDENCE"
       ],
-      "offlineBehavior": "WAIT_ONLY_REQUIRED_RUNTIME_GATE_RELEASE_CAPACITY",
+      "learningRequirements": [
+        "EXACT_SOURCE_REVISION",
+        "EXACT_ARTIFACT_IDENTITY",
+        "EXACT_UNIVERSE_AND_PLACE",
+        "EXACT_PLACE_VERSION",
+        "STUDIO_TEST_SERVICE",
+        "VIRTUAL_INPUT_ACTION",
+        "REQUIRED_CHECKPOINTS_PASS",
+        "NO_RUNTIME_ERRORS"
+      ],
+      "rawSourceDirectTrainingForbidden": true,
+      "rawGameplayValuesDirectTrainingForbidden": true,
       "publicationSeparatedFromStudioRunner": true,
-      "publicationRoute": "OPEN_CLOUD"
+      "publicationRoute": "OPEN_CLOUD",
+      "publicationTargetDiscoveryFromStudioForbidden": true,
+      "offlineBehavior": "QUEUE_STUDIO_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS"
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -4474,7 +4519,12 @@
           "INTERNAL_REDEPLOY_EXACT_CANDIDATE",
           "EXACT_CANDIDATE_REVALIDATION",
           "VIBE_INTERNAL_PLAY"
-        ]
+        ],
+        "actualVibePlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-auto-play",
+        "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_STUDIO_TEST_SERVICE_PLUS_VIRTUAL_INPUT",
+        "actualVibePlayLearningReuse": "VERIFIED_EXACT_CANDIDATE_ONLY",
+        "rawStudioSourceDirectLearningForbidden": true,
+        "rawGameplayValuesDirectLearningForbidden": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
@@ -6762,6 +6812,23 @@
       "problem": "WORKFLOW_RUN_TRIGGER_BURSTS_COULD_CANCEL_THE_RUNNING_COMPANY_RUNTIME_RECONCILE_BEFORE_PERSIST",
       "resolution": "SERIALIZE_RECONCILE_STATE_WRITES_WITHOUT_CANCEL_IN_PROGRESS; SUBSEQUENT_TRIGGERS_QUEUE",
       "affectedWorkflow": ".github/workflows/company-development-queue-reconcile.yml"
+    },
+    "robloxStudioVerifiedLearning20260925": {
+      "id": "ROBLOX_STUDIO_VERIFIED_LEARNING_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Re-enables authenticated self-hosted Roblox Studio automated internal play and allows only exact-candidate verified semantic play evidence to enter the existing Vibe learning motor for reuse.",
+      "codeBindings": [
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        "tools/vibe2-learning-motor.mjs",
+        ".github/workflows/vibe2-24h-runner.yml",
+        "company-learning/canonical-learning-pipeline.json"
+      ],
+      "headlessF0Unchanged": true,
+      "openCloudPublicationAuthorityUnchanged": true,
+      "separateLearningPipelineCreated": false,
+      "rawSourceDirectTraining": false,
+      "rawGameplayValuesDirectTraining": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -20832,12 +20899,14 @@
     },
     "robloxValidationOverride": {
       "mode": "HEADLESS_FAST_MVP",
-      "studioForbidden": true,
+      "studioForbidden": false,
       "runtimeMeaning": "HEADLESS_PLATFORM_CONTRACT_VALIDATION",
       "independentQaMeaning": "HEADLESS_INDEPENDENT_CONTRACT_QA",
       "regressionMeaning": "HEADLESS_EXACT_ARTIFACT_REGRESSION",
       "openCloudPublishRequiredForInternalRelease": true,
-      "authority": "OWNER_DIRECTIVE_2026-09-22"
+      "authority": "OWNER_DIRECTIVE_2026-09-22",
+      "studioRole": "POST_PUBLISH_INTERNAL_PLAYTEST_AND_VERIFIED_LEARNING_INPUT",
+      "headlessF0RemainsIndependent": true
     },
     "unityWebMode": "VALIDATION_SURFACE_ONLY",
     "unityWebValidationSurface": {
