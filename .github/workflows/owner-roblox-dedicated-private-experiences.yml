@@ -240,6 +240,19 @@ jobs:
             const r=JSON.parse(fs.readFileSync(path.join(root,name),'utf8'));
             const item=(q.items||[]).find(x=>x.gameId===r.gameId);
             if(!item)throw new Error('queue item missing: '+r.gameId);
+            const canonicalSourceRevision=String(item.robloxSourceCommit||'').trim();
+            const canonicalArtifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const artifactRunId=Number(
+              item.robloxRuntimeCandidateEvidence?.artifactRunId
+              ||item.robloxFoundationF0Evidence?.artifactRunId
+              ||item.robloxHeadlessFastMvpEvidence?.artifactRunId
+              ||0
+            );
+            const exactPublishedArtifact=
+              /^[a-f0-9]{40}$/i.test(canonicalSourceRevision)
+              &&/^sha256:[a-f0-9]{64}$/i.test(canonicalArtifactIdentity)
+              &&String(r.artifactIdentity||'').trim()===canonicalArtifactIdentity
+              &&artifactRunId>0;
             const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
             if(valid(r.universeId)&&valid(r.placeId)){
               item.robloxPublicationTarget={
@@ -280,10 +293,12 @@ jobs:
               else registry.targets.push(registryTarget);
             }
             item.robloxDedicatedExperience={
-              version:1,
+              version:2,
               gameId:r.gameId,
-              sourceRevision:r.sourceRevision||null,
+              sourceRevision:exactPublishedArtifact?canonicalSourceRevision:null,
+              publisherMainRevision:r.sourceRevision||null,
               artifactIdentity:r.artifactIdentity||null,
+              artifactRunId:exactPublishedArtifact?artifactRunId:null,
               universeId:r.universeId||null,
               placeId:r.placeId||null,
               created:r.created===true,
@@ -300,20 +315,54 @@ jobs:
               authority:'owner-dedicated-roblox-experience-bootstrap',
             };
             if(r.pass===true){
+              if(!exactPublishedArtifact){
+                item.robloxDedicatedExperiencePublished=false;
+                item.robloxDedicatedExperience.state='REPAIR_REQUIRED';
+                item.robloxDedicatedExperience.stage='EXACT_ARTIFACT_BINDING';
+                item.robloxDedicatedExperience.error='DEDICATED_PUBLISH_ARTIFACT_NOT_BOUND_TO_CANONICAL_GAME_SOURCE';
+                failures.push(r.gameId+':EXACT_ARTIFACT_BINDING:DEDICATED_PUBLISH_ARTIFACT_NOT_BOUND_TO_CANONICAL_GAME_SOURCE');
+                item.updatedAt=stamp;
+                continue;
+              }
               item.robloxDedicatedExperiencePublished=true;
               item.robloxDedicatedExperiencePublishedAt=stamp;
               item.robloxFastMvpPublished=true;
               item.robloxFastMvpPublishedAt=stamp;
               item.robloxReleaseVersionNumber=Number(r.versionNumber);
               item.robloxInternalReleaseReady=true;
+              item.robloxInternalReleasePublished=true;
               item.robloxPublicRelease=false;
               item.robloxReleaseClaim=false;
-              item.robloxInternalReleaseEvidence={
+              item.robloxRuntimeCandidateEvidence={
                 version:2,
                 gameId:r.gameId,
                 platform:'ROBLOX',
-                sourceRevision:r.sourceRevision,
-                artifactIdentity:r.artifactIdentity,
+                sourceRevision:canonicalSourceRevision,
+                artifactIdentity:canonicalArtifactIdentity,
+                artifactRunId,
+                universeId:String(r.universeId),
+                placeId:String(r.placeId),
+                foundationF0Passed:item.robloxFoundationF0Passed===true,
+                published:true,
+                releaseClaim:false,
+                exposure:'PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE',
+                visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+                versionNumber:Number(r.versionNumber),
+                workflowRunId:Number(process.env.GITHUB_RUN_ID)||null,
+                publishedAt:stamp,
+                authority:'roblox-open-cloud-dedicated-private-runtime-candidate',
+                dedicated:true,
+                current:true,
+                publisherMainRevision:r.sourceRevision||null,
+              };
+              item.robloxInternalReleaseEvidence={
+                version:3,
+                gameId:r.gameId,
+                platform:'ROBLOX',
+                sourceRevision:canonicalSourceRevision,
+                artifactIdentity:canonicalArtifactIdentity,
+                artifactRunId,
+                publisherMainRevision:r.sourceRevision||null,
                 universeId:String(r.universeId),
                 placeId:String(r.placeId),
                 finalReviewPassed:item.robloxHeadlessFinalReviewPassed===true||item.robloxFinalReviewPassed===true,
@@ -329,6 +378,27 @@ jobs:
                 dedicated:true,
                 authority:'owner-direct-github-dedicated-private-publish',
               };
+              item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              item.robloxFailureStage='VIBE_INTERNAL_PLAY';
+              item.robloxFailureSignature='ROBLOX_INTERNAL_VIBE_PLAY_PENDING';
+              item.routingBlockers=['roblox-internal-vibe-play-pending'];
+              item.robloxInternalPlaytestPassed=false;
+              item.robloxInternalPlaytestPassedAt=null;
+              item.robloxStudioLocalPlayRepairRequired=false;
+              item.robloxStudioLocalPlayInfrastructurePending=false;
+              if(item.robloxDedicatedTargetMigration&&typeof item.robloxDedicatedTargetMigration==='object'){
+                item.robloxDedicatedTargetMigration={
+                  ...item.robloxDedicatedTargetMigration,
+                  state:'COMPLETE',
+                  blocking:false,
+                  internalReleasePreserved:true,
+                  dedicatedUniverseId:String(r.universeId),
+                  dedicatedPlaceId:String(r.placeId),
+                  completedAt:stamp,
+                  updatedAt:stamp,
+                };
+              }
               item.robloxLastSuccessfulStage='DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED';
             }else{
               item.robloxDedicatedExperiencePublished=false;
