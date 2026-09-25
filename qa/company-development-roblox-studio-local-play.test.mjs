@@ -355,7 +355,7 @@ test('automatic Roblox Studio MCP scans supersede stale pushes while preserving 
 });
 
 
-test('Studio MCP unavailable recovery restarts only the owned Studio process and MCP client without mutating settings',()=>{
+test('Studio MCP unavailable recovery diagnoses setting recursively, fails fast on explicit prerequisite absence, and never mutates settings',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/\$maxSessionAttempts = 3/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=/);
@@ -365,8 +365,18 @@ test('Studio MCP unavailable recovery restarts only the owned Studio process and
   assert.match(studioMcpBlock,/--tool-delay-ms=1000/);
   assert.match(studioMcpBlock,/--timeout=15000/);
   assert.match(studioMcpBlock,/Roblox\\AssistantSettings/);
+  assert.match(studioMcpBlock,/Get-ChildItem \$settingsRoot -Recurse -File -Filter '\*\.json'/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_FILE_COUNT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLED_COUNT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_DISABLED_COUNT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_PARSE_ERROR_COUNT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLED=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO/);
+  assert.match(studioMcpBlock,/setting_blocked=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_ENABLE_REQUIRED:/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_IN_STUDIO_ASSISTANT_UI:/);
+  assert.match(studioMcpBlock,/Download exact immutable Roblox build artifact[\s\S]{0,180}if: steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
+  assert.match(studioMcpBlock,/Run actual local play through official Studio MCP[\s\S]{0,180}if: steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
   assert.doesNotMatch(studioMcpBlock,/Set-Content .*AssistantSettings|Out-File .*AssistantSettings|Remove-Item .*AssistantSettings/i);
   assert.doesNotMatch(studioMcpBlock,/user_mouse_input[\s\S]{0,120}Manage MCP Servers|Enable Studio as MCP server/i);
 });
