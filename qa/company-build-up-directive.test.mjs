@@ -51,6 +51,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
     responsibleFiles:['roblox-games/bug-defense/server/Game.server.luau']
   });
   assert.equal(directive.gameId,'bug-defense');
+  assert.equal(directive.version,2);
   assert.equal(directive.generation,1);
   assert.equal(directive.coverage.allDomainsConsidered,true);
   assert.equal(directive.qualityGapMap.length,BUILD_UP_DOMAINS.length);
@@ -67,7 +68,19 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.platformAdaptationDirectives.UNITY_WEB);
   assert.ok(directive.platformAdaptationDirectives.ROBLOX);
   assert.ok(directive.platformAdaptationDirectives.UNITY_APP);
+  assert.ok(directive.currentImplementationFindings.sourceAnchors.some(row=>row.symbol==='attack'));
+  assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.length>=1);
+  assert.equal(directive.responsibleSystemsAndFiles.exactSourceAnchorRequired,true);
+  assert.equal(directive.responsibleSystemsAndFiles.currentAndIntendedBehaviorRequiredPerPrimaryAnchor,true);
+  assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.currentBehavior||'').length>5));
+  assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.intendedBehavior||'').includes('primary goal')));
+  assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.observableAcceptance||'').includes(row.file)));
+  assert.ok(directive.effectivenessMeasurement.expectedPlayerEffect.length>20);
+  assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'NO_PREVIOUS_GENERATION');
+  assert.equal(directive.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
   assert.match(directivePrompt(directive),/GAME_SPECIFIC_BUILD_UP_DIRECTIVE/);
+  assert.match(directivePrompt(directive),/SOURCE_ANCHORS:/);
+  assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
 });
 
 test('unverified history raises generation but does not rotate focus without a verified source delta',()=>{
@@ -138,10 +151,12 @@ test('verified loop outcome raises development depth and changes escalation stag
     previousDirective:first,previousDirectiveOutcome:'verified'
   });
   assert.equal(second.generation,2);
-  assert.equal(second.developmentDepth,2);
-  assert.equal(second.escalationStage,'ROLE_DIFFERENTIATION');
-  assert.equal(second.escalationMode,'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA');
-  assert.equal(second.loopEscalation.nextDevelopmentDepth,3);
+  assert.equal(second.developmentDepth,1);
+  assert.equal(second.escalationStage,'FOUNDATION_COMPLETENESS');
+  assert.equal(second.escalationMode,'VERIFIED_SOURCE_DELTA_AWAITING_EFFECT');
+  assert.equal(second.loopEscalation.nextDevelopmentDepth,1);
+  assert.equal(second.effectivenessMeasurement.previousGeneration.classification,'PARTIAL_EFFECT');
+  assert.equal(second.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
 });
 
 
@@ -163,5 +178,78 @@ test('verified status without a real game source delta cannot raise development 
   assert.equal(second.escalationMode,'VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY');
   assert.equal(second.previousVersionDelta.sourceChanged,false);
   assert.equal(second.loopEscalation.completedGoalBecomesBaseline,false);
+  assert.equal(second.effectivenessMeasurement.previousGeneration.classification,'NO_MEANINGFUL_EFFECT');
+  assert.equal(second.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
   assert.match(second.primaryGoalReason,/source tree가 바뀌지 않았다/);
+});
+
+
+test('runtime-confirmed verified generation advances depth and selects the next higher-value gap',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/bug-defense',
+    sourceTreeFingerprint:'e'.repeat(64),
+    fileCount:2,
+    topFiles:[{file:'roblox-games/bug-defense/server/Combat.server.luau',score:20}],
+    sourceAnchors:[{file:'roblox-games/bug-defense/server/Combat.server.luau',line:4,kind:'FUNCTION',symbol:'resolveAttack',context:'function resolveAttack(enemy)',score:40}],
+    signals:{combat:12,progression:8,ai:4,save:1,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,lighting:1,primitive:1,todo:0,errorRecovery:2},
+    observations:['CURRENT_SOURCE_FILES=2']
+  };
+  const first=buildGameSpecificBuildUpDirective({gameId:'bug-defense',designRecord:design(),sourceObservation});
+  const second=buildGameSpecificBuildUpDirective({
+    gameId:'bug-defense',
+    designRecord:design(),
+    sourceObservation:{...sourceObservation,sourceTreeFingerprint:'f'.repeat(64)},
+    previousDirective:first,
+    previousDirectiveOutcome:'verified',
+    runtimeEvidence:{runtimeObserved:true,runtimePassed:true}
+  });
+  assert.equal(second.developmentDepth,2);
+  assert.equal(second.escalationStage,'ROLE_DIFFERENTIATION');
+  assert.equal(second.escalationMode,'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA');
+  assert.equal(second.effectivenessMeasurement.previousGeneration.classification,'EFFECT_CONFIRMED');
+  assert.equal(second.nextActionDecision.action,'MOVE_TO_NEXT_HIGHER_VALUE_GAP');
+  assert.match(second.primaryGoalReason,/Combat\.server\.luau::resolveAttack/);
+});
+
+test('failed previous generation keeps depth and routes next action to causal repair',()=>{
+  const source={
+    sourceRoot:'unity-games/bug-defense',
+    sourceTreeFingerprint:'1'.repeat(64),
+    fileCount:1,
+    topFiles:[],
+    sourceAnchors:[],
+    signals:{combat:4,progression:4,ai:1,save:1,multiplayer:0,animation:1,vfx:1,camera:0,ui:1,lighting:0,primitive:2,todo:0,errorRecovery:1},
+    observations:['CURRENT_SOURCE_FILES=1']
+  };
+  const first=buildGameSpecificBuildUpDirective({gameId:'bug-defense',designRecord:design(),sourceObservation:source});
+  const second=buildGameSpecificBuildUpDirective({
+    gameId:'bug-defense',designRecord:design(),
+    sourceObservation:{...source,sourceTreeFingerprint:'2'.repeat(64)},
+    previousDirective:first,previousDirectiveOutcome:'failed',
+    runtimeEvidence:{failureStage:'INCREMENTAL_QA',failureSignature:'combat-state-regression',runtimeObserved:true,runtimePassed:false}
+  });
+  assert.equal(second.developmentDepth,1);
+  assert.equal(second.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
+  assert.equal(second.nextActionDecision.action,'CAUSAL_REPAIR');
+});
+
+
+test('primary focus prioritizes core gameplay over generic presentation debt when both are evidenced',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/bug-defense',
+    sourceTreeFingerprint:'9'.repeat(64),
+    fileCount:2,
+    topFiles:[],
+    sourceAnchors:[],
+    signals:{combat:1,progression:1,ai:1,save:0,multiplayer:0,animation:0,vfx:0,camera:0,ui:0,lighting:0,primitive:20,todo:0,errorRecovery:0},
+    observations:['PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH','MOTION_IMPLEMENTATION_SPARSE']
+  };
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'bug-defense',
+    designRecord:design(),
+    sourceObservation,
+    qualitySignals:['combat decision gap','visual placeholder debt']
+  });
+  assert.equal(directive.primaryFocus,'CORE_FUN');
+  assert.match(directive.thisLoopPrimaryGoal,/입력→판단→상태 변화→피드백→다음 선택/);
 });

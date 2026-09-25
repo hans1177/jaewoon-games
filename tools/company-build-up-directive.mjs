@@ -68,6 +68,99 @@ function walkSource(root){
 
 function tokenCount(text,re){return (String(text).match(re)||[]).length;}
 
+const CONTROL_FLOW_SYMBOLS=new Set(['if','for','while','switch','catch','with']);
+function sourceAnchorCandidates(text='',file=''){
+  const anchors=[],lines=String(text).split('\n');
+  const patterns=[
+    ['CLASS',/^\s*(?:export\s+)?(?:(?:public|private|protected|internal|abstract|sealed|static|partial)\s+)*class\s+([A-Za-z_$][\w$]*)/],
+    ['FUNCTION',/^\s*(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
+    ['FUNCTION',/^\s*(?:local\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
+    ['FUNCTION',/^\s*(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/],
+    ['METHOD',/^\s*(?:(?:public|private|protected|internal|static|async|virtual|override|sealed|partial)\s+)+(?:[A-Za-z_$][\w$<>,.?\[\]]*\s+)+([A-Za-z_$][\w$]*)\s*\(/],
+    ['METHOD',/^\s*([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/]
+  ];
+  for(let index=0;index<lines.length;index++){
+    const line=lines[index],trimmed=line.trim();
+    if(!trimmed||trimmed.startsWith('//')||trimmed.startsWith('#'))continue;
+    let matched=false;
+    for(const [kind,re] of patterns){
+      const match=line.match(re);
+      if(!match)continue;
+      const symbol=clean(match[1]);
+      if(!symbol||CONTROL_FLOW_SYMBOLS.has(symbol.toLowerCase()))continue;
+      const nearby=lines.slice(Math.max(0,index-2),Math.min(lines.length,index+4)).join(' ');
+      const score=20
+        +tokenCount(nearby,/attack|damage|combat|enemy|boss|player|input|progress|reward|unlock|quest|save|spawn|camera|animation|vfx|ui|touch|state|phase|mode/gi)*8
+        +(kind==='CLASS'?8:kind==='FUNCTION'?6:4);
+      anchors.push({file,line:index+1,kind,symbol,context:clean(trimmed).slice(0,180),score});
+      matched=true;break;
+    }
+    if(matched)continue;
+    const state=line.match(/\b(?:state|phase|mode|status)\s*(?:=|:)\s*["']([A-Za-z0-9_-]{3,})["']/i);
+    if(state)anchors.push({file,line:index+1,kind:'STATE',symbol:'STATE:'+clean(state[1]),context:clean(trimmed).slice(0,180),score:18});
+  }
+  return anchors.sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)||a.line-b.line).slice(0,24);
+}
+
+function selectPrimarySourceAnchors(source={},responsibleFiles=[],limit=6){
+  const preferred=new Set((responsibleFiles||[]).map(posix).filter(Boolean));
+  const anchors=[...(source?.sourceAnchors||[])];
+  anchors.sort((a,b)=>(preferred.has(posix(b.file))?1:0)-(preferred.has(posix(a.file))?1:0)
+    ||Number(b.score||0)-Number(a.score||0)
+    ||String(a.file).localeCompare(String(b.file))
+    ||Number(a.line||0)-Number(b.line||0));
+  return anchors.slice(0,Math.max(1,Number(limit)||6));
+}
+
+function classifyPreviousEffectiveness({previousDirective=null,previousOutcome='',depthInfo={},runtimeEvidence={}}={}){
+  if(!previousDirective)return Object.freeze({classification:'NO_PREVIOUS_GENERATION',reason:'initial build-up generation',runtimeObserved:false});
+  const outcome=clean(previousOutcome).toLowerCase();
+  const failed=['failed','error','rejected','repair_required'].includes(outcome);
+  const verified=['verified','done','completed','pass','passed'].includes(outcome);
+  const runtimeObserved=runtimeEvidence?.runtimeObserved===true;
+  const runtimePassed=runtimeEvidence?.runtimePassed===true;
+  const failure=clean(runtimeEvidence?.failureSignature)||clean(runtimeEvidence?.failureStage);
+  const observedRuntimeFailure=runtimeObserved&&!runtimePassed&&Boolean(failure);
+  if(failed||observedRuntimeFailure)return Object.freeze({classification:'REGRESSION',reason:failure||('previous generation outcome='+outcome),runtimeObserved});
+  if(verified&&!depthInfo?.sourceChangedSincePrevious)return Object.freeze({classification:'NO_MEANINGFUL_EFFECT',reason:'verified status without real game source delta',runtimeObserved});
+  if(verified&&depthInfo?.sourceChangedSincePrevious&&runtimeObserved&&runtimePassed)return Object.freeze({classification:'EFFECT_CONFIRMED',reason:'verified generation changed game source and current runtime observation passed',runtimeObserved});
+  if(verified&&depthInfo?.sourceChangedSincePrevious&&runtimeObserved)return Object.freeze({classification:'PARTIAL_EFFECT',reason:'game source changed but runtime evidence is not a full pass',runtimeObserved});
+  if(verified&&depthInfo?.sourceChangedSincePrevious)return Object.freeze({classification:'PARTIAL_EFFECT',reason:'all required generation work verified with source delta; runtime effect remains unobserved',runtimeObserved:false});
+  return Object.freeze({classification:'UNKNOWN_RUNTIME_EFFECT',reason:'previous generation lacks sufficient verified effect evidence',runtimeObserved});
+}
+
+function depthStage(depth=1){
+  const value=Math.max(1,Number(depth)||1);
+  return value===1?'FOUNDATION_COMPLETENESS'
+    :value===2?'ROLE_DIFFERENTIATION'
+    :value===3?'SYSTEM_CONNECTION'
+    :value===4?'DECISION_DENSITY'
+    :value===5?'SIGNATURE_DEPTH'
+    :`SIGNATURE_MASTERY_${value}`;
+}
+
+function expectedPlayerEffect({focus='CORE_FUN',identity='',anchor='',secondary=''}={}){
+  const byFocus={
+    CORE_FUN:identity+'에서 '+anchor+'의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.',
+    PROGRESSION:identity+'에서 '+(secondary||anchor)+'의 목표·보상·해금이 다음 플레이 선택을 실제로 넓힌다.',
+    PRESENTATION:identity+'에서 '+anchor+'의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.',
+    USABILITY:identity+'에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.',
+    STABILITY:identity+'에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.'
+  };
+  return byFocus[focus]||byFocus.CORE_FUN;
+}
+
+function decideNextVibeAction({previousEffectiveness={},previousOutcome='',focus='CORE_FUN'}={}){
+  const classification=clean(previousEffectiveness?.classification).toUpperCase();
+  const failed=['failed','error','rejected','repair_required'].includes(clean(previousOutcome).toLowerCase());
+  if(failed||classification==='REGRESSION')return Object.freeze({action:'CAUSAL_REPAIR',reason:'verified failure/regression evidence has higher player value than unrelated build-up'});
+  if(classification==='NO_MEANINGFUL_EFFECT')return Object.freeze({action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'previous verified status did not create a meaningful source/player-value delta; change strategy at the same depth'});
+  if(classification==='UNKNOWN_RUNTIME_EFFECT')return Object.freeze({action:'REQUEST_REQUIRED_RUNTIME_OBSERVATION',reason:'effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed'});
+  if(classification==='EFFECT_CONFIRMED')return Object.freeze({action:'MOVE_TO_NEXT_HIGHER_VALUE_GAP',reason:'previous generation effect is confirmed; advance to the next highest-value deferred gap'});
+  if(classification==='PARTIAL_EFFECT')return Object.freeze({action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'source/QA progress exists but the player-value effect is not fully confirmed'});
+  return Object.freeze({action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'initial '+focus+' build-up has no previous generation effect to compare'});
+}
+
 export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const absolute=path.resolve(repoRoot,sourceRoot);
   const files=walkSource(absolute);
@@ -75,7 +168,8 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     let buffer=Buffer.alloc(0);try{buffer=fs.readFileSync(file);}catch{}
     const extension=path.extname(file).toLowerCase();
     const text=TEXT_SOURCE_EXTENSIONS.has(extension)?buffer.toString('utf8'):'';
-    return{file:posix(path.relative(repoRoot,file)),text,buffer};
+    const relative=posix(path.relative(repoRoot,file));
+    return{file:relative,text,buffer,sourceAnchors:TEXT_SOURCE_EXTENSIONS.has(extension)?sourceAnchorCandidates(text,relative):[]};
   });
   const joined=rows.map(row=>row.text).join('\n');
   const fingerprint=crypto.createHash('sha256');
@@ -100,11 +194,13 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     score:
       tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
+  const sourceAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,48);
   return Object.freeze({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:files.length?fingerprint.digest('hex'):sha('missing:'+sourceRoot),
     fileCount:files.length,
     topFiles,
+    sourceAnchors:Object.freeze(sourceAnchors),
     signals,
     observations:uniq([
       files.length===0?'CURRENT_SOURCE_MISSING_OR_UNREADABLE':'CURRENT_SOURCE_FILES='+files.length,
@@ -127,12 +223,14 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
   for(const part of parts)for(const [key,value] of Object.entries(part.signals||{}))signals[key]=(signals[key]||0)+Number(value||0);
   const combinedFingerprint=sha(parts.map(part=>part.sourceTreeFingerprint).sort().join('|'));
   const topFiles=parts.flatMap(part=>part.topFiles||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)).slice(0,20);
+  const sourceAnchors=parts.flatMap(part=>part.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,64);
   return Object.freeze({
     sourceRoot:roots.join('|'),
     sourceRoots:Object.freeze(roots),
     sourceTreeFingerprint:combinedFingerprint,
     fileCount:parts.reduce((n,part)=>n+Number(part.fileCount||0),0),
     topFiles:Object.freeze(topFiles),
+    sourceAnchors:Object.freeze(sourceAnchors),
     signals:Object.freeze(signals),
     observations:Object.freeze(uniq(parts.flatMap(part=>part.observations||[]))),
     platformSourceFingerprints:Object.freeze(Object.fromEntries(parts.map(part=>[part.sourceRoot,part.sourceTreeFingerprint])))
@@ -162,19 +260,19 @@ function qualitySignalText(values=[]){return uniq(values).join(' | ').toLowerCas
 function focusFromSignals({signals=[],source={}}={}){
   const text=qualitySignalText(signals);
   if(/crash|runtime|error|softlock|save|desync|broken|exception/.test(text))return'STABILITY';
-  if(/visual|graphic|render|animation|vfx|camera|lighting|material|silhouette|environment|placeholder/.test(text))return'PRESENTATION';
+  if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
   if(/progress|reward|unlock|quest|goal|economy|content/.test(text))return'PROGRESSION';
   if(/mobile|touch|input|ui|hud|readability|navigation|accessib/.test(text))return'USABILITY';
-  if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
+  if(/visual|graphic|render|animation|vfx|camera|lighting|material|silhouette|environment|placeholder/.test(text))return'PRESENTATION';
   const s=source?.signals||{};
-  if(Number(s.primitive||0)>8||Number(s.animation||0)<2||Number(s.vfx||0)<2)return'PRESENTATION';
-  if(Number(s.progression||0)<4)return'PROGRESSION';
   if(Number(s.ai||0)<2||Number(s.combat||0)<5)return'CORE_FUN';
+  if(Number(s.progression||0)<4)return'PROGRESSION';
+  if(Number(s.primitive||0)>8||Number(s.animation||0)<2||Number(s.vfx||0)<2)return'PRESENTATION';
   return'USABILITY';
 }
 
 function nextFocus({preferred='CORE_FUN',previous={}}={}){
-  const order=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
+  const order=['CORE_FUN','PROGRESSION','USABILITY','PRESENTATION','STABILITY'];
   const prior=clean(previous?.primaryFocus).toUpperCase();
   if(!prior||prior!==preferred)return preferred;
   const index=order.indexOf(prior);
@@ -386,12 +484,18 @@ export function directivePrompt(d={}){
   if(!d?.directiveId)return'';
   const visual=Object.entries(d.visualBuildUpDirective?.domains||{}).map(([k,v])=>`- ${k}: ${v}`).join('\n');
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,14).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
+  const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
+    'SOURCE_ANCHORS:',
+    anchors||'- exact symbol unavailable; use exact responsible file plus observed runtime/state anchor',
+    `EXPECTED_PLAYER_EFFECT: ${d.effectivenessMeasurement?.expectedPlayerEffect||'UNKNOWN'}`,
+    `PREVIOUS_EFFECT: ${d.effectivenessMeasurement?.previousGeneration?.classification||'NO_PREVIOUS_GENERATION'} - ${d.effectivenessMeasurement?.previousGeneration?.reason||''}`,
+    `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
     `GAMEPLAY: ${d.gameplayImplementationDirectives.join(' | ')}`,
     `PROGRESSION_WORLD: ${d.progressionContentWorldDirectives.join(' | ')}`,
     'PRIORITY_DOMAIN_DIRECTIVES:',
@@ -422,9 +526,23 @@ export function buildGameSpecificBuildUpDirective({
   ]);
   const preferred=focusFromSignals({signals,source});
   const generation=Math.max(1,Number(previousDirective?.generation||0)+1);
-  const depthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint});
+  const rawDepthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint});
+  const previousEffectiveness=classifyPreviousEffectiveness({previousDirective,previousOutcome:previousDirectiveOutcome,depthInfo:rawDepthInfo,runtimeEvidence});
+  const effectAdvanceAllowed=clean(previousEffectiveness?.classification).toUpperCase()==='EFFECT_CONFIRMED';
+  const retainedDepth=previousDirective?Math.max(1,Number(previousDirective?.developmentDepth||1)):Math.max(1,Number(rawDepthInfo.developmentDepth||1));
+  const depthInfo=Object.freeze({
+    ...rawDepthInfo,
+    developmentDepth:rawDepthInfo.advanceAllowed&&effectAdvanceAllowed?rawDepthInfo.developmentDepth:retainedDepth,
+    escalationStage:depthStage(rawDepthInfo.advanceAllowed&&effectAdvanceAllowed?rawDepthInfo.developmentDepth:retainedDepth),
+    escalationMode:rawDepthInfo.advanceAllowed&&!effectAdvanceAllowed?'VERIFIED_SOURCE_DELTA_AWAITING_EFFECT':rawDepthInfo.escalationMode,
+    verifiedEvolution:rawDepthInfo.verifiedEvolution&&effectAdvanceAllowed,
+    advanceAllowed:rawDepthInfo.advanceAllowed&&effectAdvanceAllowed,
+    sourceDeltaVerifiedButEffectPending:rawDepthInfo.advanceAllowed&&!effectAdvanceAllowed
+  });
   const priorFocus=clean(previousDirective?.primaryFocus).toUpperCase();
-  const focus=previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
+  const previousEffectClass=clean(previousEffectiveness?.classification).toUpperCase();
+  const keepPriorFocus=Boolean(previousDirective&&priorFocus&&['NO_MEANINGFUL_EFFECT','PARTIAL_EFFECT','REGRESSION','UNKNOWN_RUNTIME_EFFECT'].includes(previousEffectClass));
+  const focus=keepPriorFocus?priorFocus:previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
   const anchor=primaryDesignAnchor(design),secondary=secondaryDesignAnchor(design);
   const identity=design.identity||clean(gameName)||id;
   const goalByFocus={
@@ -436,13 +554,25 @@ export function buildGameSpecificBuildUpDirective({
   };
   const goal=goalByFocus[focus]||goalByFocus.CORE_FUN;
   const previousFingerprint=clean(previousDirective?.directiveFingerprint);
-  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design}));
+  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence}));
   const states=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
   const gaps=states.filter(x=>x.state==='GAP');
   const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,focus,depthInfo});
   const topFiles=uniq([...(responsibleFiles||[]),...(source?.topFiles||[]).map(x=>x.file)]).slice(0,16);
+  const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8);
+  const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
+  const expectedEffect=expectedPlayerEffect({focus,identity,anchor,secondary});
+  const sourceResponsibilities=primarySourceAnchors.map(row=>Object.freeze({
+    ...row,
+    currentBehavior:clean(row.context)||`현재 ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} 구현을 소스에서 관찰함`,
+    intendedBehavior:`${focus} primary goal "${goal}"에 맞춰 ${row.symbol||'이 책임 영역'}의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 "${expectedEffect}"가 되게 한다.`,
+    whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
+    observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
+  }));
+  const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus});
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
+    `우선 책임 소스 앵커 ${exactAnchorLabel}에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.`,
     `${anchor}를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.`,
     `${secondary}가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.`,
     systemNames.length?`고유 시스템 ${systemNames.join(', ')} 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.`:'현재 핵심 루프의 가장 얕은 책임 시스템을 기존 코드에서 직접 심화한다.',
@@ -474,7 +604,7 @@ export function buildGameSpecificBuildUpDirective({
     'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
   ]);
   return Object.freeze({
-    version:1,
+    version:2,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
     directiveFingerprint:fingerprint,
     previousDirectiveFingerprint:previousFingerprint||null,
@@ -499,7 +629,7 @@ export function buildGameSpecificBuildUpDirective({
       multiplayerMode:design.multiplayerMode,
       preserve:['CORE_IDENTITY','APPROVED_RULE_SEMANTICS','BALANCE_VALUES_UNLESS_AUTHORIZED','ECONOMY_MEANING_UNLESS_AUTHORIZED','SAVE_MEANING','NETWORK_AUTHORITY']
     },
-    currentImplementationFindings:{sourceObservations:source.observations,signals:source.signals,topFiles:source.topFiles},
+    currentImplementationFindings:{sourceObservations:source.observations,signals:source.signals,topFiles:source.topFiles,sourceAnchors:source.sourceAnchors||[]},
     previousVersionDelta:previousDirective?{previousGoal:previousDirective.thisLoopPrimaryGoal||null,previousFocus:previousDirective.primaryFocus||null,previousGeneration:previousDirective.generation||null,previousSourceTreeFingerprint:previousDirective.sourceTreeFingerprint||null,currentSourceTreeFingerprint:source.sourceTreeFingerprint,sourceChanged:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution}:{state:'NO_PREVIOUS_DIRECTIVE'},
     playtestRuntimeFindings:runtimeEvidence&&Object.keys(runtimeEvidence).length?runtimeEvidence:{state:'UNKNOWN_NOT_INVENTED'},
     qualityGapMap:states,
@@ -507,7 +637,7 @@ export function buildGameSpecificBuildUpDirective({
     detectedGaps:gaps,
     primaryFocus:focus,
     thisLoopPrimaryGoal:goal,
-    primaryGoalReason:depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.`,
+    primaryGoalReason:depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스 ${exactAnchorLabel}에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}", 현재 책임 소스는 ${exactAnchorLabel}이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.`,
     gameplayImplementationDirectives:gameplay,
     progressionContentWorldDirectives:progression,
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
@@ -519,7 +649,9 @@ export function buildGameSpecificBuildUpDirective({
       '멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다.',
       'wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.'
     ],
-    responsibleSystemsAndFiles:{files:topFiles,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST'},
+    responsibleSystemsAndFiles:{files:topFiles,sourceAnchors:sourceResponsibilities,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST',exactSourceAnchorRequired:true,currentAndIntendedBehaviorRequiredPerPrimaryAnchor:true},
+    effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
+    nextActionDecision,
     acceptanceEvidence:acceptance,
     nextEscalationCandidates:nextCandidates,
     loopEscalation:{automatic:true,nextGeneration:generation+1,currentDevelopmentDepth:depthInfo.developmentDepth,nextDevelopmentDepth:depthInfo.advanceAllowed?depthInfo.developmentDepth+1:depthInfo.developmentDepth,escalationStage:depthInfo.escalationStage,escalationMode:depthInfo.escalationMode,sourceChangedSincePrevious:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution,reuseSameGoalWithoutNewEvidence:false,completedGoalBecomesBaseline:depthInfo.verifiedEvolution},
