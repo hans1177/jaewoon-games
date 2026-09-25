@@ -147,12 +147,13 @@ for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','TARGET_PLATFORM_SOURCE_BIND
 
 assert.match(webRuntime,/Resolve Unity Web floor and upper-platform eligibility/);
 assert.match(webRuntime,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
-assert.match(webRuntime,/UNITY_WEB_FLOOR_DISPATCH_COUNT/);
-assert.match(webRuntime,/UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT/);
-assert.match(webRuntime,/UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED/);
-assert.match(webRuntime,/ROBLOX_RUNTIME_DISPATCH=YES/);
-assert.match(webRuntime,/UNITY_APP_RUNTIME_DISPATCH=YES/);
-assert.match(webRuntime,/INTERNAL_RELEASE_FIRST=YES/);
+assert.match(webRuntime,/eligible_json:/);
+assert.match(webRuntime,/unity_web_json:/);
+assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
+assert.match(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+assert.match(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+assert.doesNotMatch(webRuntime,/gh workflow run (?:company-development|unity-web)/);
 assert.doesNotMatch(webRuntime,/company-development-web-bootstrap\.mjs/);
 assert.doesNotMatch(webRuntime,/company-development-web-gameplay-validation\.mjs/);
 assert.doesNotMatch(webRuntime,/WEB_GAMEPLAY_MUSIC_GATE=REQUIRED/);
