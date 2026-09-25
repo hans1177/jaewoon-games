@@ -930,12 +930,12 @@ jobs:
             Write-Host 'ROBLOX_STUDIO_MCP_RUNTIME_STATE_CHANGE=NO'
           }
 
-          $latest = Get-Content 'runtime/development-queue.json' -Raw | ConvertFrom-Json
-          $row = @($latest.items | Where-Object { $_.gameId -eq $env:GAME_ID })[0]
-          if ($null -eq $row) { throw "ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:$env:GAME_ID" }
-          if ($row.robloxInternalVibePlayEvidence.pass -eq $true) {
+          $state = (& node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));const row=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);if(!row){console.error('ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:'+process.env.GAME_ID);process.exit(2)}const e=row.robloxInternalVibePlayEvidence||{};if(e.pass===true){process.stdout.write('PASS')}else if(e.infrastructureFailure===true){process.stdout.write('INFRA')}else{process.stdout.write('FAIL')}" ).Trim()
+          if ($LASTEXITCODE -eq 2) { throw "ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:$env:GAME_ID" }
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP persisted-state verification failed' }
+          if ($state -eq 'PASS') {
             Write-Host "ROBLOX_STUDIO_MCP_PLAY_PASS=$env:GAME_ID"
-          } elseif ($row.robloxInternalVibePlayEvidence.infrastructureFailure -eq $true) {
+          } elseif ($state -eq 'INFRA') {
             Write-Host "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING=$env:GAME_ID"
           } else {
             throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
