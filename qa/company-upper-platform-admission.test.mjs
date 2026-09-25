@@ -116,7 +116,7 @@ test('any durable native progress continues without backtracking, regardless of 
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-native-progress-'));
   try{
     for(const item of [
-      {...baseItem('existing-source'),robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'},
+      {...baseItem('existing-source'),robloxSourceCommit:'0123456789012345678901234567890123456789',robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'},
       {...baseItem('existing-build'),robloxBuildOrPackagePassed:true},
       {...baseItem('existing-runtime'),robloxRuntimeCandidateEvidence:{published:true}},
       {...baseItem('existing-unity'),unityRuntimePassed:true},
@@ -126,6 +126,18 @@ test('any durable native progress continues without backtracking, regardless of 
       assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
       assert.equal(result.grandfathered,true);
     }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('a source bootstrap timestamp without an exact native source commit cannot bypass the Unity Web gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-bootstrap-only-'));
+  try{
+    const item={...baseItem('bootstrap-only'),robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'};
+    let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    write(root,'unity-games/bootstrap-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
+    result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+    assert.equal(result.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
