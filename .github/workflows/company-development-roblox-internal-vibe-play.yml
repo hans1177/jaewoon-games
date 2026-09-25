@@ -304,15 +304,29 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $q = Get-Content 'runtime/development-queue.json' -Raw | ConvertFrom-Json
           $same = @($q.items | Where-Object {
-            $e = $_.robloxInternalReleaseEvidence
-            $e -and [string]$e.universeId -eq $env:UNIVERSE_ID -and [string]$e.placeId -eq $env:PLACE_ID
+            $ids = @(
+              $_.robloxRuntimeCandidateEvidence,
+              $_.robloxInternalReleaseEvidence,
+              $_.robloxReleaseEvidence,
+              $_.robloxPublicationTarget
+            ) | Where-Object { $_ }
+            @($ids | Where-Object {
+              [string]$_.universeId -eq $env:UNIVERSE_ID -and [string]$_.placeId -eq $env:PLACE_ID
+            }).Count -gt 0
           })
-          $dedicated = ($same.Count -eq 1 -and [string]$same[0].gameId -eq $env:GAME_ID)
+          $self = @($q.items | Where-Object { [string]$_.gameId -eq $env:GAME_ID }) | Select-Object -First 1
+          $migrationState = [string]$self.robloxDedicatedTargetMigration.state
+          $dedicated = (
+            $same.Count -eq 1
+            -and [string]$same[0].gameId -eq $env:GAME_ID
+            -and $migrationState -ne 'PENDING_DEDICATED_PRIVATE_TARGET'
+          )
           "dedicated=$($dedicated.ToString().ToLowerInvariant())" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "migration_state=$migrationState" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
           if ($dedicated) {
             Write-Host 'ROBLOX_STORE_MUTATION_TARGET=DEDICATED_GAME_TARGET'
           } else {
-            Write-Host "ROBLOX_STORE_MUTATION_SKIPPED=SHARED_INTERNAL_TARGET:$($same.Count)"
+            Write-Host "ROBLOX_STORE_MUTATION_SKIPPED=SHARED_OR_PENDING_DEDICATED_TARGET:$($same.Count):$migrationState"
           }
 
       - name: Apply title only to dedicated game target
@@ -334,6 +348,54 @@ jobs:
           if ([string]$verify.displayName -ne $env:TITLE) { throw 'ROBLOX_STORE_TITLE_VERIFY_MISMATCH' }
           Write-Host 'ROBLOX_STORE_TITLE_APPLY_VERIFY=PASS'
 
+      - name: Apply generated thumbnails and icon only to dedicated game target
+        id: storemedia
+        if: steps.storetarget.outputs.dedicated == 'true'
+        shell: powershell
+        env:
+          UNIVERSE_ID: ${{ steps.candidate.outputs.universe_id }}
+          CREATIVE_DIR: ${{ steps.creative.outputs.output_dir }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $manifest = Get-Content (Join-Path $env:CREATIVE_DIR 'manifest.json') -Raw | ConvertFrom-Json
+          $thumbs = @($manifest.homepageThumbnails)
+          if ($thumbs.Count -ne 3) { throw "ROBLOX_STORE_THUMBNAIL_COUNT_INVALID:$($thumbs.Count)" }
+          $header = @('-H', "x-api-key: $env:ROBLOX_OPEN_CLOUD_API_KEY")
+          $uploaded = 0
+          foreach ($thumb in $thumbs) {
+            $response = Join-Path $env:RUNNER_TEMP ("roblox-thumb-upload-{0}.json" -f $uploaded)
+            $code = & curl.exe -sS -o $response -w "%{http_code}" -X POST @header -F "file=@$thumb" "https://apis.roblox.com/legacy-game-internationalization/v1/game-thumbnails/games/$env:UNIVERSE_ID/language-codes/en-us/image"
+            if ([int]$code -lt 200 -or [int]$code -ge 300) {
+              throw "ROBLOX_STORE_THUMBNAIL_UPLOAD_FAILED:$code:$((Get-Content $response -Raw -ErrorAction SilentlyContinue))"
+            }
+            $uploaded++
+          }
+          $icon = [string]$manifest.icon
+          $iconResponse = Join-Path $env:RUNNER_TEMP 'roblox-icon-upload.json'
+          $iconCode = & curl.exe -sS -o $iconResponse -w "%{http_code}" -X POST @header -F "file=@$icon" "https://apis.roblox.com/legacy-game-internationalization/v1/game-icon/games/$env:UNIVERSE_ID/language-codes/en-us"
+          if ([int]$iconCode -lt 200 -or [int]$iconCode -ge 300) {
+            throw "ROBLOX_STORE_ICON_UPLOAD_FAILED:$iconCode:$((Get-Content $iconResponse -Raw -ErrorAction SilentlyContinue))"
+          }
+          if ($uploaded -ne 3) { throw "ROBLOX_STORE_THUMBNAIL_UPLOAD_COUNT_MISMATCH:$uploaded" }
+
+          # Verify Roblox accepted current media through documented read APIs.
+          $verifiedThumbs = $false
+          for ($i=0; $i -lt 12; $i++) {
+            Start-Sleep -Seconds 5
+            try {
+              $media = Invoke-RestMethod -Method Get -Uri "https://games.roblox.com/v2/games/$env:UNIVERSE_ID/media"
+              $imageCount = @($media.data | Where-Object { [string]$_.assetType -match 'Image' }).Count
+              if ($imageCount -ge 3) { $verifiedThumbs = $true; break }
+            } catch {}
+          }
+          if (-not $verifiedThumbs) { throw 'ROBLOX_STORE_THUMBNAIL_READBACK_VERIFY_FAILED' }
+
+          $icons = Invoke-RestMethod -Method Get -Uri "https://apis.roblox.com/legacy-game-internationalization/v1/game-icon/games/$env:UNIVERSE_ID" -Headers @{ 'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY }
+          if (-not $icons) { throw 'ROBLOX_STORE_ICON_READBACK_VERIFY_FAILED' }
+          Write-Host 'ROBLOX_STORE_THUMBNAIL_UPLOAD_VERIFY=PASS'
+          Write-Host 'ROBLOX_STORE_ICON_UPLOAD_VERIFY=PASS'
+
       - name: Persist Studio play and generated store-presentation evidence
         shell: powershell
         env:
@@ -346,6 +408,7 @@ jobs:
           DISTINCT_FRAMES: ${{ steps.actualplay.outputs.distinct_frames }}
           DEDICATED_TARGET: ${{ steps.storetarget.outputs.dedicated }}
           TITLE_APPLY_OUTCOME: ${{ steps.applytitle.outcome }}
+          STORE_MEDIA_OUTCOME: ${{ steps.storemedia.outcome }}
         run: |
           $ErrorActionPreference = 'Stop'
           Set-Location runtime
@@ -376,8 +439,9 @@ jobs:
           }
           $dedicated = $env:DEDICATED_TARGET -eq 'true'
           $titleApplied = $env:TITLE_APPLY_OUTCOME -eq 'success'
+          $mediaApplied = $env:STORE_MEDIA_OUTCOME -eq 'success'
           $store = [ordered]@{
-            pass=$false
+            pass=($dedicated -and $titleApplied -and $mediaApplied)
             generated=$true
             titleBilingualPass=$true
             englishPrimaryKoreanSubtitle=$true
@@ -387,9 +451,9 @@ jobs:
             sharedPlaceholderUsed=$false
             dedicatedGameTarget=$dedicated
             titleUploadVerified=($dedicated -and $titleApplied)
-            thumbnailUploadVerified=$false
-            iconUploadVerified=$false
-            uploadBlockedReason=if($dedicated){'ROBLOX_THUMBNAIL_UPLOAD_EXECUTOR_PENDING'}else{'SHARED_INTERNAL_TARGET'}
+            thumbnailUploadVerified=($dedicated -and $mediaApplied)
+            iconUploadVerified=($dedicated -and $mediaApplied)
+            uploadBlockedReason=if(-not $dedicated){'SHARED_OR_PENDING_DEDICATED_TARGET'}elseif(-not $mediaApplied){'ROBLOX_STORE_MEDIA_UPLOAD_OR_READBACK_FAILED'}else{''}
             sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY
             universeId=[string]$env:UNIVERSE_ID; placeId=[string]$env:PLACE_ID; versionNumber=[int64]$env:VERSION_NUMBER
             workflowRunId=[int64]$env:GITHUB_RUN_ID; updatedAt=$stamp
