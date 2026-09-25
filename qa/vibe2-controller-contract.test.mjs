@@ -462,6 +462,11 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.slotRefillTrigger,'vibe2-neuron-complete');
   assert.equal(runtime.continuous.perWorkerCompletionSignalEnabled,true);
   assert.equal(runtime.continuous.perWorkerSlotRefillEnabled,false);
+  assert(workflow.includes('VIBE2_SPECULATIVE_EXPANSION='));
+  assert(workflow.includes('SUPPRESSED_RUNNER_PRESSURE'));
+  assert(workflow.includes('VIBE2_SPECULATIVE_EXPANSION_REASON='));
+  assert(workflow.includes('VIBE2_PRIMARY_TASK_COUNT='));
+  assert(workflow.includes('VIBE2_SPECULATIVE_WORKER_COUNT='));
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,false);
