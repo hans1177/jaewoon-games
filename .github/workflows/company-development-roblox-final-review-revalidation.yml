@@ -102,7 +102,7 @@ jobs:
               &&runtime.f7MultiplayerFoundationPassed===true
               &&item.robloxMultiplayerQaPassed===true;
             const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance;
-            const publicRuntimeAcceptance=sharedReleaseRuntimeAcceptance;
+            const publicRuntimeAcceptance=false; // Internal F9 cannot satisfy the external public hard gate.
             const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const studioAssetRuntimeBindingExact=!studioAssetBindingRequired||(
               item.robloxStudioAssetRuntimeBindingPassed===true
@@ -211,19 +211,20 @@ jobs:
             };
             item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-internal-release-compatibility-after-f9'};
             item.robloxReleaseVersionNumber=Number(candidate.versionNumber);
-            item.robloxPublicReleaseReady=publicRuntimeAcceptance===true;
+            item.robloxPublicReleaseReady=false;
             item.robloxPublicReleaseVersionNumber=Number(candidate.versionNumber);
             item.robloxPublicReleaseEvidence={
               ...item.robloxInternalReleaseEvidence,
-              releaseClaim:'PUBLIC_PLATFORM_RELEASE_READY_SAME_EXACT_CANDIDATE',
+              releaseClaim:'INTERNAL_BUILDUP_PENDING_EXTERNAL_PUBLIC_HARD_GATE',
               publicRelease:false,
-              publicReleaseReady:publicRuntimeAcceptance===true,
-              publicExposurePending:true,
+              publicReleaseReady:false,
+              publicExposurePending:false,
+              externalPublicHardGatePending:true,
               sameAsInternalVersion:true,
-              authority:'roblox-public-release-ready-same-exact-candidate-after-f9',
+              authority:'roblox-internal-release-awaiting-perpetual-buildup-hard-gate',
             };
             item.robloxPublicRelease=false;
-            item.robloxPromotionBlockers=publicRuntimeAcceptance?['roblox-public-exposure-pending'] : ['roblox-two-client-one-sync-pending'];
+            item.robloxPromotionBlockers=['roblox-perpetual-buildup-public-hard-gate-pending'];
             item.robloxReleaseClaim=false;
             item.robloxReleasePublishedAt=null;
             item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
