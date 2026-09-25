@@ -7015,7 +7015,7 @@
         "developmentLifecycleMachine.machineOnlyProjectContinuation.webBaseImplementation",
         "phases.ROBLOX_FAST_RELEASE_STABILIZATION"
       ],
-      "activeUnityWebRole": "VALIDATION_SURFACE_ONLY",
+      "activeUnityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
       "nativeDevelopmentAuthority": "directNativeDualPlatformDevelopment"
     },
     "robloxSimpleMultiplayerAndShallowF920260924": {
@@ -19633,12 +19633,12 @@
       },
       "unityWebValidationSurface": {
         "enabled": true,
-        "role": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
+        "role": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
         "canonicalSource": "unity-games/<gameId>/",
         "outputRoot": "web-games/<gameId>/",
         "runtimeOwner": ".github/workflows/unity-web-first-stage-build.yml",
         "nativeReleaseGate": false,
-        "developmentAdmissionGate": false,
+        "developmentAdmissionGate": true,
         "developmentLaneAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
         "deploymentStage": false,
         "releaseStage": false
@@ -21778,7 +21778,7 @@
     "activeOwnerResetSource": "owner-design-reset-queue.json",
     "strictDesignContinuesParallelWithDevelopment": true,
     "activeDevelopmentMayNotGloballyDeferStrictDesign": true,
-    "unityWebRole": "VALIDATION_SURFACE_ONLY"
+    "unityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR"
   },
   "webRuntimeStartabilityContract": {
     "version": 1,

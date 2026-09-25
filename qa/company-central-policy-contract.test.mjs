@@ -169,6 +169,16 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(roadmap.unityWebFirstStage?.nativeDevelopmentMayRunWithoutWebBuild,false);
   assert.equal(roadmap.webCompanion?.developmentAdmissionGate,true);
   assert.equal(roadmap.webCompanion?.releaseGate,false);
+  assert.equal(roadmap.changeRecord?.legacyWebFirstCleanup20260923?.activeUnityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.developmentAdmissionGate,true);
+  assert.equal(roadmap.canonicalProductionDepartments?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(directive.gameSeed?.derivedProductionRequirements?.includes('UNITY_WEB_UPPER_PLATFORM_PREDEVELOPMENT_FLOOR'),true);
+  assert.equal(directive.gameSeed?.derivedProductionRequirements?.includes('UNITY_WEB_VALIDATION_SURFACE_WHEN_BUILDABLE'),false);
+  assert.equal(directive.ai?.audioDepartment?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(directive.rules?.includes('unity-web-is-required-predevelopment-floor-for-new-roblox-unity-upper-platform-entry-from-the-same-canonical-unity-project'),true);
+  assert.equal(directive.rules?.includes('unity-web-is-optional-validation-surface-from-the-same-canonical-unity-project'),false);
+  assert.equal(directive.homepageTesting?.surface,'UNITY_WEB_DEVELOPMENT_TEST_SURFACE_NO_RELEASE_AUTHORITY');
   assert.equal(architecture.concurrentPlatformDevelopment?.admissionAuthority,'UPPER_PLATFORM_DEVELOPMENT_READY');
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWeb,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.deepEqual(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.developmentFlow,expectedFlow);

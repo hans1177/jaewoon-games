@@ -994,10 +994,13 @@ test('24h scheduler fetches only required shallow refs before planning',()=>{
 });
 
 test('continuous planners overlay company-runtime design evidence before autonomous planning',()=>{
-  for(const currentWorkflow of [workflow,safetyNetWorkflow]){
-    assert.match(currentWorkflow,/git -C \/tmp\/vibe2-main fetch origin [^\n]*company-runtime[^\n]*--quiet/);
-    assert.match(currentWorkflow,/for runtime_design_path in design game-seed-state\.json/);
-    assert.match(currentWorkflow,/git -C \/tmp\/vibe2-main checkout origin\/company-runtime -- "\$runtime_design_path"/);
-    assert.match(currentWorkflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
-  }
+  assert.match(workflow,/git -C "\$control_root" fetch origin company-runtime --quiet/);
+  assert.match(workflow,/for runtime_design_path in design game-seed-state\.json/);
+  assert.match(workflow,/git -C "\$control_root" archive "origin\/company-runtime" "\$runtime_design_path" \| tar -x -C \/tmp\/vibe2-main/);
+  assert.match(workflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
+
+  assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main fetch origin [^\n]*company-runtime[^\n]*--quiet/);
+  assert.match(safetyNetWorkflow,/for runtime_design_path in design game-seed-state\.json/);
+  assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main checkout origin\/company-runtime -- "\$runtime_design_path"/);
+  assert.match(safetyNetWorkflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
 });
