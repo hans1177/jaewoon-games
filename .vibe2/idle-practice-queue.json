@@ -95,7 +95,13 @@
         "SECURITY",
         "ANIMATION_FEEL",
         "LEVEL_DESIGN",
-        "ROUTE_DESIGN"
+        "ROUTE_DESIGN",
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VFX",
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION",
+        "ROBLOX_STUDIO"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -219,7 +225,13 @@
         "SECURITY",
         "ANIMATION_FEEL",
         "LEVEL_DESIGN",
-        "ROUTE_DESIGN"
+        "ROUTE_DESIGN",
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VFX",
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION",
+        "ROBLOX_STUDIO"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -1900,16 +1912,6 @@
       ]
     },
     {
-      "id": "gap-roblox_studio-l4",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ROBLOX_STUDIO"
-      ]
-    },
-    {
       "id": "gap-vfx-l4",
       "kind": "VFX_READABILITY_DRILL",
       "priority": "low",
@@ -1927,6 +1929,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "VISUAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "gap-roblox_studio-l5",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_STUDIO"
       ]
     },
     {
