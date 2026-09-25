@@ -1,5 +1,5 @@
 {
-  "version": 366,
+  "version": 367,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -924,14 +924,15 @@
         "sharedFastMvpSupersededField": "robloxFastMvpSupersededBy",
         "internalReleaseVisibilityRequired": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE"
       },
-      "studioRuntimeRequired": true,
-      "publicationTargetFromStudioForbidden": true
+      "studioRuntimeRequired": false,
+      "publicationTargetFromStudioForbidden": true,
+      "postInternalReleaseActualVibePlayRequired": true
     },
     "validationMode": "HEADLESS_FAST_MVP",
     "studioExecution": {
-      "version": 2,
+      "version": 3,
       "enabled": true,
-      "required": true,
+      "required": false,
       "workflowUseForbidden": false,
       "qaEvidenceAuthorityForbidden": false,
       "onlinePublishedPlaceDirectOpenForbidden": true,
@@ -945,7 +946,7 @@
       ],
       "publicationAuthority": false,
       "publicationTargetDiscoveryForbidden": true,
-      "executionRole": "LOCAL_INTERNAL_AUTOMATED_PLAYTEST_AND_VERIFIED_LEARNING_EVIDENCE",
+      "executionRole": "LOCAL_EXACT_BUILD_ACTUAL_VIBE_PLAY_AND_RUNTIME_QA_VIA_OFFICIAL_STUDIO_MCP",
       "requiredRunnerLabels": [
         "self-hosted",
         "Windows",
@@ -963,7 +964,7 @@
         "placeId",
         "versionNumber"
       ],
-      "studioTestServiceRequired": true,
+      "studioTestServiceRequired": false,
       "virtualInputRequired": true,
       "rawSourceDirectLearningForbidden": true,
       "rawGameplayValuesDirectLearningForbidden": true,
@@ -975,7 +976,31 @@
       "reEnabledAt": "2026-09-25",
       "previousRemovalAt": "2026-09-22T03:45:00+09:00",
       "authority": "OWNER_DIRECTIVE_2026-09-25",
-      "sharedPublishedTargetCurrentRequired": true
+      "sharedPublishedTargetCurrentRequired": false,
+      "requiredForInternalRelease": false,
+      "requiredForActualVibeInternalPlay": true,
+      "officialStudioMcpOnly": true,
+      "studioMcpTransport": "STDIO",
+      "studioMcpServerWindows": "%LOCALAPPDATA%\\Roblox\\mcp.bat",
+      "requiredMcpTools": [
+        "list_roblox_studios",
+        "get_studio_state",
+        "start_stop_play",
+        "get_console_output",
+        "screen_capture",
+        "user_keyboard_input",
+        "user_mouse_input",
+        "character_navigation"
+      ],
+      "externalGuiAutomationForbidden": true,
+      "undocumentedStudioCliAutomationForbidden": true,
+      "robloxPlayerAutomationForbidden": true,
+      "studioTestServiceOptionalForScriptedMultiplayer": true,
+      "officialMcpInputRequired": true,
+      "rawViewportTrainingForbidden": true,
+      "verifiedSemanticLearningScope": "STRUCTURED_QA_FACTS_ONLY_NO_RAW_GAMEPLAY_TRAINING",
+      "historicalExactPublishedArtifactAllowedForLocalActualPlay": true,
+      "historicalExactPublishedArtifactMayClaimCurrentOnlineRuntime": false
     },
     "headlessValidation": {
       "version": 2,
@@ -1537,8 +1562,11 @@
         "verifiedEvidenceRequiredForCanonicalLearning": true,
         "unverifiedModelOutputMayPromoteDirectly": false,
         "robloxStudioAllowedFor24hLearning": true,
-        "robloxStudioLearningScope": "VERIFIED_LOCAL_EXACT_BUILD_PLAY_EVIDENCE_ONLY",
-        "robloxStudioRawSourceOrRawGameplayValuesDirectTraining": false
+        "robloxStudioLearningScope": "STRUCTURED_VERIFIED_OFFICIAL_STUDIO_MCP_QA_FACTS_ONLY",
+        "robloxStudioRawSourceOrRawGameplayValuesDirectTraining": false,
+        "robloxStudioRawViewportDirectTraining": false,
+        "robloxStudioMcpOfficialToolsOnly": true,
+        "robloxPlayerAutomationForLearning": false
       },
       "providerFailureSubstitution": {
         "version": 1,
@@ -3430,16 +3458,18 @@
       "saveCompatibilityCheckRequiredOnAffectedGame": true
     },
     "robloxStudioUsage": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-25",
       "learningUseForbidden": false,
       "generalPracticeUseForbidden": false,
-      "role": "LOCAL_RUNTIME_EVIDENCE_AND_VERIFIED_LEARNING_INPUT",
+      "role": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_RUNTIME_EVIDENCE",
       "allowed": [
-        "LOCAL_EXACT_BUILD_AUTOMATED_INTERNAL_PLAYTEST",
-        "VIRTUAL_INPUT_RUNTIME",
+        "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_PLAYTEST",
+        "MCP_START_STOP_PLAY",
+        "MCP_KEYBOARD_MOUSE_NAVIGATION_INPUT",
+        "MCP_VIEWPORT_CAPTURE",
+        "MCP_CONSOLE_OUTPUT_CAPTURE",
         "UI_RUNTIME_VALIDATION",
-        "RUNTIME_ERROR_CAPTURE",
         "LOCAL_MULTIPLAYER_RUNTIME_WHEN_SUPPORTED",
         "PHYSICS_OR_ENGINE_RUNTIME",
         "VERIFIED_SEMANTIC_LEARNING_REUSE"
@@ -3448,27 +3478,34 @@
         "ROBLOX_PLAYER_AUTOMATION",
         "PUBLIC_SERVER_BOT_PLAY",
         "PUBLISHED_PLACE_DIRECT_STUDIO_AUTOMATION",
+        "UNDOCUMENTED_STUDIO_CLI_AUTOMATION",
+        "EXTERNAL_GUI_MACRO_OR_INJECTION",
         "ENGAGEMENT_OR_REWARD_FARMING",
-        "EXTERNAL_INPUT_MACRO_OR_INJECTION"
+        "RAW_GAMEPLAY_OR_VIEWPORT_MODEL_TRAINING"
       ],
       "learningRequirements": [
         "EXACT_SOURCE_REVISION",
         "EXACT_ARTIFACT_IDENTITY",
         "LOCAL_PLACE_FILE_FROM_EXACT_BUILD_ARTIFACT",
-        "STUDIO_TEST_SERVICE",
-        "VIRTUAL_INPUT_ACTION",
+        "OFFICIAL_STUDIO_MCP",
+        "REAL_MCP_PLAYER_INPUT_ACTION",
+        "VIEWPORT_OR_RUNTIME_STATE_CHANGE",
         "REQUIRED_CHECKPOINTS_PASS",
-        "NO_RUNTIME_ERRORS"
+        "NO_RELEASE_BLOCKING_RUNTIME_ERRORS"
       ],
       "publishedCandidateCrossCheckRequired": true,
-      "publishedCandidateCrossCheckAuthority": "OPEN_CLOUD",
+      "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
       "rawSourceDirectTrainingForbidden": true,
       "rawGameplayValuesDirectTrainingForbidden": true,
       "publicationSeparatedFromStudioRunner": true,
       "publicationRoute": "OPEN_CLOUD",
       "publicationTargetDiscoveryFromStudioForbidden": true,
-      "offlineBehavior": "QUEUE_LOCAL_STUDIO_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS",
-      "publishedCandidateMustNotBeSupersededSharedTarget": true
+      "offlineBehavior": "QUEUE_OFFICIAL_STUDIO_MCP_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS",
+      "publishedCandidateMustNotBeSupersededSharedTarget": true,
+      "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
+      "rawViewportDirectTrainingForbidden": true,
+      "supersededSharedTargetLocalExactArtifactPlayAllowed": true,
+      "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -4492,7 +4529,7 @@
         "explicitExternalExposureEvidenceRequired": true
       },
       "internalBuildupLoop": {
-        "version": 1,
+        "version": 2,
         "authority": "OWNER_DIRECTIVE_2026-09-25",
         "status": "ACTIVE_EXECUTABLE_CONTRACT_WITH_ACTUAL_VIBE_PLAY_EXECUTOR_REQUIRED",
         "platform": "ROBLOX",
@@ -4540,13 +4577,30 @@
           "EXACT_CANDIDATE_REVALIDATION",
           "VIBE_INTERNAL_PLAY"
         ],
-        "actualVibePlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play",
-        "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_LOCAL_PLACE_FILE_STUDIO_TEST_SERVICE_PLUS_VIRTUAL_INPUT",
+        "actualVibePlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
+        "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_MCP_LOCAL_EXACT_ARTIFACT",
         "actualVibePlayPublishedPlaceDirectAutomation": false,
-        "actualVibePlayLearningReuse": "VERIFIED_LOCAL_EXACT_BUILD_ONLY",
-        "publishedCandidateIdentityCrossCheck": "OPEN_CLOUD_ONLY",
+        "actualVibePlayLearningReuse": "STRUCTURED_VERIFIED_QA_FACTS_ONLY_NO_RAW_GAMEPLAY_TRAINING",
+        "publishedCandidateIdentityCrossCheck": "COMPANY_RUNTIME_EXACT_SOURCE_ARTIFACT_TARGET_VERSION",
         "rawStudioSourceDirectLearningForbidden": true,
-        "rawGameplayValuesDirectLearningForbidden": true
+        "rawGameplayValuesDirectLearningForbidden": true,
+        "actualVibePlaySurface": "ROBLOX_STUDIO_MCP_PLAY_MODE",
+        "robloxPlayerAutomation": false,
+        "externalGuiAutomation": false,
+        "undocumentedStudioCliAutomation": false,
+        "actualVibePlayEvidenceContract": [
+          "EXACT_SOURCE_REVISION",
+          "EXACT_ARTIFACT_IDENTITY",
+          "EXACT_ARTIFACT_RUN_ID",
+          "HISTORICAL_OR_CURRENT_INTERNAL_PUBLICATION_BINDING",
+          "OFFICIAL_STUDIO_MCP_PLAY_MODE",
+          "MCP_INPUT_ACTION_OBSERVED",
+          "VIEWPORT_OR_RUNTIME_STATE_CHANGE",
+          "CONSOLE_ERROR_CAPTURE"
+        ],
+        "historicalSharedTargetExactArtifactLocalPlayAllowed": true,
+        "historicalSharedTargetLocalPlayDoesNotClaimCurrentPublishedRuntime": true,
+        "rawViewportDirectLearningForbidden": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,

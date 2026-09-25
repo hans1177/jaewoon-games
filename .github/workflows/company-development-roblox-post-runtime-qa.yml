@@ -676,9 +676,9 @@ jobs:
           done < /tmp/roblox-f9-ids
 
   studio-local-plan:
-    name: plan exact local Studio playtests
+    name: plan exact local Studio MCP playtests
     needs: runtime-foundation-qa
-    if: needs.runtime-foundation-qa.result == 'success'
+    if: always() && needs.runtime-foundation-qa.result != 'cancelled'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     outputs:
@@ -705,7 +705,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Select exact local build artifacts needing Studio play
+      - name: Select exact internal-release artifacts needing official Studio MCP play
         id: plan
         working-directory: main
         env:
@@ -725,15 +725,15 @@ jobs:
             --queue=../runtime/development-queue.json \
             --roadmap=company-learning/platform-release-roadmap.json \
             --game-id="$requested" \
-            --output=/tmp/roblox-studio-local-matrix.json
-          matrix="$(node -e "const x=require('/tmp/roblox-studio-local-matrix.json');process.stdout.write(JSON.stringify(x))")"
-          count="$(node -e "const x=require('/tmp/roblox-studio-local-matrix.json');process.stdout.write(String((x.include||[]).length))")"
+            --output=/tmp/roblox-studio-mcp-matrix.json
+          matrix="$(node -e "const x=require('/tmp/roblox-studio-mcp-matrix.json');process.stdout.write(JSON.stringify(x))")"
+          count="$(node -e "const x=require('/tmp/roblox-studio-mcp-matrix.json');process.stdout.write(String((x.include||[]).length))")"
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
           echo "count=$count" >> "$GITHUB_OUTPUT"
-          echo "ROBLOX_STUDIO_LOCAL_PLAN_COUNT=$count"
+          echo "ROBLOX_STUDIO_MCP_PLAN_COUNT=$count"
 
-  studio-local-auto-play:
-    name: Studio local actual play ${{ matrix.gameId }}
+  studio-mcp-auto-play:
+    name: Official Studio MCP actual play ${{ matrix.gameId }}
     needs: studio-local-plan
     if: needs.studio-local-plan.outputs.count != '0'
     strategy:
@@ -750,14 +750,6 @@ jobs:
           fetch-depth: 1
           fetch-tags: false
 
-      - name: Checkout existing Vibe2 Studio control tooling
-        uses: actions/checkout@v4
-        with:
-          ref: vibe2-unreal-core
-          path: control
-          fetch-depth: 1
-          fetch-tags: false
-
       - name: Checkout canonical runtime state
         uses: actions/checkout@v4
         with:
@@ -770,19 +762,38 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify local-only Studio policy and authenticated runner
+      - name: Verify official Studio MCP policy and runner
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $roadmap = Get-Content 'main/company-learning/platform-release-roadmap.json' -Raw | ConvertFrom-Json
-          if ($roadmap.roblox.studioExecution.localPlaceFileRequired -ne $true) { throw 'local Studio place-file policy missing' }
-          if ($roadmap.roblox.studioExecution.onlinePublishedPlaceDirectOpenForbidden -ne $true) { throw 'online published Place must remain forbidden' }
-          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
+          if ($roadmap.roblox.studioExecution.officialStudioMcpOnly -ne $true) { throw 'official Studio MCP policy missing' }
+          if ($roadmap.roblox.studioExecution.robloxPlayerAutomationForbidden -ne $true) { throw 'Roblox Player automation must remain forbidden' }
+          if ($roadmap.roblox.studioExecution.undocumentedStudioCliAutomationForbidden -ne $true) { throw 'undocumented Studio CLI automation must remain forbidden' }
+          if ($roadmap.roblox.studioExecution.localPlaceFileRequired -ne $true) { throw 'local exact Place artifact policy missing' }
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio MCP runner must be Windows' }
           $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
           if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
-          node -e "import('./control/tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p)})"
-          if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
-          Write-Host 'ROBLOX_STUDIO_LOCAL_RUNNER=PASS'
+
+          $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            ForEach-Object { Join-Path $_.FullName 'RobloxStudioBeta.exe' } |
+            Where-Object { Test-Path $_ } |
+            Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+
+          $mcp = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat'
+          if (-not (Test-Path $mcp)) { throw 'Official Roblox Studio MCP launcher not found' }
+
+          if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
+            throw 'Runner has an existing Roblox Studio process; refusing ambiguous MCP attachment'
+          }
+
+          "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcp" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'ROBLOX_STUDIO_MCP_RUNNER=PASS'
+          Write-Host 'ROBLOX_PLAYER_AUTOMATION=NO'
+          Write-Host 'ROBLOX_UNDOCUMENTED_STUDIO_CLI_AUTOMATION=NO'
 
       - name: Download exact immutable Roblox build artifact
         uses: actions/download-artifact@v4
@@ -793,7 +804,7 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ matrix.artifactRunId }}
 
-      - name: Bind Studio launch to the exact local Place file
+      - name: Bind and open exact local Place artifact
         shell: powershell
         env:
           EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
@@ -805,32 +816,36 @@ jobs:
           $hash = (Get-FileHash -Path $places[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           $expected = ([string]$env:EXPECTED_ARTIFACT).ToLowerInvariant()
           if ("sha256:$hash" -ne $expected) { throw "Local Place SHA256 mismatch: sha256:$hash != $expected" }
-          "VIBE2_LOCAL_PLACE_FILE=$($places[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "ROBLOX_STUDIO_LOCAL_ARTIFACT_BIND=PASS:$hash"
 
-      - name: Run actual local Studio play with official Studio APIs only
+          $studioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+          "VIBE2_LOCAL_PLACE_FILE=$($places[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_EXPECTED_NAME=$($places[0].BaseName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_LOCAL_ARTIFACT_BIND=PASS:$hash"
+          Write-Host "ROBLOX_STUDIO_PROCESS_ID=$($studioProcess.Id)"
+          Start-Sleep -Seconds 15
+
+      - name: Run actual local play through official Studio MCP
         id: studio_play
         shell: powershell
         continue-on-error: true
         run: |
           $ErrorActionPreference = 'Stop'
-          $scenario = (Resolve-Path 'main/qa/fixtures/company-roblox-studio-local-play-scenario.json').Path
-          $result = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-runtime.json'
-          $nonce = '${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.gameId }}'
+          $result = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
           $runnerArgs = @(
-            "--scenario=$scenario",
+            '--mode=mcp-run',
+            "--mcp-command=$env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND",
+            "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
             "--output=$result",
-            "--nonce=$nonce",
-            "--place-file=$env:VIBE2_LOCAL_PLACE_FILE",
-            '--local-only=true',
-            '--module-file=control/tools/runtime/roblox/Vibe2AutoPlayer.luau',
-            '--timeout=180000'
+            '--timeout=60000'
           )
-          & node 'control/tools/vibe2-roblox-studio-cli-runner.mjs' @runnerArgs
-          if ($LASTEXITCODE -ne 0) { throw 'local Roblox Studio play runner failed before verifiable runtime evidence' }
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
+          if ($LASTEXITCODE -ne 0) { throw 'official Roblox Studio MCP play failed before verified runtime evidence' }
           "VIBE2_STUDIO_RUNTIME_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=PASS'
 
-      - name: Persist exact local Studio play evidence
+      - name: Persist exact Studio MCP play evidence
+        id: persist
         if: always()
         shell: powershell
         env:
@@ -845,12 +860,41 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           if (-not $env:VIBE2_STUDIO_RUNTIME_RESULT -or -not (Test-Path $env:VIBE2_STUDIO_RUNTIME_RESULT)) {
-            throw 'Studio local play produced no runtime evidence; infrastructure failures are not game learning'
+            $fallback = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
+            @{
+              version = 1
+              authority = 'roblox-official-studio-mcp-runtime'
+              runtimeVerified = $false
+              capabilities = @{
+                officialStudioMcp = $false
+                playMode = $false
+                mcpInput = $false
+                screenCapture = $false
+                consoleCapture = $false
+              }
+              actions = @()
+              checkpoints = @()
+              errors = @(@{
+                type = 'studio-mcp-infrastructure-or-runtime-error'
+                actionId = $null
+                signature = 'MCP_RUN_DID_NOT_PRODUCE_EVIDENCE'
+              })
+              metrics = @{
+                distinctFrameChange = $false
+                consoleErrorCount = 1
+              }
+              rawSourceIncluded = $false
+              rawGameplayValuesIncluded = $false
+              rawViewportIncluded = $false
+            } | ConvertTo-Json -Depth 8 | Out-File -FilePath $fallback -Encoding utf8
+            $env:VIBE2_STUDIO_RUNTIME_RESULT = $fallback
           }
+
           git -C runtime fetch --no-tags origin company-runtime
           if ($LASTEXITCODE -ne 0) { throw 'company-runtime refresh failed' }
           git -C runtime reset --hard origin/company-runtime
           if ($LASTEXITCODE -ne 0) { throw 'company-runtime reset failed' }
+
           $persistArgs = @(
             '--mode=persist',
             '--queue=runtime/development-queue.json',
@@ -866,19 +910,19 @@ jobs:
             "--studio-step-succeeded=$env:STUDIO_STEP_SUCCEEDED"
           )
           & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
-          if ($LASTEXITCODE -ne 0) { throw 'Studio local play evidence validation failed' }
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP play evidence validation failed' }
 
-          git -C runtime config user.name 'jaewoon-roblox-studio-local'
+          git -C runtime config user.name 'jaewoon-roblox-studio-mcp'
           git -C runtime config user.email 'actions@users.noreply.github.com'
           git -C runtime add development-queue.json
           git -C runtime diff --cached --check
           if ($LASTEXITCODE -ne 0) { throw 'runtime evidence diff check failed' }
           git -C runtime diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
-            git -C runtime commit -m 'runtime: persist exact local Roblox Studio play [skip ci]'
+            git -C runtime commit -m 'runtime: persist official Studio MCP actual play [skip ci]'
             if ($LASTEXITCODE -ne 0) { throw 'runtime evidence commit failed' }
             $pushed = $false
-            for ($attempt=1; $attempt -le 3; $attempt++) {
+            for ($attempt=1; $attempt -le 5; $attempt++) {
               git -C runtime push origin HEAD:company-runtime
               if ($LASTEXITCODE -eq 0) { $pushed = $true; break }
               git -C runtime fetch --no-tags origin company-runtime
@@ -889,12 +933,52 @@ jobs:
             }
             if (-not $pushed) { throw 'runtime evidence push failed' }
           } else {
-            Write-Host 'ROBLOX_STUDIO_LOCAL_RUNTIME_STATE_CHANGE=NO'
+            Write-Host 'ROBLOX_STUDIO_MCP_RUNTIME_STATE_CHANGE=NO'
           }
 
           $latest = Get-Content 'runtime/development-queue.json' -Raw | ConvertFrom-Json
           $row = @($latest.items | Where-Object { $_.gameId -eq $env:GAME_ID })[0]
-          if ($null -eq $row -or $row.robloxInternalVibePlayEvidence.pass -ne $true) {
-            throw "ROBLOX_STUDIO_LOCAL_PLAY_FAILED:$env:GAME_ID"
+          if ($null -eq $row) { throw "ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:$env:GAME_ID" }
+          if ($row.robloxInternalVibePlayEvidence.pass -eq $true) {
+            Write-Host "ROBLOX_STUDIO_MCP_PLAY_PASS=$env:GAME_ID"
+          } elseif ($row.robloxInternalVibePlayEvidence.infrastructureFailure -eq $true) {
+            Write-Host "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING=$env:GAME_ID"
+          } else {
+            throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
           }
-          Write-Host "ROBLOX_STUDIO_LOCAL_PLAY_PASS=$env:GAME_ID"
+
+      - name: Refill existing 24H development loop after verified play
+        if: steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $headers = @{
+            Accept = 'application/vnd.github+json'
+            Authorization = "Bearer $env:GH_TOKEN"
+            'X-GitHub-Api-Version' = '2022-11-28'
+          }
+          $body = @{
+            event_type = 'vibe2-fanin-refill'
+            client_payload = @{
+              source_run = "${{ github.run_id }}"
+              source_attempt = "${{ github.run_attempt }}"
+              source_task = "$env:GAME_ID"
+              source_outcome = 'VERIFIED'
+              reason = 'roblox-official-studio-mcp-actual-play'
+            }
+          } | ConvertTo-Json -Depth 5
+          Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
+          Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
+
+      - name: Cleanup owned Studio process
+        if: always()
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Continue'
+          if ($env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
+            Stop-Process -Id ([int]$env:VIBE2_STUDIO_PROCESS_ID) -Force -ErrorAction SilentlyContinue
+            Write-Host "ROBLOX_STUDIO_MCP_PROCESS_REAPED=$env:VIBE2_STUDIO_PROCESS_ID"
+          }

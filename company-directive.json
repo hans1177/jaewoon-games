@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 81,
+  "revision": 82,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -537,7 +537,7 @@
     "robloxPreflightMode": "VIBE_PLUS_SHARED_MODEL",
     "robloxPreflightModel": "llama3.2:1b",
     "robloxValidationMode": "HEADLESS_FAST_MVP",
-    "robloxStudioExecutionAllowed": false,
+    "robloxStudioExecutionAllowed": true,
     "robloxStudioEvidenceRequired": false,
     "departmentResponsibilityMerge": {
       "balance": {
@@ -553,7 +553,15 @@
           "NUMERIC_GAMEPLAY_REGRESSION"
         ]
       }
-    }
+    },
+    "robloxStudioExecutionMode": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_ONLY",
+    "robloxStudioActualVibePlayEvidenceRequiredAfterInternalRelease": true,
+    "robloxStudioMcpAllowed": true,
+    "robloxStudioExternalGuiAutomationAllowed": false,
+    "robloxStudioUndocumentedCliAutomationAllowed": false,
+    "robloxPlayerAutomationAllowed": false,
+    "robloxPublishedPlayerBotAllowed": false,
+    "robloxStudioRawGameplayTrainingAllowed": false
   },
   "classes": {
     "DESIGN_ONLY": {
