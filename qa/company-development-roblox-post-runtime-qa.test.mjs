@@ -109,3 +109,9 @@ test('shared fallback QA only probes the one current candidate and marks older d
   assert.match(workflow,/ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING/);
   assert.match(workflow,/roblox-shared-runtime-target-capacity-republish-required/);
 });
+
+
+test('foundation runtime write contention defers only the stale write and keeps unrelated Studio play available',()=>{
+  assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE/);
+  assert.match(workflow,/if ! git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"; then[\s\S]*git rebase --abort \|\| true[\s\S]*exit 0/);
+});
