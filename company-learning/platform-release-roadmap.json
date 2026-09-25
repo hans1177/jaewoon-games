@@ -1,5 +1,5 @@
 {
-  "version": 386,
+  "version": 387,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3148,10 +3148,38 @@
           "adaptiveWaveBaseline": 20,
           "adaptiveWaveMin": 4,
           "adaptiveWaveMax": 256,
-          "runnerPressureSpeculativeSuppression": "IMPLEMENTATION_IN_PROGRESS",
+          "runnerPressureSpeculativeSuppression": "IMPLEMENTED_QA_VERIFIED",
           "runnerPressureSpeculativeSuppressionRule": "KEEP_ALL_PRIMARY_GAME_TASKS; DISABLE_ONLY_OPTIONAL_SPECULATIVE_VARIANTS_WHILE_ADAPTIVE_CONTROL_REPORTS_RUNNER_CAPACITY_QUEUE_WAIT_OR_CHECKOUT_PRESSURE; RESTORE_SPECULATION_AUTOMATICALLY_AFTER_PRESSURE_CLEARS",
           "primaryCoverageUnaffectedBySpeculativeSuppression": true,
-          "qaAndFanInUnchangedBySpeculativeSuppression": true
+          "qaAndFanInUnchangedBySpeculativeSuppression": true,
+          "runnerPressureSpeculativeSuppressionCodeHead": "4bac61bf02c4787111da3b2c66e2e4cfc62d2a7f",
+          "runnerPressureSpeculativeSuppressionVerification": {
+            "vibe2CoreQa": {
+              "runId": 36200348261,
+              "result": "PASS"
+            },
+            "parallelismContract": {
+              "runId": 36200348285,
+              "result": "PASS"
+            },
+            "centralPolicyContract": {
+              "runId": 36200348257,
+              "result": "PASS"
+            },
+            "companyEvolutionQa": {
+              "runId": 36200348264,
+              "result": "PASS"
+            },
+            "mainWriteGuard": {
+              "runId": 36200348265,
+              "result": "PASS"
+            },
+            "securityImmune": {
+              "runId": 36200348267,
+              "attempt": 2,
+              "result": "PASS"
+            }
+          }
         },
         "incidentHistory": [
           {
@@ -7325,7 +7353,16 @@
         ".github/workflows/vibe2-continuous-core.yml",
         "qa/vibe2-queue-control.test.mjs",
         "qa/vibe2-controller-contract.test.mjs"
-      ]
+      ],
+      "implementationState": "IMPLEMENTED_QA_VERIFIED",
+      "implementationCodeHead": "4bac61bf02c4787111da3b2c66e2e4cfc62d2a7f",
+      "verification": {
+        "vibe2CoreQa": 36200348261,
+        "parallelismContract": 36200348285,
+        "centralPolicyContract": 36200348257,
+        "companyEvolutionQa": 36200348264,
+        "securityImmune": 36200348267
+      }
     }
   },
   "vibeExecutionLaneContract": {
