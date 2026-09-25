@@ -399,12 +399,11 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
   for(const game of catalog.games){
     game.lifecycleState=gameLifecycleState(game);
     const project=portfolio.projects.find(row=>row.slug===game.id);
-    if(!project)continue;
     if(!lifecycleAllowsDevelopment(game)){game.productionTarget='lifecycle-inactive';game.homepageStage=game.lifecycleState;continue;}
     const row=rowByGameId.get(clean(game.id));
-    const productionClass=row?.productionClass||productionClassOf(project,game);
-    const productionClassSource=row?.productionClassSource||project.productionClassSource||game.productionClassSource||'CURRENT_EVIDENCE_STATE';
-    const targetPlatform=selectedPlatformOf(project,game);
+    const productionClass=row?.productionClass||productionClassOf(project||{},game);
+    const productionClassSource=row?.productionClassSource||project?.productionClassSource||game.productionClassSource||'CURRENT_EVIDENCE_STATE';
+    const targetPlatform=selectedPlatformOf(project||{},game);
     game.productionClass=productionClass;
     game.productionClassSource=productionClassSource;
     delete game.productionTier;

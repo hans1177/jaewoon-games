@@ -139,3 +139,28 @@ test('homepage runtime ignores legacy Web implementation scores for direct-nativ
   assert.equal(catalog.games[0].homepageInfo.scoreSource,'DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT');
   assert.equal(catalog.games[0].homepageInfo.validationSchemaVersion,null);
 });
+
+
+test('catalog-only DEVELOPMENT_CONFIRMED game keeps canonical direct-native homepage state',()=>{
+  const portfolio={version:1,projects:[]};
+  const catalog={version:1,games:[{
+    id:'catalog-only',name:'Catalog Only',genre:['simulation'],lifecycleState:'ACTIVE',
+    productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'OWNER_DIRECT_GAME_BUILD',
+    selectedPlatform:'ROBLOX',productionTarget:'roblox',
+    homepageStage:'개발확정 · Web 검증 → Roblox'
+  }]};
+
+  const result=syncProductionClasses({
+    portfolio,catalog,artbooks:{artbooks:[],dailySubmissions:[]},
+    developmentQueue:{items:[]},seedState:{seeds:[]},filesystem:fsStub
+  });
+  const game=result.catalog.games[0];
+
+  assert.equal(result.portfolio.projects.length,0,'catalog-only owner game must not create an artificial portfolio project');
+  assert.equal(game.productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(game.productionClassSource,'OWNER_DIRECT_GAME_BUILD');
+  assert.equal(game.selectedPlatform,'ROBLOX');
+  assert.equal(game.productionTarget,'ROBLOX_UNITY');
+  assert.deepEqual(game.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(game.homepageStage,'개발확정 · Roblox + Unity 앱 동시개발');
+});
