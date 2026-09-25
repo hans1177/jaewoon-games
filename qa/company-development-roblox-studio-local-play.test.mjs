@@ -513,3 +513,25 @@ test('Studio MCP setting diagnostic CLI is part of the helper contract',()=>{
   assert.match(helper,/ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO/);
   assert.match(helper,/collectMcpServerEnabledValues/);
 });
+
+
+test('Studio MCP recovery reaps only stale MCP clients when Studio is absent or after owned Studio close',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('  studio-mcp-auto-play:'));
+  assert.match(studioMcpBlock,/Get-Process StudioMCP/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STALE_CLIENT_REAPED_BEFORE_STUDIO=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STALE_CLEANUP_GUARD=NO_STUDIO_PROCESS_PRESENT/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STALE_CLIENT_REAPED_AFTER_OWNED_STUDIO_CLOSE=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STALE_CLIENT_REAPED_CLEANUP=/);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const recovery=roadmap.roblox.studioExecution.mcpUnavailableRecovery;
+  assert.equal(recovery.staleMcpClientCleanupAllowed,true);
+  assert.equal(recovery.staleMcpClientCleanupProcess,'StudioMCP');
+  assert.equal(recovery.unrelatedStudioProcessTerminationForbidden,true);
+  assert.match(recovery.staleMcpClientCleanupGuard,/NO_ROBLOX_STUDIO_PROCESS/);
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const arch=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup.mcpUnavailableRecovery;
+  assert.equal(arch.staleMcpClientCleanup,true);
+  assert.equal(arch.staleMcpProcess,'StudioMCP');
+  assert.equal(arch.unrelatedStudioTermination,false);
+  assert.equal(arch.restartOrdering,'STALE_MCP_CLEANUP_THEN_STUDIO_THEN_FRESH_MCP_CLIENT');
+});
