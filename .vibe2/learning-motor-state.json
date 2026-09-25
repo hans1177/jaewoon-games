@@ -3955,7 +3955,15 @@
       "coding_negative_1gci01b",
       "coding_negative_zmgrvd",
       "coding_negative_uqy27w",
-      "coding_negative_15zx2l9"
+      "coding_negative_15zx2l9",
+      "coding_negative_1ntmwwc",
+      "coding_negative_rqy8te",
+      "coding_negative_9z9h33",
+      "coding_negative_1j8pqrs",
+      "coding_negative_6izd9u",
+      "coding_negative_1e1bfgy",
+      "coding_negative_edll4k",
+      "coding_negative_1mf3af1"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -5160,7 +5168,7 @@
         "verifiedApplications": 216,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 477,
-        "verifiedFailures": 661,
+        "verifiedFailures": 669,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -5219,13 +5227,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 139,
-            "verifiedFailures": 324,
+            "verifiedFailures": 332,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 334,
             "totalContextBytes": 4377796,
             "lastEvidence": "coding_nwrwl2",
-            "lastFailureEvidence": "coding_negative_15zx2l9",
-            "lastUpdatedAt": "2026-09-25T02:14:01.316Z"
+            "lastFailureEvidence": "coding_negative_1mf3af1",
+            "lastUpdatedAt": "2026-09-25T02:21:50.047Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -7157,67 +7165,68 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 3,
-            "games": {},
-            "targets": {},
-            "failureGames": {
-              "bug-defense": 3
-            },
-            "failureTargets": {
-              "roblox": 3
-            },
-            "failureClasses": {
-              "EDIT_MATCH": 3
-            },
-            "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_oyqrgy",
-            "lastUpdatedAt": "2026-09-25T02:14:01.314Z"
-          },
-          "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS": {
-            "verifiedApplications": 0,
-            "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 0,
-            "verifiedFailures": 12,
-            "games": {},
-            "targets": {},
-            "failureGames": {
-              "monster-adventure": 3,
-              "seed-idle-growth-rpg-crystal-bloom": 3,
-              "seed-puzzle-chromatic-cascade": 3,
-              "village-dungeons": 3
-            },
-            "failureTargets": {
-              "roblox": 12
-            },
-            "failureClasses": {
-              "EDIT_MATCH": 11,
-              "TIMEOUT": 1
-            },
-            "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_15zx2l9",
-            "lastUpdatedAt": "2026-09-25T02:14:01.316Z"
-          },
-          "roblox|EDIT_MATCH|OTHER|PRESENTATION_DELTA|ROBLOX_VISUAL_DOMAINS": {
-            "verifiedApplications": 0,
-            "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 0,
             "verifiedFailures": 4,
             "games": {},
             "targets": {},
             "failureGames": {
-              "seed-single-defense-strat-celestial-bastion": 2,
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 2
+              "bug-defense": 4
             },
             "failureTargets": {
               "roblox": 4
             },
             "failureClasses": {
-              "EDIT_MATCH": 3,
+              "EDIT_MATCH": 4
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_rqy8te",
+            "lastUpdatedAt": "2026-09-25T02:21:50.045Z"
+          },
+          "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 15,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "monster-adventure": 3,
+              "seed-idle-growth-rpg-crystal-bloom": 4,
+              "seed-puzzle-chromatic-cascade": 4,
+              "village-dungeons": 4
+            },
+            "failureTargets": {
+              "roblox": 15
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 13,
+              "TIMEOUT": 1,
               "INVALID_PATH": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_6qzavk",
-            "lastUpdatedAt": "2026-09-25T02:14:01.314Z"
+            "lastFailureEvidence": "coding_negative_1mf3af1",
+            "lastUpdatedAt": "2026-09-25T02:21:50.047Z"
+          },
+          "roblox|EDIT_MATCH|OTHER|PRESENTATION_DELTA|ROBLOX_VISUAL_DOMAINS": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 5,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-single-defense-strat-celestial-bastion": 2,
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 3
+            },
+            "failureTargets": {
+              "roblox": 5
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 4,
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1j8pqrs",
+            "lastUpdatedAt": "2026-09-25T02:21:50.046Z"
           },
           "roblox|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
             "verifiedApplications": 0,
@@ -7283,47 +7292,68 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 2,
+            "verifiedFailures": 3,
             "games": {},
             "targets": {},
             "failureGames": {
-              "amusement-tycoon": 2
+              "amusement-tycoon": 3
             },
             "failureTargets": {
-              "roblox": 2
+              "roblox": 3
             },
             "failureClasses": {
-              "EDIT_MATCH": 2
+              "EDIT_MATCH": 3
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1asdqac",
-            "lastUpdatedAt": "2026-09-25T02:14:01.314Z"
+            "lastFailureEvidence": "coding_negative_1ntmwwc",
+            "lastUpdatedAt": "2026-09-25T02:21:50.045Z"
           },
           "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 2,
+            "verifiedFailures": 3,
             "games": {},
             "targets": {},
             "failureGames": {
-              "seed-story-complete-rpg-chronicles-of-eldoria": 2
+              "seed-story-complete-rpg-chronicles-of-eldoria": 2,
+              "monster-adventure": 1
             },
             "failureTargets": {
-              "roblox": 2
+              "roblox": 3
             },
             "failureClasses": {
-              "EDIT_MATCH": 2
+              "EDIT_MATCH": 3
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_zmgrvd",
-            "lastUpdatedAt": "2026-09-25T02:14:01.316Z"
+            "lastFailureEvidence": "coding_negative_9z9h33",
+            "lastUpdatedAt": "2026-09-25T02:21:50.046Z"
+          },
+          "roblox|EDIT_MATCH|INVALID_PATH|OTHER|PRESENTATION_DELTA|ROBLOX_VISUAL_DOMAINS": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-single-defense-strat-celestial-bastion": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_edll4k",
+            "lastUpdatedAt": "2026-09-25T02:21:50.047Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_nwrwl2",
-        "lastFailureEvidence": "coding_negative_15zx2l9",
-        "lastUpdatedAt": "2026-09-25T02:14:01.316Z"
+        "lastFailureEvidence": "coding_negative_1mf3af1",
+        "lastUpdatedAt": "2026-09-25T02:21:50.047Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 557,
@@ -11773,7 +11803,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-25T02:16:48.534Z",
+    "lastBuiltAt": "2026-09-25T02:21:50.063Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -17602,5 +17632,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-25T02:16:48.534Z"
+  "updatedAt": "2026-09-25T02:21:50.063Z"
 }
