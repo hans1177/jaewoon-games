@@ -1,5 +1,5 @@
 {
-  "version": 179,
+  "version": 180,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3438,6 +3438,18 @@
       "sameExactPackageArtifactReuse": true,
       "directPrivateRuntimeDispatchAfterF0": true,
       "gatesPreserved": true
+    },
+    "robloxF0SourceRepairLoop": {
+      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.f0SourceRepairLoop",
+      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
+      "sourceWorker": ".github/workflows/company-development-roblox-runtime.yml#source-worker",
+      "sourceCompiler": "tools/company-development-roblox-bootstrap.mjs",
+      "validator": "tools/company-development-roblox-headless-fast-mvp.mjs",
+      "failureState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "sameCanonicalPipeline": true,
+      "newShadowPipeline": false,
+      "gameplaySemanticsPreserved": true,
+      "externalCapacityOnlyParallelism": true
     }
   },
   "updatedAt": "2026-09-25",
