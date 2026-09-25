@@ -319,9 +319,10 @@ test('two-client sync pending stays before F9 and cannot promote either internal
  assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
  assert.match(finalReview,/runtime\.f7MultiplayerFoundationPassed===true/);
  assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
- assert.match(finalReview,/const publicRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
+ assert.match(finalReview,/const publicRuntimeAcceptance=false;/);
  assert.doesNotMatch(finalReview,/SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS/);
- assert.match(finalReview,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
+ assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
+ assert.match(finalReview,/roblox-perpetual-buildup-public-hard-gate-pending/);
  assert.match(finalReview,/item\.robloxPublicReleaseVersionNumber=Number\(candidate\.versionNumber\)/);
 });
 
