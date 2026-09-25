@@ -478,7 +478,26 @@ jobs:
           const graphicsCounts={Art:countFiles('Art'),Prefabs:countFiles('Prefabs'),Materials:countFiles('Materials'),Animations:countFiles('Animations')};
           const floorSourceFile=path.join(project,'unity-web-floor-source.json');
           let floorSource={};try{if(fs.existsSync(floorSourceFile))floorSource=JSON.parse(fs.readFileSync(floorSourceFile,'utf8'));}catch{}
-          const bootstrapGraphicsBlocked=floorSource?.presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'||floorSource?.upperPlatformReady===false;
+          const bootstrapGenerated=floorSource?.purpose==='UNITY_WEB_DEVELOPMENT_FLOOR';
+          const runtimeFile=path.join(project,'Assets','Scripts','UnityWebFloorGame.cs');
+          const runtimeSource=fs.existsSync(runtimeFile)?fs.readFileSync(runtimeFile,'utf8'):'';
+          const runtimeSha256=runtimeSource?createHash('sha256').update(runtimeSource).digest('hex'):null;
+          const bootstrapSourceDelta=!bootstrapGenerated
+            ||Boolean(runtimeSha256&&floorSource?.bootstrapRuntimeSha256&&runtimeSha256!==floorSource.bootstrapRuntimeSha256);
+          const primitiveCount=(runtimeSource.match(/GameObject\.CreatePrimitive\s*\(/g)||[]).length;
+          const developedAssetCount=['Art','Prefabs','Materials','Animations'].reduce((sum,dir)=>{
+            const target=path.join(project,'Assets',dir);if(!fs.existsSync(target))return sum;
+            const stack=[target];let count=0;
+            while(stack.length){const current=stack.pop();for(const entry of fs.readdirSync(current,{withFileTypes:true})){const full=path.join(current,entry.name);if(entry.isDirectory())stack.push(full);else if(entry.isFile()&&!entry.name.endsWith('.meta')&&entry.name!=='unity-web-floor-domain.json')count++;}}
+            return sum+count;
+          },0);
+          const substantivePresentation=!bootstrapGenerated||(
+            floorSource?.presentationState==='DEVELOPED_GAME_SPECIFIC_PRESENTATION'
+            &&floorSource?.upperPlatformReady===true
+            &&bootstrapSourceDelta
+            &&(developedAssetCount>=3||primitiveCount===0)
+          );
+          const bootstrapGraphicsBlocked=bootstrapGenerated&&!substantivePresentation;
           const graphicsPass=!bootstrapGraphicsBlocked
             &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
             &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png');
@@ -508,7 +527,7 @@ jobs:
           const criteria={
             design:{pass:designPass},
             code:{pass:codePass},
-            graphics:{pass:graphicsPass,assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
+            graphics:{pass:graphicsPass,assetCounts:graphicsCounts,bootstrapGraphicsBlocked,bootstrapSourceDelta,developedAssetCount,primitiveCount,substantivePresentation},
             webglBuild:{pass:Boolean(webglPass)},
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
