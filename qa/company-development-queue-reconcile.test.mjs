@@ -210,3 +210,15 @@ test('queue reconcile treats Vibe queue telemetry as observational and never def
   assert.doesNotMatch(workflow,/DEFER_QUEUE_INVALID/);
   assert.doesNotMatch(workflow,/DEFER_QUEUE_UNAVAILABLE/);
 });
+
+
+test('reconcile trigger bursts serialize instead of cancelling the running state writer',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  assert.match(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: true/);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const state=roadmap.minimumNecessaryProcedurePolicy?.execution?.stateReconciliation;
+  assert.equal(state?.serializeStateWrites,true);
+  assert.equal(state?.cancelRunningReconcileOnNewTrigger,false);
+  assert.equal(state?.repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation,true);
+});
