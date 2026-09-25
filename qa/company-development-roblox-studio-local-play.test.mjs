@@ -225,6 +225,7 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(studioMcpBlock,/Roblox\\mcp\.bat/);
   assert.match(studioMcpBlock,/StudioMCP\.exe/);
   assert.match(studioMcpBlock,/OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
+  assert.match(studioMcpBlock,/\(\?m\)\\\)\\s\*\\r\?\\n\\s\*else\\s\*\\\(/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POLICY=PASS/);
