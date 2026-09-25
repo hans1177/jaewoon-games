@@ -273,8 +273,16 @@ class McpStdioClient{
     this.protocolVersion=clean(result?.protocolVersion||'2025-11-25');
     this.serverInfo=result?.serverInfo||{};
     this.notify('notifications/initialized',{});
-    const listed=await this.request('tools/list',{});
-    for(const tool of listed?.tools||[])this.tools.set(clean(tool?.name),tool);
+    let listed={tools:[]};
+    for(let attempt=1;attempt<=12;attempt++){
+      listed=await this.request('tools/list',{});
+      this.tools.clear();
+      for(const tool of listed?.tools||[])this.tools.set(clean(tool?.name),tool);
+      const names=[...this.tools.keys()].filter(Boolean).sort();
+      console.log('ROBLOX_STUDIO_MCP_TOOL_INVENTORY_ATTEMPT='+attempt+':'+names.join(','));
+      if(this.tools.has('list_roblox_studios'))break;
+      if(attempt<12)await wait(2000);
+    }
     return listed?.tools||[];
   }
   onLine(line){
