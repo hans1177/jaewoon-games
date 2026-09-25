@@ -124,6 +124,8 @@ namespace JaewoonGames.DaechungRpg
 
             GUILayout.EndScrollView();
             GUILayout.EndArea();
+
+            DrawQaMobileActionOverlay();
         }
 
         private void DrawPlayerStatus()
@@ -183,31 +185,45 @@ namespace JaewoonGames.DaechungRpg
             GUILayout.Label($"ENEMY {_enemy.displayName} · LV {_enemy.level} · HP {_enemyHp}/{_enemy.maxHp} · ATK {_enemy.attack}");
             GUILayout.BeginHorizontal();
 
-            var attackPressed = GUILayout.Button("ATTACK");
-            var attackRect = GUILayoutUtility.GetLastRect();
-#if UNITY_WEBGL && !UNITY_EDITOR
-            if (Application.absoluteURL.Contains("qa=1") && Event.current.type == EventType.Repaint && Time.unscaledTime >= _qaMobileTargetAt)
+            if (GUILayout.Button("ATTACK"))
             {
-                _qaMobileTargetAt = Time.unscaledTime + 0.5f;
-                var attackCenter = GUIUtility.GUIToScreenPoint(attackRect.center);
-                var normalizedX = Screen.width > 0 ? attackCenter.x / Screen.width : 0f;
-                var normalizedY = Screen.height > 0 ? attackCenter.y / Screen.height : 0f;
-                Debug.Log($"JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action x={normalizedX:F4} y={normalizedY:F4}");
-            }
-#endif
-            if (attackPressed)
-            {
-#if UNITY_WEBGL && !UNITY_EDITOR
-                if (Application.absoluteURL.Contains("qa=1"))
-                {
-                    Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=daechung-rpg role=action status=PASS");
-                }
-#endif
                 AttackEnemy();
             }
 
             if (GUILayout.Button("RETREAT")) MoveTo("town");
             GUILayout.EndHorizontal();
+        }
+
+        private void DrawQaMobileActionOverlay()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (_enemy == null || !Application.absoluteURL.Contains("qa=1")) return;
+
+            var margin = Mathf.Max(12f, Screen.width * 0.04f);
+            var buttonWidth = Mathf.Clamp(Screen.width * 0.34f, 120f, 180f);
+            var buttonHeight = Mathf.Clamp(Screen.height * 0.08f, 56f, 84f);
+            var actionRect = new Rect(
+                Screen.width - buttonWidth - margin,
+                Screen.height - buttonHeight - margin,
+                buttonWidth,
+                buttonHeight
+            );
+
+            if (Event.current.type == EventType.Repaint && Time.unscaledTime >= _qaMobileTargetAt)
+            {
+                _qaMobileTargetAt = Time.unscaledTime + 0.5f;
+                var center = actionRect.center;
+                var normalizedX = Screen.width > 0 ? center.x / Screen.width : 0f;
+                var normalizedY = Screen.height > 0 ? center.y / Screen.height : 0f;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action x={normalizedX:F4} y={normalizedY:F4}");
+            }
+
+            if (GUI.Button(actionRect, "ATTACK · QA TOUCH"))
+            {
+                Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=daechung-rpg role=action status=PASS");
+                AttackEnemy();
+            }
+#endif
         }
 
         private void DrawTownControls()
