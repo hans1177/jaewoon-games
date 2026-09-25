@@ -57,6 +57,8 @@ jobs:
           import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const canonicalRobloxValidationMode=String(roadmap.roblox?.validationMode||'').trim();
+          if(canonicalRobloxValidationMode!=='HEADLESS_FAST_MVP')throw new Error('ROBLOX_CANONICAL_VALIDATION_MODE_INVALID:'+canonicalRobloxValidationMode);
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=256)break;
@@ -82,7 +84,6 @@ jobs:
           const f0Ready=(q.items||[]).filter(item=>{
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
-            if(item.robloxValidationMode!=='HEADLESS_FAST_MVP')return false;
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
             return item.robloxBuildOrPackagePassed===true
@@ -98,6 +99,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`f0_ready_count=${f0Ready.length}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_EXISTING_F0_READY_COUNT=${f0Ready.length}`);
+          console.log(`ROBLOX_CANONICAL_VALIDATION_MODE=${canonicalRobloxValidationMode}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_EXECUTION_WIP_MAX=EXTERNAL_PROVIDER_CAPACITY_ONLY');
           console.log('ROBLOX_PREFLIGHT_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL');
