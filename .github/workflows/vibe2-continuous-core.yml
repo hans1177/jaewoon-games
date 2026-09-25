@@ -443,6 +443,10 @@ jobs:
           fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
+          console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length)}`);
+          console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length))}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION=${batch.scheduler?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED'}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
 
