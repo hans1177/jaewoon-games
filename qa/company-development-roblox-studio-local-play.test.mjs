@@ -574,25 +574,26 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES/);
 });
 
-test('Studio MCP warms Studio before exact local Place attach and preserves the order on retries',()=>{
+test('Studio MCP opens the exact local Place as the single Studio before MCP and preserves exact-first retries',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
-  const warmStart=studioMcpBlock.indexOf("$warmStudioProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -PassThru");
-  const exactPlaceOpen=studioMcpBlock.indexOf("$placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru");
-  assert.ok(warmStart>0);
-  assert.ok(exactPlaceOpen>warmStart);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_GUI_READY=YES/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_ASSISTANT_READY=YES/);
-  assert.match(studioMcpBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
-  assert.match(studioMcpBlock,/Roblox Studio Assistant did not finish loading before exact Place attach/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_SETTING_ENABLED=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_SETTING_MUTATION=NO/);
-  assert.match(studioMcpBlock,/VIBE2_STUDIO_PROCESS_IDS=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_WARM_GUI_READY=YES/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_WARM_ASSISTANT_READY=YES/);
-  assert.match(studioMcpBlock,/Roblox Studio Assistant did not finish loading before MCP retry Place attach/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PLACE_LAUNCH_PROCESS_ID=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_OWNED_PROCESS_IDS=/);
+  const bindBlock=studioMcpBlock.slice(
+    studioMcpBlock.indexOf('      - name: Bind and open exact local Place artifact'),
+    studioMcpBlock.indexOf('      - name: Run actual local play through official Studio MCP')
+  );
+  assert.match(bindBlock,/\$placeLaunchProcess = Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @\(\$places\[0\]\.FullName\) -PassThru/);
+  assert.doesNotMatch(bindBlock,/\$warmStudioProcess\s*=\s*Start-Process/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_READY=YES/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_SINGLE_EXACT_STUDIO=YES/);
+  assert.match(bindBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
+  assert.match(bindBlock,/Roblox Studio Assistant did not finish loading in exact local Place/);
+  assert.match(bindBlock,/VIBE2_STUDIO_PROCESS_IDS=/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=/);
+
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_PLACE_PROCESS_ID=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SINGLE_EXACT_STUDIO=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_STALE_OFFICIAL_PROCESS_REAPED=/);
+  assert.match(studioMcpBlock,/StartsWith\(\$officialVersionsRoot,\[System\.StringComparison\]::OrdinalIgnoreCase\)/);
   assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
