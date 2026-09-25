@@ -1254,7 +1254,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
   }
   return null;
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false,robloxFullGraphicsPackageActive=false}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false,robloxGraphicsInitial=false,robloxFullGraphicsPackageActive=false}={}){
   const rawPrompt=String(prompt??'');
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -1263,7 +1263,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     : [];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   const exactPath=exactResponsible.length===1?exactResponsible[0]:'';
-  const reason=studioInitial?'INITIAL_STUDIO_PACKAGE':(clean(error?.message||error).slice(0,240)||'malformed candidate');
+  const reason=studioInitial?'INITIAL_STUDIO_PACKAGE':robloxGraphicsInitial?'INITIAL_ROBLOX_GRAPHICS_PACKAGE':(clean(error?.message||error).slice(0,240)||'malformed candidate');
   const zeroChange=/실제 source 변경/i.test(reason);
   const noChangeEdit=/변경 없는 edit/i.test(reason);
   const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
@@ -1274,8 +1274,8 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const robloxVisualMotionFailure=/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(reason);
   const retryFailureClass=generationFailureClass(reason);
   const robloxFullGraphicsPackageRecovery=robloxPresentationTask
-    &&(robloxFullGraphicsPackageActive===true||ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(retryFailureClass))
-    &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(retryFailureClass);
+    &&(robloxGraphicsInitial===true||robloxFullGraphicsPackageActive===true||ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(retryFailureClass))
+    &&(robloxGraphicsInitial===true||ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(retryFailureClass));
   const studioQualityDelta=studioInitial||/STUDIO_QUALITY_DELTA_REQUIRED/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
@@ -1363,9 +1363,9 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           .replace(/\s+===$/,'')
           .trim();
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
-          if(attempt>=3||timeoutFailure||studioInitial){
+          if(attempt>=3||timeoutFailure||studioInitial||robloxGraphicsInitial){
             const body=section.split('\n').slice(1).join('\n');
-            const excerpt=boundedLargeExcerpt(body,studioInitial?2500:5000);
+            const excerpt=boundedLargeExcerpt(body,studioInitial?2500:(robloxGraphicsInitial?3000:5000));
             section=header+'\n'+excerpt.content;
           }
           editable.push(section);
@@ -1421,8 +1421,8 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---. Finish the game before the limit rather than adding optional polish.'
       ].join('\n')
     : [
-        studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
-        `Previous failure: ${safeReason}`,
+        robloxGraphicsInitial?'ROBLOX FULL GRAPHICS INITIAL PACKAGE: generate the connected graphics implementation package directly from the first candidate.':studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        robloxGraphicsInitial?'':`Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
         previousRobloxGraphicsCandidate?'Use the previous valid partial candidate below as a preservation reference. Return a complete candidate against the ORIGINAL source and exact anchors; never return edits whose find text exists only inside the previous candidate.':'',
@@ -1514,9 +1514,14 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let fullWebProgressCreditCount=0;
   let robloxFullGraphicsPackageActive=false;
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
-  const initialStudioPrompt=studioExpansion&&!allowFullRewrite
+  const robloxAssetAdaptationPrompt=!allowFullRewrite
+    &&/Engine:\s*roblox/i.test(String(prompt??''))
+    &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
+  const initialCandidatePrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
-    :prompt;
+    :robloxAssetAdaptationPrompt
+      ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,robloxFullGraphicsPackageActive:true})
+      :prompt;
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   const baseMaxAttempts=studioExpansion&&!allowFullRewrite
     ?Math.min(3,configuredBaseMaxAttempts)
@@ -1541,7 +1546,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
     }
     const retry=attempt>1;
-    const robloxAssetAdaptationTask=!allowFullRewrite&&/Engine:\s*roblox/i.test(String(prompt??''))&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
+    const robloxAssetAdaptationTask=robloxAssetAdaptationPrompt;
     const priorFailureClass=generationFailureClass(lastError);
     const robloxFullGraphicsLateMalformedTrigger=robloxAssetAdaptationTask
       &&priorFailureClass==='MALFORMED_OUTPUT'
@@ -1573,7 +1578,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery}):initialStudioPrompt));
+      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery}):initialCandidatePrompt));
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
