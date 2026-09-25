@@ -75,11 +75,11 @@ function canReuseCompletedDesign(status){
 console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);console.log(`PRODUCTION_CLASS=${productionClass}`);console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
 await run('tools/artbook-fact-pack.mjs');
 if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
-  console.log('DEVELOPMENT_EXECUTION_MODE=DIRECT_NATIVE_DUAL_PLATFORM');
+  console.log('DEVELOPMENT_EXECUTION_MODE=UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM');
   console.log('DEVELOPMENT_RUNTIME_DELEGATED=YES');
   console.log('DEVELOPMENT_RUNTIME_OWNER=.github/workflows/company-development-confirmed-runtime.yml');
   console.log('DEVELOPMENT_QUEUE_AUTHORITY=company-runtime:development-queue.json');
-  console.log('DEVELOPMENT_LEGACY_WEB_FIRST_VALIDATION=DISABLED');
+  console.log('UNITY_WEB_UPPER_PLATFORM_FLOOR=REQUIRED_FOR_NEW_NATIVE_START');
   console.log('DEVELOPMENT_ARTBOOK_PIPELINE_SOURCE_MUTATION=NO');
 }else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
   await run('tools/company-release-production-cycle.mjs');await run('tools/company-release-stale-artifact-guard.mjs');
