@@ -435999,13 +435999,1037 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_a6099f2255abda2fc409ed3f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "amusement-tycoon",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 타이쿤/시뮬레이션은 돈·만족도·건설·업그레이드와 손님/대기열/작업자/시설 작동을 실제 월드 애니메이션으로 보"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 296295,
+        "candidateMs": 263206,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_cd583998bbcc89cfd1afb0ce",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 디펜스는 웨이브·재화·기지 HP·설치 정보를 우선하고 타워별 발사/투사체와 적 역할별 이동·피격을 구분한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|OTHER|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 381173,
+        "candidateMs": 343152,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_718a347e37a5db6142d924aa",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "unity",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. RPG/어드벤처 계열은 HP·마나/자원·경험치·퀵슬롯·퀘스트 등 실제 설계에 존재하는 핵심 정보를 우선하고 "
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 54013,
+        "failureFingerprint": "unity|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 4,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/daechung-rpg-unity-presentation-asset-adaptation-v1-primary-36085353495-1",
+        "candidateSha": "a723df1f517dd730f51aad6a425fa304b1923de4"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 538863,
+        "candidateMs": 500299,
+        "qaMs": 94
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_0dc61bbd4c6f432a9e321ee5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "monster-adventure",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. RPG/어드벤처 계열은 HP·마나/자원·경험치·퀵슬롯·퀘스트 등 실제 설계에 존재하는 핵심 정보를 우선하고 "
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 301580,
+        "candidateMs": 267031,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_c30e419ce33d3f7724151744",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|OTHER|PRESENTATION_DELTA|ROBLOX_VISUAL_DOMAINS",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 290535,
+        "candidateMs": 249446,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_263ed933a20b41b2ff7939a8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. RPG/어드벤처 계열은 HP·마나/자원·경험치·퀵슬롯·퀘스트 등 실제 설계에 존재하는 핵심 정보를 우선하고 "
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 290996,
+        "candidateMs": 244530,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_f925accc8ef56765b274cb07",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 퍼즐은 규칙·목표·조작 결과를 즉시 읽히게 하고 정답/오답/연쇄/완료 애니메이션을 구분한다.\n[COMMERC"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "INVALID_PATH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 301660,
+        "candidateMs": 253504,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:INVALID_PATH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_435912ef4749006e1eba26d6",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 디펜스는 웨이브·재화·기지 HP·설치 정보를 우선하고 타워별 발사/투사체와 적 역할별 이동·피격을 구분한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|INVALID_PATH|OTHER|PRESENTATION_DELTA|ROBLOX_VISUAL_DOMAINS",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 294080,
+        "candidateMs": 244403,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_069066f6a150ba9efe365035",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. RPG/어드벤처 계열은 HP·마나/자원·경험치·퀵슬롯·퀘스트 등 실제 설계에 존재하는 핵심 정보를 우선하고 "
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 295876,
+        "candidateMs": 247251,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_0a1d38d4ea5e0c77d81940c1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "survival-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "survival",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": null,
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|OTHER|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "BLOCKED",
+        "blocker": "work-lock-conflict:transient-state-update-race",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 36045,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_1ac6212e05838e4ceebf136d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "village-dungeons",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. RPG/어드벤처 계열은 HP·마나/자원·경험치·퀵슬롯·퀘스트 등 실제 설계에 존재하는 핵심 정보를 우선하고 "
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 296972,
+        "candidateMs": 253659,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:36085353495",
+        "reservation-id:36085353495:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 12,
+    "added": 11,
     "refreshed": 0,
-    "total": 3863,
+    "total": 3874,
     "verified": 555,
-    "failures": 2426
+    "failures": 2436
   }
 }
