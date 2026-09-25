@@ -116,7 +116,8 @@ export function feedPostReleaseFocus({roadmapFile='company-learning/platform-rel
     if(task)break;
   }
   if(!task){
-    const waitingActualPlay=candidates.some(item=>!actualVibePlayEvidenceMatches(item));
+    const requireActualPlay=roadmap?.developmentLifecycleMachine?.postReleaseFocusedDevelopment?.actualVibeInternalPlayRequiredEachBuildupCycle===true;
+    const waitingActualPlay=requireActualPlay&&candidates.some(item=>!actualVibePlayEvidenceMatches(item));
     return{added:false,reason:waitingActualPlay?'AWAITING_ACTUAL_VIBE_INTERNAL_PLAY':candidates.length?'NO_NEW_SOURCE_CYCLE':historical.length?'NO_NEW_HISTORICAL_SOURCE_CYCLE':'NO_RELEASED_OR_HISTORICAL_ROBLOX',queue};
   }
   const next={...queue,tasks:[...(queue.tasks||[]),task]};writeJson(queueFile,next);return{added:true,reason:'HISTORICAL_ROBLOX_MAINTENANCE_QUEUED',task,tasks:[task],queue:next};
