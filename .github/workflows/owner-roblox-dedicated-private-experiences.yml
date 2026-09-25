@@ -44,11 +44,11 @@ jobs:
       matrix:
         include:
           - gameId: cozy-island
-            gameName: 포근섬
+            gameName: '포근섬: 작은 왕국 키우기'
           - gameId: daechung-rpg
-            gameName: Whatever RPG
+            gameName: '5포탈 RPG: 던전 파티'
           - gameId: horror-escape-room
-            gameName: 심야 술래잡기
+            gameName: '심야 감염전 [4대4]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -93,13 +93,20 @@ jobs:
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
           if(!item)throw new Error('queue item missing: '+process.env.GAME_ID);
-          const t=item.robloxPublicationTarget||{};
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
-          const dedicated=t.dedicated===true&&t.source==='owner-dedicated-github-bootstrap'&&valid(t.universeId)&&valid(t.placeId);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+(dedicated?t.universeId:'')+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+(dedicated?t.placeId:'')+'\n');
+          const t=item.robloxPublicationTarget||{};
+          const registryPath='../runtime/roblox-dedicated-targets.json';
+          const registry=fs.existsSync(registryPath)?JSON.parse(fs.readFileSync(registryPath,'utf8')):{targets:[]};
+          const registered=(registry.targets||[]).find(row=>row.gameId===process.env.GAME_ID)||{};
+          const currentDedicated=t.dedicated===true&&t.shared!==true&&valid(t.universeId)&&valid(t.placeId);
+          const registeredDedicated=registered.dedicated===true&&registered.shared!==true&&valid(registered.universeId)&&valid(registered.placeId);
+          const chosen=currentDedicated?t:(registeredDedicated?registered:{});
+          const dedicated=valid(chosen.universeId)&&valid(chosen.placeId);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+(dedicated?chosen.universeId:'')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+(dedicated?chosen.placeId:'')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'reuse='+(dedicated?'true':'false')+'\n');
           console.log('ROBLOX_DEDICATED_TARGET_REUSE='+(dedicated?'YES':'NO'));
+          if(registeredDedicated&&!currentDedicated)console.log('ROBLOX_DEDICATED_TARGET_RECOVERED_FROM_REGISTRY=YES');
           NODE
 
       - name: Build exact current main Roblox place
@@ -219,6 +226,11 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),path=require('path');
           const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const registryPath='roblox-dedicated-targets.json';
+          const registry=fs.existsSync(registryPath)
+            ?JSON.parse(fs.readFileSync(registryPath,'utf8'))
+            :{version:1,authority:'company-runtime',purpose:'durable-game-specific-roblox-dedicated-target-identity',targets:[]};
+          registry.targets ||= [];
           const root='/tmp/roblox-dedicated-results';
           const names=fs.existsSync(root)?fs.readdirSync(root).filter(x=>x.endsWith('.result.json')).sort():[];
           if(names.length===0)throw new Error('no dedicated Roblox results');
@@ -249,6 +261,23 @@ jobs:
               };
               item.robloxSharedTargetCurrent=false;
               item.robloxFastMvpSupersededBy=null;
+              const registryTarget={
+                gameId:r.gameId,
+                universeId:String(r.universeId),
+                placeId:String(r.placeId),
+                dedicated:true,
+                shared:false,
+                private:r.private===true,
+                verified:r.private===true&&r.published===true,
+                source:'owner-dedicated-github-bootstrap',
+                bootstrapState:r.pass===true?'PUBLISHED_PRIVATE':String(r.stage||'FAILED'),
+                verifiedAt:r.pass===true?stamp:null,
+                lastVerifiedAt:r.pass===true?stamp:null,
+                workflowRunId:Number(process.env.GITHUB_RUN_ID)||null,
+              };
+              const registryIndex=registry.targets.findIndex(row=>row.gameId===r.gameId);
+              if(registryIndex>=0)registry.targets[registryIndex]={...registry.targets[registryIndex],...registryTarget};
+              else registry.targets.push(registryTarget);
             }
             item.robloxDedicatedExperience={
               version:1,
@@ -308,12 +337,15 @@ jobs:
             item.updatedAt=stamp;
           }
           q.updatedAt=stamp;
+          registry.updatedAt=stamp;
+          registry.targets.sort((a,b)=>String(a.gameId||'').localeCompare(String(b.gameId||'')));
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
           fs.writeFileSync('/tmp/roblox-dedicated-failures.json',JSON.stringify(failures,null,2)+'\n');
           NODE
           git config user.name 'jaewoon-roblox-dedicated'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
+          git add development-queue.json roblox-dedicated-targets.json
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: persist dedicated private Roblox experiences [skip ci]'
             for i in 1 2 3 4 5; do
