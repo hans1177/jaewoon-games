@@ -45,7 +45,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "시뮬레이션",
@@ -58,7 +58,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -140,7 +140,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "시뮬레이션",
@@ -153,7 +153,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -161,6 +161,180 @@
       },
       "catalogOrder": 1,
       "selectedPlatform": "ROBLOX"
+    },
+    {
+      "id": "daechung-rpg",
+      "name": "5포탈 RPG: 던전 파티",
+      "description": "마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG",
+      "genre": [
+        "RPG",
+        "탐험",
+        "전투"
+      ],
+      "image": "assets/fantasy-rpg-v2.webp",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": true,
+      "unityProjectPath": "unity-games/daechung-rpg",
+      "preferredPlatform": "unity-android",
+      "selectedPlatform": "UNITY",
+      "homepagePublicationApproved": false,
+      "publishTestBuildWhenReady": true,
+      "homepageWebPlayable": false,
+      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "RPG",
+          "탐험",
+          "전투"
+        ],
+        "genreLabel": "오비·플랫포머 · 클래식 오비",
+        "subgenre": "클래식 오비",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 2,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "daechung-rpg",
+          "name": "5포탈 RPG: 던전 파티",
+          "description": "마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG",
+          "genres": [
+            "RPG",
+            "탐험",
+            "전투"
+          ],
+          "image": "assets/fantasy-rpg-v2.webp",
+          "aliases": [
+            "대충 RPG"
+          ]
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": "unity-games/daechung-rpg"
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "/artbook-viewer.html?game=daechung-rpg",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "RPG",
+              "탐험",
+              "전투"
+            ],
+            "genreLabel": "오비·플랫포머 · 클래식 오비",
+            "subgenre": "클래식 오비",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 2,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "6fc123065edeeb0ea05065bfa5605a0e27fc64105e246013f9b5f23c95b40ba8",
+      "ownerWebEntryFile": "web-games/daechung-rpg/index.html",
+      "webDevelopmentResetRequired": true,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/daechung-rpg",
+        "UNITY": "unity-games/daechung-rpg"
+      },
+      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "nameEnglish": "Five Portal RPG: Dungeon Party",
+      "internationalTitle": "Five Portal RPG: Dungeon Party",
+      "aliases": [
+        "대충 RPG"
+      ]
     },
     {
       "id": "horror-escape-room",
@@ -178,13 +352,13 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-      "homepageStage": "주력 개발 · Roblox Headless FAST_MVP",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -202,7 +376,7 @@
       "multiplayerSupported": true,
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
-      "catalogOrder": 2,
+      "catalogOrder": 3,
       "updatedAt": "2026-09-22T19:15:00+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
@@ -222,7 +396,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "술래잡기",
@@ -231,16 +405,16 @@
         ],
         "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
         "subgenre": "",
-        "playMode": "COMPETITIVE",
-        "playModeLabel": "경쟁",
+        "playMode": "HYBRID",
+        "playModeLabel": "혼합",
         "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-09-22T19:15:00+09:00",
-        "status": "ACTIVE",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 2,
+        "catalogOrder": 3,
         "authority": "company-runtime",
         "identity": {
           "gameId": "horror-escape-room",
@@ -261,11 +435,11 @@
         },
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "OWNER_DIRECT_DEVELOPMENT",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
           "target": "ROBLOX_UNITY",
           "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
           "selectedPlatform": "ROBLOX",
-          "stage": "주력 개발 · Roblox Headless FAST_MVP"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
@@ -306,7 +480,7 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "주력 개발 · Roblox Headless FAST_MVP",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
           "runtime": {
             "authority": "company-runtime",
@@ -315,7 +489,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "술래잡기",
@@ -324,11 +498,11 @@
             ],
             "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
             "subgenre": "",
-            "playMode": "COMPETITIVE",
-            "playModeLabel": "경쟁",
-            "latestWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
-            "updatedAt": "2026-09-22T04:18:00+09:00",
-            "status": "ACTIVE",
+            "playMode": "HYBRID",
+            "playModeLabel": "혼합",
+            "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -353,13 +527,13 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-      "homepageStage": "Web 확장 구현",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -369,7 +543,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "타이쿤",
@@ -379,16 +553,16 @@
         ],
         "genreLabel": "타이쿤 · 3D · 경영 · 건설",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-        "updatedAt": "2026-09-21T13:43:07.155Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+        "updatedAt": "2026-09-25T13:56:37.556Z",
+        "status": "F0_SOURCE_PREFLIGHT_PASSED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 3,
+        "catalogOrder": 4,
         "authority": "company-runtime",
         "identity": {
           "gameId": "amusement-tycoon",
@@ -411,16 +585,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/amusement-tycoon/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -455,8 +629,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -464,7 +638,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "타이쿤",
@@ -474,16 +648,16 @@
             ],
             "genreLabel": "타이쿤 · 3D · 경영 · 건설",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-            "updatedAt": "2026-09-21T13:43:07.155Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+            "updatedAt": "2026-09-25T13:56:37.556Z",
+            "status": "F0_SOURCE_PREFLIGHT_PASSED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 3,
+      "catalogOrder": 4,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -511,7 +685,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -528,7 +702,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "웨이브",
@@ -537,16 +711,16 @@
         ],
         "genreLabel": "웨이브 · 전략 · 곤충",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:02.053Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:56:37.556Z",
+        "status": "F0_SOURCE_PREFLIGHT_PASSED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 4,
+        "catalogOrder": 5,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -568,16 +742,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/bug-defense/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -612,8 +786,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -621,7 +795,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "웨이브",
@@ -630,16 +804,16 @@
             ],
             "genreLabel": "웨이브 · 전략 · 곤충",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:02.053Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:56:37.556Z",
+            "status": "F0_SOURCE_PREFLIGHT_PASSED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 4,
+      "catalogOrder": 5,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -650,180 +824,6 @@
         "UNITY": "unity-games/bug-defense"
       },
       "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
-      "id": "daechung-rpg",
-      "name": "5포탈 RPG: 던전 파티",
-      "description": "마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG",
-      "genre": [
-        "RPG",
-        "탐험",
-        "전투"
-      ],
-      "image": "assets/fantasy-rpg-v2.webp",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": true,
-      "unityProjectPath": "unity-games/daechung-rpg",
-      "preferredPlatform": "unity-android",
-      "selectedPlatform": "UNITY",
-      "homepagePublicationApproved": false,
-      "publishTestBuildWhenReady": true,
-      "homepageWebPlayable": false,
-      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "RPG",
-          "탐험",
-          "전투"
-        ],
-        "genreLabel": "RPG · 탐험 · 전투",
-        "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-09-22T19:15:00+09:00",
-        "status": "PENDING_SELECTED_PLATFORM_BIND",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 5,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "daechung-rpg",
-          "name": "5포탈 RPG: 던전 파티",
-          "description": "마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG",
-          "genres": [
-            "RPG",
-            "탐험",
-            "전투"
-          ],
-          "image": "assets/fantasy-rpg-v2.webp",
-          "aliases": [
-            "대충 RPG"
-          ]
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/daechung-rpg/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": "unity-games/daechung-rpg"
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "/artbook-viewer.html?game=daechung-rpg",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "RPG",
-              "탐험",
-              "전투"
-            ],
-            "genreLabel": "RPG · 탐험 · 전투",
-            "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:51:41.579Z",
-            "status": "PENDING_SELECTED_PLATFORM_BIND",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 5,
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
-      "ownerWebSourceRevision": "6fc123065edeeb0ea05065bfa5605a0e27fc64105e246013f9b5f23c95b40ba8",
-      "ownerWebEntryFile": "web-games/daechung-rpg/index.html",
-      "webDevelopmentResetRequired": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/daechung-rpg",
-        "UNITY": "unity-games/daechung-rpg"
-      },
-      "updatedAt": "2026-09-22T19:15:00+09:00",
-      "nameEnglish": "Five Portal RPG: Dungeon Party",
-      "internationalTitle": "Five Portal RPG: Dungeon Party",
-      "aliases": [
-        "대충 RPG"
-      ]
     },
     {
       "id": "line-defense",
@@ -841,7 +841,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
@@ -857,7 +857,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "라인 디펜스",
@@ -866,11 +866,11 @@
         ],
         "genreLabel": "라인 디펜스 · 전략 · 자동전투",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
-        "updatedAt": "2026-09-21T13:43:17.799Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:56:37.556Z",
+        "status": "F0_SOURCE_PREFLIGHT_PASSED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -897,16 +897,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/line-defense/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -941,8 +941,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -950,7 +950,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "라인 디펜스",
@@ -959,11 +959,11 @@
             ],
             "genreLabel": "라인 디펜스 · 전략 · 자동전투",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
-            "updatedAt": "2026-09-21T13:43:17.799Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:56:37.556Z",
+            "status": "F0_SOURCE_PREFLIGHT_PASSED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -997,7 +997,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
@@ -1013,7 +1013,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "RPG",
@@ -1023,11 +1023,11 @@
         ],
         "genreLabel": "RPG · 3D · 전투 · 퀘스트",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "3D 마을, 5개 던전, 퀘스트, 상점, 레벨업, 보스, 상황별 BGM 구현",
-        "updatedAt": "2026-09-21T13:43:19.281Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T14:00:12.261Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1055,16 +1055,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/village-dungeons/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -1099,8 +1099,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "3D 마을, 5개 던전, 퀘스트, 상점, 레벨업, 보스, 상황별 BGM 구현",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -1108,7 +1108,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "RPG",
@@ -1118,11 +1118,11 @@
             ],
             "genreLabel": "RPG · 3D · 전투 · 퀘스트",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "3D 마을, 5개 던전, 퀘스트, 상점, 레벨업, 보스, 상황별 BGM 구현",
-            "updatedAt": "2026-09-21T13:43:19.281Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T14:00:12.261Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1155,7 +1155,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1172,7 +1172,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "힐링",
@@ -1184,8 +1184,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-09-22T19:15:00+09:00",
-        "status": "ACTIVE",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1211,7 +1211,7 @@
         },
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
           "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -1265,7 +1265,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "힐링",
@@ -1276,9 +1276,9 @@
             "subgenre": "",
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
-            "status": "ACTIVE",
+            "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1287,7 +1287,11 @@
       "selectedPlatform": "ROBLOX",
       "nameEnglish": "Cozy Island: Build a Tiny Kingdom",
       "internationalTitle": "Cozy Island: Build a Tiny Kingdom",
-      "updatedAt": "2026-09-22T19:15:00+09:00"
+      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ]
     },
     {
       "id": "fantasy-survival",
@@ -1308,7 +1312,7 @@
       "homepageDisplayMode": "WEB_PUBLISHED",
       "lifecycleState": "ACTIVE",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
@@ -1322,7 +1326,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "RPG",
@@ -1332,11 +1336,11 @@
         ],
         "genreLabel": "RPG · 생존 · 액션 · 보드",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-09-21T14:08:17.826Z",
-        "status": "WAITING_TARGET_PLATFORM_VALIDATION",
+        "playMode": "HYBRID",
+        "playModeLabel": "혼합",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
@@ -1365,16 +1369,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/fantasy-survival/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": ""
           },
           "unity": {
@@ -1409,8 +1413,8 @@
           "category": "development-confirmed",
           "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -1418,7 +1422,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "RPG",
@@ -1428,11 +1432,11 @@
             ],
             "genreLabel": "RPG · 생존 · 액션 · 보드",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-09-21T14:08:17.826Z",
-            "status": "WAITING_TARGET_PLATFORM_VALIDATION",
+            "playMode": "HYBRID",
+            "playModeLabel": "혼합",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1467,7 +1471,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1483,7 +1487,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "몬스터",
@@ -1492,11 +1496,11 @@
         ],
         "genreLabel": "몬스터 · 턴제 · 모험",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:08.797Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1523,14 +1527,14 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/monster-adventure/",
+            "path": "",
             "archive": false,
             "playable": false,
             "purpose": ""
@@ -1567,8 +1571,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -1576,7 +1580,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "몬스터",
@@ -1585,11 +1589,11 @@
             ],
             "genreLabel": "몬스터 · 턴제 · 모험",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:08.797Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1623,7 +1627,7 @@
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1640,7 +1644,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "액션",
@@ -1648,11 +1652,11 @@
         ],
         "genreLabel": "액션 · 생존 로그라이트",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:14.319Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1678,16 +1682,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/seed-action-survival-rogu-echoes-of-the-lost-star/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -1722,8 +1726,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -1731,7 +1735,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "액션",
@@ -1739,11 +1743,11 @@
             ],
             "genreLabel": "액션 · 생존 로그라이트",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:14.319Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1776,7 +1780,7 @@
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1793,7 +1797,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "캐주얼",
@@ -1801,11 +1805,11 @@
         ],
         "genreLabel": "캐주얼 · 모바일",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:18.863Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1831,16 +1835,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/seed-casual-realm-weaver/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -1875,8 +1879,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -1884,7 +1888,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "캐주얼",
@@ -1892,11 +1896,11 @@
             ],
             "genreLabel": "캐주얼 · 모바일",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:18.863Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1929,7 +1933,7 @@
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1946,7 +1950,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "방치형",
@@ -1954,11 +1958,11 @@
         ],
         "genreLabel": "방치형 · RPG",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:17.885Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1984,16 +1988,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/seed-idle-growth-rpg-crystal-bloom/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2028,8 +2032,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -2037,7 +2041,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "방치형",
@@ -2045,11 +2049,11 @@
             ],
             "genreLabel": "방치형 · RPG",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:17.885Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2082,7 +2086,7 @@
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2099,7 +2103,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "퍼즐",
@@ -2107,11 +2111,11 @@
         ],
         "genreLabel": "퍼즐 · 모바일",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:04.220Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -2137,16 +2141,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/seed-puzzle-chromatic-cascade/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2181,8 +2185,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -2190,7 +2194,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "퍼즐",
@@ -2198,11 +2202,11 @@
             ],
             "genreLabel": "퍼즐 · 모바일",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:04.220Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2235,7 +2239,7 @@
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2252,7 +2256,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "디펜스",
@@ -2260,11 +2264,11 @@
         ],
         "genreLabel": "디펜스 · 전략",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:07.906Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -2290,16 +2294,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/seed-single-defense-strat-celestial-bastion/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2334,8 +2338,8 @@
           "category": "development-confirmed",
           "displayMode": "WEB_PUBLISHED",
           "artbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -2343,7 +2347,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "디펜스",
@@ -2351,11 +2355,11 @@
             ],
             "genreLabel": "디펜스 · 전략",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:07.906Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2394,7 +2398,7 @@
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2411,7 +2415,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "스토리",
@@ -2419,11 +2423,11 @@
         ],
         "genreLabel": "스토리 · RPG",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:18.317Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -2449,16 +2453,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/seed-story-complete-rpg-chronicles-of-eldoria/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2493,8 +2497,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -2502,7 +2506,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "스토리",
@@ -2510,11 +2514,11 @@
             ],
             "genreLabel": "스토리 · RPG",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:18.317Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2546,7 +2550,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2563,7 +2567,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "생존",
@@ -2571,11 +2575,11 @@
         ],
         "genreLabel": "생존 · 채집",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:23.638Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-25T13:52:09.023Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -2601,16 +2605,16 @@
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
           "web": {
-            "path": "/web-games/survival/",
+            "path": "",
             "archive": true,
-            "playable": true,
+            "playable": false,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2645,8 +2649,8 @@
           "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
           "runtime": {
             "authority": "company-runtime",
             "platform": "UNITY",
@@ -2654,7 +2658,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "생존",
@@ -2662,11 +2666,11 @@
             ],
             "genreLabel": "생존 · 채집",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:23.638Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-25T13:52:09.023Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2714,7 +2718,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "디펜스",
@@ -2725,7 +2729,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -2805,7 +2809,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "디펜스",
@@ -2816,7 +2820,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -2868,7 +2872,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "생존",
@@ -2880,7 +2884,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -2961,7 +2965,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "생존",
@@ -2973,7 +2977,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3013,7 +3017,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "전략",
@@ -3024,7 +3028,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3104,7 +3108,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "전략",
@@ -3115,7 +3119,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3165,7 +3169,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "수집",
@@ -3176,7 +3180,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3256,7 +3260,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "수집",
@@ -3267,7 +3271,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3318,7 +3322,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "수집",
@@ -3329,7 +3333,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3409,7 +3413,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "수집",
@@ -3420,7 +3424,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3462,7 +3466,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "생활",
@@ -3474,7 +3478,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3555,7 +3559,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "생활",
@@ -3567,7 +3571,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3617,7 +3621,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "생존",
@@ -3628,7 +3632,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3708,7 +3712,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "생존",
@@ -3719,7 +3723,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3769,7 +3773,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "전략",
@@ -3780,7 +3784,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
+        "updatedAt": "2026-09-25",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3860,7 +3864,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "전략",
@@ -3871,7 +3875,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
+            "updatedAt": "2026-09-25",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3922,7 +3926,7 @@
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
         "validationSchemaVersion": null,
         "genre": [
           "선택형",
@@ -3935,7 +3939,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-        "updatedAt": "2026-09-20T21:19:32.233Z",
+        "updatedAt": "2026-09-25T02:42:10.840Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -4017,7 +4021,7 @@
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
             "validationSchemaVersion": null,
             "genre": [
               "선택형",
@@ -4030,7 +4034,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-            "updatedAt": "2026-09-20T21:19:32.233Z",
+            "updatedAt": "2026-09-25T02:42:10.840Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -4044,8 +4048,7 @@
   "runtimeInfoAuthority": "company-runtime",
   "runtimeSupportedPlatforms": [
     "ROBLOX",
-    "UNITY",
-    "FORTNITE_UEFN"
+    "UNITY"
   ],
   "runtimeCounts": {
     "canonicalGames": 26,
