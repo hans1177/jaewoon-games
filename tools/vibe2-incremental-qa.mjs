@@ -467,7 +467,7 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         require('GAME_VISUAL_IDENTITY_DOMAINS',Object.values(requiredVisualDomains).every(Boolean));
         require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
         const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(text);
-        const motionMutation=/(?:TweenService[\\s\\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\\s*=|(?:RenderStepped|Heartbeat)[\\s\\S]{0,1200}\\.(?:CFrame|Transform|Position|Orientation)\\s*=|(?:Motor6D|Bone)[\\s\\S]{0,800}\\.Transform\\s*=|\\.(?:CFrame|Transform|Position|Orientation)\\s*=\\s*(?:CFrame|Vector3|UDim2|[^\\n;]+[+*\\-]))/i.test(text);
+        const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(text);
         require('ROBLOX_NATIVE_MOTION_DRIVER',motionDriver);
         require('ROBLOX_NATIVE_TRANSFORM_MUTATION',motionMutation);
       }else{
