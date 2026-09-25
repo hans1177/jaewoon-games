@@ -1032,7 +1032,7 @@ export function generationFailureClass(error){
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
   if(/전체 교체 파일 크기 오류/i.test(message))return'FULL_REWRITE_SIZE';
-  if(/JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)/i.test(message))return'MALFORMED_OUTPUT';
+  if(/JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|FOCUSED_REPLACE_BLOCK_ANCHOR_TOO_NARROW/i.test(message))return'MALFORMED_OUTPUT';
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
@@ -1040,7 +1040,7 @@ function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH'
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|FOCUSED_REPLACE_BLOCK_ANCHOR_TOO_NARROW|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -1197,6 +1197,8 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'Return exactly one JSON object with exactly one key named "replace".',
       'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
+      'If the fixed find anchor is only a function/then/do block opener, do NOT restate or close the whole existing block in replace. Keep the edit local to the anchor line, or the worker will reject it and retry a wider anchor.',
+      'Never copy the unchanged source lines immediately following the find anchor into replace unless those lines are also part of find; doing so duplicates the existing block.',
       presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
       robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: the fixed anchor must be treated as presentation-owned source. Change native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI while preserving gameplay numbers and save/progression semantics.':'',
       robloxAssetAdaptationTask?'ROBLOX FULL GRAPHICS CONTRACT: replace MUST cover these minimum required core domains together: character/enemy visual form, weapon/equipment visual form, environment/terrain visual form, and material/color/style language. These core domains are mandatory, but there is no maximum visual-domain count; add UI, VFX, lighting, props, camera presentation, or other coherent visual domains when useful.':'',
@@ -1211,6 +1213,27 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
     ].filter(Boolean).join('\n')
   };
 }
+function focusedReplaceWouldDuplicateOpenBlock(spec={},replace=''){
+  const find=String(spec.find??''),next=String(replace??''),context=String(spec.context??'');
+  const findLines=find.replaceAll('\r\n','\n').split('\n').map(line=>line.trim()).filter(Boolean);
+  const replaceLines=next.replaceAll('\r\n','\n').split('\n').map(line=>line.trim()).filter(Boolean);
+  const anchor=findLines.length===1?findLines[0]:'';
+  const opensBlock=Boolean(anchor)&&(
+    /\bfunction\b/.test(anchor)
+    || /\bthen\s*$/.test(anchor)
+    || /\bdo\s*$/.test(anchor)
+    || /(?:=>|function\s*\([^)]*\))\s*\{?\s*$/.test(anchor)
+  );
+  if(opensBlock&&replaceLines.length>=4)return true;
+  const at=find&&context?context.indexOf(find):-1;
+  if(at>=0){
+    const after=context.slice(at+find.length);
+    const following=after.replaceAll('\r\n','\n').split('\n').map(line=>line.trim()).filter(line=>line.length>=4).slice(0,2);
+    if(following.length&&following.every(line=>next.includes(line)))return true;
+  }
+  return false;
+}
+
 export function normalizeFocusedReplaceOnly(raw,spec={}){
   const parsed=typeof raw==='string'?extractJson(raw):raw;
   if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('focused replace 응답은 JSON 객체여야 함');
@@ -1218,6 +1241,7 @@ export function normalizeFocusedReplaceOnly(raw,spec={}){
   if(!replace.trim())throw new Error('focused replace 비어 있음');
   if(/COMPLETE_REPLACEMENT_SOURCE_SNIPPET|MINIMAL_REAL_REPLACEMENT|REPLACEMENT_SOURCE_SNIPPET/i.test(replace))throw new Error('focused replace placeholder 금지: '+clean(spec.path));
   if(replace===String(spec.find??''))throw new Error('변경 없는 edit: '+clean(spec.path));
+  if(focusedReplaceWouldDuplicateOpenBlock(spec,replace))throw new Error('FOCUSED_REPLACE_BLOCK_ANCHOR_TOO_NARROW: '+clean(spec.path));
   return{
     summary:'Vibe2 focused replace-only recovery',
     expectedEffect:'bounded exact-anchor source repair',
