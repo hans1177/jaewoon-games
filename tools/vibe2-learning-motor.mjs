@@ -2346,10 +2346,11 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     studioExperienceChanged:studioExperience.changed===true,
     studioExperiencePersisted:studioExperience.added||0,
     studioExperiencePersistedPositive:studioExperience.positive||0,
+    studioExperiencePersistedNegative:studioExperience.negative||0,
     specializedExperiencePersisted:specializedExperience.added||0,
     specializedExperiencePersistedPositive:specializedExperience.positive||0,
     specializedExperiencePersistedNegative:specializedExperience.negative||0,
-    handoffs:buildWebRobloxHandoffs(companyQueueInput,specializedExperience.memory,practice.queue,roadmapInput),
+    handoffs:buildWebRobloxHandoffs(companyQueueInput,studioExperience.memory,practice.queue,roadmapInput),
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
     idlePracticeTaskAdded:practice.added,
@@ -2381,6 +2382,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED=${result.specializedExperiencePersisted||0}`);
   console.log(`VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=${result.studioExperiencePersisted||0}`);
   console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_OUTCOMES_ADDED=${result.addedRobloxStudioVerifiedOutcomes||0}`);
+  console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_FAILURES_PERSISTED=${result.studioExperiencePersistedNegative||0}`);
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
