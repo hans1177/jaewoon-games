@@ -200,6 +200,11 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueStrictImplementationHardFailures:(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,6),
       queueWebValidationLastAttemptAt:clean(item?.webValidationLastAttemptAt),
       queueWebFinalContentDepthLastAttemptAt:clean(item?.webFinalContentDepthLastAttemptAt),
+      queueUnityWebDevelopmentFloorState:clean(item?.unityWebDevelopmentFloorState).toUpperCase(),
+      queueUnityWebFailureStage:clean(item?.unityWebFailureStage),
+      queueUnityWebFailureSignature:clean(item?.unityWebFailureSignature),
+      queueUnityWebFailureRepairable:item?.unityWebFailureRepairable===true,
+      queueUnityWebDevelopmentFloorEvidence:item?.unityWebDevelopmentFloorEvidence&&typeof item.unityWebDevelopmentFloorEvidence==='object'?item.unityWebDevelopmentFloorEvidence:null,
       queueUnityWebReadinessPath:readiness?readinessPath:null,
       queueUnityWebReadinessPass:readiness?.pass===true,
       queueUnityWebReadinessState:clean(readiness?.state).toUpperCase(),
@@ -940,9 +945,11 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
 
   const bootstrapGraphicsBlocked=clean(project.queueUnityWebFloorPresentationState).toUpperCase()==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'
     ||(floorSource&&floorSource.upperPlatformReady===false);
+  const runtimeFloorRepair=clean(project.queueUnityWebDevelopmentFloorState).toUpperCase()==='REPAIR_REQUIRED'
+    &&project.queueUnityWebFailureRepairable===true;
   const readinessRepair=clean(project.queueUnityWebReadinessState).toUpperCase()==='REPAIR_REQUIRED'
     ||failedDomains.length>0;
-  const sourceRepairRequired=bootstrapGraphicsBlocked||readinessRepair||!buildWebReady||!runtimeMarkersReady;
+  const sourceRepairRequired=bootstrapGraphicsBlocked||readinessRepair||runtimeFloorRepair||!buildWebReady||!runtimeMarkersReady;
   // When source contracts are ready but no runtime evidence exists yet, let the existing WebGL
   // build/actual-play/QA workflow run first and produce causal evidence before editing source.
   if(!sourceRepairRequired)return null;
@@ -951,6 +958,7 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
   const reasons=[
     bootstrapGraphicsBlocked?'GRAPHICS:BOOTSTRAP_PLACEHOLDER_PRESENTATION':'',
     ...failedDomains.map(domain=>`READINESS_DOMAIN:${domain}`),
+    runtimeFloorRepair?`RUNTIME_FAILURE:${clean(project.queueUnityWebFailureStage)||'UNKNOWN'}:${clean(project.queueUnityWebFailureSignature)||'UNITY_WEB_FLOOR_FAILURE'}`:'',
     !buildWebReady?'WEBGL_BUILD:BUILD_WEB_METHOD_MISSING':'',
     !runtimeMarkersReady?'ACTUAL_PLAY:UNITY_WEB_RUNTIME_EVIDENCE_CONTRACT_MISSING':'',
     clean(project.queueUnityWebReadinessFailureAction)?`FAILURE_ACTION:${clean(project.queueUnityWebReadinessFailureAction)}`:''
@@ -982,6 +990,7 @@ unity-web-floor-source.json이 있으면 presentationState/upperPlatformReady는
     'unity-web-repair-required',
     'upper-platform-readiness-gate:UPPER_PLATFORM_DEVELOPMENT_READY',
     ...failedDomains.map(domain=>`unity-web-failed-domain:${domain}`),
+    runtimeFloorRepair?`unity-web-runtime-failure:${clean(project.queueUnityWebFailureSignature)||'UNKNOWN'}`:'',
     bootstrapGraphicsBlocked?'unity-web-bootstrap-graphics-build-up:required':'',
     'canonical-source:unity-games',
     'web-build-output:web-games',
