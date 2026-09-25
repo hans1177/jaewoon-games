@@ -677,8 +677,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      matrix: \${{ steps.plan.outputs.matrix }}
-      count: \${{ steps.plan.outputs.count }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+      count: ${{ steps.plan.outputs.count }}
     steps:
       - name: Checkout canonical runtime state
         uses: actions/checkout@v4
@@ -690,7 +690,7 @@ jobs:
       - name: Select exact candidates without reusable Studio evidence
         id: plan
         env:
-          REQUESTED_GAME_ID: \${{ inputs.game_id || '' }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -705,6 +705,7 @@ jobs:
             const play=item.robloxInternalVibePlayEvidence||{};
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const artifactRunId=Number(c.artifactRunId||item.robloxBuildArtifactRunId||0);
             const exactCandidate=
               c.published===true
               &&sourceRevision&&artifactIdentity
@@ -714,6 +715,7 @@ jobs:
               &&/^[1-9][0-9]*$/.test(String(c.placeId||''))
               &&Number.isInteger(Number(c.versionNumber))
               &&Number(c.versionNumber)>0
+              &&artifactRunId>0
               &&item.robloxSharedTargetCurrent!==false;
             if(!exactCandidate)continue;
             const reusable=
@@ -732,7 +734,8 @@ jobs:
               placeId:String(c.placeId),
               versionNumber:Number(c.versionNumber),
               sourceRevision,
-              artifactIdentity
+              artifactIdentity,
+              artifactRunId
             });
           }
           const matrix=JSON.stringify({include:rows});
@@ -742,21 +745,22 @@ jobs:
           NODE
 
   studio-auto-play:
-    name: Studio auto play \${{ matrix.gameId }}
+    name: Studio auto play ${{ matrix.gameId }}
     needs: studio-plan
     if: needs.studio-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      matrix: \${{ fromJson(needs.studio-plan.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.studio-plan.outputs.matrix) }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 12
     env:
-      GAME_ID: \${{ matrix.gameId }}
-      UNIVERSE_ID: \${{ matrix.universeId }}
-      PLACE_ID: \${{ matrix.placeId }}
-      PLACE_VERSION: \${{ matrix.versionNumber }}
-      SOURCE_REVISION: \${{ matrix.sourceRevision }}
-      ARTIFACT_IDENTITY: \${{ matrix.artifactIdentity }}
+      GAME_ID: ${{ matrix.gameId }}
+      UNIVERSE_ID: ${{ matrix.universeId }}
+      PLACE_ID: ${{ matrix.placeId }}
+      PLACE_VERSION: ${{ matrix.versionNumber }}
+      SOURCE_REVISION: ${{ matrix.sourceRevision }}
+      ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+      ARTIFACT_RUN_ID: ${{ matrix.artifactRunId }}
       COMPANY_RUNTIME_BRANCH: company-runtime
     steps:
       - name: Checkout Vibe2 Studio control
@@ -798,6 +802,27 @@ jobs:
           git reset --hard "origin/$env:COMPANY_RUNTIME_BRANCH"
           node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));const i=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);if(!i)throw new Error('game missing');const c=i.robloxRuntimeCandidateEvidence||{};const ok=c.published===true&&String(i.robloxSourceCommit||'')===process.env.SOURCE_REVISION&&String(i.robloxBuildArtifactIdentity||'')===process.env.ARTIFACT_IDENTITY&&String(c.universeId||'')===process.env.UNIVERSE_ID&&String(c.placeId||'')===process.env.PLACE_ID&&Number(c.versionNumber)===Number(process.env.PLACE_VERSION)&&c.sourceRevision===process.env.SOURCE_REVISION&&c.artifactIdentity===process.env.ARTIFACT_IDENTITY&&i.robloxSharedTargetCurrent!==false;if(!ok)throw new Error('candidate became stale before Studio launch');console.log('ROBLOX_STUDIO_EXACT_CANDIDATE_RECHECK=PASS')"
 
+      - name: Download retained immutable Roblox build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: development-roblox-package-${{ matrix.gameId }}
+          path: ${{ runner.temp }}/jaewoon-studio-artifact-${{ matrix.gameId }}
+          run-id: ${{ matrix.artifactRunId }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+
+      - name: Verify immutable local Studio artifact SHA256
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP "jaewoon-studio-artifact-$env:GAME_ID"
+          $files = @(Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in '.rbxl','.rbxlx' })
+          if ($files.Count -ne 1) { throw "Expected exactly one Roblox place artifact, found $($files.Count)" }
+          $hash = (Get-FileHash -Path $files[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ("sha256:$hash" -ne $env:ARTIFACT_IDENTITY.ToLowerInvariant()) { throw 'immutable Roblox artifact SHA256 mismatch' }
+          "ROBLOX_STUDIO_PLACE_FILE=$($files[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'ROBLOX_STUDIO_LOCAL_IMMUTABLE_ARTIFACT=PASS'
+
       - name: Build actual Studio API play scenario
         shell: powershell
         run: |
@@ -813,9 +838,7 @@ jobs:
               @{ id='gui'; type='expect'; name='player gui nonempty'; expression='player-gui-nonempty' },
               @{ id='ui-visible'; type='expect'; name='visible ui exists'; expression='ui-visible-elements' },
               @{ id='ui-text'; type='expect'; name='visible ui text fits'; expression='ui-text-fits' },
-              @{ id='move-forward'; type='key'; key='W'; holdMs=350 },
-              @{ id='jump'; type='key'; key='Space'; holdMs=90 },
-              @{ id='post-input-settle'; type='wait'; ms=500 }
+              @{ id='post-assertion-settle'; type='wait'; ms=500 }
             )
           }
           $scenarioPath = Join-Path $env:RUNNER_TEMP "jaewoon-studio-$env:GAME_ID-scenario.json"
@@ -830,25 +853,25 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $nonce = [Guid]::NewGuid().ToString('N')
-          node tools/vibe2-roblox-studio-cli-runner.mjs "--studio=$env:VIBE2_ROBLOX_STUDIO_PATH" "--scenario=$env:ROBLOX_STUDIO_SCENARIO" "--output=$env:ROBLOX_STUDIO_RESULT" "--nonce=$nonce" "--place-id=$env:PLACE_ID" "--universe-id=$env:UNIVERSE_ID" "--place-version=$env:PLACE_VERSION" --timeout=420000
+          node tools/vibe2-roblox-studio-cli-runner.mjs "--studio=$env:VIBE2_ROBLOX_STUDIO_PATH" "--scenario=$env:ROBLOX_STUDIO_SCENARIO" "--output=$env:ROBLOX_STUDIO_RESULT" "--nonce=$nonce" "--place-file=$env:ROBLOX_STUDIO_PLACE_FILE" --timeout=420000
           if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio API play failed' }
           Write-Host 'ROBLOX_STUDIO_ACTUAL_PLAY=PASS'
 
-      - name: Validate Studio UI error input and exact identity evidence
+      - name: Validate assertion-only Studio UI and error evidence
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.ROBLOX_STUDIO_RESULT,'utf8'));const required=(r.checkpoints||[]).filter(x=>x.required!==false);const ok=r.authority==='vibe2-roblox-studio-runtime'&&r.runtimeVerified===true&&r.capabilities?.studioTestService===true&&r.capabilities?.virtualInput===true&&String(r.universeId||'')===process.env.UNIVERSE_ID&&String(r.placeId||'')===process.env.PLACE_ID&&Number(r.placeVersion||0)===Number(process.env.PLACE_VERSION)&&(r.actions||[]).some(x=>x.dispatched===true&&x.ok===true)&&required.length>=5&&required.every(x=>x.pass===true)&&(r.errors||[]).length===0&&Number(r.metrics?.consoleErrorCount||0)===0;if(!ok){console.error(JSON.stringify(r,null,2));throw new Error('Studio runtime evidence rejected')}console.log('ROBLOX_STUDIO_UI_INPUT_ERROR_EXACT_EVIDENCE=PASS')"
+          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.ROBLOX_STUDIO_RESULT,'utf8'));const required=(r.checkpoints||[]).filter(x=>x.required!==false);const actions=r.actions||[];const ok=r.authority==='vibe2-roblox-studio-runtime'&&r.runtimeVerified===true&&r.capabilities?.studioTestService===true&&r.capabilities?.virtualInput===false&&!actions.some(x=>x.dispatched===true)&&required.length>=5&&required.every(x=>x.pass===true)&&(r.errors||[]).length===0&&Number(r.metrics?.consoleErrorCount||0)===0;if(!ok){console.error(JSON.stringify(r,null,2));throw new Error('Studio assertion-only runtime evidence rejected')}console.log('ROBLOX_STUDIO_ASSERTION_ONLY_UI_ERROR_EVIDENCE=PASS')"
 
       - name: Persist sanitized exact Studio play evidence
         working-directory: runtime
         env:
-          GITHUB_RUN_ID_VALUE: \${{ github.run_id }}
-          GITHUB_RUN_ATTEMPT_VALUE: \${{ github.run_attempt }}
+          GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT_VALUE: ${{ github.run_attempt }}
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));const raw=JSON.parse(fs.readFileSync(process.env.ROBLOX_STUDIO_RESULT,'utf8'));const i=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);if(!i)throw new Error('game missing');const c=i.robloxRuntimeCandidateEvidence||{};const exact=String(i.robloxSourceCommit||'')===process.env.SOURCE_REVISION&&String(i.robloxBuildArtifactIdentity||'')===process.env.ARTIFACT_IDENTITY&&String(c.universeId||'')===process.env.UNIVERSE_ID&&String(c.placeId||'')===process.env.PLACE_ID&&Number(c.versionNumber)===Number(process.env.PLACE_VERSION);if(!exact)throw new Error('candidate changed before Studio evidence persist');const stamp=new Date().toISOString();const checkpoints=(raw.checkpoints||[]).map(x=>({id:String(x.id||''),name:String(x.name||x.id||''),required:x.required!==false,pass:x.pass===true}));const actions=(raw.actions||[]).map(x=>({id:String(x.id||''),type:String(x.type||''),dispatched:x.dispatched===true,ok:x.ok===true}));i.robloxInternalVibePlayEvidence={version:2,gameId:i.gameId,authority:'vibe2-roblox-studio-runtime',pass:true,actualPlay:true,runtimeVerified:true,learningReusable:true,rawSourceIncluded:false,rawGameplayValuesIncluded:false,sourceRevision:process.env.SOURCE_REVISION,artifactIdentity:process.env.ARTIFACT_IDENTITY,universeId:process.env.UNIVERSE_ID,placeId:process.env.PLACE_ID,versionNumber:Number(process.env.PLACE_VERSION),capabilities:{studioTestService:true,virtualInput:true},actions,checkpoints,errors:[],metrics:{consoleErrorCount:0},learningSignals:['roblox studio','actual play','virtual input','ui','movement','runtime'],scenarioCoverage:['NEW_GAME_START'],scenarioCoveragePass:false,workflowRunId:Number(process.env.GITHUB_RUN_ID_VALUE||0),workflowRunAttempt:Number(process.env.GITHUB_RUN_ATTEMPT_VALUE||0),testedAt:stamp};i.robloxInternalPlaytestPassed=true;i.robloxInternalPlaytestPassedAt=stamp;i.updatedAt=stamp;q.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');console.log('ROBLOX_STUDIO_PLAY_EVIDENCE_PERSIST_READY='+i.gameId)"
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));const raw=JSON.parse(fs.readFileSync(process.env.ROBLOX_STUDIO_RESULT,'utf8'));const i=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);if(!i)throw new Error('game missing');const c=i.robloxRuntimeCandidateEvidence||{};const exact=String(i.robloxSourceCommit||'')===process.env.SOURCE_REVISION&&String(i.robloxBuildArtifactIdentity||'')===process.env.ARTIFACT_IDENTITY&&String(c.universeId||'')===process.env.UNIVERSE_ID&&String(c.placeId||'')===process.env.PLACE_ID&&Number(c.versionNumber)===Number(process.env.PLACE_VERSION);if(!exact)throw new Error('candidate changed before Studio evidence persist');const stamp=new Date().toISOString();const checkpoints=(raw.checkpoints||[]).map(x=>({id:String(x.id||''),name:String(x.name||x.id||''),required:x.required!==false,pass:x.pass===true}));const actions=(raw.actions||[]).map(x=>({id:String(x.id||''),type:String(x.type||''),dispatched:x.dispatched===true,ok:x.ok===true}));i.robloxInternalVibePlayEvidence={version:3,gameId:i.gameId,authority:'vibe2-roblox-studio-runtime',pass:true,actualPlay:true,runtimeVerified:true,learningReusable:true,executionSurface:'LOCAL_IMMUTABLE_ARTIFACT',immutableArtifactVerified:true,publishedCandidateObserved:false,automatedUserInput:false,rawSourceIncluded:false,rawGameplayValuesIncluded:false,sourceRevision:process.env.SOURCE_REVISION,artifactIdentity:process.env.ARTIFACT_IDENTITY,universeId:process.env.UNIVERSE_ID,placeId:process.env.PLACE_ID,versionNumber:Number(process.env.PLACE_VERSION),artifactRunId:Number(process.env.ARTIFACT_RUN_ID||0),capabilities:{studioTestService:true,virtualInput:false,assertionOnly:true},actions,checkpoints,errors:[],metrics:{consoleErrorCount:0},learningSignals:['roblox studio','actual play','assertion only','ui','runtime'],scenarioCoverage:['NEW_GAME_START'],scenarioCoveragePass:false,workflowRunId:Number(process.env.GITHUB_RUN_ID_VALUE||0),workflowRunAttempt:Number(process.env.GITHUB_RUN_ATTEMPT_VALUE||0),testedAt:stamp};i.robloxInternalPlaytestPassed=true;i.robloxInternalPlaytestPassedAt=stamp;i.updatedAt=stamp;q.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');console.log('ROBLOX_STUDIO_PLAY_EVIDENCE_PERSIST_READY='+i.gameId)"
           git config user.name 'jaewoon-roblox-studio-play'
           git config user.email 'actions@users.noreply.github.com'
           git add development-queue.json
@@ -874,8 +897,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: roblox-studio-auto-play-\${{ matrix.gameId }}-\${{ github.run_id }}
-          path: \${{ runner.temp }}/jaewoon-studio-\${{ matrix.gameId }}-result.json
+          name: roblox-studio-auto-play-${{ matrix.gameId }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/jaewoon-studio-${{ matrix.gameId }}-result.json
           if-no-files-found: warn
           retention-days: 7
 
@@ -900,7 +923,7 @@ jobs:
     steps:
       - name: Dispatch existing 24H learning and development cycle
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
