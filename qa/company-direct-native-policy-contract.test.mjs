@@ -39,6 +39,17 @@ test('canonical policy routes new Roblox and Unity work through the Unity Web re
   assert.deepEqual(direct.upperPlatformAdmissionMigration?.grandfatherGameIds,['cozy-island','daechung-rpg']);
   assert.equal(direct.upperPlatformAdmissionMigration?.allOtherDevelopmentConfirmedMustRunUnityWebFloor,true);
   assert.equal(direct.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,true);
+  assert.equal(direct.orchestrationConcurrency?.globalSerializationForbidden,true);
+  assert.equal(direct.orchestrationConcurrency?.distinctGamesParallel,true);
+  assert.equal(direct.orchestrationConcurrency?.unityWebAndNativeParallelWhenIndependent,true);
+  assert.equal(direct.orchestrationConcurrency?.longRunningNativeMayNotBlockUnityWebFloor,true);
+  assert.equal(direct.orchestrationConcurrency?.sameGameIndependentNonOverlappingPackagesParallel,true);
+  assert.equal(direct.orchestrationConcurrency?.onlyAllowedSerialization,'ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT');
+  assert.equal(roadmap.developmentSpeedExecution.globalHeavyExecutionSerializationForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.globalOrchestrationSerializationForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.longRunningNativeBuildMayNotBlockUnityWebDevelopment,true);
+  assert.equal(roadmap.developmentSpeedExecution.runtimeWaitMustReleaseIndependentDevelopmentCapacity,true);
+  assert.equal(roadmap.developmentSpeedExecution.sharedStateSerializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.sameGameBothPlatformsRequired,true);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
@@ -263,4 +274,13 @@ test('Unity Web source bootstrap is fail-closed and excludes the two owner-grand
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   assert.match(webWorkflow,/bootstrapGraphicsBlocked/);
   assert.match(webWorkflow,/presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'/);
+});
+
+
+test('development orchestrator never globally serializes heavy platform or Unity Web execution',()=>{
+  assert.doesNotMatch(runtime,/^concurrency:\s*\n\s*group:\s*company-development-confirmed-runtime\s*$/m);
+  assert.match(runtime,/dispatch-roblox:/);
+  assert.match(runtime,/dispatch-unity:/);
+  assert.match(runtime,/dispatch-unity-web-floor:/);
+  assert.match(runtime,/dispatch-unity-web-bootstrap:/);
 });

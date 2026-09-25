@@ -266,6 +266,20 @@ test('development runtime has no legacy Web pause switch and uses readiness-cont
   assert.doesNotMatch(workflow,/UNITY_APP_RUNTIME_DISPATCH=YES/);
 });
 
+test('long native builds never serialize unrelated Unity Web or development-confirmed orchestration',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const arch=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  assert.doesNotMatch(workflow,/^concurrency:\s*\n\s*group:\s*company-development-confirmed-runtime\s*$/m);
+  assert.equal(roadmap.developmentSpeedExecution.globalOrchestrationSerializationForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.longRunningNativeBuildMayNotBlockUnityWebDevelopment,true);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.orchestrationConcurrency.globalSerializationForbidden,true);
+  assert.equal(arch.concurrentPlatformDevelopment.orchestrationConcurrency.globalSerializationForbidden,true);
+  assert.equal(arch.concurrentPlatformDevelopment.orchestrationConcurrency.nativeRuntimeWaitCannotBlockUnityWeb,true);
+  assert.equal(arch.departmentRuntimeTopology.concurrency.sharedAtomicStateCriticalSectionOnly,true);
+  assert.equal(arch.departmentRuntimeTopology.concurrency.sharedAtomicStateCriticalSectionMayNotEncloseHeavyExecution,true);
+});
+
 test('presentation runtime observation measures frame continuity and living motion',()=>{
   const frameDeltas=Array.from({length:29},()=>16.7);
   const samples=Array.from({length:7},(_,i)=>({
