@@ -26359,11 +26359,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ed5b5ea38c4ef7b66161404e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-3149",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "acd72ebc2b3e5ec550cbde67494fe4d294ba971c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 3149,
+        "baseBranch": "main",
+        "headBranch": "chatgpt/fix-unity-runtime-and-reusable-qa",
+        "baseSha": "acd72ebc2b3e5ec550cbde67494fe4d294ba971c",
+        "headSha": "58502e6f7699eab912530f50fd83c614734069e5",
+        "mergeCommitSha": "8e876e8f95d60cb3e46e0f64a68ff121ca784fa8",
+        "mergedAt": "2026-09-25T17:02:12Z",
+        "authorLogin": "hans1177",
+        "titleHash": "6982ec056aaf29c3ea49fb113cace7a07554483d839c9ca49489c92bff6514aa",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "chatgpt/fix-unity-runtime-and-reusable-qa",
+        "candidateSha": "58502e6f7699eab912530f50fd83c614734069e5"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 92,
+        "deletedLineCount": 102,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-unity-runtime.yml",
+          "qa/company-development-roblox-independent-promotion.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-unity-runtime.yml",
+          "qa/company-development-roblox-independent-promotion.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:3149",
+        "merge-commit:8e876e8f95d60cb3e46e0f64a68ff121ca784fa8",
+        "base-main:acd72ebc2b3e5ec550cbde67494fe4d294ba971c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 212
+    "total": 213
   }
 }
