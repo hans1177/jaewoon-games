@@ -4020,7 +4020,8 @@
       "coding_negative_1t1v44c",
       "coding_negative_fqc6sr",
       "coding_negative_2dy5im",
-      "coding_negative_1nkufhi"
+      "coding_negative_1nkufhi",
+      "coding_negative_1pvahn"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -5225,7 +5226,7 @@
         "verifiedApplications": 216,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 477,
-        "verifiedFailures": 723,
+        "verifiedFailures": 724,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -7493,22 +7494,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 8,
+            "verifiedFailures": 9,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 4,
+              "cozy-island": 5,
               "line-defense": 4
             },
             "failureTargets": {
-              "roblox": 8
+              "roblox": 9
             },
             "failureClasses": {
-              "EDIT_MATCH": 8
+              "EDIT_MATCH": 9
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1nkufhi",
-            "lastUpdatedAt": "2026-09-25T21:34:55.629Z"
+            "lastFailureEvidence": "coding_negative_1pvahn",
+            "lastUpdatedAt": "2026-09-25T21:41:50.348Z"
           },
           "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS": {
             "verifiedApplications": 0,
@@ -7533,8 +7534,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_nwrwl2",
-        "lastFailureEvidence": "coding_negative_1nkufhi",
-        "lastUpdatedAt": "2026-09-25T21:34:55.629Z"
+        "lastFailureEvidence": "coding_negative_1pvahn",
+        "lastUpdatedAt": "2026-09-25T21:41:50.348Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 557,
@@ -11984,7 +11985,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-25T21:34:55.646Z",
+    "lastBuiltAt": "2026-09-25T21:41:50.363Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -17813,5 +17814,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-25T21:34:55.646Z"
+  "updatedAt": "2026-09-25T21:41:50.363Z"
 }
