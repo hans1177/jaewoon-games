@@ -23,7 +23,7 @@ function mk(){
   fs.writeFileSync(files.roadmap,JSON.stringify({
     developmentLifecycleMachine:{
       internalPlatformReleaseAndPublicExposureGate:{activatedAt:'2026-09-21T00:00:00Z'},
-      postReleaseFocusedDevelopment:{enabled:true,priorities:[]}
+      postReleaseFocusedDevelopment:{enabled:true,priorities:[],actualVibeInternalPlayRequiredEachBuildupCycle:true}
     }
   }));
   fs.writeFileSync(files.hist,JSON.stringify({assets:[]}));
@@ -37,7 +37,9 @@ function releasedItem(extra={}){
     robloxProjectPath:'roblox-games/g',robloxSourceCommit:sha,
     robloxBuildArtifactIdentity:artifact,robloxReleaseClaim:true,
     robloxFinalReviewPassed:true,robloxRegressionPassed:true,robloxExactRevisionPassed:true,
-    robloxReleaseEvidence:{published:true,sourceRevision:sha,artifactIdentity:artifact,versionNumber:1,...extra},
+    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:sha,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:1},
+    robloxInternalVibePlayEvidence:{pass:true,actualPlay:true,sourceRevision:sha,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:1,scenarioCoveragePass:true,scenarioCoverage:['NEW_GAME_START','CORE_GAMEPLAY_LOOP','PROGRESSION_AND_REWARD']},
+    robloxReleaseEvidence:{published:true,sourceRevision:sha,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:1,...extra},
   };
 }
 function run(ctx,item,exposure){
@@ -66,7 +68,10 @@ test('verified private Roblox publication counts as internal release for focus',
     gameId:'g',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
     robloxProjectPath:'roblox-games/g',
     robloxDedicatedExperiencePublished:true,
-    robloxPublicationTarget:{verified:true,placeId:'123'}
+    robloxPublicationTarget:{verified:true,placeId:'123'},
+    robloxSourceCommit:sha,robloxBuildArtifactIdentity:artifact,
+    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:sha,artifactIdentity:artifact,universeId:'123',placeId:'123',versionNumber:1},
+    robloxInternalVibePlayEvidence:{pass:true,actualPlay:true,sourceRevision:sha,artifactIdentity:artifact,universeId:'123',placeId:'123',versionNumber:1}
   };
   const r=run(c,item,{games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY'}]});
   assert.equal(r.added,true);
@@ -83,6 +88,9 @@ test('all eligible internal-release Roblox caretakers are queued in one focus cy
     robloxProjectPath:`roblox-games/${id}`,
     robloxDedicatedExperiencePublished:true,
     robloxPublicationTarget:{verified:true,placeId:id==='g'?'123':'456'},
+    robloxSourceCommit:sha,robloxBuildArtifactIdentity:artifact,
+    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:sha,artifactIdentity:artifact,universeId:'123',placeId:id==='g'?'123':'456',versionNumber:1},
+    robloxInternalVibePlayEvidence:{pass:true,actualPlay:true,sourceRevision:sha,artifactIdentity:artifact,universeId:'123',placeId:id==='g'?'123':'456',versionNumber:1},
     ownerPrimaryRank:id==='g'?1:2
   });
   fs.writeFileSync(c.files.runtime,JSON.stringify({items:[item('g'),item('h')]}));
@@ -97,6 +105,17 @@ test('all eligible internal-release Roblox caretakers are queued in one focus cy
   assert.deepEqual(r.tasks.map(x=>x.gameId),['g','h']);
   assert.ok(r.tasks.every(x=>x.postReleaseFocused===true&&x.priority==='critical'));
 });
+test('internal release waits for actual Vibe play before repair development',()=>{
+  const c=mk();
+  const item=releasedItem({publishedAt:'2026-09-21T10:00:00Z'});
+  delete item.robloxInternalVibePlayEvidence;
+  const r=run(c,item,{
+    games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY',platforms:[{platform:'ROBLOX',internalReleasePublished:true,internalReleaseState:'INTERNAL_PLAYTEST_AND_DEBUG',placeId:'456'}]}]
+  });
+  assert.equal(r.added,false);
+  assert.equal(r.reason,'AWAITING_ACTUAL_VIBE_INTERNAL_PLAY');
+});
+
 test('private runtime candidate without internal release is not release-focused',()=>{
   const c=mk();
   const item={
