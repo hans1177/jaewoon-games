@@ -226,6 +226,7 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.match(workflow,/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/);
   assert.doesNotMatch(workflow,/RobloxPlayerBeta|RobloxPlayerLauncher|roblox:\/\//i);
   assert.doesNotMatch(workflow,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
+  assert.doesNotMatch(workflow,/Get-Content 'C:\\\\actions-runner\\\\\.runner'|ConvertFrom-Json.*runnerMetadata/);
   assert.doesNotMatch(workflow,/--place-id=\$env:|--universe-id=\$env:/);
 });
 
