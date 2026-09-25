@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function worldToScreen(x,y){return{x:x-state.camera.x,y:y-state.camera.y}}",
+      "replace": "ctx.fillStyle=t.color;ctx.beginPath();ctx.ellipse(-10,0,12,8,-.5,0,TAU);ctx.ellipse(10,0,12,8,.5,0,TAU);ctx.fill();ctx.fillStyle='#241d28';ctx.fillRect(-2,-7,4,14)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
