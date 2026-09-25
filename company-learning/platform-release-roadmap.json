@@ -977,7 +977,8 @@
       "authority": "OWNER_DIRECTIVE_2026-09-25",
       "sharedPublishedTargetCurrentRequired": true,
       "requiresRuntimeFoundationQaSuccess": true,
-      "launchAfter": "ROBLOX_RUNTIME_FOUNDATION_QA_PASS"
+      "launchAfter": "ROBLOX_RUNTIME_FOUNDATION_QA_PASS",
+      "requiresRuntimeFoundationCandidatePass": true
     },
     "headlessValidation": {
       "version": 2,
@@ -3471,7 +3472,8 @@
       "publicationTargetDiscoveryFromStudioForbidden": true,
       "offlineBehavior": "QUEUE_LOCAL_STUDIO_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS",
       "publishedCandidateMustNotBeSupersededSharedTarget": true,
-      "runtimeFoundationQaPassRequiredBeforeStudioPlay": true
+      "runtimeFoundationQaPassRequiredBeforeStudioPlay": true,
+      "runtimeFoundationCandidatePassRequiredBeforeStudioPlay": true
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -6865,7 +6867,8 @@
       "documentationFirst": true,
       "rule": "LOCAL_STUDIO_ACTUAL_PLAY_REQUIRES_RUNTIME_FOUNDATION_QA_PASS",
       "failureAction": "DO_NOT_QUEUE_OR_RUN_STUDIO_PLAY_WHEN_RUNTIME_FOUNDATION_QA_FAILS",
-      "implementation": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-plan"
+      "implementation": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-plan",
+      "candidateRequirement": "robloxRuntimeFoundationPassed=true"
     }
   },
   "vibeExecutionLaneContract": {
