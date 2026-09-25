@@ -515,22 +515,6 @@ jobs:
                 if(other.robloxRuntimeCandidateEvidence&&typeof other.robloxRuntimeCandidateEvidence==='object'){
                   other.robloxRuntimeCandidateEvidence={...other.robloxRuntimeCandidateEvidence,current:false,supersededAt:stamp,supersededBy:item.gameId};
                 }
-                other.robloxInternalReleaseReady=false;
-                other.robloxPublicReleaseReady=false;
-                other.robloxPublicRelease=false;
-                other.robloxReleaseClaim=false;
-                other.robloxRuntimePassed=false;
-                other.robloxRuntimePassedAt=null;
-                other.robloxRuntimeFoundationPassed=false;
-                other.robloxRuntimeFoundationEvidence=null;
-                other.robloxPostRuntimeQaEvidence=null;
-                other.robloxFinalReviewPassed=false;
-                other.robloxFinalReviewPassedAt=null;
-                other.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
-                other.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
-                other.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
-                other.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
-                other.routingBlockers=['roblox-shared-runtime-target-capacity-republish-required'];
                 other.updatedAt=stamp;
               }
             }
