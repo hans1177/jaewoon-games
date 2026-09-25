@@ -9,7 +9,7 @@ const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const runtime=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
 
-test('canonical policy uses Unity Web as the required upper-platform development floor and keeps UEFN owner-held',()=>{
+test('canonical policy routes new Roblox and Unity work through the Unity Web readiness floor and keeps UEFN owner-held',()=>{
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
   const direct=roadmap.directNativeDualPlatformDevelopment;
@@ -23,13 +23,7 @@ test('canonical policy uses Unity Web as the required upper-platform development
   assert.equal(direct.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(direct.unityWebValidationSurface?.requiredForDevelopmentAdmission,true);
   assert.equal(direct.unityWebValidationSurface?.requiredForInternalRelease,false);
-  const gate=direct.upperPlatformDevelopmentReadinessGate;
-  assert.equal(gate?.gateId,'UPPER_PLATFORM_DEVELOPMENT_READY');
-  assert.equal(gate?.allCriteriaRequired,true);
-  assert.deepEqual(Object.keys(gate?.criteria||{}),['design','code','graphics','webglBuild','actualPlay','qa','portability']);
-  assert.equal(gate?.failureState,'REPAIR_REQUIRED');
-  assert.equal(gate?.passAction,'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT');
-  assert.equal(gate?.releaseOrDeploymentAuthority,false);
+  assert.equal(direct.upperPlatformAdmission,'UPPER_PLATFORM_DEVELOPMENT_READY');
   const fan=direct.unityWebNativeFanOut;
   assert.equal(fan?.enabled,true);
   assert.equal(fan?.role,'MAIN_BOUND_UPPER_PLATFORM_READINESS_HANDOFF');
@@ -38,40 +32,67 @@ test('canonical policy uses Unity Web as the required upper-platform development
   assert.equal(fan?.exactGameOnly,true);
   assert.equal(fan?.requiresMinimumDesignContract,true);
   assert.equal(fan?.developmentAdmissionAuthority,true);
-  assert.equal(fan?.releaseAuthority,false);
-  assert.equal(fan?.nativeEvidenceStillRequired,true);
   assert.equal(fan?.directDispatchFromUnityWebBuildForbidden,true);
   assert.equal(fan?.sourceTreeExactMatchRequired,true);
+  assert.equal(fan?.nativeEvidenceStillRequired,true);
+  assert.equal(direct.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
+  assert.deepEqual(direct.upperPlatformAdmissionMigration?.grandfatherGameIds,['cozy-island','daechung-rpg']);
+  assert.equal(direct.upperPlatformAdmissionMigration?.allOtherDevelopmentConfirmedMustRunUnityWebFloor,true);
+  assert.equal(direct.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,true);
+  assert.equal(direct.orchestrationConcurrency?.globalSerializationForbidden,true);
+  assert.equal(direct.orchestrationConcurrency?.distinctGamesParallel,true);
+  assert.equal(direct.orchestrationConcurrency?.unityWebAndNativeParallelWhenIndependent,true);
+  assert.equal(direct.orchestrationConcurrency?.longRunningNativeMayNotBlockUnityWebFloor,true);
+  assert.equal(direct.orchestrationConcurrency?.sameGameIndependentNonOverlappingPackagesParallel,true);
+  assert.equal(direct.orchestrationConcurrency?.onlyAllowedSerialization,'ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT');
+  assert.equal(roadmap.developmentSpeedExecution.globalHeavyExecutionSerializationForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.globalOrchestrationSerializationForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.longRunningNativeBuildMayNotBlockUnityWebDevelopment,true);
+  assert.equal(roadmap.developmentSpeedExecution.runtimeWaitMustReleaseIndependentDevelopmentCapacity,true);
+  assert.equal(roadmap.developmentSpeedExecution.sharedStateSerializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.sameGameBothPlatformsRequired,true);
-  assert.equal(direct.platformSpecificImplementationRequired,true);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
   assert.equal(direct.platformSpecificIndependentQaRequired,true);
   assert.equal(direct.platformSpecificRegressionRequired,true);
-  assert.equal(direct.noArtificialGlobalGameCountCap,true);
-  assert.equal(direct.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
-  assert.equal(direct.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,true);
   assert.equal(direct.fortniteUefnState,'OWNER_HOLD');
   assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
 });
 
-test('lifecycle runs Unity Web development before new upper-platform development and keeps internal playtest co-development',()=>{
+test('lifecycle uses Unity Web as the pre-native development floor and keeps release separate',()=>{
   const life=roadmap.developmentLifecycleMachine;
   assert.deepEqual(life.stages,[
-    'MINIMUM_DESIGN_CONTRACT_READY','UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT','UNITY_WEBGL_BUILD',
-    'UNITY_WEB_ACTUAL_BROWSER_PLAY','UNITY_WEB_INDEPENDENT_QA','UNITY_WEB_REGRESSION','UPPER_PLATFORM_DEVELOPMENT_READY',
-    'ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION',
-    'INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE','POST_RELEASE_FOCUSED_DEVELOPMENT'
+    'MINIMUM_DESIGN_CONTRACT_READY',
+    'UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT',
+    'UNITY_WEBGL_BUILD',
+    'UNITY_WEB_ACTUAL_BROWSER_PLAY',
+    'UNITY_WEB_INDEPENDENT_QA',
+    'UNITY_WEB_REGRESSION',
+    'UPPER_PLATFORM_DEVELOPMENT_READY',
+    'ROBLOX_UNITY_NATIVE_SOURCE_BIND',
+    'TARGET_PLATFORM_RUNTIME',
+    'TARGET_PLATFORM_INDEPENDENT_QA',
+    'TARGET_PLATFORM_REGRESSION',
+    'INTERNAL_PLATFORM_RELEASE',
+    'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    'PUBLIC_RELEASE_READY',
+    'PUBLIC_RELEASE',
+    'POST_RELEASE_FOCUSED_DEVELOPMENT'
   ]);
-  assert.equal(life.machineWorkInstruction.unityWebWorker.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(life.machineWorkInstruction.unityWebWorker.readinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
-  assert.equal(life.machineWorkInstruction.unityWebWorker.deploymentOrReleaseAuthority,false);
+  assert.equal(life.directNativeDualPlatformDevelopment.admission,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(life.directNativeDualPlatformDevelopment.unityWebDevelopmentFloorRequired,true);
+  assert.equal(life.directNativeDualPlatformDevelopment.unityWebGateRequiredForUpperPlatformStart,true);
+  assert.equal(life.directNativeDualPlatformDevelopment.existingNativeDevelopmentGrandfathered,true);
+  assert.equal(Object.hasOwn(life,'webToPlatformHandoff'),false);
+  assert.equal(Object.hasOwn(life,'webFirstImplementation'),false);
   assert.equal(life.machineWorkInstruction.internalPlaytestWorker.activeCoDevelopment,true);
-  assert.equal(life.machineWorkInstruction.internalPlaytestWorker.ownerInterruptSupported,true);
   assert.equal(life.machineWorkInstruction.internalPlaytestWorker.publicPromotionBlockedUntilAcceptance,true);
+  assert.equal(life.gameDevelopmentAuthority.ownsWebFirstImplementation,false);
+  assert.equal(life.gameDevelopmentAuthority.ownsSelectedPlatformImplementation,true);
+  assert.equal(life.gameDevelopmentAuthority.ownsInternalPlaytestRepair,true);
 });
 
-test('directive mirror requires Unity Web readiness before new native development without changing release authority',()=>{
+test('directive mirrors the Unity Web readiness gate without making Web a release platform',()=>{
   assert.equal(directive.currentExecutionMode,'UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_ROBLOX_UNITY');
   assert.equal(Object.hasOwn(directive,'legacyWebFirstPolicy'),false);
   assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,false);
@@ -86,37 +107,48 @@ test('directive mirror requires Unity Web readiness before new native developmen
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface.nativeGateAuthority,true);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface.releaseAuthority,false);
   assert.equal(directive.classes.RELEASE_CONFIRMED.webCompanionRequired,false);
+  assert.equal(directive.ai.vibe2.ownsInternalPlaytestRepair,true);
   assert.equal(directive.ai.robloxStudioExecutionMode,'OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_ONLY');
   assert.equal(directive.ai.robloxPlayerAutomationAllowed,false);
   assert.equal(directive.ai.robloxStudioExternalGuiAutomationAllowed,false);
   assert.equal(directive.ai.robloxStudioUndocumentedCliAutomationAllowed,false);
 });
 
-test('architecture and runtime execute the Unity Web readiness to upper-platform topology',()=>{
+test('architecture and runtime execute Unity Web readiness before new upper-platform dispatch',()=>{
   assert.deepEqual(architecture.executionTopology.web,[
-    'UNITY_WEB_FULL_DEVELOPMENT_FLOOR','SAME_CANONICAL_UNITY_PROJECT','CODE_AND_GRAPHICS_BUILD_UP','UNITY_WEBGL_BUILD',
-    'ACTUAL_BROWSER_PLAY','INDEPENDENT_QA','REGRESSION','UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION','REPAIR_REQUIRED_OR_UPPER_PLATFORM_HANDOFF'
+    'UNITY_WEB_FULL_DEVELOPMENT_FLOOR',
+    'SAME_CANONICAL_UNITY_PROJECT',
+    'CODE_AND_GRAPHICS_BUILD_UP',
+    'UNITY_WEBGL_BUILD',
+    'ACTUAL_BROWSER_PLAY',
+    'INDEPENDENT_QA',
+    'REGRESSION',
+    'UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION',
+    'REPAIR_REQUIRED_OR_UPPER_PLATFORM_HANDOFF'
   ]);
+  assert.equal(architecture.concurrentPlatformDevelopment.admissionAuthority,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(architecture.concurrentPlatformDevelopment.webAdmissionAuthority,true);
   assert.ok(architecture.executionTopology.selectedPlatform.includes('UPPER_PLATFORM_DEVELOPMENT_READY'));
   assert.ok(architecture.executionTopology.selectedPlatform.includes('ROBLOX_UNITY_AUTO_PAIR'));
-  assert.ok(architecture.executionTopology.selectedPlatform.includes('INTERNAL_PLATFORM_RELEASE'));
-  assert.equal(architecture.concurrentPlatformDevelopment.admissionAuthority,'UPPER_PLATFORM_DEVELOPMENT_READY');
-  assert.equal(architecture.concurrentPlatformDevelopment.unityWeb,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(architecture.concurrentPlatformDevelopment.unityWebValidationSurface.nativeFanOutTrigger,'UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN');
-  assert.equal(architecture.concurrentPlatformDevelopment.unityWebValidationSurface.developmentAdmissionAuthority,true);
   assert.match(runtime,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
-  assert.match(runtime,/UPPER_PLATFORM_ELIGIBLE_IDS=/);
-  assert.match(runtime,/UNITY_WEB_FLOOR_IDS=/);
+  assert.match(runtime,/upper-platform-development-readiness\.json/);
   assert.match(runtime,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
-  assert.match(runtime,/company-development-roblox-runtime\.yml/);
-  assert.match(runtime,/company-development-unity-runtime\.yml/);
-  assert.match(runtime,/unity-web-first-stage-build\.yml/);
+  assert.match(runtime,/eligible_json:/);
+  assert.match(runtime,/unity_web_json:/);
+  assert.match(runtime,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
+  assert.match(runtime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+  assert.match(runtime,/grandfatherGameIds/);
+  assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
+  assert.match(runtime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(runtime,/gh workflow run (?:company-development|unity-web)/);
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   assert.match(webWorkflow,/Run Unity Web independent QA/);
   assert.match(webWorkflow,/Run Unity Web regression/);
   assert.match(webWorkflow,/Evaluate upper-platform development readiness/);
   assert.match(webWorkflow,/upper-platform-development-readiness\.json/);
   assert.doesNotMatch(webWorkflow,/Fan verified Unity Web into exact Roblox and Unity development/);
+  assert.equal(architecture.concurrentPlatformDevelopment.unityWeb,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
 });
 
@@ -209,4 +241,46 @@ test('every accepted Roblox buildup modification must rebuild before revalidatio
   assert.equal(a.rebuildAfterEveryAcceptedModification,true);
   assert.equal(a.staleArtifactReuseAfterSourceModification,false);
   assert.equal(a.revalidationInput,'NEWLY_REBUILT_EXACT_CANDIDATE_ONLY');
+});
+
+
+test('native executors cannot bypass Unity Web upper-platform readiness',()=>{
+  const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
+  const roblox=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  for(const workflow of [unity,roblox]){
+    assert.match(workflow,/company-upper-platform-admission\.mjs/);
+    assert.match(workflow,/classifyUpperPlatformAdmission/);
+    assert.match(workflow,/grandfatherGameIds/);
+    assert.match(workflow,/admission\.state!=='UPPER_PLATFORM'/);
+  }
+  assert.match(unity,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
+  assert.match(roblox,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,['cozy-island','daechung-rpg']);
+});
+
+test('Unity Web source bootstrap is fail-closed and excludes the two owner-grandfathered games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/unity-web-floor-source-bootstrap.yml','utf8');
+  const generator=fs.readFileSync('tools/company-unity-web-floor-bootstrap.mjs','utf8');
+  assert.match(workflow,/cozy-island/);
+  assert.match(workflow,/daechung-rpg/);
+  assert.match(workflow,/UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN/);
+  assert.match(workflow,/company-unity-web-floor-bootstrap\.mjs/);
+  assert.match(workflow,/git add "unity-games\/\$id"/);
+  assert.doesNotMatch(workflow,/git add "unity-games\/\$id" "\.build-requests\/unity-web\/\$id\.json"/);
+  assert.match(generator,/BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP/);
+  assert.match(generator,/upperPlatformReady:false/);
+  assert.match(generator,/releaseOrDeploymentAuthority:false/);
+  assert.match(generator,/public static void BuildWeb\(\)/);
+  const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  assert.match(webWorkflow,/bootstrapGraphicsBlocked/);
+  assert.match(webWorkflow,/presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'/);
+});
+
+
+test('development orchestrator never globally serializes heavy platform or Unity Web execution',()=>{
+  assert.doesNotMatch(runtime,/^concurrency:\s*\n\s*group:\s*company-development-confirmed-runtime\s*$/m);
+  assert.match(runtime,/dispatch-roblox:/);
+  assert.match(runtime,/dispatch-unity:/);
+  assert.match(runtime,/dispatch-unity-web-floor:/);
+  assert.match(runtime,/dispatch-unity-web-bootstrap:/);
 });
