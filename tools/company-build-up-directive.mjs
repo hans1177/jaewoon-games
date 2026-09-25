@@ -466,6 +466,11 @@ export function directivePrompt(d={}){
     visual,
     `UX_INPUT: ${d.uxInputDirectives.join(' | ')}`,
     `PRESERVE: ${d.preserveConstraints.join(' | ')}`,
+    `SOURCE_ANCHORS: ${(d.sourceSymbolAnchors||[]).map(row=>row.file+'#'+(row.symbol||row.kind)).join(' | ')||'NO_SYMBOL_FALLBACK'}`,
+    `EXPECTED_PLAYER_EFFECT: ${d.expectedPlayerEffect||'UNKNOWN'}`,
+    `OBSERVED_PLAYER_EFFECT: ${d.observedPlayerEffect||'UNKNOWN_NOT_OBSERVED'}`,
+    `EFFECTIVENESS_CLASSIFICATION: ${d.effectivenessMeasurement?.classification||'UNKNOWN_RUNTIME_EFFECT'}`,
+    `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'REQUEST_REQUIRED_RUNTIME_OBSERVATION'}; reason=${d.nextActionDecision?.reason||'UNKNOWN'}`,
     `ACCEPTANCE: ${d.acceptanceEvidence.join(' | ')}`,
     `NEXT_ESCALATION: ${d.nextEscalationCandidates.join(' | ')}`
   ].join('\n');
@@ -488,7 +493,8 @@ export function buildGameSpecificBuildUpDirective({
   ]);
   const preferred=focusFromSignals({signals,source});
   const generation=Math.max(1,Number(previousDirective?.generation||0)+1);
-  const depthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint});
+  const priorEffectivenessClassification=previousEffectiveness(runtimeEvidence);
+  const depthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint,previousEffectivenessClassification:priorEffectivenessClassification});
   const priorFocus=clean(previousDirective?.primaryFocus).toUpperCase();
   const focus=previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
   const anchor=primaryDesignAnchor(design),secondary=secondaryDesignAnchor(design);
@@ -501,6 +507,12 @@ export function buildGameSpecificBuildUpDirective({
     STABILITY:`${identity}의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.`
   };
   const goal=goalByFocus[focus]||goalByFocus.CORE_FUN;
+  const sourceAnchors=(source?.sourceAnchors||[]).slice(0,8);
+  const fallbackFile=clean((responsibleFiles||[])[0]||source?.topFiles?.[0]?.file);
+  const primaryAnchors=sourceAnchors.length?sourceAnchors:(fallbackFile?[{file:fallbackFile,kind:'FILE_STATE_FALLBACK',symbol:null,line:null,snippet:(source?.observations||[]).join(' | ')}]:[]);
+  const expectedPlayerEffect=expectedEffectForFocus(focus,{identity,anchor,secondary,progression:design.progressionDirection});
+  const observedPlayerEffect=clean(runtimeEvidence?.observedPlayerEffect||runtimeEvidence?.playtestFinding)||'UNKNOWN_NOT_OBSERVED';
+  const nextActionDecision=nextActionForEffect(priorEffectivenessClassification,{previousDirective:Boolean(previousDirective)});
   const previousFingerprint=clean(previousDirective?.directiveFingerprint);
   const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design}));
   const states=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
@@ -530,6 +542,8 @@ export function buildGameSpecificBuildUpDirective({
     'GAMEPLAY_CLAIM_REQUIRES_OBSERVABLE_GAME_STATE_DELTA',
     'VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA',
     'BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON',
+    'EXPECTED_PLAYER_EFFECT_BOUND_BEFORE_IMPLEMENTATION',
+    'SOURCE_DELTA_ALONE_CANNOT_CONFIRM_PLAYER_EFFECT',
     'NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION',
     'FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP'
   ];
@@ -573,7 +587,27 @@ export function buildGameSpecificBuildUpDirective({
     detectedGaps:gaps,
     primaryFocus:focus,
     thisLoopPrimaryGoal:goal,
-    primaryGoalReason:depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.`,
+    sourceSymbolAnchors:primaryAnchors,
+    sourceSpecificity:{
+      exactSourceAnchorsRequired:true,
+      primaryAnchors:primaryAnchors.map(row=>({...row,currentBehavior:row.snippet||'CURRENT_SOURCE_BEHAVIOR_OBSERVED',intendedBehavior:goal})),
+      genericTopFileListAloneInsufficient:true,
+      sourceFingerprint:source.sourceTreeFingerprint
+    },
+    expectedPlayerEffect,
+    observedPlayerEffect,
+    effectivenessMeasurement:{
+      classification:priorEffectivenessClassification,
+      sourceDeltaAloneDoesNotProvePlayerValueImprovement:true,
+      runtimeObserved:runtimeEvidence?.runtimeObserved===true,
+      runtimePassed:runtimeEvidence?.runtimePassed===true,
+      independentQaPassed:runtimeEvidence?.independentQaPassed===true,
+      regressionPassed:runtimeEvidence?.regressionPassed===true,
+      expectedPlayerEffect,
+      observedPlayerEffect
+    },
+    nextActionDecision,
+    primaryGoalReason:depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}"이며 실제 source delta와 EFFECT_CONFIRMED가 함께 검증된 루프만 다음 깊이로 상승한다.`,
     gameplayImplementationDirectives:gameplay,
     progressionContentWorldDirectives:progression,
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
