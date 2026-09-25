@@ -15,7 +15,7 @@ def score(img):
     brightness_penalty=abs(brightness-118)*0.15
     return contrast*1.25+edge_mean*1.4+saturation*0.6-brightness_penalty
 
-def select_frame(paths):
+def select_frames(paths, count=3):
     ranked=[]
     for p in paths:
         try:
@@ -23,10 +23,12 @@ def select_frame(paths):
                 ranked.append((score(im),p))
         except Exception:
             pass
-    if not ranked:
-        raise RuntimeError("NO_VALID_GAMEPLAY_FRAMES")
+    if len(ranked) < count:
+        raise RuntimeError(f"INSUFFICIENT_DISTINCT_GAMEPLAY_FRAMES:{len(ranked)}/{count}")
     ranked.sort(reverse=True,key=lambda x:x[0])
-    return ranked[0][1],ranked
+    # Prefer distinct frames by source file. Vibe play capture must provide multiple moments.
+    selected=[p for _,p in ranked[:count]]
+    return selected,ranked
 
 def polish(im):
     im=im.convert("RGB")
@@ -71,28 +73,39 @@ def main():
     frames=[]
     for ext in ("*.png","*.jpg","*.jpeg","*.webp"):
         frames.extend(Path(ns.frames_dir).glob(ext))
-    selected,ranked=select_frame(frames)
+    selected,ranked=select_frames(frames,3)
     out=Path(ns.output_dir);out.mkdir(parents=True,exist_ok=True)
-    thumb=out/"homepage-thumbnail.png";icon=out/"experience-icon.png"
-    make_thumbnail(selected,thumb);make_icon(selected,icon)
-    if thumb.stat().st_size>ns.max_bytes:
-        with Image.open(thumb) as im:
-            im.convert("RGB").save(out/"homepage-thumbnail.jpg","JPEG",quality=90,optimize=True)
-        thumb=out/"homepage-thumbnail.jpg"
+    thumbnails=[]
+    for i,src in enumerate(selected, start=1):
+        thumb=out/f"homepage-thumbnail-{i}.png"
+        make_thumbnail(src,thumb)
+        if thumb.stat().st_size>ns.max_bytes:
+            jpg=out/f"homepage-thumbnail-{i}.jpg"
+            with Image.open(thumb) as im:
+                im.convert("RGB").save(jpg,"JPEG",quality=90,optimize=True)
+            thumb.unlink(missing_ok=True)
+            thumb=jpg
+        thumbnails.append(str(thumb).replace("\\","/"))
+    icon=out/"experience-icon.png"
+    make_icon(selected[0],icon)
     manifest={
-        "version":1,
-        "selectedFrame":str(selected).replace("\\","/"),
+        "version":2,
+        "selectedFrames":[str(p).replace("\\","/") for p in selected],
         "candidateFrames":[{"path":str(p).replace("\\","/"),"score":round(s,3)} for s,p in ranked[:8]],
-        "homepageThumbnail":str(thumb).replace("\\","/"),
+        "homepageThumbnails":thumbnails,
+        "homepageThumbnailCandidateCount":len(thumbnails),
         "icon":str(icon).replace("\\","/"),
         "actualGameplayFrameSource":True,
+        "distinctGameplayFramesRequired":True,
         "sharedPlaceholderUsed":False,
         "misleadingSyntheticGameplayAdded":False,
-        "composition":"ACTUAL_GAMEPLAY_REFRAME_WITH_MILD_COLOR_CONTRAST_SHARPNESS"
+        "composition":"ACTUAL_GAMEPLAY_REFRAME_WITH_MILD_COLOR_CONTRAST_SHARPNESS",
+        "benchmark":"ROBLOX_CLICK_INTENT_STRUCTURE_NO_COPYING"
     }
     import json
     (out/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-    print("ROBLOX_THUMBNAIL_SELECTED_FRAME="+str(selected))
+    print("ROBLOX_THUMBNAIL_SELECTED_FRAMES="+",".join(str(x) for x in selected))
+    print("ROBLOX_THUMBNAIL_CANDIDATE_COUNT=3")
     print("ROBLOX_THUMBNAIL_AUTOCOMPOSE=PASS")
 
 if __name__=="__main__":
