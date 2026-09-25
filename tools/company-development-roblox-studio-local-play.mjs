@@ -51,6 +51,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&/^[1-9][0-9]*$/.test(String(candidate?.universeId||''))
       &&/^[1-9][0-9]*$/.test(String(candidate?.placeId||''))
       &&Number(candidate?.versionNumber||0)>0
+      &&item?.robloxSharedTargetCurrent!==false
       &&clean(candidate?.authority).startsWith('roblox-open-cloud-')
     );
     if(!exact)continue;
@@ -95,6 +96,7 @@ export function createLocalStudioPlayEvidence({
     clean(item?.robloxSourceCommit)===sourceRevision
     &&clean(item?.robloxBuildArtifactIdentity)===artifactIdentity
     &&candidate?.published===true
+    &&item?.robloxSharedTargetCurrent!==false
     &&clean(candidate?.authority).startsWith('roblox-open-cloud-')
     &&clean(candidate?.sourceRevision)===sourceRevision
     &&clean(candidate?.artifactIdentity)===artifactIdentity
