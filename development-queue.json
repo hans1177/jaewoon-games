@@ -60,7 +60,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-25T08:30:30.672Z",
+      "updatedAt": "2026-09-25T09:31:28.546Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -326,10 +326,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "ACTUAL_VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
       "routingBlockers": [
-        "roblox-internal-vibe-play-pending"
+        "roblox-studio-mcp-infrastructure-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -359,7 +359,69 @@
       },
       "robloxReleaseVersionNumber": 9,
       "robloxPublicRelease": false,
-      "robloxInternalVibePlayEvidence": null,
+      "robloxInternalVibePlayEvidence": {
+        "version": 2,
+        "gameId": "cozy-island",
+        "authority": "roblox-official-studio-mcp-runtime",
+        "pass": false,
+        "actualPlay": false,
+        "runtimeVerified": false,
+        "learningReusable": false,
+        "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
+        "infrastructureFailure": true,
+        "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "localPlaceFile": true,
+        "officialStudioMcp": true,
+        "onlinePlaceDirectOpen": false,
+        "robloxPlayerAutomation": false,
+        "externalGuiAutomation": false,
+        "undocumentedStudioCliAutomation": false,
+        "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
+        "sourceRevision": "4732acc131c7f36e19928d0b20ed3fee3067044f",
+        "artifactIdentity": "sha256:7bf90247615cd16c1fe3f13d61e13090ab2566a1dc704216fd29af886f0ef793",
+        "artifactRunId": 36098673080,
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "versionNumber": 9,
+        "historicalSharedTargetExactArtifact": true,
+        "currentPublishedRuntimeClaim": false,
+        "publishedCandidateCrossCheckPassed": true,
+        "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
+        "capabilities": {
+          "officialStudioMcp": false,
+          "playMode": false,
+          "mcpInput": false,
+          "screenCapture": false,
+          "consoleCapture": false
+        },
+        "actions": [],
+        "checkpoints": [],
+        "errors": [
+          {
+            "type": "studio-mcp-infrastructure-or-runtime-error",
+            "actionId": null,
+            "signature": "MCP_RUN_DID_NOT_PRODUCE_EVIDENCE"
+          }
+        ],
+        "runtimeSummary": {
+          "consoleErrorCount": 1,
+          "distinctFrameChange": false
+        },
+        "learningSignals": [
+          "roblox official studio mcp local runtime",
+          "debugging",
+          "runtime error"
+        ],
+        "rawSourceIncluded": false,
+        "rawGameplayValuesIncluded": false,
+        "rawViewportIncluded": false,
+        "scenarioCoverage": [],
+        "scenarioCoveragePass": false,
+        "testedAt": "2026-09-25T09:31:28.546Z",
+        "workflowRunId": 36118612069,
+        "publicationAuthority": false,
+        "publicationTargetDiscovery": false
+      },
       "robloxDedicatedTargetMigration": {
         "version": 1,
         "fromUniverseId": "10766974456",
@@ -371,7 +433,11 @@
         "internalReleasePreserved": true,
         "updatedAt": "2026-09-25T08:30:30.672Z"
       },
-      "robloxInternalReleasePublished": true
+      "robloxInternalReleasePublished": true,
+      "robloxInternalPlaytestPassed": false,
+      "robloxInternalPlaytestPassedAt": null,
+      "robloxStudioLocalPlayRepairRequired": false,
+      "robloxStudioLocalPlayInfrastructurePending": true
     },
     {
       "gameId": "daechung-rpg",
@@ -6206,7 +6272,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T09:30:24.110Z",
+  "updatedAt": "2026-09-25T09:31:28.546Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
