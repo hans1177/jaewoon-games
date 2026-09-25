@@ -173,3 +173,8 @@ test('기획 정체성만 필요한 프로젝트는 코드 생성으로 밀어 �
 test('paidApi가 켜진 포트폴리오는 즉시 거부한다',()=>{
   assert.throws(()=>buildAutonomousWorkOrder({portfolio:{...basePortfolio,paidApi:true},artbooks:{},health:{},catalog,diagnostics:{},filesystem,queueState:queue()}),/무료정책 위반/);
 });
+
+test('autonomous work planner CLI guard tolerates import contexts without argv[1]',()=>{
+  const source=fs.readFileSync(new URL('../tools/autonomous-work-planner.mjs',import.meta.url),'utf8');
+  assert.match(source,/if\(process\.argv\[1\]&&import\.meta\.url===pathToFileURL\(process\.argv\[1\]\)\.href\)/);
+});
