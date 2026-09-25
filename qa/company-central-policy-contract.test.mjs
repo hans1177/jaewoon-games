@@ -315,6 +315,8 @@ test('Unity Web is required for new upper-platform entry while native evidence r
   assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
   assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,[]);
   assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
+  assert.equal(architecture.concurrentPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
+  assert.equal(architecture.concurrentPlatformDevelopment?.upperPlatformAdmissionMigration?.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebGrandfatherScope?.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
   assert.deepEqual(architecture.concurrentPlatformDevelopment?.unityWebGrandfatherScope?.grandfatherGameIds,[]);
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebGrandfatherScope?.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
