@@ -256,3 +256,13 @@ test('Studio MCP play lane is not blocked by an unrelated runtime-foundation fai
   assert.match(workflow,/event_type = 'vibe2-fanin-refill'/);
   assert.match(workflow,/reason = 'roblox-official-studio-mcp-actual-play'/);
 });
+
+
+test('Studio MCP failure evidence path is exported before the MCP process can fail',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const exportAt=studioMcpBlock.indexOf('"VIBE2_STUDIO_RUNTIME_RESULT=$result"');
+  const runAt=studioMcpBlock.indexOf("& node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs");
+  assert.ok(exportAt>0);
+  assert.ok(runAt>exportAt);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=/);
+});
