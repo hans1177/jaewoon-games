@@ -116,10 +116,10 @@ env:
   VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
   VIBE2_LEARNING_LANE_MAX: '4'
 
-# Keep one continuous scheduler chain. Multiple wake signals collapse into one
-# pending cycle while the running cycle still dispatches its successor unconditionally.
+# Keep one continuous scheduler chain. The v2 epoch releases stale pre-lane-isolation
+# concurrency state while preserving one pending cycle and unconditional successor refill.
 concurrency:
-  group: vibe2-24h-cycle-singleton
+  group: vibe2-24h-cycle-singleton-v2
   cancel-in-progress: false
 
 jobs:
