@@ -73,6 +73,7 @@ on:
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'qa/vibe2-exploration-worker.test.mjs'
       - 'qa/vibe2-existing-web-assessment.test.mjs'
+      - 'qa/vibe2-development-web-browser-smoke.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-capability-distillation.test.mjs'
       - 'qa/vibe2-merged-pr-provenance.test.mjs'
@@ -265,6 +266,7 @@ jobs:
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
           node --check qa/vibe2-existing-web-assessment.test.mjs
+          node --check qa/vibe2-development-web-browser-smoke.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-capability-distillation.test.mjs
           node --check qa/vibe2-merged-pr-provenance.test.mjs
@@ -340,6 +342,11 @@ jobs:
           node --test qa/vibe2-system-architecture-execution.test.mjs
           node --test qa/vibe2-system-evolution-verify.test.mjs
           node --test qa/company-machine-development-lifecycle.test.mjs
+
+      - name: Development Web browser startup smoke
+        run: |
+          set -euo pipefail
+          node qa/vibe2-development-web-browser-smoke.mjs
 
       - name: Generate machine handoff
         run: |
