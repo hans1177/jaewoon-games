@@ -1567,6 +1567,10 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       evidence:[...new Set([
         ...(taskInput.evidence||[]),
         'game-specific-build-up-directive:v1',
+        'game-specific-build-up-directive:v2',
+        'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
+        'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
+        'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
         'build-up-directive-reused-active-generation:YES',
         'build-up-directive-generation-fan-in:INCOMPLETE_NO_ESCALATION',
         'build-up-directive-id:'+directive.directiveId,
@@ -1618,7 +1622,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     previousDirectiveOutcome,
     runtimeEvidence,
     qualitySignals,
-    responsibleFiles:[]
+    responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean)
   });
   return{
     ...taskInput,
@@ -1632,6 +1636,10 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v1',
+      'game-specific-build-up-directive:v2',
+      'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
+      'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
+      'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
       'build-up-directive-id:'+directive.directiveId,
       'build-up-generation:'+directive.generation,
       'build-up-focus:'+directive.primaryFocus,
@@ -1842,7 +1850,11 @@ function bindSharedBuildUpDirective(taskInput,directive){
     nextEscalationRequired:true,
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
+      'game-specific-build-up-directive:v2',
       'build-up-shared-generation-exact-object:YES',
+      'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
+      'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
+      'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
       'build-up-directive-id:'+directive.directiveId,
       'build-up-generation:'+directive.generation,
       'build-up-focus:'+directive.primaryFocus,
@@ -1862,25 +1874,61 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     const target=clean(item?.target).toLowerCase();
     return target==='web'||target==='roblox'||target==='unity'||target.startsWith('unity-');
   };
+  const terminalStatuses=new Set(['verified','done','completed','failed','error','rejected','cancelled','superseded']);
   const tasks=[...(queue?.tasks||[])];
-  let changed=0;
+  let changed=0,mutated=0,attached=0,rebound=0,designPending=0,checked=0;
   for(let index=0;index<tasks.length;index+=1){
     const item=tasks[index];
     if(clean(item?.status).toLowerCase()!=='queued'||!isDevelopmentImplementation(item)||!supportedTarget(item))continue;
-    if(clean(item?.buildUpDirective?.directiveId)||clean(item?.buildUpDirectiveId))continue;
-    const project=projectByGameId.get(clean(item?.gameId));
-    if(!project)continue;
-    const candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,{...queue,tasks});
-    if(!clean(candidate?.buildUpDirective?.directiveId))continue;
-    tasks[index]={
+    const gameId=clean(item?.gameId),project=projectByGameId.get(gameId);
+    if(!gameId||!project)continue;
+    checked+=1;
+    const history=tasks.filter((row,rowIndex)=>rowIndex!==index&&clean(row?.gameId)===gameId&&clean(row?.buildUpDirective?.directiveId));
+    const activeCanonical=history
+      .filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase()))
+      .sort((a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0))[0]||null;
+    const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
+    let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
+    if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
+      candidate=bindSharedBuildUpDirective(item,activeCanonical.buildUpDirective);
+      rebound+=1;changed+=1;
+      freshness='RECONCILED_TO_ACTIVE_GENERATION';
+    }else if(!currentId){
+      const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
+      if(!verifiedDesign){
+        designPending+=1;
+        freshness='DESIGN_PENDING';
+        candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
+      }else{
+        candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,{...queue,tasks},verifiedDesign);
+        if(clean(candidate?.buildUpDirective?.directiveId)){
+          attached+=1;changed+=1;
+          freshness='CURRENT_OR_RECONCILED';
+          candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
+        }else{
+          designPending+=1;
+          freshness='DESIGN_PENDING';
+        }
+      }
+    }else if(activeCanonical?.buildUpDirective){
+      freshness='CURRENT_ACTIVE_GENERATION';
+    }
+    const checkedCandidate={
       ...candidate,
-      evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]
+      evidence:[...new Set([
+        ...(candidate.evidence||[]),
+        'build-up-pre-reserve-binding:CHECKED',
+        'build-up-directive-freshness:'+freshness
+      ])]
     };
-    changed+=1;
+    if(JSON.stringify(checkedCandidate)!==JSON.stringify(item)){
+      tasks[index]=checkedCandidate;
+      mutated+=1;
+    }
   }
   return{
-    changed,
-    queue:changed?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue
+    changed,mutated,attached,rebound,designPending,checked,
+    queue:mutated?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue
   };
 }
 export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
@@ -1888,7 +1936,17 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
     .map(focus=>findStudioContinuousImprovementTask(project,repoRoot,queue,focus))
     .filter(Boolean);
   const canonical=tasks.find(row=>row?.buildUpDirective?.directiveId)?.buildUpDirective||null;
-  return canonical?tasks.map(row=>bindSharedBuildUpDirective(row,canonical)):tasks;
+  if(!canonical)return tasks;
+  const bound=tasks.map(row=>bindSharedBuildUpDirective(row,canonical));
+  const primary=clean(canonical.primaryFocus).toUpperCase();
+  const stableOrder=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
+  return bound.sort((a,b)=>{
+    const af=clean(a?.studioQualityEvolution?.focusPillar).toUpperCase();
+    const bf=clean(b?.studioQualityEvolution?.focusPillar).toUpperCase();
+    const ap=af===primary?0:1,bp=bf===primary?0:1;
+    if(ap!==bp)return ap-bp;
+    return stableOrder.indexOf(af)-stableOrder.indexOf(bf);
+  });
 }
 
 function findSafeTasks(project,repoRoot,queue){
