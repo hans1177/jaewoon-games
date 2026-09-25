@@ -267,3 +267,11 @@ test('Studio MCP failure evidence path is exported before the MCP process can fa
   assert.ok(runAt>exportAt);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=/);
 });
+
+
+test('Studio MCP diagnostics expose installed version and available tool inventory on contract mismatch',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_PRODUCT_VERSION=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PRODUCT_VERSION=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_TOOL_MISSING:'\+name\+':available='\+available\.join\(','\)/);
+});
