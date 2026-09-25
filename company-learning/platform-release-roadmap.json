@@ -1,5 +1,5 @@
 {
-  "version": 368,
+  "version": 369,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -634,16 +634,22 @@
         }
       },
       "workflowRunConcurrency": {
-        "version": 1,
+        "version": 2,
         "exactGameDispatchGroup": "PER_GAME_STABLE_GROUP",
         "batchDispatchGroup": "UNIQUE_PER_WORKFLOW_RUN",
         "batchRunsMayOverlap": true,
         "oneSlowGameMayNotQueueUnrelatedNewBatchRun": true,
-        "sharedRuntimeWritersRemainSerialized": true,
+        "sharedRuntimeWritersRemainSerialized": false,
         "heavySourceBuildPreflightF0MayNotBeSerializedByBatchWorkflowGroup": true,
         "duplicateExactGameDispatchMaySerialize": true,
         "cancelInProgress": false,
-        "externalProviderCapacityRemainsOnlyHeavyExecutionBoundary": true
+        "externalProviderCapacityRemainsOnlyHeavyExecutionBoundary": true,
+        "sharedRuntimeWriterStrategy": "OPTIMISTIC_LATEST_READ_REAPPLY_PUSH_RETRY",
+        "staticGlobalWriterConcurrencyGroupForbidden": true,
+        "pendingWriterMayNotBeCancelledByNewerWriter": true,
+        "writerConflictResolution": "REFETCH_LATEST_COMPANY_RUNTIME_AND_REAPPLY_IMMUTABLE_RESULT",
+        "writerRetryBound": "JOB_TIMEOUT_ONLY",
+        "writerStateMergeAuthority": "LATEST_COMPANY_RUNTIME_PLUS_CURRENT_IMMUTABLE_RESULT"
       },
       "privateRuntimeCandidateModeAuthority": {
         "version": 1,
@@ -674,6 +680,21 @@
         "retryUntilPublishedOrVerifiedDifferentRootCause": true,
         "runtimePassStillRequiresActualRuntimeEvidence": true,
         "shadowPipelineForbidden": true
+      },
+      "runtimeStateWriter": {
+        "version": 1,
+        "scope": [
+          "ROBLOX_SOURCE_BIND_PERSIST",
+          "ROBLOX_TECHNICAL_CHECKPOINT_PERSIST"
+        ],
+        "staticConcurrencyGroupForbidden": true,
+        "optimisticRetryRequired": true,
+        "refetchBeforeEveryAttempt": true,
+        "reapplyAgainstLatestStateRequired": true,
+        "staleSourceRevisionIgnored": true,
+        "pushConflictRetriesUntilSuccessOrJobTimeout": true,
+        "immutableWorkerArtifactReuseRequired": true,
+        "unrelatedGameStatePreserved": true
       }
     },
     "candidateReleaseConcurrency": {
@@ -6774,6 +6795,16 @@
       "resolution": "EVERY_CANONICAL_ROBLOX_RUNTIME_RUN_SCANS_ALL_EXACT_F0_PASSED_PRIVATE_RUNTIME_PENDING_CANDIDATES_AND_REDISPATCHES_IDEMPOTENTLY; PER_GAME_RELEASE_CONCURRENCY_PREVENTS_DUPLICATE_HEAVY_WORK",
       "qualityGateWeakening": false,
       "runtimeEvidenceRulesChanged": false,
+      "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
+    },
+    "robloxRuntimeWriterOptimisticRetry20260925": {
+      "id": "ROBLOX_RUNTIME_WRITER_OPTIMISTIC_RETRY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "STATIC_COMPANY_RUNTIME_WRITER_CONCURRENCY_COULD_CANCEL_OLDER_PENDING_SOURCE_OR_TECHNICAL_PERSIST_JOBS_WHEN_MULTIPLE_ROBLOX_RUNS_OVERLAPPED",
+      "resolution": "REMOVE_STATIC_GLOBAL_WRITER_CONCURRENCY_FOR_ROBLOX_SOURCE_AND_TECHNICAL_PERSIST; EACH_WRITER_REFETCHES_LATEST_COMPANY_RUNTIME_REAPPLIES_ITS_IMMUTABLE_RESULT_AND_RETRIES_NON_FAST_FORWARD_PUSH_UNTIL_SUCCESS_OR_JOB_TIMEOUT",
+      "qualityGateWeakening": false,
+      "runtimeStateLossForbidden": true,
       "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
     }
   },
