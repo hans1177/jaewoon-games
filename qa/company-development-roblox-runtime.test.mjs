@@ -466,12 +466,19 @@ test('Roblox source and package workers avoid full repository history checkout',
 });
 
 
-test('Roblox runtime persist writers serialize with the shared company runtime writer lock',()=>{
+test('Roblox runtime persist writers refetch and reapply instead of using a cancellable global writer lock',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  const sourcePersist=workflow.slice(workflow.indexOf('  source-bootstrap:'),workflow.indexOf('  technical-plan:'));
-  const packagePersist=workflow.slice(workflow.indexOf('  technical-persist:'),workflow.indexOf('  ',workflow.indexOf('  technical-persist:')+10)>0?workflow.length:workflow.length);
-  assert.match(sourcePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
-  assert.match(packagePersist,/concurrency:\s*\n\s*group: company-runtime-writer\s*\n\s*cancel-in-progress: false/);
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const writer=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.runtimeStateWriter;
+  assert.equal(writer.staticConcurrencyGroupForbidden,true);
+  assert.equal(writer.optimisticRetryRequired,true);
+  assert.equal(writer.refetchBeforeEveryAttempt,true);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.match(workflow,/ROBLOX_SOURCE_PERSIST_ATTEMPT=/);
+  assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_ATTEMPT=/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
+  assert.ok((workflow.match(/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH" main/g)||[]).length>=4);
 });
 
 
@@ -488,17 +495,18 @@ test('Roblox game source pushes route through exact changed-source sync instead 
 });
 
 
-test('exact Roblox dispatch stays per-game while batch runs do not serialize heavy execution',()=>{
+test('exact Roblox dispatch stays per-game while batch runs and runtime writers avoid global serialization',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   const concurrency=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.workflowRunConcurrency;
   assert.equal(concurrency.exactGameDispatchGroup,'PER_GAME_STABLE_GROUP');
   assert.equal(concurrency.batchDispatchGroup,'UNIQUE_PER_WORKFLOW_RUN');
   assert.equal(concurrency.batchRunsMayOverlap,true);
-  assert.equal(concurrency.sharedRuntimeWritersRemainSerialized,true);
+  assert.equal(concurrency.sharedRuntimeWritersRemainSerialized,false);
+  assert.equal(concurrency.sharedRuntimeWriterStrategy,'OPTIMISTIC_LATEST_READ_REAPPLY_PUSH_RETRY');
+  assert.equal(concurrency.staticGlobalWriterConcurrencyGroupForbidden,true);
   assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| format\('batch-\{0\}', github\.run_id\) \}\}/);
-  assert.match(workflow,/source-bootstrap:[\s\S]*group: company-runtime-writer/);
-  assert.match(workflow,/technical-persist:[\s\S]*group: company-runtime-writer/);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
 });
 
 

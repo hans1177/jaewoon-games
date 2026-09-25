@@ -346,9 +346,6 @@ jobs:
     name: persist Roblox source-bind results
     needs: [source-plan, source-worker]
     if: always() && needs.source-plan.result == 'success'
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -381,8 +378,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git checkout -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
-          node <<'NODE'
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git checkout -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            echo "ROBLOX_SOURCE_PERSIST_ATTEMPT=$attempt"
+            node <<'NODE'
           const fs=require('fs');
           const path=require('path');
           const {execFileSync}=require('child_process');
@@ -555,14 +557,22 @@ jobs:
             "$PWD/game-catalog.json" \
             "$PWD/homepage-platform-exposure.json" \
             /tmp/roblox-homepage-sync/company-learning/platform-release-roadmap.json
-          git config user.name 'jaewoon-roblox-development'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json homepage-platform-exposure.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+            git config user.name 'jaewoon-roblox-development'
+            git config user.email 'actions@users.noreply.github.com'
+            git add development-queue.json homepage-platform-exposure.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_SOURCE_PERSIST_NO_CHANGE=YES'
+              break
+            fi
             git commit -m 'runtime: reconcile and bind Roblox DEVELOPMENT source [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_SOURCE_PERSIST_PUSH=PASS:$attempt"
+              break
+            fi
+            echo "ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep 2
+          done
           echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
@@ -977,9 +987,6 @@ jobs:
     name: persist Roblox package checkpoints
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -1005,8 +1012,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
-          node <<'NODE'
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            echo "ROBLOX_TECHNICAL_PERSIST_ATTEMPT=$attempt"
+            node <<'NODE'
           const fs=require('fs');
           const path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
@@ -1119,14 +1131,22 @@ jobs:
           console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
           console.log('ROBLOX_RELEASE_CLAIM=NO');
           NODE
-          git config user.name 'jaewoon-roblox-development'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+            git config user.name 'jaewoon-roblox-development'
+            git config user.email 'actions@users.noreply.github.com'
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_TECHNICAL_PERSIST_NO_CHANGE=YES'
+              break
+            fi
             git commit -m 'runtime: persist Roblox package checkpoint [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_TECHNICAL_PERSIST_PUSH=PASS:$attempt"
+              break
+            fi
+            echo "ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep 2
+          done
       - name: Record isolated package failures without blocking other games
         if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result != 'success'
         run: |
