@@ -157,6 +157,7 @@ test('queued low-value micro diagnostics are consolidated so studio presentation
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  writeStudioDesign(root,gameId);
   const validationDir=path.join(root,'design',gameId,'2026-09-24');
   fs.mkdirSync(validationDir,{recursive:true});
   fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
@@ -1007,6 +1008,7 @@ test('verified studio quality package advances to a new large studio cycle inste
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  writeStudioDesign(root,gameId);
   const project={gameId,name:'Studio Repeat Cycle',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
   const first=findStudioContinuousImprovementTask(project,root,{tasks:[]});
   assert.ok(first);
@@ -1101,7 +1103,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.equal(first.taskWorkUnits,7);
   assert.equal(first.studioQualityEvolution?.cycle,1);
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
-  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,6);
+  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,null);
   assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
   working={...working,tasks:working.tasks.map(row=>
