@@ -136,14 +136,10 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       const deferred=infrastructurePending.filter(row=>row.gameId!==canary.gameId).map(row=>row.gameId).sort();
       console.log('ROBLOX_STUDIO_MCP_SHARED_INFRA_CANARY='+canary.gameId);
       console.log('ROBLOX_STUDIO_MCP_SHARED_INFRA_DEFERRED='+(deferred.join(',')||'NONE'));
-      return{
-        include:[...nonInfra,canary],
-        sharedInfrastructureCanary:true,
-        deferredInfrastructureGameIds:deferred
-      };
+      return{include:[...nonInfra,canary]};
     }
   }
-  return{include,sharedInfrastructureCanary:false,deferredInfrastructureGameIds:[]};
+  return{include};
 }
 
 function flattenText(value,out=[]){
