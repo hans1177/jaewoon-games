@@ -9,6 +9,8 @@ import {
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+const centralRoadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
@@ -18,10 +20,14 @@ function roadmap(){
     roblox:{studioExecution:{
       enabled:true,required:true,localPlaceFileRequired:true,
       onlinePublishedPlaceDirectOpenForbidden:true,
-      placeIdOrUniverseIdAsStudioLaunchTargetForbidden:true
+      placeIdOrUniverseIdAsStudioLaunchTargetForbidden:true,
+      requiresRuntimeFoundationQaSuccess:true,
+      requiresRuntimeFoundationCandidatePass:true
     }},
     developmentLifecycleMachine:{robloxStudioUsage:{
       learningUseForbidden:false,
+      runtimeFoundationQaPassRequiredBeforeStudioPlay:true,
+      runtimeFoundationCandidatePassRequiredBeforeStudioPlay:true,
       forbidden:[
         'ROBLOX_PLAYER_AUTOMATION',
         'PUBLIC_SERVER_BOT_PLAY',
@@ -38,7 +44,8 @@ function item(){
     robloxBuildOrPackagePassed:true,
     robloxBuildSourceRevision:source,
     robloxBuildArtifactIdentity:artifact,
-    robloxSharedTargetCurrent:false,
+    robloxSharedTargetCurrent:true,
+    robloxRuntimeFoundationPassed:true,
     robloxRuntimeCandidateEvidence:{
       sourceRevision:source,
       artifactIdentity:artifact,
@@ -149,6 +156,19 @@ test('verified Studio runtime error routes exact game to repair while remaining 
   assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
   assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_LOCAL_RUNTIME_ERROR');
   assert.deepEqual(applied.item.routingBlockers,['roblox-studio-local-play-repair-required']);
+});
+
+test('local Studio play is ordered after successful runtime foundation QA and exact candidate pass',()=>{
+  assert.equal(centralRoadmap.roblox.studioExecution.requiresRuntimeFoundationQaSuccess,true);
+  assert.equal(centralRoadmap.roblox.studioExecution.requiresRuntimeFoundationCandidatePass,true);
+  assert.equal(centralRoadmap.developmentLifecycleMachine.robloxStudioUsage.runtimeFoundationQaPassRequiredBeforeStudioPlay,true);
+  assert.equal(architecture.learningClosedLoopTopology.robloxStudioVerifiedRuntimeIngress.requiresRuntimeFoundationQaSuccess,true);
+  assert.equal(architecture.learningClosedLoopTopology.robloxStudioVerifiedRuntimeIngress.requiresRuntimeFoundationCandidatePass,true);
+  assert.match(workflow,/studio-local-plan:[\s\S]*needs: runtime-foundation-qa[\s\S]*if: needs\.runtime-foundation-qa\.result == 'success'/);
+  assert.equal((workflow.match(/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true;/g)||[]).length,1);
+  const candidate=item();
+  candidate.robloxRuntimeFoundationPassed=false;
+  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
 });
 
 test('company runtime QA uses local immutable Place artifact and never launches published Place directly in Studio',()=>{
