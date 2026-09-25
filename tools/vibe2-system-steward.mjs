@@ -24,11 +24,12 @@ const activeStatus=s=>['queued','running'].includes(clean(s).toLowerCase());
 const waitBlocker=v=>/WAITING_FOR_GEMINI_QUOTA|external.*model.*quota|roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME/i.test(clean(v));
 const failureSignature=t=>clean(t?.blocker)||clean(t?.lastOutcome)||'causal-repair-required';
 const ADAPTIVE_STEPS=new Set(ADAPTIVE_PARALLELISM_STEPS);
+const adaptiveControlStepHealthy=input=>{const step=Number(input?.currentMax);return ADAPTIVE_STEPS.has(step)&&(step>=DEFAULT_ADAPTIVE_TARGET||(input?.lastTelemetry&&typeof input.lastTelemetry==='object'));};
 const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));
 const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   Number(queueInput?.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
   Number(controlInput?.version)===4&&
-  ADAPTIVE_STEPS.has(Number(controlInput?.currentMax));
+  adaptiveControlStepHealthy(controlInput);
 const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null});
 
 function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
@@ -51,7 +52,7 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   let control=createParallelismControl(controlInput);
   const nowMs=Date.parse(now)||Date.now(),actions=[],taskIds=[];
   const rawControlVersionHealthy=Number(controlInput?.version||4)===4;
-  const rawControlStepHealthy=ADAPTIVE_STEPS.has(Number(controlInput?.currentMax));
+  const rawControlStepHealthy=adaptiveControlStepHealthy(controlInput);
   const machineRepairActions=[];
 
   if(!rawControlVersionHealthy||!rawControlStepHealthy){
@@ -75,7 +76,7 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   const repairedMachineStateHealthy=
     Number(queue.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
     rawControlVersionHealthy&&
-    ADAPTIVE_STEPS.has(Number(control.currentMax));
+    adaptiveControlStepHealthy(control);
 
   const staleMachineIds=new Set(
     repairedMachineStateHealthy
