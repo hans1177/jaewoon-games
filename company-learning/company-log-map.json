@@ -1,5 +1,5 @@
 {
-  "version": 63,
+  "version": 64,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1197,5 +1197,20 @@
     "primaryCoverageMustRemainUnchangedWhenSuppressed": true,
     "suppressionIsNotFailure": true,
     "automaticRecoveryExpected": true
+  },
+  "vibeRunnerPressureCallbackCoalescing": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerPressureCallbackCoalescing20260926",
+    "requiredMarkers": [
+      "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=",
+      "VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS",
+      "VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN",
+      "VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN"
+    ],
+    "coalescedResultMustRemainInWorkerArtifact": true,
+    "existingCohortFanInMustConsumeCoalescedResult": true,
+    "coalescingIsNotTaskFailure": true,
+    "immediateDispatchMustResumeWhenQueuePressureClears": true,
+    "workerDirectControlWriteForbidden": true
   }
 }
