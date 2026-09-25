@@ -68,6 +68,35 @@ function walkSource(root){
 
 function tokenCount(text,re){return (String(text).match(re)||[]).length;}
 
+function sourceAnchorsFromRows(rows=[],topFiles=[]){
+  const priority=new Map((topFiles||[]).map((row,index)=>[clean(row?.file),index]));
+  const ordered=[...rows].sort((a,b)=>(priority.get(a.file)??999)-(priority.get(b.file)??999)||a.file.localeCompare(b.file));
+  const out=[],seen=new Set();
+  const push=(row,lineIndex,kind,symbol,line)=>{
+    const file=clean(row?.file),name=clean(symbol);
+    if(!file||!name)return;
+    const key=file+'|'+kind+'|'+name;
+    if(seen.has(key))return;
+    seen.add(key);
+    out.push(Object.freeze({file,kind,symbol:name,line:lineIndex+1,snippet:clean(line).slice(0,180)}));
+  };
+  for(const row of ordered){
+    if(!row?.text)continue;
+    const lines=String(row.text).split(/\r?\n/);
+    for(let i=0;i<lines.length&&out.length<32;i+=1){
+      const line=lines[i];
+      let m=null;
+      if((m=/\bclass\s+([A-Za-z_][A-Za-z0-9_]*)/.exec(line)))push(row,i,'CLASS',m[1],line);
+      if((m=/\b(?:local\s+)?function\s+([A-Za-z_][A-Za-z0-9_.:]*)\s*\(/.exec(line)))push(row,i,'FUNCTION',m[1],line);
+      if((m=/\b(?:public|private|protected|internal|static|async|virtual|override|sealed|partial|new|\s)+\s*[A-Za-z_][A-Za-z0-9_<>,.?\[\]]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^;]*\)\s*(?:\{|=>)/.exec(line)))push(row,i,/^On[A-Z]|^Handle[A-Z]/.test(m[1])?'EVENT_HANDLER':'FUNCTION',m[1],line);
+      if((m=/\b(?:const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>/.exec(line)))push(row,i,'FUNCTION',m[1],line);
+      if((m=/\b([A-Za-z_][A-Za-z0-9_]*)\s*[:=]\s*function\s*\(/.exec(line)))push(row,i,'FUNCTION',m[1],line);
+    }
+    if(out.length>=32)break;
+  }
+  return Object.freeze(out.slice(0,24));
+}
+
 export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const absolute=path.resolve(repoRoot,sourceRoot);
   const files=walkSource(absolute);
@@ -100,11 +129,13 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     score:
       tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
+  const sourceAnchors=sourceAnchorsFromRows(rows,topFiles);
   return Object.freeze({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:files.length?fingerprint.digest('hex'):sha('missing:'+sourceRoot),
     fileCount:files.length,
     topFiles,
+    sourceAnchors,
     signals,
     observations:uniq([
       files.length===0?'CURRENT_SOURCE_MISSING_OR_UNREADABLE':'CURRENT_SOURCE_FILES='+files.length,
@@ -127,12 +158,14 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
   for(const part of parts)for(const [key,value] of Object.entries(part.signals||{}))signals[key]=(signals[key]||0)+Number(value||0);
   const combinedFingerprint=sha(parts.map(part=>part.sourceTreeFingerprint).sort().join('|'));
   const topFiles=parts.flatMap(part=>part.topFiles||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)).slice(0,20);
+  const sourceAnchors=parts.flatMap(part=>part.sourceAnchors||[]).filter((row,index,array)=>array.findIndex(other=>other.file===row.file&&other.kind===row.kind&&other.symbol===row.symbol)===index).slice(0,32);
   return Object.freeze({
     sourceRoot:roots.join('|'),
     sourceRoots:Object.freeze(roots),
     sourceTreeFingerprint:combinedFingerprint,
     fileCount:parts.reduce((n,part)=>n+Number(part.fileCount||0),0),
     topFiles:Object.freeze(topFiles),
+    sourceAnchors:Object.freeze(sourceAnchors),
     signals:Object.freeze(signals),
     observations:Object.freeze(uniq(parts.flatMap(part=>part.observations||[]))),
     platformSourceFingerprints:Object.freeze(Object.fromEntries(parts.map(part=>[part.sourceRoot,part.sourceTreeFingerprint])))
