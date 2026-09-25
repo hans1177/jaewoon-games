@@ -321,3 +321,22 @@ test('every rebuilt Roblox candidate invalidates prior Vibe play and external-pu
     /item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/
   ]) assert.match(candidate,pattern);
 });
+
+
+test('shared FAST_MVP target selects the newest current runtime candidate and preserves completed evidence on rotation',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/robloxRuntimeCandidateEvidence\?\.published===true/);
+  assert.match(candidate,/robloxSharedTargetCurrent===false/);
+  assert.match(candidate,/\.sort\(\(a,b\)=>Number\(b\.robloxRuntimeCandidateEvidence\?\.versionNumber/);
+  assert.match(candidate,/ROBLOX_RELEASE_SHARED_FALLBACK_CAPACITY_BUSY/);
+  assert.match(candidate,/sharedRotation=headlessCanonical===true/);
+  const start=candidate.indexOf('if(sharedRotation){');
+  const end=candidate.indexOf('item.robloxSharedTargetCurrent=true;',start);
+  assert.ok(start>0&&end>start);
+  const rotation=candidate.slice(start,end);
+  assert.match(rotation,/other\.robloxSharedTargetCurrent=false/);
+  assert.match(rotation,/other\.robloxFastMvpSupersededBy=item\.gameId/);
+  assert.doesNotMatch(rotation,/other\.robloxRuntimePassed=false/);
+  assert.doesNotMatch(rotation,/other\.robloxRuntimeFoundationEvidence=null/);
+  assert.doesNotMatch(rotation,/other\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+});
