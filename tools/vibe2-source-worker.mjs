@@ -80,8 +80,11 @@ const FULL_WEB_CONTEXT_WINDOW=32768;
 const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
 const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
+const ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS=new Set([
+  'TIMEOUT','EDIT_MATCH','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
+]);
 const ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES=new Set([
-  'TIMEOUT','EDIT_MATCH','MALFORMED_OUTPUT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
+  ...ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS,'MALFORMED_OUTPUT'
 ]);
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
 const FULL_FILE_CONTENT_MARKER='---VIBE2_FILE_CONTENT---';
@@ -1251,7 +1254,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
   }
   return null;
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false,robloxFullGraphicsPackageActive=false}={}){
   const rawPrompt=String(prompt??'');
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -1270,7 +1273,9 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const robloxVisualDomainsFailure=/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(reason);
   const robloxVisualMotionFailure=/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(reason);
   const retryFailureClass=generationFailureClass(reason);
-  const robloxFullGraphicsPackageRecovery=robloxPresentationTask&&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(retryFailureClass);
+  const robloxFullGraphicsPackageRecovery=robloxPresentationTask
+    &&(robloxFullGraphicsPackageActive===true||ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(retryFailureClass))
+    &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(retryFailureClass);
   const studioQualityDelta=studioInitial||/STUDIO_QUALITY_DELTA_REQUIRED/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
@@ -1507,6 +1512,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let studioEditMatchCreditUsed=false;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
+  let robloxFullGraphicsPackageActive=false;
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const initialStudioPrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
@@ -1537,7 +1543,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const retry=attempt>1;
     const robloxAssetAdaptationTask=!allowFullRewrite&&/Engine:\s*roblox/i.test(String(prompt??''))&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
     const priorFailureClass=generationFailureClass(lastError);
-    const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask&&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass);
+    if(robloxAssetAdaptationTask&&ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(priorFailureClass))robloxFullGraphicsPackageActive=true;
+    const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask
+      &&robloxFullGraphicsPackageActive
+      &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
@@ -1561,7 +1570,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired}):initialStudioPrompt));
+      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery}):initialStudioPrompt));
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
