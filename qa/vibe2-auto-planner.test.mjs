@@ -1386,7 +1386,7 @@ test('owner focused games and all released games receive focused caretaker prior
 });
 
 
-test('central Unity Web owner lock routes DEVELOPMENT_CONFIRMED first-stage work to canonical Unity source',()=>{
+test('central Unity Web development floor routes new DEVELOPMENT_CONFIRMED work to canonical Unity source',()=>{
   const root=tempRepo();
   const gameId='unity-first-stage-game';
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
@@ -1395,11 +1395,14 @@ test('central Unity Web owner lock routes DEVELOPMENT_CONFIRMED first-stage work
     humanDocumentRequired:false,
     unityWebFirstStage:{
       status:'OWNER_DIRECT_LOCKED',
-      scope:'FIRST_WEB_GAME_STAGE_ONLY',
-      appliesToAllGames:true,
+      scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+      developmentAdmissionAuthority:true,
+      validationSurfaceOnly:false,
       canonicalGameSourceRoot:'unity-games/<gameId>/',
-      publicWebBuildRoot:'web-games/<gameId>/',
-      postUnityWebGatePipelineUnchanged:true
+      publicWebBuildRoot:'web-games/<gameId>/'
+    },
+    directNativeDualPlatformDevelopment:{
+      upperPlatformAdmissionMigration:{grandfatherGameIds:['cozy-island','daechung-rpg']}
     }
   },null,2),'utf8');
   const result=planVibe2AutonomousTasks({
@@ -1436,6 +1439,101 @@ test('central Unity Web owner lock routes DEVELOPMENT_CONFIRMED first-stage work
   assert.match(task.goal,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
   assert.match(task.goal,/1차 Web 게임 원본을 unity-games\//);
   assert.match(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
+});
+
+
+test('missing current upper-platform readiness requeues real Unity Web code and graphics repair',()=>{
+  const root=tempRepo();
+  const gameId='unity-web-readiness-repair';
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
+    humanDocumentRequired:false,
+    unityWebFirstStage:{
+      status:'OWNER_DIRECT_LOCKED',
+      scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+      developmentAdmissionAuthority:true,
+      validationSurfaceOnly:false,
+      canonicalGameSourceRoot:'unity-games/<gameId>/',
+      publicWebBuildRoot:'web-games/<gameId>/'
+    },
+    directNativeDualPlatformDevelopment:{
+      upperPlatformAdmissionMigration:{grandfatherGameIds:['cozy-island','daechung-rpg']}
+    }
+  },null,2),'utf8');
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','GameCore.cs'),'public class GameCore {}\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','RuntimeBootstrap.cs'),[
+    'using UnityEngine;',
+    'public class RuntimeBootstrap : MonoBehaviour {',
+    'void Update(){ if(Application.absoluteURL.Contains("qa=1")){} }',
+    'void Evidence(){ Debug.Log("JAEWOON_UNITY_WEB_QA BOOT"); Debug.Log("JAEWOON_UNITY_WEB_QA STATE"); Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_TARGET"); Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT"); Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN"); }',
+    '}'
+  ].join('\n'));
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','Visuals.cs'),'public class Visuals { public void Animate(){} }\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Editor','Build.cs'),'public static class WebBuild { public static void BuildWeb(){} }\n');
+  fs.writeFileSync(path.join(unityRoot,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Readiness Repair',productionClass:'DEVELOPMENT_CONFIRMED',homepageCategory:'development-confirmed',lifecycleState:'ACTIVE'}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Readiness Repair',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'DEVELOPMENT_CONFIRMED',
+      selectedPlatform:'ROBLOX',
+      minimumDesignContract:{pass:true},
+      platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},
+      concurrentTargetPlatforms:['ROBLOX','UNITY']
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId&&String(row.id).includes('unity-web-repair'));
+  assert.ok(task);
+  assert.equal(task.target,'unity');
+  assert.ok(task.evidence.includes('unity-web-development-floor:v1'));
+  assert.ok(task.evidence.includes('upper-platform-readiness:READINESS_EVIDENCE_MISSING'));
+  assert.ok(task.responsibleFiles.includes(`unity-games/${gameId}/Assets/Scripts/Visuals.cs`));
+  assert.match(task.goal,/CODE\/GRAPHICS\/WEBGL_BUILD\/ACTUAL_PLAY\/QA\/PORTABILITY/);
+  assert.match(task.goal,/실제 2명 이상 상태 동기화/);
+});
+
+test('explicit grandfathered native progress is not rewound into the Unity Web repair floor',()=>{
+  const root=tempRepo();
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
+    humanDocumentRequired:false,
+    unityWebFirstStage:{
+      status:'OWNER_DIRECT_LOCKED',
+      scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+      developmentAdmissionAuthority:true,
+      validationSurfaceOnly:false,
+      canonicalGameSourceRoot:'unity-games/<gameId>/',
+      publicWebBuildRoot:'web-games/<gameId>/'
+    },
+    directNativeDualPlatformDevelopment:{
+      upperPlatformAdmissionMigration:{grandfatherGameIds:['cozy-island','daechung-rpg']}
+    }
+  },null,2),'utf8');
+  const projects=collectProjects(
+    {projects:[]},
+    {games:[{id:'cozy-island',name:'Cozy',productionClass:'DEVELOPMENT_CONFIRMED',homepageCategory:'development-confirmed',lifecycleState:'ACTIVE'}]},
+    root,
+    {items:[{
+      gameId:'cozy-island',gameName:'Cozy',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',selectedPlatform:'ROBLOX',
+      minimumDesignContract:{pass:true},
+      platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      robloxFoundationF0Passed:true,
+      robloxProjectPath:'roblox-games/cozy-island'
+    }]}
+  );
+  assert.equal(projects.some(row=>row.gameId==='cozy-island'&&row.firstStageUnityWeb===true),false);
 });
 
 
