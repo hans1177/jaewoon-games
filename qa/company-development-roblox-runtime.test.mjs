@@ -601,3 +601,18 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     fs.rmSync(tmp,{recursive:true,force:true});
   }
 });
+
+
+test('known Roblox source repair debt outranks reconciliation pass and canonical-state rewrites',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const priority=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.f0SourceRepairLoop.reentryPriority;
+  assert.equal(priority.reconciliationPassMayNotSuppressKnownRepairDebt,true);
+  assert.equal(priority.canonicalStateMayBeRewrittenByHigherLevelRouting,true);
+  assert.equal(priority.knownBootstrapFailureMayNotBeSkippedByExactMainReconciliation,true);
+  assert.match(workflow,/const bootstrapFailed=secondaryOwnerFocus\?item\.ownerFocusRobloxSourceBootstrapFailedAt:item\.robloxSourceBootstrapFailedAt/);
+  assert.match(workflow,/item\.robloxFoundationF0Passed!==true/);
+  assert.match(workflow,/const knownSourceRepairDebt=Boolean\(bootstrapFailed\)\|\|f0FoundationRepair/);
+  assert.match(workflow,/reconciledPass\.has\(item\.gameId\)&&!knownSourceRepairDebt/);
+  assert.doesNotMatch(workflow,/f0FoundationRepair=!secondaryOwnerFocus\s*\n\s*&&state==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'/);
+});
