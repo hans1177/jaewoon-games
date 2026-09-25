@@ -193,9 +193,12 @@ jobs:
             return status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true;
           };
           const active=(state.seeds||[]).filter(designReviewEligible);
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
-          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
           const latestStrictPassFor=(seed)=>{
+            const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed.gameId));
             if(!fs.existsSync(gameRoot))return null;
             try{
@@ -431,7 +434,10 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';
           const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const designReviewEligible=x=>{const status=String(x?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||x?.promotion?.strictDesignReviewContinuesInParallel===true);};const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&designReviewEligible(x));
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
+          const resetAt=resetGameIds.has(gameId)?resetTimestamp:0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           let strictPass=false,latestPassAt=0;
           const gameRoot=path.join('design',gameId);
@@ -1161,8 +1167,9 @@ jobs:
             .filter(game=>['ACTIVE','REBUILD'].includes(String(game.lifecycleState||'ACTIVE').toUpperCase()))
             .map(game=>String(game.id||'').trim())
             .filter(Boolean));
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
-          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
           const designReviewEligible=seed=>{
             const status=String(seed?.status||'').trim().toUpperCase();
             return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);
@@ -1171,6 +1178,8 @@ jobs:
           for(const seed of state.seeds||[]){
             const gameId=String(seed?.gameId||'').trim();
             if(!canonical.has(gameId)||!designReviewEligible(seed))continue;
+            const resetAt=resetGameIds.has(gameId)?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const root=path.join('design',gameId);
             const dates=fs.existsSync(root)?fs.readdirSync(root,{withFileTypes:true})
               .filter(entry=>entry.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(entry.name))
@@ -1248,11 +1257,15 @@ jobs:
           const branch=process.env.COMPANY_RUNTIME_BRANCH;
           const show=file=>execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
           const state=JSON.parse(show('game-seed-state.json'));let count=0;
-          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
-          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
+            .map(value=>String(value||'').trim()).filter(Boolean));
           const designReviewEligible=seed=>{const status=String(seed?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);};
           for(const seed of state.seeds||[]){
             if(!designReviewEligible(seed))continue;
+            const gameId=String(seed?.gameId||'').trim();
+            const resetAt=resetGameIds.has(gameId)?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             let passed=false;
             try{
               const tree=execFileSync('git',['ls-tree','-r','--name-only',`origin/${branch}`,`design/${seed.gameId}`],{encoding:'utf8',maxBuffer:32*1024*1024}).split(/\r?\n/).filter(Boolean);

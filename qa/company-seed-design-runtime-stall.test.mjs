@@ -249,3 +249,11 @@ test('missing designs are automatically enrolled into the existing GAME_SEED des
   assert.match(workflow,/--auto-missing-design-intake --game-id="\$GAME_ID"/);
   assert.match(workflow,/MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE/);
 });
+
+
+test('owner all-games reset freshness applies only to the reset gameIds, not every game',()=>{
+  assert.match(workflow,/const resetGameIds=new Set\(\(Array\.isArray\(state\?\.ownerAllGamesDesignReset\?\.gameIds\)/);
+  assert.match(workflow,/const resetAt=resetGameIds\.has\(String\(seed\?\.gameId\|\|''\)\.trim\(\)\)\?resetTimestamp:0/);
+  assert.match(workflow,/const resetAt=resetGameIds\.has\(gameId\)\?resetTimestamp:0/);
+  assert.doesNotMatch(workflow,/const resetAt=Date\.parse\(state\?\.ownerAllGamesDesignReset\?\.updatedAt/);
+});
