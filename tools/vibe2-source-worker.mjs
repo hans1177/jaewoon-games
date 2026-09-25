@@ -80,6 +80,12 @@ const FULL_WEB_CONTEXT_WINDOW=32768;
 const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
 const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
+const ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS=new Set([
+  'TIMEOUT','EDIT_MATCH','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
+]);
+const ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES=new Set([
+  ...ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS,'MALFORMED_OUTPUT'
+]);
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
 const FULL_FILE_CONTENT_MARKER='---VIBE2_FILE_CONTENT---';
 const FULL_FILE_END_MARKER='---VIBE2_FILE_END---';
@@ -707,7 +713,7 @@ function presentationWorkerGuidance(order = {}) {
     '새 wrapper/override/shadow pipeline으로 덮지 말고 기존 책임 시스템을 직접 정리한다.',
     'ASSET_ADAPTATION에서 Unity는 C# 기반 저폴리 조립 모델·재질·조명·VFX·모션/UI를, Roblox는 Luau 기반 조립 모델·Material/Color·Particle/Beam/Trail·모션/UI를 실제 게임 화면에 구현할 수 있다.',
     'Roblox ASSET_ADAPTATION은 캐릭터/적, 무기/장비, 환경/지형, 재질·색·스타일의 핵심 시각 도메인을 모두 실제 source delta로 구현해야 한다. 이들은 최소 필수 코어이며 총 시각 도메인 수의 상한이 아니다. UI/VFX/조명/소품/카메라 등 필요한 추가 도메인은 제한 없이 함께 개선할 수 있다.',
-    'Roblox ASSET_ADAPTATION은 첫 후보부터 완성형 그래픽 edits[] 패키지로 생성한다. 서로 다른 exact anchor를 여러 개 사용해도 되며, 한 개 micro-patch로 축소하지 않는다. 단일 edit를 쓸 수 있는 경우는 그 replace 하나가 모든 최소 필수 코어 도메인과 필수 모션을 실제 실행 코드로 함께 충족할 때뿐이다.',
+    'Roblox ASSET_ADAPTATION은 첫 후보부터 완성형 그래픽 edits[] 패키지로 생성한다. 서로 다른 exact anchor를 여러 개 사용해도 되며, 한 개 micro-patch로 축소하지 않는다. 각 replace는 기존 책임 함수 주변의 짧고 정확한 구현으로 유지하고 전체 파일급 거대 블록을 한 edit에 몰아넣지 않는다. 단일 edit를 쓸 수 있는 경우는 그 replace 하나가 모든 최소 필수 코어 도메인과 필수 모션을 실제 실행 코드로 함께 충족할 때뿐이다.',
     'Roblox ASSET_ADAPTATION의 모션은 필수다. TweenService, RenderStepped/Heartbeat, Animator/AnimationTrack, Motor6D/Bone과 CFrame/Transform/Position/Orientation 실제 변화 등 네이티브 모션 경로를 기존 visual owner에 적용해야 하며 정적 색상/UI 변경만으로 완료할 수 없다.',
     '단일 primitive, 이름만 바꾼 기본 Part/GameObject, 검증용 임시 도형은 최종 그래픽 완료로 인정하지 않는다. 여러 의미 있는 파트와 Style Lock을 사용해 게임 정체성이 보이는 결과를 만든다.',
     '하이엔드 기본값은 플레이어/적/NPC/무기/아이템/건축/지형/배경/식생/소품/UI/VFX까지 목적 있는 에셋을 실제 게임에 적용하는 것이다.',
@@ -1248,7 +1254,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
   }
   return null;
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,studioInitial=false,robloxFullGraphicsPackageActive=false}={}){
   const rawPrompt=String(prompt??'');
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -1266,7 +1272,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const robloxPresentationDelta=presentationDelta&&robloxPresentationTask;
   const robloxVisualDomainsFailure=/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(reason);
   const robloxVisualMotionFailure=/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(reason);
-  const robloxFullGraphicsPackageRecovery=robloxPresentationTask&&(robloxVisualDomainsFailure||robloxVisualMotionFailure||timeoutFailure);
+  const retryFailureClass=generationFailureClass(reason);
+  const robloxFullGraphicsPackageRecovery=robloxPresentationTask
+    &&(robloxFullGraphicsPackageActive===true||ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(retryFailureClass))
+    &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(retryFailureClass);
   const studioQualityDelta=studioInitial||/STUDIO_QUALITY_DELTA_REQUIRED/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
@@ -1283,6 +1292,14 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       ].join('\n')
     :'';
   const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':semanticDiffViolation?'candidate crossed the compiled semantic edit budget; keep only primary responsibility and required direct dependencies':reason;
+  const missingRobloxVisualDomains=robloxVisualDomainsFailure
+    ?unique((reason.match(/MISSING_([A-Z_,]+)/i)?.[1]||'').split(',').map(value=>clean(value).toUpperCase()).filter(Boolean))
+    :[];
+  const previousRobloxGraphicsCandidate=robloxFullGraphicsPackageRecovery
+    &&['ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','PRESENTATION_PATCH_DELTA'].includes(retryFailureClass)
+    &&String(previousOutput||'').trim()
+      ?boundedLargeExcerpt(String(previousOutput),8000).content
+      :'';
   const fullWebTargetLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Full Web generation target:'))||`Full Web generation target: ${FULL_WEB_GENERATION_TARGET_MIN_BYTES}-${FULL_WEB_GENERATION_TARGET_MAX_BYTES} UTF-8 bytes.`;
   const fullWebTargetMatch=fullWebTargetLine.match(/(\d+)-(\d+)\s+UTF-8 bytes/i);
   const fullWebTargetMin=Math.max(MIN_FULL_REWRITE_BYTES,Number(fullWebTargetMatch?.[1]||FULL_WEB_GENERATION_TARGET_MIN_BYTES));
@@ -1368,6 +1385,11 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           robloxPresentationDelta?'ROBLOX PRESENTATION PATCH DELTA RECOVERY: prefer an Allowed edit path owned by client/visual/render/UI/camera/VFX code before server/gameplay owners. The candidate must create an observable native visual delta, not a marker.':'',
           robloxPresentationTask?'ROBLOX FULL GRAPHICS CONTRACT: the minimum required core domains are character/enemy, weapon/equipment, environment/terrain, and material/color/style. Additional visual domains are unlimited. Motion is mandatory through TweenService/RenderStepped/Heartbeat/Animator/AnimationTrack/Motor6D/Bone plus an actual CFrame/Transform/Position/Orientation mutation.':'',
           robloxFullGraphicsPackageRecovery?'ROBLOX FULL GRAPHICS RECOVERY PACKAGE: do not collapse recovery to one micro edit. Use a connected edits[] package across distinct exact anchors when needed. The package as a whole must cover every required core visual domain and real native transform motion; a domain may share an edit with another domain, and extra visual domains have no upper limit.':'',
+          missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Preserve every core domain already present in the previous candidate and add these missing domains without regressing the others.':'',
+          previousRobloxGraphicsCandidate?'PREVIOUS VALID PARTIAL ROBLOX GRAPHICS CANDIDATE: reuse its successful visual implementation as a reference, but return a complete candidate against the ORIGINAL editable source with exact find anchors. Do not output a delta against this JSON.':'',
+          previousRobloxGraphicsCandidate?'---BEGIN_PREVIOUS_ROBLOX_GRAPHICS_CANDIDATE---':'',
+          previousRobloxGraphicsCandidate,
+          previousRobloxGraphicsCandidate?'---END_PREVIOUS_ROBLOX_GRAPHICS_CANDIDATE---':'',
           'Do not expand unrelated code.'
         ].filter(Boolean).join('\n'):prefix;
         retryBase=[compactRetryPrefix,...editable].join('\n\n');
@@ -1402,6 +1424,11 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
+        missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
+        previousRobloxGraphicsCandidate?'Use the previous valid partial candidate below as a preservation reference. Return a complete candidate against the ORIGINAL source and exact anchors; never return edits whose find text exists only inside the previous candidate.':'',
+        previousRobloxGraphicsCandidate?'---BEGIN_PREVIOUS_ROBLOX_GRAPHICS_CANDIDATE---':'',
+        previousRobloxGraphicsCandidate,
+        previousRobloxGraphicsCandidate?'---END_PREVIOUS_ROBLOX_GRAPHICS_CANDIDATE---':'',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
         retryAnchorInstruction,
         zeroChange?'You MUST produce at least one edits[] entry. Use one EXACT FIND ANCHOR OPTION above when available, then make replace materially different. Do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use one EXACT FIND ANCHOR OPTION above when available, then make the smallest real implementation change required by the work order.':editMatchFailure?(studioExpansion?'Return 3-6 connected edits. For every edit, copy a different EXACT FIND ANCHOR OPTION character-for-character; do not paraphrase, normalize, reconstruct, reuse, or guess any find string.':robloxFullGraphicsPackageRecovery?'Use distinct EXACT FIND ANCHOR OPTIONS for the connected edits[] package. Copy every chosen anchor character-for-character and do not reuse, paraphrase, normalize, reconstruct, or guess any find string.':'Use exactly one EXACT FIND ANCHOR OPTION above when available. Copy the entire anchor value character-for-character, including whitespace and punctuation. Do not paraphrase, normalize, reconstruct, or guess source text.'):semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':presentationDelta?'Use a visual/render anchor when available. The replacement MUST create an actual visible presentation delta through material/color/lighting/mesh/UI/motion/camera/VFX source while preserving gameplay values, save meaning, progression and combat semantics. Do not satisfy this with a version marker, attribute-only metadata, comments, or unrelated gameplay changes.':studioQualityDelta?`${studioInitial?'Return 3-6 connected edits and at least 3 actual source deltas from the first candidate; do not begin with a one-edit micro patch.':'Return 3-6 connected edits and at least 3 actual source deltas; the previous 1-edit micro patch is invalid for BUILD_UP.'} ${/focus=PRESENTATION/i.test(rawPrompt)?'At least 2 edits must be real visual source deltas. ':''}Use distinct exact anchors and keep each replacement concise.`:invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
@@ -1485,6 +1512,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let studioEditMatchCreditUsed=false;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
+  let robloxFullGraphicsPackageActive=false;
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const initialStudioPrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
@@ -1515,7 +1543,13 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const retry=attempt>1;
     const robloxAssetAdaptationTask=!allowFullRewrite&&/Engine:\s*roblox/i.test(String(prompt??''))&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
     const priorFailureClass=generationFailureClass(lastError);
-    const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask&&['ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','TIMEOUT'].includes(priorFailureClass);
+    const robloxFullGraphicsLateMalformedTrigger=robloxAssetAdaptationTask
+      &&priorFailureClass==='MALFORMED_OUTPUT'
+      &&attempt>=4;
+    if(robloxAssetAdaptationTask&&(ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(priorFailureClass)||robloxFullGraphicsLateMalformedTrigger))robloxFullGraphicsPackageActive=true;
+    const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask
+      &&robloxFullGraphicsPackageActive
+      &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
@@ -1539,7 +1573,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired}):initialStudioPrompt));
+      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery}):initialStudioPrompt));
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
@@ -1730,7 +1764,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       const robloxFullGraphicsRecoveryRetry=!allowFullRewrite
         &&robloxAssetAdaptationTask
-        &&['ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','TIMEOUT','MALFORMED_OUTPUT','EDIT_MATCH'].includes(failureClass)
+        &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(failureClass)
         &&attempt<configuredBaseMaxAttempts;
       if(robloxFullGraphicsRecoveryRetry)console.log(`VIBE2_ROBLOX_FULL_GRAPHICS_RECOVERY_RETRY=${attempt}->${attempt+1}:${candidateVariant}:${failureClass}`);
       const presentationRecoveryRetry=!allowFullRewrite&&presentationPatchDeltaObserved&&focusedFinalRetryAllowed(error)&&attempt<configuredBaseMaxAttempts;

@@ -115,6 +115,61 @@ test('Roblox full graphics domain recovery keeps a connected multi-edit package 
   assert.doesNotMatch(retry,/exactly one edit/i);
 });
 
+test('Roblox full graphics edit-match recovery keeps the connected package contract',()=>{
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve full Roblox graphics and native motion without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local character = workspace:FindFirstChild("Character")',
+    'local weapon = workspace:FindFirstChild("Sword")',
+    'local terrainRock = workspace:FindFirstChild("TerrainRock")',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('edit find 불일치: client/Game.client.luau'),
+    responsibleFiles:['client/Game.client.luau'],
+    attempt:2
+  });
+  assert.match(retry,/ROBLOX FULL GRAPHICS RECOVERY PACKAGE/i);
+  assert.match(retry,/connected edits\[\] package/i);
+  assert.match(retry,/distinct exact anchors/i);
+  assert.doesNotMatch(retry,/exactly one edit/i);
+});
+
+test('Roblox full graphics domain recovery carries partial progress and prioritizes missing domains',()=>{
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve full Roblox graphics and native motion without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local character = workspace:FindFirstChild("Character")',
+    'local weapon = workspace:FindFirstChild("Sword")',
+    'local terrainRock = workspace:FindFirstChild("TerrainRock")',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  ].join('\n');
+  const previous=JSON.stringify({edits:[{
+    path:'client/Game.client.luau',
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:'local enemyBody = Instance.new("MeshPart")\\nlocal terrainRock = Instance.new("MeshPart")\\npanel.BackgroundColor3 = Color3.fromRGB(70,95,130)\\nRunService.RenderStepped:Connect(function(dt) enemyBody.CFrame = enemyBody.CFrame * CFrame.Angles(0,dt,0) end)'
+  }]});
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED:MISSING_WEAPON_EQUIPMENT'),
+    responsibleFiles:['client/Game.client.luau'],
+    attempt:4,
+    previousOutput:previous
+  });
+  assert.match(retry,/MISSING CORE VISUAL DOMAINS TO ADD FIRST: WEAPON_EQUIPMENT/i);
+  assert.match(retry,/PREVIOUS VALID PARTIAL ROBLOX GRAPHICS CANDIDATE/i);
+  assert.match(retry,/BEGIN_PREVIOUS_ROBLOX_GRAPHICS_CANDIDATE/i);
+  assert.match(retry,/enemyBody = Instance\.new/i);
+  assert.match(retry,/return a complete candidate against the ORIGINAL/i);
+});
+
 test('Roblox full graphics source worker switches to package recovery after a core-domain failure',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
@@ -154,6 +209,45 @@ test('Roblox full graphics source worker switches to package recovery after a co
   assert.match(candidate,/TerrainRockEnvironment/);
   assert.match(candidate,/RenderStepped/);
   assert.match(candidate,/enemyBody\.CFrame\s*=/);
+});
+
+test('Roblox full graphics source worker stays in package mode after edit-match failure',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-full-graphics-edit-match-package'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve full Roblox graphics and native motion without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const bad=path.join(cwd,'bad-find.json');
+  const strong=path.join(cwd,'strong-package.json');
+  write(bad,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(1,2,3)',
+    replace:'panel.BackgroundColor3 = Color3.fromRGB(70,95,130)'
+  }]}));
+  write(strong,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:robloxFullGraphicsMotionPatch('96,126,162')
+  }]}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,strong]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/96,126,162/);
+  assert.match(candidate,/SwordEquipment/);
+  assert.match(candidate,/RenderStepped/);
 });
 
 test('Roblox full graphics recovery uses the configured fourth attempt after repeated visual-domain failures',async()=>{
@@ -300,7 +394,7 @@ test('repeated presentation delta rotates to the next visual anchor before the n
   assert.match(candidate,/70,95,130/);
 });
 
-test('presentation recovery keeps the fourth slot after malformed focused output',async()=>{
+test('Roblox presentation package recovery keeps the fourth slot after malformed output',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
   const relative='client/Game.client.luau';
@@ -322,11 +416,11 @@ test('presentation recovery keeps the fourth slot after malformed focused output
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
   write(r2,JSON.stringify({replace:'local score = 2'}));
   write(r3,'{"replace":');
-  write(r4,JSON.stringify({replace:robloxFullGraphicsMotionPatch('82,110,148')}));
+  write(r4,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('82,110,148')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
   assert.equal(result.generation.attempts,4);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.presentationCandidateDelta.pass,true);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
   assert.match(candidate,/82,110,148/);
