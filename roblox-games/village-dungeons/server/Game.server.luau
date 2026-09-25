@@ -155,3 +155,47 @@ Players.PlayerRemoving:Connect(function(player)
   end)
   lastAction[player] = nil
 end)
+
+
+-- native-foundation-sentinel-v1
+local nativeFoundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
+if nativeFoundationRemote and not nativeFoundationRemote:IsA("RemoteEvent") then
+  nativeFoundationRemote:Destroy()
+  nativeFoundationRemote = nil
+end
+if not nativeFoundationRemote then
+  nativeFoundationRemote = Instance.new("RemoteEvent")
+  nativeFoundationRemote.Name = "RuntimeFoundationReport"
+  nativeFoundationRemote.Parent = ReplicatedStorage
+end
+local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
+if not nativeFoundationSpawn then
+  nativeFoundationSpawn = Instance.new("SpawnLocation")
+  nativeFoundationSpawn.Name = "NativeFoundationSpawn"
+  nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
+  nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
+  nativeFoundationSpawn.Neutral = true
+  nativeFoundationSpawn.Parent = workspace
+end
+local function bindNativeFoundationCharacter(character)
+  local humanoid = character:WaitForChild("Humanoid")
+  local rootPart = character:WaitForChild("HumanoidRootPart")
+  rootPart.Anchored = false
+  humanoid.PlatformStand = false
+  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
+  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
+  character:SetAttribute("MOVEMENT_CONFIRMED", true)
+end
+local function bindNativeFoundationPlayer(player)
+  if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end
+  player.CharacterAdded:Connect(bindNativeFoundationCharacter)
+end
+Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
+for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
+  task.defer(bindNativeFoundationPlayer, nativeFoundationPlayer)
+end
+nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
+  if typeof(signal) ~= "string" then return end
+  player:SetAttribute("NativeFoundationReadyAt", os.time())
+end)
+game:BindToClose(function() end)

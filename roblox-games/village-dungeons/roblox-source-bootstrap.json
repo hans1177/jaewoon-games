@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
   "platform": "ROBLOX",
@@ -13,12 +13,13 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": false,
+  "serverSourceChanged": true,
+  "foundationRepairApplied": true,
   "generatedFiles": [
-    "shared/GameConfig.luau",
-    "client/Game.client.luau"
+    "client/Game.client.luau",
+    "server/Game.server.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -91,9 +92,9 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "company library Studio asset binding updated in existing config and client presentation",
+    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-24T06:11:19.703Z"
+  "createdAt": "2026-09-25T05:02:46.211Z"
 }
