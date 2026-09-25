@@ -1,5 +1,5 @@
 {
-  "version": 187,
+  "version": 188,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2986,7 +2986,7 @@
     "ownerResetMaterialization": "tools/owner-design-reset.mjs::materializeOwnerDesignResetSeeds",
     "strictDesignParallelWithDevelopment": true,
     "globalDevelopmentQueueMayNotDeferStrictDesign": true,
-    "unityWebRole": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
+    "unityWebRole": "FULL_DEVELOPMENT_QA_LOOP_NO_RELEASE",
     "graphics": {
       "canonicalRoleKey": "graphics",
       "displayName": "HIGH_END_VISUAL_ASSET_AND_PRESENTATION",
@@ -3078,7 +3078,7 @@
     "directPolicyCreationOutsideCentralRoadmap": false
   },
   "concurrentPlatformDevelopment": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
     "defaultTargets": [
       "ROBLOX",
@@ -3096,7 +3096,7 @@
     "onePlatformMayReleaseWithoutWaitingForOther": true,
     "globalGameCountCap": null,
     "uefn": "OWNER_HOLD",
-    "unityWeb": "VALIDATION_SURFACE_ONLY",
+    "unityWeb": "FULL_DEVELOPMENT_QA_LOOP_NO_RELEASE",
     "unityWebValidationSurface": {
       "enabled": true,
       "releasePlatform": false,
@@ -3126,7 +3126,11 @@
       "nativeFanOutExactGameOnly": true,
       "nativeFanOutLoopGuardInput": "trigger_source=UNITY_WEB_VERIFIED",
       "nativeFanOutDoesNotCreateAdmissionAuthority": true,
-      "nativeFanOutDoesNotReplaceNativeEvidence": true
+      "nativeFanOutDoesNotReplaceNativeEvidence": true,
+      "role": "COMPATIBILITY_ALIAS_TO_UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP",
+      "compatibilityAliasFor": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "deploymentAuthority": false,
+      "developmentLoopAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane"
     },
     "admissionAuthority": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
     "strictDesignScoreAdmissionAuthority": false,
@@ -3142,6 +3146,41 @@
       "scheduler": ".github/workflows/company-seed-design-runtime.yml",
       "policyAuthority": false,
       "semanticMirrorForbidden": true
+    },
+    "unityWebDevelopmentLane": {
+      "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "role": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
+      "canonicalSource": "unity-games/<gameId>/",
+      "outputRoot": "web-games/<gameId>/",
+      "sameCanonicalUnityProjectRequired": true,
+      "separateWebGameplayCodebaseForbidden": true,
+      "developmentFlow": [
+        "CODE_DEVELOPMENT",
+        "GRAPHICS_MOTION_AUDIO_PRESENTATION_DEVELOPMENT",
+        "UNITY_WEBGL_BUILD",
+        "ACTUAL_BROWSER_PLAY",
+        "INDEPENDENT_QA",
+        "REGRESSION",
+        "CAUSAL_REPAIR_AND_REBUILD",
+        "CONTINUOUS_BUILD_UP"
+      ],
+      "developmentQualityParityWithNative": true,
+      "actualBrowserRuntimeEvidenceRequired": true,
+      "independentQaRequired": true,
+      "regressionRequired": true,
+      "continuousAfterRegression": true,
+      "regressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
+      "passIsCheckpointNotTerminal": true,
+      "deploymentStage": false,
+      "internalReleaseStage": false,
+      "publicReleaseStage": false,
+      "releasePromotionStage": false,
+      "nativeLaneBlocking": false,
+      "failureState": "REPAIR_REQUIRED",
+      "retryLimit": null,
+      "currentExecutor": ".github/workflows/unity-web-first-stage-build.yml",
+      "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+      "implementationState": "ARCHITECTURE_BOUND_EXECUTOR_UPGRADE_NEXT"
     }
   },
   "releaseExposureLifecycle": {
@@ -3569,7 +3608,10 @@
       "source": "web-games/<gameId>/",
       "gate": "DEPLOYABLE_BUNDLE_MANIFEST",
       "staleCatalogAvailabilityMustFailClosed": true,
-      "qaPassStillSeparateFromHomepageLink": true
+      "qaPassStillSeparateFromHomepageLink": true,
+      "role": "OWNER_TEST_ACCESS_TO_VERIFIED_UNITY_WEB_BUILD",
+      "deploymentAuthority": false,
+      "releaseAuthority": false
     },
     "webGameStartabilityGate": "company-learning/platform-release-roadmap.json#webRuntimeStartabilityContract"
   },
@@ -3597,9 +3639,29 @@
       "sameGameNonOverlappingPackagesParallel": true,
       "sourceRootWideLockForbidden": true,
       "responsibleFileConflictSerializationOnly": true
+    },
+    "unityWebDevelopmentLane": {
+      "source": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "canonicalSource": "unity-games/<gameId>/",
+      "outputRoot": "web-games/<gameId>/",
+      "sequence": [
+        "CODE_DEVELOPMENT",
+        "GRAPHICS_MOTION_AUDIO_PRESENTATION_DEVELOPMENT",
+        "UNITY_WEBGL_BUILD",
+        "ACTUAL_BROWSER_PLAY",
+        "INDEPENDENT_QA",
+        "REGRESSION",
+        "CAUSAL_REPAIR_AND_REBUILD",
+        "CONTINUOUS_BUILD_UP"
+      ],
+      "deploymentAndReleaseOmitted": true,
+      "passIsCheckpointNotTerminal": true,
+      "nativePipelinesRemainIndependent": true,
+      "currentImplementationBinding": ".github/workflows/unity-web-first-stage-build.yml",
+      "nextImplementationTask": "UPGRADE_EXISTING_UNITY_WEB_EXECUTOR_AND_ORCHESTRATION_NO_NEW_SHADOW_PIPELINE"
     }
   },
-  "updatedAt": "2026-09-25",
+  "updatedAt": "2026-09-25T23:03:00+09:00",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -3936,8 +3998,14 @@
       "unityRuntime": ".github/workflows/company-development-unity-runtime.yml",
       "legacyWebFirstValidatorActive": false,
       "unityWebValidationRuntime": ".github/workflows/unity-web-first-stage-build.yml",
-      "unityWebValidationRole": "NON_BLOCKING_VALIDATION_SURFACE",
-      "unityWebCanonicalSource": "unity-games/<gameId>/"
+      "unityWebValidationRole": "COMPATIBILITY_ALIAS_TO_FULL_DEVELOPMENT_QA_LOOP",
+      "unityWebCanonicalSource": "unity-games/<gameId>/",
+      "unityWebDevelopmentRuntime": ".github/workflows/unity-web-first-stage-build.yml",
+      "unityWebDevelopmentRole": "FULL_DEVELOPMENT_QA_LOOP_NO_RELEASE",
+      "unityWebBuildOutput": "web-games/<gameId>/",
+      "unityWebDeploymentStage": false,
+      "unityWebReleaseStage": false,
+      "unityWebRegressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR"
     },
     "revisions": {
       "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
