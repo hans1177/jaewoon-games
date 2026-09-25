@@ -24,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 5, 'contract.version');
+eq(contract.version, 12, 'contract.version');
 eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
 eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
 eq(contract.policyAuthority, false, 'contract.policyAuthority');
