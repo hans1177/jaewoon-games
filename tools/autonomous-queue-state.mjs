@@ -255,6 +255,6 @@ function main(){
   console.log(JSON.stringify({stateFile,date:arg('date'),gameId:arg('game-id'),attemptsToday:attemptsForDate(next,arg('date')).length,gameFloorsToday:attemptCountForGameOnDate(next,arg('date'),arg('game-id'))},null,2));
 }
 
-if(import.meta.url===pathToFileURL(process.argv[1]).href){
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{main();}catch(error){console.error(error.message);process.exitCode=1;}
 }
