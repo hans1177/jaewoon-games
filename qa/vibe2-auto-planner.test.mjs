@@ -728,7 +728,7 @@ test('planner never selects Unity project without owner PASS',()=>{
   assert.equal(result.reason,'NO_CONFIRMED_PRODUCTION_PROJECT');
 });
 
-test('active source root is skipped while another project can be planned',()=>{
+test('active source root does not block same-game non-overlapping planning',()=>{
   const root=tempRepo();
   const mixedCatalog={games:[
     {id:'demo',homepageCategory:'release-confirmed'},
@@ -736,11 +736,12 @@ test('active source root is skipped while another project can be planned',()=>{
   ]};
   const result=planVibe2AutonomousTasks({
     status,catalog:mixedCatalog,
-    queue:{maxConcurrentTasks:4,tasks:[{id:'demo-active',gameId:'demo',sourceRoot:'unity-games/demo',target:'unity',goal:'active',releaseState:'release-confirmed',status:'running'}]},
+    queue:{maxConcurrentTasks:4,tasks:[{id:'demo-active',gameId:'demo',sourceRoot:'unity-games/demo',target:'unity',goal:'active',releaseState:'release-confirmed',status:'running',responsibleFiles:['unity-games/demo/Assets/Scripts/Active.cs']}]},
     repoRoot:root,maxConcurrentTasks:4
   });
-  assert.equal(result.tasks.some(t=>t.gameId==='demo'),false);
+  assert.equal(result.tasks.some(t=>t.gameId==='demo'),true);
   assert.equal(result.tasks.some(t=>t.gameId==='dev-web'),true);
+  assert.equal(result.tasks.filter(t=>t.gameId==='demo').every(task=>!(task.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/Active.cs')),true);
 });
 
 test('development web is assessed before deterministic diagnostics',()=>{
