@@ -4001,7 +4001,10 @@
       "coding_negative_amisfd",
       "coding_negative_5eam6r",
       "coding_negative_1j3o72m",
-      "coding_negative_12zb2d3"
+      "coding_negative_12zb2d3",
+      "coding_negative_1dee3wc",
+      "coding_negative_viva32",
+      "coding_negative_j3rmi2"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -5206,7 +5209,7 @@
         "verifiedApplications": 216,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 477,
-        "verifiedFailures": 704,
+        "verifiedFailures": 707,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -5265,13 +5268,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 139,
-            "verifiedFailures": 367,
+            "verifiedFailures": 368,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 334,
             "totalContextBytes": 4377796,
             "lastEvidence": "coding_nwrwl2",
-            "lastFailureEvidence": "coding_negative_12zb2d3",
-            "lastUpdatedAt": "2026-09-25T02:56:21.150Z"
+            "lastFailureEvidence": "coding_negative_1dee3wc",
+            "lastUpdatedAt": "2026-09-25T20:23:06.616Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -7032,21 +7035,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 15,
+            "verifiedFailures": 16,
             "games": {},
             "targets": {},
             "failureGames": {
-              "daechung-rpg": 15
+              "daechung-rpg": 16
             },
             "failureTargets": {
-              "unity": 15
+              "unity": 16
             },
             "failureClasses": {
-              "INCREMENTAL_QA": 15
+              "INCREMENTAL_QA": 16
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1axdxro",
-            "lastUpdatedAt": "2026-09-25T02:56:21.147Z"
+            "lastFailureEvidence": "coding_negative_1dee3wc",
+            "lastUpdatedAt": "2026-09-25T20:23:06.616Z"
           },
           "web|NO_OP|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CONCEPT_DIRECTION|CORE_LOOP|ECONOMY|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_REPLICATION|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE|UEFN_REPLICATION|UEFN_RUNTIME|UI_STATE|UNITY_RUNTIME|WEB_RUNTIME": {
             "verifiedApplications": 0,
@@ -7428,12 +7431,52 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_16qu1rj",
             "lastUpdatedAt": "2026-09-25T02:56:21.149Z"
+          },
+          "roblox|MOBILE_INPUT|SAVE_RESTORE|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|CAMERA_LANGUAGE|CHARACTER_ARC|CORE_LOOP|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|ROBLOX_MULTIPLAYER|ROBLOX_STUDIO|SAVE|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|VISUAL_IDENTITY": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "cozy-island": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_viva32",
+            "lastUpdatedAt": "2026-09-25T20:23:06.621Z"
+          },
+          "roblox|MOBILE_INPUT|STATE_FLOW|RUNTIME|RELEASE|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|CONCEPT_DIRECTION|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|QUEST_DESIGN|ROBLOX_STUDIO|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX|VISUAL_IDENTITY": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "line-defense": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_j3rmi2",
+            "lastUpdatedAt": "2026-09-25T20:23:06.621Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_nwrwl2",
-        "lastFailureEvidence": "coding_negative_12zb2d3",
-        "lastUpdatedAt": "2026-09-25T02:56:21.150Z"
+        "lastFailureEvidence": "coding_negative_j3rmi2",
+        "lastUpdatedAt": "2026-09-25T20:23:06.621Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 557,
@@ -11883,7 +11926,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-25T20:08:20.548Z",
+    "lastBuiltAt": "2026-09-25T20:23:06.639Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -17712,5 +17755,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-25T20:08:20.548Z"
+  "updatedAt": "2026-09-25T20:23:06.639Z"
 }
