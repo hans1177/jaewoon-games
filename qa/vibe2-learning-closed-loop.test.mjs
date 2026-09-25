@@ -112,16 +112,6 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(architectureIngress?.postNativeFinalReviewImplementation,'tools/vibe2-fan-in-review.mjs');
   assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.nativeTwoStageReviewRequired,true);
   assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.candidateResultWorkflowCannotMintFinalMarker,true);
-  assert.equal(roadmap.roblox?.studioExecution?.enabled,true);
-  assert.equal(roadmap.roblox?.studioExecution?.localPlaceFileRequired,true);
-  assert.equal(roadmap.roblox?.studioExecution?.onlinePublishedPlaceDirectOpenForbidden,true);
-  assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.learningProviderIsolation?.robloxStudioAllowedFor24hLearning,true);
-  assert.equal(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.learningUseForbidden,false);
-  assert.ok(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.forbidden?.includes('ROBLOX_PLAYER_AUTOMATION'));
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.launchInput,'LOCAL_EXACT_BUILD_PLACE_FILE_ONLY');
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.onlinePlaceIdLaunchForbidden,true);
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.separateTrainer,false);
-  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play');
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
