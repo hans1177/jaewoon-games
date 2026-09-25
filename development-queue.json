@@ -630,7 +630,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T18:07:17.276Z",
+      "updatedAt": "2026-09-25T18:13:17.363Z",
       "robloxSourceCommit": "51eadc7b331419af8319c664c539023aed1e7403",
       "robloxSourceBootstrapPassedAt": "2026-09-25T17:30:08.745Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -850,6 +850,9 @@
         "exactGame": true,
         "exactPlace": true,
         "exactVersion": false,
+        "exactEngineVersion": true,
+        "engineExecuted": true,
+        "serverBootObserved": false,
         "blockers": [
           "exactVersion",
           "checkpointOrder",
@@ -867,8 +870,8 @@
           "checkpoint:SAVE_ROUNDTRIP",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
-        "observedAt": "2026-09-25T18:07:17.276Z",
-        "authority": "stale-runtime-sentinel-observation"
+        "observedAt": "2026-09-25T18:13:17.363Z",
+        "authority": "exact-engine-version-awaiting-real-server-boot"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
@@ -876,7 +879,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 3,
+      "robloxRuntimeRetryCount": 4,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -899,9 +902,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
       "routingBlockers": [
-        "roblox-runtime-foundation-stale-version"
+        "roblox-runtime-foundation-awaiting-real-server-boot"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1160,7 +1163,7 @@
         "newSourceRevision": "51eadc7b331419af8319c664c539023aed1e7403",
         "invalidatedAt": "2026-09-25T17:30:08.745Z"
       },
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-25T18:07:17.276Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-25T18:13:17.363Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -6596,7 +6599,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T18:07:17.276Z",
+  "updatedAt": "2026-09-25T18:13:17.363Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
