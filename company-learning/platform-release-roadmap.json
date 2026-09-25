@@ -1,5 +1,5 @@
 {
-  "version": 388,
+  "version": 389,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7420,7 +7420,7 @@
       "atomicCompletionIngress": "PERSIST_RESULT_ONLY_UNTIL_TASK_MICRO_FANIN_COMPLETE",
       "pendingVariantCallbackRunsHeavyReserve": false,
       "taskMicroFanInDispatchesSingleRefill": true,
-      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
+      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS",
       "taskLocalExplorationRequired": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
@@ -7446,7 +7446,9 @@
       "coalescingDoesNotChangeQaReleaseOrSecurityAuthority": true,
       "coalescingDoesNotGrantWorkerControlBranchWrite": true,
       "coalescingCreatesNoNewWorkflowOrScheduler": true,
-      "automaticImmediateCallbackRecoveryWhenPressureClears": true
+      "automaticImmediateCallbackRecoveryWhenPressureClears": true,
+      "taskMicroFanInImmediateDispatchMayCoalesceUnderLiveRunnerPressure": true,
+      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
