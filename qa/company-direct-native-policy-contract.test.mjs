@@ -246,5 +246,8 @@ test('Unity Web source bootstrap is fail-closed and excludes the two owner-grand
   assert.match(generator,/public static void BuildWeb\(\)/);
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   assert.match(webWorkflow,/bootstrapGraphicsBlocked/);
-  assert.match(webWorkflow,/presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'/);
+  assert.match(webWorkflow,/bootstrapSourceDelta/);
+  assert.match(webWorkflow,/presentationState==='DEVELOPED_GAME_SPECIFIC_PRESENTATION'/);
+  assert.match(webWorkflow,/bootstrapGenerated&&!substantivePresentation/);
+  assert.match(webWorkflow,/developedAssetCount>=3\|\|primitiveCount===0/);
 });
