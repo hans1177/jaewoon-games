@@ -75,6 +75,19 @@ test('exact Roblox F9 review is isolated per game after multiplayer acceptance',
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
+test('F9 allows internal release when exact engine and official Studio MCP pass while real-server observation remains public-only',()=>{
+  assert.match(workflow,/const internalRuntimeObservationDeferred=/);
+  assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException===true/);
+  assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending===true/);
+  assert.match(workflow,/runtime\.authority==='exact-engine-version-awaiting-real-server-boot'/);
+  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred/);
+  assert.match(workflow,/item\.robloxRuntimeFoundationPassed===true\|\|internalRuntimeObservationDeferred/);
+  assert.match(workflow,/actualRuntimeFoundationPassed:item\.robloxRuntimeFoundationPassed===true/);
+  assert.match(workflow,/publicReleaseRuntimeObservationPending:internalRuntimeObservationDeferred/);
+  assert.match(workflow,/roblox-public-release-awaiting-real-server-boot/);
+  assert.match(workflow,/item\.robloxPublicReleaseReady=false/);
+});
+
 test('F9 promotion stops at internal release and cannot self-approve external public readiness',()=>{
   assert.match(workflow,/const publicRuntimeAcceptance=false; \/\/ Internal F9 cannot satisfy the external public hard gate\./);
   assert.match(workflow,/item\.robloxPublicReleaseReady=false;/);
