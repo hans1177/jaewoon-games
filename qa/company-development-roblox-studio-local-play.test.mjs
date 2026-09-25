@@ -138,6 +138,18 @@ test('planner selects exact internally released artifact even when shared target
   assert.equal(result.include[0].historicalExactPublishedArtifact,true);
 });
 
+test('planner keeps internally released Vibe play eligible when runtime-foundation temporarily owns currentStep',()=>{
+  const candidate=item();
+  candidate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+  candidate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+  candidate.robloxFailureStage='VIBE_INTERNAL_PLAY';
+  candidate.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].gameId,'g1');
+  assert.equal(result.include[0].artifactRunId,777);
+});
+
 test('planner skips only an already verified exact Studio MCP play record',()=>{
   const candidate=item();
   candidate.robloxInternalVibePlayEvidence={
