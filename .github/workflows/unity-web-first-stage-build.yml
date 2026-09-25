@@ -545,8 +545,15 @@ jobs:
       - name: Mark Unity Web floor repair requirement
         if: steps.readiness.outputs.pass != 'true'
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
+          set -euo pipefail
           echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
+          echo "UNITY_WEB_REPAIR_GAME_ID=$GAME_ID"
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'UNITY_WEB_REPAIR_PLANNER_DISPATCH=YES'
           exit 42
 
       - name: Create verified Unity Web readiness PR
