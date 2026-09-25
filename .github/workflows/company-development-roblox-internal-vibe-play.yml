@@ -87,17 +87,23 @@ jobs:
           Add-Type @"
           using System;
           using System.Runtime.InteropServices;
+          public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
           public static class NativeInput {
             [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
             [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+            [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
           }
           "@
 
-          function Capture-Screen([string]$path) {
-            $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-            $bmp = New-Object System.Drawing.Bitmap $bounds.Width,$bounds.Height
+          function Capture-RobloxWindow([IntPtr]$hwnd,[string]$path) {
+            $rect = New-Object RECT
+            if (-not [NativeInput]::GetWindowRect($hwnd,[ref]$rect)) { throw 'ROBLOX_PLAYER_WINDOW_RECT_FAILED' }
+            $width = $rect.Right - $rect.Left
+            $height = $rect.Bottom - $rect.Top
+            if ($width -lt 320 -or $height -lt 240) { throw ('ROBLOX_PLAYER_WINDOW_TOO_SMALL:' + $width + 'x' + $height) }
+            $bmp = New-Object System.Drawing.Bitmap $width,$height
             $gfx = [System.Drawing.Graphics]::FromImage($bmp)
-            $gfx.CopyFromScreen($bounds.Location,[System.Drawing.Point]::Empty,$bounds.Size)
+            $gfx.CopyFromScreen((New-Object System.Drawing.Point($rect.Left,$rect.Top)),[System.Drawing.Point]::Empty,(New-Object System.Drawing.Size($width,$height)))
             $bmp.Save($path,[System.Drawing.Imaging.ImageFormat]::Png)
             $gfx.Dispose(); $bmp.Dispose()
           }
@@ -125,20 +131,20 @@ jobs:
 
           [NativeInput]::SetForegroundWindow($player.MainWindowHandle) | Out-Null
           Start-Sleep -Seconds 18
-          Capture-Screen (Join-Path $frames '01-start.png')
+          Capture-RobloxWindow $player.MainWindowHandle (Join-Path $frames '01-start.png')
 
           Key-Hold 0x57 1700
           Start-Sleep -Seconds 2
-          Capture-Screen (Join-Path $frames '02-forward.png')
+          Capture-RobloxWindow $player.MainWindowHandle (Join-Path $frames '02-forward.png')
 
           Key-Hold 0x44 1200
           Key-Hold 0x20 250
           Start-Sleep -Seconds 2
-          Capture-Screen (Join-Path $frames '03-move-jump.png')
+          Capture-RobloxWindow $player.MainWindowHandle (Join-Path $frames '03-move-jump.png')
 
           Key-Hold 0x41 1100
           Start-Sleep -Seconds 2
-          Capture-Screen (Join-Path $frames '04-move-left.png')
+          Capture-RobloxWindow $player.MainWindowHandle (Join-Path $frames '04-move-left.png')
 
           [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(
             [int]([System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width * 0.72),
@@ -146,7 +152,7 @@ jobs:
           )
           [System.Windows.Forms.SendKeys]::SendWait(" ")
           Start-Sleep -Seconds 3
-          Capture-Screen (Join-Path $frames '05-action.png')
+          Capture-RobloxWindow $player.MainWindowHandle (Join-Path $frames '05-action.png')
 
           $player.Refresh()
           if ($player.HasExited) { throw 'ROBLOX_PLAYER_EXITED_DURING_ACTUAL_PLAY' }
