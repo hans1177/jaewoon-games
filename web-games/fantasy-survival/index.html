@@ -418,7 +418,17 @@ function randomVolcanoPoint(zone='volcano'){
  let r=zone==='colosseum'?COLOSSEUM:zone==='wasteland'?WASTELAND:zone==='core'?VOLCANO_CORE:{x:2400,y:2000,w:12000,h:3200};
  let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35||(zone==='volcano'&&(pointInRect(p.x,p.y,COLOSSEUM)||pointInRect(p.x,p.y,CONSTRUCTION)||pointInRect(p.x,p.y,WASTELAND)||pointInRect(p.x,p.y,VOLCANO_CORE))))&&guard<300);return p
 }
+function pointInFlowerField(x,y){return pointInRect(x,y,FLOWER_FIELD)}
+function pointInGiantGarden(x,y){return pointInRect(x,y,GIANT_GARDEN)}
+function randomFlowerPoint(mini=false){const r=mini?GIANT_GARDEN:FLOWER_FIELD;return{x:rand(r.x+90,r.x+r.w-90),y:rand(r.y+90,r.y+r.h-90)}}
+function flowerWebAt(x,y){return state.flowerWebs.find(w=>w.hits>0&&dist(x,y,w.x,w.y)<w.r)}
+function drawFlowerWorld(cx,cy){
+ for(const b of FLOWER_BUILDINGS){const x=b.x-cx,y=b.y-cy;if(x<-b.w||y<-b.h||x>innerWidth+b.w||y>innerHeight+b.h)continue;ctx.save();ctx.translate(x,y);ctx.fillStyle='#8d684f';ctx.strokeStyle='#f1cde5';ctx.lineWidth=7;ctx.fillRect(-b.w/2,-b.h/2,b.w,b.h);ctx.strokeRect(-b.w/2,-b.h/2,b.w,b.h);ctx.fillStyle='#fff0f7';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(b.name,0,6);ctx.restore()}
+ for(const w of state.flowerWebs){if(w.hits<=0)continue;const x=w.x-cx,y=w.y-cy;if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)continue;ctx.strokeStyle='#e8e8efcc';ctx.lineWidth=2;for(let i=0;i<6;i++){const a=i*Math.PI/3;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(a)*w.r,y+Math.sin(a)*w.r);ctx.stroke()}for(const rr of [18,34,50]){ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);ctx.stroke()}ctx.fillStyle='#fff';ctx.font='bold 8px system-ui';ctx.textAlign='center';ctx.fillText('거미줄 '+w.hits+'/3',x,y+w.r+12)}
+}
 function regionAt(x,y){
+ if(pointInGiantGarden(x,y))return'giantgarden';
+ if(pointInFlowerField(x,y))return'flowerfield';
  if(pointInSnow(x,y))return'snow';
  if(pointInJungle(x,y))return'jungle';
  if(pointInCrystalRegion(x,y))return'crystal';
@@ -625,6 +635,7 @@ function discoverRegion(){
   if(state.area!=='surface')return;
   const r=regionAt(state.player.x,state.player.y);
   if(r==='snow'&&!state.discovered.snow){state.discovered.snow=true;state.dirty=true;showNotice('발견함 설원')}
+  if((r==='flowerfield'||r==='giantgarden')&&!state.discovered.flowerfield){state.discovered.flowerfield=true;state.dirty=true;showNotice('발견함 꽃밭 지역')}
   if(r==='jungle'&&!state.discovered.jungle){state.discovered.jungle=true;state.dirty=true;showNotice('발견함 밀림')}
   if(r==='canyon'&&!state.discovered.canyon){state.discovered.canyon=true;state.dirty=true;showNotice('발견함 협곡')}
   if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}
@@ -706,6 +717,7 @@ function initWorld(){
   state.carrots=Array.from({length:360},(_,i)=>makeNode('carrot',i));
   state.poisonStones=Array.from({length:5},(_,i)=>makeNode('poisonstone',i));
   state.enemies=[];
+  state.flowerGiantFlowers=Array.from({length:18},(_,i)=>{const p=randomFlowerPoint(true);return{id:'giantflower'+i,kind:'giantflower',x:p.x,y:p.y,hp:6,maxHp:6,dead:false,respawnAt:0}});state.flowerWebs=Array.from({length:14},(_,i)=>{const p=randomFlowerPoint(true);return{id:'flowerweb'+i,x:p.x,y:p.y,r:58,hits:3,lastAlertAt:0}});
   const counts={mossboar:18,goblin:18,shadowwolf:15,fairy:8};
   for(const [id,count] of Object.entries(counts))for(let i=0;i<count;i++)state.enemies.push(spawnCreature(creatures[id],i));
   const starter=[
@@ -769,6 +781,8 @@ function initWorld(){
   {const e=spawnAt(creatures.lakecroc,10400,1880,null);e.area='underwater';e.noRespawn=true;state.enemies.push(e)}
   for(const p of [{x:5200,y:1700},{x:14300,y:2300}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   for(let i=0;i<6;i++){const p={x:2200+i*2450,y:650+(i%3)*720};const e=spawnAt(creatures.lakefish,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
+  // 꽃밭 생태계
+  for(let i=0;i<8;i++){const p=randomFlowerPoint(false);state.enemies.push(spawnAt(creatures.flowergoblin,p.x,p.y,null))}for(let pack=0;pack<6;pack++){const a=randomFlowerPoint(false),count=Math.random()<.2?1:2;for(let i=0;i<count;i++)state.enemies.push(spawnAt(creatures.giantbee,a.x+rand(-55,55),a.y+rand(-55,55),pack))}for(let i=0;i<5;i++){const a=randomFlowerPoint(true),adult=spawnAt(creatures.giantspider,a.x,a.y,100+i);state.enemies.push(adult);const kids=2+Math.floor(Math.random()*3);for(let k=0;k<kids;k++){const c=spawnAt(creatures.giantspiderling,a.x+rand(-85,85),a.y+rand(-85,85),100+i);c.leaderId=adult.netId;state.enemies.push(c)}}for(let i=0;i<2;i++){const p=randomFlowerPoint(true);state.enemies.push(spawnAt(creatures.giantspiderling,p.x,p.y,null))}
   // 설원 생태계
   {const e=spawnAt(creatures.yetileader,27000,10800,null);e.noRespawn=true;state.enemies.push(e)}
   for(let i=0;i<4;i++)state.enemies.push(spawnCreature(creatures.polarbear,i));
@@ -797,7 +811,7 @@ function updateHud(){
  ui.foodfill.style.width=clamp(p.hunger,0,100)+'%';ui.foodtext.textContent=Math.ceil(p.hunger)+'/100';
  ui.weapon.textContent=nameOf(p.weapon,'맨손');ui.tool.textContent=nameOf(p.tool);ui.armor.textContent=nameOf(p.armor);
  const z=state.area==='underwater'?'underwater':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':state.area==='jungletemple'?'jungletemple':state.area==='jungletemple-upper'?'jungletemple-upper':state.area==='jungletemple-lower'?'jungletemple-lower':state.area==='jungletemple-secret'?'jungletemple-secret':regionAt(p.x,p.y);
- let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='jungletemple'?'밀림 신전':z==='jungletemple-upper'?'밀림 신전 위층':z==='jungletemple-lower'?'밀림 신전 지하':z==='jungletemple-secret'?'밀림 신전 비밀공간':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='snow'?'설원':'마력숲';
+ let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='jungletemple'?'밀림 신전':z==='jungletemple-upper'?'밀림 신전 위층':z==='jungletemple-lower'?'밀림 신전 지하':z==='jungletemple-secret'?'밀림 신전 비밀공간':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='snow'?'설원':z==='giantgarden'?'거대화원':z==='flowerfield'?'꽃밭 지역':'마력숲';
  if(z==='underwater')zoneName+=' · 산소 '+(item(p.armor)?.underwaterBreath?'∞':Math.ceil(Math.max(0,p.oxygen||0)/1000)+'초');
  if(z==='snow')zoneName+=' · 추위 '+(item(p.armor)?.coldImmune?'면역':Math.floor(p.cold||0)+'/100');
  ui.zone.textContent=zoneName;
@@ -985,7 +999,8 @@ function craftItem(id){
  const pos=r.kind==='structure'?findStructurePlacement():null;if(r.kind==='structure'&&!pos){showNotice('건축물이 겹치지 않는 설치 공간이 필요해');return}
  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
  pay(r.cost);const p=state.player;
- if(r.kind==='structure'){
+ if(r.kind==='material'){addMaterial(r.outputMaterial||r.id,Number(r.output)||1)}
+ else if(r.kind==='structure'){
    const placed=placeStructure(r.id,pos);rememberItem(r.id);
    if(multiplayer.connected&&!multiIsHost())multiSend('structure-place',{id:r.id,pos:placed&&typeof placed==='object'?placed:{x:pos.x,y:pos.y}})
  }
@@ -1059,6 +1074,8 @@ function renderInventory(){
 }
 function mapTerrainColorAt(x,y){
  const r=regionAt(x,y);
+ if(r==='giantgarden')return'#6c315f';
+ if(r==='flowerfield')return'#7b9b4c';
  if(r==='snow')return'#d7e7ee';
  if(r==='jungle')return pointInJungleLake(x,y)?'#285d58':'#153a22';
  if(r==='volcano'){if(dist(x,y,OASIS.x,OASIS.y)<=OASIS.r)return'#2f78b7';if(pointInRect(x,y,WASTELAND))return'#b99b3f';return'#3b1517'}
@@ -1074,6 +1091,7 @@ function drawMap(){
    m.fillStyle=mapTerrainColorAt(cx,cy);
    m.fillRect(wx*sx,wy*sy,MAP_CELL*sx+1,MAP_CELL*sy+1)
  }
+ if(state.discovered.flowerfield){m.strokeStyle='#d39bc6';m.lineWidth=2;m.strokeRect(FLOWER_FIELD.x*sx,FLOWER_FIELD.y*sy,FLOWER_FIELD.w*sx,FLOWER_FIELD.h*sy);m.strokeStyle='#b66ea8';m.strokeRect(GIANT_GARDEN.x*sx,GIANT_GARDEN.y*sy,GIANT_GARDEN.w*sx,GIANT_GARDEN.h*sy)}
  if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,(SNOW_REGION.y+SNOW_REGION.h/2)*sy);for(const o of SNOW_OUTPOSTS){m.fillStyle='#7ba0ad';m.fillRect(o.x*sx-3,o.y*sy-3,6,6)}}
  if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
  const tx=JUNGLE_TEMPLE_ENTRANCE.x*sx,ty=JUNGLE_TEMPLE_ENTRANCE.y*sy;
@@ -1135,7 +1153,7 @@ function drawMiniMap(now=performance.now()){
   const a=toMini(rect.x,rect.y),b=toMini(rect.x+rect.w,rect.y+rect.h);
   m.strokeStyle=stroke;m.lineWidth=width;m.strokeRect(a.x,a.y,b.x-a.x,b.y-a.y)
  };
- drawRect(SNOW_REGION,'#d7f4ff77',1);drawRect(JUNGLE_REGION,'#78b86c77',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
+ drawRect(SNOW_REGION,'#d7f4ff77',1);drawRect(FLOWER_FIELD,'#ffd1ef88',1);drawRect(GIANT_GARDEN,'#e28bcf88',1);drawRect(JUNGLE_REGION,'#78b86c77',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
  const landmark=(x,y,color,size=3)=>{
   const q=toMini(x,y);if((q.x-cx)*(q.x-cx)+(q.y-cy)*(q.y-cy)>r*r)return;
   m.fillStyle=color;m.beginPath();m.arc(q.x,q.y,size,0,Math.PI*2);m.fill()
@@ -1552,13 +1570,13 @@ function receiveGiftItem(payload){
  if(state.panelMode==='inventory'&&ui.sheet.classList.contains('open'))renderInventory()
 }
 function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.classList.remove('open')}
-function resourceNodes(){return[...state.trees,...state.rocks,...state.fibers,...state.irons,...state.golds,...state.essences,...state.carrots,...state.poisonStones]}
+function resourceNodes(){return[...state.trees,...state.rocks,...state.fibers,...state.irons,...state.golds,...state.essences,...state.carrots,...state.poisonStones,...state.flowerGiantFlowers]}
 function nearestGatherResource(range=AUTO_GATHER_RANGE){
  const p=state.player;let best=null,bestD=range;
  for(const n of resourceNodes()){if(n.dead)continue;const d=dist(p.x,p.y,n.x,n.y);if(d<bestD){best=n;bestD=d}}
  return best
 }
-function resourceGatherName(n){return n?.kind==='tree'?'나무':n?.kind==='rock'?'돌':n?.kind==='fiber'?'섬유':n?.kind==='iron'?'철광석':n?.kind==='gold'?'화산 금':n?.kind==='essence'?'정수':n?.kind==='carrot'?'당근':n?.kind==='poisonstone'?'독점석':'자원'}
+function resourceGatherName(n){return n?.kind==='tree'?'나무':n?.kind==='rock'?'돌':n?.kind==='fiber'?'섬유':n?.kind==='iron'?'철광석':n?.kind==='gold'?'화산 금':n?.kind==='essence'?'정수':n?.kind==='carrot'?'당근':n?.kind==='poisonstone'?'독점석':n?.kind==='giantflower'?'거대 꽃':'자원'}
 function gather(target=null,silent=false){
  const p=state.player,now=performance.now();if(p.downedUntil){if(!silent)showNotice('쓰러진 상태야');return false}if(now<(p.stunnedUntil||0)){if(!silent)showNotice('기절 중');return false}if(state.area!=='surface'){if(!silent)showNotice('지하에는 채집할 자원이 없어');return false}
  let best=null;
@@ -1573,11 +1591,12 @@ function gather(target=null,silent=false){
  if(best.kind==='gold'&&p.tool!=='iron-pick'){if(!silent)showNotice('화산 금은 철 곡괭이로만 캘 수 있어');return false}
  if(best.kind==='poisonstone'&&p.tool!=='gold-pick'){if(!silent)showNotice('독점석은 금 곡괭이로만 캘 수 있어');return false}
  if(best.kind==='essence'&&!(p.weapon==='iron-axe'||p.tool==='gold-axe')){if(!silent)showNotice('정수는 철도끼나 금도끼로만 캘 수 있어');return false}
+ if(best.kind==='giantflower'&&!['iron-axe','gold-axe'].includes(p.tool)){if(!silent)showNotice('거대 꽃은 철도끼나 금도끼가 필요해');return false}
  let amount=1;if(tool?.target===best.kind)amount=tool.mult;if(best.kind==='iron'||best.kind==='poisonstone')amount=1;
  best.hp--;
- if(best.kind==='tree')p.wood+=amount;else if(best.kind==='rock')p.stone+=amount;else if(best.kind==='fiber')p.fiber+=amount;else if(best.kind==='iron')p.ironOre+=amount;else if(best.kind==='gold')p.goldOre+=amount;else if(best.kind==='essence')p.essence+=1;else if(best.kind==='carrot'){addInv('carrot',1);if(Math.random()<.5){addInv('carrot-seed',1);showNotice('당근 씨앗 획득')}}else if(best.kind==='poisonstone')addMaterial('monopolyStone',1);
- if(!['carrot','poisonstone'].includes(best.kind))rememberMaterial({tree:'wood',rock:'stone',fiber:'fiber',iron:'ironOre',gold:'goldOre',essence:'essence'}[best.kind]);
- if(best.hp<=0){best.dead=true;best.respawnAt=now+RESOURCE_RESPAWN_MS;if(state.gathering.target===best)state.gathering.target=null;if(state.gathering.manualTarget===best)state.gathering.manualTarget=null;showNotice(best.kind==='poisonstone'?'독점석 광맥 고갈 · 독가스가 사라졌다':'자원 채집 완료')}
+ if(best.kind==='tree')p.wood+=amount;else if(best.kind==='rock')p.stone+=amount;else if(best.kind==='fiber')p.fiber+=amount;else if(best.kind==='iron')p.ironOre+=amount;else if(best.kind==='gold')p.goldOre+=amount;else if(best.kind==='essence')p.essence+=1;else if(best.kind==='carrot'){addInv('carrot',1);if(Math.random()<.5){addInv('carrot-seed',1);showNotice('당근 씨앗 획득')}}else if(best.kind==='poisonstone')addMaterial('monopolyStone',1);else if(best.kind==='giantflower')addMaterial('giantPetal',1);
+ if(!['carrot','poisonstone','giantflower'].includes(best.kind))rememberMaterial({tree:'wood',rock:'stone',fiber:'fiber',iron:'ironOre',gold:'goldOre',essence:'essence'}[best.kind]);
+ if(best.hp<=0){best.dead=true;best.respawnAt=now+RESOURCE_RESPAWN_MS;if(state.gathering.target===best)state.gathering.target=null;if(state.gathering.manualTarget===best)state.gathering.manualTarget=null;showNotice(best.kind==='poisonstone'?'독점석 광맥 고갈 · 독가스가 사라졌다':best.kind==='giantflower'?'거대 꽃을 베었다':'자원 채집 완료')}
  state.dirty=true;updateHud();renderPanel();return true
 }
 function interruptAutoGather(now=performance.now()){
@@ -2937,7 +2956,7 @@ function update(dt,now){
   if(state.area==='underground'&&state.bossDefeated&&state.bossExitAt>0&&Date.now()>=state.bossExitAt){leaveCave(true)}
   if(!p.downedUntil)updateHazards(now);updateTempleTrap(now);updateRaid(Date.now())
   if(p.torchEquipped&&p.torch){p.torchDurability=Math.max(0,p.torchDurability-dt*1000);if(p.torchDurability<=0){p.torchEquipped=false;showNotice('횃불 내구도가 다 닳았어')}state.dirty=true}
-  if(state.area==='surface')for(const n of [...state.trees,...state.rocks,...state.fibers,...state.irons,...state.golds,...state.essences,...state.carrots,...state.poisonStones])if(n.dead&&now>=n.respawnAt){n.dead=false;n.hp=n.maxHp}
+  if(state.area==='surface')for(const n of [...state.trees,...state.rocks,...state.fibers,...state.irons,...state.golds,...state.essences,...state.carrots,...state.poisonStones,...state.flowerGiantFlowers])if(n.dead&&now>=n.respawnAt){n.dead=false;n.hp=n.maxHp}
   if(now>=p.hungerNext){const steps=Math.max(1,Math.floor((now-p.hungerNext)/20000)+1);p.hunger=Math.max(0,p.hunger-steps);p.hungerNext+=steps*20000;state.dirty=true;updateHud()}
   if(p.regenTicks>0&&now>=p.regenNext){p.hp=Math.min(p.maxHp,p.hp+10);p.regenTicks--;p.regenNext=now+1000;state.dirty=true;updateHud()}
   if(p.foodRegenTicks>0&&now>=p.foodRegenNext){p.hp=Math.min(p.maxHp,p.hp+p.foodRegenAmount);p.foodRegenTicks--;p.foodRegenNext=now+1000;state.dirty=true;updateHud()}
@@ -3162,6 +3181,11 @@ function drawBackground(cx,cy,w,h){
  for(let i=0;i<60;i++){const x=SNOW_REGION.x+100+(i*811)%(SNOW_REGION.w-200),y=SNOW_REGION.y+100+(i*557)%(SNOW_REGION.h-200);ctx.fillStyle=i%2?'#f4fbff':'#bfd8e3';ctx.beginPath();ctx.arc(x,y,18+(i%5)*6,0,Math.PI*2);ctx.fill()}
  ctx.fillStyle='#496978';ctx.font='bold 32px system-ui';ctx.textAlign='center';ctx.fillText('설원',SNOW_REGION.x+SNOW_REGION.w/2,SNOW_REGION.y+110);
  ctx.font='bold 11px system-ui';ctx.fillText('추위 게이지가 빠르게 오른다',SNOW_REGION.x+SNOW_REGION.w/2,SNOW_REGION.y+145);
+ // 꽃밭 지역
+ ctx.fillStyle='#78964b';ctx.fillRect(FLOWER_FIELD.x,FLOWER_FIELD.y,FLOWER_FIELD.w,FLOWER_FIELD.h);
+ for(let i=0;i<150;i++){const x=FLOWER_FIELD.x+80+(i*733)%(FLOWER_FIELD.w-160),y=FLOWER_FIELD.y+70+(i*397)%(FLOWER_FIELD.h-140);ctx.fillStyle=i%3===0?'#ffd4e8':i%3===1?'#f7e67d':'#c8a7ff';ctx.beginPath();ctx.arc(x,y,8+(i%4)*2,0,Math.PI*2);ctx.fill()}
+ ctx.fillStyle='#fff5cf';ctx.font='bold 30px system-ui';ctx.textAlign='center';ctx.fillText('꽃밭 지역',FLOWER_FIELD.x+FLOWER_FIELD.w/2,FLOWER_FIELD.y+100);
+ ctx.fillStyle='#5e2854';ctx.fillRect(GIANT_GARDEN.x,GIANT_GARDEN.y,GIANT_GARDEN.w,GIANT_GARDEN.h);ctx.fillStyle='#ffd6f4';ctx.font='bold 22px system-ui';ctx.fillText('거대화원',GIANT_GARDEN.x+GIANT_GARDEN.w/2,GIANT_GARDEN.y+90);
  // 밀림 · 기존 크기의 0.4배
  ctx.fillStyle='#153a22';ctx.fillRect(JUNGLE_REGION.x,JUNGLE_REGION.y,JUNGLE_REGION.w,JUNGLE_REGION.h);fillFantasyRegionTextureRect(JUNGLE_REGION,'jungle',.42);
  ctx.strokeStyle='#346b3f';ctx.lineWidth=28;ctx.strokeRect(JUNGLE_REGION.x+14,JUNGLE_REGION.y+14,JUNGLE_REGION.w-28,JUNGLE_REGION.h-28);
@@ -3289,7 +3313,8 @@ function drawQuestDarkness(){
 }
 function drawNode(n,cx,cy){
  const x=n.x-cx,y=n.y-cy;if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)return;
- const kind=n.kind==='fiber'?'fiber':n.kind,size=n.kind==='poisonstone'?92:n.kind==='tree'?76:58;
+ const kind=n.kind==='fiber'?'fiber':n.kind,size=n.kind==='giantflower'?110:n.kind==='poisonstone'?92:n.kind==='tree'?76:58;
+ if(n.kind==='giantflower'){ctx.strokeStyle='#73a94f';ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(x,y+35);ctx.lineTo(x,y-35);ctx.stroke();ctx.fillStyle='#e4a5d5';for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.beginPath();ctx.ellipse(x+Math.cos(a)*26,y-35+Math.sin(a)*26,18,10,a,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#f6d76f';ctx.beginPath();ctx.arc(x,y-35,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6d8';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('거대 꽃 '+n.hp+'/6',x,y+55);return}
  if(n.kind==='poisonstone'){ctx.fillStyle='rgba(94,180,74,.16)';ctx.beginPath();ctx.arc(x,y,78,0,Math.PI*2);ctx.fill()}
  if(!drawFantasyWorldObject(kind,x,y,size,size)){
   if(n.kind==='tree'){ctx.fillStyle='#6f4f32';ctx.fillRect(x-5,y,10,28);ctx.fillStyle='#4e8f58';ctx.beginPath();ctx.arc(x,y-8,21,0,Math.PI*2);ctx.fill()}
@@ -3794,8 +3819,8 @@ function draw(){
  else if(state.area.startsWith('jungletemple'))drawJungleTemple(cx,cy,innerWidth,innerHeight);
  else{
   drawBackground(cx,cy,innerWidth,innerHeight);
-  for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);
-  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');for(const crop of state.crops)drawCrop(crop,cx,cy);drawSnowOutposts(cx,cy);drawBlueprint(cx,cy);drawShadowEgg(cx,cy)
+  for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.flowerGiantFlowers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);
+  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');for(const crop of state.crops)drawCrop(crop,cx,cy);drawSnowOutposts(cx,cy);drawFlowerWorld(cx,cy);drawBlueprint(cx,cy);drawShadowEgg(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);
  drawDeathEffects(cx,cy,now);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawQuestDarkness();drawMiniMap(now)
