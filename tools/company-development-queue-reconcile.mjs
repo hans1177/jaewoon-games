@@ -112,6 +112,10 @@ function migrateSharedRobloxFallbackToDedicatedTarget(item){
     &&item?.robloxFoundationF0Passed===true
     &&clean(item?.robloxBuildSourceRevision)===clean(item?.robloxSourceCommit)
     && /^sha256:[a-f0-9]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity));
+  const internalReleaseAlreadyPublished=item?.robloxInternalReleasePublished===true
+    ||item?.robloxInternalReleaseEvidence?.published===true
+    ||(item?.robloxReleaseEvidence?.published===true&&item?.robloxExternalPublicReleaseConfirmed!==true);
+  if(internalReleaseAlreadyPublished)return false;
   if(!sharedFallback||!exactCandidate||!reusableBuild)return false;
   item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
   item.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
