@@ -141,3 +141,12 @@ test('F0 planner uses central Roblox validation mode and does not require a queu
   assert.ok(workflow.includes('ROBLOX_F0_CANONICAL_VALIDATION_MODE='));
   assert.doesNotMatch(workflow,/item\.robloxValidationMode/);
 });
+
+
+test('F0 accepts approved non-combat action loops without inventing combat markers',()=>{
+ const nonCombatConfig=config.replace('Actions={ATTACK="ATTACK"}','Actions={MOVE="MOVE"}');
+ const nonCombatClient=client.replaceAll('ATTACK','MOVE');
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config:nonCombatConfig,server,client:nonCombatClient,project});
+ assert.equal(r.pass,true,r.blockers.join(','));
+ assert.equal(r.checks.combatOrRound,true);
+});
