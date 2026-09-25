@@ -1,5 +1,5 @@
 {
-  "version": 370,
+  "version": 371,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6184,7 +6184,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 6,
+    "version": 7,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6367,7 +6367,11 @@
         "playableWebCompanionRequiresPlayableAndArchive": true,
         "playableWebCompanionRequiresExistingCanonicalIndex": true,
         "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
-        "mainCatalogMayNotOverrideFresherCompanyRuntime": true
+        "mainCatalogMayNotOverrideFresherCompanyRuntime": true,
+        "runtimeCatalogMirrorMode": "RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY",
+        "rawRuntimeCatalogDirectCopyForbidden": true,
+        "actualGameFileSourceMetadataPreserved": true,
+        "canonicalNormalizationRequiredBeforeHomepagePublication": true
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6477,7 +6481,15 @@
       "target": "main:game-catalog.json",
       "onEverySuccessfulNonPrHomepageSync": true,
       "sourceIsAuthoritative": true,
-      "staleMainFallbackForbiddenWhenRuntimeAvailable": true
+      "staleMainFallbackForbiddenWhenRuntimeAvailable": true,
+      "mode": "RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY",
+      "runtimeStateAuthority": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE_AND_RUNTIME_CATALOG",
+      "canonicalSourceMetadataAuthority": "MAIN_GAME_CATALOG_AND_ACTUAL_GAME_FILES",
+      "rawRuntimeCatalogDirectCopyForbidden": true,
+      "existingCatalogSourceMetadataMustBePreserved": true,
+      "runtimeMissingGamesMayBeMergedWhenLiveQueueEligible": true,
+      "canonicalNormalizationRequiredBeforePublication": true,
+      "normalizationOwner": "tools/company-status-sync.mjs + tools/game-catalog-normalization.mjs"
     }
   },
   "longHorizonVision": {
@@ -7018,6 +7030,25 @@
       "genericExistingFileAloneCannotActivate": true,
       "catalogPlayableArchiveAndCanonicalIndexRequired": true,
       "nativeReleaseAuthorityUnchanged": true,
+      "buildersUnchanged": true
+    },
+    "homepageRuntimeCatalogReconcile20260925": {
+      "id": "HOMEPAGE_RUNTIME_CATALOG_RECONCILE_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Reconcile company-runtime development state onto the canonical main game registry and actual game-file source metadata, then run the existing catalog normalizer before homepage publication. Raw runtime catalog replacement is forbidden.",
+      "codeBindings": [
+        ".github/workflows/homepage-manager.yml",
+        "tools/company-status-sync.mjs",
+        "tools/game-catalog-normalization.mjs",
+        "qa/homepage-manager-publication-order.test.mjs",
+        "qa/company-homepage-runtime-propagation.test.mjs",
+        "company-directive.json"
+      ],
+      "preservesActualGameFileWebRoutes": true,
+      "appliesRuntimeDevelopmentState": true,
+      "rawCopyForbidden": true,
+      "canonicalNormalizationRequired": true,
       "buildersUnchanged": true
     }
   },
