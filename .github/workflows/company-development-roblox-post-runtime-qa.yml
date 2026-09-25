@@ -1125,6 +1125,7 @@ jobs:
           $success = $false
           $enablementRequired = $false
           $toolProviderTimeoutObserved = $false
+          $studioAttachmentFailureObserved = $false
 
           for ($attempt = 1; $attempt -le $maxSessionAttempts; $attempt++) {
             if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
@@ -1160,6 +1161,11 @@ jobs:
               $mcpServerNotEnabled = $failureSignature -match 'stderrHint=MCP_SERVER_NOT_ENABLED'
               $emptyAssistantSettingsAfterReady = $failureSignature -match 'settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY'
               $toolProviderTimeout = $failureSignature -match 'stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'
+              $studioAttachmentFailure = $failureSignature -match 'ROBLOX_STUDIO_MCP_NO_STUDIO_AFTER_ATTACH_WAIT'
+              if ($studioAttachmentFailure) {
+                $studioAttachmentFailureObserved = $true
+                Write-Host "ROBLOX_STUDIO_MCP_STUDIO_ATTACHMENT_PENDING=attempt=$attempt"
+              }
               if ($requiredToolsEmpty -and $toolProviderTimeout) {
                 $toolProviderTimeoutObserved = $true
                 Write-Host "ROBLOX_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT=attempt=$attempt"
@@ -1265,15 +1271,15 @@ jobs:
 
           if (-not $success) {
             Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED"
-            if ($toolProviderTimeoutObserved) {
+            if ($toolProviderTimeoutObserved -or $studioAttachmentFailureObserved) {
               $studioLogsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
               $latestStudioLog = Get-ChildItem $studioLogsRoot -File -Filter '*.log' -ErrorAction SilentlyContinue |
                 Sort-Object LastWriteTime -Descending |
                 Select-Object -First 1
               if ($latestStudioLog) {
-                $diagnosticLines = @(Get-Content $latestStudioLog.FullName -Tail 4000 -ErrorAction SilentlyContinue |
-                  Select-String -Pattern 'MCP|Assistant|StudioMCP|tool provider' |
-                  Select-Object -Last 40)
+                $diagnosticLines = @(Get-Content $latestStudioLog.FullName -Tail 5000 -ErrorAction SilentlyContinue |
+                  Select-String -Pattern 'MCP|Assistant|StudioMCP|tool provider|RBX_STUDIO_NS|named pipe|connection|connected client' |
+                  Select-Object -Last 60)
                 Write-Host "ROBLOX_STUDIO_MCP_STUDIO_LOG_MATCH_COUNT=$($diagnosticLines.Count)"
                 foreach ($match in $diagnosticLines) {
                   $safeLine = [string]$match.Line
@@ -1290,6 +1296,9 @@ jobs:
             }
             if ($toolProviderTimeoutObserved) {
               throw 'official Roblox Studio MCP tool provider timed out after 3 clean Studio sessions'
+            }
+            if ($studioAttachmentFailureObserved) {
+              throw 'official Roblox Studio MCP client connected but Studio instance registration remained empty after 3 exact Studio sessions'
             }
             throw 'official Roblox Studio MCP play failed after 3 official restart sessions'
           }

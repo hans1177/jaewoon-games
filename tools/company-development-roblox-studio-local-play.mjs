@@ -577,6 +577,10 @@ export async function runOfficialStudioMcpPlay({
       const studios=collectStudios(studioListResult,[]);
       const unique=[...new Map(studios.map(x=>[x.studioId,x])).values()];
       console.log('ROBLOX_STUDIO_MCP_STUDIO_ATTACH_WAIT='+attempt+':connected='+unique.length);
+      if(!unique.length){
+        const listText=flattenText(studioListResult,[]).join(' | ').replace(/\s+/g,' ').slice(0,700);
+        console.log('ROBLOX_STUDIO_MCP_STUDIO_LIST_RESPONSE='+attempt+':'+(listText||'EMPTY'));
+      }
       if(unique.length){
         studio=chooseStudio(studioListResult,expectedStudioName);
         console.log(

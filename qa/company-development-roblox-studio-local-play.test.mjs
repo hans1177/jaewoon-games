@@ -514,6 +514,8 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
 test('Studio MCP waits for a connected Studio after tool inventory becomes ready',()=>{
   assert.match(helper,/const studioAttachAttempts=20/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_STUDIO_ATTACH_WAIT=/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_STUDIO_LIST_RESPONSE=/);
+  assert.match(helper,/flattenText\(studioListResult,\[\]\)\.join\(' \| '\)/);
   assert.match(helper,/connected='\+unique\.length/);
   assert.match(helper,/if\(attempt<studioAttachAttempts\)await wait\(1000\)/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_NO_STUDIO_AFTER_ATTACH_WAIT/);
@@ -568,6 +570,10 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT=attempt=/);
   assert.match(studioMcpBlock,/tool provider timed out after 3 clean Studio sessions/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_LOG_MATCH_COUNT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_ATTACHMENT_PENDING=attempt=/);
+  assert.match(studioMcpBlock,/\$studioAttachmentFailureObserved = \$true/);
+  assert.match(studioMcpBlock,/RBX_STUDIO_NS\|named pipe\|connection\|connected client/);
+  assert.match(studioMcpBlock,/client connected but Studio instance registration remained empty/);
   assert.doesNotMatch(studioMcpBlock,/ROBLOX_PLAYER_AUTOMATION=YES/);
   assert.match(studioMcpBlock,/WaitForInputIdle\(30000\)/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_GUI_READY=YES/);
