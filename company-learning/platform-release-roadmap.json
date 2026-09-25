@@ -1,5 +1,5 @@
 {
-  "version": 365,
+  "version": 366,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -618,7 +618,20 @@
         "f0GateBypassForbidden": true,
         "retryUntilPassOrVerifiedDifferentRootCause": true,
         "wakeAfterTechnicalPersist": true,
-        "repairFanout": "PER_GAME_PARALLEL_EXTERNAL_PROVIDER_CAPACITY_ONLY"
+        "repairFanout": "PER_GAME_PARALLEL_EXTERNAL_PROVIDER_CAPACITY_ONLY",
+        "reentryPriority": {
+          "version": 1,
+          "authoritativeSignals": [
+            "robloxSourceBootstrapFailedAt",
+            "robloxFoundationF0Passed=false",
+            "robloxFailureStage=F0_SOURCE_INTEGRITY",
+            "robloxFailureSignature=ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+          ],
+          "canonicalStateMayBeRewrittenByHigherLevelRouting": true,
+          "reconciliationPassMayNotSuppressKnownRepairDebt": true,
+          "knownBootstrapFailureMayNotBeSkippedByExactMainReconciliation": true,
+          "failureEvidenceClearsOnlyAfterSuccessfulSourceRepairOrAuthoritativeReplacement": true
+        }
       },
       "workflowRunConcurrency": {
         "version": 1,
@@ -6701,6 +6714,16 @@
       "qualityGatesWeakened": false,
       "runtimeWriterSerializationPreserved": true,
       "externalProviderCapacityOnly": true,
+      "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
+    },
+    "robloxF0RepairPriority20260925": {
+      "id": "ROBLOX_F0_REPAIR_PRIORITY_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "problem": "A_KNOWN_ROBLOX_SOURCE_BOOTSTRAP_OR_F0_FAILURE_COULD_BE_SKIPPED_WHEN_EXACT_MAIN_RECONCILIATION_PASSED_OR_A_HIGHER_LEVEL_ROUTER_REWROTE_CANONICAL_STATE",
+      "resolution": "KNOWN_SOURCE_REPAIR_DEBT_TAKES_PRIORITY_OVER_RECONCILIATION_PASS_AND_DOES_NOT_REQUIRE_ONE_SPECIFIC_CANONICAL_STATE_WHEN_EXACT_F0_FAILURE_FIELDS_STILL_IDENTIFY_THE_ROOT_CAUSE",
+      "qualityGateWeakening": false,
+      "failureEvidenceAuthoritative": true,
       "affectedWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
     }
   },
