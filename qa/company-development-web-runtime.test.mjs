@@ -218,7 +218,9 @@ test('native routing admits only readiness-pass or grandfathered games while unr
   assert.match(source,/decision\.state==='UNITY_WEB_FLOOR'/);
   assert.match(source,/decision\.state==='UNITY_WEB_BOOTSTRAP'/);
   assert.match(source,/grandfatheredIds\.push\(item\.gameId\)/);
-  assert.match(admission,/grandfathered\.has\(gameId\)&&nativeUpperPlatformAlreadyStarted\(item\)/);
+  assert.match(admission,/const nativeStarted=nativeUpperPlatformAlreadyStarted\(item\)/);
+  assert.match(admission,/if\(nativeStarted\)return\{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS'/);
+  assert.match(admission,/grandfatherSource:grandfathered\.has\(gameId\)\?'EXPLICIT_MIGRATION_LIST':'DURABLE_NATIVE_PROGRESS_EVIDENCE'/);
   assert.match(admission,/if\(readiness\.pass\)return\{gameId,state:'UPPER_PLATFORM'/);
   assert.match(admission,/if\(buildMethod\)return\{gameId,state:'UNITY_WEB_FLOOR'/);
   assert.match(admission,/state:'UNITY_WEB_BOOTSTRAP'/);
