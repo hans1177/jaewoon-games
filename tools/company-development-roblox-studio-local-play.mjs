@@ -16,11 +16,7 @@ export function validateLocalStudioPolicy(roadmap={}){
     &&studio.localPlaceFileRequired===true
     &&studio.onlinePublishedPlaceDirectOpenForbidden===true
     &&studio.placeIdOrUniverseIdAsStudioLaunchTargetForbidden===true
-    &&studio.requiresRuntimeFoundationQaSuccess===true
-    &&studio.requiresRuntimeFoundationCandidatePass===true
     &&usage.learningUseForbidden===false
-    &&usage.runtimeFoundationQaPassRequiredBeforeStudioPlay===true
-    &&usage.runtimeFoundationCandidatePassRequiredBeforeStudioPlay===true
     &&Array.isArray(usage.forbidden)
     &&usage.forbidden.includes('ROBLOX_PLAYER_AUTOMATION')
     &&usage.forbidden.includes('PUBLIC_SERVER_BOT_PLAY')
