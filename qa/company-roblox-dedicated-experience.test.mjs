@@ -147,4 +147,17 @@ test('dedicated Roblox workflow recovers and persists the durable target registr
   assert.match(workflow,/gameName: '포근섬: 작은 왕국 키우기'/);
   assert.match(workflow,/gameName: '5포탈 RPG: 던전 파티'/);
   assert.match(workflow,/gameName: '심야 감염전 \[4대4\]'/);
+  assert.match(workflow,/const canonicalSourceRevision=String\(item\.robloxSourceCommit\|\|''\)\.trim\(\)/);
+  assert.match(workflow,/const canonicalArtifactIdentity=String\(item\.robloxBuildArtifactIdentity\|\|''\)\.trim\(\)/);
+  assert.match(workflow,/DEDICATED_PUBLISH_ARTIFACT_NOT_BOUND_TO_CANONICAL_GAME_SOURCE/);
+  assert.match(workflow,/item\.robloxRuntimeCandidateEvidence=\{/);
+  assert.match(workflow,/authority:'roblox-open-cloud-dedicated-private-runtime-candidate'/);
+  assert.match(workflow,/sourceRevision:canonicalSourceRevision/);
+  assert.match(workflow,/artifactIdentity:canonicalArtifactIdentity/);
+  assert.match(workflow,/item\.robloxInternalReleasePublished=true/);
+  assert.match(workflow,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
+  assert.match(workflow,/item\.robloxFailureStage='VIBE_INTERNAL_PLAY'/);
+  assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_INTERNAL_VIBE_PLAY_PENDING'/);
+  assert.match(workflow,/item\.routingBlockers=\['roblox-internal-vibe-play-pending'\]/);
+  assert.doesNotMatch(workflow,/robloxInternalReleaseEvidence=\{[\s\S]{0,400}sourceRevision:r\.sourceRevision/);
 });
