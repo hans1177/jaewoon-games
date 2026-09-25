@@ -610,9 +610,15 @@ jobs:
 
             if(result.runtimeAcceptancePassed===true){
               item.robloxRuntimeFoundationInternalReleaseException=false;
+              item.robloxRuntimeFailureExternalReleaseOnly=false;
+              item.robloxInternalQaContinuationAllowed=false;
+              item.robloxInternalRegressionContinuationAllowed=false;
               item.robloxPublicReleaseRuntimeObservationPending=false;
               item.robloxPublicReleaseFailureSignature=null;
-              item.robloxPublicReleaseBlockers=(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]).filter(value=>value!=='roblox-public-release-awaiting-real-server-boot');
+              item.robloxPublicReleaseBlockers=(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]).filter(value=>
+                value!=='roblox-public-release-awaiting-real-server-boot'
+                &&!String(value||'').startsWith('roblox-public-release-runtime-finding:')
+              );
               item.robloxRuntimePassedAt=stamp;
               item.robloxRuntimeFailedAt=null;
               item.robloxIndependentQaPassed=true;
@@ -713,25 +719,109 @@ jobs:
                 console.log('ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING='+item.gameId);
                 pending++;
               }else{
-                item.robloxIndependentQaPassed=false;
-                item.robloxRegressionPassed=false;
                 item.robloxParallelMultiplayerValidationPending=false;
-                item.robloxPromotionBlockers=[];
-                if(groundFailure){
-                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-                item.robloxFailureSignature='GROUND_CONTACT_FAILURE';
-                item.routingBlockers=['roblox-ground-contact-failure'];
-                failed++;
-              }else if(result.runtimeFoundationPassed===true){
-                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                item.robloxFailureSignature='ROBLOX_RUNTIME_ACCEPTANCE_PENDING';
-                item.routingBlockers=['roblox-runtime-acceptance-awaiting-tester-actions'];
-                pending++;
-              }else{
-                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-                item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
-                item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
-                pending++;
+                const studioPlay=item.robloxInternalVibePlayEvidence||{};
+                const exactStudioPlay=
+                  studioPlay.pass===true
+                  &&studioPlay.actualPlay===true
+                  &&studioPlay.runtimeVerified===true
+                  &&studioPlay.officialStudioMcp===true
+                  &&studioPlay.localPlaceFile===true
+                  &&studioPlay.sourceRevision===sourceRevision
+                  &&studioPlay.artifactIdentity===artifactIdentity
+                  &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+                  &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+                const exactPrivateRuntimeFinding=
+                  result.exactGame===true
+                  &&result.exactPlace===true
+                  &&result.exactVersion===true
+                  &&result.actualRuntimeEvidence===true
+                  &&exactStudioPlay;
+                if(exactPrivateRuntimeFinding){
+                  const runtimeSignature=groundFailure
+                    ?'GROUND_CONTACT_FAILURE'
+                    :(result.runtimeFoundationPassed===true?'ROBLOX_RUNTIME_ACCEPTANCE_PENDING':'ROBLOX_RUNTIME_FOUNDATION_PENDING');
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=true;
+                  item.robloxInternalRegressionContinuationAllowed=true;
+                  item.robloxRuntimeFailureExternalReleaseOnly=true;
+                  item.robloxPublicReleaseRuntimeObservationPending=true;
+                  item.robloxPublicReleaseFailureSignature=runtimeSignature;
+                  item.robloxPublicReleaseBlockers=[...new Set([
+                    ...(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]),
+                    'roblox-public-release-runtime-finding:'+runtimeSignature.toLowerCase(),
+                  ])];
+                  item.robloxPostRuntimeQaEvidence={
+                    version:5,
+                    gameId:item.gameId,
+                    sourceRevision,
+                    artifactIdentity,
+                    artifactRunId:Number(candidate.artifactRunId||0),
+                    candidateVersionNumber:Number(candidate.versionNumber),
+                    runtimeFoundationEvidence:evidence,
+                    exactRevision:true,
+                    independentQaPassed:false,
+                    regressionPassed:false,
+                    internalQaContinuationAllowed:true,
+                    internalRegressionContinuationAllowed:true,
+                    runtimeFailureExternalReleaseOnly:true,
+                    publicReleaseRuntimeObservationPending:true,
+                    runtimeFailureSignature:runtimeSignature,
+                    actualRuntimeEvidence:true,
+                    officialStudioMcpActualPlayPassed:true,
+                    studioAssetBindingRequired,
+                    studioAssetRuntimeBindingPassed,
+                    studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
+                    authority:'roblox-internal-flow-runtime-finding-external-release-only',
+                    verifiedAt:stamp,
+                  };
+                  item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                  item.canonicalState='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                  item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                  item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+                  item.routingBlockers=[];
+                  item.robloxPromotionBlockers=[...new Set([
+                    ...(Array.isArray(item.robloxPromotionBlockers)?item.robloxPromotionBlockers:[]),
+                    'roblox-public-release-runtime-finding:'+runtimeSignature.toLowerCase(),
+                  ])];
+                  if(item.executionEvidence){
+                    item.executionEvidence.runtimePassed=false;
+                    item.executionEvidence.independentQaPassed=false;
+                    item.executionEvidence.regressionPassed=false;
+                    item.executionEvidence.failureStage='PUBLIC_RELEASE_RUNTIME_FINDING';
+                    item.executionEvidence.failureSignature=runtimeSignature;
+                  }
+                  f9Ids.push(item.gameId);
+                  console.log('ROBLOX_INTERNAL_FLOW_CONTINUES_RUNTIME_FINDING_EXTERNAL_ONLY='+item.gameId+':'+runtimeSignature);
+                  pending++;
+                }else if(groundFailure){
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=false;
+                  item.robloxInternalRegressionContinuationAllowed=false;
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                  item.robloxFailureSignature='GROUND_CONTACT_FAILURE';
+                  item.routingBlockers=['roblox-ground-contact-failure'];
+                  failed++;
+                }else if(result.runtimeFoundationPassed===true){
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=false;
+                  item.robloxInternalRegressionContinuationAllowed=false;
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_ACCEPTANCE_PENDING';
+                  item.routingBlockers=['roblox-runtime-acceptance-awaiting-tester-actions'];
+                  pending++;
+                }else{
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=false;
+                  item.robloxInternalRegressionContinuationAllowed=false;
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
+                  pending++;
                 }
               }
             }
