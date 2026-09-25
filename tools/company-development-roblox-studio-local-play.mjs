@@ -421,6 +421,7 @@ class McpStdioClient{
       .slice(-1200);
     const stderrLower=stderrRedacted.toLowerCase();
     const stderrHint=!stderrRedacted?'EMPTY'
+      :/timed out waiting for tools to become available/i.test(stderrRedacted)?'STUDIO_TOOL_PROVIDER_TIMEOUT'
       :/no studio|unable to find an active studio|studio[^.]{0,80}(?:not available|unavailable|not connected)/i.test(stderrRedacted)?'NO_ACTIVE_STUDIO'
       :/enable studio as mcp|mcp[^.]{0,80}(?:disabled|not enabled)/i.test(stderrRedacted)?'MCP_SERVER_NOT_ENABLED'
       :/websocket|connection refused|failed to connect|connection closed/i.test(stderrLower)?'STUDIO_PROXY_CONNECTION'
