@@ -163,7 +163,7 @@ function setup(){
   assert.equal(first.task.historicalDeploymentRecovery,true);
   const occupied=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,historicalRegistryFile:registryFile,queueFile,recombinationFile:memoryFile,repoRoot:root});
   assert.equal(occupied.added,false);
-  assert.equal(occupied.reason,'CARETAKER_ALREADY_ACTIVE_FOR_GAME');
+  assert.equal(occupied.reason,'NO_NEW_HISTORICAL_SOURCE_CYCLE');
 }
 
 {

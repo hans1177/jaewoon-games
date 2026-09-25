@@ -85,7 +85,7 @@ function isHealthy(telemetry = {}) {
     && throughput>0;
 }
 
-export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = DEFAULT_ADAPTIVE_TARGET } = {}) {
+export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = DEFAULT_ADAPTIVE_MIN } = {}) {
   let control = createParallelismControl(controlInput);
   const nowMs = Date.parse(now);
   const previousAt = Date.parse(clean(control.lastUpdatedAt));

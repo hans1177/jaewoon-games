@@ -58,8 +58,11 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.deepEqual(directive.gameSeed.requiredFields,[...GAME_SEED_REQUIRED_FIELDS]);
   assert.ok(directive.gameSeed.requiredFields.includes('REFERENCE_INPUTS'));
   assert.ok(!directive.gameSeed.requiredFields.includes('REFERENCE_GAMES'));
-  assert.equal(directive.productionThroughput.concurrentGameWipMax,20);
-  assert.equal(directive.productionThroughput.webValidationParallelismControlledSeparately,true);
+  assert.equal(directive.productionThroughput.concurrentGameWipMax,null);
+  assert.equal(directive.productionThroughput.webValidationParallelismControlledSeparately,false);
+  assert.equal(directive.productionThroughput.sourceRootExclusiveLockForbidden,true);
+  assert.equal(directive.productionThroughput.internalArtificialConcurrencyCapsForbidden,true);
+  assert.equal(directive.productionThroughput.defaultRequestedConcurrentGameTasks,256);
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
   assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
   assert.equal(Object.hasOwn(directive.stageGateScoringV2.currentThresholds,'webPlatformPromotion'),false);

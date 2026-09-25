@@ -120,7 +120,9 @@ assert.equal(continuation.robloxContinuation.continueFromSharedMinimumDesign,tru
 assert.equal(continuation.robloxContinuation.verifiedLearningReuseRequired,true);
 assert.equal(continuation.unityContinuation.continueFromSharedMinimumDesign,true);
 assert.equal(continuation.unityContinuation.platformNativeRuntimeEvidenceRequired,true);
-assert.equal(continuation.postReleaseFocusedDevelopment.dedicatedProtectedRunnerSlots,1);
+assert.equal(continuation.postReleaseFocusedDevelopment.dedicatedProtectedRunnerSlots,null);
+assert.equal(continuation.postReleaseFocusedDevelopment.sameGameNonOverlappingPackagesParallel,true);
+assert.equal(continuation.postReleaseFocusedDevelopment.sourceRootWideLockForbidden,true);
 assert.equal(continuation.postReleaseFocusedDevelopment.continuousRefill,true);
 assert.equal(continuation.verifiedLearningMaxUse.required,true);
 assert.equal(continuation.verifiedLearningMaxUse.sameGameHighestPriority,true);
