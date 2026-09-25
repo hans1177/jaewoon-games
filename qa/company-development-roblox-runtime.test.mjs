@@ -531,7 +531,7 @@ test('Roblox fused happy path reuses the exact package through shared preflight 
   assert.match(workflow,/Run fused shared-model build preflight/);
   assert.match(workflow,/ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE/);
   assert.match(workflow,/--rebuilt-artifact-identity="\$artifact_identity"/);
-  assert.match(workflow,/ROBLOX_FUSED_PRIVATE_RUNTIME_DISPATCH=/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/queue\.robloxTechnicalParallelism=null/);
   assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=2/);
   assert.match(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR/);
@@ -615,4 +615,21 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/const knownSourceRepairDebt=Boolean\(bootstrapFailed\)\|\|f0FoundationRepair/);
   assert.match(workflow,/reconciledPass\.has\(item\.gameId\)&&!knownSourceRepairDebt/);
   assert.doesNotMatch(workflow,/f0FoundationRepair=!secondaryOwnerFocus\s*\n\s*&&state==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'/);
+});
+
+
+test('pending private runtime candidates retry even when technical target count is zero',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const retry=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateRetry;
+  assert.equal(retry.retryMayRunWhenTechnicalTargetCountIsZero,true);
+  assert.equal(retry.retryScansAllExactF0PassedPendingCandidates,true);
+  assert.equal(retry.duplicatePerGameDispatchSerializedByReleaseWorkflow,true);
+  assert.match(workflow,/name: Dispatch pending private runtime candidates[\s\S]*?if: always\(\)/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT=/);
+  assert.match(workflow,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(workflow,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
+  assert.doesNotMatch(workflow,/Dispatch private runtime candidate for fused F0 passes/);
 });
