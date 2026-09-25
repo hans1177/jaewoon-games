@@ -681,9 +681,7 @@ jobs:
 
   studio-local-plan:
     name: plan exact local Studio MCP playtests
-    needs: runtime-foundation-qa
-    if: always() && needs.runtime-foundation-qa.result != 'cancelled'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 8
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -715,26 +713,41 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
-        shell: bash
+        shell: powershell
         run: |
-          set -euo pipefail
+          $ErrorActionPreference = 'Stop'
           git -C ../runtime fetch --no-tags origin company-runtime
+          if ($LASTEXITCODE -ne 0) { throw 'company-runtime refresh failed before Studio MCP plan' }
           git -C ../runtime reset --hard origin/company-runtime
-          requested="$REQUESTED_GAME_ID"
-          if [ -z "$requested" ] && [ "$EVENT_NAME" = 'push' ] && [ -f roblox-games/.company-runtime-trigger ]; then
-            requested="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | tr -d '[:space:]')"
-          fi
-          node tools/company-development-roblox-studio-local-play.mjs \
-            --mode=plan \
-            --queue=../runtime/development-queue.json \
-            --roadmap=company-learning/platform-release-roadmap.json \
-            --game-id="$requested" \
-            --output=/tmp/roblox-studio-mcp-matrix.json
-          matrix="$(node -e "const x=require('/tmp/roblox-studio-mcp-matrix.json');process.stdout.write(JSON.stringify({include:Array.isArray(x.include)?x.include:[]}))")"
-          count="$(node -e "const x=require('/tmp/roblox-studio-mcp-matrix.json');process.stdout.write(String((x.include||[]).length))")"
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-          echo "count=$count" >> "$GITHUB_OUTPUT"
-          echo "ROBLOX_STUDIO_MCP_PLAN_COUNT=$count"
+          if ($LASTEXITCODE -ne 0) { throw 'company-runtime reset failed before Studio MCP plan' }
+
+          $requested = [string]$env:REQUESTED_GAME_ID
+          if ([string]::IsNullOrWhiteSpace($requested) -and $env:EVENT_NAME -eq 'push') {
+            $triggerPath = 'roblox-games/.company-runtime-trigger'
+            if (Test-Path $triggerPath) {
+              $triggerText = Get-Content $triggerPath -Raw
+              $match = [regex]::Match($triggerText,'(?m)^gameId:\s*([^\s]+)\s*$')
+              if ($match.Success) { $requested = $match.Groups[1].Value.Trim() }
+            }
+          }
+
+          $planOutput = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-matrix.json'
+          $planArgs = @(
+            '--mode=plan',
+            '--queue=../runtime/development-queue.json',
+            '--roadmap=company-learning/platform-release-roadmap.json',
+            "--game-id=$requested",
+            "--output=$planOutput"
+          )
+          & node 'tools/company-development-roblox-studio-local-play.mjs' @planArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP self-hosted plan failed' }
+          $plan = Get-Content $planOutput -Raw | ConvertFrom-Json
+          $include = @($plan.include)
+          $matrix = @{ include = $include } | ConvertTo-Json -Compress -Depth 12
+          "matrix=$matrix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "count=$($include.Count)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_PLAN_COUNT=$($include.Count)"
+          Write-Host 'ROBLOX_STUDIO_MCP_PLAN_RUNNER=SELF_HOSTED_WINDOWS'
 
   studio-mcp-auto-play:
     name: Official Studio MCP actual play ${{ matrix.gameId }}
