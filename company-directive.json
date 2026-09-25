@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 74,
+  "revision": 75,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -918,7 +918,9 @@
     "externalMatrixBatchMax": 256,
     "verifiedExternalPressureMayTemporarilyReduceWorkers": true,
     "recoverToExternalCapacityAfterPressure": true,
-    "internalRampUpStepsForbidden": true
+    "internalRampUpStepsForbidden": true,
+    "minimumAdaptiveWorkerFloor": 4,
+    "staleOrMissingPressureEvidenceResetsTo": 256
   },
   "stageGateScoringV2": {
     "version": 2,

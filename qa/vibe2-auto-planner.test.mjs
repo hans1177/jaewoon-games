@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -2070,4 +2070,38 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
   assert.ok(studio.evidence.includes('runtime-neural-event-outcome:PASS'));
   assert.ok(studio.evidence.includes('runtime-neural-event-authority:SHADOW'));
   assert.ok(studio.evidence.some(value=>value.startsWith('neural-event-shadow:')));
+});
+
+
+test('studio evolution emits all five quality pillars for one game',()=>{
+  const root=tempRepo();
+  const gameId='parallel-studio';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.mkdirSync(path.join(source,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(source,'client','Visual.client.luau'),'local camera = workspace.CurrentCamera\n','utf8');
+  fs.writeFileSync(path.join(source,'client','Input.client.luau'),'local input = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'local combat = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Progression.server.luau'),'local progression = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'shared','Save.luau'),'local save = {}\n','utf8');
+  const project={gameId,name:'Parallel Studio',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
+  assert.equal(tasks.length,5);
+  assert.deepEqual(new Set(tasks.map(row=>row.studioQualityEvolution.focusPillar)),new Set(['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']));
+  assert.ok(tasks.every(row=>row.responsibleFiles.length>0&&row.responsibleFiles.length<=2));
+});
+
+test('failed studio pillar creates a repair generation without globally blocking the game',()=>{
+  const root=tempRepo();
+  const gameId='repair-parallel';
+  const source=path.join(root,'web-games',gameId);
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'index.html'),'<!doctype html><canvas id="game"></canvas>','utf8');
+  const project={gameId,name:'Repair Parallel',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  const next=findStudioContinuousImprovementTask(project,root,{tasks:[{...first,status:'failed',blocker:'test-failure'}]},'CORE_FUN');
+  assert.ok(next);
+  assert.match(next.id,/-v2$/);
+  assert.equal(next.studioQualityEvolution.phase,'REPAIR');
 });

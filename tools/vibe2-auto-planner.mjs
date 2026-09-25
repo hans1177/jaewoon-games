@@ -345,15 +345,14 @@ function nextCausalGenerationId(queue,basePrefix){
   if(!rows.length)return `${basePrefix}-v1`;
   const latest=rows[rows.length-1];
   const status=clean(latest.item.status).toLowerCase();
-  if(['queued','running','blocked','failed'].includes(status))return null;
-  if(status==='verified')return `${basePrefix}-v${latest.version+1}`;
-  return null;
+  if(['queued','running'].includes(status))return null;
+  return `${basePrefix}-v${latest.version+1}`;
 }
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function isDevelopmentImplementation(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
 function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(clean(item.blocker));}
 function developmentPlanningPool(queue){return activeTasks(queue).filter(item=>isDevelopmentImplementation(item)&&!isReleaseWait(item));}
-function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return true;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
+function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return false;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){return activeTasks(queue).some(item=>sameRootResponsibilityConflict(item,task));}
 function supervisedWebBuildRequired(project={},goal=''){
   if(clean(project.engine).toLowerCase()!=='web')return false;
@@ -1471,16 +1470,21 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 }
 
 
-export function findStudioContinuousImprovementTask(project,repoRoot,queue){
+export function findStudioContinuousImprovementTask(project,repoRoot,queue,forcedFocusPillar=''){
   if(!project?.gameId||!project?.projectPath)return null;
   const sourceRoot=posix(project.projectPath),sourceDir=sourceFile(repoRoot,sourceRoot);
   if(!fs.existsSync(sourceDir)||!fs.statSync(sourceDir).isDirectory())return null;
-  const id=nextCausalGenerationId(queue,`${project.gameId}-studio-evolution`);
+  const requestedFocus=clean(forcedFocusPillar).toUpperCase();
+  const generationBase=requestedFocus
+    ?`${project.gameId}-studio-evolution-${requestedFocus.toLowerCase().replaceAll('_','-')}`
+    :`${project.gameId}-studio-evolution`;
+  const id=nextCausalGenerationId(queue,generationBase);
   if(!id)return null;
 
   const history=(queue.tasks||[]).filter(item=>
     clean(item.gameId)===clean(project.gameId)
     &&(item.evidence||[]).map(clean).includes('studio-quality-loop:v1')
+    &&(!requestedFocus||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()===requestedFocus)
   );
   const verified=history.filter(item=>clean(item.status).toLowerCase()==='verified');
   const previous=verified.at(-1)||null;
@@ -1510,7 +1514,8 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue){
   else if(signalFocus==='PRESENTATION')focusPillar='PRESENTATION';
   else if(cycle>1&&signalFocus&&cycle%2===0)focusPillar=signalFocus;
   const hasVerifiedPresentation=verified.some(item=>clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()==='PRESENTATION');
-  if(phase!=='REPAIR'&&!hasVerifiedPresentation)focusPillar='PRESENTATION';
+  if(!requestedFocus&&phase!=='REPAIR'&&!hasVerifiedPresentation)focusPillar='PRESENTATION';
+  if(requestedFocus)focusPillar=requestedFocus;
 
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
@@ -1544,7 +1549,8 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue){
     if(focusPillar==='STABILITY'&&/game|core|runtime|server|save|network|state/.test(value))score+=18;
     return score;
   };
-  const responsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b)).slice(0,6);
+  const responsibleFileLimit=requestedFocus?2:6;
+  const responsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b)).slice(0,responsibleFileLimit);
   const baselineId=clean(previous?.id)||`source:${sourceRoot}`;
   const explicitGap=knownSignals[0]||`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`;
   const phaseInstruction=phase==='BUILD_UP'
@@ -1606,6 +1612,12 @@ ${phaseInstruction}${visualInstruction}
   return out;
 }
 
+export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
+  return ['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']
+    .map(focus=>findStudioContinuousImprovementTask(project,repoRoot,queue,focus))
+    .filter(Boolean);
+}
+
 function findSafeTasks(project,repoRoot,queue){
   const pilot=isAssetProductionPilot(project,repoRoot);
   if(project.engine==='roblox')return uniqueTaskCandidates([
@@ -1613,7 +1625,7 @@ function findSafeTasks(project,repoRoot,queue){
     findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
     findWeatherPresentationTask(project,repoRoot,queue),
     findPresentationQualityTask(project,repoRoot,queue),
-    findStudioContinuousImprovementTask(project,repoRoot,queue),
+    ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
     scanExplicitMarkerTask(project,repoRoot,queue)
   ]);
   if(project.engine==='unity'){
@@ -1622,40 +1634,40 @@ function findSafeTasks(project,repoRoot,queue){
       if(firstStage)return[firstStage];
       return uniqueTaskCandidates([
         findPresentationQualityTask(project,repoRoot,queue),
-        findStudioContinuousImprovementTask(project,repoRoot,queue),
+        ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
         scanExplicitMarkerTask(project,repoRoot,queue)
       ]);
     }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
       findPresentationQualityTask(project,repoRoot,queue),
-      findStudioContinuousImprovementTask(project,repoRoot,queue),
+      ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
     return uniqueTaskCandidates([
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
       findUnityTask(project,repoRoot,queue),
-      findStudioContinuousImprovementTask(project,repoRoot,queue),
+      ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
   }
   if(project.engine==='web'){
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-      return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+      return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...findStudioContinuousImprovementTasks(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     }
     // Preserve canonical Web responsibility order for bootstrap and exact repair.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair)return[startupSpatialRepair];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findStudioContinuousImprovementTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),...findStudioContinuousImprovementTasks(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
 function selectPackageCandidates(candidates,queue,remaining,policy){
   const selected=[];
-  const limit=Math.max(1,Math.min(Number(policy?.maxTasksPerPackage||5),remaining));
+  const limit=Math.max(1,remaining);
   for(const candidate of candidates){
     if(!candidate||plannerConflict(queue,candidate))continue;
     if(selected.some(other=>sameRootResponsibilityConflict(other,candidate)))continue;

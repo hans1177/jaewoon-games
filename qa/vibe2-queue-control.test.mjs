@@ -551,14 +551,16 @@ test('same source root may fan out when responsibility files are concrete and di
   assert.equal(reserved.tasks.length,2);
 });
 
-test('same source root remains exclusive when responsibility files overlap or are unspecified', () => {
+test('same source root never creates a game-wide lock; only overlapping responsibility files serialize', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
   queue=add(queue,'a','same','web',{responsibleFiles:['shared.js']});
   queue=add(queue,'b','same','web',{responsibleFiles:['shared.js']});
   queue=add(queue,'c','same','web');
   const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
-  assert.equal(reserved.tasks.length,1);
-  assert.ok(reserved.selection.deferredConflicts.some(row=>row.reason==='responsible-file-conflict'||row.reason==='source-root-conflict'));
+  assert.equal(reserved.tasks.length,2);
+  assert.ok(reserved.tasks.some(row=>row.id==='c'));
+  assert.ok(reserved.selection.deferredConflicts.some(row=>row.reason==='responsible-file-conflict'));
+  assert.equal(reserved.selection.deferredConflicts.some(row=>row.reason==='source-root-conflict'),false);
 });
 
 test('DAG dependency starts only after predecessor PASS', () => {
@@ -572,18 +574,17 @@ test('DAG dependency starts only after predecessor PASS', () => {
   assert.equal(next.selected[0].id,'after');
 });
 
-test('awaiting QA holds its source root but does not block independent work', () => {
+test('awaiting QA holds only its responsible file and same-game disjoint work continues', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
-  queue=add(queue,'first','game-a','unity');
-  queue=add(queue,'same-next','game-a','unity');
-  queue=add(queue,'other','game-b','web');
+  queue=add(queue,'first','game-a','unity',{responsibleFiles:['Assets/Scripts/Combat.cs']});
+  queue=add(queue,'same-next','game-a','unity',{responsibleFiles:['Assets/Scripts/Progression.cs']});
+  queue=add(queue,'other','game-b','web',{responsibleFiles:['index.html']});
   let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
   assert.deepEqual(new Set(reserved.tasks.map(t=>t.id)),new Set(['first','other']));
   queue=markVibeTaskAwaiting(reserved.queue,{taskId:'first',blocker:'candidate-awaiting-qa-and-deployment'});
   let done=settleVibeTask(queue,{taskId:'other',outcome:'PASS'}).queue;
   const next=selectVibeQueueBatch(done,{maxConcurrentTasks:4});
-  assert.equal(next.selected.some(t=>t.id==='same-next'),false);
-  assert.equal(next.stopReason,'ONLY_CONFLICTING_WORK_AVAILABLE');
+  assert.equal(next.selected.some(t=>t.id==='same-next'),true);
 });
 
 test('completed single worker releases capacity before fan-in without dropping source locks or adding QA pressure', () => {

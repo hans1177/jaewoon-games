@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-continuous-queue.js
-// 역할: Vibe2 작업을 DAG 의존성 + shard + source/file lock 기반 계층형 병렬 큐로 관리한다.
-// 원칙: 사용자 지시 우선, 출시확정 > 개발확정, 서로 독립인 source root만 병렬, 동일 root/file 충돌 금지, 유료 자원 금지.
+// 역할: Vibe2 작업을 DAG 의존성 + shard + 책임 파일 충돌 기반 계층형 병렬 큐로 관리한다.
+// 원칙: 사용자 지시 우선, 출시확정 > 개발확정, 같은 게임도 비충돌 책임 파일은 최대 병렬, 동일 책임 파일 동시 쓰기만 직렬화, source-root/game-wide 락 금지, 유료 자원 금지.
 
 const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
@@ -298,10 +298,12 @@ export function createVibeContinuousQueue(seed = {}) {
       hierarchicalParallelism: true,
       shardAware: true,
       workStealing: true,
-      sourceRootExclusive: true,
+      sourceRootExclusive: false,
+      gameWideLockForbidden: true,
+      sameGameNonOverlappingPackagesParallel: true,
       responsibleFileExclusive: true,
-      unityReleaseFocusSlots: 1,
-      postReleaseFocusedSlots: 3,
+      unityReleaseFocusSlots: null,
+      postReleaseFocusedSlots: null,
       postReleaseFocusedSlotsScaleWithEligibleGames: true,
       postReleaseCaretakerMode: 'per-game-persistent',
       systemStewardProtectedSlots: 1,
@@ -361,21 +363,12 @@ function fileLocks(task) {
   return new Set((task.responsibleFiles || []).map(posix).filter(Boolean).map((file) => root && !file.startsWith(`${root}/`) ? `${root}/${file}` : file));
 }
 function lockConflict(a, b) {
-  const aRoot = posix(a.sourceRoot), bRoot = posix(b.sourceRoot);
   const aFiles = fileLocks(a), bFiles = fileLocks(b);
-  if (aRoot && bRoot && aRoot === bRoot) {
-    if (!aFiles.size || !bFiles.size) return 'source-root-conflict';
-    for (const file of aFiles) if (bFiles.has(file)) return 'responsible-file-conflict';
-    return null;
-  }
+  if (!aFiles.size || !bFiles.size) return null;
   for (const file of aFiles) if (bFiles.has(file)) return 'responsible-file-conflict';
   return null;
 }
-function isReleaseUnity(task) {
-  return task.target === 'unity' && task.releaseState === 'release-confirmed' && !['inspect','research','qa'].includes(clean(task.type).toLowerCase());
-}
 function conflictsWith(task, active) {
-  if (isReleaseUnity(task) && active.some(isReleaseUnity)) return 'unity-release-focus-slot-busy';
   for (const other of active) {
     const reason = lockConflict(task, other);
     if (reason) return reason;
@@ -480,14 +473,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const focusedCandidates=candidates.filter((row)=>isPostReleaseFocused(row.task));
   const focusedGameIds=new Set(focusedRunning.map(focusedGameId).filter(Boolean));
   const eligibleFocusedGameIds=new Set([...focusedGameIds,...focusedCandidates.map((row)=>focusedGameId(row.task)).filter(Boolean)]);
-  const postReleaseFocusedSlotLimit=Math.min(effectiveMax,Math.max(3,eligibleFocusedGameIds.size));
+  const postReleaseFocusedSlotLimit=effectiveMax;
   const postReleaseFocusedTaskIds=[];
-  const focusedSlotAvailable=(task)=>{
-    if(!isPostReleaseFocused(task))return true;
-    const gameId=focusedGameId(task);
-    if(gameId&&focusedGameIds.has(gameId))return false;
-    return focusedGameIds.size<postReleaseFocusedSlotLimit;
-  };
+  const focusedSlotAvailable=(_task)=>true;
   const noteFocusedSelection=(task)=>{
     if(!isPostReleaseFocused(task))return;
     const gameId=focusedGameId(task);

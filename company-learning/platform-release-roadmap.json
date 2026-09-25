@@ -1,5 +1,5 @@
 {
-  "version": 354,
+  "version": 355,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -837,7 +837,10 @@
     "sourceRootWideLockForbidden": true,
     "responsibleFileConflictOnlySerialization": true,
     "releaseOrRuntimeWaitDoesNotConsumeIndependentDevelopmentCapacity": true,
-    "graphicsQaFailureDoesNotSerializeUnrelatedSameGameDevelopment": true
+    "graphicsQaFailureDoesNotSerializeUnrelatedSameGameDevelopment": true,
+    "defaultRequestedParallelism": 256,
+    "verifiedExternalPressureMayTemporarilyDownshift": true,
+    "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true
   },
   "phases": [
     {
@@ -10952,10 +10955,17 @@
       "adaptiveBackpressureMayLowerBelow20": true,
       "rationale": "GAME_PRIMARY requests the current external provider/planning boundary by default. Independent tasks refill immediately after per-task micro-fan-in; source-root locks are forbidden and only overlapping responsible-file writes or brief atomic shared-state mutation serialize. Verified external provider or runner pressure may temporarily reduce active workers, then recovery returns to the external boundary.",
       "gamePrimaryAdaptiveSteps": [
+        4,
+        8,
+        16,
+        20,
+        32,
+        64,
+        128,
         256
       ],
       "gamePrimaryBaselineTarget": 256,
-      "gamePrimaryAdaptiveMinimum": 1,
+      "gamePrimaryAdaptiveMinimum": 4,
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryFixedInternalCap": null,
       "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
@@ -10973,7 +10983,10 @@
       "responsibleFileConflictProtectionStillRequired": true,
       "sourceRootWideLockForbidden": true,
       "defaultRequestedParallelism": 256,
-      "recoverToExternalBoundaryAfterPressure": true
+      "recoverToExternalBoundaryAfterPressure": true,
+      "defaultStartsAtExternalBoundary": true,
+      "verifiedExternalPressureOnlyDownshift": true,
+      "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true
     },
     "liveShadowObservation": {
       "observedAt": "2026-09-20",

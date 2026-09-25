@@ -1,5 +1,5 @@
 {
-  "version": 29,
+  "version": 30,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -184,7 +184,7 @@
     "refillPlannerOnDispatch": false,
     "ownerDirectivePreemptsAutonomy": true,
     "maxConcurrentGameTasks": 256,
-    "unityReleaseFocusSlots": 1,
+    "unityReleaseFocusSlots": null,
     "longWorkProtectedSlots": 1,
     "priorityOrder": [
       "owner-directive",
@@ -227,8 +227,8 @@
     "slotRefillBranchPrefix": "vibe2/refill/",
     "slotRefillSingleVariantOnly": false,
     "slotRefillWorkerDirectControlWrite": false,
-    "slotRefillSourceLocksHeldUntilFanIn": true,
-    "postReleaseFocusedRunnerSlots": 1,
+    "slotRefillSourceLocksHeldUntilFanIn": false,
+    "postReleaseFocusedRunnerSlots": null,
     "postReleaseFocusedRefill": true,
     "legacySlotRefillBranchCompatibility": false,
     "systemStewardProtectedSlots": 1,
@@ -237,7 +237,7 @@
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_ATOMIC_COMPLETION_REFILL",
-    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_AND_PLANNING_BOUND; GAME_PRIMARY_HAS_NO_FIXED_INTERNAL_CAP; BASELINE_AND_PRESSURE_FLOOR_20; VERIFIED_HEALTHY_TELEMETRY_SELF_EXPANDS",
+    "maxConcurrentGameTasksMeaning": "DEFAULT_REQUESTS_EXTERNAL_PROVIDER_BOUNDARY_256; NO_INTERNAL_GAME_OR_SOURCE_ROOT_CAP; VERIFIED_EXTERNAL_PRESSURE_MAY_TEMPORARILY_DOWNSHIFT",
     "minimumNecessaryProcedure": {
       "enabled": true,
       "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
@@ -317,11 +317,11 @@
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "Legacy capacity envelope only: execution is an atomic neuron stream with no global worker barrier. Task variants micro-fan-in independently, free capacity refills immediately, pressure never lowers GAME_PRIMARY below 20, and healthy saturation expands 20→32→64→128→256; 256 remains the current external provider boundary.",
+      "note": "GAME_PRIMARY requests external provider capacity 256 by default. Same-game non-overlapping responsible files run in parallel; source-root/game-wide locks are forbidden. Verified external runner/provider pressure may temporarily downshift and stale/missing pressure evidence recovers to 256.",
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
-      "baselineTarget": 20,
-      "adaptiveMinActiveWorkers": 20,
+      "baselineTarget": 256,
+      "adaptiveMinActiveWorkers": 4,
       "adaptiveMaxActiveWorkers": 256,
       "fixedWaveBarrier": false,
       "legacyCapacityEnvelopeOnly": true
@@ -348,8 +348,8 @@
         "fanInOnlyRefill": false,
         "adaptiveGameControlEligible": true,
         "capacityAwareFreeSlotRefill": true,
-        "adaptiveBaselineTarget": 20,
-        "adaptiveMinActiveWorkers": 20,
+        "adaptiveBaselineTarget": 256,
+        "adaptiveMinActiveWorkers": 4,
         "adaptiveMaxActiveWorkers": 256
       },
       "RECOVERY_FAST": {
@@ -413,9 +413,12 @@
       "refillAfterTaskMicroFanIn": true,
       "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
       "workerDirectControlWrite": false,
-      "sourceAndFileConflictLocksPreserved": true,
-      "pressureFloor": 20,
+      "sourceAndFileConflictLocksPreserved": false,
+      "pressureFloor": 4,
       "autonomousScaleSteps": [
+        4,
+        8,
+        16,
         20,
         32,
         64,
@@ -445,7 +448,9 @@
       "runtimeResultPlatformMismatchShadowOnly": true,
       "runtimeResultExistingTaskRequeueEnabled": true,
       "runtimeResultExistingTaskRequeueRequiresUnambiguousTarget": true,
-      "runtimeResultNewTaskCreationAllowed": false
+      "runtimeResultNewTaskCreationAllowed": false,
+      "responsibleFileConflictLocksPreserved": true,
+      "sourceRootWideLocksForbidden": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -480,7 +485,10 @@
       "foundationPresentationPassesBeforeGenericVisualEvolution": true,
       "designTextIsNotImplementationCeiling": true,
       "sameResponsibleFileConcurrentWrite": false,
-      "fullRegressionOnceAtFanIn": true
+      "fullRegressionOnceAtFanIn": true,
+      "sameGameNonOverlappingPackagesParallel": true,
+      "sourceRootWideLock": false,
+      "laneLocalFailureIsolation": true
     },
     "workLockConflictPolicy": {
       "transientSchedulingState": true,
@@ -497,7 +505,8 @@
       "ambiguousMissingPathFailClosed": true,
       "writableScopeExpansionAllowed": false,
       "missingPathRecoveryTelemetry": "codingMethod.missingPathRecoveries"
-    }
+    },
+    "slotRefillResponsibleFileLocksHeldUntilFanIn": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -526,21 +535,21 @@
     "lowWorkloadBuildsRecoveryStreak": false,
     "immediateDynamicCapMayAlsoDownshiftPersistentCap": false,
     "duplicateRunMayChangePersistentCap": false,
-    "missingStateFallbackMax": 20,
-    "corruptStateFallbackMax": 20,
+    "missingStateFallbackMax": 256,
+    "corruptStateFallbackMax": 256,
     "fastHealthyRamp": true,
     "staleTelemetryTtlMinutes": 90,
     "staleTelemetryResetsToMax": false,
     "laneSpecificPressurePreferred": true,
     "policyConcurrencyLimit": null,
     "externalBatchMax": 256,
-    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-09-20_PRESSURE_FLOOR_20_SELF_ADAPTIVE_EXPANSION",
+    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-09-25_MAX_EXTERNAL_CAPACITY_DEFAULT_VERIFIED_PRESSURE_ONLY_DOWNSHIFT",
     "ownerMinimumWaveAppliedTo": [
       "GAME_PRIMARY"
     ],
-    "minimumAdaptiveWave": 20,
-    "baselineAdaptiveWave": 20,
-    "staleTelemetryResetTarget": 20
+    "minimumAdaptiveWave": 4,
+    "baselineAdaptiveWave": 256,
+    "staleTelemetryResetTarget": 256
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -625,8 +634,8 @@
     }
   },
   "coordination": {
-    "mode": "dag-batch-source-root-exclusive-file-aware",
-    "sourceRootExclusive": true,
+    "mode": "dag-batch-responsible-file-exclusive",
+    "sourceRootExclusive": false,
     "separateFileLocks": true,
     "sameFileParallelWrite": false,
     "activeTaskSource": ".vibe2/queue.json",
@@ -653,7 +662,10 @@
         "VIBE2",
         "VIBE3"
       ]
-    }
+    },
+    "responsibleFileExclusive": true,
+    "gameWideLockForbidden": true,
+    "sameGameNonOverlappingPackagesParallel": true
   },
   "qaOptimization": {
     "incrementalFirst": true,
@@ -718,7 +730,7 @@
       256
     ],
     "policyConcurrencyLimit": null,
-    "effectiveMaxMeaning": "CURRENT_GAME_PRIMARY_ADAPTIVE_TARGET_NOT_EXTERNAL_BOUNDARY"
+    "effectiveMaxMeaning": "CURRENT_EXTERNAL_CAPACITY_REQUEST_AFTER_VERIFIED_PRESSURE_ADJUSTMENT"
   },
   "contracts": {
     "core": {
@@ -1031,8 +1043,9 @@
     "directMainWriteByWorker": false,
     "binaryAssetsDirectTextEditForbidden": true,
     "sharedWorkLockRequired": false,
-    "queueSourceRootLeaseRequired": true,
-    "homepagePublicationAutomatic": false
+    "queueSourceRootLeaseRequired": false,
+    "homepagePublicationAutomatic": false,
+    "queueResponsibleFileConflictProtectionRequired": true
   },
   "workPackages": {
     "enabled": true,
@@ -1045,7 +1058,7 @@
     "targetPackagesPerCycle": 4,
     "targetFeaturePackagesPerCycle": 2,
     "maxPackagesPerCycle": 256,
-    "maxTasksPerPackage": 8,
+    "maxTasksPerPackage": null,
     "smallTaskAction": "auto-expand-or-defer",
     "automaticExpansionMode": "real-disjoint-candidates-first-explicit-related-scopes-fallback",
     "automaticExpansion": [
@@ -1180,7 +1193,8 @@
         "STABILITY"
       ]
     },
-    "studioSmallTaskAction": "merge-into-coherent-studio-package-or-defer"
+    "studioSmallTaskAction": "merge-into-coherent-studio-package-or-defer",
+    "maxTasksPerPackageMeaning": "NO_INTERNAL_CAP; RESPONSIBLE_FILE_CONFLICT_AND_CURRENT_EXTERNAL_EXECUTION_WINDOW_ONLY"
   },
   "learningMotor": {
     "enabled": true,

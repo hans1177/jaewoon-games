@@ -14,9 +14,9 @@
     "hierarchicalParallelism": true,
     "shardAware": true,
     "workStealing": true,
-    "sourceRootExclusive": true,
+    "sourceRootExclusive": false,
     "responsibleFileExclusive": true,
-    "unityReleaseFocusSlots": 1,
+    "unityReleaseFocusSlots": null,
     "baseShardSlots": {
       "unity": 3,
       "web": 7,
@@ -24,7 +24,11 @@
       "support": 5
     },
     "dynamicBackpressure": true,
-    "speculativeParallelism": "high-risk-opt-in-only"
+    "speculativeParallelism": "high-risk-opt-in-only",
+    "gameWideLockForbidden": true,
+    "sameGameNonOverlappingPackagesParallel": true,
+    "internalConcurrencyCap": null,
+    "externalCapacityOnlyBoundary": true
   },
   "defaultMaxRetries": 2,
   "tasks": [
