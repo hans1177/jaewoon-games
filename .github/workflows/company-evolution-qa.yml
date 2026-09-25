@@ -158,7 +158,7 @@ jobs:
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
           const dev=directive.classes?.DEVELOPMENT_CONFIRMED||{};
-          if(dev.executionMode!=='DIRECT_NATIVE_DUAL_PLATFORM'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.admissionAuthority!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY'||dev.strictDesignScoreRequiredForAdmission!==false||dev.strictDesignReviewRunsInParallel!==true||dev.targetPlatformMayRunImmediately!==true||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true||dev.unityWebValidationSurface?.nativeGateAuthority!==false)throw new Error('DEVELOPMENT_CONFIRMED direct-native settings missing');
+          if(dev.executionMode!=='UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.admissionAuthority!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY'||dev.upperPlatformAdmissionAuthority!=='UPPER_PLATFORM_DEVELOPMENT_READY'||dev.strictDesignScoreRequiredForAdmission!==false||dev.strictDesignReviewRunsInParallel!==true||dev.targetPlatformMayRunImmediately!==false||dev.unityWebDevelopmentMayRunImmediately!==true||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true||dev.unityWebValidationSurface?.nativeGateAuthority!==true)throw new Error('DEVELOPMENT_CONFIRMED Unity Web upper-platform settings missing');
           const release=directive.classes?.RELEASE_CONFIRMED||{};
           if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED selected-platform gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
@@ -191,7 +191,7 @@ jobs:
           grep -Fq 'design/**/android-runtime-validation.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/independent-release-qa.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq "'unity-games/**'" .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'DEVELOPMENT_EXECUTION_MODE=DIRECT_NATIVE_DUAL_PLATFORM' tools/artbook-production-pipeline.mjs
+          grep -Fq 'DEVELOPMENT_EXECUTION_MODE=UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM' tools/artbook-production-pipeline.mjs
           grep -Fq 'RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION' tools/artbook-production-pipeline.mjs
           grep -Fq 'RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED' tools/artbook-production-pipeline.mjs
           grep -Fq 'currentUnitySourceTreeSha' tools/company-release-production-cycle.mjs
@@ -227,11 +227,11 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-          for(const token of ['minimum-dual-platform-design-required','targetEvidenceFile','development-revalidation.json','selected-native-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY','supportingOnly:true'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
-          if(gate.includes("webGameplay:{required:true"))throw new Error('Web gameplay may not regain development admission authority');
+          for(const token of ['minimum-dual-platform-design-required','upper-platform-development-ready-required','upperPlatformReadiness','targetEvidenceFile','development-revalidation.json','selected-native-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY','supportingOnly:true'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
+          if(gate.includes("webGameplay:{required:true"))throw new Error('legacy generic Web gameplay may not become upper-platform admission authority');
           console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
-          console.log('DEVELOPMENT_ADMISSION=MINIMUM_DESIGN_PLUS_NATIVE_EVIDENCE');
-          console.log('UNITY_WEB_ADMISSION_AUTHORITY=NONE');
+          console.log('DEVELOPMENT_ADMISSION=MINIMUM_DESIGN_PLUS_UNITY_WEB_READINESS_PLUS_NATIVE_EVIDENCE');
+          console.log('UNITY_WEB_UPPER_PLATFORM_ADMISSION_AUTHORITY=UPPER_PLATFORM_DEVELOPMENT_READY');
           NODE
 
       - name: Validate RELEASE_CONFIRMED evidence and Vibe2 handoff cannot be faked

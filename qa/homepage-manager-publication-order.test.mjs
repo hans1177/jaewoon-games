@@ -185,17 +185,19 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/data-direct-play|dataset\.directPlay/);
 });
 
-test('central development orchestrator dispatches Roblox and Unity directly from minimum design',()=>{
+test('central development orchestrator dispatches Unity Web floor before new Roblox and Unity work',()=>{
   const development=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   assert.match(development,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
   assert.match(development,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_COUNT/);
+  assert.match(development,/UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT/);
+  assert.match(development,/upper-platform-development-readiness\.json/);
+  assert.match(development,/READINESS_SOURCE_STALE/);
   assert.match(development,/company-development-roblox-runtime\.yml/);
   assert.match(development,/company-development-unity-runtime\.yml/);
-  assert.match(development,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
-  assert.match(development,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
-  assert.doesNotMatch(development,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.match(development,/UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED/);
   assert.match(development,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
-  assert.doesNotMatch(development,/web-gate|WEB_PRESENTATION_HANDOFF_REJECTED|Unity Web gate/);
+  assert.doesNotMatch(development,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
 test('validation candidate evidence sync remains semantic-idempotent and is not a homepage shelf',()=>{
@@ -226,16 +228,18 @@ test('PR creation failure remains a blocking publication failure inside Director
   assert.ok(director.includes('exit 1'));
 });
 
-test('native development admission is minimum dual-platform design, not Web score',()=>{
+test('new native development admission requires Unity Web upper-platform readiness',()=>{
   const dual=roadmap.directNativeDualPlatformDevelopment||{};
   assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
   assert.equal(dual.unityWebEnabled,true);
-  assert.equal(dual.unityWebRequired,false);
-  assert.equal(dual.unityWebGateRequired,false);
-  assert.equal(dual.unityWebMode,'VALIDATION_SURFACE_ONLY');
-  assert.equal(dual.unityWebValidationSurface?.requiredForDevelopmentAdmission,false);
+  assert.equal(dual.unityWebRequired,true);
+  assert.equal(dual.unityWebGateRequired,true);
+  assert.equal(dual.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(dual.upperPlatformAdmission,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(dual.upperPlatformDevelopmentReadinessGate?.gateId,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(dual.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
   assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
-  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'MINIMUM_DESIGN_CONTRACT_READY');
+  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
 });
 
 test('homepage manager keeps machine self-QA and one post-work Director supervisor',()=>{

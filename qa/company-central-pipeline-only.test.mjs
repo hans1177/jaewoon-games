@@ -36,7 +36,7 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production runtime keeps one direct-native Roblox and Unity chain with platform-specific evidence',()=>{
+test('central production runtime gates new Roblox and Unity work on Unity Web readiness',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,file+' must exist');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -46,11 +46,11 @@ test('central production runtime keeps one direct-native Roblox and Unity chain 
   assert.equal(direct.status,'OWNER_DIRECT_LOCKED');
   assert.equal(direct.mode,'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR');
   assert.deepEqual(direct.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
-  assert.equal(direct.webDevelopmentStageRemoved,true);
+  assert.equal(direct.webDevelopmentStageRemoved,false);
   assert.equal(direct.unityWebEnabled,true);
-  assert.equal(direct.unityWebRequired,false);
-  assert.equal(direct.unityWebGateRequired,false);
-  assert.equal(direct.unityWebMode,'VALIDATION_SURFACE_ONLY');
+  assert.equal(direct.unityWebRequired,true);
+  assert.equal(direct.unityWebGateRequired,true);
+  assert.equal(direct.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
   assert.equal(direct.platformSpecificIndependentQaRequired,true);
@@ -58,12 +58,14 @@ test('central production runtime keeps one direct-native Roblox and Unity chain 
   assert.equal(direct.fortniteUefnState,'OWNER_HOLD');
   assert.match(development,/company-minimum-design-contract\.mjs/);
   assert.match(development,/company-selected-platform-router\.mjs/);
-  assert.match(development,/DIRECT_NATIVE_MACHINE_CONTRACT=PASS/);
+  assert.match(development,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
   assert.match(development,/ROBLOX_RUNTIME_DISPATCH=YES/);
   assert.match(development,/UNITY_APP_RUNTIME_DISPATCH=YES/);
-  assert.match(development,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
-  assert.match(development,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
-  assert.doesNotMatch(development,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_COUNT/);
+  assert.match(development,/UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT/);
+  assert.match(development,/UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED/);
+  assert.match(development,/upper-platform-development-readiness\.json/);
+  assert.match(development,/READINESS_SOURCE_STALE/);
   assert.match(development,/INTERNAL_RELEASE_FIRST=YES/);
   assert.doesNotMatch(development,/company-development-web-bootstrap\.mjs/);
   assert.doesNotMatch(development,/company-development-web-gameplay-validation\.mjs/);

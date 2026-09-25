@@ -1,5 +1,5 @@
-name: Unity WebGL Validation Surface Build
-run-name: Unity Web ${{ inputs.game_id || inputs.request_file || github.event.head_commit.message }}
+name: Unity Web Development Floor
+run-name: Unity Web Floor ${{ inputs.game_id || inputs.request_file || github.event.head_commit.message }}
 
 on:
   push:
@@ -144,7 +144,7 @@ jobs:
           print(f'UNITY_WEB_BUILD_METHOD={method}')
           PY
 
-      - name: Verify Unity WebGL validation-surface contract
+      - name: Verify Unity Web development-floor contract
         shell: bash
         run: |
           set -euo pipefail
@@ -152,12 +152,36 @@ jobs:
           import fs from 'node:fs';
           const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const c=policy.unityWebFirstStage;
+          const gate=policy.directNativeDualPlatformDevelopment?.upperPlatformDevelopmentReadinessGate;
           if(c?.status!=='OWNER_DIRECT_LOCKED') throw new Error('Unity Web policy not locked');
-          if(c?.scope!=='VALIDATION_SURFACE_ONLY'||c?.enabled!==true||c?.developmentAdmissionAuthority!==false) throw new Error('Unity Web validation surface contract changed');
+          if(c?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||c?.enabled!==true||c?.developmentAdmissionAuthority!==true) throw new Error('Unity Web development floor contract changed');
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
-          if(c?.postUnityWebGatePipelineUnchanged!==true) throw new Error('post gate pipeline changed');
-          console.log('UNITY_WEB_VALIDATION_SURFACE_CONTRACT=PASS');
+          if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
+          console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
+          NODE
+
+      - name: Bind canonical Unity source tree
+        id: source
+        shell: bash
+        env:
+          PROJECT_PATH: ${{ steps.request.outputs.project_path }}
+        run: |
+          set -euo pipefail
+          test -d "$PROJECT_PATH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import crypto from 'node:crypto';
+          const root=process.env.PROJECT_PATH;
+          const files=[];
+          const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,e.name);const rel=path.relative(root,full).replaceAll('\\','/');if(e.isDirectory()){if(rel==='Library'||rel.startsWith('Library/')||rel==='Temp'||rel.startsWith('Temp/'))continue;walk(full);}else if(e.isFile())files.push(rel);}};
+          walk(root);files.sort();
+          const hash=crypto.createHash('sha256');
+          for(const rel of files){hash.update(rel);hash.update('\0');hash.update(fs.readFileSync(path.join(root,rel)));hash.update('\0');}
+          const digest=hash.digest('hex');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'tree_sha='+digest+'\n');
+          console.log('UNITY_WEB_CANONICAL_SOURCE_TREE_SHA256='+digest);
           NODE
 
       - name: Verify Unity credentials
@@ -339,7 +363,7 @@ jobs:
           console.log('UNITY_WEB_BOOT_SMOKE=PASS');
           NODE
 
-      - name: Run Unity Web real gameplay QA
+      - name: Run Unity Web actual browser play
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -353,32 +377,157 @@ jobs:
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-gameplay-validation.json" \
             --screenshot="/tmp/unity-web/gameplay-mobile.png"
 
+      - name: Run Unity Web independent QA
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        run: |
+          set -euo pipefail
+          cd /tmp/unity-web
+          node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+            --game-id="$GAME_ID" \
+            --source="web-games/$GAME_ID" \
+            --port=4188 \
+            --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-independent-qa.json" \
+            --screenshot="/tmp/unity-web/independent-qa-mobile.png"
+
+      - name: Run Unity Web regression
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        run: |
+          set -euo pipefail
+          cd /tmp/unity-web
+          node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+            --game-id="$GAME_ID" \
+            --source="web-games/$GAME_ID" \
+            --port=4189 \
+            --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-regression.json" \
+            --screenshot="/tmp/unity-web/regression-mobile.png"
+
       - name: Write build evidence
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
           SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
           TREE_SHA: ${{ steps.output.outputs.tree_sha }}
+          UNITY_SOURCE_TREE_SHA: ${{ steps.source.outputs.tree_sha }}
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const file=`/tmp/unity-web/web-games/${process.env.GAME_ID}/unity-web-build.json`;
+          const gameId=process.env.GAME_ID;
+          const file='/tmp/unity-web/web-games/'+gameId+'/unity-web-build.json';
           fs.writeFileSync(file,JSON.stringify({
-            version:1,
+            version:2,
             engine:'UNITY_WEB',
-            gameId:process.env.GAME_ID,
-            canonicalSourceRoot:`unity-games/${process.env.GAME_ID}`,
-            buildOutputRoot:`web-games/${process.env.GAME_ID}`,
+            gameId,
+            canonicalSourceRoot:'unity-games/'+gameId,
+            buildOutputRoot:'web-games/'+gameId,
             sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
+            unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             buildTreeSha256:process.env.TREE_SHA,
             bootSmoke:'PASS',
-            initialRealGameplayQa:'PASS',
-            fullGameplayGate:'NOT_NATIVE_GATE',
-            validationSurfaceOnly:true,
-            nativeGateAuthority:false,
-            postGatePlatformPipelineChanged:false,
+            actualBrowserPlay:'PASS',
+            independentQa:'PASS',
+            regression:'PASS',
+            upperPlatformGateCandidate:true,
+            validationSurfaceOnly:false,
+            nativeGateAuthority:true,
+            releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString()
           },null,2)+'\n');
+          NODE
+
+      - name: Evaluate upper-platform development readiness
+        id: readiness
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+          SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
+          UNITY_SOURCE_TREE_SHA: ${{ steps.source.outputs.tree_sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin company-runtime
+          git show origin/company-runtime:development-queue.json > /tmp/company-runtime-development-queue.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          const gameId=process.env.GAME_ID;
+          const root='/tmp/unity-web/web-games/'+gameId;
+          const queue=JSON.parse(fs.readFileSync('/tmp/company-runtime-development-queue.json','utf8'));
+          const item=(queue.items||[]).find(row=>row.gameId===gameId);
+          if(!item)throw new Error('UPPER_PLATFORM_QUEUE_ITEM_MISSING:'+gameId);
+          const build=JSON.parse(fs.readFileSync(path.join(root,'unity-web-build.json'),'utf8'));
+          const play=JSON.parse(fs.readFileSync(path.join(root,'unity-web-gameplay-validation.json'),'utf8'));
+          const independent=JSON.parse(fs.readFileSync(path.join(root,'unity-web-independent-qa.json'),'utf8'));
+          const regression=JSON.parse(fs.readFileSync(path.join(root,'unity-web-regression.json'),'utf8'));
+          const project=path.join(process.cwd(),'unity-games',gameId);
+          const countFiles=dir=>{
+            const target=path.join(project,'Assets',dir);
+            if(!fs.existsSync(target))return 0;
+            let n=0;
+            const walk=p=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())walk(full);else if(e.isFile()&&!e.name.endsWith('.meta'))n++;}};
+            walk(target);return n;
+          };
+          const designPass=item.minimumDesignContract?.pass===true
+            &&Boolean(item.platformDesignProfiles?.ROBLOX?.source)
+            &&Boolean(item.platformDesignProfiles?.UNITY?.source);
+          const codePass=play.pass===true&&play.gameplay?.pass===true&&play.coreFun?.pass===true&&play.noCriticalRuntimeError===true;
+          const graphicsCounts={Art:countFiles('Art'),Prefabs:countFiles('Prefabs'),Materials:countFiles('Materials'),Animations:countFiles('Animations')};
+          const graphicsPass=Object.values(graphicsCounts).filter(v=>v>0).length>=3
+            &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png');
+          const webglPass=build.bootSmoke==='PASS'
+            &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
+            &&Boolean(build.buildTreeSha256)
+            &&fs.existsSync(path.join(root,'unity-web-deploy-manifest.json'));
+          const actualPlayPass=play.pass===true&&play.mobile?.pass===true&&play.coreFun?.pass===true;
+          const designSource=String(item.minimumDesignContract?.source||'');
+          let multiplayerRequired=false;
+          if(designSource){
+            try{
+              const raw=JSON.parse(execFileSync('git',['show','origin/company-runtime:'+designSource],{encoding:'utf8'}));
+              const mode=String(raw?.content?.multiplayerMode||'').toUpperCase();
+              multiplayerRequired=Boolean(mode&&mode!=='SINGLE'&&mode!=='SINGLE_PLAYER');
+            }catch{}
+          }
+          const multiplayerEvidence=item.unityWebMultiplayerQaEvidence||null;
+          const multiplayerPass=!multiplayerRequired
+            ||(multiplayerEvidence?.pass===true&&Number(multiplayerEvidence?.participantCount||0)>=2&&multiplayerEvidence?.authoritativeSync===true);
+          const qaPass=independent.pass===true&&regression.pass===true
+            &&independent.saveRestore?.pass===true&&regression.saveRestore?.pass===true
+            &&multiplayerPass;
+          const portabilityPass=designPass
+            &&build.canonicalSourceRoot==='unity-games/'+gameId
+            &&build.buildOutputRoot==='web-games/'+gameId;
+          const criteria={
+            design:{pass:designPass},
+            code:{pass:codePass},
+            graphics:{pass:graphicsPass,assetCounts:graphicsCounts},
+            webglBuild:{pass:Boolean(webglPass)},
+            actualPlay:{pass:actualPlayPass},
+            qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
+            portability:{pass:portabilityPass},
+          };
+          const pass=Object.values(criteria).every(row=>row.pass===true);
+          const evidence={
+            version:1,
+            gameId,
+            state:pass?'UPPER_PLATFORM_DEVELOPMENT_READY':'REPAIR_REQUIRED',
+            pass,
+            sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
+            unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
+            buildTreeSha256:build.buildTreeSha256,
+            criteria,
+            passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
+            failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
+            releaseOrDeploymentAuthority:false,
+            generatedAt:new Date().toISOString(),
+          };
+          fs.writeFileSync(path.join(root,'upper-platform-development-readiness.json'),JSON.stringify(evidence,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
+          console.log('UPPER_PLATFORM_DEVELOPMENT_READY='+(pass?'PASS':'NO'));
+          if(!pass)console.log('UPPER_PLATFORM_REPAIR_REQUIRED='+JSON.stringify(criteria));
           NODE
 
       - name: Upload Unity Web artifact
@@ -389,19 +538,15 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Fan verified Unity Web into exact Roblox and Unity development
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ steps.request.outputs.game_id }}
+      - name: Mark Unity Web floor repair requirement
+        if: steps.readiness.outputs.pass != 'true'
         shell: bash
         run: |
-          set -euo pipefail
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main             -f game_id="$GAME_ID"             -f trigger_source="UNITY_WEB_VERIFIED"
-          echo "UNITY_WEB_NATIVE_FANOUT=DISPATCHED:$GAME_ID"
-          echo 'UNITY_WEB_NATIVE_FANOUT_TARGETS=ROBLOX,UNITY'
+          echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
+          exit 42
 
-      - name: Create verified Unity Web build PR
-        if: github.event_name == 'push' || inputs.publish_to_main == true
+      - name: Create verified Unity Web readiness PR
+        if: steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -431,8 +576,8 @@ jobs:
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
             exit 0
           fi
-          git commit -m "build: publish $GAME_ID Unity Web validation"
+          git commit -m "build: publish $GAME_ID Unity Web readiness"
           git push --force-with-lease origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web validation"             --body "Verified Unity WebGL validation-surface build from workflow run $GITHUB_RUN_ID. This is a homepage test artifact only and does not satisfy Unity native release gates.")"
-          echo "UNITY_WEB_PUBLICATION_PR=$pr_url"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
+          echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'

@@ -67,7 +67,7 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
   assert.equal(Object.hasOwn(directive.stageGateScoringV2.currentThresholds,'webPlatformPromotion'),false);
   assert.equal(directive.stageGateScoringV2.designScoreRole,'PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION');
-  assert.equal(directive.stageGateScoringV2.webScoreRole,'OPTIONAL_UNITY_WEB_VALIDATION_QUALITY_ONLY');
+  assert.equal(directive.stageGateScoringV2.webScoreRole,'UNITY_WEB_PRE_NATIVE_READINESS_QUALITY_SIGNAL_NOT_NATIVE_COMPLETION_SCORE');
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
   assert.equal(directive.stageGateScoringV2.currentThresholds.release,90);
   assert.equal(directive.stageGateScoringV2.liveVersionUpdate.passMinimum,80);

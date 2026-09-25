@@ -226,10 +226,17 @@
       "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
       "UNITY": "design-revised.json#content.platformProfiles.UNITY"
     },
-    "requestEitherStartsBoth": true,
+    "requestEitherStartsBoth": false,
     "platformEvidenceIndependent": true,
-    "unityWeb": "VALIDATION_SURFACE_ONLY",
-    "unityWebRequired": false,
-    "unityWebNativeGateAuthority": false
+    "unityWeb": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
+    "unityWebRequired": true,
+    "unityWebNativeGateAuthority": true,
+    "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+    "upperPlatformTargets": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "upperPlatformStartAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
+    "unityWebReleaseStage": false
   }
 }
