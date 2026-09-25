@@ -169,7 +169,7 @@ jobs:
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Dispatch upper-platform runtimes
         env:
@@ -178,12 +178,42 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          retry_workflow_dispatch() {
+            local workflow="$1"
+            shift
+            local attempt=1
+            local max_attempts=8
+            local delay_seconds=15
+            while true; do
+              set +e
+              output="$(gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref main "$@" 2>&1)"
+              status=$?
+              set -e
+              if [ "$status" -eq 0 ]; then
+                [ -z "$output" ] || echo "$output"
+                return 0
+              fi
+              echo "$output" >&2
+              if [[ "$output" != *"API rate limit exceeded"* && "$output" != *"secondary rate limit"* && "$output" != *"Secondary rate limit"* ]]; then
+                return "$status"
+              fi
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_EXHAUSTED=$workflow" >&2
+                return "$status"
+              fi
+              echo "GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_RETRY=$workflow:$attempt/$max_attempts"
+              sleep "$delay_seconds"
+              attempt=$((attempt+1))
+            done
+          }
           IFS=',' read -ra ids <<< "$ELIGIBLE_IDS"
           count=0
           for id in "${ids[@]}"; do
             [ -n "$id" ] || continue
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            retry_workflow_dispatch company-development-roblox-runtime.yml -f game_id="$id"
+            sleep 2
+            retry_workflow_dispatch company-development-unity-runtime.yml -f game_id="$id"
+            sleep 2
             count=$((count+1))
           done
           echo "UPPER_PLATFORM_DISPATCH_COUNT=$count"
@@ -198,7 +228,7 @@ jobs:
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_ids != ''
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Dispatch WebGL development-floor builds
         env:
@@ -207,15 +237,44 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          retry_workflow_dispatch() {
+            local workflow="$1"
+            shift
+            local attempt=1
+            local max_attempts=8
+            local delay_seconds=15
+            while true; do
+              set +e
+              output="$(gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref main "$@" 2>&1)"
+              status=$?
+              set -e
+              if [ "$status" -eq 0 ]; then
+                [ -z "$output" ] || echo "$output"
+                return 0
+              fi
+              echo "$output" >&2
+              if [[ "$output" != *"API rate limit exceeded"* && "$output" != *"secondary rate limit"* && "$output" != *"Secondary rate limit"* ]]; then
+                return "$status"
+              fi
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_EXHAUSTED=$workflow" >&2
+                return "$status"
+              fi
+              echo "GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_RETRY=$workflow:$attempt/$max_attempts"
+              sleep "$delay_seconds"
+              attempt=$((attempt+1))
+            done
+          }
           IFS=',' read -ra ids <<< "$UNITY_WEB_IDS"
           count=0
           for id in "${ids[@]}"; do
             [ -n "$id" ] || continue
-            gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            retry_workflow_dispatch unity-web-first-stage-build.yml \
               -f game_id="$id" \
               -f project_path="unity-games/$id" \
               -f source_commit="$GITHUB_SHA" \
               -f publish_to_main=true
+            sleep 2
             count=$((count+1))
           done
           echo "UNITY_WEB_FLOOR_DISPATCH_COUNT=$count"
@@ -229,7 +288,7 @@ jobs:
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_bootstrap_ids != ''
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Dispatch canonical Unity Web floor source bootstrap
         env:
@@ -238,7 +297,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run unity-web-floor-source-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main \
+          retry_workflow_dispatch() {
+            local workflow="$1"
+            shift
+            local attempt=1
+            local max_attempts=8
+            local delay_seconds=15
+            while true; do
+              set +e
+              output="$(gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref main "$@" 2>&1)"
+              status=$?
+              set -e
+              if [ "$status" -eq 0 ]; then
+                [ -z "$output" ] || echo "$output"
+                return 0
+              fi
+              echo "$output" >&2
+              if [[ "$output" != *"API rate limit exceeded"* && "$output" != *"secondary rate limit"* && "$output" != *"Secondary rate limit"* ]]; then
+                return "$status"
+              fi
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_EXHAUSTED=$workflow" >&2
+                return "$status"
+              fi
+              echo "GITHUB_ACTIONS_DISPATCH_RATE_LIMIT_RETRY=$workflow:$attempt/$max_attempts"
+              sleep "$delay_seconds"
+              attempt=$((attempt+1))
+            done
+          }
+          retry_workflow_dispatch unity-web-floor-source-bootstrap.yml \
             -f game_ids="$UNITY_WEB_BOOTSTRAP_IDS"
           echo "UNITY_WEB_FLOOR_BOOTSTRAP_IDS=$UNITY_WEB_BOOTSTRAP_IDS"
           echo 'UNITY_WEB_FLOOR_BOOTSTRAP_DISPATCH=YES'
