@@ -70,6 +70,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 75
+    outputs:
+      repair_required: ${{ steps.repair.outputs.required }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -564,17 +566,17 @@ jobs:
           retention-days: 7
 
       - name: Mark Unity Web floor repair requirement
+        id: repair
         if: steps.readiness.outputs.pass != 'true'
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
           set -euo pipefail
+          echo 'required=true' >> "$GITHUB_OUTPUT"
           echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
           echo "UNITY_WEB_REPAIR_GAME_ID=$GAME_ID"
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'UNITY_WEB_REPAIR_PLANNER_DISPATCH=YES'
+          echo 'UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW'
           exit 42
 
       - name: Create verified Unity Web readiness PR
@@ -613,3 +615,14 @@ jobs:
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
+
+
+  repair-vibe2:
+    name: Re-enter Vibe2 Unity Web causal repair
+    needs: build
+    if: always() && needs.build.outputs.repair_required == 'true'
+    permissions:
+      contents: write
+      actions: write
+    uses: ./.github/workflows/vibe2-24h-runner.yml
+    secrets: inherit
