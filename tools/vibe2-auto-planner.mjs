@@ -1563,6 +1563,11 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       buildUpGeneration:directive.generation,
       buildUpGoal:directive.thisLoopPrimaryGoal,
       buildUpSourceTree:directive.sourceTreeFingerprint,
+      buildUpStatus:'DIRECTIVE_BOUND',
+      previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
+      lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
+      developmentDepth:Number(directive.developmentDepth||1),
+      escalationStage:clean(directive.escalationStage)||null,
       nextEscalationRequired:true,
       evidence:[...new Set([
         ...(taskInput.evidence||[]),
@@ -1632,6 +1637,11 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     buildUpGeneration:directive.generation,
     buildUpGoal:directive.thisLoopPrimaryGoal,
     buildUpSourceTree:directive.sourceTreeFingerprint,
+    buildUpStatus:'DIRECTIVE_BOUND',
+    previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
+    lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
+    developmentDepth:Number(directive.developmentDepth||1),
+    escalationStage:clean(directive.escalationStage)||null,
     nextEscalationRequired:true,
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
@@ -1847,6 +1857,11 @@ function bindSharedBuildUpDirective(taskInput,directive){
     buildUpGeneration:directive.generation,
     buildUpGoal:directive.thisLoopPrimaryGoal,
     buildUpSourceTree:directive.sourceTreeFingerprint,
+    buildUpStatus:'DIRECTIVE_BOUND',
+    previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
+    lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
+    developmentDepth:Number(directive.developmentDepth||1),
+    escalationStage:clean(directive.escalationStage)||null,
     nextEscalationRequired:true,
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
@@ -1903,7 +1918,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       if(!verifiedDesign){
         designPending+=1;
         freshness='DESIGN_PENDING';
-        candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
+        candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
       }else{
         candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,{...queue,tasks},verifiedDesign);
         if(clean(candidate?.buildUpDirective?.directiveId)){
@@ -1920,7 +1935,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       if(!verifiedDesign){
         designPending+=1;
         freshness='STALE_DESIGN_PENDING';
-        candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
+        candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
       }else{
         const queueWithoutCurrent={...queue,tasks:tasks.filter((_,rowIndex)=>rowIndex!==index)};
         const refreshed=attachGameSpecificBuildUpDirective(item,project,repoRoot,queueWithoutCurrent,verifiedDesign);
