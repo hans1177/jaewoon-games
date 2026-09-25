@@ -11,7 +11,6 @@ const technicalBase=()=>({
   gameId:'g',gameName:'G',productionClass:'DEVELOPMENT_CONFIRMED',
   robloxSourceCommit:source,robloxBuildArtifactIdentity:artifact,
   robloxRuntimeCandidateEvidence:{...candidate},
-  robloxReleaseEvidence:{...candidate,releaseClaim:'INTERNAL_PLATFORM_RELEASE_ONLY'},
   executionEvidence:{runtimePassed:true,independentQaPassed:true,regressionPassed:true,exactRevision:true},
   robloxRuntimePassed:true,robloxIndependentQaPassed:true,robloxRegressionPassed:true,
   robloxExactRevisionPassed:true,robloxF9ReleaseRegressionPassed:true,robloxFinalReviewPassed:true,
