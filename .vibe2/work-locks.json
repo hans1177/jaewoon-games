@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-p7b1zh",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "roblox-games/monster-adventure/client/Game.client.luau",
+        "roblox-games/monster-adventure/server/Game.server.luau",
+        "roblox-games/monster-adventure/shared/GameConfig.luau"
+      ],
+      "baseSha": "877e7dde4d2d1ad21569980af3aabd03213d7afe",
+      "acquiredAt": "2026-09-25T02:36:45.807Z",
+      "expiresAt": "2026-09-25T03:21:45.807Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
