@@ -2713,7 +2713,7 @@ function performMonsterVsMonsterAttack(e,target,now,damageMult=1){
     if(Math.random()<.30){
       target.x=e.x+(e.faceX||1)*(e.type.r+target.type.r+10);
       target.y=e.y+(e.faceY||0)*(e.type.r+target.type.r+10);
-      hit(70);stun(2000);showNotice('악어 · 몬스터 끌고 뒤집기');
+      hit(70);stun(2000);
       return
     }
     hit(e.type.dmg);return
@@ -2722,25 +2722,25 @@ function performMonsterVsMonsterAttack(e,target,now,damageMult=1){
     hit(44);e.hp=Math.min(e.maxHp,e.hp+44);return
   }
   if(e.type.id==='gorilla'){
-    if(Math.random()<.30){hit(20);hit(30);hit(30);stun(3000);showNotice('고릴라 · 몬스터 잡아치기');return}
+    if(Math.random()<.30){hit(20);hit(30);hit(30);stun(3000);return}
     hit(50);return
   }
   if(e.type.id==='anaconda'){
-    if(Math.random()<.30){for(let i=0;i<8&&target.hp>0;i++)hit(7);stun(4000);showNotice('아나콘다 · 몬스터 감싸기');return}
+    if(Math.random()<.30){for(let i=0;i<8&&target.hp>0;i++)hit(7);stun(4000);return}
     hit(65);return
   }
   if(e.type.id==='polarbear'){
-    if(Math.random()<.30){hit(30);stun(2000);showNotice('북극곰 · 몬스터 가르기');return}
+    if(Math.random()<.30){hit(30);stun(2000);return}
     hit(50);return
   }
   if(e.type.id==='shark'&&Math.random()<.30){
-    hit(30);if(target.hp>0)hit(40);if(target.hp>0)hit(30);showNotice('상어 · 몬스터 3연타');return
+    hit(30);if(target.hp>0)hit(40);if(target.hp>0)hit(30);return
   }
   if(e.type.flame&&Math.random()<.30){
-    hit(e.type.dmg*2);showNotice(e.type.name+' · 몬스터 화염 특수공격');return
+    hit(e.type.dmg*2);return
   }
   if(enemyCanUseCommonSpecial(e)&&Math.random()<.30){
-    hit(e.type.dmg*1.5);showNotice(e.type.name+' · 몬스터 특수 공격 강타');return
+    hit(e.type.dmg*1.5);return
   }
   hit(e.type.dmg)
 }
