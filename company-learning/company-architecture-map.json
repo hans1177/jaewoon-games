@@ -1,5 +1,5 @@
 {
-  "version": 185,
+  "version": 178,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3422,81 +3422,6 @@
       "sameGameNonOverlappingPackagesParallel": true,
       "sourceRootWideLockForbidden": true,
       "responsibleFileConflictSerializationOnly": true
-    },
-    "robloxHappyPathStageFusion": {
-      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.happyPathStageFusion",
-      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
-      "primaryWorkflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "recoveryWorkflow": ".github/workflows/company-development-roblox-runtime-continuation.yml",
-      "f0RecoveryWorkflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
-      "stages": [
-        "EXACT_SOURCE_ROJO_PACKAGE",
-        "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
-        "F0_SOURCE_PREFLIGHT"
-      ],
-      "sameWorkerHappyPath": true,
-      "sameExactPackageArtifactReuse": true,
-      "directPrivateRuntimeDispatchAfterF0": true,
-      "gatesPreserved": true
-    },
-    "robloxF0SourceRepairLoop": {
-      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.f0SourceRepairLoop",
-      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
-      "sourceWorker": ".github/workflows/company-development-roblox-runtime.yml#source-worker",
-      "sourceCompiler": "tools/company-development-roblox-bootstrap.mjs",
-      "validator": "tools/company-development-roblox-headless-fast-mvp.mjs",
-      "failureState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
-      "sameCanonicalPipeline": true,
-      "newShadowPipeline": false,
-      "gameplaySemanticsPreserved": true,
-      "externalCapacityOnlyParallelism": true
-    },
-    "robloxWorkflowRunConcurrency": {
-      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.workflowRunConcurrency",
-      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
-      "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "exactGameDispatch": "STABLE_PER_GAME_GROUP",
-      "batchDispatch": "UNIQUE_PER_RUN_GROUP",
-      "batchOverlapAllowed": true,
-      "sharedRuntimeWriterLock": "company-runtime-writer",
-      "heavyExecutionSerializedByWriterLock": false
-    },
-    "robloxF0RepairPriority": {
-      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.f0SourceRepairLoop.reentryPriority",
-      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
-      "planner": ".github/workflows/company-development-roblox-runtime.yml#source-plan",
-      "reconciliationPassDoesNotSuppressKnownRepairDebt": true,
-      "canonicalStateNotSoleRepairTrigger": true,
-      "exactFailureFieldsRemainAuthoritative": true
-    },
-    "robloxPrivateRuntimeCandidateModeAuthority": {
-      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateModeAuthority",
-      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
-      "workflow": ".github/workflows/company-development-roblox-release-promotion.yml",
-      "centralModeSource": "company-learning/platform-release-roadmap.json#roblox.validationMode",
-      "f0EvidenceMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-      "queueLocalValidationModeRequired": false,
-      "actualRuntimeRequiredAfterCandidateDeployment": true
-    },
-    "robloxPrivateRuntimeCandidateRetry": {
-      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateRetry",
-      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
-      "wakeWorkflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "releaseWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml",
-      "scansPendingF0CandidatesWhenTechnicalCountZero": true,
-      "perGameReleaseConcurrencyProvidesIdempotentSerialization": true,
-      "shadowPipeline": false
-    },
-    "robloxRuntimeStateWriter": {
-      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.runtimeStateWriter",
-      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
-      "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "sourcePersistJob": "source-bootstrap",
-      "technicalPersistJob": "technical-persist",
-      "globalConcurrencyGroup": false,
-      "conflictStrategy": "REFETCH_REAPPLY_RETRY",
-      "immutableWorkerResults": true,
-      "latestRuntimeStatePreserved": true
     }
   },
   "updatedAt": "2026-09-25",
