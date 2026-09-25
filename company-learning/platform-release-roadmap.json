@@ -1,5 +1,5 @@
 {
-  "version": 375,
+  "version": 376,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -8,7 +8,7 @@
     "UNITY"
   ],
   "primaryPlatform": "ROBLOX",
-  "currentPhase": "ROBLOX_UNITY_DIRECT_NATIVE_DUAL_DEVELOPMENT",
+  "currentPhase": "ROBLOX_UNITY_DIRECT_NATIVE_DUAL_DEVELOPMENT_PLUS_UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP",
   "priorityMeaning": "REQUEST_EITHER_ROBLOX_OR_UNITY_STARTS_BOTH_NATIVE_IMPLEMENTATIONS_FOR_THE_SAME_GAME",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
@@ -22,10 +22,10 @@
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
   "webCompanion": {
-    "version": 2,
+    "version": 3,
     "status": "DEPRECATED_COMPATIBILITY_ALIAS",
-    "sourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebValidationSurface",
-    "role": "UNITY_WEB_VALIDATION_SURFACE_ONLY",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+    "role": "UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS",
     "requiredForEveryGame": false,
     "requiredAcross": [],
     "developmentAdmissionGate": false,
@@ -38,8 +38,15 @@
     "canonicalSourceRoot": "unity-games/<gameId>/",
     "outputRoot": "web-games/<gameId>/",
     "buildOnlyWhenCanonicalUnityProjectSupportsIt": true,
-    "missingOrFailedBuildAction": "KEEP_NATIVE_LANES_RUNNING_AND_MARK_WEB_TEST_UNAVAILABLE",
-    "legacyWebFirstPolicyRemoved": true
+    "missingOrFailedBuildAction": "KEEP_NATIVE_LANES_RUNNING_AND_REPAIR_OR_REQUEUE_UNITY_WEB_LANE",
+    "legacyWebFirstPolicyRemoved": true,
+    "requiredWhenWebGLBuildable": true,
+    "executionParityWithNativeDevelopmentFlow": true,
+    "deploymentStage": false,
+    "internalReleaseStage": false,
+    "publicReleaseStage": false,
+    "regressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
+    "passIsCheckpointNotTerminal": true
   },
   "livingMotionVisualQualityContract": {
     "version": 5,
@@ -55,7 +62,7 @@
       "INTERNAL_PLATFORM_RELEASE",
       "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "POST_RELEASE_FOCUSED_DEVELOPMENT",
-      "UNITY_WEB_VALIDATION_SURFACE_OPTIONAL"
+      "UNITY_WEB_DEVELOPMENT_LOOP"
     ],
     "priorityOrder": [
       "CORE_GAMEPLAY_LOGIC",
@@ -4923,7 +4930,11 @@
       "bidirectionalAutoPair": true,
       "webStageSkipped": true,
       "webGateSkipped": true,
-      "globalGameDevelopmentWindow": null
+      "globalGameDevelopmentWindow": null,
+      "unityWebDevelopmentLane": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
+      "unityWebRunsAlongsideNativeWhenBuildable": true,
+      "legacyWebAdmissionStageSkipped": true,
+      "unityWebIsReleaseStage": false
     },
     "internalPlatformPlaytestDevelopment": {
       "version": 3,
@@ -6491,7 +6502,7 @@
     "staleHomepagePolicyAction": "FAIL_CLOSED_BLOCK_PUBLICATION_AND_REQUEUE_HOMEPAGE_MANAGER",
     "unityWebValidationSurface": {
       "enabled": true,
-      "role": "OWNER_FACING_BROWSER_TEST_VALIDATION_SURFACE",
+      "role": "OWNER_FACING_BROWSER_DEVELOPMENT_TEST_SURFACE",
       "releasePlatform": false,
       "developmentAdmissionGate": false,
       "nativeReleaseGate": false,
@@ -6529,7 +6540,10 @@
         "data",
         "framework",
         "wasm"
-      ]
+      ],
+      "developmentLaneAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "deploymentAuthority": false,
+      "homepageTestLinkIsNotDeploymentOrRelease": true
     },
     "runtimeCatalogPublication": {
       "source": "company-runtime:game-catalog.json",
@@ -7105,6 +7119,32 @@
       "rawCopyForbidden": true,
       "canonicalNormalizationRequired": true,
       "buildersUnchanged": true
+    },
+    "unityWebFullDevelopmentLoop20260925": {
+      "id": "UNITY_WEB_FULL_DEVELOPMENT_LOOP_NO_DEPLOYMENT_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "summary": "Promote Unity Web from validation-only semantics to the same continuous code, graphics, build, actual-play, independent-QA and regression development loop used by upper platform development, while omitting deployment and release stages.",
+      "canonicalSource": "unity-games/<gameId>/",
+      "buildOutput": "web-games/<gameId>/",
+      "developmentFlow": [
+        "CODE_DEVELOPMENT",
+        "GRAPHICS_MOTION_AUDIO_PRESENTATION_DEVELOPMENT",
+        "UNITY_WEBGL_BUILD",
+        "ACTUAL_BROWSER_PLAY",
+        "INDEPENDENT_QA",
+        "REGRESSION",
+        "CAUSAL_REPAIR_AND_REBUILD",
+        "CONTINUOUS_BUILD_UP"
+      ],
+      "deploymentStage": false,
+      "internalReleaseStage": false,
+      "publicReleaseStage": false,
+      "releasePromotionStage": false,
+      "nativeEvidenceAuthorityUnchanged": true,
+      "nativeLanesRemainNonBlocking": true,
+      "implementationState": "CENTRAL_POLICY_AND_ARCHITECTURE_SYNC_FIRST_IMPLEMENTATION_NEXT"
     }
   },
   "vibeExecutionLaneContract": {
@@ -19461,12 +19501,15 @@
       },
       "unityWebValidationSurface": {
         "enabled": true,
-        "role": "NON_BLOCKING_VALIDATION_SURFACE",
+        "role": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
         "canonicalSource": "unity-games/<gameId>/",
         "outputRoot": "web-games/<gameId>/",
         "runtimeOwner": ".github/workflows/unity-web-first-stage-build.yml",
         "nativeReleaseGate": false,
-        "developmentAdmissionGate": false
+        "developmentAdmissionGate": false,
+        "developmentLaneAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+        "deploymentStage": false,
+        "releaseStage": false
       },
       "sameGameSourceRootExclusiveLock": false,
       "sameGameResponsibleFileConflictSerializes": true,
@@ -20262,10 +20305,10 @@
     ]
   },
   "unityWebFirstStage": {
-    "version": 3,
+    "version": 4,
     "status": "OWNER_DIRECT_LOCKED",
-    "authority": "OWNER_DIRECTIVE_2026-09-24_UNITY_WEB_START_FAILURE_REPAIR",
-    "scope": "VALIDATION_SURFACE_ONLY",
+    "authority": "OWNER_DIRECTIVE_2026-09-25_UNITY_WEB_FULL_DEVELOPMENT_LOOP",
+    "scope": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
     "appliesToAllGames": true,
     "replacesFirstStageWebAuthoringOnly": false,
     "postUnityWebGatePipelineUnchanged": true,
@@ -20329,7 +20372,7 @@
     },
     "build": {
       "target": "UNITY_WEBGL_VALIDATION",
-      "automatedBuildRequired": false,
+      "automatedBuildRequired": true,
       "manualEditorBuildAsPermanentPipelineForbidden": true,
       "outputRoot": "web-games/<gameId>/",
       "cloudflareCompatibleArtifacts": [
@@ -20359,7 +20402,11 @@
       "publicationManifest": "unity-web-deploy-manifest.json",
       "gitignoreExceptionRequired": true,
       "cloudflareSingleAssetMaxBytes": 26214400,
-      "oversizedAssetAction": "FAIL_PUBLICATION_AND_REBUILD_RELEASE_SIZED"
+      "oversizedAssetAction": "REBUILD_BROWSER_QA_BUNDLE_WITHIN_HOST_LIMIT",
+      "outputPurpose": "QA_RUNTIME_ARTIFACT",
+      "deploymentRequired": false,
+      "releasePromotionRequired": false,
+      "publicationBundleMeaning": "COMPATIBILITY_NAME_FOR_BROWSER_QA_RUNTIME_BUNDLE_NOT_A_RELEASE_DEPLOYMENT"
     },
     "browserValidation": {
       "installFreeLinkExecutionRequired": true,
@@ -20433,7 +20480,7 @@
       "target": "STABLE_MOBILE_WEB_WITH_HIGHER_ANDROID_QUALITY_OPTION"
     },
     "postGateContinuation": {
-      "commonRule": "EXISTING_POST_WEB_PIPELINE_UNCHANGED",
+      "commonRule": "REGRESSION_PASS_RETURNS_TO_NEXT_UNITY_WEB_DEVELOPMENT_FLOOR_WHILE_NATIVE_LANES_CONTINUE_INDEPENDENTLY",
       "UNITY": {
         "sameUnityProjectContinues": true,
         "nextBuild": "ANDROID_APK_OR_AAB",
@@ -20524,12 +20571,35 @@
     "enabled": true,
     "disabledReason": null,
     "developmentAdmissionAuthority": false,
-    "validationSurfaceOnly": true,
+    "validationSurfaceOnly": false,
     "nativeDevelopmentMayRunWithoutWebBuild": true,
     "nativeReleaseMayRunWithoutWebBuild": true,
     "homepageTestLinkEnabled": true,
     "humanPolicySpecRequired": false,
-    "postValidationNativeFanOutPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebNativeFanOut"
+    "postValidationNativeFanOutPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebNativeFanOut",
+    "developmentLane": true,
+    "homepageTestLinkIsNotDeploymentOrRelease": true,
+    "developmentLoop": {
+      "canonicalSourceRoot": "unity-games/<gameId>/",
+      "buildOutputRoot": "web-games/<gameId>/",
+      "sequence": [
+        "CODE_DEVELOPMENT",
+        "GRAPHICS_MOTION_AUDIO_PRESENTATION_DEVELOPMENT",
+        "UNITY_WEBGL_BUILD",
+        "ACTUAL_BROWSER_PLAY",
+        "INDEPENDENT_QA",
+        "REGRESSION",
+        "CAUSAL_REPAIR_AND_REBUILD",
+        "CONTINUOUS_BUILD_UP"
+      ],
+      "regressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
+      "passIsCheckpointNotTerminal": true,
+      "sameNativeQualityPrinciples": true,
+      "deploymentStage": false,
+      "internalReleaseStage": false,
+      "publicReleaseStage": false,
+      "releasePromotionStage": false
+    }
   },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
@@ -21150,7 +21220,12 @@
       "onePlatformFailureDoesNotCancelOther": true,
       "noArtificialGlobalGameCountCap": true,
       "globalGameDevelopmentWindow": null,
-      "executionBatchIsCapacityOnly": true
+      "executionBatchIsCapacityOnly": true,
+      "unityWebDevelopmentLaneRequiredWhenWebGLBuildable": true,
+      "unityWebDevelopmentLoopParallelsNativeQualityStages": true,
+      "unityWebDeploymentStage": false,
+      "unityWebReleaseStage": false,
+      "unityWebRegressionPassReturnsToDevelopment": true
     },
     "internalRelease": {
       "firstReleaseGoal": true,
@@ -21198,8 +21273,13 @@
       "requiredForRegression": false,
       "requiredForInternalRelease": false,
       "requiredForPublicRelease": false,
-      "missingOrFailedWebBuildAction": "KEEP_NATIVE_LANES_RUNNING_AND_MARK_WEB_TEST_UNAVAILABLE",
-      "verifiedBuildMayExposeHomepageTestLink": true
+      "missingOrFailedWebBuildAction": "REPAIR_OR_REQUEUE_UNITY_WEB_LANE_WITHOUT_BLOCKING_NATIVE_LANES",
+      "verifiedBuildMayExposeHomepageTestLink": true,
+      "optionalMeaning": "DOES_NOT_GATE_NATIVE_LANES; NOT_PERMISSION_TO_SKIP_THE_UNITY_WEB_DEVELOPMENT_LOOP_WHEN_WEBGL_BUILDABLE",
+      "compatibilityAliasFor": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "role": "LEGACY_VALIDATION_SURFACE_NAME_FOR_FULL_DEVELOPMENT_QA_LOOP",
+      "deploymentStage": false,
+      "releaseStage": false
     },
     "canonicalDevelopmentAdmissionAuthority": true,
     "legacyWebFirstFallbackForbidden": true,
@@ -21225,6 +21305,55 @@
       "recursiveUnityWebRedispatchForbidden": true,
       "missingOrFailedUnityWebDoesNotBlockNativeDevelopment": true,
       "authority": "OWNER_DIRECTIVE_2026-09-25"
+    },
+    "unityWebDevelopmentLane": {
+      "version": 1,
+      "status": "OWNER_DIRECT_LOCKED",
+      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "enabled": true,
+      "role": "FULL_DEVELOPMENT_QA_LOOP_NO_DEPLOYMENT",
+      "eligibility": "DEVELOPMENT_CONFIRMED_GAMES_WITH_WEBGL_BUILDABLE_CANONICAL_UNITY_PROJECT",
+      "sameCanonicalUnityProjectRequired": true,
+      "canonicalSourceRoot": "unity-games/<gameId>/",
+      "outputRoot": "web-games/<gameId>/",
+      "separateWebGameplayCodebaseForbidden": true,
+      "developmentFlow": [
+        "CODE_DEVELOPMENT",
+        "GRAPHICS_MOTION_AUDIO_PRESENTATION_DEVELOPMENT",
+        "UNITY_WEBGL_BUILD",
+        "ACTUAL_BROWSER_PLAY",
+        "INDEPENDENT_QA",
+        "REGRESSION",
+        "CAUSAL_REPAIR_AND_REBUILD",
+        "CONTINUOUS_BUILD_UP"
+      ],
+      "sameDevelopmentQualityContractAsNative": true,
+      "codeDevelopmentRequired": true,
+      "graphicsAndMotionDevelopmentRequired": true,
+      "buildRequiredAfterRelevantSourceChange": true,
+      "actualBrowserPlayRequired": true,
+      "mobileBrowserPlayRequiredWhenSupported": true,
+      "independentQaRequired": true,
+      "regressionRequired": true,
+      "causalRepairRequiredOnFailure": true,
+      "retryLimit": null,
+      "continuousLoop": true,
+      "passIsCheckpointNotTerminal": true,
+      "regressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
+      "deploymentStage": false,
+      "deploymentPromotion": false,
+      "internalReleaseStage": false,
+      "publicReleaseStage": false,
+      "storeOrPlatformDistributionStage": false,
+      "releasePromotionStage": false,
+      "buildArtifactIsQaRuntimeArtifactNotRelease": true,
+      "nativeDevelopmentAdmissionAuthority": false,
+      "nativeRuntimeGateAuthority": false,
+      "nativeReleaseGateAuthority": false,
+      "oneLaneFailureDoesNotCancelNativeDevelopment": true,
+      "missingOrFailedBuildAction": "REPAIR_OR_REQUEUE_UNITY_WEB_LANE_WITHOUT_BLOCKING_NATIVE_LANES",
+      "homepageTestAccessMayExposeVerifiedBuild": true,
+      "homepageTestAccessIsNotDeploymentOrReleaseAuthority": true
     }
   },
   "centralDocumentation": {
