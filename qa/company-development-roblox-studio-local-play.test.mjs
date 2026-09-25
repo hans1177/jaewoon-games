@@ -464,11 +464,16 @@ test('Studio MCP warms Studio before exact local Place attach and preserves the 
   assert.ok(warmStart>0);
   assert.ok(exactPlaceOpen>warmStart);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_GUI_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_ASSISTANT_READY=YES/);
+  assert.match(studioMcpBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
+  assert.match(studioMcpBlock,/Roblox Studio Assistant did not finish loading before exact Place attach/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_SETTING_ENABLED=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_WARM_SETTING_MUTATION=NO/);
   assert.match(studioMcpBlock,/VIBE2_STUDIO_PROCESS_IDS=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_WARM_GUI_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_WARM_ASSISTANT_READY=YES/);
+  assert.match(studioMcpBlock,/Roblox Studio Assistant did not finish loading before MCP retry Place attach/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PLACE_LAUNCH_PROCESS_ID=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_OWNED_PROCESS_IDS=/);
   assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
