@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "local captured=p:GetAttribute(\"CapturedBases\")or 0\n if captured>lastCaptured then victorySfx.TimePosition=0;victorySfx:Play()end\n lastCaptured=captured"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
