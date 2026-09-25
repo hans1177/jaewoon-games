@@ -691,7 +691,7 @@ export function createLocalStudioPlayEvidence({
     &&errors.length===0
   );
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
-  const studioMcpServerEnablementRequired=errors.some(row=>{
+  const studioMcpServerEnablementRequired=expected?.studioMcpServerEnablementRequired===true||errors.some(row=>{
     const signature=clean(row.signature||'');
     return /ROBLOX_STUDIO_MCP_SETTING_ENABLE/i.test(signature)
       ||(/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(signature)&&/stderrHint=MCP_SERVER_NOT_ENABLED/i.test(signature));
@@ -856,7 +856,8 @@ async function main(){
       artifactRunId:Number(a['artifact-run-id']||0),
       universeId:clean(a['universe-id']),
       placeId:clean(a['place-id']),
-      versionNumber:Number(a['version-number']||0)
+      versionNumber:Number(a['version-number']||0),
+      studioMcpServerEnablementRequired:bool(a['studio-mcp-server-enablement-required'])
     };
     const applied=applyLocalStudioPlayResult({
       queue,
