@@ -536,9 +536,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T17:14:42.906Z",
+      "updatedAt": "2026-09-25T17:18:13.491Z",
       "robloxSourceCommit": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
       "robloxSourceBootstrapPassedAt": "2026-09-25T07:09:18.896Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -801,9 +801,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
       "routingBlockers": [
-        "roblox-studio-mcp-infrastructure-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -841,12 +841,12 @@
         "gameId": "daechung-rpg",
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
-        "actualPlay": false,
+        "actualPlay": true,
         "runtimeVerified": false,
-        "learningReusable": false,
+        "learningReusable": true,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
-        "infrastructureFailure": true,
-        "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "infrastructureFailure": false,
+        "failureClass": "STUDIO_MCP_RUNTIME_ERROR",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
         "localPlaceFile": true,
@@ -869,35 +869,131 @@
         "publishedCandidateCrossCheckPassed": true,
         "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
         "capabilities": {
-          "officialStudioMcp": false,
-          "playMode": false,
-          "mcpInput": false,
-          "screenCapture": false,
-          "consoleCapture": false
+          "officialStudioMcp": true,
+          "playMode": true,
+          "mcpInput": true,
+          "screenCapture": true,
+          "consoleCapture": true
         },
-        "actions": [],
+        "actions": [
+          {
+            "id": "keyboard-w",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "keyboard-a",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "keyboard-d",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "keyboard-space",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          }
+        ],
         "checkpoints": [
           {
             "id": "official-studio-mcp-connected",
             "name": "official-studio-mcp-connected",
             "required": true,
             "pass": true
+          },
+          {
+            "id": "local-studio-selected",
+            "name": "local-studio-selected",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "studio-state-readable",
+            "name": "studio-state-readable",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "play-mode-started",
+            "name": "play-mode-started",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "viewport-before-captured",
+            "name": "viewport-before-captured",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "mcp-input-dispatched",
+            "name": "mcp-input-dispatched",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "viewport-changed-after-input",
+            "name": "viewport-changed-after-input",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "console-output-captured",
+            "name": "console-output-captured",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "no-release-blocking-runtime-errors",
+            "name": "no-release-blocking-runtime-errors",
+            "required": true,
+            "pass": false
+          },
+          {
+            "id": "play-mode-stopped",
+            "name": "play-mode-stopped",
+            "required": true,
+            "pass": true
           }
         ],
         "errors": [
           {
-            "type": "studio-mcp-infrastructure-or-runtime-error",
+            "type": "studio-console-error",
             "actionId": null,
-            "signature": "ROBLOX_STUDIO_MCP_NO_STUDIO_AFTER_ATTACH_WAIT"
+            "signature": "Stack Begin"
+          },
+          {
+            "type": "studio-console-error",
+            "actionId": null,
+            "signature": "infinite yield possible"
           }
         ],
         "runtimeSummary": {
-          "consoleErrorCount": 1,
-          "distinctFrameChange": false
+          "consoleErrorCount": 2,
+          "distinctFrameChange": true
         },
         "learningSignals": [
           "roblox official studio mcp local runtime",
+          "mcp-keyboard-input",
+          "mcp-keyboard-input",
+          "mcp-keyboard-input",
+          "mcp-keyboard-input",
           "official-studio-mcp-connected",
+          "local-studio-selected",
+          "studio-state-readable",
+          "play-mode-started",
+          "viewport-before-captured",
+          "mcp-input-dispatched",
+          "viewport-changed-after-input",
+          "console-output-captured",
+          "play-mode-stopped",
           "debugging",
           "runtime error"
         ],
@@ -906,8 +1002,8 @@
         "rawViewportIncluded": false,
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T17:14:42.906Z",
-        "workflowRunId": 36165500504,
+        "testedAt": "2026-09-25T17:18:13.491Z",
+        "workflowRunId": 36165657772,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -939,8 +1035,8 @@
       "robloxInternalReleasePublished": true,
       "robloxInternalPlaytestPassed": false,
       "robloxInternalPlaytestPassedAt": null,
-      "robloxStudioLocalPlayRepairRequired": false,
-      "robloxStudioLocalPlayInfrastructurePending": true,
+      "robloxStudioLocalPlayRepairRequired": true,
+      "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
         "source": "roblox-dedicated-targets.json",
@@ -6407,7 +6503,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T17:14:42.906Z",
+  "updatedAt": "2026-09-25T17:18:13.491Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
