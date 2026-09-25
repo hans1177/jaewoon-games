@@ -1,5 +1,5 @@
 {
-  "version": 183,
+  "version": 184,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3477,6 +3477,15 @@
       "f0EvidenceMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
       "queueLocalValidationModeRequired": false,
       "actualRuntimeRequiredAfterCandidateDeployment": true
+    },
+    "robloxPrivateRuntimeCandidateRetry": {
+      "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateRetry",
+      "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
+      "wakeWorkflow": ".github/workflows/company-development-roblox-runtime.yml",
+      "releaseWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml",
+      "scansPendingF0CandidatesWhenTechnicalCountZero": true,
+      "perGameReleaseConcurrencyProvidesIdempotentSerialization": true,
+      "shadowPipeline": false
     }
   },
   "updatedAt": "2026-09-25",
