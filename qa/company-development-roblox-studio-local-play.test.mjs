@@ -286,8 +286,10 @@ test('Studio MCP diagnostics expose installed version and available tool invento
 });
 
 
-test('automatic Roblox Studio MCP scans share one concurrency group without cancelling active play',()=>{
-  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ github\.event_name == 'workflow_dispatch' && \(inputs\.game_id \|\| 'manual-scan'\) \|\| 'automatic-scan' \}\}/);
+test('automatic Roblox Studio MCP scans dedupe push noise while preserving exact-game and scheduled isolation',()=>{
+  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'schedule' && 'scheduled-scan'\) \|\| \(github\.event_name == 'workflow_dispatch' && 'manual-scan'\) \|\| 'automatic-scan' \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/scheduled-scan/);
+  assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
 });
