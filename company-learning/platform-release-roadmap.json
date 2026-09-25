@@ -3650,7 +3650,20 @@
         "runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution": true,
         "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
         "observationRetry": "UNLIMITED_OBSERVATION",
-        "nextAction": "WAIT_FOR_VERIFIED_REAL_GAME_SERVER_BOOT_OR_OTHER_POLICY_APPROVED_RUNTIME_OBSERVATION",
+        "runtimeObservationMayBlockDevelopment": false,
+        "runtimeObservationBlocksPromotionOnly": true,
+        "sameGameIndependentDevelopmentContinuesWhilePending": true,
+        "allowedDevelopmentWhilePending": [
+          "SOURCE_IMPLEMENTATION",
+          "GAMEPLAY_AND_CORE_FUN",
+          "PROGRESSION_AND_CONTENT",
+          "GRAPHICS_PRESENTATION_AND_MOTION",
+          "MOBILE_UI_AND_USABILITY",
+          "AUDIO_AND_FEEDBACK",
+          "STATIC_AND_IMPACT_SCOPED_QA",
+          "REBUILD_PRIVATE_CANDIDATE_AFTER_ACCEPTED_SOURCE_CHANGE"
+        ],
+        "nextAction": "CONTINUE_INDEPENDENT_GAME_DEVELOPMENT_IN_PARALLEL_AND_KEEP_REOBSERVING_FOR_VERIFIED_REAL_GAME_SERVER_BOOT",
         "robloxPlayerAutomationForbidden": true,
         "publishedPlaceDirectStudioAutomationForbidden": true
       }
