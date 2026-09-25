@@ -353,7 +353,7 @@ jobs:
           console.log('UNITY_WEB_BOOT_SMOKE=PASS');
           NODE
 
-      - name: Run Unity Web real gameplay QA
+      - name: Run Unity Web actual browser play
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -367,30 +367,63 @@ jobs:
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-gameplay-validation.json" \
             --screenshot="/tmp/unity-web/gameplay-mobile.png"
 
+      - name: Run Unity Web independent QA
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        run: |
+          set -euo pipefail
+          cd /tmp/unity-web
+          node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+            --game-id="$GAME_ID" \
+            --source="web-games/$GAME_ID" \
+            --port=4188 \
+            --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-independent-qa.json" \
+            --screenshot="/tmp/unity-web/independent-qa-mobile.png"
+
+      - name: Run Unity Web regression
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        run: |
+          set -euo pipefail
+          cd /tmp/unity-web
+          node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+            --game-id="$GAME_ID" \
+            --source="web-games/$GAME_ID" \
+            --port=4189 \
+            --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-regression.json" \
+            --screenshot="/tmp/unity-web/regression-mobile.png"
+
       - name: Write build evidence
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
           SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
           TREE_SHA: ${{ steps.output.outputs.tree_sha }}
+          UNITY_SOURCE_TREE_SHA: ${{ steps.source.outputs.tree_sha }}
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const file=`/tmp/unity-web/web-games/${process.env.GAME_ID}/unity-web-build.json`;
+          const gameId=process.env.GAME_ID;
+          const file='/tmp/unity-web/web-games/'+gameId+'/unity-web-build.json';
           fs.writeFileSync(file,JSON.stringify({
-            version:1,
+            version:2,
             engine:'UNITY_WEB',
-            gameId:process.env.GAME_ID,
-            canonicalSourceRoot:`unity-games/${process.env.GAME_ID}`,
-            buildOutputRoot:`web-games/${process.env.GAME_ID}`,
+            gameId,
+            canonicalSourceRoot:'unity-games/'+gameId,
+            buildOutputRoot:'web-games/'+gameId,
             sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
+            unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             buildTreeSha256:process.env.TREE_SHA,
             bootSmoke:'PASS',
-            initialRealGameplayQa:'PASS',
-            fullGameplayGate:'NOT_NATIVE_GATE',
-            validationSurfaceOnly:true,
-            nativeGateAuthority:false,
-            postGatePlatformPipelineChanged:false,
+            actualBrowserPlay:'PASS',
+            independentQa:'PASS',
+            regression:'PASS',
+            upperPlatformGateCandidate:true,
+            validationSurfaceOnly:false,
+            nativeGateAuthority:true,
+            releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString()
           },null,2)+'\n');
           NODE
