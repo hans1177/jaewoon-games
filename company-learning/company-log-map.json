@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1212,5 +1212,21 @@
     "coalescingIsNotTaskFailure": true,
     "immediateDispatchMustResumeWhenQueuePressureClears": true,
     "workerDirectControlWriteForbidden": true
+  },
+  "vibeWorkerControlCheckoutRelief": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.controlBranchWorkerCheckoutRelief20260926",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "requiredMarkers": [
+      "VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY",
+      "VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT"
+    ],
+    "metrics": [
+      "checkoutMs"
+    ],
+    "comparison": "BEFORE_AFTER_WORKER_CHECKOUT_MS_AND_CHECKOUT_NETWORK_BOTTLENECK_CLASSIFICATION",
+    "gamePrimaryBoundaryMustRemain": 256,
+    "adaptivePressureBehaviorMustRemainUnchanged": true,
+    "checkoutReliefMustNotBecomeQaOrSecurityBypass": true
   }
 }
