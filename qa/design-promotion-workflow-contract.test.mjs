@@ -33,6 +33,11 @@ test('promotion source has one direct-native admission path and no Web-first or 
 });
 
 test('promotion persists only runtime state while machine policy comes from main',()=>{
+  const checkout=promotion.slice(promotion.indexOf('- name: Checkout current engine source'),promotion.indexOf('- name: Overlay latest company runtime design evidence'));
+  assert.match(checkout,/fetch-depth: 2/);
+  assert.doesNotMatch(checkout,/fetch-depth: 0/);
+  assert.match(promotion,/refs\/heads\/company-runtime:refs\/remotes\/origin\/company-runtime/);
+  assert.match(promotion,/refs\/heads\/main:refs\/remotes\/origin\/main/);
   assert.match(promotion,/for attempt in 1 2 3; do/);
   assert.match(promotion,/git fetch origin main "\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(promotion,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
