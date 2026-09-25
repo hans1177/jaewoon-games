@@ -1870,26 +1870,6 @@
       ]
     },
     {
-      "id": "gap-concept_direction-l2",
-      "kind": "CONCEPT_DIRECTION_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CONCEPT_DIRECTION"
-      ]
-    },
-    {
-      "id": "gap-asset_adaptation-l3",
-      "kind": "ASSET_ADAPTATION_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ASSET_ADAPTATION"
-      ]
-    },
-    {
       "id": "gap-character_arc-l3",
       "kind": "CHARACTER_ARC_DRILL",
       "priority": "low",
@@ -1900,23 +1880,23 @@
       ]
     },
     {
-      "id": "gap-vfx-l3",
-      "kind": "VFX_READABILITY_DRILL",
+      "id": "gap-concept_direction-l3",
+      "kind": "CONCEPT_DIRECTION_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "VFX"
+        "CONCEPT_DIRECTION"
       ]
     },
     {
-      "id": "gap-visual_identity-l3",
-      "kind": "GAME_VISUAL_DNA_DRILL",
+      "id": "gap-asset_adaptation-l4",
+      "kind": "ASSET_ADAPTATION_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "VISUAL_IDENTITY"
+        "ASSET_ADAPTATION"
       ]
     },
     {
@@ -1927,6 +1907,26 @@
       "countsAsProductionPass": false,
       "domains": [
         "ROBLOX_STUDIO"
+      ]
+    },
+    {
+      "id": "gap-vfx-l4",
+      "kind": "VFX_READABILITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VFX"
+      ]
+    },
+    {
+      "id": "gap-visual_identity-l4",
+      "kind": "GAME_VISUAL_DNA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VISUAL_IDENTITY"
       ]
     },
     {

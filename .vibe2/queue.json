@@ -15651,6 +15651,46 @@
         "PRODUCTION_PASS_NO"
       ],
       "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-company-graphics-roblox-asset-loadout-g1",
+      "gameId": null,
+      "target": "web",
+      "department": "learning",
+      "type": "research",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=ASSET_LOADOUT_SELECTION_DRILL\ndomains=ASSET_PRODUCTION,ASSET_ADAPTATION,VISUAL_IDENTITY\npracticeGeneration=1\npracticeMode=WEB_ARTIFACT\ncompanyGraphicsLibrary=YES\nplatformProfile=ROBLOX\n소스 파일을 수정하지 않는다. 요구 자산마다 검증 회사 자산→저장소→라이선스 검증 외부→안전 파생→신규 제작 순으로 후보를 비교하고 Visual DNA·플랫폼·리그/모션·검증 이력·모바일 비용·실패 이력으로 선택한다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "sourceRoot": "learning-practice:company-graphics-roblox-asset-loadout",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:ASSET_LOADOUT_SELECTION_DRILL",
+        "practice-generation:1",
+        "learning-web-artifact-practice",
+        "company-graphics-library-24h",
+        "company-graphics-library-prepared-not-promoted",
+        "company-graphics-platform:ROBLOX",
+        "practice-domain:ASSET_PRODUCTION",
+        "practice-domain:ASSET_ADAPTATION",
+        "practice-domain:VISUAL_IDENTITY"
+      ],
+      "completionCriteria": [
+        "PRACTICE_WEB_ARTIFACT_VERIFIED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO"
+      ]
     }
   ]
 }
