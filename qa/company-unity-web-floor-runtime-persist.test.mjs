@@ -49,3 +49,15 @@ test('Unity Web infrastructure failure stays separate from source repair',()=>{
     assert.doesNotMatch(item.routingBlockers.join('\n'),/repair-required/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('Unity Web workflow persists failed stage and wakes Vibe only for repairable source failures',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  assert.match(workflow,/persist-repair:/);
+  assert.match(workflow,/group: company-runtime-writer/);
+  assert.match(workflow,/tools\/company-unity-web-floor-runtime-persist\.mjs/);
+  assert.match(workflow,/UNITY_WEB_FLOOR_FAILURE_STATE=/);
+  assert.match(workflow,/INFRASTRUCTURE_PENDING/);
+  assert.match(workflow,/if: steps\.failure\.outputs\.repairable == 'true'/);
+  assert.match(workflow,/gh workflow run vibe2-24h-runner\.yml/);
+});
