@@ -1,5 +1,5 @@
 {
-  "version": 374,
+  "version": 375,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -4660,7 +4660,12 @@
         "studioMcpSettingEnablementRequired": true,
         "studioMcpUnconfirmedSettingIsInfrastructureNotGameFailure": true,
         "studioMcpUnconfirmedSettingMayNotConsumePlayRetry": true,
-        "studioMcpAutomaticSettingMutationForbidden": true
+        "studioMcpAutomaticSettingMutationForbidden": true,
+        "actualVibePlayEligibility": "INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+        "actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep": true,
+        "foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease": true,
+        "currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility": true,
+        "explicitDisabledGameRemainsIneligible": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
