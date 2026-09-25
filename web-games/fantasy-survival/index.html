@@ -44,8 +44,8 @@ const SNOW_REGION={x:18000,y:3840,w:18000,h:4800}; // 축소된 밀림 바로 �
 const JUNGLE_LAKES=[{x:20560,y:1040,r:144},{x:22560,y:2600,r:120},{x:24480,y:3560,r:136}];
 const JUNGLE_TEMPLE_ENTRANCE={x:22040,y:1560,r:90};
 const SNOW_OUTPOSTS=[
- {id:'snow-supply',name:'설원 보급막사',x:23200,y:5200,w:520,h:360,chest:{x:23320,y:5270}},
- {id:'ice-watch',name:'빙설 감시소',x:31200,y:7200,w:560,h:380,chest:{x:31080,y:7280}}
+ {id:'snow-supply',name:'설원 보급막사',x:23200,y:5200,w:520,h:360,chest:{x:23510,y:5270}},
+ {id:'ice-watch',name:'빙설 감시소',x:31200,y:7200,w:560,h:380,chest:{x:30860,y:7280}}
 ];
 const JUNGLE_TEMPLE_LOBBY={w:2600,h:1800,entry:{x:1300,y:1480},exit:{x:1300,y:1620},upper:{x:650,y:280},lower:{x:1950,y:280}};
 const JUNGLE_TEMPLE_UPPER={w:4200,h:2600,return:{x:2100,y:2380},altar:{x:2100,y:1300},secret:{x:3850,y:330}};
@@ -834,8 +834,9 @@ function useItem(id){
 function cropTypeForSeed(id){return id==='carrot-seed'?'carrot':id==='greens-seed'?'greens':null}
 function cropSeedId(type){return type==='carrot'?'carrot-seed':'greens-seed'}
 function cropItemId(type){return type==='carrot'?'carrot':'worldtree-greens'}
-function cropPlacementValid(x,y,ignoreId=null){
- if(state.area!=='surface'||pointInGiantLakeWater(x,y))return false;
+function insideSnowOutpost(x,y,pad=0){return SNOW_OUTPOSTS.some(o=>Math.abs(x-o.x)<=o.w/2+pad&&Math.abs(y-o.y)<=o.h/2+pad)}
+function cropPlacementValid(x,y,ignoreId=null,requireSurface=true){
+ if((requireSurface&&state.area!=='surface')||pointInGiantLakeWater(x,y)||insideSnowOutpost(x,y,35))return false;
  if(structurePositions().some(v=>dist(x,y,v.x,v.y)<78))return false;
  return state.crops.every(c=>c.id===ignoreId||dist(x,y,c.x,c.y)>=58)
 }
@@ -853,7 +854,7 @@ function plantSeed(id){
 }
 function hostPlantCrop(payload){
  if(!multiIsHost()||!payload?.crop)return;const c=payload.crop,type=cropTypeForSeed(c.type==='carrot'?'carrot-seed':c.type==='greens'?'greens-seed':'');
- const x=Number(c.x),y=Number(c.y);if(!type||!Number.isFinite(x)||!Number.isFinite(y)||!cropPlacementValid(x,y))return;
+ const x=Number(c.x),y=Number(c.y);if(!type||!Number.isFinite(x)||!Number.isFinite(y)||!cropPlacementValid(x,y,null,false))return;
  if(state.crops.some(v=>v.id===String(c.id)))return;
  state.crops.push({id:String(c.id||('c'+Date.now().toString(36))),type,x:clamp(x,45,WORLD.w-45),y:clamp(y,45,WORLD.h-45),readyAt:Date.now()+45000});state.dirty=true;multiplayer.worldAt=0;saveGame(false)
 }
@@ -901,7 +902,7 @@ function resolveStructureOverlaps(){
 }
 function findStructurePlacement(){
  const p=state.player,offs=[[65,25],[90,-55],[20,95],[-70,65],[-95,-30],[-35,-100],[90,75],[-100,95],[130,0],[0,130],[-130,0],[0,-130]];
- for(const [ox,oy] of offs){const pos={x:clamp(p.x+ox,45,WORLD.w-45),y:clamp(p.y+oy,45,WORLD.h-45)};if(structurePositions().every(s=>dist(pos.x,pos.y,s.x,s.y)>=88))return pos}
+ for(const [ox,oy] of offs){const pos={x:clamp(p.x+ox,45,WORLD.w-45),y:clamp(p.y+oy,45,WORLD.h-45)};if(!insideSnowOutpost(pos.x,pos.y,45)&&structurePositions().every(s=>dist(pos.x,pos.y,s.x,s.y)>=88))return pos}
  return null
 }
 function placeStructure(id,pos=findStructurePlacement()){
@@ -932,7 +933,7 @@ function startBlueprint(r){
 }
 function blueprintPlacementValid(bp,x=bp?.x,y=bp?.y){
  if(!bp||state.area!=='surface'||!Number.isFinite(x)||!Number.isFinite(y))return false;
- if(pointInGiantLakeWater(x,y))return false;
+ if(pointInGiantLakeWater(x,y)||insideSnowOutpost(x,y,45))return false;
  return structurePositions().every(s=>dist(x,y,s.x,s.y)>=88)
 }
 function cancelBlueprint(){
@@ -1432,7 +1433,7 @@ function playerBuildingAt(x,y,range=70){
  return best
 }
 function blockedByPlayerBuilding(x,y){
- if(state.area!=='surface')return false;
+ if(state.area!=='surface')return false;if(insideSnowOutpost(x,y,18))return true;
  const blocks=[...state.walls,...state.doors.filter(d=>!d.open)];
  for(const b of blocks){const hx=b.vertical?17:48,hy=b.vertical?48:17;if(Math.abs(x-b.x)<hx+18&&Math.abs(y-b.y)<hy+18)return true}
  return false
@@ -1444,7 +1445,7 @@ function openGiftPlayer(targetId){
  state.giftTargetId=targetId;state.panelMode='gift';ui.sheet.classList.add('open');renderGift()
 }
 function giftableItems(){
- return recipes.filter(r=>['weapon','tool','armor','consumable','ingredient'].includes(r.kind)&&invCount(r.id)>0)
+ return recipes.filter(r=>['weapon','tool','armor','consumable','ingredient','seed'].includes(r.kind)&&invCount(r.id)>0)
 }
 function renderGift(){
  tabState();
@@ -1468,7 +1469,7 @@ function renderGift(){
 function giveItemToPlayer(itemId){
  const targetId=state.giftTargetId,r=targetId?multiplayer.remote.get(targetId):null,now=performance.now(),itemData=item(itemId);
  if(!multiplayer.connected||!r||r.area!==state.area||now-(r.seenAt||0)>2500){showNotice('동료가 연결되어 있지 않아');renderGift();return}
- if(!itemData||!['weapon','tool','armor','consumable','ingredient'].includes(itemData.kind)||invCount(itemId)<1){showNotice('줄 수 없는 아이템이야');renderGift();return}
+ if(!itemData||!['weapon','tool','armor','consumable','ingredient','seed'].includes(itemData.kind)||invCount(itemId)<1){showNotice('줄 수 없는 아이템이야');renderGift();return}
  const p=state.player,next=invCount(itemId)-1;
  p.inventory[itemId]=next;if(next<=0)delete p.inventory[itemId];
  if(next<=0&&p.weapon===itemId)setWeapon(null);
@@ -1480,7 +1481,7 @@ function giveItemToPlayer(itemId){
 function receiveGiftItem(payload){
  if(!payload||payload.targetId!==multiplayer.playerId)return;
  const itemId=String(payload.itemId||''),itemData=item(itemId);
- if(!itemData||!['weapon','tool','armor','consumable','ingredient'].includes(itemData.kind))return;
+ if(!itemData||!['weapon','tool','armor','consumable','ingredient','seed'].includes(itemData.kind))return;
  addInv(itemId,1);updateHud();saveGame(false);
  showNotice('동료에게 '+itemData.name+' 1개를 받았어');
  if(state.panelMode==='inventory'&&ui.sheet.classList.contains('open'))renderInventory()
@@ -1608,13 +1609,13 @@ function startRaid(realNow=Date.now()){
  if(multiplayer.connected&&!multiIsHost())return;const targets=raidTargetCandidates();if(!targets.length){state.raid.nextAt=realNow+10000;return}
  const wave=Math.min(5,(state.raid.count||0)+1),spec=RAID_WAVES[wave-1],target=targets[Math.floor(Math.random()*targets.length)],id='raid-'+realNow.toString(36),bounds=areaRaidBounds(target.area);let n=0,total=spec.reduce((v,g)=>v+g.count,0);
  for(const group of spec)for(let i=0;i<group.count;i++){const a=(n++/Math.max(1,total))*Math.PI*2+rand(-.25,.25),rr=rand(220,330),x=clamp(target.x+Math.cos(a)*rr,70,bounds.w-70),y=clamp(target.y+Math.sin(a)*rr,70,bounds.h-70),e=spawnAt(creatures[group.id],x,y,null);e.area=target.area;e.noRespawn=true;e.hostile=true;e.raidId=id;e.raidTargetId=target.id;e.raidChase=true;state.enemies.push(e)}
- state.raid.count=wave;state.raid.active={id,wave,targetId:target.id,deadline:realNow+60000};state.raid.nextAt=0;state.dirty=true;if(multiplayer.connected)multiplayer.worldAt=0;
+ state.raid.count=wave;state.raid.active={id,wave,targetId:target.id,deadline:realNow+60000};state.raid.nextAt=realNow+120000;state.dirty=true;if(multiplayer.connected)multiplayer.worldAt=0;
  if(target.local)showNotice(wave+'차 습격 · 60초 안에 전부 처치');else{showNotice('동료에게 '+wave+'차 습격');multiSend('raid-alert',{targetId:target.id,wave})}
 }
 function updateRaid(realNow=Date.now()){
  if(multiplayer.connected&&!multiIsHost())return;const a=state.raid.active;
- if(a){const alive=state.enemies.some(e=>e.hp>0&&e.raidId===a.id);if(!alive){state.raid.active=null;state.raid.nextAt=realNow+120000;state.dirty=true;if(a.targetId===multiplayer.playerId)showNotice(a.wave+'차 습격 방어 성공');else multiSend('raid-clear',{targetId:a.targetId,wave:a.wave});return}
-  if(realNow>=a.deadline){for(const e of state.enemies)if(e.hp>0&&e.raidId===a.id)e.hp=0;state.raid.active=null;state.raid.nextAt=realNow+120000;state.dirty=true;if(a.targetId===multiplayer.playerId)knockoutPlayer('습격 제한시간 초과 · 즉사',true);else multiSend('raid-fail',{targetId:a.targetId});if(multiplayer.connected)multiplayer.worldAt=0;return}
+ if(a){const alive=state.enemies.some(e=>e.hp>0&&e.raidId===a.id);if(!alive){state.raid.active=null;state.dirty=true;if(a.targetId===multiplayer.playerId)showNotice(a.wave+'차 습격 방어 성공');else multiSend('raid-clear',{targetId:a.targetId,wave:a.wave});return}
+  if(realNow>=a.deadline){for(const e of state.enemies)if(e.hp>0&&e.raidId===a.id)e.hp=0;state.raid.active=null;state.dirty=true;if(a.targetId===multiplayer.playerId)knockoutPlayer('습격 제한시간 초과 · 즉사',true);else multiSend('raid-fail',{targetId:a.targetId});if(multiplayer.connected)multiplayer.worldAt=0;return}
  }else if(realNow>=(state.raid.nextAt||0))startRaid(realNow)
 }
 function receiveRaidAlert(payload){if(payload?.targetId===multiplayer.playerId)showNotice((payload.wave||1)+'차 습격 · 60초 안에 전부 처치')}
@@ -3675,14 +3676,13 @@ function drawRemotePlayers(cx,cy){
  for(const [id,r] of multiplayer.remote){
   if(now-(r.seenAt||0)>5000||r.area!==state.area)continue;
   const x=r.x-cx,y=r.y-cy;if(x<-50||y<-50||x>innerWidth+50||y>innerHeight+50)continue;
+  const down=(Number(r.downedUntil)||0)>Date.now()||(Number(r.hp)||0)<=0;
+  if(down){ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/2);ctx.globalAlpha=.78;ctx.fillStyle='#4b6070';roundRect(-12,-24,24,48,7);ctx.fill();ctx.restore();ctx.fillStyle='#ffd1d1';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('쓰러진 동료 · 두 번 눌러 부활',x,y-25);continue}
   ctx.save();ctx.globalAlpha=.88;ctx.fillStyle='#b6d7ff';ctx.beginPath();ctx.arc(x,y-11,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3f7bb5';roundRect(x-11,y-2,22,25,6);ctx.fill();
   ctx.fillStyle='#dcecff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('동료 '+id.slice(-4),x,y-25);
   ctx.fillStyle='#102030';ctx.fillRect(x-20,y+37,40,4);ctx.fillStyle='#62b6ff';ctx.fillRect(x-20,y+37,40*Math.max(0,Math.min(1,(r.hp||0)/(r.maxHp||1))),4);
   if(r.pet&&!r.pet.mounted){ctx.fillStyle='#5d5278';ctx.beginPath();ctx.arc(r.pet.x-cx,r.pet.y-cy,14,0,Math.PI*2);ctx.fill()}
-  if(r.torchEquipped){
-   ctx.strokeStyle='#8b6338';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-7,y+5);ctx.lineTo(x-18,y-18);ctx.stroke();
-   ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(x-19,y-22,7,0,Math.PI*2);ctx.fill()
-  }
+  if(r.torchEquipped){ctx.strokeStyle='#8b6338';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-7,y+5);ctx.lineTo(x-18,y-18);ctx.stroke();ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(x-19,y-22,7,0,Math.PI*2);ctx.fill()}
   if(r.weapon){ctx.strokeStyle='#bcdcff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+(r.faceX||1)*25,y+4+(r.faceY||0)*25);ctx.stroke()}ctx.restore()
  }
 }
