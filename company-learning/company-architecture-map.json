@@ -1,5 +1,5 @@
 {
-  "version": 195,
+  "version": 196,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -833,7 +833,21 @@
         "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
         "workerDirectControlWrite": false,
         "capacityRefill": "IMMEDIATE_AFTER_TASK_MICRO_FANIN",
-        "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP"
+        "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
+        "speculativeExpansionController": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
+        "speculativeExpansionPressureSource": ".vibe2/parallelism-control.json",
+        "speculativeExpansionPolicy": "PRIMARY_FIRST_SPARE_ONLY_WITH_RUNNER_PRESSURE_SUPPRESSION",
+        "speculativeExpansionSuppressedSignals": [
+          "RUNNER_CAPACITY",
+          "RUNNER_QUEUE_WAIT",
+          "CHECKOUT_NETWORK",
+          "LOW_EFFECTIVE_PEAK_UTILIZATION_WITH_LOADED_WORK"
+        ],
+        "speculativeExpansionSuppressionEffect": "OPTIONAL_VARIANTS_ONLY",
+        "primaryReservationCountUnaffected": true,
+        "taskMicroFanInPreservedDuringSuppression": true,
+        "speculativeExpansionRestoresAutomaticallyWhenPressureClears": true,
+        "newSchedulerCreated": false
       },
       "bottleneckFirstRuntimeCheckpoint": {
         "version": 1,
