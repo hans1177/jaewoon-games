@@ -1327,7 +1327,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       retryBase=[criticalPrefix,...editable].join('\n\n');
     }
   }
-  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||(attempt>=2&&timeoutFailure))){
+  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||(attempt>=2&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
     for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
