@@ -13,6 +13,7 @@ import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-context.mjs';
+import { latestUsableDesign } from './company-all-games-design-reset.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -1517,13 +1518,36 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   if(!requestedFocus&&phase!=='REPAIR'&&!hasVerifiedPresentation)focusPillar='PRESENTATION';
   if(requestedFocus)focusPillar=requestedFocus;
 
+  const designContext=latestUsableDesign(repoRoot,project.gameId);
+  const gameplayDesignRequired=['CORE_FUN','PROGRESSION'].includes(focusPillar);
+  if(gameplayDesignRequired&&!designContext)return null;
+  const designContent=designContext?.record?.content&&typeof designContext.record.content==='object'
+    ?designContext.record.content
+    :(designContext?.record||{});
+  const designSource=designContext?posix(path.relative(repoRoot,designContext.file)):null;
+  const designCoreLoop=Array.isArray(designContent?.coreLoop)?designContent.coreLoop.map(clean).filter(Boolean).slice(0,8):[];
+  const designSystems=Array.isArray(designContent?.signatureSystems)?designContent.signatureSystems
+    .map(system=>({
+      name:clean(system?.name),
+      purpose:clean(system?.purpose),
+      playerChoice:clean(system?.playerChoice)
+    })).filter(system=>system.name||system.purpose||system.playerChoice).slice(0,8):[];
+  const designSummary={
+    source:designSource,
+    identity:clean(designContent?.identity),
+    coreFun:clean(designContent?.coreFun),
+    coreLoop:designCoreLoop,
+    signatureSystems:designSystems,
+    progressionDirection:clean(designContent?.progressionDirection)
+  };
+
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
     :project.engine==='web'?new Set(['.html','.htm','.js','.mjs','.css'])
     :project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini'])
     :new Set(['.gd','.tscn']);
   const candidates=[],stack=[sourceDir];
-  while(stack.length&&candidates.length<30){
+  while(stack.length){
     const current=stack.pop();
     let entries=[];
     try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
@@ -1533,7 +1557,6 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
       if(entry.isDirectory()){stack.push(full);continue;}
       if(!extensions.has(path.extname(entry.name).toLowerCase()))continue;
       candidates.push(posix(path.relative(repoRoot,full)));
-      if(candidates.length>=30)break;
     }
   }
   if(!candidates.length)return null;
@@ -1544,8 +1567,8 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     if(/game|core|runtime|main|controller|player|client|server/.test(value))score+=10;
     if(focusPillar==='PRESENTATION'&&/visual|render|ui|hud|effect|vfx|camera|audio|anim|style|scene/.test(value))score+=18;
     if(focusPillar==='USABILITY'&&/ui|hud|input|controller|client|menu/.test(value))score+=18;
-    if(focusPillar==='PROGRESSION'&&/progress|quest|reward|inventory|economy|save/.test(value))score+=18;
-    if(focusPillar==='CORE_FUN'&&/game|combat|enemy|player|world|core|controller/.test(value))score+=18;
+    if(focusPillar==='PROGRESSION'&&/progress|quest|reward|inventory|economy|save|unlock|goal|wave|content/.test(value))score+=18;
+    if(focusPillar==='CORE_FUN'&&/game|combat|enemy|player|world|core|controller|interaction|ability|weapon/.test(value))score+=18;
     if(focusPillar==='STABILITY'&&/game|core|runtime|server|save|network|state/.test(value))score+=18;
     return score;
   };
@@ -1554,19 +1577,28 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const baselineId=clean(previous?.id)||`source:${sourceRoot}`;
   const explicitGap=knownSignals[0]||`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`;
   const phaseInstruction=phase==='BUILD_UP'
-    ?'기존 설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현 3~6개를 한 패키지로 끝내고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다.'
+    ?'설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 3개 이상 필요한 만큼 한 패키지에서 완성하고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다.'
     :phase==='REPAIR'
       ?'최근 실패/차단 근거를 먼저 재현하고 원인 책임 시스템을 직접 수리한다. 같은 증상을 다른 wrapper나 임시 override로 덮지 말고 원인을 제거한 뒤 동일 시나리오를 다시 검증한다. 수리 범위 안에서 작은 품질 개선도 함께 남긴다.'
       :'새 기능을 억지로 늘리지 말고 현재 구현의 병목을 최적화한다. 중복/불필요한 처리, 모바일 입력 지연, 렌더/업데이트 비용, 상태 불일치, UI 가독성, 코드 책임 혼선을 기존 구조 안에서 직접 줄이고 실제 플레이 품질을 한 단계 올린다.';
   const visualInstruction=focusPillar==='PRESENTATION'
     ?' 그래픽은 마커/상수/파티클 존재만으로 완료하지 않는다. 캐릭터·적 실루엣, 환경 깊이와 랜드마크, 애니메이션 상태, 공격/피격/사망 반응, VFX, 조명, UI 계층, 카메라/오디오 타이밍 중 현재 약한 부분을 실제 렌더 소스에서 여러 요소 함께 개선하고 전후 차이가 눈에 보여야 한다.'
     :'';
+  const designInstruction=focusPillar==='CORE_FUN'
+    ?` 승인 설계의 coreFun/coreLoop/signatureSystems를 실제 입력→판단→상태 변화→피드백→다음 선택으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
+    :focusPillar==='PROGRESSION'
+      ?` 승인 설계의 progressionDirection/coreLoop/signatureSystems를 실제 목표·보상·해금·웨이브·퀘스트·인벤토리·경제·콘텐츠 깊이 중 해당 게임에 존재하는 책임 시스템으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
+      :(designContext?` 승인 설계 맥락을 보존한다. APPROVED_DESIGN_SOURCE=${designSource}`:'');
   const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
-${phaseInstruction}${visualInstruction}
+${phaseInstruction}${visualInstruction}${designInstruction}
 현재 근거=${explicitGap}
 설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
 작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
 
+  const designEvidence=designContext?[
+    `studio-quality-design-source:${designSource}`,
+    `studio-quality-design-grounded:${focusPillar}`
+  ]:[];
   const out=task(id,project,goal,responsibleFiles,project.ownerFocusedCaretaker?'critical':'high','medium',[
     'studio-quality-loop:v1',
     `studio-quality-cycle:${cycle}`,
@@ -1579,7 +1611,9 @@ ${phaseInstruction}${visualInstruction}
     'work-package-scope:implementation-completeness',
     'work-package-scope:quality-delta',
     'work-package-scope:optimization',
-    ...(focusPillar==='PRESENTATION'?['work-package-scope:visual-runtime-delta']:[])
+    ...designEvidence,
+    ...(focusPillar==='PRESENTATION'?['work-package-scope:visual-runtime-delta']:[]),
+    ...(gameplayDesignRequired?['work-package-scope:design-grounded-gameplay-evolution']:[])
   ]);
   out.workUnits=7;
   out.maxRetries=null;
@@ -1599,19 +1633,23 @@ ${phaseInstruction}${visualInstruction}
     ])];
   }
   out.studioQualityEvolution={
-    version:1,cycle,phase,focusPillar,baselineId,
+    version:2,cycle,phase,focusPillar,baselineId,
     baselineSource:previous?.id?'VERIFIED_QUEUE_TASK':'CURRENT_SOURCE',
     explicitGap,
+    designSource,
+    designGrounded:gameplayDesignRequired,
+    designContextAvailable:Boolean(designContext),
+    approvedDesignElements:gameplayDesignRequired?designSummary:null,
     designIsImplementationCeiling:false,
-    requiredConnectedImprovements:{min:3,max:6},
+    requiredConnectedImprovements:{min:3,max:null},
     realSourceDeltaRequired:true,
+    gameplaySourceDeltaRequired:gameplayDesignRequired,
     visibleRenderDeltaRequired:focusPillar==='PRESENTATION',
     protectedRegressionForbidden:true,
     nextCycleRequired:true
   };
   return out;
 }
-
 export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
   return ['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']
     .map(focus=>findStudioContinuousImprovementTask(project,repoRoot,queue,focus))

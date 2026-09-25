@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 30,
+      "runtime": 31,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -490,7 +490,16 @@
       "fullRegressionOnceAtFanIn": true,
       "sameGameNonOverlappingPackagesParallel": true,
       "sourceRootWideLock": false,
-      "laneLocalFailureIsolation": true
+      "laneLocalFailureIsolation": true,
+      "latestRevisedDesignRequiredForCoreFunAndProgression": true,
+      "designContextSource": "design/<gameId>/<latest-date>/design-revised.json",
+      "missingDesignAction": "AUTO_ENROLL_CANONICAL_GAME_SEED_AND_DESIGN_RUNTIME",
+      "missingDesignPassiveWaitForbidden": true,
+      "genericGameplayGuessWithoutDesignForbidden": true,
+      "presentationUsabilityAndStabilityMayContinueDuringDesignCreation": true,
+      "coreFunAndProgressionResumeAfterVerifiedDesign": true,
+      "designSpecificGoalAndEvidenceRequired": true,
+      "requiredConnectedImprovementsMaximum": null
     },
     "workLockConflictPolicy": {
       "transientSchedulingState": true,
@@ -573,7 +582,9 @@
     "centralPolicy": "company-learning/platform-release-roadmap.json",
     "logMap": "company-learning/company-log-map.json",
     "architectureMap": "company-learning/company-architecture-map.json",
-    "systemAiQueue": ".vibe2/system-ai-queue.json"
+    "systemAiQueue": ".vibe2/system-ai-queue.json",
+    "missingDesignIntake": "tools/company-all-games-design-reset.mjs --auto-missing-design-intake",
+    "seedDesignRuntime": ".github/workflows/company-seed-design-runtime.yml"
   },
   "workers": {
     "exploration": {

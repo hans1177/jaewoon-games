@@ -121,8 +121,8 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
     '.github/workflows/company-evolution-qa.yml',
     '.github/workflows/vibe3-engine-contract.yml'
   ]);
-  assert.equal(runtime.version>=30,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,30);
+  assert.equal(runtime.version>=31,true);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,31);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
   assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
