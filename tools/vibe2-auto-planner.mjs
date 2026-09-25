@@ -1568,6 +1568,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
       developmentDepth:Number(directive.developmentDepth||1),
       escalationStage:clean(directive.escalationStage)||null,
+      buildUpNextAction:clean(directive?.nextActionDecision?.action)||null,
+      buildUpNextActionReason:clean(directive?.nextActionDecision?.reason)||null,
       nextEscalationRequired:true,
       evidence:[...new Set([
         ...(taskInput.evidence||[]),
@@ -1576,6 +1578,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
         'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
         'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
+        'build-up-next-vibe-action-reason:'+clean(directive.nextActionDecision?.reason),
         'build-up-directive-reused-active-generation:YES',
         'build-up-directive-generation-fan-in:INCOMPLETE_NO_ESCALATION',
         'build-up-directive-id:'+directive.directiveId,
@@ -1642,6 +1645,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
     developmentDepth:Number(directive.developmentDepth||1),
     escalationStage:clean(directive.escalationStage)||null,
+    buildUpNextAction:clean(directive?.nextActionDecision?.action)||null,
+    buildUpNextActionReason:clean(directive?.nextActionDecision?.reason)||null,
     nextEscalationRequired:true,
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
@@ -1650,6 +1655,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
       'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
+      'build-up-next-vibe-action-reason:'+clean(directive.nextActionDecision?.reason),
       'build-up-directive-id:'+directive.directiveId,
       'build-up-generation:'+directive.generation,
       'build-up-focus:'+directive.primaryFocus,
@@ -1862,6 +1868,8 @@ function bindSharedBuildUpDirective(taskInput,directive){
     lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
     developmentDepth:Number(directive.developmentDepth||1),
     escalationStage:clean(directive.escalationStage)||null,
+    buildUpNextAction:clean(directive?.nextActionDecision?.action)||null,
+    buildUpNextActionReason:clean(directive?.nextActionDecision?.reason)||null,
     nextEscalationRequired:true,
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
@@ -1870,6 +1878,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
       'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
+      'build-up-next-vibe-action-reason:'+clean(directive.nextActionDecision?.reason),
       'build-up-directive-id:'+directive.directiveId,
       'build-up-generation:'+directive.generation,
       'build-up-focus:'+directive.primaryFocus,
@@ -1985,6 +1994,57 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     queue:mutated?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue
   };
 }
+function studioBuildUpTask(taskInput={}){
+  return Boolean(taskInput?.buildUpDirective?.directiveId)
+    &&(taskInput.evidence||[]).map(clean).includes('studio-quality-loop:v1');
+}
+
+export function applyBuildUpNextActionController(tasks=[]){
+  const rows=(tasks||[]).filter(Boolean);
+  if(!rows.length)return rows;
+  const canonical=rows.find(row=>studioBuildUpTask(row)&&clean(row?.buildUpDirective?.nextActionDecision?.action))?.buildUpDirective||null;
+  if(!canonical)return rows;
+  const action=clean(canonical?.nextActionDecision?.action).toUpperCase();
+  const reason=clean(canonical?.nextActionDecision?.reason);
+  const primary=clean(canonical?.primaryFocus).toUpperCase();
+  const waitActions=new Set([
+    'REQUEST_REQUIRED_RUNTIME_OBSERVATION',
+    'MAINTAIN_VERIFIED_BASELINE_WHILE_WAITING_FOR_REQUIRED_EXTERNAL_EVIDENCE'
+  ]);
+  if(waitActions.has(action)){
+    return rows.filter(row=>!studioBuildUpTask(row));
+  }
+  return rows.map(row=>{
+    if(!studioBuildUpTask(row))return row;
+    const focus=clean(row?.studioQualityEvolution?.focusPillar).toUpperCase();
+    const primaryTask=Boolean(primary&&focus===primary);
+    const next={...row,
+      buildUpNextAction:action||null,
+      buildUpNextActionReason:reason||null,
+      evidence:[...new Set([
+        ...(row.evidence||[]),
+        'build-up-next-action-controller:APPLIED',
+        'build-up-next-vibe-action:'+action,
+        'build-up-next-vibe-action-reason:'+reason
+      ])]
+    };
+    if(action==='CAUSAL_REPAIR'){
+      next.priority=primaryTask?'critical':next.priority;
+      next.maxRetries=null;
+      next.retryPolicy='UNLIMITED_CAUSAL_REPAIR';
+      next.goal='[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] '+reason+'\n'+clean(next.goal);
+      if(next.studioQualityEvolution)next.studioQualityEvolution={...next.studioQualityEvolution,phase:'REPAIR',nextActionControlled:true};
+    }else if(action==='OPTIMIZE_VERIFIED_BOTTLENECK'){
+      next.priority=primaryTask?'critical':next.priority;
+      next.goal='[BUILD_UP_NEXT_ACTION=OPTIMIZE_VERIFIED_BOTTLENECK] '+reason+'\n'+clean(next.goal);
+      if(next.studioQualityEvolution)next.studioQualityEvolution={...next.studioQualityEvolution,phase:'OPTIMIZE',nextActionControlled:true};
+    }else if(next.studioQualityEvolution){
+      next.studioQualityEvolution={...next.studioQualityEvolution,nextActionControlled:true};
+    }
+    return next;
+  });
+}
+
 export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
   const tasks=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']
     .map(focus=>findStudioContinuousImprovementTask(project,repoRoot,queue,focus))
@@ -1994,13 +2054,14 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
   const bound=tasks.map(row=>bindSharedBuildUpDirective(row,canonical));
   const primary=clean(canonical.primaryFocus).toUpperCase();
   const stableOrder=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
-  return bound.sort((a,b)=>{
+  const ordered=bound.sort((a,b)=>{
     const af=clean(a?.studioQualityEvolution?.focusPillar).toUpperCase();
     const bf=clean(b?.studioQualityEvolution?.focusPillar).toUpperCase();
     const ap=af===primary?0:1,bp=bf===primary?0:1;
     if(ap!==bp)return ap-bp;
     return stableOrder.indexOf(af)-stableOrder.indexOf(bf);
   });
+  return applyBuildUpNextActionController(ordered);
 }
 
 function findSafeTasks(project,repoRoot,queue){

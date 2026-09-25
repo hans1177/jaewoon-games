@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -2263,14 +2263,33 @@ test('BUILD_UP depth advances only when the entire shared directive generation v
   assert.equal(afterMixed.length,5);
   assert.equal(afterMixed[0].buildUpDirective.developmentDepth,1);
   assert.equal(afterMixed[0].buildUpDirective.escalationMode,'DEEPER_CAUSAL_REPAIR');
+  assert.equal(afterMixed[0].buildUpDirective.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.equal(afterMixed[0].studioQualityEvolution.phase,'REPAIR');
+  assert.equal(afterMixed[0].priority,'critical');
+  assert.match(afterMixed[0].goal,/\[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR\]/);
+  assert.ok(afterMixed.every(row=>row.evidence.includes('build-up-next-action-controller:APPLIED')));
   assert.equal(new Set(afterMixed.map(row=>row.buildUpDirectiveId)).size,1);
 
   const verified=first.map(row=>({...row,status:'verified'}));
-  const effectPending=findStudioContinuousImprovementTasks(project,root,{tasks:verified});
-  assert.equal(effectPending.length,5);
-  assert.equal(effectPending[0].buildUpDirective.developmentDepth,1);
-  assert.equal(effectPending[0].buildUpDirective.escalationMode,'VERIFIED_SOURCE_DELTA_AWAITING_EFFECT');
-  assert.equal(effectPending[0].buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'PARTIAL_EFFECT');
+  const pendingFocus=first[0].studioQualityEvolution.focusPillar;
+  const pendingSingle=findStudioContinuousImprovementTask(project,root,{tasks:verified},pendingFocus);
+  assert.ok(pendingSingle);
+  assert.equal(pendingSingle.buildUpDirective.developmentDepth,1);
+  assert.equal(pendingSingle.buildUpDirective.escalationMode,'VERIFIED_SOURCE_DELTA_AWAITING_EFFECT');
+  assert.equal(pendingSingle.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'PARTIAL_EFFECT');
+  assert.equal(pendingSingle.buildUpDirective.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
+
+  const unknownProject={...project,queueRuntimeObserved:true,queueRuntimePassed:false};
+  const unknownSingle=findStudioContinuousImprovementTask(unknownProject,root,{tasks:verified},pendingFocus);
+  assert.ok(unknownSingle);
+  assert.equal(unknownSingle.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'PARTIAL_EFFECT');
+
+  const cancelledHistory=first.map(row=>({...row,status:'cancelled'}));
+  const runtimeObservationCandidate=findStudioContinuousImprovementTask(project,root,{tasks:cancelledHistory},pendingFocus);
+  assert.ok(runtimeObservationCandidate);
+  assert.equal(runtimeObservationCandidate.buildUpDirective.nextActionDecision.action,'REQUEST_REQUIRED_RUNTIME_OBSERVATION');
+  const effectPending=findStudioContinuousImprovementTasks(project,root,{tasks:cancelledHistory});
+  assert.equal(effectPending.length,0);
 
   const projectWithConfirmedEffect={...project,queueRuntimeObserved:true,queueRuntimePassed:true};
   const afterVerified=findStudioContinuousImprovementTasks(projectWithConfirmedEffect,root,{tasks:verified});
@@ -2278,7 +2297,25 @@ test('BUILD_UP depth advances only when the entire shared directive generation v
   assert.equal(afterVerified[0].buildUpDirective.developmentDepth,2);
   assert.equal(afterVerified[0].buildUpDirective.escalationMode,'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA');
   assert.equal(afterVerified[0].buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'EFFECT_CONFIRMED');
+  assert.equal(afterVerified[0].buildUpDirective.nextActionDecision.action,'MOVE_TO_NEXT_HIGHER_VALUE_GAP');
+  assert.ok(afterVerified.every(row=>row.evidence.includes('build-up-next-action-controller:APPLIED')));
   assert.equal(new Set(afterVerified.map(row=>JSON.stringify(row.buildUpDirective))).size,1);
+});
+
+test('BUILD_UP next action controller preserves parallel-safe non-build-up work while waiting for runtime evidence',()=>{
+  const directive={
+    directiveId:'demo-g2',gameId:'demo',primaryFocus:'CORE_FUN',
+    nextActionDecision:{action:'MAINTAIN_VERIFIED_BASELINE_WHILE_WAITING_FOR_REQUIRED_EXTERNAL_EVIDENCE',reason:'external runtime evidence pending'}
+  };
+  const buildUp={
+    id:'demo-build-up',gameId:'demo',status:'queued',goal:'source change',
+    buildUpDirective:directive,
+    studioQualityEvolution:{focusPillar:'CORE_FUN',phase:'BUILD_UP'},
+    evidence:['studio-quality-loop:v1']
+  };
+  const diagnostic={id:'demo-diagnostic',gameId:'demo',status:'queued',goal:'independent diagnostic',evidence:['diagnostic:STATIC_ONLY']};
+  const controlled=applyBuildUpNextActionController([buildUp,diagnostic]);
+  assert.deepEqual(controlled.map(row=>row.id),['demo-diagnostic']);
 });
 
 test('studio source discovery has no artificial 30-file ceiling',()=>{
@@ -2491,6 +2528,7 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
     developmentDepth:1,
     escalationStage:'FOUNDATION_COMPLETENESS',
     previousVersionDelta:{previousGoal:'이전 전투 피드백 개선'},
+    nextActionDecision:{action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'same system needs another verified effect pass'},
     allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}]
   };
   const normalized=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
@@ -2499,7 +2537,9 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
     goal:'build up',status:'queued',buildUpDirective:directive,buildUpDirectiveId:directive.directiveId,
     buildUpGeneration:1,buildUpGoal:directive.thisLoopPrimaryGoal,buildUpSourceTree:directive.sourceTreeFingerprint,
     buildUpStatus:'DIRECTIVE_BOUND',previousGoal:'이전 전투 피드백 개선',lastAchievedGoal:'이전 전투 피드백 개선',
-    developmentDepth:1,escalationStage:'FOUNDATION_COMPLETENESS',nextEscalationRequired:true
+    developmentDepth:1,escalationStage:'FOUNDATION_COMPLETENESS',
+    buildUpNextAction:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',buildUpNextActionReason:'same system needs another verified effect pass',
+    nextEscalationRequired:true
   }]});
   const task=normalized.tasks[0];
   assert.deepEqual(task.buildUpDirective,directive);
@@ -2512,6 +2552,8 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
   assert.equal(task.lastAchievedGoal,'이전 전투 피드백 개선');
   assert.equal(task.developmentDepth,1);
   assert.equal(task.escalationStage,'FOUNDATION_COMPLETENESS');
+  assert.equal(task.buildUpNextAction,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
+  assert.equal(task.buildUpNextActionReason,'same system needs another verified effect pass');
   assert.equal(task.nextEscalationRequired,true);
 });
 

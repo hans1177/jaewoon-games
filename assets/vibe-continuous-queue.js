@@ -286,6 +286,8 @@ function normalizeTask(input = {}, index = 0) {
     lastAchievedGoal: clean(input.lastAchievedGoal) || null,
     developmentDepth: clampInt(input.developmentDepth??input.buildUpDirective?.developmentDepth??0,0,1000000),
     escalationStage: clean(input.escalationStage||input.buildUpDirective?.escalationStage) || null,
+    buildUpNextAction: clean(input.buildUpNextAction||input.buildUpDirective?.nextActionDecision?.action) || null,
+    buildUpNextActionReason: clean(input.buildUpNextActionReason||input.buildUpDirective?.nextActionDecision?.reason) || null,
     nextEscalationRequired: input.nextEscalationRequired === true,
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
