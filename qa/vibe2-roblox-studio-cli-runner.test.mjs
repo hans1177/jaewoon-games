@@ -4,7 +4,6 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { runRobloxStudioCliRuntime, findRobloxStudioBinary } from '../tools/vibe2-roblox-studio-cli-runner.mjs';
-import { runGameStudyWorker } from '../tools/vibe2-game-study-worker.mjs';
 
 const liveSmokeWorkflow = fs.readFileSync('.github/workflows/vibe2-roblox-studio-live-smoke.yml', 'utf8');
 const continuousWorkflow = fs.readFileSync('.github/workflows/vibe2-game-study-continuous.yml', 'utf8');
@@ -39,7 +38,7 @@ test('continuous Roblox GAME STUDY uses the dedicated isolated Studio runner', (
   assert.doesNotMatch(continuousWorkflow, /Stop-Process -Id/);
 });
 
-test('Roblox production Studio has priority on a shared Windows session while isolated sessions may learn concurrently', async () => {
+test('Roblox production Studio keeps assertion-only learning isolated and external target disabled', () => {
   assert.match(continuousWorkflow, /Protect active Roblox production Studio session/);
   assert.match(continuousWorkflow, /Get-Process -Name RobloxStudioBeta/);
   assert.match(continuousWorkflow, /VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY=true/);
@@ -54,27 +53,9 @@ test('Roblox production Studio has priority on a shared Windows session while is
   assert.equal(targetConfig.policy.learningInputs.ciQaRegressionEvidence, true);
   assert.equal(targetConfig.policy.learningInputs.playTelemetry, true);
   assert.equal(targetConfig.policy.learningInputs.ownerDirectiveFeedback, true);
-
-  const beforeBusy = process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY;
-  const beforeIsolated = process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION;
-  process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY = 'true';
-  delete process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION;
-  try {
-    const result = await runGameStudyWorker({
-      taskId: 'game-study-external-roblox-potion-shop-flow-a',
-      targetId: 'external-roblox-potion-shop-flow-a',
-      targetsFile: '.vibe2/game-study-targets.json'
-    });
-    assert.equal(result.outcome, 'BLOCKED');
-    assert.equal(result.blocker, 'roblox-studio-production-busy-deferred');
-    assert.equal(result.study, null);
-    assert.equal(result.authorityExpanded, false);
-  } finally {
-    if (beforeBusy === undefined) delete process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY;
-    else process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY = beforeBusy;
-    if (beforeIsolated === undefined) delete process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION;
-    else process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION = beforeIsolated;
-  }
+  const external=targetConfig.targets.find(x=>x.id==='external-roblox-potion-shop-flow-a');
+  assert.equal(external?.enabled,false);
+  assert.match(liveSmokeWorkflow,/External Potion Shop Studio automation must remain disabled/);
 });
 
 test('Vibe2 live smoke transports Studio command args through environment on Windows PowerShell', () => {
@@ -107,7 +88,7 @@ test('uncopylocked Studio copies separate edit-time identity evidence from play-
   assert.match(studioCliSource, /const authorizedCopy =/);
   assert.match(studioCliSource, /const expectedRuntimePlaceId = authorizedCopy \|\| normalizedPlaceFile \? '' : normalizedPlaceId/);
   assert.match(studioCliSource, /observedPlaceId = tostring\(game\.PlaceId\)/);
-  assert.match(potionScenario, /"key": "P"/);
+  assert.doesNotMatch(potionScenario, /"type": "key"|"type": "click"/);
   assert.match(potionScenario, /"expression": "game-loaded"/);
   assert.match(potionScenario, /"expression": "player-present"/);
   assert.match(potionScenario, /"expression": "player-gui-nonempty"/);
@@ -116,6 +97,16 @@ test('uncopylocked Studio copies separate edit-time identity evidence from play-
   assert.match(liveSmokeWorkflow, /\$manifest\.scriptCount -lt 6/);
   assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_POTION_SHOP_COPY_SESSION_IDENTITY=PASS/);
   assert.doesNotMatch(liveSmokeWorkflow, /vibe2-roblox-authorized-download-runner/);
+});
+
+test('assertion-only Studio mode does not create VirtualInput when scenario has no user actions', () => {
+  const runtimeModule = fs.readFileSync('tools/runtime/roblox/Vibe2AutoPlayer.luau', 'utf8');
+  assert.match(runtimeModule,/local inputRequired = false/);
+  assert.match(runtimeModule,/if kind == "key" or kind == "click" then/);
+  assert.match(runtimeModule,/virtualInput = inputRequired/);
+  assert.match(liveSmokeWorkflow,/Verify official Studio CLI assertion-only play/);
+  assert.match(liveSmokeWorkflow,/multiplayer assertion regression/);
+  assert.match(liveSmokeWorkflow,/automated user input must remain disabled/);
 });
 
 test('Studio runtime captures console errors and exposes UI checkpoints', () => {
@@ -146,11 +137,10 @@ test('official Studio CLI runner persists nonce-bound runtime and sanitized auth
     version: 1,
     engine: 'roblox',
     actions: [
-      { id: 'input', type: 'key', key: 'Tab' },
       { id: 'loaded', type: 'expect', expression: 'game-loaded' }
     ]
   });
-  fs.writeFileSync(fakeStudio, `#!/usr/bin/env node\nconst fs=require('fs');\nconst args=process.argv.slice(2);\nconst get=(name)=>{const i=args.indexOf(name);return i>=0?args[i+1]:''};\nconst bootstrap=fs.readFileSync(get('--runScriptFile'),'utf8');\nconst nonce=(bootstrap.match(/\\"nonce\\":\\"([a-f0-9]+)\\"/)||[])[1];\nif(!nonce) throw new Error('nonce missing from generated bootstrap');\nconst sourcePlaceId=(bootstrap.match(/placeId = \\[\\[([0-9]+)\\]\\]/)||[])[1]||get('--placeId')||'0';\nconst runtime={version:1,engine:'roblox',nonce,authority:'vibe2-roblox-studio-runtime',runtimeVerified:true,capabilities:{studioTestService:true,virtualInput:true},place:'fixture-copy',actions:[{id:'input',type:'key',dispatched:true,ok:true}],checkpoints:[{id:'loaded',name:'loaded',required:true,pass:true,value:true}],errors:[],metrics:{timeToFirstActionMs:1,consoleErrorCount:0}};\nconst source={version:1,placeId:sourcePlaceId,observedPlaceId:'0',expectedPlaceId:'',scriptCount:7,patterns:['datastore-persistence','network-remotes','input-services'],rawSourcePersisted:false,authorityExpanded:false};\nconst enc=x=>Buffer.from(JSON.stringify(x)).toString('base64');\nfs.writeFileSync(get('--outputFile'),'VIBE2_ROBLOX_SOURCE_PATTERNS_JSON='+enc(source)+'\\nVIBE2_AUTO_PLAYER_RUNTIME_JSON='+enc(runtime)+'\\nVIBE2_AUTO_PLAYER_RUNTIME_JSON=bm90LWpzb24=\\nprint(\\"VIBE2_AUTO_PLAYER_RUNTIME_JSON=\\" .. encoded)\\n','utf8');\n`, 'utf8');
+  fs.writeFileSync(fakeStudio, `#!/usr/bin/env node\nconst fs=require('fs');\nconst args=process.argv.slice(2);\nconst get=(name)=>{const i=args.indexOf(name);return i>=0?args[i+1]:''};\nconst bootstrap=fs.readFileSync(get('--runScriptFile'),'utf8');\nconst nonce=(bootstrap.match(/\\"nonce\\":\\"([a-f0-9]+)\\"/)||[])[1];\nif(!nonce) throw new Error('nonce missing from generated bootstrap');\nconst sourcePlaceId=(bootstrap.match(/placeId = \\[\\[([0-9]+)\\]\\]/)||[])[1]||get('--placeId')||'0';\nconst runtime={version:1,engine:'roblox',nonce,authority:'vibe2-roblox-studio-runtime',runtimeVerified:true,capabilities:{studioTestService:true,virtualInput:false},place:'fixture-copy',actions:[{id:'loaded',type:'expect',dispatched:false,ok:true}],checkpoints:[{id:'loaded',name:'loaded',required:true,pass:true,value:true}],errors:[],metrics:{timeToFirstActionMs:null,consoleErrorCount:0}};\nconst source={version:1,placeId:sourcePlaceId,observedPlaceId:'0',expectedPlaceId:'',scriptCount:7,patterns:['datastore-persistence','network-remotes','input-services'],rawSourcePersisted:false,authorityExpanded:false};\nconst enc=x=>Buffer.from(JSON.stringify(x)).toString('base64');\nfs.writeFileSync(get('--outputFile'),'VIBE2_ROBLOX_SOURCE_PATTERNS_JSON='+enc(source)+'\\nVIBE2_AUTO_PLAYER_RUNTIME_JSON='+enc(runtime)+'\\nVIBE2_AUTO_PLAYER_RUNTIME_JSON=bm90LWpzb24=\\nprint(\\"VIBE2_AUTO_PLAYER_RUNTIME_JSON=\\" .. encoded)\\n','utf8');\n`, 'utf8');
   fs.chmodSync(fakeStudio, 0o755);
   const result = await runRobloxStudioCliRuntime({
     studioPath: fakeStudio,
