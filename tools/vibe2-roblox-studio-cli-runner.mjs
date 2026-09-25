@@ -195,7 +195,7 @@ function persistSanitizedSourceEvidence(sourceRoot, evidence, { placeId, permiss
 
 export async function runRobloxStudioCliRuntime({
   studioPath = '', scenarioFile = '', runtimeResultFile = '', nonce = '', placeFile = '', placeId = '', universeId = '', placeVersion = '',
-  copyPermission = '', permissionEvidence = '', sourceRoot = '', moduleFile = 'tools/runtime/roblox/Vibe2AutoPlayer.luau',
+  localOnly = false, copyPermission = '', permissionEvidence = '', sourceRoot = '', moduleFile = 'tools/runtime/roblox/Vibe2AutoPlayer.luau',
   cwd = process.cwd(), timeoutMs = 180000, fetchImpl = globalThis.fetch
 } = {}) {
   if (!clean(scenarioFile) || !fs.existsSync(scenarioFile)) throw new Error('Roblox Studio scenario file missing');
@@ -210,6 +210,10 @@ export async function runRobloxStudioCliRuntime({
   const normalizedPlaceFile = clean(placeFile);
   const normalizedPlaceId = clean(placeId);
   const normalizedPlaceVersion = clean(placeVersion);
+  if (localOnly === true) {
+    if (!normalizedPlaceFile) throw new Error('Roblox Studio local-only mode requires --place-file');
+    if (normalizedPlaceId || clean(universeId) || normalizedPlaceVersion) throw new Error('Roblox Studio local-only mode forbids placeId, universeId and placeVersion launch arguments');
+  }
   if (normalizedPlaceVersion && !/^[1-9]\d*$/.test(normalizedPlaceVersion)) throw new Error('Roblox Studio expected place version must be a positive integer');
   const authorizedCopy = clean(copyPermission) === COPY_PERMISSION && Boolean(clean(permissionEvidence)) && /^\d+$/.test(normalizedPlaceId);
   const expectedRuntimePlaceId = authorizedCopy || normalizedPlaceFile ? '' : normalizedPlaceId;
@@ -253,7 +257,7 @@ export async function runRobloxStudioCliRuntime({
     process.stderr.write('VIBE2_ROBLOX_STUDIO_CLI=PASS\n');
     process.stderr.write(`VIBE2_ROBLOX_STUDIO_SOURCE_PLACE_ID=${normalizedPlaceId || 'NONE'}\n`);
     process.stderr.write(`VIBE2_ROBLOX_STUDIO_PLACE=${clean(runtime?.place) || normalizedPlaceId || 'baseplate'}\n`);
-    return Object.freeze({ verifiedRuntime: runtime?.runtimeVerified === true, studioPath: resolvedStudio, placeId: normalizedPlaceId || null, universeId: resolvedUniverse || null, placeVersion: normalizedPlaceVersion ? Number(normalizedPlaceVersion) : null, authorizedCopy, localPlaceFile: Boolean(normalizedPlaceFile), authorityExpanded: false });
+    return Object.freeze({ verifiedRuntime: runtime?.runtimeVerified === true, studioPath: resolvedStudio, placeId: normalizedPlaceId || null, universeId: resolvedUniverse || null, placeVersion: normalizedPlaceVersion ? Number(normalizedPlaceVersion) : null, authorizedCopy, localPlaceFile: Boolean(normalizedPlaceFile), localOnly: localOnly === true, onlinePlaceDirectOpen: Boolean(normalizedPlaceId), authorityExpanded: false });
   } finally {
     try { fs.rmSync(tempRoot, { recursive: true, force: true }); } catch {}
   }
@@ -270,6 +274,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     placeId: clean(args['place-id']) || clean(process.env.VIBE2_ROBLOX_STUDIO_PLACE_ID) || clean(process.env.VIBE2_ROBLOX_AUTHORIZED_SOURCE_PLACE_ID),
     universeId: clean(args['universe-id']) || clean(process.env.VIBE2_ROBLOX_STUDIO_UNIVERSE_ID),
     placeVersion: clean(args['place-version']) || clean(process.env.VIBE2_ROBLOX_STUDIO_PLACE_VERSION),
+    localOnly: String(args['local-only'] ?? process.env.VIBE2_ROBLOX_STUDIO_LOCAL_ONLY ?? '').toLowerCase() === 'true',
     copyPermission: clean(args['copy-permission']) || clean(process.env.VIBE2_ROBLOX_COPY_PERMISSION),
     permissionEvidence: clean(args['permission-evidence']) || clean(process.env.VIBE2_ROBLOX_PERMISSION_EVIDENCE),
     sourceRoot: clean(args['source-root']) || clean(process.env.VIBE2_ROBLOX_AUTHORIZED_SOURCE_ROOT),
