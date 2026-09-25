@@ -223,11 +223,13 @@ jobs:
           const f0EvidenceMode=String(item.robloxFoundationF0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();
           const headlessMode=canonicalRobloxValidationMode==='HEADLESS_FAST_MVP'&&f0EvidenceMode==='HEADLESS_SOURCE_PREFLIGHT_F0';
           const artifactRunId=Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||item.robloxRuntimeEvidence?.artifactRunId||0);
+          const publicationTarget=item.robloxPublicationTarget||{};
           const currentCandidate=item.robloxRuntimeCandidateEvidence?.published===true
-            &&item.robloxSharedTargetCurrent!==false
             &&item.robloxRuntimeCandidateEvidence?.sourceRevision===revision
             &&item.robloxRuntimeCandidateEvidence?.artifactIdentity===artifact
-            &&Number(item.robloxRuntimeCandidateEvidence?.versionNumber)>0;
+            &&Number(item.robloxRuntimeCandidateEvidence?.versionNumber)>0
+            &&String(item.robloxRuntimeCandidateEvidence?.universeId||'')===String(publicationTarget.universeId||'')
+            &&String(item.robloxRuntimeCandidateEvidence?.placeId||'')===String(publicationTarget.placeId||'');
           if(currentCandidate){
             put('skip','true');put('skip_reason','runtime-candidate-already-deployed');
             console.log(`ROBLOX_RUNTIME_CANDIDATE_ALREADY_DEPLOYED=${gameId}`);
@@ -274,7 +276,17 @@ jobs:
           const evidenceTarget=targetEvidence?.publicationTarget||{};
           const ownerPinned=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
           const exactCandidates=[
-            {source:'company-runtime-publication-target',target:persistedTarget,valid:validIds(persistedTarget)&&persistedTarget.verified===true},
+            {
+              source:'company-runtime-publication-target',
+              target:persistedTarget,
+              valid:validIds(persistedTarget)&&(
+                persistedTarget.verified===true
+                ||(persistedTarget.dedicated===true
+                  &&persistedTarget.shared!==true
+                  &&persistedTarget.internalOnly===true
+                  &&String(persistedTarget.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED')
+              )
+            },
             {source:'company-runtime-prior-release',target:priorPublishedTarget,valid:validIds(priorPublishedTarget)},
             {source:'known-good-runtime-evidence',target:evidenceTarget,valid:validIds(evidenceTarget)},
           ].filter(row=>row.valid);
@@ -659,8 +671,12 @@ jobs:
           }
           item.robloxSharedTargetCurrent=true;
           item.robloxFastMvpSupersededBy=null;
+          const dedicatedTarget=existingTarget.dedicated===true
+            ||targetSource==='canonical-dedicated-open-cloud-bootstrap'
+            ||String(existingTarget.source||'')==='canonical-dedicated-open-cloud-bootstrap'
+            ||String(existingTarget.source||'')==='owner-dedicated-github-bootstrap';
           item.robloxPublicationTarget={
-            version:2,
+            version:3,
             gameId:item.gameId,
             universeId,
             placeId,
@@ -669,9 +685,12 @@ jobs:
             lastVerifiedAt:stamp,
             source:existingTarget.source||targetSource||'proven-open-cloud-internal-release',
             authority:'roblox-canonical-publication-target',
+            dedicated:dedicatedTarget,
+            shared:dedicatedTarget?false:(existingTarget.shared===true),
             visibilityIntent,
             internalOnly:!preserveExistingVisibility,
             publicDiscoveryAllowed:preserveExistingVisibility?null:false,
+            bootstrapState:'PUBLISHED_PRIVATE',
           };
           item.robloxRuntimeCandidateEvidence={
             version:1,
