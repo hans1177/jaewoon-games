@@ -374,6 +374,94 @@ test('queue reconcile never demotes an already published internal Roblox release
 });
 
 
+test('queue reconcile repairs stale pre-release canonical state after Roblox internal release while keeping parallel revalidation currentStep',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-internal-umbrella-repair-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'released-revalidation',name:'Released Revalidation',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'released-revalidation',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    const source=writeDesign(root,'released-revalidation');
+    const revision='1'.repeat(40),artifact='sha256:'+'2'.repeat(64);
+    write(root,'development-queue.json',{items:[{
+      gameId:'released-revalidation',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+      canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      minimumDesignContract:{pass:true,source},
+      robloxSourceCommit:revision,
+      robloxBuildSourceRevision:revision,
+      robloxBuildArtifactIdentity:artifact,
+      robloxBuildOrPackagePassed:true,
+      robloxBuildPreflightPassed:true,
+      robloxFoundationF0Passed:true,
+      robloxInternalReleasePublished:true,
+      robloxInternalReleaseReady:true,
+      robloxInternalReleaseEvidence:{
+        published:true,sourceRevision:revision,artifactIdentity:artifact,
+        versionNumber:22,universeId:'10767445769',placeId:'126302702438348'
+      },
+      robloxRuntimeCandidateEvidence:{
+        published:true,sourceRevision:revision,artifactIdentity:artifact,
+        versionNumber:22,universeId:'10767445769',placeId:'126302702438348'
+      },
+      robloxFailureStage:'VIBE_INTERNAL_PLAY',
+      robloxFailureSignature:'ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING',
+      routingBlockers:['roblox-studio-mcp-infrastructure-pending']
+    }]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.currentStep,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+    assert.equal(item.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+    assert.equal(item.robloxInternalReleasePublished,true);
+    assert.equal(item.robloxFailureStage,'VIBE_INTERNAL_PLAY');
+    assert.equal(item.robloxFailureSignature,'ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING');
+    assert.deepEqual(item.routingBlockers,['roblox-studio-mcp-infrastructure-pending']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('queue reconcile does not hide a real post-release repair state behind the internal buildup umbrella',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-internal-repair-preserve-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'released-repair',name:'Released Repair',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'released-repair',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    const source=writeDesign(root,'released-repair');
+    write(root,'development-queue.json',{items:[{
+      gameId:'released-repair',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'REPAIR_REQUIRED',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      minimumDesignContract:{pass:true,source},
+      robloxInternalReleasePublished:true,
+      robloxInternalReleaseReady:true,
+      robloxInternalReleaseEvidence:{published:true,versionNumber:22,universeId:'1',placeId:'2'},
+      robloxFailureStage:'VIBE_INTERNAL_PLAY',
+      robloxFailureSignature:'ROBLOX_STUDIO_MCP_RUNTIME_ERROR',
+      routingBlockers:['roblox-studio-mcp-play-repair-required']
+    }]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.canonicalState,'REPAIR_REQUIRED');
+    assert.equal(item.robloxFailureSignature,'ROBLOX_STUDIO_MCP_RUNTIME_ERROR');
+    assert.deepEqual(item.routingBlockers,['roblox-studio-mcp-play-repair-required']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
 test('queue reconcile restores durable dedicated Roblox target identity before shared fallback migration',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-dedicated-registry-'));
   try{
