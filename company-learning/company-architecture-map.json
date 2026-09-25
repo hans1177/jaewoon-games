@@ -1,5 +1,5 @@
 {
-  "version": 197,
+  "version": 198,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1162,7 +1162,24 @@
         "sharedContextMustPassBeforeWork": true,
         "unsynchronizedWorkerAction": "INHIBIT_AND_REPLAN_OR_REQUEUE"
       },
-      "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING"
+      "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING",
+      "workerControlCheckoutTopology": {
+        "version": 1,
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "stateRef": "vibe2-unreal-core",
+        "checkoutScope": [
+          ".vibe2"
+        ],
+        "executableCodeSource": "PINNED_MAIN_CONTRACT",
+        "workerCheckoutMultiplicity": "ONE_PER_WORKER",
+        "purpose": "REDUCE_CHECKOUT_NETWORK_AND_FILESYSTEM_PRESSURE_AT_HIGH_GAME_PRIMARY_CONCURRENCY",
+        "fullControlBranchGameSourceCheckoutRequired": false,
+        "gamePrimaryExternalBoundary": 256,
+        "adaptiveBackpressureSemanticsChanged": false,
+        "taskReservationSemanticsChanged": false,
+        "sourceWriteAuthorityChanged": false,
+        "qaSecurityReleaseAuthorityChanged": false
+      }
     },
     "liveShadowRepairLoop": {
       "path": [
