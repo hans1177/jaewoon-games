@@ -69,6 +69,20 @@ function freshAfterOwnerReset(design,resetAt=0){
   const resetDate=new Date(resetAt).toISOString().slice(0,10);
   return Boolean(design?.date&&String(design.date)>resetDate);
 }
+function recoverExactPrivateRuntimeCheckpoint(item,design){
+  const priorDesignSource=clean(item?.minimumDesignContract?.source||item?.designBaselineSource);
+  if(priorDesignSource&&priorDesignSource!==clean(design?.file))return null;
+  const step=clean(item?.currentStep).toUpperCase();
+  const state=clean(item?.canonicalState).toUpperCase();
+  if(step&&step!=='TARGET_PLATFORM_SOURCE_BIND'&&state!=='PENDING_DUAL_NATIVE_SOURCE_BIND')return null;
+  const candidate=item?.robloxRuntimeCandidateEvidence||{};
+  const exact=candidate?.published===true
+    &&clean(candidate.sourceRevision)===clean(item?.robloxSourceCommit)
+    &&clean(candidate.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+    &&Number(candidate.versionNumber)>0;
+  if(!exact)return null;
+  return{currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
+}
 function directQueueProgressIsCurrent(item,design){
   return item?.minimumDesignContract?.pass===true
     &&clean(item?.minimumDesignContract?.source)===clean(design?.file)
@@ -84,8 +98,9 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
   const selectedPlatform=selectedPlatformOf(seed);
   const paths=directNativeSourcePaths(gameId);
   const preserveProgress=directQueueProgressIsCurrent(item,design);
-  const previousStep=preserveProgress?item.currentStep:null;
-  const previousState=preserveProgress?item.canonicalState:null;
+  const recoveredProgress=recoverExactPrivateRuntimeCheckpoint(item,design);
+  const previousStep=recoveredProgress?.currentStep||(preserveProgress?item.currentStep:null);
+  const previousState=recoveredProgress?.canonicalState||(preserveProgress?item.canonicalState:null);
   const ownerPreservationPresentationUpgrade=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
     &&clean(seed?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
 
