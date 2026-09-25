@@ -827,6 +827,23 @@ jobs:
             throw 'Runner has an existing Roblox Studio process; refusing ambiguous MCP attachment'
           }
 
+          $officialVersionsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\Versions'
+          $staleStudioMcp = @(Get-Process StudioMCP -ErrorAction SilentlyContinue | Where-Object {
+            try {
+              $processPath = [string]$_.Path
+              $processPath -and $processPath.StartsWith($officialVersionsRoot,[System.StringComparison]::OrdinalIgnoreCase)
+            } catch {
+              $false
+            }
+          })
+          if ($staleStudioMcp.Count -gt 0) {
+            foreach ($process in $staleStudioMcp) {
+              Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            }
+            Start-Sleep -Seconds 1
+          }
+          Write-Host "ROBLOX_STUDIO_MCP_STALE_OFFICIAL_PROCESS_REAPED=$($staleStudioMcp.Count)"
+
           $settingsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\AssistantSettings'
           $settingDiag = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-setting-diagnostic.json'
           $diagArgs = @(
@@ -970,6 +987,7 @@ jobs:
           $maxSessionAttempts = 3
           $success = $false
           $enablementRequired = $false
+          $toolProviderTimeoutObserved = $false
 
           for ($attempt = 1; $attempt -le $maxSessionAttempts; $attempt++) {
             if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
@@ -999,7 +1017,14 @@ jobs:
               Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result"
               $failureSignature = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));process.stdout.write(String(r?.errors?.[0]?.signature||''))" $result).Trim()
               if ($LASTEXITCODE -ne 0) { throw 'Studio MCP failure evidence parse failed' }
-              if (($attempt -gt 1) -and ($mcpCommandForAttempt -eq $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) -and ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')) {
+              $requiredToolsEmpty = ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')
+              $mcpServerNotEnabled = $failureSignature -match 'stderrHint=MCP_SERVER_NOT_ENABLED'
+              $toolProviderTimeout = $failureSignature -match 'stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'
+              if ($requiredToolsEmpty -and $toolProviderTimeout) {
+                $toolProviderTimeoutObserved = $true
+                Write-Host "ROBLOX_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT=attempt=$attempt"
+              }
+              if (($attempt -gt 1) -and ($mcpCommandForAttempt -eq $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) -and $requiredToolsEmpty -and $mcpServerNotEnabled) {
                 $enablementRequired = $true
                 Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT'
                 Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
@@ -1032,8 +1057,31 @@ jobs:
 
           if (-not $success) {
             Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED"
+            if ($toolProviderTimeoutObserved) {
+              $studioLogsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+              $latestStudioLog = Get-ChildItem $studioLogsRoot -File -Filter '*.log' -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending |
+                Select-Object -First 1
+              if ($latestStudioLog) {
+                $diagnosticLines = @(Get-Content $latestStudioLog.FullName -Tail 4000 -ErrorAction SilentlyContinue |
+                  Select-String -Pattern 'MCP|Assistant|StudioMCP|tool provider' |
+                  Select-Object -Last 40)
+                Write-Host "ROBLOX_STUDIO_MCP_STUDIO_LOG_MATCH_COUNT=$($diagnosticLines.Count)"
+                foreach ($match in $diagnosticLines) {
+                  $safeLine = [string]$match.Line
+                  if ($env:USERPROFILE) { $safeLine = $safeLine.Replace($env:USERPROFILE,'%USERPROFILE%') }
+                  if ($safeLine.Length -gt 700) { $safeLine = $safeLine.Substring(0,700) }
+                  Write-Host "ROBLOX_STUDIO_MCP_STUDIO_LOG=$safeLine"
+                }
+              } else {
+                Write-Host 'ROBLOX_STUDIO_MCP_STUDIO_LOG=NOT_FOUND'
+              }
+            }
             if ($enablementRequired) {
               throw 'official Roblox Studio MCP tools unavailable; enable Studio as MCP server in Assistant'
+            }
+            if ($toolProviderTimeoutObserved) {
+              throw 'official Roblox Studio MCP tool provider timed out after 3 clean Studio sessions'
             }
             throw 'official Roblox Studio MCP play failed after 3 official restart sessions'
           }
