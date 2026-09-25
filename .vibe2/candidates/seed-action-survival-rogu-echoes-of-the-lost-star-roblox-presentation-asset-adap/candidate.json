@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "if hasStudioAssetAtom(\"FRAME_PANEL\") then",
+      "replace": "local list = Instance.new(\"ScrollingFrame\")\nlist.Name = \"ApprovedActions\"\nlist.Size = UDim2.new(1, -20, 0, 48)\nlist.Position = UDim2.fromOffset(10, 54)\nlist.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nlist.TextColor3 = Color3.fromRGB(220, 232, 250)\nlist.TextScaled = true\nlist.Parent = root"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
