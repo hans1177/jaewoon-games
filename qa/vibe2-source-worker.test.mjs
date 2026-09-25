@@ -394,7 +394,7 @@ test('repeated presentation delta rotates to the next visual anchor before the n
   assert.match(candidate,/70,95,130/);
 });
 
-test('presentation recovery keeps the fourth slot after malformed focused output',async()=>{
+test('Roblox presentation package recovery keeps the fourth slot after malformed output',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
   const relative='client/Game.client.luau';
@@ -416,11 +416,11 @@ test('presentation recovery keeps the fourth slot after malformed focused output
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
   write(r2,JSON.stringify({replace:'local score = 2'}));
   write(r3,'{"replace":');
-  write(r4,JSON.stringify({replace:robloxFullGraphicsMotionPatch('82,110,148')}));
+  write(r4,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('82,110,148')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
   assert.equal(result.generation.attempts,4);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.presentationCandidateDelta.pass,true);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
   assert.match(candidate,/82,110,148/);
