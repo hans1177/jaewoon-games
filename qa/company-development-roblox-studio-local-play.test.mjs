@@ -224,6 +224,64 @@ test('planner collapses repeated shared Studio MCP infrastructure failures to on
   assert.deepEqual(result.deferredInfrastructureGameIds,['g1','g3']);
 });
 
+test('automatic planner defers exact games with a confirmed Studio MCP enablement prerequisite and advances unresolved infrastructure canary work',()=>{
+  const rows=['g1','g2','g3'].map((gameId,index)=>{
+    const candidate=item();
+    candidate.gameId=gameId;
+    candidate.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
+    candidate.robloxInternalVibePlayEvidence={
+      version:2,
+      gameId,
+      pass:false,
+      actualPlay:false,
+      infrastructureFailure:true,
+      failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',
+      studioMcpServerEnablementRequired:index!==1,
+      operatorPrerequisite:index!==1?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
+      sourceRevision:source,
+      artifactIdentity:artifact,
+      artifactRunId:777,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:9,
+      testedAt:['2026-09-25T09:00:00.000Z','2026-09-25T09:01:00.000Z','2026-09-25T09:02:00.000Z'][index]
+    };
+    return candidate;
+  });
+  const result=planLocalStudioCandidates({queue:{items:rows},roadmap:roadmap()});
+  assert.equal(result.sharedInfrastructureCanary,false);
+  assert.deepEqual(result.include.map(row=>row.gameId),['g2']);
+  assert.deepEqual(result.deferredInfrastructureGameIds,[]);
+  assert.deepEqual(result.deferredPrerequisiteGameIds,['g1','g3']);
+});
+
+test('explicit game request still permits rechecking a game with a confirmed Studio MCP enablement prerequisite',()=>{
+  const candidate=item();
+  candidate.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
+  candidate.robloxInternalVibePlayEvidence={
+    version:2,
+    gameId:'g1',
+    pass:false,
+    actualPlay:false,
+    infrastructureFailure:true,
+    failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',
+    studioMcpServerEnablementRequired:true,
+    operatorPrerequisite:'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    artifactRunId:777,
+    universeId:'123',
+    placeId:'456',
+    versionNumber:9,
+    testedAt:'2026-09-25T09:00:00.000Z'
+  };
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),requestedGameId:'g1'});
+  assert.equal(result.sharedInfrastructureCanary,false);
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].gameId,'g1');
+  assert.deepEqual(result.deferredPrerequisiteGameIds,[]);
+});
+
 test('explicit game request bypasses shared Studio MCP infrastructure canary collapsing',()=>{
   const rows=['g1','g2'].map(gameId=>{
     const candidate=item();
