@@ -81,10 +81,11 @@ const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
 const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
 const ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS=new Set([
-  'TIMEOUT','EDIT_MATCH','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
+  'TIMEOUT','EDIT_MATCH','PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
 ]);
 const ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES=new Set([
-  ...ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS,'MALFORMED_OUTPUT'
+  ...ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS,
+  'NO_OP','INVALID_PATH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','STUDIO_QUALITY_DELTA'
 ]);
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
 const FULL_FILE_CONTENT_MARKER='---VIBE2_FILE_CONTENT---';
@@ -1519,6 +1520,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const robloxGraphicsInitial=!allowFullRewrite
     &&/Engine:\s*roblox/i.test(String(prompt??''))
     &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
+  if(robloxGraphicsInitial)robloxFullGraphicsPackageActive=true;
   const initialStudioPrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
     :robloxGraphicsInitial

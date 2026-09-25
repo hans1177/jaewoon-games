@@ -152,6 +152,49 @@ test('Roblox full graphics first source-worker attempt completes as a full packa
   assert.match(candidate,/weapon\.Orientation\s*=/);
 });
 
+test('Roblox full graphics keeps package mode after repeated no-op failures',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-full-graphics-package-state'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve full Roblox graphics and native motion without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const weak1=path.join(cwd,'noop-1.json');
+  const weak2=path.join(cwd,'noop-2.json');
+  const strong=path.join(cwd,'strong-package.json');
+  const noOp={edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  }]};
+  write(weak1,JSON.stringify(noOp));
+  write(weak2,JSON.stringify(noOp));
+  write(strong,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:robloxFullGraphicsMotionPatch('112,142,178')
+  }]}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[weak1,weak2,strong]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.generation.robloxFullGraphicsInitialPackage,true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/SwordEquipment/);
+  assert.match(candidate,/TerrainRockEnvironment/);
+  assert.match(candidate,/RenderStepped/);
+});
+
 test('Roblox full graphics domain recovery keeps a connected multi-edit package instead of collapsing to one edit',()=>{
   const prompt=[
     '[PRESENTATION_PASS:ASSET_ADAPTATION]',
@@ -356,7 +399,7 @@ test('Roblox full graphics recovery uses the configured fourth attempt after rep
   assert.match(candidate,/weapon\.Orientation\s*=/);
 });
 
-test('Roblox presentation recovery reaches a real visual source delta on the focused retry',async()=>{
+test('Roblox presentation recovery reaches a real visual source delta on the package retry',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
   const relative='client/Game.client.luau';
@@ -377,14 +420,14 @@ test('Roblox presentation recovery reaches a real visual source delta on the foc
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
 
   const bad1=path.join(cwd,'presentation-bad-1.json');
-  const good=path.join(cwd,'presentation-good-focused.json');
+  const good=path.join(cwd,'presentation-good-package.json');
   write(bad1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(good,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
+  write(good,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('70,95,130')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,good]});
   assert.equal(result.generation.attempts,2);
   assert.equal(result.generation.recoveryUsed,true);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.presentationCandidateDelta.pass,true);
   assert.equal(result.presentationCandidateDelta.presentationPass,'ASSET_ADAPTATION');
   assert.deepEqual(result.changedFiles,[relative]);
@@ -415,19 +458,19 @@ test('presentation delta uses the configured fourth recovery attempt instead of 
   const r3=path.join(cwd,'presentation-r3.json');
   const r4=path.join(cwd,'presentation-r4.json');
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(r2,JSON.stringify({replace:'local score = 2'}));
-  write(r3,JSON.stringify({replace:'local score = 3'}));
-  write(r4,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
+  write(r2,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 2'}]}));
+  write(r3,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 3'}]}));
+  write(r4,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('70,95,130')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3,r4]});
   assert.equal(result.generation.attempts,4);
   assert.equal(result.generation.recoveryUsed,true);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.presentationCandidateDelta.pass,true);
   assert.deepEqual(result.changedFiles,[relative]);
 });
 
-test('repeated presentation delta rotates to the next visual anchor before the next focused retry',async()=>{
+test('repeated Roblox presentation delta stays in package mode instead of rotating to focused retry',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
   const relative='client/Game.client.luau';
@@ -447,13 +490,13 @@ test('repeated presentation delta rotates to the next visual anchor before the n
   const r2=path.join(cwd,'presentation-rotate-r2.json');
   const r3=path.join(cwd,'presentation-rotate-r3.json');
   write(r1,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
-  write(r2,JSON.stringify({replace:'local presentationMarker = 2'}));
-  write(r3,JSON.stringify({replace:robloxFullGraphicsMotionPatch('70,95,130')}));
+  write(r2,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local presentationMarker = 2'}]}));
+  write(r3,JSON.stringify({edits:[{path:relative,find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',replace:robloxFullGraphicsMotionPatch('70,95,130')}]}));
 
   const result=await runVibe2SourceWorker({cwd,responseFiles:[r1,r2,r3]});
   assert.equal(result.generation.attempts,3);
-  assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.ok(result.generation.focusedReplaceAnchorRotations>=1);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.focusedReplaceAnchorRotations,0);
   assert.equal(result.presentationCandidateDelta.pass,true);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
   assert.match(candidate,/70,95,130/);
