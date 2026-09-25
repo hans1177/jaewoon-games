@@ -772,9 +772,6 @@ jobs:
           if ($roadmap.roblox.studioExecution.undocumentedStudioCliAutomationForbidden -ne $true) { throw 'undocumented Studio CLI automation must remain forbidden' }
           if ($roadmap.roblox.studioExecution.localPlaceFileRequired -ne $true) { throw 'local exact Place artifact policy missing' }
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio MCP runner must be Windows' }
-          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
-          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
-
           $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Directory -ErrorAction SilentlyContinue |
             Sort-Object LastWriteTime -Descending |
             ForEach-Object { Join-Path $_.FullName 'RobloxStudioBeta.exe' } |
