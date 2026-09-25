@@ -372,3 +372,30 @@ test('queue reconcile never demotes an already published internal Roblox release
     assert.equal(item.robloxDedicatedTargetMigration,undefined);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('queue reconcile restores durable dedicated Roblox target identity before shared fallback migration',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-dedicated-registry-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'registry-target',name:'Registry Target',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'registry-target',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    writeDesign(root,'registry-target');
+    write(root,'roblox-dedicated-targets.json',{version:1,targets:[{
+      gameId:'registry-target',universeId:'10767445769',placeId:'126302702438348',
+      dedicated:true,shared:false,verified:true,source:'owner-dedicated-github-bootstrap',bootstrapState:'PUBLISHED_PRIVATE'
+    }]});
+    write(root,'development-queue.json',{items:[]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.robloxPublicationTarget.universeId,'10767445769');
+    assert.equal(item.robloxPublicationTarget.placeId,'126302702438348');
+    assert.equal(item.robloxPublicationTarget.dedicated,true);
+    assert.equal(item.robloxSharedTargetCurrent,false);
+    assert.equal(item.robloxDedicatedTargetRegistryBinding.source,'roblox-dedicated-targets.json');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
