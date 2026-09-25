@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 77,
+  "revision": 78,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1353,6 +1353,12 @@
     "designIsImplementationQuantityCeiling": false,
     "sourceRootOrGameWideLockForbidden": true,
     "responsibleFileConflictSerializationOnly": true,
-    "terminalCompletionStateForbidden": true
+    "terminalCompletionStateForbidden": true,
+    "missingDesignAutoCreate": true,
+    "missingDesignIntake": "CANONICAL_GAME_SEED_AND_DESIGN_PIPELINE",
+    "missingDesignPassiveWaitForbidden": true,
+    "shadowDesignPipelineForbidden": true,
+    "safePresentationAndStabilityMayContinueDuringDesignGeneration": true,
+    "coreFunAndProgressionResumeAfterVerifiedDesign": true
   }
 }

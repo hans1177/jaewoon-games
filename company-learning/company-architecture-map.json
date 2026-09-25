@@ -1,5 +1,5 @@
 {
-  "version": 173,
+  "version": 174,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4006,6 +4006,19 @@
     "sourceRootWideLockForbidden": true,
     "gameWideLockForbidden": true,
     "responsibleFileConflictSerializationOnly": true,
-    "architectureMapDoesNotCreatePolicy": true
+    "architectureMapDoesNotCreatePolicy": true,
+    "missingDesignFlow": [
+      "CATALOG_ACTIVE_OR_REBUILD_GAME",
+      "MISSING_OR_UNUSABLE_DESIGN_DETECTED",
+      "EXISTING_GAME_GAME_SEED_AUTO_INTAKE",
+      "COMPANY_SEED_DESIGN_RUNTIME",
+      "COMPANY_DESIGN_CYCLE",
+      "STRICT_DESIGN_REVIEW",
+      "DESIGN_PROMOTION_GATE",
+      "GAME_SPECIFIC_CORE_FUN_AND_PROGRESSION_FANOUT"
+    ],
+    "missingDesignIntakeTool": "tools/company-all-games-design-reset.mjs --auto-missing-design-intake",
+    "newDesignPipelineCreated": false,
+    "reusesCanonicalDesignRuntime": true
   }
 }

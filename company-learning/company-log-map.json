@@ -1,5 +1,5 @@
 {
-  "version": 55,
+  "version": 56,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1039,5 +1039,16 @@
     "protectedSemanticsUnchanged": true,
     "sourceRootOrGameWideLockForbidden": true,
     "maxSafeParallelismPreserved": true
+  },
+  "missingDesignAutoCreationContract": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.designContext",
+    "documentedAt": "2026-09-25",
+    "trigger": "ACTIVE_OR_REBUILD_GAME_HAS_NO_USABLE_DESIGN_REVISED_CONTEXT",
+    "action": "AUTO_ENROLL_EXISTING_GAME_IN_EXISTING_GAME_SEED_AND_DESIGN_RUNTIME",
+    "passiveWaitingForbidden": true,
+    "genericGameplayGuessForbidden": true,
+    "existingPipelineReuseRequired": true,
+    "shadowPipelineForbidden": true
   }
 }

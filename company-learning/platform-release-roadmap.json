@@ -1,5 +1,5 @@
 {
-  "version": 357,
+  "version": 358,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6567,6 +6567,15 @@
       ],
       "sourceRootWideLocksRemainForbidden": true,
       "protectedGameplaySemanticsRemainLocked": true
+    },
+    "continuousGameplayEvolutionMissingDesignAutoCreate20260925": {
+      "id": "CONTINUOUS_GAMEPLAY_MISSING_DESIGN_AUTO_CREATE_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Active or rebuild games without a usable design are automatically enrolled into the existing GAME_SEED -> design cycle -> strict review -> promotion pipeline instead of remaining designless or receiving generic gameplay guesses.",
+      "existingPipelineReuseRequired": true,
+      "shadowPipelineForbidden": true,
+      "gameplayDevelopmentResumesAfterVerifiedDesign": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -21185,7 +21194,32 @@
       "latestRevisedDesignMustBeLoadedBeforeCoreFunOrProgressionTaskGeneration": true,
       "taskMustCarryDesignContextEvidence": true,
       "genericQualityGapWithoutAvailableDesignContextForbiddenForCoreFunAndProgression": true,
-      "missingDesignAction": "DO_NOT_INVENT_PROTECTED_GAMEPLAY; CONTINUE_ONLY_SAFE_PRESENTATION_STABILITY_OR_EXPLICIT_REPAIR_AND_ROUTE_DESIGN_CONTEXT_REPAIR"
+      "missingDesignAction": "AUTO_ENROLL_EXISTING_GAME_IN_CANONICAL_GAME_SEED_AND_DESIGN_PIPELINE",
+      "missingDesignMustNotRemainPassive": true,
+      "autoCreateDesign": true,
+      "autoCreateUsesExistingPipelineOnly": true,
+      "autoCreatePipeline": [
+        "DETECT_ACTIVE_OR_REBUILD_CATALOG_GAME_WITHOUT_USABLE_DESIGN",
+        "ENSURE_EXISTING_GAME_GAME_SEED_IN_GAME_SEED_STATE",
+        "NORMALIZE_GAME_SEED_WITH_EXISTING_COMPANY_SEED_CONTRACT",
+        "RUN_COMPANY_SEED_DESIGN_RUNTIME",
+        "RUN_COMPANY_DESIGN_CYCLE",
+        "RUN_STRICT_DESIGN_REVIEW",
+        "PROMOTE_ONLY_AFTER_EXISTING_DESIGN_GATES",
+        "RESUME_CORE_FUN_AND_PROGRESSION_DEVELOPMENT_FROM_VERIFIED_DESIGN"
+      ],
+      "autoCreateBindings": {
+        "intake": "tools/company-all-games-design-reset.mjs --auto-missing-design-intake",
+        "seedContract": "tools/company-game-seed-contract.mjs",
+        "seedNormalizer": "tools/company-design-seed-normalize.mjs",
+        "designRuntime": ".github/workflows/company-seed-design-runtime.yml",
+        "designCycle": "tools/company-design-cycle.mjs",
+        "promotion": ".github/workflows/company-design-promotion-sync.yml"
+      },
+      "newShadowDesignPipelineForbidden": true,
+      "missingDesignMayNotBeSolvedByGenericGameplayGuess": true,
+      "presentationAndStabilityMayContinueInParallelWhileDesignIsBeingCreatedWhenSafe": true,
+      "coreFunAndProgressionResumeImmediatelyAfterVerifiedDesign": true
     },
     "simultaneousLanes": {
       "required": [
