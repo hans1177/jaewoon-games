@@ -412,6 +412,18 @@ test('central development orchestrator gates new native lanes on Unity Web readi
   assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
+test('Roblox native executor independently enforces Unity Web upper-platform admission',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const admission=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
+  assert.match(workflow,/company-upper-platform-admission\.mjs/);
+  assert.match(workflow,/classifyUpperPlatformAdmission/);
+  assert.match(workflow,/grandfatherGameIds/);
+  assert.match(workflow,/admission\.state!=='UPPER_PLATFORM'/);
+  assert.match(workflow,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
+  assert.match(admission,/UPPER_PLATFORM_DEVELOPMENT_READY/);
+  assert.match(admission,/READINESS_SOURCE_STALE/);
+});
+
 test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
