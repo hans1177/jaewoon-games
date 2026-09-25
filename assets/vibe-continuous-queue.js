@@ -96,12 +96,22 @@ function inferSourceRoot(input = {}) {
 }
 function normalizeStudioQualityEvolution(input=null){
   if(!input||typeof input!=='object')return null;
-  const connected=input.requiredConnectedImprovements&&typeof input.requiredConnectedImprovements==='object'
+  const sourceConnected=input.requiredConnectedImprovements&&typeof input.requiredConnectedImprovements==='object'
+    ?input.requiredConnectedImprovements:{};
+  const rawMin=Number(sourceConnected.min);
+  const rawMax=sourceConnected.max;
+  const rawStrictScore=input.strictDesignScore;
+  const connected=freeze({
+    min:Number.isFinite(rawMin)?Math.max(0,Math.floor(rawMin)):0,
+    max:rawMax===null||rawMax===undefined||clean(rawMax)===''?null:(Number.isFinite(Number(rawMax))?Math.max(0,Math.floor(Number(rawMax))):null)
+  });
+  const approved=input.approvedDesignElements&&typeof input.approvedDesignElements==='object'&&!Array.isArray(input.approvedDesignElements)
     ?freeze({
-      min:clampInt(input.requiredConnectedImprovements.min||0,0,20),
-      max:clampInt(input.requiredConnectedImprovements.max||0,0,20)
+      ...input.approvedDesignElements,
+      coreLoop:freezeList(input.approvedDesignElements.coreLoop||[]),
+      signatureSystems:freeze((Array.isArray(input.approvedDesignElements.signatureSystems)?input.approvedDesignElements.signatureSystems:[]).map(row=>freeze({...row})))
     })
-    :freeze({min:0,max:0});
+    :null;
   return freeze({
     version:clampInt(input.version||1,1,1000),
     cycle:clampInt(input.cycle||1,1,1000000),
@@ -110,9 +120,16 @@ function normalizeStudioQualityEvolution(input=null){
     baselineId:clean(input.baselineId)||null,
     baselineSource:clean(input.baselineSource).toUpperCase()||null,
     explicitGap:clean(input.explicitGap)||null,
+    designSource:posix(input.designSource)||null,
+    designGrounded:input.designGrounded===true,
+    designVerified:input.designVerified===true,
+    designContextAvailable:input.designContextAvailable===true,
+    strictDesignScore:rawStrictScore===null||rawStrictScore===undefined||clean(rawStrictScore)===''?null:(Number.isFinite(Number(rawStrictScore))?Number(rawStrictScore):null),
+    approvedDesignElements:approved,
     designIsImplementationCeiling:input.designIsImplementationCeiling===true,
     requiredConnectedImprovements:connected,
     realSourceDeltaRequired:input.realSourceDeltaRequired!==false,
+    gameplaySourceDeltaRequired:input.gameplaySourceDeltaRequired===true,
     visibleRenderDeltaRequired:input.visibleRenderDeltaRequired===true,
     protectedRegressionForbidden:input.protectedRegressionForbidden!==false,
     nextCycleRequired:input.nextCycleRequired!==false

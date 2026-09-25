@@ -1510,3 +1510,29 @@ test('non-empty malformed queue remains fail-closed instead of being silently re
   assert.throws(()=>runQueueCommand({command:'summary',queue:queueFile}));
   assert.equal(fs.readFileSync(queueFile,'utf8'),'{"version":5,');
 });
+
+
+test('studio quality normalization preserves unbounded max and verified design authority',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[{
+    id:'verified-design-core-v1',gameId:'verified-design',target:'roblox',sourceRoot:'roblox-games/verified-design',
+    department:'development',type:'implementation',goal:'verified design core',responsibleFiles:['server/Combat.server.luau'],
+    studioQualityEvolution:{
+      version:2,cycle:1,phase:'BUILD_UP',focusPillar:'CORE_FUN',baselineId:'source:roblox-games/verified-design',
+      designSource:'design/verified-design/2026-09-25/design-revised.json',designGrounded:true,designVerified:true,designContextAvailable:true,strictDesignScore:91,
+      approvedDesignElements:{identity:'identity',coreFun:'combat',coreLoop:['read','act','advance'],signatureSystems:[{name:'combat',purpose:'counterplay',playerChoice:'attack'}],progressionDirection:'advance'},
+      designIsImplementationCeiling:false,requiredConnectedImprovements:{min:3,max:null},realSourceDeltaRequired:true,
+      gameplaySourceDeltaRequired:true,visibleRenderDeltaRequired:false,protectedRegressionForbidden:true,nextCycleRequired:true
+    }
+  }]});
+  const contract=queue.tasks[0].studioQualityEvolution;
+  assert.equal(contract.requiredConnectedImprovements.min,3);
+  assert.equal(contract.requiredConnectedImprovements.max,null);
+  assert.equal(contract.designGrounded,true);
+  assert.equal(contract.designVerified,true);
+  assert.equal(contract.designContextAvailable,true);
+  assert.equal(contract.strictDesignScore,91);
+  assert.equal(contract.designSource,'design/verified-design/2026-09-25/design-revised.json');
+  assert.equal(contract.gameplaySourceDeltaRequired,true);
+  assert.deepEqual(contract.approvedDesignElements.coreLoop,['read','act','advance']);
+  assert.equal(contract.approvedDesignElements.signatureSystems[0].name,'combat');
+});

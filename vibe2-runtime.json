@@ -1,5 +1,5 @@
 {
-  "version": 31,
+  "version": 32,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 31,
+      "runtime": 32,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -491,7 +491,6 @@
       "sameGameNonOverlappingPackagesParallel": true,
       "sourceRootWideLock": false,
       "laneLocalFailureIsolation": true,
-      "latestRevisedDesignRequiredForCoreFunAndProgression": true,
       "designContextSource": "design/<gameId>/<latest-date>/design-revised.json",
       "missingDesignAction": "AUTO_ENROLL_CANONICAL_GAME_SEED_AND_DESIGN_RUNTIME",
       "missingDesignPassiveWaitForbidden": true,
@@ -499,7 +498,15 @@
       "presentationUsabilityAndStabilityMayContinueDuringDesignCreation": true,
       "coreFunAndProgressionResumeAfterVerifiedDesign": true,
       "designSpecificGoalAndEvidenceRequired": true,
-      "requiredConnectedImprovementsMaximum": null
+      "requiredConnectedImprovementsMaximum": null,
+      "latestVerifiedDesignRequiredForCoreFunAndProgression": true,
+      "verifiedDesignBaselineGateState": "DESIGN_BASELINE_READY",
+      "verifiedDesignStrictPassMinimum": 80,
+      "verifiedDesignHardFailuresMax": 0,
+      "currentOwnerResetGamesRequirePostResetFreshDesign": true,
+      "runtimeDesignEvidenceAuthority": "company-runtime",
+      "runtimeDesignOverlayRequired": true,
+      "unverifiedDesignGameplayMutationForbidden": true
     },
     "workLockConflictPolicy": {
       "transientSchedulingState": true,
@@ -584,7 +591,9 @@
     "architectureMap": "company-learning/company-architecture-map.json",
     "systemAiQueue": ".vibe2/system-ai-queue.json",
     "missingDesignIntake": "tools/company-all-games-design-reset.mjs --auto-missing-design-intake",
-    "seedDesignRuntime": ".github/workflows/company-seed-design-runtime.yml"
+    "seedDesignRuntime": ".github/workflows/company-seed-design-runtime.yml",
+    "companyRuntimeDesignEvidence": "company-runtime:design",
+    "companyRuntimeSeedState": "company-runtime:game-seed-state.json"
   },
   "workers": {
     "exploration": {

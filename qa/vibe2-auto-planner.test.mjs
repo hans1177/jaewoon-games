@@ -58,6 +58,8 @@ function writeStudioDesign(root,gameId,overrides={}){
   };
   const file=path.join(dir,'design-revised.json');
   fs.writeFileSync(file,JSON.stringify({version:1,gameId,date:'2026-09-25',status:'DESIGN_BASELINE_CANDIDATE',content},null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'cycle-status.json'),JSON.stringify({gameId,status:'COMPLETE',baselineGate:{state:'DESIGN_BASELINE_READY',ready:true,blockers:[],checkedAt:'2026-09-25T00:00:00Z'}},null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'strict-design-review.json'),JSON.stringify({gameId,verdict:'PASS',totalScore:90,hardFailures:[],reviewedAt:'2026-09-25T00:00:00Z'},null,2),'utf8');
   return file;
 }
 const status={projects:[{gameId:'demo',ownerDecision:'PASS',target:'unity-android',projectPath:'unity-games/demo',progress:80}]};
@@ -2122,6 +2124,8 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   const core=tasks.find(row=>row.studioQualityEvolution.focusPillar==='CORE_FUN');
   const progression=tasks.find(row=>row.studioQualityEvolution.focusPillar==='PROGRESSION');
   assert.equal(core.studioQualityEvolution.designGrounded,true);
+  assert.equal(core.studioQualityEvolution.designVerified,true);
+  assert.equal(core.studioQualityEvolution.strictDesignScore,90);
   assert.equal(progression.studioQualityEvolution.designGrounded,true);
   assert.ok(core.studioQualityEvolution.designSource.endsWith('/design-revised.json'));
   assert.match(core.goal,/적 웨이브를 읽고 전투 행동을 선택/);
@@ -2161,4 +2165,26 @@ test('missing design suppresses generic CORE_FUN and PROGRESSION guesses while s
   const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
   assert.deepEqual(new Set(tasks.map(row=>row.studioQualityEvolution.focusPillar)),new Set(['PRESENTATION','USABILITY','STABILITY']));
   assert.ok(tasks.every(row=>row.studioQualityEvolution.designContextAvailable===false));
+});
+
+
+test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evolution',()=>{
+  const root=tempRepo();
+  const gameId='unverified-design-game';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'local combat = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'client','Visual.client.luau'),'local visual = {}\n','utf8');
+  const dir=path.join(root,'design',gameId,'2026-09-25');
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'design-revised.json'),JSON.stringify({
+    gameId,content:{identity:'구체적인 설계 후보 정체성',coreFun:'실제 전투 선택이 상태를 바꾸는 재미',coreLoop:['위협 읽기','전투 행동','결과로 다음 선택'],signatureSystems:[],progressionDirection:'성장'}
+  },null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'cycle-status.json'),JSON.stringify({gameId,baselineGate:{state:'DESIGN_BASELINE_READY',ready:true}},null,2),'utf8');
+  fs.writeFileSync(path.join(dir,'strict-design-review.json'),JSON.stringify({gameId,verdict:'REVISE',totalScore:91,hardFailures:['CORE_FUN_WEAK'],reviewedAt:'2026-09-25T00:00:00Z'},null,2),'utf8');
+  const project={gameId,name:'Unverified Design',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN'),null);
+  assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION'),null);
+  assert.ok(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION'));
 });

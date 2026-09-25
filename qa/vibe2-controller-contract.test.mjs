@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-controller-contract.test.mjs
-// 역할: Vibe2 24시간 컨트롤러의 엔진 분기, 계층형 병렬, source lock, fan-out/fan-in, incremental QA와 설계지능 안전 계약을 검증한다.
+// 역할: Vibe2 24시간 컨트롤러의 엔진 분기, 계층형 병렬, responsible-file conflict protection, fan-out/fan-in, incremental QA와 설계지능 안전 계약을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -121,8 +121,14 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
     '.github/workflows/company-evolution-qa.yml',
     '.github/workflows/vibe3-engine-contract.yml'
   ]);
-  assert.equal(runtime.version>=31,true);
-  assert.equal(runtime.documentation.machineStateVersions.runtime,31);
+  assert.equal(runtime.version>=32,true);
+  assert.equal(runtime.continuous.studioQualityLoop.latestVerifiedDesignRequiredForCoreFunAndProgression,true);
+  assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignBaselineGateState,'DESIGN_BASELINE_READY');
+  assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignStrictPassMinimum,80);
+  assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignHardFailuresMax,0);
+  assert.equal(runtime.continuous.studioQualityLoop.unverifiedDesignGameplayMutationForbidden,true);
+  assert.equal(runtime.continuous.studioQualityLoop.runtimeDesignEvidenceAuthority,'company-runtime');
+  assert.equal(runtime.documentation.machineStateVersions.runtime,32);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
   assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
@@ -971,4 +977,14 @@ test('every non-neuron reserve ingress syncs current company runtime before plan
   assert.match(block,/--company-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC=PASS/);
   assert.doesNotMatch(block,/if \[ "\$callback_kind" = 'fanin' \]; then/);
+});
+
+
+test('continuous planners overlay company-runtime design evidence before autonomous planning',()=>{
+  for(const currentWorkflow of [workflow,safetyNetWorkflow]){
+    assert.match(currentWorkflow,/git -C \/tmp\/vibe2-main fetch origin company-runtime --quiet/);
+    assert.match(currentWorkflow,/for runtime_design_path in design game-seed-state\.json/);
+    assert.match(currentWorkflow,/git -C \/tmp\/vibe2-main checkout origin\/company-runtime -- "\$runtime_design_path"/);
+    assert.match(currentWorkflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
+  }
 });

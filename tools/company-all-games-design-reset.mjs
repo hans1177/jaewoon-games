@@ -62,6 +62,43 @@ export function latestUsableDesign(root='.',gameId=''){
   }
   return null;
 }
+export function latestVerifiedDesign(root='.',gameId=''){
+  const id=clean(gameId),base=path.join(root,'design',id);
+  if(!id||!fs.existsSync(base))return null;
+  const seedState=readJson(path.join(root,SEED_FILE),null);
+  const reset=seedState?.ownerAllGamesDesignReset;
+  const resetIds=new Set((Array.isArray(reset?.gameIds)?reset.gameIds:[]).map(clean).filter(Boolean));
+  const resetAt=resetIds.has(id)?(Date.parse(reset?.updatedAt||'')||0):0;
+  const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+  const dates=fs.readdirSync(base,{withFileTypes:true})
+    .filter(x=>x.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(x.name))
+    .map(x=>x.name).sort().reverse();
+  for(const date of dates){
+    const revisedFile=path.join(base,date,'design-revised.json');
+    const cycleFile=path.join(base,date,'cycle-status.json');
+    const reviewFile=path.join(base,date,'strict-design-review.json');
+    const record=readJson(revisedFile,null),cycleStatus=readJson(cycleFile,null),strictReview=readJson(reviewFile,null);
+    if(!meaningfulDesign(record,id)||!cycleStatus||!strictReview)continue;
+    const gate=cycleStatus?.baselineGate;
+    const score=Number(strictReview?.totalScore);
+    const hardFailures=Array.isArray(strictReview?.hardFailures)?strictReview.hardFailures:[];
+    if(gate?.state!=='DESIGN_BASELINE_READY'||gate?.ready!==true)continue;
+    if(clean(strictReview?.verdict).toUpperCase()!=='PASS'||!Number.isFinite(score)||score<80||hardFailures.length)continue;
+    const evidenceAt=Date.parse(strictReview?.reviewedAt||strictReview?.generatedAt||strictReview?.updatedAt||strictReview?.createdAt||gate?.checkedAt||'')||0;
+    if(resetAt){
+      if(evidenceAt&&evidenceAt<resetAt)continue;
+      if(!evidenceAt&&date<=resetDate)continue;
+    }
+    return{
+      date,file:revisedFile,record,
+      cycleStatusFile:cycleFile,cycleStatus,
+      strictReviewFile:reviewFile,strictReview,
+      verified:true,strictScore:score,verifiedAt:evidenceAt?new Date(evidenceAt).toISOString():null,
+      postResetFresh:resetAt?true:null
+    };
+  }
+  return null;
+}
 function baseGameplaySketch(game,coreLoop,category){
   const description=clean(game?.description)||clean(game?.name)||clean(game?.id);
   return{

@@ -13,7 +13,7 @@ import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-context.mjs';
-import { latestUsableDesign } from './company-all-games-design-reset.mjs';
+import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -1518,7 +1518,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   if(!requestedFocus&&phase!=='REPAIR'&&!hasVerifiedPresentation)focusPillar='PRESENTATION';
   if(requestedFocus)focusPillar=requestedFocus;
 
-  const designContext=latestUsableDesign(repoRoot,project.gameId);
+  const designContext=latestVerifiedDesign(repoRoot,project.gameId);
   const gameplayDesignRequired=['CORE_FUN','PROGRESSION'].includes(focusPillar);
   if(gameplayDesignRequired&&!designContext)return null;
   const designContent=designContext?.record?.content&&typeof designContext.record.content==='object'
@@ -1638,7 +1638,9 @@ ${phaseInstruction}${visualInstruction}${designInstruction}
     explicitGap,
     designSource,
     designGrounded:gameplayDesignRequired,
+    designVerified:gameplayDesignRequired,
     designContextAvailable:Boolean(designContext),
+    strictDesignScore:designContext?.strictScore??null,
     approvedDesignElements:gameplayDesignRequired?designSummary:null,
     designIsImplementationCeiling:false,
     requiredConnectedImprovements:{min:3,max:null},
