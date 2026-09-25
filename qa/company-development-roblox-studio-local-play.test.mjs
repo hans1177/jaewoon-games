@@ -277,6 +277,29 @@ test('verified runtime error routes exact game to repair while infrastructure fa
   assert.deepEqual(pending.item.routingBlockers,['roblox-studio-mcp-infrastructure-pending']);
 });
 
+
+test('empty official Studio MCP tool inventory is persisted as an explicit one-time enablement prerequisite',()=>{
+  const infra=runtime();
+  infra.runtimeVerified=false;
+  infra.capabilities={officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false};
+  infra.actions=[];
+  infra.checkpoints=[];
+  infra.metrics.distinctFrameChange=false;
+  infra.errors=[{
+    type:'studio-mcp-infrastructure-or-runtime-error',
+    signature:'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:missing=list_roblox_studios:available=:protocol=2024-11-05:server=RobloxStudio'
+  }];
+  const result=createLocalStudioPlayEvidence({
+    item:item(),runtime:infra,expected,workflowRunId:44,studioStepSucceeded:false,
+    testedAt:'2026-09-25T09:10:00.000Z'
+  });
+  assert.equal(result.pass,false);
+  assert.equal(result.evidence.infrastructureFailure,true);
+  assert.equal(result.evidence.studioMcpServerEnablementRequired,true);
+  assert.equal(result.evidence.operatorPrerequisite,'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT');
+  assert.equal(result.evidence.learningReusable,false);
+});
+
 test('runtime workflow uses exact local artifact plus official Studio MCP and no Player or undocumented Studio CLI automation',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/studio-mcp-auto-play:/);
@@ -333,6 +356,19 @@ test('Windows workflow prefers Roblox documented mcp.bat whenever it exists',()=
   assert.ok(documented>batCheck);
   assert.ok(exeFallback>documented);
   assert.doesNotMatch(studioMcpBlock,/knownBrokenBatch|OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_GENERATED_BATCH/);
+});
+
+
+test('workflow falls back to the installed official StudioMCP binary only after a failed documented batch attempt',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioMcpBlock,/VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_TRANSPORT_FALLBACK=OFFICIAL_STUDIOMCP_EXE/);
+  assert.match(studioMcpBlock,/\$attempt -gt 1 -and \$env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/);
+  assert.match(studioMcpBlock,/available=:/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO/);
+  assert.doesNotMatch(studioMcpBlock,/ROBLOX_PLAYER_AUTOMATION=YES/);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
