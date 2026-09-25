@@ -1,5 +1,5 @@
 {
-  "version": 189,
+  "version": 190,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3220,6 +3220,14 @@
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true
+    },
+    "unityWebGrandfatherScope": {
+      "grandfatherGameIds": [
+        "cozy-island",
+        "daechung-rpg"
+      ],
+      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
+      "migrationMode": "NO_DEMOTION_OF_RELEASE_STATE_BUT_WEB_FLOOR_REQUIRED_BEFORE_NEW_UPPER_PLATFORM_PROGRESS"
     }
   },
   "releaseExposureLifecycle": {
