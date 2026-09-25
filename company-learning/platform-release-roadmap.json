@@ -1,5 +1,5 @@
 {
-  "version": 362,
+  "version": 363,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -19761,7 +19761,7 @@
     ]
   },
   "unityWebFirstStage": {
-    "version": 2,
+    "version": 3,
     "status": "OWNER_DIRECT_LOCKED",
     "authority": "OWNER_DIRECTIVE_2026-09-24_UNITY_WEB_START_FAILURE_REPAIR",
     "scope": "VALIDATION_SURFACE_ONLY",
@@ -20027,7 +20027,8 @@
     "nativeDevelopmentMayRunWithoutWebBuild": true,
     "nativeReleaseMayRunWithoutWebBuild": true,
     "homepageTestLinkEnabled": true,
-    "humanPolicySpecRequired": false
+    "humanPolicySpecRequired": false,
+    "postValidationNativeFanOutPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebNativeFanOut"
   },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
@@ -20087,7 +20088,7 @@
     "executionCapacityMayQueueWithoutChangingEligibility": true,
     "fortniteUefnAutomaticDevelopment": false,
     "fortniteUefnState": "OWNER_HOLD",
-    "version": 3,
+    "version": 4,
     "automaticPairing": {
       "ROBLOX": [
         "ROBLOX",
@@ -20701,7 +20702,26 @@
     "legacyStrictScoreAdmissionForbidden": true,
     "designOnlyIsTransientPreMinimumDesignState": true,
     "minimumDesignPromotionIsPerGame": true,
-    "strictDesignReviewRunsInParallel": true
+    "strictDesignReviewRunsInParallel": true,
+    "unityWebNativeFanOut": {
+      "enabled": true,
+      "role": "UPSTREAM_ORCHESTRATION_TRIGGER_NOT_CANONICAL_SOURCE",
+      "trigger": "VERIFIED_UNITY_WEB_VALIDATION",
+      "targets": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "exactGameOnly": true,
+      "requiresMinimumDesignContract": true,
+      "developmentAdmissionAuthority": false,
+      "releaseAuthority": false,
+      "nativeEvidenceStillRequired": true,
+      "orchestrationWorkflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "triggerSourceInput": "UNITY_WEB_VERIFIED",
+      "recursiveUnityWebRedispatchForbidden": true,
+      "missingOrFailedUnityWebDoesNotBlockNativeDevelopment": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-25"
+    }
   },
   "centralDocumentation": {
     "version": 3,
