@@ -77,6 +77,16 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.match(manage,/HOMEPAGE_STATUS_SYNC_TRIGGER=.*COMPANY_RUNTIME/);
   assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.onEverySuccessfulNonPrHomepageSync,true);
   assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.sourceIsAuthoritative,true);
+  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.mode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
+  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.rawRuntimeCatalogDirectCopyForbidden,true);
+  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.existingCatalogSourceMetadataMustBePreserved,true);
+  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.canonicalNormalizationRequiredBeforePublication,true);
+  assert.match(manage,/HOMEPAGE_RUNTIME_CATALOG_RECONCILE=PASS/);
+  assert.match(manage,/mergeRuntimeCatalogMissingGames/);
+  assert.match(manage,/syncProductionClasses/);
+  assert.match(manage,/applyHomepageRuntimeInfo/);
+  assert.match(manage,/validateNormalizedCatalog/);
+  assert.doesNotMatch(manage,/cp \/tmp\/homepage-runtime\/runtime-game-catalog\.json game-catalog\.json/);
 });
 
 test('homepage shows native, Unity Web, and server-catalog playable web actions',()=>{
@@ -404,6 +414,10 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(display.playableWebCompanionRequiresExistingCanonicalIndex,true);
   assert.equal(display.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
   assert.equal(display.mainCatalogMayNotOverrideFresherCompanyRuntime,true);
+  assert.equal(display.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
+  assert.equal(display.rawRuntimeCatalogDirectCopyForbidden,true);
+  assert.equal(display.actualGameFileSourceMetadataPreserved,true);
+  assert.equal(display.canonicalNormalizationRequiredBeforeHomepagePublication,true);
   assert.equal(surface.developmentConfirmedHomepageExposureRequiredWhenDeployable,true);
   assert.equal(surface.cardDirectLaunchFallbackAllowed,true);
   const directiveDisplay=directive.homepageOperations?.developmentProgressDisplay||{};
@@ -414,6 +428,10 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(directiveDisplay.playableWebCompanionButtonEnabled,true);
   assert.equal(directiveDisplay.playableWebCompanionButtonLabel,'웹 플레이');
   assert.equal(directiveDisplay.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
+  assert.equal(directiveDisplay.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
+  assert.equal(directiveDisplay.rawRuntimeCatalogDirectCopyForbidden,true);
+  assert.equal(directiveDisplay.actualGameFileSourceMetadataPreserved,true);
+  assert.equal(directiveDisplay.canonicalNormalizationRequiredBeforeHomepagePublication,true);
 });
 test('platform availability requires explicit internal release evidence from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
