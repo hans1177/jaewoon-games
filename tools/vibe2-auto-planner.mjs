@@ -1527,6 +1527,43 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 }
 
 
+
+function buildUpRuntimeSummary(directive,{status='DIRECTIVE_BOUND',bindingState='ATTACHED_CURRENT',freshness='CURRENT'}={}){
+  if(!directive?.directiveId)return{};
+  const classification=clean(directive?.effectivenessMeasurement?.classification).toUpperCase()||'UNKNOWN_RUNTIME_EFFECT';
+  const priorGoal=clean(directive?.previousVersionDelta?.previousGoal);
+  return{
+    buildUpDirectiveId:directive.directiveId,
+    buildUpGeneration:Number(directive.generation||0),
+    buildUpGoal:directive.thisLoopPrimaryGoal,
+    buildUpStatus:status,
+    previousGoal:priorGoal||null,
+    lastAchievedGoal:classification==='EFFECT_CONFIRMED'&&priorGoal?priorGoal:null,
+    buildUpSourceTree:directive.sourceTreeFingerprint,
+    developmentDepth:Number(directive.developmentDepth||0),
+    escalationStage:clean(directive.escalationStage)||null,
+    buildUpBindingState:bindingState,
+    buildUpFreshnessDecision:freshness,
+    expectedPlayerEffect:clean(directive.expectedPlayerEffect)||null,
+    effectivenessClassification:classification,
+    nextVibeAction:clean(directive?.nextActionDecision?.action)||null,
+    nextVibeActionReason:clean(directive?.nextActionDecision?.reason)||null,
+    nextEscalationRequired:true
+  };
+}
+function goalWithBuildUpDirective(goal,directive){
+  const raw=String(goal||'');
+  const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]';
+  const at=raw.indexOf(marker);
+  const base=(at>=0?raw.slice(0,at):raw).trimEnd();
+  return base+'\n\n'+directivePrompt(directive);
+}
+function sourceObservationForProject(project,repoRoot){
+  const sourceRoots=[project?.projectPath,`roblox-games/${project?.gameId||''}`,`unity-games/${project?.gameId||''}`,`web-games/${project?.gameId||''}`]
+    .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
+  return{sourceRoots,sourceObservation:inspectGameSources({repoRoot,sourceRoots})};
+}
+
 function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
   if(!taskInput||!project?.gameId)return taskInput;
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
@@ -1557,13 +1594,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     const directive=activeDirectiveTask.buildUpDirective;
     return{
       ...taskInput,
-      goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
+      goal:goalWithBuildUpDirective(taskInput.goal,directive),
       buildUpDirective:directive,
-      buildUpDirectiveId:directive.directiveId,
-      buildUpGeneration:directive.generation,
-      buildUpGoal:directive.thisLoopPrimaryGoal,
-      buildUpSourceTree:directive.sourceTreeFingerprint,
-      nextEscalationRequired:true,
+      ...buildUpRuntimeSummary(directive,{status:'DIRECTIVE_BOUND_ACTIVE_GENERATION',bindingState:'REUSED_ACTIVE_GENERATION',freshness:'CURRENT'}),
       evidence:[...new Set([
         ...(taskInput.evidence||[]),
         'game-specific-build-up-directive:v1',
@@ -1603,9 +1636,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     independentQaPassed:project?.queueRuntimeIndependentQaPassed===true,
     regressionPassed:project?.queueRuntimeRegressionPassed===true
   };
-  const sourceRoots=[project.projectPath,`roblox-games/${project.gameId}`,`unity-games/${project.gameId}`,`web-games/${project.gameId}`]
-    .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
-  const sourceObservation=inspectGameSources({repoRoot,sourceRoots});
+  const {sourceRoots,sourceObservation}=sourceObservationForProject(project,repoRoot);
   const directive=buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
@@ -1622,13 +1653,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   });
   return{
     ...taskInput,
-    goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
+    goal:goalWithBuildUpDirective(taskInput.goal,directive),
     buildUpDirective:directive,
-    buildUpDirectiveId:directive.directiveId,
-    buildUpGeneration:directive.generation,
-    buildUpGoal:directive.thisLoopPrimaryGoal,
-    buildUpSourceTree:directive.sourceTreeFingerprint,
-    nextEscalationRequired:true,
+    ...buildUpRuntimeSummary(directive,{status:'DIRECTIVE_BOUND_CURRENT',bindingState:'ATTACHED_CURRENT',freshness:'CURRENT'}),
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v1',
@@ -1827,19 +1854,11 @@ ${phaseInstruction}${visualInstruction}${designInstruction}
 }
 function bindSharedBuildUpDirective(taskInput,directive){
   if(!taskInput||!directive?.directiveId)return taskInput;
-  const rawGoal=String(taskInput.goal||'');
-  const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]';
-  const at=rawGoal.indexOf(marker);
-  const baseGoal=(at>=0?rawGoal.slice(0,at):rawGoal).trimEnd();
   return{
     ...taskInput,
-    goal:baseGoal+'\n\n'+directivePrompt(directive),
+    goal:goalWithBuildUpDirective(taskInput.goal,directive),
     buildUpDirective:directive,
-    buildUpDirectiveId:directive.directiveId,
-    buildUpGeneration:directive.generation,
-    buildUpGoal:directive.thisLoopPrimaryGoal,
-    buildUpSourceTree:directive.sourceTreeFingerprint,
-    nextEscalationRequired:true,
+    ...buildUpRuntimeSummary(directive,{status:'DIRECTIVE_BOUND_SHARED_GENERATION',bindingState:'SHARED_GENERATION',freshness:'CURRENT'}),
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
       'build-up-shared-generation-exact-object:YES',
@@ -1864,22 +1883,65 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   };
   const tasks=[...(queue?.tasks||[])];
   let changed=0;
+  const bindings=[];
   for(let index=0;index<tasks.length;index+=1){
     const item=tasks[index];
     if(clean(item?.status).toLowerCase()!=='queued'||!isDevelopmentImplementation(item)||!supportedTarget(item))continue;
-    if(clean(item?.buildUpDirective?.directiveId)||clean(item?.buildUpDirectiveId))continue;
     const project=projectByGameId.get(clean(item?.gameId));
     if(!project)continue;
-    const candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,{...queue,tasks});
-    if(!clean(candidate?.buildUpDirective?.directiveId))continue;
+    const existingId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
+    const {sourceObservation}=sourceObservationForProject(project,repoRoot);
+    const existingSource=clean(item?.buildUpDirective?.sourceTreeFingerprint||item?.buildUpSourceTree);
+    const currentSource=clean(sourceObservation?.sourceTreeFingerprint);
+    if(existingId&&existingSource&&existingSource===currentSource){
+      const directive=item.buildUpDirective;
+      if(directive){
+        const rebound=bindSharedBuildUpDirective(item,directive);
+        tasks[index]={
+          ...rebound,
+          ...buildUpRuntimeSummary(directive,{status:'DIRECTIVE_BOUND_CURRENT',bindingState:'PRE_RESERVE_RECONCILED',freshness:'CURRENT'}),
+          evidence:[...new Set([...(rebound.evidence||[]),'build-up-directive-backfill:queued-existing-work','PRE_RESERVE_DIRECTIVE_BINDING_STATE:BOUND_CURRENT','DIRECTIVE_FRESHNESS_DECISION:CURRENT'])]
+        };
+        if(clean(item.buildUpBindingState)!=='PRE_RESERVE_RECONCILED'||clean(item.buildUpFreshnessDecision)!=='CURRENT')changed+=1;
+        bindings.push({taskId:item.id,gameId:item.gameId,directiveId:directive.directiveId,state:'BOUND_CURRENT',freshness:'CURRENT'});
+      }
+      continue;
+    }
+    if(existingId&&existingSource&&existingSource!==currentSource){
+      const activeSibling=tasks.some(other=>clean(other?.buildUpDirectiveId||other?.buildUpDirective?.directiveId)===existingId
+        &&clean(other?.status).toLowerCase()==='running'
+        &&Boolean(clean(other?.reservationId)||clean(other?.reservationRunId)));
+      if(activeSibling){
+        tasks[index]={
+          ...item,
+          buildUpBindingState:'ACTIVE_GENERATION_PRESERVED',
+          buildUpFreshnessDecision:'STALE_SOURCE_ACTIVE_RESERVATION_PRESERVED',
+          evidence:[...new Set([...(item.evidence||[]),'PRE_RESERVE_DIRECTIVE_BINDING_STATE:ACTIVE_GENERATION_PRESERVED','DIRECTIVE_FRESHNESS_DECISION:STALE_SOURCE_ACTIVE_RESERVATION_PRESERVED'])]
+        };
+        changed+=1;
+        bindings.push({taskId:item.id,gameId:item.gameId,directiveId:existingId,state:'ACTIVE_GENERATION_PRESERVED',freshness:'STALE_SOURCE_ACTIVE_RESERVATION_PRESERVED'});
+        continue;
+      }
+    }
+    const historyQueue=existingId
+      ?{...queue,tasks:tasks.map(other=>clean(other?.buildUpDirectiveId||other?.buildUpDirective?.directiveId)===existingId?{...other,status:'cancelled'}:other)}
+      :{...queue,tasks};
+    const candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,historyQueue);
+    const directive=candidate?.buildUpDirective;
+    if(!clean(directive?.directiveId))continue;
+    const freshness=existingId?'STALE_REBOUND_TO_CURRENT_SOURCE':'ATTACHED_CURRENT';
+    const rebound=bindSharedBuildUpDirective(item,directive);
     tasks[index]={
-      ...candidate,
-      evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]
+      ...rebound,
+      ...buildUpRuntimeSummary(directive,{status:'DIRECTIVE_BOUND_CURRENT',bindingState:existingId?'REBOUND_STALE':'ATTACHED_CURRENT',freshness}),
+      evidence:[...new Set([...(rebound.evidence||[]),'build-up-directive-backfill:queued-existing-work','PRE_RESERVE_DIRECTIVE_BINDING_STATE:'+(existingId?'REBOUND_STALE':'ATTACHED_CURRENT'),'DIRECTIVE_FRESHNESS_DECISION:'+freshness])]
     };
     changed+=1;
+    bindings.push({taskId:item.id,gameId:item.gameId,directiveId:directive.directiveId,state:existingId?'REBOUND_STALE':'ATTACHED_CURRENT',freshness});
   }
   return{
     changed,
+    bindings,
     queue:changed?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue
   };
 }
