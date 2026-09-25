@@ -2219,6 +2219,11 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   assert.equal(tasks.length,5);
   assert.deepEqual(new Set(tasks.map(row=>row.studioQualityEvolution.focusPillar)),new Set(['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']));
   assert.ok(tasks.every(row=>row.responsibleFiles.length>0&&row.responsibleFiles.length<=2));
+  assert.equal(new Set(tasks.map(row=>row.buildUpDirectiveId)).size,1);
+  assert.equal(new Set(tasks.map(row=>row.buildUpDirective?.directiveFingerprint)).size,1);
+  assert.equal(new Set(tasks.map(row=>JSON.stringify(row.buildUpDirective))).size,1);
+  assert.ok(tasks.every(row=>(row.evidence||[]).includes('build-up-shared-generation-exact-object:YES')));
+
   const core=tasks.find(row=>row.studioQualityEvolution.focusPillar==='CORE_FUN');
   const progression=tasks.find(row=>row.studioQualityEvolution.focusPillar==='PROGRESSION');
   assert.equal(core.studioQualityEvolution.designGrounded,true);
@@ -2230,6 +2235,41 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   assert.match(progression.goal,/웨이브 보상으로 다음 방어 선택과 해금을 확장/);
   assert.ok(core.evidence.some(value=>value.startsWith('studio-quality-design-source:')));
   assert.equal(core.studioQualityEvolution.requiredConnectedImprovements.max,null);
+});
+
+
+test('BUILD_UP depth advances only when the entire shared directive generation verifies',()=>{
+  const root=tempRepo();
+  const gameId='shared-directive-outcome';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.mkdirSync(path.join(source,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(source,'client','Visual.client.luau'),'local camera = workspace.CurrentCamera\n','utf8');
+  fs.writeFileSync(path.join(source,'client','Input.client.luau'),'local input = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'local combat = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Progression.server.luau'),'local progression = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'shared','Save.luau'),'local save = {}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 역할을 읽고 전투 선택을 바꾸는 재미',progressionDirection:'보상으로 다음 전투 선택과 해금을 확장한다.'});
+  const project={gameId,name:'Shared Directive Outcome',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const first=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
+  assert.equal(first.length,5);
+  assert.equal(new Set(first.map(row=>row.buildUpDirectiveId)).size,1);
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'local combat = { improved = true }\n','utf8');
+
+  const mixed=first.map((row,index)=>({...row,status:index===0?'failed':'verified'}));
+  const afterMixed=findStudioContinuousImprovementTasks(project,root,{tasks:mixed});
+  assert.equal(afterMixed.length,5);
+  assert.equal(afterMixed[0].buildUpDirective.developmentDepth,1);
+  assert.equal(afterMixed[0].buildUpDirective.escalationMode,'DEEPER_CAUSAL_REPAIR');
+  assert.equal(new Set(afterMixed.map(row=>row.buildUpDirectiveId)).size,1);
+
+  const verified=first.map(row=>({...row,status:'verified'}));
+  const afterVerified=findStudioContinuousImprovementTasks(project,root,{tasks:verified});
+  assert.equal(afterVerified.length,5);
+  assert.equal(afterVerified[0].buildUpDirective.developmentDepth,2);
+  assert.equal(afterVerified[0].buildUpDirective.escalationMode,'ESCALATE_AFTER_VERIFIED_GAME_SOURCE_DELTA');
+  assert.equal(new Set(afterVerified.map(row=>JSON.stringify(row.buildUpDirective))).size,1);
 });
 
 test('studio source discovery has no artificial 30-file ceiling',()=>{

@@ -851,6 +851,13 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(p.execution.nonblockingChecksUseSpareOrSeparateCapacity,true);
   assert.equal(p.execution.taskMicroFanInImmediateRefillPreserved,true);
   assert.equal(p.execution.cohortFanInLimitedToRelevantIntegrationRegressionAndRelease,true);
+  assert.equal(p.principles.optimizationLaneMustRemainLiveDuringDevelopment,true);
+  assert.equal(p.principles.unrelatedSecurityQaOrReviewMustNotSerializeBuildUp,true);
+  assert.equal(p.developmentLoopOptimization.active,true);
+  assert.equal(p.developmentLoopOptimization.unrelatedSecurityQaReviewAdminAction,'SKIP_OR_RUN_NONBLOCKING_WITH_REUSED_VALID_EVIDENCE');
+  assert.equal(p.developmentLoopOptimization.relevantSecurityBoundaryStillFailClosed,true);
+  assert.equal(p.developmentLoopOptimization.optimizationLaneMustRemainEligibleDuringDevelopment,true);
+  assert.equal(p.developmentLoopOptimization.optimizationMayRunParallelWhenResponsibleFilesDoNotConflict,true);
   assert.ok(p.hardGateOnlyWhen.includes('PUBLIC_RELEASE_OR_EXTERNAL_PROMOTION'));
   assert.ok(p.forbiddenInterpretations.includes('SKIP_RELEVANT_SECURITY_FINDING'));
   assert.ok(p.forbiddenInterpretations.includes('REUSE_INVALIDATED_EVIDENCE'));
@@ -866,6 +873,9 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(projection.impactScopedWorkflowTriggersImplemented,true);
   assert.equal(projection.unrelatedWorkflowStartupForbidden,true);
   assert.equal(projection.scopeExpansionRequiresRelevantEvidence,true);
+  assert.equal(projection.unrelatedSecurityQaReviewMaySerializeBuildUp,false);
+  assert.equal(projection.optimizationLaneRemainsLive,true);
+  assert.equal(projection.optimizationParallelWhenNoResponsibleFileConflict,true);
 
   const impact=p.implementation.impactScopedWorkflowTriggers;
   assert.equal(impact.enabled,true);
@@ -877,5 +887,73 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
     const source=readText(workflowFile);
     assert.match(source,/push:\n\s+branches: \[main\]\n\s+paths:/,workflowFile);
     assert.match(source,/pull_request:\n\s+branches: \[main\]\n\s+paths:/,workflowFile);
+  }
+});
+
+test('game-specific BUILD_UP directive is one autonomous common goal with exhaustive per-loop coverage',()=>{
+  const c=roadmap.continuousGameplaySystemEvolutionContract?.gameSpecificBuildUpDirective;
+  assert.equal(c.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(c.placement,'BETWEEN_COMPANY_EVOLUTION_BUILD_UP_DECISION_AND_PLATFORM_IMPLEMENTATION');
+  assert.equal(c.runtimeBranch,'vibe2-unreal-core');
+  assert.equal(c.canonicalArtifact,'.vibe2/build-up-directives/<gameId>/current.json');
+  assert.equal(c.commonGoalAcrossPlatforms,true);
+  assert.equal(c.creationAuthority,'VIBE_DIRECTOR_ONLY');
+  assert.equal(c.platformExecutorsConsumerOnly,true);
+  assert.equal(c.platformLocalDirectiveGenerationForbidden,true);
+  assert.deepEqual(c.supportedExecutionSurfaces,['UNITY_WEB','ROBLOX','UNITY_APP']);
+  assert.equal(c.analysisCoverage.allRelevantDomainsMustBeConsideredEveryGeneration,true);
+  assert.equal(c.analysisCoverage.silentDomainOmissionForbidden,true);
+  assert.equal(c.directiveDetail.everyApplicableDomainGetsOwnDirective,true);
+  assert.ok(c.directiveDetail.requiredSections.includes('ALL_DOMAIN_IMPLEMENTATION_DIRECTIVES'));
+  assert.equal(c.loopEscalation.developmentDepthRequired,true);
+  assert.equal(c.loopEscalation.verifiedLoopIncrementsDepth,true);
+  assert.equal(c.loopEscalation.failedLoopKeepsDepthAndRequiresDeeperCausalRepair,true);
+  assert.equal(c.loopEscalation.verifiedStatusAloneCannotIncreaseDepth,true);
+  assert.equal(c.loopEscalation.realGameSourceTreeDeltaRequiredForDepthIncrease,true);
+  assert.equal(c.loopEscalation.generationFanInRequiredBeforeNextDirective,true);
+  assert.equal(c.loopEscalation.anyActiveTaskKeepsSameDirectiveGeneration,true);
+  assert.equal(c.loopEscalation.anyFailedTaskKeepsDepthAndTriggersCausalRepair,true);
+  assert.equal(c.loopEscalation.allRequiredGenerationTasksMustBeVerifiedBeforeEscalation,true);
+  assert.equal(c.loopEscalation.sharedDirectiveGenerationAllRequiredTasksMustVerifyBeforeDepthIncrease,true);
+  assert.equal(c.loopEscalation.anyFailedSiblingKeepsCurrentDepth,true);
+  assert.equal(c.gameSpecificity.oneGenericCrossGameDirectiveForbidden,true);
+  assert.equal(c.gameSpecificity.renameGameAndStillFitsHeuristic,'REGENERATE_AS_TOO_GENERIC');
+  assert.equal(c.visualBuildUpDirective.required,true);
+  assert.equal(c.visualBuildUpDirective.actualRenderedChangeRequired,true);
+  assert.equal(c.visualBuildUpDirective.markerConfigAtomOnlyNeverCounts,true);
+  assert.equal(c.loopEscalation.automatic,true);
+  assert.equal(c.loopEscalation.everyVerifiedCycleCreatesNextDirective,true);
+  assert.equal(c.loopEscalation.previousGoalMayNotRepeatWithoutNewEvidence,true);
+  assert.equal(c.verification.workflowQaHomepageOnlyDeltaDoesNotCountAsGameEvolution,true);
+  assert.equal(c.verification.foundationOnlyRepairDoesNotCountAsBuildUpUnlessPrimaryGoalIsVerifiedFoundationDefect,true);
+  assert.equal(c.platformHandoff.platformMayNotInventDifferentCoreGameMeaning,true);
+  assert.equal(c.platformHandoff.missingDirectiveMayNotInventPlatformSpecificGoal,true);
+  const arch=architecture.continuousGameplaySystemEvolutionTopology?.gameSpecificBuildUpDirective;
+  assert.equal(arch.generator,'tools/company-build-up-directive.mjs');
+  assert.equal(arch.runtimeBranch,'vibe2-unreal-core');
+  assert.equal(arch.everyVerifiedLoopRegeneratesDirective,true);
+  assert.equal(arch.perApplicableDomainDirectiveRequired,true);
+  assert.equal(arch.verifiedLoopDevelopmentDepthEscalation,true);
+  assert.equal(arch.creationAuthority,'VIBE_DIRECTOR_ONLY');
+  assert.equal(arch.platformExecutorsConsumerOnly,true);
+  assert.equal(arch.platformLocalDirectiveGenerationForbidden,true);
+  assert.equal(arch.verifiedStatusWithoutGameSourceDeltaCannotEscalate,true);
+  assert.equal(arch.realGameSourceTreeDeltaRequiredForDepthIncrease,true);
+  assert.equal(arch.generationFanInBeforeEscalation,true);
+  assert.equal(arch.activeSiblingTaskPreventsGenerationAdvance,true);
+  assert.equal(arch.failedSiblingTaskPreventsGenerationAdvance,true);
+  assert.equal(arch.sharedDirectiveGenerationAllRequiredTasksMustVerifyBeforeDepthIncrease,true);
+  assert.equal(arch.anyFailedSiblingKeepsCurrentDepth,true);
+  assert.equal(arch.sharedSiblingDirectiveObjectExact,true);
+  assert.equal(arch.genericCrossGameDirectiveForbidden,true);
+  assert.equal(arch.shadowPipelineCreated,false);
+
+  const robloxBootstrap=readText('tools/company-development-roblox-bootstrap.mjs');
+  const unityBootstrap=readText('tools/company-development-unity-bootstrap.mjs');
+  const unityWebBootstrap=readText('tools/company-unity-web-floor-bootstrap.mjs');
+  for(const source of [robloxBootstrap,unityBootstrap,unityWebBootstrap]){
+    assert.doesNotMatch(source,/import\s+\{?\s*buildGameSpecificBuildUpDirective/);
+    assert.doesNotMatch(source,/buildGameSpecificBuildUpDirective\s*\(/);
+    assert.match(source,/buildUpDirectiveCompletionClaim:false/);
   }
 });

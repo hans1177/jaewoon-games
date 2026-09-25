@@ -541,6 +541,7 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
     'You are the Vibe2 game source worker. Return one additive Web expansion only.',
     line('Engine:'),
     line('Goal:'),
+    buildUpDirectiveBlockFromPrompt(promptText),
     line('Allowed edit paths:'),
     line('Full Web generation target after automatic expansion:')||line('Full Web generation target:'),
     'Preserve the exact responsible path and existing playable systems. Do not widen scope.'
@@ -755,6 +756,50 @@ function studioQualityWorkerGuidance(order = {}) {
   ].filter(Boolean).join('\n');
 }
 
+function gameSpecificBuildUpDirectiveGuidance(order = {}) {
+  const d=order?.selectedTask?.buildUpDirective||order?.buildUpDirective||null;
+  if(!d||typeof d!=='object'||!clean(d.directiveId))return'';
+  const target=clean(order?.target).toUpperCase();
+  const platformKey=target==='ROBLOX'?'ROBLOX':target==='UNITY'?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_APP'):target==='WEB'?'UNITY_WEB':'';
+  const visual=Object.entries(d?.visualBuildUpDirective?.domains||{})
+    .map(([domain,instruction])=>`${domain}=${clean(instruction)}`)
+    .filter(Boolean);
+  const priorityDomains=(d?.allDomainImplementationDirectives||[])
+    .filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(clean(row?.priority).toUpperCase()))
+    .slice(0,14)
+    .map(row=>`${clean(row.domain)}[${clean(row.priority)}]=${clean(row.directive)}`)
+    .filter(Boolean);
+  return[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
+    `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
+    `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
+    `whyNow=${clean(d.primaryGoalReason)}`,
+    `gameplay=${(d.gameplayImplementationDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
+    `priorityDomains=${priorityDomains.join(' | ')}`,
+    `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
+    `visual=${visual.join(' | ')}`,
+    `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
+    platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
+    `preserve=${(d.preserveConstraints||[]).map(clean).filter(Boolean).join(' | ')}`,
+    `acceptance=${(d.acceptanceEvidence||[]).map(clean).filter(Boolean).join(' | ')}`,
+    `nextEscalation=${(d.nextEscalationCandidates||[]).map(clean).filter(Boolean).join(' | ')}`,
+    'Do not replace this game-specific directive with a generic genre task. Implement only the parts owned by Allowed edit paths in this worker; other non-overlapping directive responsibilities remain for sibling workers.',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].filter(Boolean).join('\n');
+}
+function buildUpDirectiveBlockFromPrompt(prompt=''){
+  const raw=String(prompt??'');
+  const begin='[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]';
+  const end='[GAME SPECIFIC BUILD UP DIRECTIVE END]';
+  const start=raw.indexOf(begin);
+  if(start<0)return'';
+  const finish=raw.indexOf(end,start+begin.length);
+  if(finish<0)return'';
+  return raw.slice(start,finish+end.length);
+}
+
+
 function gatedRetryStrategyGuidance(order = {}) {
   const evidence=(order?.selectedTask?.evidence||[]).map(clean).filter(Boolean);
   const marker=[...evidence].reverse().find(value=>value.startsWith('neural-gated-retry-strategy:'));
@@ -816,6 +861,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 studioQualityWorkerGuidance(order),
+gameSpecificBuildUpDirectiveGuidance(order),
 gatedRetryStrategyGuidance(order),
 weatherWorkerGuidance(order),
 clean(order.target).toLowerCase()==='system'?systemArchitectureGuidance(order.selectedTask||{}):'',
@@ -1136,6 +1182,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
     prompt:[
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
+      buildUpDirectiveBlockFromPrompt(raw),
       reason?'Previous failure: '+reason:'',
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
@@ -1208,6 +1255,7 @@ export function buildSystemAtomicPairCompletionPrompt(prompt,{error=null,respons
     prompt:[
       'You are the Vibe2 system atomic-pair completion worker. Return JSON only.',
       goal,
+      buildUpDirectiveBlockFromPrompt(raw),
       reason?'Previous failure: '+reason:'',
       roleRule,
       'The worker already preserves the valid counterpart edit from the rejected candidate. Do not regenerate or describe that counterpart.',
@@ -1316,6 +1364,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON.',
       rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
       rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+      buildUpDirectiveBlockFromPrompt(rawPrompt),
       allowedLine,
       fullWebTargetLine,
       'Preserve the exact responsible path. Do not touch homepage/company files or widen writable scope.',
@@ -1379,6 +1428,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
           rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+          buildUpDirectiveBlockFromPrompt(rawPrompt),
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
@@ -1412,6 +1462,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const correction=allowFullRewrite
     ? [
         'RECOVERY RETRY: the previous generation did not finish or violated the full-file envelope.',
+        buildUpDirectiveBlockFromPrompt(rawPrompt),
         `Previous failure: ${reason}`,
         'Return a complete file from start to finish. Keep any valid gameplay idea from the prior attempt, but expand it into a fully playable HTML instead of repeating a tiny shell. Use implementation code only: no explanatory prose, no markdown, and no comments outside the game file.',
         fullWebTargetLine,
@@ -1425,6 +1476,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       ].join('\n')
     : [
         robloxGraphicsInitial?'INITIAL ROBLOX FULL GRAPHICS PACKAGE: generate the complete connected visual package directly from the writable source; this is the first attempt, not a recovery retry.':studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        buildUpDirectiveBlockFromPrompt(rawPrompt),
         `Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',

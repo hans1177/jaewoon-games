@@ -10,6 +10,7 @@ const gameId=String(args['game-id']||'').trim();
 const gameName=String(args['game-name']||gameId).trim();
 const baselinePath=String(args.baseline||'').trim();
 const output=String(args.output||`unity-games/${gameId}`).trim().replaceAll('\\','/');
+const buildUpDirectivePath=String(args['build-up-directive']||'').trim();
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`invalid game id: ${gameId}`);
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error(`design baseline missing: ${baselinePath}`);
 if(!/^unity-games\/[A-Za-z0-9._-]+$/.test(output)||output.includes('..'))throw new Error(`invalid Unity output: ${output}`);
@@ -19,6 +20,9 @@ const UNITY_EDITOR_REVISION='f7f8ed4d1e24';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const baseline=readJson(baselinePath);
 const design=baseline.content||baseline;
+const buildUpDirective=buildUpDirectivePath&&fs.existsSync(buildUpDirectivePath)?readJson(buildUpDirectivePath):null;
+const buildUpDirectiveConsumed=Boolean(String(buildUpDirective?.directiveId||'').trim());
+if(buildUpDirectiveConsumed&&String(buildUpDirective?.gameId||'').trim()!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
 const unityPlatformProfile=design?.platformProfiles?.UNITY;
 if(!unityPlatformProfile||Array.isArray(unityPlatformProfile)||typeof unityPlatformProfile!=='object')throw new Error('UNITY_PLATFORM_PROFILE_REQUIRED');
 if(String(unityPlatformProfile.platform||'').trim().toUpperCase()!=='UNITY')throw new Error('UNITY_PLATFORM_PROFILE_TARGET_MISMATCH');
@@ -315,12 +319,19 @@ public static class SeedAndroidBuild
 
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
-fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity app native development baseline\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- Unity app profile: \`design-revised.json#content.platformProfiles.UNITY\`\n- build method: \`SeedAndroidBuild.Build\`\n- Android graphics profile: \`OpenGLES3 with ES 3.0 minimum compatibility\`\n- purpose: \`TARGET_PLATFORM_NATIVE_APP_DEVELOPMENT\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Unity Web is not used. The project is generated from the common game design plus the Unity app platform profile.\nIt remains DEVELOPMENT_CONFIRMED until platform runtime, independent QA, regression, and release evidence pass.\n`);
+fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity app native development baseline\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`
+- BUILD_UP directive: ${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'} (generation ${buildUpDirectiveConsumed?buildUpDirective.generation:0})\n- Unity app profile: \`design-revised.json#content.platformProfiles.UNITY\`\n- build method: \`SeedAndroidBuild.Build\`\n- Android graphics profile: \`OpenGLES3 with ES 3.0 minimum compatibility\`\n- purpose: \`TARGET_PLATFORM_NATIVE_APP_DEVELOPMENT\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Unity Web is not used. The project is generated from the common game design plus the Unity app platform profile.\nIt remains DEVELOPMENT_CONFIRMED until platform runtime, independent QA, regression, and release evidence pass.\n`);
 fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   version:3,gameId,gameName,category,identity,coreLoop,
   selectedPlatform:'UNITY',
   unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
   generatorFingerprint,
+  buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,
+  buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
+  buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,
+  buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
+  buildUpDirectiveConsumed,
+  buildUpDirectiveCompletionClaim:false,
   platformDesignProfile:unityPlatformProfile,
   androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
   designBaseline:baselinePath,productionClass:'DEVELOPMENT_CONFIRMED',
@@ -331,6 +342,8 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
 console.log(`UNITY_TECH_PROJECT=${output}`);
 console.log(`UNITY_EDITOR_VERSION=${UNITY_EDITOR_VERSION}`);
 console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
+console.log(`UNITY_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
+console.log('UNITY_BUILD_UP_COMPLETION_CLAIM=NO');
 console.log(`UNITY_TECH_GENERATOR_FINGERPRINT=${generatorFingerprint}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');

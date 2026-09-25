@@ -187,8 +187,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Fetch only current company runtime state
-        run: git fetch --no-tags --depth=1 origin company-runtime
+      - name: Fetch current company runtime and Vibe build-up state
+        run: |
+          git fetch --no-tags --depth=1 origin company-runtime
+          git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core"
 
       - name: Materialize locked design and runtime catalog
         id: context
@@ -206,11 +208,20 @@ jobs:
           git show "origin/company-runtime:$DESIGN_SOURCE" > "$DESIGN_SOURCE"
           git show origin/company-runtime:game-catalog.json > game-catalog.json
           node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const p=d?.content?.platformProfiles?.UNITY;if(!p||p.platform!=='UNITY')process.exit(2);for(const k of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'])if(String(p[k]||'').trim().length<8)process.exit(3);console.log('UNITY_PLATFORM_PROFILE_INPUT=READY')" "$DESIGN_SOURCE"
+          directive="/tmp/build-up-directive-$GAME_ID.json"
+          if git cat-file -e "origin/vibe2-unreal-core:.vibe2/build-up-directives/$GAME_ID/current.json" 2>/dev/null; then
+            git show "origin/vibe2-unreal-core:.vibe2/build-up-directives/$GAME_ID/current.json" > "$directive"
+            echo "UNITY_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:$GAME_ID"
+          else
+            directive=''
+            echo "UNITY_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:$GAME_ID"
+          fi
           {
             echo "base=$base"
             echo "date=$date"
             echo "project=$project"
             echo "request=$request"
+            echo "directive=$directive"
           } >> "$GITHUB_OUTPUT"
 
       - name: Change detection and exact-source reuse
@@ -224,6 +235,7 @@ jobs:
           PROJECT: ${{ steps.context.outputs.project }}
           REQUEST: ${{ steps.context.outputs.request }}
           DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
+          BUILD_UP_DIRECTIVE: ${{ steps.context.outputs.directive }}
         shell: bash
         run: |
           set -euo pipefail
@@ -317,11 +329,14 @@ jobs:
             echo "UNITY_SOURCE_REUSE_INVALIDATED=GENERATOR_FINGERPRINT_MISMATCH old=${source_generator:-MISSING} current=$current_generator"
           fi
 
+          directive_args=()
+          if [[ -n "$BUILD_UP_DIRECTIVE" && -f "$BUILD_UP_DIRECTIVE" ]]; then directive_args+=(--build-up-directive="$BUILD_UP_DIRECTIVE"); fi
           node tools/company-development-unity-bootstrap.mjs \
             --game-id="$GAME_ID" \
             --game-name="$GAME_NAME" \
             --baseline="$DESIGN_SOURCE" \
-            --output="$PROJECT"
+            --output="$PROJECT" \
+            "${directive_args[@]}"
           bind_catalog
           branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
           git config user.name 'jaewoon-development-unity-runtime'

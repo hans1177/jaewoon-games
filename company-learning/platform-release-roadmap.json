@@ -1,5 +1,5 @@
 {
-  "version": 382,
+  "version": 383,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6146,7 +6146,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-25",
+  "updatedAt": "2026-09-26",
   "priorityTiers": [
     {
       "tier": 1,
@@ -19693,7 +19693,7 @@
     "activeOwnerResetSource": "owner-design-reset-queue.json"
   },
   "minimumNecessaryProcedurePolicy": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-25",
     "status": "ACTIVE",
     "priority": "DEVELOPMENT_THROUGHPUT_FIRST_WITH_MINIMUM_NECESSARY_PROCEDURE",
@@ -19711,7 +19711,9 @@
       "immediateAtomicRefillMustContinueWhileUnrelatedChecksRun": true,
       "coordinationTelemetryFailureMayNotDeferDevelopmentOrReconciliation": true,
       "activeGameWorkMayNotDeferIndependentDesignOrQueueReconciliation": true,
-      "reconciliationCancellationChurnForbidden": true
+      "reconciliationCancellationChurnForbidden": true,
+      "optimizationLaneMustRemainLiveDuringDevelopment": true,
+      "unrelatedSecurityQaOrReviewMustNotSerializeBuildUp": true
     },
     "hardGateOnlyWhen": [
       "CENTRAL_POLICY_OR_AUTHORITY_MUTATION",
@@ -19786,6 +19788,26 @@
         "existingSecurityPathScopePreserved": true,
         "existingHomepageAndRecordsPathScopesPreserved": true
       }
+    },
+    "developmentLoopOptimization": {
+      "active": true,
+      "appliesDuring": [
+        "BUILD_UP",
+        "ERROR_REPAIR",
+        "OPTIMIZE",
+        "UNITY_WEB_DEVELOPMENT_LOOP",
+        "ROBLOX_DEVELOPMENT",
+        "UNITY_APP_DEVELOPMENT"
+      ],
+      "defaultRule": "RUN_ONLY_PROCEDURE_WITH_DIRECT_CHANGED_RISK_OR_ACCEPTANCE_RELEVANCE",
+      "unrelatedSecurityQaReviewAdminAction": "SKIP_OR_RUN_NONBLOCKING_WITH_REUSED_VALID_EVIDENCE",
+      "relevantSecurityBoundaryStillFailClosed": true,
+      "publicReleaseAndExternalPromotionStillRequireExistingReleaseEvidence": true,
+      "optimizationLaneMustRemainEligibleDuringDevelopment": true,
+      "optimizationLane": "PERFORMANCE_RESPONSIBILITY_CLEANUP_MOBILE_LATENCY_RENDER_UPDATE_COST_AND_STATE_CONSISTENCY",
+      "optimizationMayRunParallelWhenResponsibleFilesDoNotConflict": true,
+      "procedureReductionMayNotLowerProductQualityThreshold": true,
+      "procedureReductionMayNotFabricateOrReuseInvalidatedEvidence": true
     }
   },
   "neuralGatedExecution": {
@@ -22319,7 +22341,293 @@
         "qa/vibe2-auto-planner.test.mjs",
         "qa/vibe2-controller-contract.test.mjs"
       ],
-      "runtimeDesignEvidence": "company-runtime:design/<gameId>/<date>"
+      "runtimeDesignEvidence": "company-runtime:design/<gameId>/<date>",
+      "directiveGenerator": "tools/company-build-up-directive.mjs",
+      "directiveRoot": ".vibe2/build-up-directives/<gameId>/current.json"
+    },
+    "gameSpecificBuildUpDirective": {
+      "version": 1,
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "AUTONOMOUSLY_GENERATE_A_GAME_SPECIFIC_LOOP_SPECIFIC_DETAILED_BUILD_UP_DIRECTIVE_FROM_VERIFIED_DESIGN_CURRENT_SOURCE_PREVIOUS_VERSION_AND_PLAY_RUNTIME_EVIDENCE_THEN_FEED_THE_SAME_COMMON_GOAL_TO_UNITY_WEB_ROBLOX_AND_UNITY_APP_WITH_PLATFORM_NATIVE_IMPLEMENTATION",
+      "placement": "BETWEEN_COMPANY_EVOLUTION_BUILD_UP_DECISION_AND_PLATFORM_IMPLEMENTATION",
+      "shadowPipelineForbidden": true,
+      "generator": "tools/company-build-up-directive.mjs",
+      "canonicalArtifact": ".vibe2/build-up-directives/<gameId>/current.json",
+      "historyArtifact": ".vibe2/build-up-directives/<gameId>/history/<generation>.json",
+      "commonGoalAcrossPlatforms": true,
+      "platformSpecificExecutionRequired": true,
+      "supportedExecutionSurfaces": [
+        "UNITY_WEB",
+        "ROBLOX",
+        "UNITY_APP"
+      ],
+      "inputs": {
+        "required": [
+          "LATEST_VERIFIED_DESIGN",
+          "CURRENT_GAME_SOURCE",
+          "PREVIOUS_VERIFIED_GAME_SOURCE_OR_CHECKPOINT",
+          "LATEST_PLAYTEST_OR_RUNTIME_EVIDENCE_WHEN_AVAILABLE",
+          "LATEST_QA_FAILURES_AND_QUALITY_GAPS",
+          "PREVIOUS_BUILD_UP_DIRECTIVE_AND_RESULT_WHEN_AVAILABLE"
+        ],
+        "designFields": [
+          "identity",
+          "coreFun",
+          "coreLoop",
+          "signatureSystems",
+          "progressionDirection",
+          "multiplayerMode",
+          "platformProfiles"
+        ],
+        "sourceInspectionRequired": true,
+        "priorResultRequiredWhenAvailable": true,
+        "missingPlayEvidenceAction": "KEEP_RUNTIME_QUALITY_UNKNOWN_AND_USE_SOURCE_PLUS_VERIFIED_DESIGN_WITHOUT_INVENTING_PLAY_RESULTS"
+      },
+      "analysisCoverage": {
+        "allRelevantDomainsMustBeConsideredEveryGeneration": true,
+        "domains": [
+          "CORE_FUN",
+          "COMBAT_OR_PRIMARY_INTERACTION",
+          "PLAYER_ACTIONS",
+          "ENEMY_AI",
+          "BOSS_AND_SIGNATURE_MOMENTS",
+          "PROGRESSION",
+          "GOALS",
+          "REWARDS",
+          "UNLOCKS",
+          "QUESTS",
+          "CONTENT_VARIETY",
+          "WORLD_MAP_TOPOLOGY",
+          "REGIONS",
+          "LANDMARKS",
+          "TRAVERSAL",
+          "ECONOMY",
+          "INVENTORY",
+          "CRAFTING",
+          "SAVE_AND_RECOVERY",
+          "MULTIPLAYER_AND_SYNC",
+          "INPUT",
+          "MOBILE_UX",
+          "ACCESSIBILITY",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS",
+          "WEAPONS_AND_EQUIPMENT",
+          "BUILDINGS_AND_PROPS",
+          "ENVIRONMENT",
+          "TERRAIN",
+          "MATERIALS",
+          "PALETTE",
+          "LIGHTING",
+          "ANIMATION",
+          "SECONDARY_MOTION",
+          "VFX",
+          "CAMERA",
+          "UI_HUD",
+          "AUDIO_VISUAL_TIMING",
+          "ENVIRONMENTAL_MOTION",
+          "PERFORMANCE",
+          "RUNTIME_STABILITY",
+          "ERROR_RECOVERY",
+          "TUTORIAL_ONBOARDING",
+          "DIFFICULTY_PACING",
+          "GAME_FEEL",
+          "SPAWN_ENCOUNTER_DIRECTOR",
+          "FAILURE_RESPAWN_CHECKPOINTS",
+          "NPC_SOCIAL_BEHAVIOR",
+          "NARRATIVE_STORY",
+          "AUDIO_MUSIC_SFX",
+          "REPLAYABILITY_VARIATION"
+        ],
+        "notApplicableMustBeExplicitlyClassified": true,
+        "silentDomainOmissionForbidden": true,
+        "genericGenreOnlyDiagnosisForbidden": true
+      },
+      "gameSpecificity": {
+        "identityFirst": true,
+        "currentImplementationFirst": true,
+        "exactGameEvidenceRequired": true,
+        "oneGenericCrossGameDirectiveForbidden": true,
+        "renameGameAndStillFitsHeuristic": "REGENERATE_AS_TOO_GENERIC",
+        "mustReferenceAtLeastOneGameSpecificDesignElement": true,
+        "mustReferenceAtLeastOneCurrentSourceObservation": true,
+        "mustExplainWhySelectedGoalHasHigherPlayerValueThanDeferredGaps": true
+      },
+      "directiveDetail": {
+        "requiredSections": [
+          "GAME_IDENTITY_AND_NON_NEGOTIABLES",
+          "CURRENT_IMPLEMENTATION_FINDINGS",
+          "PREVIOUS_VERSION_DELTA",
+          "PLAYTEST_RUNTIME_FINDINGS",
+          "QUALITY_GAP_MAP",
+          "THIS_LOOP_PRIMARY_GOAL",
+          "GAMEPLAY_IMPLEMENTATION_DIRECTIVES",
+          "PROGRESSION_CONTENT_WORLD_DIRECTIVES",
+          "VISUAL_BUILD_UP_DIRECTIVE",
+          "UX_INPUT_DIRECTIVES",
+          "PLATFORM_ADAPTATION_DIRECTIVES",
+          "PRESERVE_CONSTRAINTS",
+          "RESPONSIBLE_SYSTEMS_AND_FILES",
+          "ACCEPTANCE_EVIDENCE",
+          "NEXT_ESCALATION_CANDIDATES",
+          "ALL_DOMAIN_IMPLEMENTATION_DIRECTIVES"
+        ],
+        "implementationInstructionMustSpecify": [
+          "WHAT_CHANGES",
+          "WHY_IT_MATTERS",
+          "TRIGGER_OR_CONDITION",
+          "STATE_CHANGE",
+          "PLAYER_FEEDBACK",
+          "SYSTEM_CONNECTIONS",
+          "EXPECTED_SOURCE_RESPONSIBILITY",
+          "OBSERVABLE_ACCEPTANCE"
+        ],
+        "vagueInstructionsForbidden": [
+          "IMPROVE_GRAPHICS",
+          "IMPROVE_AI",
+          "MAKE_COMBAT_FUN",
+          "ADD_POLISH",
+          "IMPROVE_UI"
+        ],
+        "withoutConcreteSubinstructions": true,
+        "everyApplicableDomainGetsOwnDirective": true,
+        "perDomainFields": [
+          "domain",
+          "state",
+          "priority",
+          "developmentDepth",
+          "directive",
+          "implementationContract",
+          "acceptance"
+        ]
+      },
+      "visualBuildUpDirective": {
+        "required": true,
+        "evaluateEveryGeneration": [
+          "CHARACTER",
+          "ENEMY_CREATURE",
+          "WEAPON_EQUIPMENT",
+          "BUILDING_PROP",
+          "ENVIRONMENT_TERRAIN",
+          "MATERIAL_SURFACE",
+          "PALETTE",
+          "LIGHTING",
+          "ANIMATION",
+          "SECONDARY_MOTION",
+          "VFX",
+          "CAMERA",
+          "UI_HUD",
+          "AUDIO_VISUAL_SYNC",
+          "ENVIRONMENTAL_MOTION",
+          "SCENE_DENSITY",
+          "LANDMARK_READABILITY"
+        ],
+        "perActorWhenRelevant": [
+          "SILHOUETTE",
+          "PROPORTION",
+          "MATERIAL",
+          "IDLE",
+          "LOCOMOTION",
+          "ATTACK_ANTICIPATION",
+          "IMPACT",
+          "RECOVERY",
+          "HIT_REACTION",
+          "DEATH",
+          "VFX_LANGUAGE",
+          "AUDIO_VISUAL_TIMING"
+        ],
+        "actualRenderedChangeRequired": true,
+        "markerConfigAtomOnlyNeverCounts": true,
+        "colorOnlyNeverCountsAsFullIdentityUpgrade": true,
+        "primitiveOnlyCompletionForbidden": true,
+        "gameSpecificArtDirectionRequired": true,
+        "beforeAfterComparisonRequired": true
+      },
+      "loopEscalation": {
+        "automatic": true,
+        "everyVerifiedCycleCreatesNextDirective": true,
+        "previousGoalMayNotRepeatWithoutNewEvidence": true,
+        "completedGoalBecomesBaseline": true,
+        "nextGoalMustEither": [
+          "DEEPEN_COMPLETED_SYSTEM",
+          "CONNECT_TO_ANOTHER_GAME_SYSTEM",
+          "CLOSE_NEXT_HIGHEST_VALUE_GAP",
+          "RAISE_PRESENTATION_OR_USABILITY_QUALITY",
+          "OPTIMIZE_VERIFIED_BOTTLENECK"
+        ],
+        "difficultyAndSpecificityShouldIncreaseWhenPriorGoalVerified": true,
+        "failedGoalRequiresNewCausalHypothesisOrDeeperRepair": true,
+        "terminalCompletionStateForbidden": true,
+        "generationCounterRequired": true,
+        "previousDirectiveFingerprintRequired": true,
+        "forbiddenRepeatFingerprintRequired": true,
+        "developmentDepthRequired": true,
+        "depthStages": [
+          "FOUNDATION_COMPLETENESS",
+          "ROLE_DIFFERENTIATION",
+          "SYSTEM_CONNECTION",
+          "DECISION_DENSITY",
+          "SIGNATURE_DEPTH",
+          "SIGNATURE_MASTERY_N"
+        ],
+        "verifiedLoopIncrementsDepth": true,
+        "failedLoopKeepsDepthAndRequiresDeeperCausalRepair": true,
+        "verifiedStatusAloneCannotIncreaseDepth": true,
+        "realGameSourceTreeDeltaRequiredForDepthIncrease": true,
+        "sharedDirectiveGenerationAllRequiredTasksMustVerifyBeforeDepthIncrease": true,
+        "anyFailedSiblingKeepsCurrentDepth": true,
+        "failedSiblingNextAction": "NEW_CAUSAL_REPAIR_GENERATION_AT_SAME_DEPTH",
+        "generationFanInRequiredBeforeNextDirective": true,
+        "anyActiveTaskKeepsSameDirectiveGeneration": true,
+        "anyFailedTaskKeepsDepthAndTriggersCausalRepair": true,
+        "allRequiredGenerationTasksMustBeVerifiedBeforeEscalation": true
+      },
+      "platformHandoff": {
+        "sharedCommonGoal": true,
+        "unityWeb": "SAME_CANONICAL_UNITY_PROJECT_FIRST_PLAYABLE_DEVELOPMENT_AND_BROWSER_QA_SURFACE",
+        "roblox": "TRANSLATE_COMMON_GOAL_TO_ROBLOX_NATIVE_LUAU_SERVER_CLIENT_TOUCH_AND_PLATFORM_PRESENTATION",
+        "unityApp": "TRANSLATE_COMMON_GOAL_TO_UNITY_NATIVE_APP_INPUT_RENDERING_PERFORMANCE_AND_PLATFORM_PRESENTATION",
+        "platformMayNotInventDifferentCoreGameMeaning": true,
+        "platformSpecificPresentationAndImplementationAllowed": true,
+        "directiveSource": ".vibe2/build-up-directives/<gameId>/current.json",
+        "missingDirectiveMayNotInventPlatformSpecificGoal": true
+      },
+      "verification": {
+        "actualGameSourceDeltaRequired": true,
+        "actualVisibleRuntimeDeltaRequiredForVisualClaims": true,
+        "gameplayStateDeltaRequiredForGameplayClaims": true,
+        "workflowQaHomepageOnlyDeltaDoesNotCountAsGameEvolution": true,
+        "foundationOnlyRepairDoesNotCountAsBuildUpUnlessPrimaryGoalIsVerifiedFoundationDefect": true,
+        "sourceTreeFingerprintRequired": true,
+        "changedGameFilesRequired": true,
+        "beforeAfterEvidenceRequired": true,
+        "noMeaningfulPlayerValueDeltaAction": "DO_NOT_COUNT_CYCLE_AS_BUILD_UP_AND_GENERATE_A_DIFFERENT_DIRECTIVE",
+        "verifiedStatusWithoutSourceTreeDeltaAction": "KEEP_DEPTH_AND_REGENERATE_REAL_IMPLEMENTATION_DIRECTIVE",
+        "sourceTreeFingerprintIncludesRealGameCodeScenesPrefabsMaterialsAnimationImagesAudio": true,
+        "generatedWorkflowQaBootstrapEvidenceMetadataExcludedFromEvolutionFingerprint": true
+      },
+      "runtimeStateProjection": {
+        "queueStoresSummaryOnly": true,
+        "fields": [
+          "buildUpDirectiveId",
+          "buildUpGeneration",
+          "buildUpGoal",
+          "buildUpStatus",
+          "previousGoal",
+          "lastAchievedGoal",
+          "nextEscalationRequired",
+          "buildUpSourceTree",
+          "developmentDepth",
+          "escalationStage"
+        ],
+        "detailedDirectiveRemainsCanonicalArtifact": true
+      },
+      "runtimeBranch": "vibe2-unreal-core",
+      "runtimeStateNotPolicy": true,
+      "creationAuthority": "VIBE_DIRECTOR_ONLY",
+      "platformExecutorsConsumerOnly": true,
+      "platformLocalDirectiveGenerationForbidden": true,
+      "missingDirectivePlatformBehavior": "BASELINE_OR_REPAIR_WORK_MAY_CONTINUE_BUT_BUILD_UP_COMPLETION_MUST_REMAIN_UNCLAIMED_UNTIL_VIBE_DIRECTIVE_EXISTS_AND_IS_IMPLEMENTED"
     }
   }
 }

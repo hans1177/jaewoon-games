@@ -132,6 +132,7 @@ jobs:
           for file in \
             assets/vibe-continuous-queue.js \
             tools/vibe2-auto-planner.mjs \
+            tools/company-build-up-directive.mjs \
             tools/vibe2-learning-motor.mjs \
             tools/vibe2-continuous-runner.mjs \
             tools/vibe2-asset-production-plan.mjs \
@@ -368,6 +369,9 @@ jobs:
               .vibe2/idle-practice-queue.json
               .vibe2/web-roblox-handoffs.json
             )
+            if [ -d "$control_root/.vibe2/build-up-directives" ]; then
+              state_paths+=(.vibe2/build-up-directives)
+            fi
             if git -C "$control_root" diff --quiet -- "${state_paths[@]}"; then
               state_persisted=1
               state_write='NO'
@@ -1786,6 +1790,7 @@ jobs:
 
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json \
               .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
+            test ! -d .vibe2/build-up-directives || git add .vibe2/build-up-directives
             test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
             if git diff --cached --quiet; then
               pushed=1

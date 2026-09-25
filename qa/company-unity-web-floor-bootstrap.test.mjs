@@ -43,6 +43,9 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.presentationState,'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP');
     assert.equal(source.upperPlatformReady,false);
     assert.equal(source.releaseOrDeploymentAuthority,false);
+    assert.equal(source.buildUpDirectiveConsumed,false);
+    assert.equal(source.buildUpDirectiveCompletionClaim,false);
+    assert.equal(source.buildUpDirectiveId,null);
     assert.equal(source.buildMethod,'UnityWebFloorBuild.BuildWeb');
     assert.match(build,/public static void BuildWeb\(\)/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA BOOT/);
@@ -80,6 +83,49 @@ test('Unity Web floor bootstrap rejects non-canonical output path',()=>{
     assert.throws(()=>execFileSync(process.execPath,[tool.pathname,
       '--game-id=test-game','--baseline='+baseline,'--output=web-games/test-game'
     ],{stdio:'pipe'}));
+  }finally{
+    process.chdir(old);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
+test('Unity Web floor consumes the exact Vibe directive without creating a platform-local goal',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-floor-directive-'));
+  const old=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    const directive=path.join(root,'directive.json');
+    fs.writeFileSync(baseline,JSON.stringify({content:{
+      identity:'Garden insect defense',
+      coreLoop:['READ_WAVE','PLACE_INSECT','DEFEND','UPGRADE'],
+      multiplayerMode:'SINGLE_PLAYER',
+      platformProfiles:{UNITY:{
+        platform:'UNITY',inputModel:'mobile and keyboard input',sessionModel:'session progression model',
+        multiplayerRuntime:'single player runtime',performanceBudget:'mobile sixty fps budget',
+        uiUx:'touch first readable ui',saveAndNetwork:'local save and future network',
+        platformContentAdaptation:'unity web and app adaptation',internalReleaseTarget:'private internal target',
+        validationEvidence:'runtime qa regression evidence'
+      }}
+    }}));
+    fs.writeFileSync(directive,JSON.stringify({
+      directiveId:'test-survival-build-up-g7-shared',
+      directiveFingerprint:'f'.repeat(64),
+      gameId:'test-survival',
+      generation:7,
+      thisLoopPrimaryGoal:'곤충별 역할과 공격 전조를 실제 전투에서 구별한다.'
+    }));
+    execFileSync(process.execPath,[tool.pathname,
+      '--game-id=test-survival','--game-name=Test Survival','--baseline='+baseline,
+      '--output=unity-games/test-survival','--build-up-directive='+directive
+    ],{stdio:'pipe'});
+    const source=JSON.parse(fs.readFileSync('unity-games/test-survival/unity-web-floor-source.json','utf8'));
+    assert.equal(source.buildUpDirectiveConsumed,true);
+    assert.equal(source.buildUpDirectiveCompletionClaim,false);
+    assert.equal(source.buildUpDirectiveId,'test-survival-build-up-g7-shared');
+    assert.equal(source.buildUpGeneration,7);
+    assert.equal(source.buildUpGoal,'곤충별 역할과 공격 전조를 실제 전투에서 구별한다.');
   }finally{
     process.chdir(old);
     fs.rmSync(root,{recursive:true,force:true});

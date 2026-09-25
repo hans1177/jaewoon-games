@@ -514,7 +514,7 @@ function clientSource({profile,learning={},studioAssets={}}){
   return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n${learnedInput}local STUDIO_ASSET_BINDING_VERSION = 1\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\nlocal foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")\nlocal nativeTouchEnabled = UserInputService.TouchEnabled\nlocal nativeFoundationCamera = workspace.CurrentCamera\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild("Humanoid")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    foundationRemote:FireServer("CAMERA_READY")\n  end\n  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")\nend\ntask.defer(reportNativeFoundationReady)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nlocal studioUi = Config.StudioAssets and Config.StudioAssets.Families and Config.StudioAssets.Families.UI or {}\nlocal function hasStudioAtom(atom)\n  return table.find(studioUi, atom) ~= nil\nend\nroot.BackgroundColor3 = hasStudioAtom("FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)\nroot:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = hasStudioAtom("BUTTON_PRIMARY") and Color3.fromRGB(224, 236, 255) or Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal healthTrack = Instance.new("Frame")\nhealthTrack.Name = "StudioHealthTrack"\nhealthTrack.Size = UDim2.new(1, -20, 0, 10)\nhealthTrack.Position = UDim2.fromOffset(10, 98)\nhealthTrack.BackgroundColor3 = Color3.fromRGB(70, 78, 92)\nhealthTrack.BorderSizePixel = 0\nhealthTrack.Visible = hasStudioAtom("BAR_HEALTH")\nhealthTrack.Parent = root\nlocal healthFill = Instance.new("Frame")\nhealthFill.Name = "StudioHealthFill"\nhealthFill.Size = UDim2.fromScale(1, 1)\nhealthFill.BackgroundColor3 = Color3.fromRGB(92, 205, 118)\nhealthFill.BorderSizePixel = 0\nhealthFill.Parent = healthTrack\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\n  healthFill.Size = UDim2.fromScale(math.clamp((player:GetAttribute("Health") or 100) / 100, 0, 1), 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n${learnedBinding}`;
 }
 
-export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={},playbooks={},recombination={},webHandoff={},roadmap={},assetLibrary={}}={}){
+export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={},playbooks={},recombination={},webHandoff={},roadmap={},assetLibrary={},buildUpDirective={}}={}){
   void webHandoff;
   void roadmap;
   const profile=robloxBuildProfileFromBaseline(baseline);
@@ -545,6 +545,7 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
       learning.applied?`Vibe3 Roblox playbook applied: ${learning.checklist.join(', ')}`:'Vibe3 learning context not supplied',
       learning.applied?`transformative recipe=${learning.recipeId}; operator=${learning.transformationOperator}; features=${learning.featureBlend.join(', ')}`:null,
       saveRequired?'persistent player state uses DataStoreService with safe fallback':'no DataStore added because locked baseline does not require persistence',
+      clean(buildUpDirective?.thisLoopPrimaryGoal)?`shared BUILD_UP directive pending implementation: ${clean(buildUpDirective.thisLoopPrimaryGoal)}`:null,
       'runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass',
     ].filter(Boolean),
   };
@@ -553,9 +554,9 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   return {result,validation,actions,profile,platformProfile,learning,studioAssets,webHandoff:null,handoffValidation,generationMode:learning.applied?'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT':'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
 }
 
-export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model}){
+export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective}){
   void model;
-  return compileRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary});
+  return compileRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,buildUpDirective});
 }
 function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
   fs.mkdirSync(path.join(root,'shared'),{recursive:true});
@@ -581,6 +582,7 @@ async function main(){
   const assetLibraryFile=clean(arg('asset-library','company-asset-library.json'));
   const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
   const foundationRepair=clean(arg('foundation-repair','false')).toLowerCase()==='true';
+  const buildUpDirectiveFile=clean(arg('build-up-directive'));
   if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile||!playbooksFile||!recombinationFile||!roadmapFile)throw new Error('required Roblox bootstrap argument missing');
   if(outputRoot!==`roblox-games/${gameId}`)throw new Error(`invalid Roblox output root: ${outputRoot}`);
   const existingSource=fs.existsSync(outputRoot)&&fs.readdirSync(outputRoot).length>0;
@@ -591,6 +593,9 @@ async function main(){
   const webHandoff=webHandoffFile&&fs.existsSync(webHandoffFile)?readJson(webHandoffFile):{};
   const roadmap=readJson(roadmapFile);
   const assetLibrary=fs.existsSync(assetLibraryFile)?readJson(assetLibraryFile):{};
+  const buildUpDirective=buildUpDirectiveFile&&fs.existsSync(buildUpDirectiveFile)?readJson(buildUpDirectiveFile):null;
+  const buildUpDirectiveConsumed=Boolean(clean(buildUpDirective?.directiveId));
+  if(buildUpDirectiveConsumed&&clean(buildUpDirective?.gameId)!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
   if(existingSource){
     const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair});
     const evidence={
@@ -603,6 +608,9 @@ async function main(){
       vibe3LearningApplied:false,recombinationRecipeId:null,
       studioAssetBinding:applied.studioAssets,studioAssetBindingApplied:applied.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
       implementationNotes:foundationRepair?['existing Roblox gameplay source preserved','native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass']:['existing Roblox gameplay source preserved','company library Studio asset binding updated in existing config and client presentation','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass'],
+      buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
+      buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
+      buildUpDirectiveConsumed,buildUpDirectiveCompletionClaim:false,
       nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
     };
     fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
@@ -615,11 +623,13 @@ async function main(){
     console.log(`ROBLOX_FOUNDATION_REPAIR=${foundationRepair?'APPLIED':'NOT_REQUESTED'}`);
     console.log(`ROBLOX_STUDIO_ASSET_BINDING=${applied.studioAssets.applied?'APPLIED_UNVERIFIED':'NOT_APPLIED'}`);
     console.log(`ROBLOX_STUDIO_ASSET_ATOMS=${applied.studioAssets.selectedAtomCount}`);
+    console.log(`ROBLOX_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
+  console.log('ROBLOX_BUILD_UP_COMPLETION_CLAIM=NO');
     console.log('ROBLOX_RUNTIME_PASS=NO');
     console.log('ROBLOX_RELEASE_CLAIM=NO');
     return;
   }
-  const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model});
+  const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective});
   if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
   writeSourceTree(outputRoot,built.result,gameId);
   const evidence={
@@ -633,7 +643,11 @@ async function main(){
     recombinationOperator:built.learning.transformationOperator,recombinationSourceProjects:built.learning.sourceProjects,learningFeatureBlend:built.learning.featureBlend,
     platformDesignProfile:built.platformProfile,webPlatformHandoffLegacy:built.webHandoff,webPlatformHandoffRequired:false,
     studioAssetBinding:built.studioAssets,studioAssetBindingApplied:built.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
-    implementationNotes:built.result.implementationNotes,nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
+    implementationNotes:built.result.implementationNotes,
+    buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
+    buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
+    buildUpDirectiveConsumed,buildUpDirectiveCompletionClaim:false,
+    nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
   };
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
   fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`,'utf8');
@@ -656,7 +670,9 @@ async function main(){
   console.log(`ROBLOX_STUDIO_ASSET_ATOMS=${built.studioAssets.selectedAtomCount}`);
   console.log(`ROBLOX_WEB_HANDOFF_CARRY=${built.handoffValidation.carryForward.join(',')}`);
   console.log('MODEL_USED=NO');
-  console.log('ROBLOX_RUNTIME_PASS=NO');
+  console.log(`ROBLOX_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
+  console.log('ROBLOX_BUILD_UP_COMPLETION_CLAIM=NO');
+    console.log('ROBLOX_RUNTIME_PASS=NO');
   console.log('ROBLOX_RELEASE_CLAIM=NO');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){

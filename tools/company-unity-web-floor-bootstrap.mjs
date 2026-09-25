@@ -10,6 +10,7 @@ const gameId=String(args['game-id']||'').trim();
 const gameName=String(args['game-name']||gameId).trim();
 const baselinePath=String(args.baseline||'').trim();
 const output=String(args.output||`unity-games/${gameId}`).replaceAll('\\','/').trim();
+const buildUpDirectivePath=String(args['build-up-directive']||'').trim();
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('UNITY_WEB_FLOOR_GAME_ID_INVALID');
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error('UNITY_WEB_FLOOR_DESIGN_BASELINE_MISSING');
 if(output!==`unity-games/${gameId}`)throw new Error('UNITY_WEB_FLOOR_OUTPUT_MUST_BE_CANONICAL_UNITY_ROOT');
@@ -32,6 +33,9 @@ const packageId=`com.jaewoongames.${gameId.replace(/[^a-z0-9]/g,'').slice(0,48)}
 const prefix=gameId.replace(/[^a-zA-Z0-9]/g,'_');
 const csharp=v=>String(v).replaceAll('\\','\\\\').replaceAll('"','\\"').replace(/\r?\n/g,' ');
 const fingerprint=createHash('sha256').update(fs.readFileSync(new URL(import.meta.url))).digest('hex');
+const buildUpDirective=buildUpDirectivePath&&fs.existsSync(buildUpDirectivePath)?JSON.parse(fs.readFileSync(buildUpDirectivePath,'utf8')):null;
+const buildUpDirectiveConsumed=Boolean(String(buildUpDirective?.directiveId||'').trim());
+if(buildUpDirectiveConsumed&&String(buildUpDirective?.gameId||'').trim()!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
 
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of [
@@ -295,6 +299,12 @@ fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify(
   buildMethod:'UnityWebFloorBuild.BuildWeb',
   futureNativeBuildMethod:'UnityWebFloorBuild.Build',
   generatorFingerprint:fingerprint,
+  buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,
+  buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
+  buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,
+  buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
+  buildUpDirectiveConsumed,
+  buildUpDirectiveCompletionClaim:false,
   designBaseline:baselinePath,
   unityPlatformProfile:profile,
   purpose:'UNITY_WEB_DEVELOPMENT_FLOOR',
@@ -310,6 +320,7 @@ fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — Unity Web Deve
 - canonical source: \`unity-games/${gameId}/\`
 - WebGL build method: \`UnityWebFloorBuild.BuildWeb\`
 - future Unity app build method: \`UnityWebFloorBuild.Build\`
+- BUILD_UP directive: ${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'} (generation ${buildUpDirectiveConsumed?buildUpDirective.generation:0})
 - readiness gate: \`UPPER_PLATFORM_DEVELOPMENT_READY\`
 - release/deployment authority: **NO**
 
@@ -318,3 +329,5 @@ Generated from the locked common design and Unity platform profile. This source 
 console.log('UNITY_WEB_FLOOR_SOURCE='+output);
 console.log('UNITY_WEB_FLOOR_BUILD_METHOD=UnityWebFloorBuild.BuildWeb');
 console.log('UNITY_WEB_FLOOR_RELEASE_AUTHORITY=NO');
+console.log(`UNITY_WEB_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
+console.log('UNITY_WEB_BUILD_UP_COMPLETION_CLAIM=NO');

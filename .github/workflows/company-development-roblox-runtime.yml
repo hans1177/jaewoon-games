@@ -221,12 +221,23 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Fetch current company runtime and Vibe3 learning memory
+      - name: Fetch current company runtime, Vibe learning, and shared build-up directive
+        env:
+          GAME_ID: ${{ matrix.gameId }}
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git fetch --no-tags origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
+          git fetch --no-tags origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core"
+          directive="/tmp/build-up-directive-${GAME_ID}.json"
+          if git cat-file -e "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" 2>/dev/null; then
+            git show "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" > "$directive"
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:${GAME_ID}"
+          else
+            rm -f "$directive"
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:${GAME_ID}"
+          fi
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-recombination-memory.json" > /tmp/vibe3-recombination-memory.json
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/tmp/vibe3-task-playbooks.json'));const r=JSON.parse(fs.readFileSync('/tmp/vibe3-recombination-memory.json'));if(!p.taskTypes?.roblox||!r.recipes?.length)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_MEMORY=READY');console.log('ROBLOX_VIBE3_RECIPE_COUNT='+r.recipes.length)"
@@ -240,6 +251,7 @@ jobs:
           ARTBOOK_SOURCE: ${{ matrix.artbook }}
           TARGET_SOURCE: ${{ matrix.target }}
           FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
+          BUILD_UP_DIRECTIVE: /tmp/build-up-directive-${{ matrix.gameId }}.json
         shell: bash
         run: |
           set -euo pipefail
@@ -262,6 +274,8 @@ jobs:
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
           git checkout -b "$branch"
+          directive_args=()
+          if [ -f "$BUILD_UP_DIRECTIVE" ]; then directive_args+=(--build-up-directive="$BUILD_UP_DIRECTIVE"); fi
           timeout 2m node tools/company-development-roblox-bootstrap.mjs \
             --game-id="$GAME_ID" \
             --game-name="$GAME_NAME" \
@@ -272,7 +286,8 @@ jobs:
             --roadmap=company-learning/platform-release-roadmap.json \
             --output-root="$TARGET_SOURCE" \
             --foundation-repair="$FOUNDATION_REPAIR" \
-            --evidence="$evidence"
+            --evidence="$evidence" \
+            "${directive_args[@]}"
           node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
           git diff --check
           git add "$TARGET_SOURCE"

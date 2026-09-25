@@ -17,6 +17,7 @@ import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxBuildProfileFromBaseline } from './company-development-roblox-bootstrap.mjs';
 import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
+import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -875,7 +876,7 @@ Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 
     out.ownerDirective=true;
     out.speculativeEligible=false;
     out.workUnits=6;
-    return out;
+    return attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
   }
 
   if(repairState||!buildWebReady||!qaReady||readiness.pass!==true){
@@ -923,7 +924,7 @@ UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY
     ]);
     out.ownerDirective=true;
     out.speculativeEligible=false;
-    return out;
+    return attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
   }
   return null;
 }
@@ -1526,6 +1527,123 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 }
 
 
+function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
+  if(!taskInput||!project?.gameId)return taskInput;
+  const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
+  const minimum=verified?null:latestMinimumDesign(repoRoot,project.gameId);
+  const designContext=verified||minimum;
+  if(!designContext){
+    return{
+      ...taskInput,
+      evidence:[...new Set([...(taskInput.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]
+    };
+  }
+  const taskHistory=[...(queue?.tasks||[])].filter(item=>
+    clean(item?.gameId)===clean(project.gameId)
+    &&item?.buildUpDirective
+    &&typeof item.buildUpDirective==='object'
+  );
+  const successDirectiveStatuses=new Set(['verified','done','completed']);
+  const failedDirectiveStatuses=new Set(['failed','error','rejected']);
+  const inactiveDirectiveStatuses=new Set([...successDirectiveStatuses,...failedDirectiveStatuses,'cancelled','superseded']);
+  const latestGeneration=taskHistory.reduce((max,item)=>Math.max(max,Number(item?.buildUpDirective?.generation||0)),0);
+  const latestGenerationTask=[...taskHistory].reverse().find(item=>Number(item?.buildUpDirective?.generation||0)===latestGeneration)||null;
+  const latestDirectiveId=clean(latestGenerationTask?.buildUpDirective?.directiveId);
+  const latestDirectiveTasks=latestDirectiveId
+    ?taskHistory.filter(item=>clean(item?.buildUpDirective?.directiveId)===latestDirectiveId)
+    :[];
+  const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
+  if(activeDirectiveTask?.buildUpDirective){
+    const directive=activeDirectiveTask.buildUpDirective;
+    return{
+      ...taskInput,
+      goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
+      buildUpDirective:directive,
+      buildUpDirectiveId:directive.directiveId,
+      buildUpGeneration:directive.generation,
+      buildUpGoal:directive.thisLoopPrimaryGoal,
+      buildUpSourceTree:directive.sourceTreeFingerprint,
+      nextEscalationRequired:true,
+      evidence:[...new Set([
+        ...(taskInput.evidence||[]),
+        'game-specific-build-up-directive:v1',
+        'build-up-directive-reused-active-generation:YES',
+        'build-up-directive-generation-fan-in:INCOMPLETE_NO_ESCALATION',
+        'build-up-directive-id:'+directive.directiveId,
+        'build-up-generation:'+directive.generation,
+        'build-up-focus:'+directive.primaryFocus,
+        'build-up-source-tree:'+directive.sourceTreeFingerprint,
+        'build-up-platform-common-goal:YES'
+      ])]
+    };
+  }
+  const previous=latestGenerationTask?.buildUpDirective||null;
+  const latestStatuses=latestDirectiveTasks.map(item=>clean(item.status).toLowerCase()).filter(Boolean);
+  const previousDirectiveOutcome=latestStatuses.some(status=>failedDirectiveStatuses.has(status))
+    ?'failed'
+    :latestStatuses.length&&latestStatuses.every(status=>successDirectiveStatuses.has(status))
+      ?'verified'
+      :latestStatuses.some(status=>status==='cancelled'||status==='superseded')
+        ?'cancelled'
+        :clean(latestGenerationTask?.status).toLowerCase();
+  const qualitySignals=[
+    ...(project?.developmentValidation?.blockers||[]),
+    clean(project?.developmentValidation?.nextAction),
+    clean(project?.queueVibeWebImplementationReason),
+    clean(project?.queueRobloxFailureStage),
+    clean(project?.queueRobloxFailureSignature),
+    ...(project?.queueRoutingBlockers||[])
+  ].map(clean).filter(Boolean);
+  const runtimeEvidence={
+    failureStage:clean(project?.queueRuntimeFailureStage||project?.queueRobloxFailureStage),
+    failureSignature:clean(project?.queueRuntimeFailureSignature||project?.queueRobloxFailureSignature),
+    blockers:[...(project?.queueRoutingBlockers||[])].map(clean).filter(Boolean),
+    runtimeObserved:project?.queueRuntimeObserved===true,
+    runtimePassed:project?.queueRuntimePassed===true,
+    independentQaPassed:project?.queueRuntimeIndependentQaPassed===true,
+    regressionPassed:project?.queueRuntimeRegressionPassed===true
+  };
+  const sourceRoots=[project.projectPath,`roblox-games/${project.gameId}`,`unity-games/${project.gameId}`,`web-games/${project.gameId}`]
+    .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
+  const sourceObservation=inspectGameSources({repoRoot,sourceRoots});
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:project.gameId,
+    gameName:project.name||project.gameId,
+    platform:'COMMON',
+    designRecord:designContext.record,
+    sourceObservation,
+    repoRoot,
+    sourceRoot:sourceRoots.join('|'),
+    previousDirective:previous,
+    previousDirectiveOutcome,
+    runtimeEvidence,
+    qualitySignals,
+    responsibleFiles:[]
+  });
+  return{
+    ...taskInput,
+    goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
+    buildUpDirective:directive,
+    buildUpDirectiveId:directive.directiveId,
+    buildUpGeneration:directive.generation,
+    buildUpGoal:directive.thisLoopPrimaryGoal,
+    buildUpSourceTree:directive.sourceTreeFingerprint,
+    nextEscalationRequired:true,
+    evidence:[...new Set([
+      ...(taskInput.evidence||[]),
+      'game-specific-build-up-directive:v1',
+      'build-up-directive-id:'+directive.directiveId,
+      'build-up-generation:'+directive.generation,
+      'build-up-focus:'+directive.primaryFocus,
+      'build-up-source-tree:'+directive.sourceTreeFingerprint,
+      'build-up-every-loop-regenerate:YES',
+      'build-up-all-domain-coverage:YES',
+      'build-up-platform-common-goal:YES'
+    ])]
+  };
+}
+
+
 export function findStudioContinuousImprovementTask(project,repoRoot,queue,forcedFocusPillar=''){
   if(!project?.gameId||!project?.projectPath)return null;
   const sourceRoot=posix(project.projectPath),sourceDir=sourceFile(repoRoot,sourceRoot);
@@ -1705,12 +1823,40 @@ ${phaseInstruction}${visualInstruction}${designInstruction}
     protectedRegressionForbidden:true,
     nextCycleRequired:true
   };
-  return out;
+  return attachGameSpecificBuildUpDirective(out,project,repoRoot,queue,designContext);
+}
+function bindSharedBuildUpDirective(taskInput,directive){
+  if(!taskInput||!directive?.directiveId)return taskInput;
+  const rawGoal=String(taskInput.goal||'');
+  const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]';
+  const at=rawGoal.indexOf(marker);
+  const baseGoal=(at>=0?rawGoal.slice(0,at):rawGoal).trimEnd();
+  return{
+    ...taskInput,
+    goal:baseGoal+'\n\n'+directivePrompt(directive),
+    buildUpDirective:directive,
+    buildUpDirectiveId:directive.directiveId,
+    buildUpGeneration:directive.generation,
+    buildUpGoal:directive.thisLoopPrimaryGoal,
+    buildUpSourceTree:directive.sourceTreeFingerprint,
+    nextEscalationRequired:true,
+    evidence:[...new Set([
+      ...(taskInput.evidence||[]),
+      'build-up-shared-generation-exact-object:YES',
+      'build-up-directive-id:'+directive.directiveId,
+      'build-up-generation:'+directive.generation,
+      'build-up-focus:'+directive.primaryFocus,
+      'build-up-source-tree:'+directive.sourceTreeFingerprint,
+      'build-up-platform-common-goal:YES'
+    ])]
+  };
 }
 export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
-  return ['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']
+  const tasks=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']
     .map(focus=>findStudioContinuousImprovementTask(project,repoRoot,queue,focus))
     .filter(Boolean);
+  const canonical=tasks.find(row=>row?.buildUpDirective?.directiveId)?.buildUpDirective||null;
+  return canonical?tasks.map(row=>bindSharedBuildUpDirective(row,canonical)):tasks;
 }
 
 function findSafeTasks(project,repoRoot,queue){
@@ -1988,8 +2134,26 @@ export function runVibe2AutoPlanner({
   const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:readJson(developmentQueueFile,{items:[]}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks});
   const normalizedBefore=createVibeContinuousQueue(queueBefore);
   const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
+  const directiveRoot=path.join(path.dirname(path.resolve(resolvedQueueFile)),'build-up-directives');
+  const directiveWrites=[];
+  const directivesById=new Map();
+  for(const task of result.queue?.tasks||[]){
+    const directive=task?.buildUpDirective;
+    if(!directive?.directiveId||!directive?.gameId)continue;
+    directivesById.set(directive.directiveId,directive);
+  }
+  for(const directive of directivesById.values()){
+    const gameRoot=path.join(directiveRoot,directive.gameId);
+    const historyRoot=path.join(gameRoot,'history');
+    fs.mkdirSync(historyRoot,{recursive:true});
+    const currentFile=path.join(gameRoot,'current.json');
+    const historyFile=path.join(historyRoot,String(directive.generation).padStart(4,'0')+'-'+directive.directiveId+'.json');
+    writeJson(currentFile,directive);
+    if(!fs.existsSync(historyFile))writeJson(historyFile,directive);
+    directiveWrites.push(posix(path.relative(path.dirname(path.resolve(resolvedQueueFile)),currentFile)));
+  }
   if(result.planned||queueSynchronized)writeJson(resolvedQueueFile,result.queue);
-  return{...result,queueSynchronized,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length},robloxDistillationContext:{file:posix(resolvedRobloxDistillationFile),records:Array.isArray(robloxDistillationLedger?.records)?robloxDistillationLedger.records.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).includes('roblox-distilled-context:advisory')).length}};
+  return{...result,queueSynchronized,directiveWrites,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length},robloxDistillationContext:{file:posix(resolvedRobloxDistillationFile),records:Array.isArray(robloxDistillationLedger?.records)?robloxDistillationLedger.records.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).includes('roblox-distilled-context:advisory')).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',developmentQueueFile:clean(args['development-queue']),queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),historicalRegistryFile:clean(args['historical-registry']),robloxDistillationFile:clean(args['roblox-distillation']),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
@@ -2004,6 +2168,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_DEVELOPMENT_QUEUE_SOURCE=${clean(args['development-queue'])||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_QUEUE_SYNC=${result.queueSynchronized?'YES':'NO'}`);
+  console.log(`VIBE2_BUILD_UP_DIRECTIVES_WRITTEN=${Array.isArray(result.directiveWrites)?result.directiveWrites.length:0}`);
   console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);
   console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count||0}`);
   console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId||'NONE'}`);

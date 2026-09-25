@@ -67,6 +67,9 @@ test('creates Unity target-platform prototypes after admission without embedding
     assert.equal(meta.unityWebEnabled,false);
     assert.equal(meta.platformDesignProfile.platform,'UNITY');
     assert.equal(meta.releaseAuthority,false);
+    assert.equal(meta.buildUpDirectiveConsumed,false);
+    assert.equal(meta.buildUpDirectiveCompletionClaim,false);
+    assert.equal(meta.buildUpDirectiveId,null);
     assert.equal(meta.purpose,'TARGET_PLATFORM_TECHNICAL_VALIDATION');
     assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
     assert.equal(meta.unityEditorRevision,expectedUnityEditorRevision);
