@@ -1175,6 +1175,24 @@ test('continuous reserve keeps preflight cheap and defers full core regression t
   assert.equal(runtime.qaOptimization.fullCoreRegressionOnceAtFanIn,true);
 });
 
+test('atomic neuron callback keeps pinned worker contract but mutates queue with latest main schema',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('- name: Prepare latest main machine contract');
+  const end=workflow.indexOf('- name: Fast scheduler preflight',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/requested_contract_sha=.*client_payload\?\.contract_sha/);
+  assert.match(block,/git fetch --depth=1 --no-tags origin main --quiet/);
+  assert.match(block,/state_schema_sha="\$\(git rev-parse FETCH_HEAD\)"/);
+  assert.match(block,/contract_sha="\$state_schema_sha"/);
+  assert.match(block,/if \[ -n "\$requested_contract_sha" \]; then[\s\S]{0,220}git fetch --depth=1 --no-tags origin "\$requested_contract_sha" --quiet[\s\S]{0,160}contract_sha="\$\(git rev-parse FETCH_HEAD\)"/);
+  assert.match(block,/git archive "\$state_schema_sha" \| tar -x -C \/tmp\/vibe2-main/);
+  assert.match(block,/echo "sha=\$contract_sha" >> "\$GITHUB_OUTPUT"/);
+  assert.match(block,/echo "state_schema_sha=\$state_schema_sha" >> "\$GITHUB_OUTPUT"/);
+  assert.match(block,/VIBE2_STATE_SCHEMA_SHA=\$state_schema_sha/);
+  assert.doesNotMatch(block,/git archive "\$contract_sha" \| tar -x -C \/tmp\/vibe2-main/);
+});
+
 test('atomic neuron variants micro-fan-in one task and release capacity without waiting for the cohort',()=>{
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
     {id:'atomic-a',gameId:'a',target:'web',department:'development',type:'implementation',goal:'repair a',status:'queued',sourceRoot:'web-games/a',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true},

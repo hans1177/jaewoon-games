@@ -109,19 +109,22 @@ jobs:
               requested_contract_sha="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.client_payload?.contract_sha||''))")"
             fi
           fi
+          git fetch --depth=1 --no-tags origin main --quiet
+          state_schema_sha="$(git rev-parse FETCH_HEAD)"
+          contract_sha="$state_schema_sha"
           if [ -n "$requested_contract_sha" ]; then
             git fetch --depth=1 --no-tags origin "$requested_contract_sha" --quiet
-          else
-            git fetch --depth=1 --no-tags origin main --quiet
+            contract_sha="$(git rev-parse FETCH_HEAD)"
           fi
-          contract_sha="$(git rev-parse FETCH_HEAD)"
           rm -rf /tmp/vibe2-main
           mkdir -p /tmp/vibe2-main
-          git archive "$contract_sha" | tar -x -C /tmp/vibe2-main
+          git archive "$state_schema_sha" | tar -x -C /tmp/vibe2-main
           test -f /tmp/vibe2-main/vibe2-runtime.json
           echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"
+          echo "state_schema_sha=$state_schema_sha" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
-          echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
+          echo "VIBE2_STATE_SCHEMA_SHA=$state_schema_sha"
+          echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=LATEST_MAIN_ARCHIVE'
 
       - name: Fast scheduler preflight
         if: github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete'
