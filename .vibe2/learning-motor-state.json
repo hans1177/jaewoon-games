@@ -3940,7 +3940,8 @@
       "coding_negative_f92k4i",
       "coding_negative_13onkx3",
       "coding_negative_1tv1sxm",
-      "coding_negative_1up4q00"
+      "coding_negative_1up4q00",
+      "coding_negative_7s6443"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -5145,7 +5146,7 @@
         "verifiedApplications": 216,
         "firstCandidatePasses": 24,
         "totalGenerationAttempts": 477,
-        "verifiedFailures": 648,
+        "verifiedFailures": 649,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -5204,13 +5205,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 139,
-            "verifiedFailures": 311,
+            "verifiedFailures": 312,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 334,
             "totalContextBytes": 4377796,
             "lastEvidence": "coding_nwrwl2",
-            "lastFailureEvidence": "coding_negative_1up4q00",
-            "lastUpdatedAt": "2026-09-25T01:51:02.094Z"
+            "lastFailureEvidence": "coding_negative_7s6443",
+            "lastUpdatedAt": "2026-09-25T01:52:52.895Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -7282,12 +7283,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1tv1sxm",
             "lastUpdatedAt": "2026-09-25T01:51:02.093Z"
+          },
+          "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-story-complete-rpg-chronicles-of-eldoria": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "EDIT_MATCH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_7s6443",
+            "lastUpdatedAt": "2026-09-25T01:52:52.895Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_nwrwl2",
-        "lastFailureEvidence": "coding_negative_1up4q00",
-        "lastUpdatedAt": "2026-09-25T01:51:02.094Z"
+        "lastFailureEvidence": "coding_negative_7s6443",
+        "lastUpdatedAt": "2026-09-25T01:52:52.895Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 557,
@@ -11737,7 +11758,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-25T01:51:02.116Z",
+    "lastBuiltAt": "2026-09-25T01:52:52.912Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -17566,5 +17587,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-25T01:51:02.116Z"
+  "updatedAt": "2026-09-25T01:52:52.912Z"
 }
