@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {buildHistoricalPostReleaseFocusTask,buildPostReleaseFocusTask,feedPostReleaseFocus} from '../tools/vibe2-post-release-focus.mjs';
+import {buildHistoricalPostReleaseFocusTask,buildPostReleaseFocusTask,feedPostReleaseFocus,reconcileQueuedPostReleaseActualPlayGate} from '../tools/vibe2-post-release-focus.mjs';
 
 function setup(){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-post-release-focus-'));
@@ -166,6 +166,128 @@ function setup(){
   assert.equal(occupied.reason,'NO_NEW_HISTORICAL_SOURCE_CYCLE');
 }
 
+
+{
+  const {roadmap,item}=setup();
+  roadmap.developmentLifecycleMachine.postReleaseFocusedDevelopment.actualVibeInternalPlayRequiredEachBuildupCycle=true;
+  const runtimeItem={
+    ...item,
+    robloxRuntimeCandidateEvidence:{
+      published:true,
+      sourceRevision:item.robloxSourceCommit,
+      artifactIdentity:item.robloxBuildArtifactIdentity,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:7
+    },
+    robloxInternalVibePlayEvidence:{
+      pass:false,
+      actualPlay:false,
+      sourceRevision:item.robloxSourceCommit,
+      artifactIdentity:item.robloxBuildArtifactIdentity,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:7
+    }
+  };
+  const staleTask={
+    id:'demo-post-release-focus-stale',
+    gameId:'demo',
+    target:'roblox',
+    department:'development',
+    type:'implementation',
+    releaseState:'release-confirmed',
+    status:'queued',
+    retries:0,
+    evidence:['post-release-focused:yes','actual-vibe-internal-play:verified'],
+    postReleaseFocused:true,
+    actualVibeInternalPlayRequired:true
+  };
+  const blocked=reconcileQueuedPostReleaseActualPlayGate({
+    queue:{maxConcurrentTasks:20,tasks:[staleTask]},
+    runtimeQueue:{items:[runtimeItem]},
+    roadmap
+  });
+  assert.equal(blocked.changed,true);
+  assert.equal(blocked.blocked,1);
+  assert.equal(blocked.reopened,0);
+  assert.equal(blocked.queue.tasks[0].status,'blocked');
+  assert.equal(blocked.queue.tasks[0].blocker,'awaiting-actual-vibe-internal-play');
+  assert.ok(blocked.queue.tasks[0].evidence.includes('actual-vibe-reserve-gate:blocked'));
+
+  runtimeItem.robloxInternalVibePlayEvidence={
+    pass:true,
+    actualPlay:true,
+    sourceRevision:item.robloxSourceCommit,
+    artifactIdentity:item.robloxBuildArtifactIdentity,
+    universeId:'123',
+    placeId:'456',
+    versionNumber:7
+  };
+  const reopened=reconcileQueuedPostReleaseActualPlayGate({
+    queue:blocked.queue,
+    runtimeQueue:{items:[runtimeItem]},
+    roadmap
+  });
+  assert.equal(reopened.changed,true);
+  assert.equal(reopened.blocked,0);
+  assert.equal(reopened.reopened,1);
+  assert.equal(reopened.queue.tasks[0].status,'queued');
+  assert.equal(reopened.queue.tasks[0].blocker,null);
+  assert.ok(reopened.queue.tasks[0].evidence.includes('actual-vibe-reserve-gate:reopened'));
+
+  const running={...staleTask,status:'running',blocker:null};
+  runtimeItem.robloxInternalVibePlayEvidence={pass:false,actualPlay:false};
+  const untouched=reconcileQueuedPostReleaseActualPlayGate({
+    queue:{maxConcurrentTasks:20,tasks:[running]},
+    runtimeQueue:{items:[runtimeItem]},
+    roadmap
+  });
+  assert.equal(untouched.changed,false);
+  assert.equal(untouched.queue.tasks[0].status,'running');
+}
+
+{
+  const {root,roadmap,item,recombination,exposure}=setup();
+  roadmap.developmentLifecycleMachine.postReleaseFocusedDevelopment.actualVibeInternalPlayRequiredEachBuildupCycle=true;
+  const runtimeItem={
+    ...item,
+    robloxRuntimeCandidateEvidence:{
+      published:true,
+      sourceRevision:item.robloxSourceCommit,
+      artifactIdentity:item.robloxBuildArtifactIdentity,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:7
+    },
+    robloxInternalVibePlayEvidence:{pass:false,actualPlay:false}
+  };
+  const staleTask={
+    id:'demo-post-release-focus-stale',
+    gameId:'demo',target:'roblox',department:'development',type:'implementation',
+    releaseState:'release-confirmed',status:'queued',retries:0,
+    evidence:['post-release-focused:yes'],postReleaseFocused:true,actualVibeInternalPlayRequired:true
+  };
+  const roadmapFile=path.join(root,'roadmap-gate.json');
+  const runtimeFile=path.join(root,'runtime-gate.json');
+  const queueFile=path.join(root,'queue-gate.json');
+  const memoryFile=path.join(root,'recomb-gate.json');
+  const exposureFile=path.join(root,'exposure-gate.json');
+  fs.writeFileSync(roadmapFile,JSON.stringify(roadmap));
+  fs.writeFileSync(runtimeFile,JSON.stringify({items:[runtimeItem]}));
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:20,tasks:[staleTask]}));
+  fs.writeFileSync(memoryFile,JSON.stringify(recombination));
+  fs.writeFileSync(exposureFile,JSON.stringify(exposure));
+  const result=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
+  const persisted=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  assert.equal(result.added,false);
+  assert.equal(result.reason,'AWAITING_ACTUAL_VIBE_INTERNAL_PLAY');
+  assert.equal(result.reconciled,true);
+  assert.equal(result.blocked,1);
+  assert.equal(persisted.tasks[0].status,'blocked');
+  assert.equal(persisted.tasks[0].blocker,'awaiting-actual-vibe-internal-play');
+}
+
 {
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   assert.equal((runner.match(/VIBE2_24H_REFILL=DISPATCHED/g)||[]).length,1);
@@ -183,6 +305,13 @@ function setup(){
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const focus=roadmap.developmentLifecycleMachine.postReleaseFocusedDevelopment;
   assert.equal(focus.generatedTaskContract.priority,'critical');
+  assert.equal(focus.generatedTaskContract.actualVibePlayRevalidatedBeforeReserve,true);
+  assert.equal(focus.staleQueuedFocusTaskGate.enabled,true);
+  assert.equal(focus.staleQueuedFocusTaskGate.reconcileBeforeEveryReserve,true);
+  assert.equal(focus.staleQueuedFocusTaskGate.missingOrStaleActualPlayAction,'BLOCK_QUEUED_FOCUS_TASK');
+  assert.equal(focus.staleQueuedFocusTaskGate.blocker,'awaiting-actual-vibe-internal-play');
+  assert.equal(focus.staleQueuedFocusTaskGate.automaticReopenWhenExactActualPlayPassAppears,true);
+  assert.equal(focus.staleQueuedFocusTaskGate.runningTaskMutationForbidden,true);
   assert.deepEqual(focus.machinePriorityOrder.slice(0,3),['owner-directive','post-release-focused-development','release-confirmed']);
   assert.equal(focus.learningRunsInParallel,true);
   assert.equal(focus.historicalDeploymentRecovery.enabled,true);
