@@ -14,6 +14,8 @@ import {
   collectVerifiedSpecializedQueueExperience,
   applyVerifiedSpecializedQueueOutcomes,
   mergeVerifiedSpecializedQueueExperienceMemory,
+  collectVerifiedRobloxStudioPlayExperience,
+  mergeVerifiedRobloxStudioPlayExperienceMemory,
   applyVerifiedGraphicsEvolutionOutcomes,
   architectureDriftRiskForTask,
   architectureDriftGuidance,
@@ -34,6 +36,97 @@ import {
   dedupeIdlePracticeTasks,
   buildWebRobloxHandoffs
 } from '../tools/vibe2-learning-motor.mjs';
+
+test('verified local Roblox Studio play becomes reusable and online/stale evidence is rejected',()=>{
+  const source='a'.repeat(40);
+  const artifact='sha256:'+'b'.repeat(64);
+  const base={
+    gameId:'studio-game',
+    robloxSourceCommit:source,
+    robloxBuildArtifactIdentity:artifact,
+    robloxFoundationF0Evidence:{artifactRunId:777},
+    robloxRuntimeCandidateEvidence:{
+      sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,
+      universeId:'123',placeId:'456',versionNumber:7,published:true
+    },
+    robloxInternalVibePlayEvidence:{
+      authority:'vibe2-roblox-studio-runtime',
+      pass:true,actualPlay:true,runtimeVerified:true,learningReusable:true,
+      localPlaceFile:true,onlinePlaceDirectOpen:false,robloxPlayerAutomation:false,
+      rawSourceIncluded:false,rawGameplayValuesIncluded:false,
+      sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,
+      publishedCandidateCrossCheckPassed:true,publishedCandidateCrossCheckAuthority:'OPEN_CLOUD',
+      universeId:'123',placeId:'456',versionNumber:7,
+      capabilities:{studioTestService:true,virtualInput:true},
+      actions:[{id:'move',type:'key',dispatched:true,ok:true}],
+      checkpoints:[{id:'player',name:'player-present',required:true,pass:true}],
+      errors:[],learningSignals:['input','runtime','ui'],
+      workflowRunId:12345,testedAt:'2026-09-25T08:00:00.000Z'
+    }
+  };
+  const extracted=collectVerifiedRobloxStudioPlayExperience({items:[base]});
+  assert.equal(extracted.records.length,1);
+  assert.equal(extracted.records[0].engine,'roblox');
+  assert.ok(extracted.records[0].reusablePatterns.includes('verified-studio-local-play:roblox-studio'));
+  const merged=mergeVerifiedRobloxStudioPlayExperienceMemory({records:[]},{items:[base]});
+  assert.equal(merged.changed,true);
+  assert.equal(merged.added,1);
+  assert.equal(merged.memory.records.length,1);
+
+  const online=structuredClone(base);
+  online.robloxInternalVibePlayEvidence.localPlaceFile=false;
+  online.robloxInternalVibePlayEvidence.onlinePlaceDirectOpen=true;
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[online]}).records.length,0);
+
+  const stale=structuredClone(base);
+  stale.robloxInternalVibePlayEvidence.artifactRunId=776;
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[stale]}).records.length,0);
+
+  const noInput=structuredClone(base);
+  noInput.robloxInternalVibePlayEvidence.actions=[{id:'wait',type:'wait',dispatched:false,ok:true}];
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[noInput]}).records.length,0);
+});
+
+test('verified local Studio runtime failure becomes reusable failure lesson but infrastructure does not',()=>{
+  const source='c'.repeat(40);
+  const artifact='sha256:'+'d'.repeat(64);
+  const base={
+    gameId:'studio-fail',
+    robloxSourceCommit:source,
+    robloxBuildArtifactIdentity:artifact,
+    robloxFoundationF0Evidence:{artifactRunId:888},
+    robloxRuntimeCandidateEvidence:{
+      sourceRevision:source,artifactIdentity:artifact,artifactRunId:888,
+      universeId:'777',placeId:'999',versionNumber:3,published:true
+    },
+    robloxInternalVibePlayEvidence:{
+      authority:'vibe2-roblox-studio-runtime',
+      pass:false,actualPlay:true,runtimeVerified:false,learningReusable:true,
+      localPlaceFile:true,onlinePlaceDirectOpen:false,robloxPlayerAutomation:false,
+      rawSourceIncluded:false,rawGameplayValuesIncluded:false,
+      sourceRevision:source,artifactIdentity:artifact,artifactRunId:888,
+      publishedCandidateCrossCheckPassed:true,publishedCandidateCrossCheckAuthority:'OPEN_CLOUD',
+      universeId:'777',placeId:'999',versionNumber:3,
+      capabilities:{studioTestService:true,virtualInput:true},
+      actions:[{id:'move',type:'key',dispatched:true,ok:true}],
+      checkpoints:[{id:'gui',name:'ui-visible-elements',required:true,pass:false}],
+      errors:[{type:'studio-console-error',actionId:null}],
+      learningSignals:['ui','debugging'],
+      workflowRunId:333,testedAt:'2026-09-25T08:10:00.000Z'
+    }
+  };
+  const extracted=collectVerifiedRobloxStudioPlayExperience({items:[base]});
+  assert.equal(extracted.records.length,1);
+  assert.equal(extracted.records[0].outcome,'FAIL');
+  assert.match(extracted.records[0].failureCause,/studio-console-error/);
+  assert.ok(extracted.records[0].avoidPatterns.length>0);
+
+  const infra=structuredClone(base);
+  infra.robloxInternalVibePlayEvidence.actualPlay=false;
+  infra.robloxInternalVibePlayEvidence.capabilities.studioTestService=false;
+  infra.robloxInternalVibePlayEvidence.infrastructureFailure=true;
+  assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[infra]}).records.length,0);
+});
 
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
   const experience={records:[
