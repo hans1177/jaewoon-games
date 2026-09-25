@@ -3213,6 +3213,13 @@
       "failureState": "REPAIR_REQUIRED",
       "passAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
       "releaseOrDeploymentAuthority": false
+    },
+    "upperPlatformAdmissionMigration": {
+      "existingNativeDevelopmentGrandfathered": true,
+      "newNativeDevelopmentStartRequiresUnityWebReadiness": true,
+      "existingInternalOrPublicReleaseNeverDemoted": true,
+      "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
+      "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true
     }
   },
   "releaseExposureLifecycle": {
@@ -3704,7 +3711,11 @@
       ],
       "regressionPassNextAction": "UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION",
       "readinessPassNextAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
-      "readinessFailNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR"
+      "readinessFailNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
+      "mainBoundReadinessEvidence": "web-games/<gameId>/upper-platform-development-readiness.json",
+      "directNativeDispatchFromBuildWorkflowForbidden": true,
+      "sourceTreeExactMatchRequired": true,
+      "existingNativeDevelopmentGrandfathered": true
     }
   },
   "updatedAt": "2026-09-25T23:24:00+09:00",
