@@ -213,12 +213,22 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     if(infrastructurePending.length>1){
       const infraIds=new Set(infrastructurePending.map(row=>row.gameId));
       const nonInfra=include.filter(row=>!infraIds.has(row.gameId));
-      const canary=[...infrastructurePending].sort((a,b)=>{
-        const ai=clean(itemByGameId.get(a.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
-        const bi=clean(itemByGameId.get(b.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
-        return ai.localeCompare(bi)||a.gameId.localeCompare(b.gameId);
-      })[0];
+      const prerequisiteCanaries=infrastructurePending.filter(row=>{
+        const prior=itemByGameId.get(row.gameId)?.robloxInternalVibePlayEvidence||{};
+        return prior?.studioMcpServerEnablementRequired===true
+          &&clean(prior?.operatorPrerequisite)==='ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT';
+      });
+      const canary=(prerequisiteCanaries.length
+        ?[...prerequisiteCanaries].sort((a,b)=>a.gameId.localeCompare(b.gameId))
+        :[...infrastructurePending].sort((a,b)=>{
+          const ai=clean(itemByGameId.get(a.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
+          const bi=clean(itemByGameId.get(b.gameId)?.robloxInternalVibePlayEvidence?.testedAt);
+          return ai.localeCompare(bi)||a.gameId.localeCompare(b.gameId);
+        }))[0];
       const deferred=infrastructurePending.filter(row=>row.gameId!==canary.gameId).map(row=>row.gameId).sort();
+      if(prerequisiteCanaries.length){
+        console.log('ROBLOX_STUDIO_MCP_SHARED_PREREQUISITE_CANARY='+canary.gameId);
+      }
       console.log('ROBLOX_STUDIO_MCP_SHARED_INFRA_CANARY='+canary.gameId);
       console.log('ROBLOX_STUDIO_MCP_SHARED_INFRA_DEFERRED='+(deferred.join(',')||'NONE'));
       return{
