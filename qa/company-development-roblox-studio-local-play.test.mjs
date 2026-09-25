@@ -480,8 +480,13 @@ test('Studio MCP warms Studio before exact local Place attach and preserves the 
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
 
-test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
-  assert.match(workflow,/studio-local-plan:[\s\S]*needs: runtime-foundation-qa[\s\S]*if: always\(\) && needs\.runtime-foundation-qa\.result != 'cancelled'/);
+test('Studio MCP plan and actual play bypass saturated GitHub-hosted foundation capacity on the authenticated self-hosted Windows runner',()=>{
+  const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioPlanBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(studioPlanBlock,/shell: powershell/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=SELF_HOSTED_WINDOWS/);
+  assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
+  assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
   assert.match(workflow,/event_type = 'vibe2-fanin-refill'/);
   assert.match(workflow,/reason = 'roblox-official-studio-mcp-actual-play'/);
