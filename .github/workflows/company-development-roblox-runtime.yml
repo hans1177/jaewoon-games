@@ -222,6 +222,7 @@ jobs:
           BASELINE_SOURCE: ${{ matrix.baseline }}
           ARTBOOK_SOURCE: ${{ matrix.artbook }}
           TARGET_SOURCE: ${{ matrix.target }}
+          FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
         shell: bash
         run: |
           set -euo pipefail
@@ -253,6 +254,7 @@ jobs:
             --recombination=/tmp/vibe3-recombination-memory.json \
             --roadmap=company-learning/platform-release-roadmap.json \
             --output-root="$TARGET_SOURCE" \
+            --foundation-repair="$FOUNDATION_REPAIR" \
             --evidence="$evidence"
           node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
           git diff --check
@@ -264,7 +266,7 @@ jobs:
           echo "safe=$safe" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
           echo 'ROBLOX_SOURCE_MODEL_USED=NO'
-          node -e "const e=require(process.argv[1]);const existing=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';if(existing){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==false)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{if(e.vibe3LearningApplied!==true||!e.recombinationRecipeId)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
+          node -e "const e=require(process.argv[1]);const assetRebind=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';const foundationRepair=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_FOUNDATION_REPAIR';if(foundationRepair){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==true||e.foundationRepairApplied!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS');}else if(assetRebind){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==false)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{if(e.vibe3LearningApplied!==true||!e.recombinationRecipeId)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
 
       - name: Attempt validated Roblox source promotion through PR
         id: merge
