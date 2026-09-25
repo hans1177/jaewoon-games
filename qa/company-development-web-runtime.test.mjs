@@ -188,34 +188,47 @@ test('legacy frozen implementation context requires an exact canonical game and 
   assert.match(source,/FROZEN_DESIGN_BASELINE\+CANONICAL_DEVELOPMENT_QUEUE/);
 });
 
-test('canonical DEVELOPMENT_CONFIRMED runtime dispatches direct native lanes and keeps Unity Web non-blocking',()=>{
+test('canonical DEVELOPMENT_CONFIRMED runtime gates new upper-platform work on Unity Web readiness',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const admission=fs.readFileSync('tools/company-upper-platform-admission.mjs','utf8');
   assert.match(source,/native-plan:/);
   assert.match(source,/String\(item\.productionClass\|\|''\)\.toUpperCase\(\)==='DEVELOPMENT_CONFIRMED'/);
   assert.match(source,/platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
-  assert.match(source,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
-  assert.match(source,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
-  assert.match(source,/DUAL_NATIVE_TARGETS_REQUIRED/);
-  assert.match(source,/LEGACY_WEB_GATE_ACTIVE/);
-  assert.match(source,/discoverBuildWeb/);
-  assert.match(source,/gh workflow run company-development-roblox-runtime\.yml/);
-  assert.match(source,/gh workflow run company-development-unity-runtime\.yml/);
-  assert.match(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
-  assert.match(source,/INTERNAL_RELEASE_FIRST=YES/);
+  assert.match(admission,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
+  assert.match(admission,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+  assert.match(admission,/DUAL_NATIVE_TARGETS_REQUIRED/);
+  assert.match(admission,/UPPER_PLATFORM_DEVELOPMENT_READY/);
+  assert.match(admission,/READINESS_SOURCE_STALE/);
+  assert.match(source,/UPPER_PLATFORM_ELIGIBLE_IDS=/);
+  assert.match(source,/UNITY_WEB_FLOOR_IDS=/);
+  assert.match(source,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
+  assert.match(source,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
+  assert.match(source,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(source,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
+  assert.match(source,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.doesNotMatch(source,/gh workflow run company-development-(?:roblox|unity)-runtime\.yml/);
 });
 
-test('native routing does not wait for optional Unity Web build',()=>{
+test('native routing admits only readiness-pass or grandfathered games while unready games stay in Unity Web floor',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.match(source,/\n  dispatch-native:\n[\s\S]{0,500}needs: native-plan/);
-  assert.doesNotMatch(source,/needs:.*web-gate/);
-  const robloxAt=source.indexOf('gh workflow run company-development-roblox-runtime.yml');
-  const unityAt=source.indexOf('gh workflow run company-development-unity-runtime.yml');
-  const webDispatchAt=source.indexOf('gh workflow run unity-web-first-stage-build.yml');
-  assert.ok(robloxAt>0);
-  assert.ok(unityAt>robloxAt);
-  assert.ok(webDispatchAt>unityAt);
-  assert.match(source,/TRIGGER_SOURCE.*UNITY_WEB_VERIFIED/);
-  assert.match(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  const admission=fs.readFileSync('tools/company-upper-platform-admission.mjs','utf8');
+  assert.match(source,/classifyUpperPlatformAdmission/);
+  assert.match(source,/decision\.state==='UPPER_PLATFORM'/);
+  assert.match(source,/decision\.state==='UNITY_WEB_FLOOR'/);
+  assert.match(source,/decision\.state==='UNITY_WEB_BOOTSTRAP'/);
+  assert.match(source,/grandfatheredIds\.push\(item\.gameId\)/);
+  assert.match(admission,/grandfathered\.has\(gameId\)&&nativeUpperPlatformAlreadyStarted\(item\)/);
+  assert.match(admission,/if\(readiness\.pass\)return\{gameId,state:'UPPER_PLATFORM'/);
+  assert.match(admission,/if\(buildMethod\)return\{gameId,state:'UNITY_WEB_FLOOR'/);
+  assert.match(admission,/state:'UNITY_WEB_BOOTSTRAP'/);
+  assert.match(source,/dispatch-roblox:/);
+  assert.match(source,/dispatch-unity:/);
+  assert.match(source,/dispatch-unity-web-floor:/);
+  assert.match(source,/dispatch-unity-web-bootstrap:/);
+  assert.match(source,/needs\.native-plan\.outputs\.eligible_json/);
+  assert.match(source,/needs\.native-plan\.outputs\.unity_web_json/);
+  assert.doesNotMatch(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
 });
 
 test('target platform failures stay in repair states in native workers',()=>{
@@ -240,14 +253,17 @@ test('development runtime uses company-runtime queue authority and canonical nat
   assert.match(source,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
 });
 
-test('direct native runtime has no legacy Web pause stop switch',()=>{
+test('development runtime has no legacy Web pause switch and uses readiness-controlled reusable native lanes',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   assert.doesNotMatch(workflow,/OWNER_WEB_DEVELOPMENT_PAUSED/);
   assert.doesNotMatch(workflow,/WEB_DEVELOPMENT_TARGET_COUNT=0/);
-  assert.doesNotMatch(workflow,/web-gate/);
   assert.match(workflow,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
-  assert.match(workflow,/ROBLOX_RUNTIME_DISPATCH=YES/);
-  assert.match(workflow,/UNITY_APP_RUNTIME_DISPATCH=YES/);
+  assert.match(workflow,/UPPER_PLATFORM_ELIGIBLE_IDS=/);
+  assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
+  assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_DISPATCH=YES/);
+  assert.doesNotMatch(workflow,/UNITY_APP_RUNTIME_DISPATCH=YES/);
 });
 
 test('presentation runtime observation measures frame continuity and living motion',()=>{
