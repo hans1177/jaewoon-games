@@ -70,7 +70,7 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
   return{pass:true,reason:'READY',data,currentTree};
 }
 
-export function classifyUpperPlatformAdmission(item,{repoRoot='.'}={}){
+export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGameIds=[]}={}){
   const gameId=clean(item?.gameId);
   if(!gameId)throw new Error('UPPER_PLATFORM_GAME_ID_REQUIRED');
   if(item.minimumDesignContract?.pass!==true)return{gameId,state:'BLOCKED',reason:'MINIMUM_DESIGN_CONTRACT_REQUIRED'};
@@ -78,10 +78,11 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.'}={}){
   if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)return{gameId,state:'BLOCKED',reason:'DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED'};
   const targets=new Set(item.concurrentTargetPlatforms||[]);
   if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
-  if(nativeUpperPlatformAlreadyStarted(item))return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true};
+  const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
+  if(grandfathered.has(gameId)&&nativeUpperPlatformAlreadyStarted(item))return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true};
   const readiness=readUpperPlatformReadiness(repoRoot,gameId);
   if(readiness.pass)return{gameId,state:'UPPER_PLATFORM',reason:'UPPER_PLATFORM_DEVELOPMENT_READY',grandfathered:false,readiness};
   const buildMethod=discoverUnityWebBuildMethod(repoRoot,gameId);
   if(buildMethod)return{gameId,state:'UNITY_WEB_FLOOR',reason:readiness.reason,buildMethod};
-  return{gameId,state:'BLOCKED',reason:readiness.reason+':BUILD_WEB_UNAVAILABLE'};
+  return{gameId,state:'UNITY_WEB_BOOTSTRAP',reason:readiness.reason+':CANONICAL_UNITY_WEB_SOURCE_REQUIRED'};
 }
