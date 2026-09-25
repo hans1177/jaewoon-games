@@ -1,5 +1,5 @@
 {
-  "version": 180,
+  "version": 181,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3169,6 +3169,27 @@
       "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
       "staleBuildEvidenceRejected": true,
       "changedSourceRequiresRebuildBeforeGateReevaluation": true
+    },
+    "robloxInternalReleaseStorePresentation": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalBuildupLoop.storePresentationAutomation",
+      "triggerSource": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+      "executor": ".github/workflows/company-roblox-internal-vibe-presentation.yml",
+      "playerCapture": "tools/company-roblox-internal-player-capture.ps1",
+      "composer": "tools/company-roblox-thumbnail-compose.py",
+      "uploader": "tools/company-roblox-thumbnail-opencloud.mjs",
+      "titleResolver": "tools/company-roblox-store-presentation.mjs",
+      "studioGuiAutomation": false,
+      "studioApiOnly": true,
+      "thumbnailCount": 3,
+      "homepagePropagation": {
+        "writeAuthority": "company-runtime:game-catalog.json",
+        "imageField": "canonical.identity.image",
+        "compatibilityField": "image",
+        "value": "verified Roblox CDN thumbnail URL",
+        "consumer": ".github/workflows/homepage-manager.yml",
+        "shadowHomepagePipeline": false
+      },
+      "evidence": "company-runtime:development-queue.json#robloxStorePresentationEvidence"
     }
   },
   "autonomousBottleneckRecovery": {
