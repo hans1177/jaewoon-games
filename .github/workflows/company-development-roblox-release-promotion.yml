@@ -193,10 +193,17 @@ jobs:
               .sort((a,b)=>Number(b.robloxRuntimeCandidateEvidence?.versionNumber||b.robloxInternalReleaseEvidence?.versionNumber||0)
                 -Number(a.robloxRuntimeCandidateEvidence?.versionNumber||a.robloxInternalReleaseEvidence?.versionNumber||0))[0];
             sharedRotation=headlessCanonical===true;
-            const occupiedRuntimeComplete=occupied?.robloxRuntimePassed===true
-              ||occupied?.robloxFinalReviewPassed===true
-              ||String(occupied?.currentStep||'').toUpperCase()==='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-            if(occupied&&!occupiedRuntimeComplete){
+            const occupiedCandidate=occupied?.robloxRuntimeCandidateEvidence||occupied?.robloxInternalReleaseEvidence||occupied?.robloxReleaseEvidence||{};
+            const occupiedPlay=occupied?.robloxInternalVibePlayEvidence||{};
+            const occupiedVibePlayComplete=occupiedPlay.pass===true
+              &&occupiedPlay.actualPlay===true
+              &&String(occupiedPlay.sourceRevision||'')===String(occupied?.robloxSourceCommit||'')
+              &&String(occupiedPlay.artifactIdentity||'')===String(occupied?.robloxBuildArtifactIdentity||'')
+              &&String(occupiedPlay.universeId||'')===String(occupiedCandidate.universeId||'')
+              &&String(occupiedPlay.placeId||'')===String(occupiedCandidate.placeId||'')
+              &&Number(occupiedPlay.versionNumber||0)>0
+              &&Number(occupiedPlay.versionNumber)===Number(occupiedCandidate.versionNumber||0);
+            if(occupied&&!occupiedVibePlayComplete){
               throw new Error(`ROBLOX_RELEASE_SHARED_FALLBACK_CAPACITY_BUSY:${gameId}:${occupied.gameId}`);
             }
             if(occupied&&sharedRotation)console.log(`ROBLOX_FAST_MVP_SHARED_TARGET_ROTATE=${occupied.gameId}->${gameId}`);
