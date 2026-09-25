@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { runSystemAiWorker } from '../tools/company-system-ai-worker.mjs';
 import { normalizeSystemAiQueue,reserveSystemAiBatch,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask,systemAiImpactProfile } from '../tools/company-system-ai-queue.mjs';
+import { analyzeSystemAiBottlenecks } from '../tools/company-system-ai-bottleneck-sensor.mjs';
 
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-system-ai-'));}
 function write(file,text){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text,'utf8');}
@@ -319,3 +320,66 @@ test('System AI refuses a hypothesis that prior evidence already rejected',async
     assert.match(fs.readFileSync('tools/demo.mjs','utf8'),/value=1/);
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
+
+test('bottleneck sensor recommendation is consumed by the existing impact-aware reserve order',()=>{
+  const queue=normalizeSystemAiQueue({tasks:[
+    {id:'cohort-a',status:'queued',priority:'high',taskType:'bottleneck-repair',goal:'repair shared failure',responsibleFiles:['tools/a.mjs'],failureSignature:'SHARED_FAILURE',blockedTaskIds:['g1','g2','g3'],recurrenceCount:3,createdAt:'2026-09-25T00:00:00Z'},
+    {id:'cohort-b',status:'queued',priority:'high',taskType:'bottleneck-repair',goal:'repair shared failure',responsibleFiles:['tools/b.mjs'],failureSignature:'SHARED_FAILURE',createdAt:'2026-09-25T00:01:00Z'},
+    {id:'unrelated-critical',status:'queued',priority:'critical',goal:'unrelated',responsibleFiles:['tools/c.mjs'],createdAt:'2026-09-25T00:02:00Z'}
+  ]});
+  const snapshot=analyzeSystemAiBottlenecks({systemAiQueue:queue,gameQueue:{tasks:[]},maxBatch:1,at:Date.parse('2026-09-26T00:00:00Z')});
+  assert.equal(snapshot.commonFailureCohorts.length,1);
+  assert.equal(snapshot.recommendedReserveTaskIds[0],'cohort-a');
+  assert.equal(snapshot.recommendedTargets[0].commonBottleneck,true);
+  const reserved=reserveSystemAiBatch(queue,{max:1,reservationId:'sensor-guided',preferredIds:snapshot.recommendedReserveTaskIds,at:Date.parse('2026-09-26T00:00:00Z')});
+  assert.deepEqual(reserved.reserved.map(x=>x.id),['cohort-a']);
+  assert.deepEqual(reserved.preferredIds,['cohort-a']);
+});
+
+test('hard bottleneck repair critic may revise the proposal before any file edit is applied',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({
+      id:'critic-repair',status:'running',taskType:'bottleneck-repair',goal:'repair exact bottleneck',
+      responsibleFiles:['tools/demo.mjs'],acceptanceCriteria:['value becomes 3'],failureSignature:'EXACT_BOTTLENECK',
+      retries:1,evidence:['failure-cause:EXACT_BOTTLENECK']
+    }));
+    write('response.json',JSON.stringify({
+      summary:'initial proposal',
+      strategyOptions:[
+        {id:'wide',summary:'initial wide repair',risk:'HIGH',files:['tools/demo.mjs']},
+        {id:'minimal',summary:'smaller repair',risk:'LOW',files:['tools/demo.mjs']}
+      ],
+      selectedStrategyId:'wide',
+      edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],
+      newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]
+    }));
+    write('critic.json',JSON.stringify({
+      verdict:'REVISE',
+      preferredStrategyId:'minimal',
+      weakPoints:['initial change does not meet the exact acceptance value'],
+      requiredCorrections:['use the minimal strategy and set the exact accepted value'],
+      revisedAnswer:{
+        summary:'critic-corrected minimal repair',
+        strategyOptions:[
+          {id:'wide',summary:'initial wide repair',risk:'HIGH',files:['tools/demo.mjs']},
+          {id:'minimal',summary:'exact minimal repair',risk:'LOW',files:['tools/demo.mjs']}
+        ],
+        selectedStrategyId:'minimal',
+        edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=3'}],
+        newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]
+      }
+    }));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json',criticResponseFile:'critic.json'});
+    assert.match(fs.readFileSync('tools/demo.mjs','utf8'),/value=3/);
+    assert.doesNotMatch(fs.readFileSync('tools/demo.mjs','utf8'),/value=2/);
+    assert.equal(result.deepReasoningUsed,true);
+    assert.equal(result.criticVerdict,'REVISE');
+    assert.equal(result.selectedStrategyId,'minimal');
+    assert.equal(result.strategyOptions.length,2);
+    assert.equal(result.criticRawStored,false);
+    assert.ok(result.criticDecisionSha256);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
