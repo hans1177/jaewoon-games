@@ -146,7 +146,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "currentPhase": "ROBLOX_UNITY_DIRECT_NATIVE_DUAL_DEVELOPMENT",
+    "currentPhase": "UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_UPPER_PLATFORM_DEVELOPMENT",
     "unityExistingPathPreserved": true,
     "platformSpecificEvidenceRequired": true,
     "portableVerifiedExperienceSharedThroughV3Memory": true,
@@ -178,7 +178,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "equalTierSelection": "SAME_GAME_AUTO_PAIR",
+    "equalTierSelection": "UPPER_PLATFORM_PAIR_AFTER_UNITY_WEB_READINESS",
     "robloxMustRunFirst": false,
     "machinePolicyAuthority": "company-learning/platform-release-roadmap.json",
     "humanReadableSpecRequired": false
@@ -194,7 +194,7 @@
   },
   "unityWebFirstStage": {
     "enabled": true,
-    "scope": "VALIDATION_SURFACE_ONLY",
+    "scope": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
     "canonicalSourceRoot": "unity-games/<gameId>/",
     "buildOutputRoot": "web-games/<gameId>/",
     "authoringStack": [
@@ -222,7 +222,7 @@
     "policyAuthority": "company-learning/platform-release-roadmap.json",
     "cloudflareBuildOutputRequired": true,
     "mobileBrowserQaRequired": true,
-    "failureState": "UNAVAILABLE_NON_BLOCKING",
+    "failureState": "REPAIR_REQUIRED",
     "retryLimit": null,
     "runtimeQaContract": {
       "queryMode": "qa=1",
@@ -247,20 +247,47 @@
       "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
     },
     "status": "OWNER_DIRECT_LOCKED",
-    "developmentAdmissionAuthority": false,
+    "developmentAdmissionAuthority": true,
     "legacyCompatibilityOnly": false,
-    "validationSurfaceOnly": true,
-    "nativeGateAuthority": false,
+    "validationSurfaceOnly": false,
+    "nativeGateAuthority": true,
     "homepageTestSurface": true,
-    "nativeDevelopmentMayRunWithoutWebBuild": true,
+    "nativeDevelopmentMayRunWithoutWebBuild": false,
     "nativeReleaseMayRunWithoutWebBuild": true,
-    "machinePolicyAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebValidationSurface",
-    "humanReadableSyncDocumentRequired": false
+    "machinePolicyAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
+    "humanReadableSyncDocumentRequired": false,
+    "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+    "upperPlatformTargets": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "passAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
+    "readinessFailAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
+    "developmentFlow": [
+      "CODE_DEVELOPMENT",
+      "GRAPHICS_MOTION_AUDIO_PRESENTATION_DEVELOPMENT",
+      "UNITY_WEBGL_BUILD",
+      "ACTUAL_BROWSER_PLAY",
+      "INDEPENDENT_QA",
+      "REGRESSION",
+      "UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION",
+      "CAUSAL_REPAIR_AND_REBUILD_WHEN_NOT_READY",
+      "HANDOFF_TO_ROBLOX_AND_UNITY_WHEN_READY"
+    ],
+    "requiredReadinessDomains": [
+      "DESIGN",
+      "CODE",
+      "GRAPHICS",
+      "WEBGL_BUILD",
+      "ACTUAL_PLAY",
+      "QA",
+      "PORTABILITY"
+    ]
   },
   "directNativeDualPlatformDevelopment": {
     "enabled": true,
     "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
-    "requestEitherStartsBoth": true,
+    "requestEitherStartsBoth": false,
     "targets": [
       "ROBLOX",
       "UNITY"
@@ -286,7 +313,10 @@
     "externalReleaseIndependent": true,
     "globalGameCountCap": null,
     "machinePolicyAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
-    "humanReadableSyncDocumentRequired": false
+    "humanReadableSyncDocumentRequired": false,
+    "upperPlatformReadinessRequired": true,
+    "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+    "upperPlatformStartAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT"
   },
   "robloxCoDevelopmentDesign": {
     "version": 1,
