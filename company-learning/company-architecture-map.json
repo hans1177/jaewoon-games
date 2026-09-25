@@ -2880,7 +2880,8 @@
       "supersededSharedTargetRejected": true,
       "publishedCandidateMustBeCurrentWhenShared": true,
       "requiresRuntimeFoundationQaSuccess": true,
-      "executionOrder": "RUNTIME_FOUNDATION_QA_PASS -> LOCAL_STUDIO_ACTUAL_PLAY -> VERIFIED_LEARNING_INGRESS"
+      "executionOrder": "RUNTIME_FOUNDATION_QA_PASS -> LOCAL_STUDIO_ACTUAL_PLAY -> VERIFIED_LEARNING_INGRESS",
+      "requiresRuntimeFoundationCandidatePass": true
     }
   },
   "ownerRule2Topology": {
@@ -3197,7 +3198,8 @@
       "publishedCandidateVerification": "OPEN_CLOUD_ONLY",
       "headlessF0RemainsIndependent": true,
       "supersededSharedTargetCannotMintActualPlayEvidence": true,
-      "localStudioPlayRequiresRuntimeFoundationQaSuccess": true
+      "localStudioPlayRequiresRuntimeFoundationQaSuccess": true,
+      "localStudioPlayRequiresRuntimeFoundationCandidatePass": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
