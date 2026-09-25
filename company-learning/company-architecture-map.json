@@ -1,5 +1,5 @@
 {
-  "version": 172,
+  "version": 173,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3984,5 +3984,28 @@
       "gateThresholdsUnchanged": true,
       "learningDoesNotExpandAuthority": true
     }
+  },
+  "continuousGameplaySystemEvolutionTopology": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract",
+    "planner": "tools/vibe2-auto-planner.mjs",
+    "designDiscovery": "design/<gameId>/<latest-date>/design-revised.json",
+    "flow": [
+      "LOAD_LATEST_REVISED_DESIGN",
+      "EXTRACT_GAME_SPECIFIC_CORE_FUN_CORE_LOOP_SIGNATURE_SYSTEMS_PROGRESSION",
+      "BUILD_PARALLEL_CORE_FUN_PROGRESSION_PRESENTATION_USABILITY_STABILITY_TASKS",
+      "FILTER_ONLY_OVERLAPPING_RESPONSIBLE_FILES",
+      "EXECUTE_MAXIMUM_SAFE_NON_OVERLAPPING_WORK",
+      "INCREMENTAL_QA_PER_RESPONSIBILITY",
+      "FAN_IN_REGRESSION",
+      "COMPARE_AGAINST_VERIFIED_BASELINE",
+      "CREATE_NEXT_GAME_SPECIFIC_GAP_CYCLE"
+    ],
+    "sameGameIndependentSystemsParallel": true,
+    "presentationAndGameplayParallel": true,
+    "sourceRootWideLockForbidden": true,
+    "gameWideLockForbidden": true,
+    "responsibleFileConflictSerializationOnly": true,
+    "architectureMapDoesNotCreatePolicy": true
   }
 }

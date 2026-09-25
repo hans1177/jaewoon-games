@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 76,
+  "revision": 77,
   "updatedAt": "2026-09-25",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -1342,5 +1342,17 @@
     "nativeTargetProofTraceRequired": true,
     "webPositiveExemptFromNativeEngineQa": true,
     "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
+  },
+  "continuousGameplaySystemEvolution": {
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract",
+    "enabled": true,
+    "latestRevisedDesignContextRequiredForCoreFunAndProgression": true,
+    "coreFunAndProgressionRunAlongsidePresentationWhenResponsibilitiesDoNotOverlap": true,
+    "presentationMayNotMonopolizeDevelopment": true,
+    "genericDesignAgnosticCoreFunOrProgressionTaskForbiddenWhenDesignExists": true,
+    "designIsImplementationQuantityCeiling": false,
+    "sourceRootOrGameWideLockForbidden": true,
+    "responsibleFileConflictSerializationOnly": true,
+    "terminalCompletionStateForbidden": true
   }
 }

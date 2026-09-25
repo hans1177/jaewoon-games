@@ -1,5 +1,5 @@
 {
-  "version": 356,
+  "version": 357,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -6554,6 +6554,19 @@
       "implementationBreadthAdded": true,
       "perpetualLoopAdded": true,
       "transientWorkLockRequeueAdded": true
+    },
+    "continuousGameplayEvolution20260925": {
+      "id": "CONTINUOUS_GAMEPLAY_SYSTEM_EVOLUTION_2026-09-25",
+      "documentedAt": "2026-09-25",
+      "documentationFirst": true,
+      "summary": "Requires the planner to load each game's latest revised design and keep CORE_FUN and PROGRESSION advancing in parallel with presentation and other independent quality lanes.",
+      "codeBindings": [
+        "tools/vibe2-auto-planner.mjs",
+        "vibe2-runtime.json",
+        "qa/vibe2-auto-planner.test.mjs"
+      ],
+      "sourceRootWideLocksRemainForbidden": true,
+      "protectedGameplaySemanticsRemainLocked": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -21148,6 +21161,107 @@
       "preserveLearningSignal": true,
       "doNotRecordFailureCause": true,
       "reason": "SOURCE_ROOT_OR_FILE_LOCK_CONTENTION_IS_SCHEDULING_NOT_GAME_QUALITY_FAILURE"
+    }
+  },
+  "continuousGameplaySystemEvolutionContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-25",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "intent": "GAME_MUST_KEEP_ADVANCING_TOWARD_AND_BEYOND_APPROVED_DESIGN_COMPLETENESS_WHILE_PRESENTATION_EVOLVES_IN_PARALLEL",
+    "appliesTo": [
+      "ROBLOX",
+      "UNITY",
+      "WEB_VALIDATION_SURFACE_WHEN_IT_IS_THE_ACTIVE_IMPLEMENTATION_SURFACE"
+    ],
+    "designContext": {
+      "requiredForGameplayEvolution": true,
+      "canonicalDiscoveryRoot": "design/<gameId>/<latest-date>/",
+      "preferredFiles": [
+        "design-revised.json",
+        "design-disposition.json",
+        "cycle-status.json",
+        "core-artbook.json"
+      ],
+      "latestRevisedDesignMustBeLoadedBeforeCoreFunOrProgressionTaskGeneration": true,
+      "taskMustCarryDesignContextEvidence": true,
+      "genericQualityGapWithoutAvailableDesignContextForbiddenForCoreFunAndProgression": true,
+      "missingDesignAction": "DO_NOT_INVENT_PROTECTED_GAMEPLAY; CONTINUE_ONLY_SAFE_PRESENTATION_STABILITY_OR_EXPLICIT_REPAIR_AND_ROUTE_DESIGN_CONTEXT_REPAIR"
+    },
+    "simultaneousLanes": {
+      "required": [
+        "CORE_FUN",
+        "PROGRESSION",
+        "PRESENTATION",
+        "USABILITY",
+        "STABILITY"
+      ],
+      "presentationMayNotMonopolizeDevelopment": true,
+      "coreFunAndProgressionMustRemainEligibleWhilePresentationWorkExists": true,
+      "graphicsAndGameplayParallelWhenResponsibleFilesDoNotOverlap": true,
+      "sameGameIndependentSystemsParallel": true,
+      "sourceRootOrGameWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true,
+      "runtimeOrGraphicsFailureBlocksOnlyAffectedResponsibilities": true
+    },
+    "gameplayAdvance": {
+      "coreFun": {
+        "mustGroundIn": [
+          "content.coreFun",
+          "content.coreLoop",
+          "content.signatureSystems"
+        ],
+        "requirement": "ADVANCE_REAL_PLAYER_ACTION_DECISION_FEEDBACK_AND_GAME_STATE_NOT_MARKERS_OR_DESCRIPTIONS"
+      },
+      "progression": {
+        "mustGroundIn": [
+          "content.progressionDirection",
+          "content.coreLoop",
+          "content.signatureSystems"
+        ],
+        "requirement": "ADVANCE_REAL_REWARD_UNLOCK_GOAL_WAVE_QUEST_INVENTORY_ECONOMY_OR_CONTENT_DEPTH_WHEN_PRESENT_IN_APPROVED_DESIGN"
+      },
+      "systemDepth": {
+        "designIsMinimumMeaningAndConstraintNotImplementationQuantityCeiling": true,
+        "mayDeepenExistingApprovedSystems": true,
+        "mayAddConnectedImplementationDepthWithoutChangingProtectedGameMeaning": true,
+        "protectedWithoutOwnerOrApprovedDesignAuthority": [
+          "CORE_IDENTITY",
+          "BALANCE_VALUES",
+          "ECONOMY_MEANING",
+          "SAVE_SCHEMA",
+          "NETWORK_AUTHORITY",
+          "APPROVED_RULE_SEMANTICS"
+        ]
+      }
+    },
+    "taskGeneration": {
+      "designSpecificGoalTextRequired": true,
+      "designSpecificEvidenceRequired": true,
+      "responsibleFilesMustBeSelectedByPillarAndDesignIntent": true,
+      "oneGenericCrossGameGoalForAllTitlesForbidden": true,
+      "perVerifiedCycleMustAttemptCoreFunAndProgressionAlongsidePresentationWhenSafe": true,
+      "terminalCompletionStateForbidden": true,
+      "nextVerifiedGapCycleRequired": true
+    },
+    "verification": {
+      "realSourceDeltaRequired": true,
+      "coreFunAndProgressionRequireGameplaySourceDelta": true,
+      "presentationRequiresVisibleRuntimeDelta": true,
+      "markerOnlyOrCommentOnlyPassForbidden": true,
+      "taskMustStateWhichApprovedDesignElementAdvanced": true,
+      "runtimeOrDeterministicGameplayQaRequiredWhenBehaviorChanges": true,
+      "beforeAfterOrBaselineComparisonRequired": true,
+      "saveAndGameplaySemanticRegressionForbidden": true
+    },
+    "bindings": {
+      "planner": "tools/vibe2-auto-planner.mjs",
+      "runtime": "vibe2-runtime.json",
+      "queue": "assets/vibe-continuous-queue.js",
+      "incrementalQa": "tools/vibe2-incremental-qa.mjs",
+      "tests": [
+        "qa/vibe2-auto-planner.test.mjs",
+        "qa/vibe2-controller-contract.test.mjs"
+      ]
     }
   }
 }

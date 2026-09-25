@@ -1,5 +1,5 @@
 {
-  "version": 54,
+  "version": 55,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1029,5 +1029,15 @@
     "postReleaseFixedProtectedSlotForbidden": true,
     "historicalMaintenanceInternalCap": null,
     "externalCapacityOnlyBoundary": true
+  },
+  "continuousGameplaySystemEvolutionContract": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract",
+    "documentedAt": "2026-09-25",
+    "problem": "GENERIC_QUALITY_TASKS_COULD_ADVANCE_PRESENTATION_WITHOUT_STRONGLY_GROUNDING_CORE_FUN_OR_PROGRESSION_IN_THE_GAME_DESIGN",
+    "resolution": "LOAD_LATEST_REVISED_DESIGN_AND_GENERATE_GAME_SPECIFIC_CORE_FUN_AND_PROGRESSION_WORK_IN_PARALLEL_WITH_PRESENTATION",
+    "protectedSemanticsUnchanged": true,
+    "sourceRootOrGameWideLockForbidden": true,
+    "maxSafeParallelismPreserved": true
   }
 }
