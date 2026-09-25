@@ -56,7 +56,7 @@ jobs:
         working-directory: main
         run: |
           set -euo pipefail
-          node --test qa/company-development-roblox-release-promotion.test.mjs qa/vibe3-roblox-platform.test.mjs
+          node --test qa/company-development-roblox-release-promotion.test.mjs qa/company-roblox-store-presentation.test.mjs qa/vibe3-roblox-platform.test.mjs
 
       - name: Resolve exact canonical release target
         id: target
@@ -639,12 +639,17 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {resolveRobloxBilingualTitle} from './tools/company-roblox-store-presentation.mjs';
 
           const launch=JSON.parse(fs.readFileSync(`${process.env.SOURCE_ROOT}/launch-mvp.json`,'utf8'));
-          const displayName=String(launch.robloxTitleKorean||launch.gameName||'').trim();
-          const description=String(launch.robloxDescriptionKorean||'').trim();
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const gameId=String(launch.gameId||'').trim();
+          const catalogEntry=(catalog.games||[]).find(x=>String(x.id||x.gameId||'').trim()===gameId)||{};
+          const title=resolveRobloxBilingualTitle({launch,catalogEntry});
+          const displayName=title.displayName;
+          const description=String(launch.robloxDescriptionKorean||launch.gameDescriptionKo||'').trim();
           const serverSize=Number(launch.robloxServerSize||0);
-          if(!displayName)throw new Error('ROBLOX_METADATA_TITLE_MISSING');
+          fs.writeFileSync('/tmp/roblox-store-title.json',JSON.stringify({gameId,displayName,...title},null,2)+'\\n');
 
           const fields=['displayName','description'];
           const payload={displayName,description};
@@ -666,6 +671,7 @@ jobs:
           if(Number.isInteger(serverSize)&&serverSize>0&&Number(place.serverSize)!==serverSize)throw new Error(`ROBLOX_SERVER_SIZE_VERIFY_MISMATCH:${place.serverSize}`);
 
           console.log(`ROBLOX_EXPERIENCE_TITLE=${displayName}`);
+          console.log('ROBLOX_EXPERIENCE_TITLE_BILINGUAL=PASS');
           console.log(`ROBLOX_EXPERIENCE_DESCRIPTION_LENGTH=${description.length}`);
           if(serverSize>0)console.log(`ROBLOX_SERVER_SIZE=${serverSize}`);
           console.log('ROBLOX_EXPERIENCE_METADATA_UPDATE=PASS');
