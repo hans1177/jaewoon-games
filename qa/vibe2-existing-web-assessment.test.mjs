@@ -93,12 +93,12 @@ test('stale high validation does not hide current approved scope gaps',()=>{
 
 test('development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const developmentGames=(catalog.games||[]).filter(game=>String(game.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED');
   const checked=[];
-  for(const game of catalog.games||[]){
-    if(String(game.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+  for(const game of developmentGames){
     const root=path.join('web-games',String(game.id||''));
     const index=path.join(root,'index.html');
-    if(!fs.existsSync(index))continue;
+    assert.equal(fs.existsSync(index),true,`${game.id}: DEVELOPMENT_CONFIRMED Web entry missing`);
     const html=fs.readFileSync(index,'utf8');
     assert.doesNotMatch(html,/task-local exploration handoff|placeholder for the actual implementation|Approved Web Bootstrap/i,game.id);
     const scriptTag=/<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
@@ -125,5 +125,5 @@ test('development-confirmed Web entries have parseable startup code and no missi
     }
     checked.push(game.id);
   }
-  assert.ok(checked.length>=10,'expected current development-confirmed Web games to be checked');
+  assert.equal(checked.length,developmentGames.length,'every DEVELOPMENT_CONFIRMED game must be checked');
 });
