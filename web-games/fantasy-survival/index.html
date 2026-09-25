@@ -1609,10 +1609,10 @@ function raidEnemyPlayerTarget(e){
 }
 function startRaid(realNow=Date.now()){
  if(multiplayer.connected&&!multiIsHost())return;const targets=raidTargetCandidates();if(!targets.length){state.raid.nextAt=realNow+10000;return}
- const wave=Math.min(5,(state.raid.count||0)+1),spec=RAID_WAVES[wave-1],target=targets[Math.floor(Math.random()*targets.length)],id='raid-'+realNow.toString(36),bounds=areaRaidBounds(target.area);let n=0,total=spec.reduce((v,g)=>v+g.count,0);
+ const raidNo=Math.max(1,(state.raid.count||0)+1),waveIndex=Math.min(RAID_WAVES.length,raidNo),spec=RAID_WAVES[waveIndex-1],target=targets[Math.floor(Math.random()*targets.length)],id='raid-'+realNow.toString(36),bounds=areaRaidBounds(target.area),limitMs=raidNo*60000;let n=0,total=spec.reduce((v,g)=>v+g.count,0);
  for(const group of spec)for(let i=0;i<group.count;i++){const a=(n++/Math.max(1,total))*Math.PI*2+rand(-.25,.25),rr=rand(220,330),x=clamp(target.x+Math.cos(a)*rr,70,bounds.w-70),y=clamp(target.y+Math.sin(a)*rr,70,bounds.h-70),e=spawnAt(creatures[group.id],x,y,null);e.area=target.area;e.noRespawn=true;e.hostile=true;e.raidId=id;e.raidTargetId=target.id;e.raidChase=true;state.enemies.push(e)}
- state.raid.count=wave;state.raid.active={id,wave,targetId:target.id,deadline:realNow+60000};state.raid.nextAt=realNow+120000;state.dirty=true;if(multiplayer.connected)multiplayer.worldAt=0;
- if(target.local)showNotice(wave+'차 습격 · 60초 안에 전부 처치');else{showNotice('동료에게 '+wave+'차 습격');multiSend('raid-alert',{targetId:target.id,wave})}
+ state.raid.count=raidNo;state.raid.active={id,wave:raidNo,targetId:target.id,deadline:realNow+limitMs};state.raid.nextAt=realNow+120000;state.dirty=true;if(multiplayer.connected)multiplayer.worldAt=0;
+ if(target.local)showNotice(raidNo+'차 습격 · '+raidNo+'분 안에 전부 처치');else{showNotice('동료에게 '+raidNo+'차 습격');multiSend('raid-alert',{targetId:target.id,wave:raidNo})}
 }
 function updateRaid(realNow=Date.now()){
  if(multiplayer.connected&&!multiIsHost())return;const a=state.raid.active;
@@ -1620,7 +1620,7 @@ function updateRaid(realNow=Date.now()){
   if(realNow>=a.deadline){for(const e of state.enemies)if(e.hp>0&&e.raidId===a.id)e.hp=0;state.raid.active=null;state.dirty=true;if(a.targetId===multiplayer.playerId)knockoutPlayer('습격 제한시간 초과 · 즉사',true);else multiSend('raid-fail',{targetId:a.targetId});if(multiplayer.connected)multiplayer.worldAt=0;return}
  }else if(realNow>=(state.raid.nextAt||0))startRaid(realNow)
 }
-function receiveRaidAlert(payload){if(payload?.targetId===multiplayer.playerId)showNotice((payload.wave||1)+'차 습격 · 60초 안에 전부 처치')}
+function receiveRaidAlert(payload){if(payload?.targetId===multiplayer.playerId){const n=Math.max(1,Number(payload.wave)||1);showNotice(n+'차 습격 · '+n+'분 안에 전부 처치')}}
 function receiveRaidClear(payload){if(payload?.targetId===multiplayer.playerId)showNotice((payload.wave||1)+'차 습격 방어 성공')}
 function receiveRaidFail(payload){if(payload?.targetId===multiplayer.playerId)knockoutPlayer('습격 제한시간 초과 · 즉사',true)}
 function updateMultiStatus(extra=''){
@@ -1791,7 +1791,7 @@ function applyWorldSnapshot(w){
  }
  if(Array.isArray(w.crops))state.crops=w.crops.filter(c=>c&&['carrot','greens'].includes(c.type)&&Number.isFinite(Number(c.x))&&Number.isFinite(Number(c.y))).map(c=>({id:String(c.id),type:c.type,x:Number(c.x),y:Number(c.y),readyAt:Number(c.readyAt)||Date.now()}));
  if(Array.isArray(w.snowChests))state.snowChests=[!!w.snowChests[0],!!w.snowChests[1]];
- if(w.raid&&typeof w.raid==='object')state.raid={count:Math.max(0,Math.min(5,Number(w.raid.count)||0)),nextAt:Number(w.raid.nextAt)||Date.now()+120000,active:w.raid.active?{...w.raid.active}:null};
+ if(w.raid&&typeof w.raid==='object')state.raid={count:Math.max(0,Math.floor(Number(w.raid.count)||0)),nextAt:Number(w.raid.nextAt)||Date.now()+120000,active:w.raid.active?{...w.raid.active}:null};
  if(w.weather&&typeof w.weather==='object')setWeather(w.weather.kind,{fromNetwork:true,changedAt:w.weather.changedAt,nextAt:w.weather.nextAt,seed:w.weather.seed});
  state.bossSummoned=!!w.bossSummoned;state.bossDefeated=!!w.bossDefeated;state.crystalSealReleased=!!w.crystalSealReleased
 }
@@ -3763,7 +3763,7 @@ function loadGame(){
   state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.jungleBench=loadPos(s.jungleBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);state.flags=Array.isArray(s.flags)?s.flags.map(loadPos).filter(Boolean):[];
   const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?{open:!!b.open}:{}),...(type==='chest'?{storage:b.storage&&typeof b.storage==='object'?{...b.storage}:{}}:{}),...(type==='wall'?{material:['wood','iron','gold'].includes(b.material)?b.material:'wood',refund:b.refund&&typeof b.refund==='object'?{...b.refund}:{wood:5}}:{})}}).filter(Boolean):[];
   state.chests=loadBuildList(s.chests,'chest');state.walls=loadBuildList(s.walls,'wall');state.doors=loadBuildList(s.doors,'door');state.beds=loadBuildList(s.beds,'bed');
-  state.crops=Array.isArray(s.crops)?s.crops.map(c=>{const p=loadPos(c);return p&&['carrot','greens'].includes(c.type)?{id:String(c.id||('c'+Math.random().toString(36).slice(2))),type:c.type,x:p.x,y:p.y,readyAt:Math.max(Date.now()-60000,Number(c.readyAt)||Date.now())}:null}).filter(Boolean):[];state.snowChests=Array.isArray(s.snowChests)?[!!s.snowChests[0],!!s.snowChests[1]]:[false,false];state.raid={count:Math.max(0,Math.min(5,Number(s.raid?.count)||0)),nextAt:Math.max(Date.now()+1000,Number(s.raid?.nextAt)||Date.now()+120000),active:null};
+  state.crops=Array.isArray(s.crops)?s.crops.map(c=>{const p=loadPos(c);return p&&['carrot','greens'].includes(c.type)?{id:String(c.id||('c'+Math.random().toString(36).slice(2))),type:c.type,x:p.x,y:p.y,readyAt:Math.max(Date.now()-60000,Number(c.readyAt)||Date.now())}:null}).filter(Boolean):[];state.snowChests=Array.isArray(s.snowChests)?[!!s.snowChests[0],!!s.snowChests[1]]:[false,false];state.raid={count:Math.max(0,Math.floor(Number(s.raid?.count)||0)),nextAt:Math.max(Date.now()+1000,Number(s.raid?.nextAt)||Date.now()+120000),active:null};
   state.respawnPos=s.respawnPos&&Number.isFinite(Number(s.respawnPos.x))?loadPos(s.respawnPos):null;resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),reviveClickUntil:Math.max(0,Number(s.pet.reviveClickUntil)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
   if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug','fish','hare','lizard','crystaldeer','greens','bird','goat','monopoly'].includes(x)):[]}}
   state.knownMaterials=s.knownMaterials&&typeof s.knownMaterials==='object'?{...s.knownMaterials}:{};
