@@ -891,3 +891,19 @@ jobs:
           foreach ($process in $owned) { Stop-Process -Id ([int]$process.ProcessId) -Force -ErrorAction SilentlyContinue }
           Write-Host "ROBLOX_STUDIO_OWNED_SESSION_REAPED=$($owned.Count)"
 
+  studio-learning-wake:
+    name: wake existing Vibe learning loop after Studio evidence
+    needs: [studio-plan, studio-auto-play]
+    if: always() && needs.studio-plan.outputs.count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Dispatch existing 24H learning and development cycle
+        env:
+          GH_TOKEN: \${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'ROBLOX_STUDIO_LEARNING_WAKE=DISPATCHED'
+
