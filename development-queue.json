@@ -627,10 +627,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-25T17:36:49.537Z",
+      "updatedAt": "2026-09-25T17:44:38.997Z",
       "robloxSourceCommit": "51eadc7b331419af8319c664c539023aed1e7403",
       "robloxSourceBootstrapPassedAt": "2026-09-25T17:30:08.745Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -818,7 +818,25 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "platform": "ROBLOX",
+        "sourceRevision": "51eadc7b331419af8319c664c539023aed1e7403",
+        "artifactIdentity": "sha256:eaac4b27b3cbef6b7a4498f01ddcc3e48fa3c1a71c38b15173a47e9b7881d5d2",
+        "artifactRunId": 36167523434,
+        "universeId": "10767445769",
+        "placeId": "126302702438348",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 23,
+        "workflowRunId": 36168235212,
+        "publishedAt": "2026-09-25T17:44:38.997Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -843,38 +861,16 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxInternalReleaseEvidence": {
-        "version": 3,
-        "gameId": "daechung-rpg",
-        "platform": "ROBLOX",
-        "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
-        "artifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
-        "artifactRunId": 36106173538,
-        "publisherMainRevision": "75f2d279f11c56d4cc2d256e3d73cbc06c60b62b",
-        "universeId": "10767445769",
-        "placeId": "126302702438348",
-        "finalReviewPassed": false,
-        "validationMode": null,
-        "headlessFastMvpPassed": true,
-        "published": true,
-        "publicRelease": false,
-        "exposure": "PRIVATE_OR_RESTRICTED",
-        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-        "versionNumber": 22,
-        "workflowRunId": 36145336407,
-        "publishedAt": "2026-09-25T14:08:10.303Z",
-        "dedicated": true,
-        "authority": "owner-direct-github-dedicated-private-publish"
-      },
+      "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -886,7 +882,7 @@
       },
       "strictDesignReviewRefreshRequired": true,
       "robloxExactRevisionPassed": true,
-      "robloxSharedTargetCurrent": false,
+      "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
         "version": 3,
@@ -895,7 +891,7 @@
         "placeId": "126302702438348",
         "verified": true,
         "verifiedAt": "2026-09-25T14:08:10.303Z",
-        "lastVerifiedAt": "2026-09-25T14:08:10.303Z",
+        "lastVerifiedAt": "2026-09-25T17:44:38.997Z",
         "source": "owner-dedicated-github-bootstrap",
         "authority": "roblox-canonical-publication-target",
         "dedicated": true,
@@ -905,167 +901,9 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxReleaseVersionNumber": 22,
+      "robloxReleaseVersionNumber": 23,
       "robloxPublicRelease": false,
-      "robloxInternalVibePlayEvidence": {
-        "version": 2,
-        "gameId": "daechung-rpg",
-        "authority": "roblox-official-studio-mcp-runtime",
-        "pass": true,
-        "actualPlay": true,
-        "runtimeVerified": true,
-        "learningReusable": true,
-        "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
-        "infrastructureFailure": false,
-        "failureClass": null,
-        "studioMcpServerEnablementRequired": false,
-        "operatorPrerequisite": null,
-        "localPlaceFile": true,
-        "officialStudioMcp": true,
-        "onlinePlaceDirectOpen": false,
-        "robloxPlayerAutomation": false,
-        "externalGuiAutomation": false,
-        "undocumentedStudioCliAutomation": false,
-        "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "8e71a6ee9681ece4feafd4963ccebe37d106c2bb",
-        "artifactIdentity": "sha256:992e5a56e23e31420cbaff6f4038bcbc7510b25523b7f0ef8f5a5d9eb2865bf6",
-        "artifactRunId": 36106173538,
-        "universeId": "10767445769",
-        "placeId": "126302702438348",
-        "versionNumber": 22,
-        "historicalSharedTargetExactArtifact": true,
-        "historicalExactBuildReplay": false,
-        "currentSourceArtifactBinding": true,
-        "currentPublishedRuntimeClaim": false,
-        "publishedCandidateCrossCheckPassed": true,
-        "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
-        "capabilities": {
-          "officialStudioMcp": true,
-          "playMode": true,
-          "mcpInput": true,
-          "screenCapture": true,
-          "consoleCapture": true
-        },
-        "actions": [
-          {
-            "id": "keyboard-w",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-a",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-d",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-space",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          }
-        ],
-        "checkpoints": [
-          {
-            "id": "official-studio-mcp-connected",
-            "name": "official-studio-mcp-connected",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "local-studio-selected",
-            "name": "local-studio-selected",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "studio-state-readable",
-            "name": "studio-state-readable",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "play-mode-started",
-            "name": "play-mode-started",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "viewport-before-captured",
-            "name": "viewport-before-captured",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "mcp-input-dispatched",
-            "name": "mcp-input-dispatched",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "viewport-changed-after-input",
-            "name": "viewport-changed-after-input",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "console-output-captured",
-            "name": "console-output-captured",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "no-release-blocking-runtime-errors",
-            "name": "no-release-blocking-runtime-errors",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "play-mode-stopped",
-            "name": "play-mode-stopped",
-            "required": true,
-            "pass": true
-          }
-        ],
-        "errors": [],
-        "runtimeSummary": {
-          "consoleErrorCount": 0,
-          "distinctFrameChange": true
-        },
-        "learningSignals": [
-          "roblox official studio mcp local runtime",
-          "mcp-keyboard-input",
-          "mcp-keyboard-input",
-          "mcp-keyboard-input",
-          "mcp-keyboard-input",
-          "official-studio-mcp-connected",
-          "local-studio-selected",
-          "studio-state-readable",
-          "play-mode-started",
-          "viewport-before-captured",
-          "mcp-input-dispatched",
-          "viewport-changed-after-input",
-          "console-output-captured",
-          "no-release-blocking-runtime-errors",
-          "play-mode-stopped"
-        ],
-        "rawSourceIncluded": false,
-        "rawGameplayValuesIncluded": false,
-        "rawViewportIncluded": false,
-        "scenarioCoverage": [],
-        "scenarioCoveragePass": false,
-        "testedAt": "2026-09-25T17:29:36.866Z",
-        "workflowRunId": 36166804259,
-        "publicationAuthority": false,
-        "publicationTargetDiscovery": false
-      },
+      "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
       "robloxSecurityReleaseEvidence": null,
@@ -6568,7 +6406,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-25T17:36:49.537Z",
+  "updatedAt": "2026-09-25T17:44:38.997Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
