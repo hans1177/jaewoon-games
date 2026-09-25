@@ -2,6 +2,11 @@ name: Unity Web Floor Source Bootstrap
 run-name: Unity Web Floor Bootstrap ${{ inputs.game_ids }}
 
 on:
+  workflow_call:
+    inputs:
+      game_ids:
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       game_ids:

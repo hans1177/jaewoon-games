@@ -58,7 +58,9 @@ jobs:
     outputs:
       eligible_count: ${{ steps.plan.outputs.eligible_count }}
       eligible_ids: ${{ steps.plan.outputs.eligible_ids }}
+      eligible_json: ${{ steps.plan.outputs.eligible_json }}
       unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
+      unity_web_json: ${{ steps.plan.outputs.unity_web_json }}
       unity_web_bootstrap_ids: ${{ steps.plan.outputs.unity_web_bootstrap_ids }}
     steps:
       - uses: actions/checkout@v4
@@ -151,7 +153,9 @@ jobs:
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_json='+JSON.stringify(nativeIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_json='+JSON.stringify(webIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_ids='+bootstrapIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
@@ -164,81 +168,68 @@ jobs:
           NODE
 
 
-  dispatch-native:
-    name: Dispatch ready Roblox and Unity app lanes
+
+  dispatch-roblox:
+    name: Run ready Roblox upper-platform lanes
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch upper-platform runtimes
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ELIGIBLE_IDS: ${{ needs.native-plan.outputs.eligible_ids }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          IFS=',' read -ra ids <<< "$ELIGIBLE_IDS"
-          count=0
-          for id in "${ids[@]}"; do
-            [ -n "$id" ] || continue
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            count=$((count+1))
-          done
-          echo "UPPER_PLATFORM_DISPATCH_COUNT=$count"
-          echo "UPPER_PLATFORM_IDS=$ELIGIBLE_IDS"
-          echo 'ROBLOX_RUNTIME_DISPATCH=YES'
-          echo 'UNITY_APP_RUNTIME_DISPATCH=YES'
-          echo 'UPPER_PLATFORM_READINESS_GATE=PASS_OR_GRANDFATHERED'
-          echo 'INTERNAL_RELEASE_FIRST=YES'
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    uses: ./.github/workflows/company-development-roblox-runtime.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+    secrets: inherit
+
+  dispatch-unity:
+    name: Run ready Unity upper-platform lanes
+    needs: native-plan
+    if: needs.native-plan.outputs.eligible_count != '0'
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
+    permissions:
+      contents: write
+      actions: write
+    uses: ./.github/workflows/company-development-unity-runtime.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+    secrets: inherit
 
   dispatch-unity-web-floor:
-    name: Dispatch Unity Web development floor
+    name: Run Unity Web development floor
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_ids != ''
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch WebGL development-floor builds
-        env:
-          GH_TOKEN: ${{ github.token }}
-          UNITY_WEB_IDS: ${{ needs.native-plan.outputs.unity_web_ids }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          IFS=',' read -ra ids <<< "$UNITY_WEB_IDS"
-          count=0
-          for id in "${ids[@]}"; do
-            [ -n "$id" ] || continue
-            gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
-              -f game_id="$id" \
-              -f project_path="unity-games/$id" \
-              -f source_commit="$GITHUB_SHA" \
-              -f publish_to_main=true
-            count=$((count+1))
-          done
-          echo "UNITY_WEB_FLOOR_DISPATCH_COUNT=$count"
-          echo "UNITY_WEB_FLOOR_IDS=$UNITY_WEB_IDS"
-          echo 'UNITY_WEB_FLOOR_ROLE=UPPER_PLATFORM_PREDEVELOPMENT'
-
-
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_json) }}
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    uses: ./.github/workflows/unity-web-first-stage-build.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+      project_path: unity-games/${{ matrix.game_id }}
+      source_commit: ${{ github.sha }}
+      publish_to_main: true
+    secrets: inherit
 
   dispatch-unity-web-bootstrap:
     name: Bootstrap Unity Web development-floor sources
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_bootstrap_ids != ''
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch canonical Unity Web floor source bootstrap
-        env:
-          GH_TOKEN: ${{ github.token }}
-          UNITY_WEB_BOOTSTRAP_IDS: ${{ needs.native-plan.outputs.unity_web_bootstrap_ids }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run unity-web-floor-source-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main \
-            -f game_ids="$UNITY_WEB_BOOTSTRAP_IDS"
-          echo "UNITY_WEB_FLOOR_BOOTSTRAP_IDS=$UNITY_WEB_BOOTSTRAP_IDS"
-          echo 'UNITY_WEB_FLOOR_BOOTSTRAP_DISPATCH=YES'
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml
+    with:
+      game_ids: ${{ needs.native-plan.outputs.unity_web_bootstrap_ids }}
+    secrets: inherit

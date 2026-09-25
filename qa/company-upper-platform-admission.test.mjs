@@ -135,3 +135,24 @@ test('only the owner-scoped cozy-island and daechung-rpg examples may grandfathe
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('upper-platform orchestration uses reusable workflows instead of rate-limited API dispatch',()=>{
+  const root=process.cwd();
+  const orchestration=fs.readFileSync(path.join(root,'.github','workflows','company-development-confirmed-runtime.yml'),'utf8');
+  const roblox=fs.readFileSync(path.join(root,'.github','workflows','company-development-roblox-runtime.yml'),'utf8');
+  const unity=fs.readFileSync(path.join(root,'.github','workflows','company-development-unity-runtime.yml'),'utf8');
+  const web=fs.readFileSync(path.join(root,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const bootstrap=fs.readFileSync(path.join(root,'.github','workflows','unity-web-floor-source-bootstrap.yml'),'utf8');
+
+  assert.match(orchestration,/eligible_json:/);
+  assert.match(orchestration,/unity_web_json:/);
+  assert.match(orchestration,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(orchestration,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
+  assert.match(orchestration,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.match(orchestration,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+  assert.doesNotMatch(orchestration,/gh workflow run company-development-(?:roblox|unity)-runtime\.yml/);
+  assert.doesNotMatch(orchestration,/gh workflow run unity-web-(?:first-stage-build|floor-source-bootstrap)\.yml/);
+
+  for(const workflow of [roblox,unity,web,bootstrap])assert.match(workflow,/workflow_call:/);
+});
