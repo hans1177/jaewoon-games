@@ -21,7 +21,8 @@ const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
   'webInitialCycleSourcePath','webInitialCycleSourceIndexSha256','webInitialCycleDesignBaselineSha256',
   'webInitialCycleValidationSchemaVersion','webInitialCycleStrictScore','webInitialCycleStrictReviewPath',
   'webInitialCycleSourceRevision','webInitialCycleMusicValidationPassed','homepageTestEligible','homepageTestCandidate',
-  'homepageTestScore','homepageTestVerdict','ownerWebDevelopmentResetAppliedFor','ownerWebDevelopmentResetAppliedAt'
+  'homepageTestScore','homepageTestVerdict','ownerWebDevelopmentResetAppliedFor','ownerWebDevelopmentResetAppliedAt',
+  'newFeatureExpansionFrozen'
 ]);
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -31,6 +32,23 @@ const upper=value=>clean(value).toUpperCase();
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const directPaths=gameId=>({ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`});
 const removeLegacy=item=>{for(const key of LEGACY_WEB_ADMISSION_KEYS)delete item[key];return item;};
+function clearLegacyQueueCaps(queue={}){
+  let changed=false;
+  for(const key of [
+    'webValidationPolicy','webValidationContractVersion','webGateRequired','webValidationParallelism',
+    'robloxSourceParallelism','robloxTechnicalParallelism','webValidationEvidenceSchemaMinimum',
+    'webPromotionRevalidationRequired'
+  ]){
+    if(Object.hasOwn(queue,key)){delete queue[key];changed=true;}
+  }
+  if(queue.ownerPrimaryDevelopment&&Object.hasOwn(queue.ownerPrimaryDevelopment,'maxConcurrentPrimary')){
+    delete queue.ownerPrimaryDevelopment.maxConcurrentPrimary;changed=true;
+  }
+  if(queue.fastLaunch&&Object.hasOwn(queue.fastLaunch,'newFeatureExpansionFrozen')){
+    delete queue.fastLaunch.newFeatureExpansionFrozen;changed=true;
+  }
+  return changed;
+}
 
 function assertDirectNativePolicy(roadmap={}){
   const d=roadmap?.directNativeDualPlatformDevelopment||{};
@@ -179,20 +197,23 @@ export function reconcileDevelopmentQueue({root='.'}={}){
 
   const beforeItems=JSON.stringify(queue.items);
   const afterItems=JSON.stringify(next);
+  const legacyQueueMetadataRemoved=clearLegacyQueueCaps(queue);
   const metadataChanged=
     clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE||
     queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT'||
     queue.developmentGameWipMax!==null||
     queue.reconciliationPolicy!=='ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE';
 
-  const changed=beforeItems!==afterItems||duplicateRemoved>0||metadataChanged;
+  const changed=beforeItems!==afterItems||duplicateRemoved>0||metadataChanged||legacyQueueMetadataRemoved;
   if(changed){
     queue.items=next;
     queue.routerPolicy=MACHINE_POLICY_SOURCE;
     queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
     queue.developmentGameWipMax=null;
     queue.reconciliationPolicy='ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE';
-    delete queue.webValidationPolicy;
+    queue.internalConcurrencyCap=null;
+    queue.externalCapacityOnlyBoundary=true;
+    queue.automaticFeatureExpansionFreezeForbidden=true;
     queue.updatedAt=stamp;
     writeJson(queuePath,queue);
   }
@@ -201,7 +222,11 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     changed,created,removed,rebound,preserved,duplicateRemoved,
     queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE,
     nativeDevelopmentPolicy:'MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT',
-    developmentGameWipMax:null
+    developmentGameWipMax:null,
+    internalConcurrencyCap:null,
+    externalCapacityOnlyBoundary:true,
+    automaticFeatureExpansionFreezeForbidden:true,
+    legacyQueueMetadataRemoved
   };
 }
 
