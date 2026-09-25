@@ -1131,6 +1131,39 @@ jobs:
           echo 'ROBLOX_PACKAGE_FAILURE_ISOLATED=YES'
           echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
           echo 'ROBLOX_TECHNICAL_REPAIR_UNLIMITED=YES'
+      - name: Dispatch F0 source repair after exact blocker persist
+        if: needs.technical-plan.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-f0-repair-queue.json
+          repair_count="$(node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-f0-repair-queue.json','utf8'));
+          const ids=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').filter(x=>x.secondaryOwnerFocus!==true).map(x=>x.gameId));
+          let count=0;
+          for(const item of q.items||[]){
+            if(!ids.has(item.gameId))continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED')continue;
+            if(String(item.robloxFailureStage||'').toUpperCase()!=='F0_SOURCE_INTEGRITY')continue;
+            if(String(item.robloxFailureSignature||'').toUpperCase()!=='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED')continue;
+            count++;
+          }
+          process.stdout.write(String(count));
+          NODE
+          )"
+          echo "ROBLOX_F0_SOURCE_REPAIR_COUNT=$repair_count"
+          if [[ "$repair_count" =~ ^[1-9][0-9]*$ ]]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'ROBLOX_F0_SOURCE_REPAIR_DISPATCH=YES'
+          else
+            echo 'ROBLOX_F0_SOURCE_REPAIR_DISPATCH=NO'
+          fi
+
       - name: Dispatch next Roblox technical execution slice when other exact-source work remains
         if: needs.technical-plan.outputs.count != '0'
         env:
@@ -1261,9 +1294,13 @@ jobs:
               const runtimeEvidence=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeEvidence:item.robloxRuntimeEvidence;
               const securityHoldFlag=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeSecurityHold:item.robloxRuntimeSecurityHold;
               const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;
+              const f0RepairRequired=!secondaryOwnerFocus
+                &&String(item.canonicalState||'').toUpperCase()==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'
+                &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
+                &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
               if(preflightPassed!==true){
                 preflightReady++;
-              }else if(!secondaryOwnerFocus&&f0Passed!==true){
+              }else if(!secondaryOwnerFocus&&f0Passed!==true&&!f0RepairRequired){
                 f0Ready++;
               }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
                 const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
