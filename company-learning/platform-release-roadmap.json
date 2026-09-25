@@ -1,5 +1,5 @@
 {
-  "version": 365,
+  "version": 364,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -924,58 +924,18 @@
         "sharedFastMvpSupersededField": "robloxFastMvpSupersededBy",
         "internalReleaseVisibilityRequired": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE"
       },
-      "studioRuntimeRequired": true,
+      "studioRuntimeRequired": false,
       "publicationTargetFromStudioForbidden": true
     },
     "validationMode": "HEADLESS_FAST_MVP",
     "studioExecution": {
-      "version": 2,
-      "enabled": true,
-      "required": true,
-      "workflowUseForbidden": false,
-      "qaEvidenceAuthorityForbidden": false,
-      "onlinePublishedPlaceDirectOpenForbidden": true,
-      "placeIdOrUniverseIdAsStudioLaunchTargetForbidden": true,
+      "enabled": false,
+      "required": false,
+      "workflowUseForbidden": true,
+      "qaEvidenceAuthorityForbidden": true,
       "universeOrPlaceIdDiscoveryForbidden": true,
-      "localPlaceFileRequired": true,
-      "localPlaceFileSource": "EXACT_ROBLOX_BUILD_ARTIFACT_ONLY",
-      "localPlaceFileExtensions": [
-        ".rbxl",
-        ".rbxlx"
-      ],
-      "publicationAuthority": false,
-      "publicationTargetDiscoveryForbidden": true,
-      "executionRole": "LOCAL_INTERNAL_AUTOMATED_PLAYTEST_AND_VERIFIED_LEARNING_EVIDENCE",
-      "requiredRunnerLabels": [
-        "self-hosted",
-        "Windows",
-        "X64",
-        "roblox-studio-authenticated"
-      ],
-      "exactArtifactBindingRequired": true,
-      "exactArtifactFields": [
-        "sourceRevision",
-        "artifactIdentity",
-        "artifactRunId"
-      ],
-      "publishedCandidateCrossCheckFields": [
-        "universeId",
-        "placeId",
-        "versionNumber"
-      ],
-      "studioTestServiceRequired": true,
-      "virtualInputRequired": true,
-      "rawSourceDirectLearningForbidden": true,
-      "rawGameplayValuesDirectLearningForbidden": true,
-      "verifiedSemanticLearningReuseAllowed": true,
-      "actualPlayEvidenceField": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
-      "canonicalLearningIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience",
-      "publicationRoute": "OPEN_CLOUD",
-      "publishedCandidateVerificationRoute": "OPEN_CLOUD_ONLY",
-      "reEnabledAt": "2026-09-25",
-      "previousRemovalAt": "2026-09-22T03:45:00+09:00",
-      "authority": "OWNER_DIRECTIVE_2026-09-25",
-      "sharedPublishedTargetCurrentRequired": true
+      "removedAt": "2026-09-22T03:45:00+09:00",
+      "authority": "OWNER_DIRECTIVE_2026-09-22"
     },
     "headlessValidation": {
       "version": 2,
@@ -1536,9 +1496,7 @@
         "providerOutageMayStopLearning": false,
         "verifiedEvidenceRequiredForCanonicalLearning": true,
         "unverifiedModelOutputMayPromoteDirectly": false,
-        "robloxStudioAllowedFor24hLearning": true,
-        "robloxStudioLearningScope": "VERIFIED_LOCAL_EXACT_BUILD_PLAY_EVIDENCE_ONLY",
-        "robloxStudioRawSourceOrRawGameplayValuesDirectTraining": false
+        "robloxStudioAllowedFor24hLearning": false
       },
       "providerFailureSubstitution": {
         "version": 1,
@@ -3430,45 +3388,22 @@
       "saveCompatibilityCheckRequiredOnAffectedGame": true
     },
     "robloxStudioUsage": {
-      "version": 2,
-      "authority": "OWNER_DIRECTIVE_2026-09-25",
-      "learningUseForbidden": false,
-      "generalPracticeUseForbidden": false,
-      "role": "LOCAL_RUNTIME_EVIDENCE_AND_VERIFIED_LEARNING_INPUT",
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "learningUseForbidden": true,
+      "generalPracticeUseForbidden": true,
+      "role": "RUNTIME_EVIDENCE_ONLY",
       "allowed": [
-        "LOCAL_EXACT_BUILD_AUTOMATED_INTERNAL_PLAYTEST",
-        "VIRTUAL_INPUT_RUNTIME",
-        "UI_RUNTIME_VALIDATION",
-        "RUNTIME_ERROR_CAPTURE",
-        "LOCAL_MULTIPLAYER_RUNTIME_WHEN_SUPPORTED",
+        "REPLICATION_RUNTIME",
+        "DATASTORE_RUNTIME",
+        "REMOTE_RUNTIME",
+        "MULTIPLAYER_RUNTIME",
         "PHYSICS_OR_ENGINE_RUNTIME",
-        "VERIFIED_SEMANTIC_LEARNING_REUSE"
+        "OTHER_STUDIO_ONLY_EVIDENCE"
       ],
-      "forbidden": [
-        "ROBLOX_PLAYER_AUTOMATION",
-        "PUBLIC_SERVER_BOT_PLAY",
-        "PUBLISHED_PLACE_DIRECT_STUDIO_AUTOMATION",
-        "ENGAGEMENT_OR_REWARD_FARMING",
-        "EXTERNAL_INPUT_MACRO_OR_INJECTION"
-      ],
-      "learningRequirements": [
-        "EXACT_SOURCE_REVISION",
-        "EXACT_ARTIFACT_IDENTITY",
-        "LOCAL_PLACE_FILE_FROM_EXACT_BUILD_ARTIFACT",
-        "STUDIO_TEST_SERVICE",
-        "VIRTUAL_INPUT_ACTION",
-        "REQUIRED_CHECKPOINTS_PASS",
-        "NO_RUNTIME_ERRORS"
-      ],
-      "publishedCandidateCrossCheckRequired": true,
-      "publishedCandidateCrossCheckAuthority": "OPEN_CLOUD",
-      "rawSourceDirectTrainingForbidden": true,
-      "rawGameplayValuesDirectTrainingForbidden": true,
+      "offlineBehavior": "WAIT_ONLY_REQUIRED_RUNTIME_GATE_RELEASE_CAPACITY",
       "publicationSeparatedFromStudioRunner": true,
-      "publicationRoute": "OPEN_CLOUD",
-      "publicationTargetDiscoveryFromStudioForbidden": true,
-      "offlineBehavior": "QUEUE_LOCAL_STUDIO_TEST_UNTIL_LOCAL_RUNNER_RETURNS_WITHOUT_FABRICATING_PASS",
-      "publishedCandidateMustNotBeSupersededSharedTarget": true
+      "publicationRoute": "OPEN_CLOUD"
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -4539,14 +4474,7 @@
           "INTERNAL_REDEPLOY_EXACT_CANDIDATE",
           "EXACT_CANDIDATE_REVALIDATION",
           "VIBE_INTERNAL_PLAY"
-        ],
-        "actualVibePlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-local-auto-play",
-        "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_LOCAL_PLACE_FILE_STUDIO_TEST_SERVICE_PLUS_VIRTUAL_INPUT",
-        "actualVibePlayPublishedPlaceDirectAutomation": false,
-        "actualVibePlayLearningReuse": "VERIFIED_LOCAL_EXACT_BUILD_ONLY",
-        "publishedCandidateIdentityCrossCheck": "OPEN_CLOUD_ONLY",
-        "rawStudioSourceDirectLearningForbidden": true,
-        "rawGameplayValuesDirectLearningForbidden": true
+        ]
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
@@ -6834,27 +6762,6 @@
       "problem": "WORKFLOW_RUN_TRIGGER_BURSTS_COULD_CANCEL_THE_RUNNING_COMPANY_RUNTIME_RECONCILE_BEFORE_PERSIST",
       "resolution": "SERIALIZE_RECONCILE_STATE_WRITES_WITHOUT_CANCEL_IN_PROGRESS; SUBSEQUENT_TRIGGERS_QUEUE",
       "affectedWorkflow": ".github/workflows/company-development-queue-reconcile.yml"
-    },
-    "robloxStudioLocalVerifiedLearning20260925": {
-      "id": "ROBLOX_STUDIO_LOCAL_VERIFIED_LEARNING_2026-09-25",
-      "documentedAt": "2026-09-25",
-      "documentationFirst": true,
-      "summary": "Re-enables authenticated Roblox Studio only for exact local build artifact playtests and verified semantic learning reuse; published Roblox Player/public-server automation and direct published-place Studio launch remain forbidden.",
-      "codeBindings": [
-        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
-        "tools/vibe2-learning-motor.mjs",
-        ".github/workflows/vibe2-24h-runner.yml",
-        "company-learning/canonical-learning-pipeline.json",
-        "vibe2-unreal-core:tools/vibe2-roblox-studio-cli-runner.mjs"
-      ],
-      "headlessF0Unchanged": true,
-      "openCloudPublicationAuthorityUnchanged": true,
-      "separateLearningPipelineCreated": false,
-      "rawSourceDirectTraining": false,
-      "rawGameplayValuesDirectTraining": false,
-      "robloxPlayerAutomation": false,
-      "publicServerBotPlay": false,
-      "sharedSupersededCandidateCannotMintStudioActualPlayEvidence": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -20925,15 +20832,12 @@
     },
     "robloxValidationOverride": {
       "mode": "HEADLESS_FAST_MVP",
-      "studioForbidden": false,
+      "studioForbidden": true,
       "runtimeMeaning": "HEADLESS_PLATFORM_CONTRACT_VALIDATION",
       "independentQaMeaning": "HEADLESS_INDEPENDENT_CONTRACT_QA",
       "regressionMeaning": "HEADLESS_EXACT_ARTIFACT_REGRESSION",
       "openCloudPublishRequiredForInternalRelease": true,
-      "authority": "OWNER_DIRECTIVE_2026-09-22",
-      "studioRole": "LOCAL_POST_BUILD_INTERNAL_PLAYTEST_AND_VERIFIED_LEARNING_INPUT",
-      "headlessF0RemainsIndependent": true,
-      "publishedPlaceDirectStudioAutomationForbidden": true
+      "authority": "OWNER_DIRECTIVE_2026-09-22"
     },
     "unityWebMode": "VALIDATION_SURFACE_ONLY",
     "unityWebValidationSurface": {
