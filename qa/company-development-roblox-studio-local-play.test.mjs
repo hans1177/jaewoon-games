@@ -380,6 +380,8 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/ROBLOX_STUDIO_MCP_STDERR_HINT=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_STDERR_REDACTED=/);
   assert.match(helper,/stderrHint=/);
+  assert.match(helper,/STUDIO_TOOL_PROVIDER_TIMEOUT/);
+  assert.match(helper,/timed out waiting for tools to become available/);
   assert.match(helper,/NO_ACTIVE_STUDIO/);
   assert.match(helper,/MCP_SERVER_NOT_ENABLED/);
   assert.match(helper,/STUDIO_PROXY_CONNECTION/);
