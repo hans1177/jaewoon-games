@@ -540,7 +540,9 @@ test('Studio console classification blocks MessageError but keeps warnings and s
   const unknownStrong={
     content:[{type:'text',text:JSON.stringify({message:'Script Runtime Error: unhandled exception',messageType:null})}]
   };
-  assert.equal(classifyStudioConsoleOutput(unknownStrong).errors.length,1);
+  const unknownResult=classifyStudioConsoleOutput(unknownStrong);
+  assert.equal(unknownResult.errors.length,1);
+  assert.equal(unknownResult.errors[0].signature,'Script Runtime Error: unhandled exception');
 });
 
 test('Studio console parser accepts line-delimited structured console output',()=>{

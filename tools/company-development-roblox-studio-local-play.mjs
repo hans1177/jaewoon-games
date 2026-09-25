@@ -422,12 +422,11 @@ export function classifyStudioConsoleOutput(consoleResult){
     /unhandled exception/i
   ];
   if(structured.length===0||structured.some(entry=>entry.messageType==null)){
-    const unknownText=structured.length
-      ?structured.filter(entry=>entry.messageType==null).map(entry=>entry.message).join('\n')
-      :fallbackText;
-    for(const re of strongFallbackPatterns){
-      const match=unknownText.match(re);
-      if(match)addError(match[0]);
+    const unknownMessages=structured.length
+      ?structured.filter(entry=>entry.messageType==null).map(entry=>entry.message)
+      :[fallbackText];
+    for(const message of unknownMessages){
+      if(strongFallbackPatterns.some(re=>re.test(message)))addError(message);
     }
   }
 
