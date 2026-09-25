@@ -18888,6 +18888,41 @@
         "PRODUCTION_PASS_NO"
       ],
       "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-gap-relationship_memory-l1-g1",
+      "gameId": null,
+      "target": "web",
+      "department": "learning",
+      "type": "research",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=RELATIONSHIP_MEMORY_DRILL\ndomains=RELATIONSHIP_MEMORY\npracticeGeneration=1\npracticeMode=ANALYSIS\n소스 파일을 수정하지 않는다. 신뢰·호감·두려움·존중·빚·배신·약속·목격 사건과 세력 관계 변화를 원인 이벤트에 연결하고 동일 source event가 중복 적용되지 않게 한다. 저장/불러오기 뒤에도 관계와 세력 상태가 일관되게 복구되는지 검증하며 관계 수치가 선언되지 않은 보상·데미지·진행을 직접 쓰지 못하게 한다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "sourceRoot": "learning-practice:gap-relationship_memory-l1",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:RELATIONSHIP_MEMORY_DRILL",
+        "practice-generation:1",
+        "learning-analysis-practice",
+        "practice-domain:RELATIONSHIP_MEMORY"
+      ],
+      "completionCriteria": [
+        "PRACTICE_ANALYSIS_COMPLETED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO"
+      ]
     }
   ]
 }
