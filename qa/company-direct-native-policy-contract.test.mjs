@@ -157,7 +157,11 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   assert.equal(archLoop.continuesAfterPublicRelease,true);
   assert.equal(archLoop.actualPlayExecutor,'.github/workflows/company-development-roblox-internal-vibe-play.yml');
   assert.equal(loop.actualVibePlayExecutor,'.github/workflows/company-development-roblox-internal-vibe-play.yml');
-  assert.equal(loop.actualPlayerProcessRequired,true);
+  assert.equal(loop.actualVibePlayExecutionSurface,'ROBLOX_STUDIO_ONLY');
+  assert.equal(loop.studioTestServiceRequired,true);
+  assert.equal(loop.virtualInputRequired,true);
+  assert.equal(loop.publishedRobloxPlayerAutomationForbidden,true);
+  assert.equal(loop.actualPlayerProcessRequired,false);
   assert.equal(loop.actualInputRequired,true);
   assert.equal(loop.distinctScreenChangeRequired,true);
   assert.equal(archGate.failClosed,true);
@@ -204,4 +208,11 @@ test('Roblox internal play owns gameplay-derived English-primary store presentat
   assert.equal(a.workflow,'.github/workflows/company-development-roblox-internal-vibe-play.yml');
   assert.equal(a.thumbnailCandidateCount,3);
   assert.equal(a.newRuntimeCandidateInvalidatesEvidence,true);
+});
+
+test('Roblox Vibe play architecture forbids published Player botting',()=>{
+  const a=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
+  assert.equal(a.actualPlayMechanism,'ROBLOX_STUDIO_CLI_RUNSCRIPT_PLUS_STUDIOTESTSERVICE_PLUS_VIRTUALINPUT');
+  assert.equal(a.publishedPlayerAutomation,false);
+  assert.equal(a.studioOnly,true);
 });
