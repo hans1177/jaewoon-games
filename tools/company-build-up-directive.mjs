@@ -129,6 +129,16 @@ function classifyPreviousEffectiveness({previousDirective=null,previousOutcome='
   return Object.freeze({classification:'UNKNOWN_RUNTIME_EFFECT',reason:'previous generation lacks sufficient verified effect evidence',runtimeObserved});
 }
 
+function depthStage(depth=1){
+  const value=Math.max(1,Number(depth)||1);
+  return value===1?'FOUNDATION_COMPLETENESS'
+    :value===2?'ROLE_DIFFERENTIATION'
+    :value===3?'SYSTEM_CONNECTION'
+    :value===4?'DECISION_DENSITY'
+    :value===5?'SIGNATURE_DEPTH'
+    :`SIGNATURE_MASTERY_${value}`;
+}
+
 function expectedPlayerEffect({focus='CORE_FUN',identity='',anchor='',secondary=''}={}){
   const byFocus={
     CORE_FUN:identity+'에서 '+anchor+'의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.',
@@ -516,8 +526,19 @@ export function buildGameSpecificBuildUpDirective({
   ]);
   const preferred=focusFromSignals({signals,source});
   const generation=Math.max(1,Number(previousDirective?.generation||0)+1);
-  const depthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint});
-  const previousEffectiveness=classifyPreviousEffectiveness({previousDirective,previousOutcome:previousDirectiveOutcome,depthInfo,runtimeEvidence});
+  const rawDepthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint});
+  const previousEffectiveness=classifyPreviousEffectiveness({previousDirective,previousOutcome:previousDirectiveOutcome,depthInfo:rawDepthInfo,runtimeEvidence});
+  const effectAdvanceAllowed=clean(previousEffectiveness?.classification).toUpperCase()==='EFFECT_CONFIRMED';
+  const retainedDepth=previousDirective?Math.max(1,Number(previousDirective?.developmentDepth||1)):Math.max(1,Number(rawDepthInfo.developmentDepth||1));
+  const depthInfo=Object.freeze({
+    ...rawDepthInfo,
+    developmentDepth:rawDepthInfo.advanceAllowed&&effectAdvanceAllowed?rawDepthInfo.developmentDepth:retainedDepth,
+    escalationStage:depthStage(rawDepthInfo.advanceAllowed&&effectAdvanceAllowed?rawDepthInfo.developmentDepth:retainedDepth),
+    escalationMode:rawDepthInfo.advanceAllowed&&!effectAdvanceAllowed?'VERIFIED_SOURCE_DELTA_AWAITING_EFFECT':rawDepthInfo.escalationMode,
+    verifiedEvolution:rawDepthInfo.verifiedEvolution&&effectAdvanceAllowed,
+    advanceAllowed:rawDepthInfo.advanceAllowed&&effectAdvanceAllowed,
+    sourceDeltaVerifiedButEffectPending:rawDepthInfo.advanceAllowed&&!effectAdvanceAllowed
+  });
   const priorFocus=clean(previousDirective?.primaryFocus).toUpperCase();
   const previousEffectClass=clean(previousEffectiveness?.classification).toUpperCase();
   const keepPriorFocus=Boolean(previousDirective&&priorFocus&&['NO_MEANINGFUL_EFFECT','PARTIAL_EFFECT','REGRESSION','UNKNOWN_RUNTIME_EFFECT'].includes(previousEffectClass));
