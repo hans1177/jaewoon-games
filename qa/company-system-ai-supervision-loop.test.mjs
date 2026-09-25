@@ -523,3 +523,31 @@ test('System AI immutable result persists failed repair fingerprints and hypothe
   assert.match(worker,/CAUSAL HYPOTHESES:/);
   assert.match(worker,/KNOWN GOOD REVISION:/);
 });
+
+test('System AI bottleneck sensor recommendations steer the existing reserve path instead of remaining log-only',()=>{
+  assert.match(workflow,/SYSTEM_AI_BOTTLENECK_RECOMMENDED_TARGETS=/);
+  assert.match(workflow,/preferred_targets=/);
+  assert.match(workflow,/--preferred="\$preferred_targets"/);
+  assert.match(workflow,/SYSTEM_AI_BOTTLENECK_RESERVATION_MODE=SENSOR_GUIDED_EXISTING_RESERVE/);
+  assert.match(queue,/preferredIds=\[\]/);
+  assert.match(queue,/preferredOrder/);
+  assert.match(queue,/preferredRank/);
+  assert.doesNotMatch(workflow,/new-bottleneck-scheduler|shadow-bottleneck-workflow/i);
+});
+
+test('hard bottleneck repairs use an adversarial critic before verified candidate publication',()=>{
+  assert.match(worker,/function shouldUseDeepReasoning/);
+  assert.match(worker,/function buildRepairCriticPrompt/);
+  assert.match(worker,/SYSTEM_AI_DEEP_STRATEGY_OPTIONS_REQUIRED/);
+  assert.match(worker,/SYSTEM_AI_CRITIC_STRATEGY_NOT_FOLLOWED/);
+  assert.match(worker,/criticRawStored:false/);
+  assert.match(worker,/appliedAnswerSha256/);
+  assert.match(workflow,/system-ai-deep-reasoning:YES/);
+  assert.match(workflow,/selected-strategy:/);
+  assert.match(workflow,/system-ai-critic-verdict:/);
+  assert.match(workflow,/system-ai-applied-answer-sha256:/);
+  const implement=workflow.indexOf('- name: Execute external AI assignment');
+  const verify=workflow.indexOf('- name: Verify external AI candidate');
+  assert.ok(implement>=0&&verify>implement);
+});
+
