@@ -31,8 +31,9 @@ const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),foodfill:document.getElementById('foodfill'),foodtext:document.getElementById('foodtext'),questText:document.getElementById('questText'),recorderOverlay:document.getElementById('recorderOverlay'),recorderCaption:document.getElementById('recorderCaption'),recorderState:document.getElementById('recorderState'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),essence:document.getElementById('essence'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),jungleBenchTab:document.getElementById('jungleBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),autoGather:document.getElementById('autoGather'),dismount:document.getElementById('dismount'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),deerSmeltBtn:document.getElementById('deerSmeltBtn'),bugSmeltBtn:document.getElementById('bugSmeltBtn'),fishSmeltBtn:document.getElementById('fishSmeltBtn'),hareSmeltBtn:document.getElementById('hareSmeltBtn'),lizardSmeltBtn:document.getElementById('lizardSmeltBtn'),crystalDeerSmeltBtn:document.getElementById('crystalDeerSmeltBtn'),greensSmeltBtn:document.getElementById('greensSmeltBtn'),birdSmeltBtn:document.getElementById('birdSmeltBtn'),goatSmeltBtn:document.getElementById('goatSmeltBtn'),monopolySmeltBtn:document.getElementById('monopolySmeltBtn'),smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner'),multiPanel:document.getElementById('multiPanel'),multiStatus:document.getElementById('multiStatus'),multiRoom:document.getElementById('multiRoom')};
 const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
 const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
-const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0,pings:[]};
+const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0,pings:[],pingReadyAt:0,pingSeenAt:new Map()};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
+const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
 const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=48,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
@@ -1130,17 +1131,25 @@ function drawMap(){
  const mapPlayerPos=state.area.startsWith('jungletemple')?JUNGLE_TEMPLE_ENTRANCE:state.player;m.fillStyle='#ffffff';m.beginPath();m.arc(mapPlayerPos.x*sx,mapPlayerPos.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){
- tabState();ui.sheetBody.innerHTML='<div class="info"><b>지도</b><br>직접 가본 곳만 표시돼. 지도를 누르면 핑을 찍고 10초 뒤 사라져.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';
+ tabState();ui.sheetBody.innerHTML='<div class="info"><b>지도</b><br>직접 가본 곳만 표시돼. 핑은 10초에 1개씩 찍을 수 있고 10초 뒤 사라져.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';
  drawMap();const mc=document.getElementById('mapCanvas');if(mc)mc.addEventListener('pointerdown',placeMapPing)
 }
 
 function placeMapPing(e){
- const mc=document.getElementById('mapCanvas');if(!mc)return;const r=mc.getBoundingClientRect(),x=clamp((e.clientX-r.left)/Math.max(1,r.width)*WORLD.w,0,WORLD.w),y=clamp((e.clientY-r.top)/Math.max(1,r.height)*WORLD.h,0,WORLD.h);
- const ping={id:multiplayer.playerId+'-'+Date.now(),ownerId:multiplayer.playerId,x,y,expiresAt:Date.now()+10000};multiplayer.pings.push(ping);if(multiplayer.connected)multiSend('map-ping',{id:ping.id,ownerId:ping.ownerId,x,y});drawMap();setTimeout(()=>drawMap(),10050)
+ const mc=document.getElementById('mapCanvas');if(!mc)return;const now=Date.now(),wait=(multiplayer.pingReadyAt||0)-now;
+ if(wait>0){showNotice('핑 재사용까지 '+Math.ceil(wait/1000)+'초');return}
+ const r=mc.getBoundingClientRect(),x=clamp((e.clientX-r.left)/Math.max(1,r.width)*WORLD.w,0,WORLD.w),y=clamp((e.clientY-r.top)/Math.max(1,r.height)*WORLD.h,0,WORLD.h);
+ const ping={id:multiplayer.playerId+'-'+now,ownerId:multiplayer.playerId,x,y,expiresAt:now+MAP_PING_LIFETIME_MS};
+ multiplayer.pingReadyAt=now+MAP_PING_COOLDOWN_MS;multiplayer.pingSeenAt.set(multiplayer.playerId,now);multiplayer.pings.push(ping);
+ if(multiplayer.connected)multiSend('map-ping',{id:ping.id,ownerId:ping.ownerId,x,y});
+ drawMap();setTimeout(()=>drawMap(),MAP_PING_LIFETIME_MS+50)
 }
 function receiveMapPing(payload){
- if(!payload||!Number.isFinite(Number(payload.x))||!Number.isFinite(Number(payload.y)))return;const id=String(payload.id||'');if(!id||multiplayer.pings.some(p=>p.id===id))return;
- multiplayer.pings.push({id,ownerId:String(payload.ownerId||''),x:clamp(Number(payload.x),0,WORLD.w),y:clamp(Number(payload.y),0,WORLD.h),expiresAt:Date.now()+10000});if(state.panelMode==='map'&&ui.sheet.classList.contains('open'))drawMap();setTimeout(()=>drawMap(),10050)
+ if(!payload||!Number.isFinite(Number(payload.x))||!Number.isFinite(Number(payload.y)))return;
+ const id=String(payload.id||''),ownerId=String(payload.ownerId||'');if(!id||!ownerId||multiplayer.pings.some(p=>p.id===id))return;
+ const now=Date.now(),last=Number(multiplayer.pingSeenAt.get(ownerId)||0);if(now-last<MAP_PING_COOLDOWN_MS)return;
+ multiplayer.pingSeenAt.set(ownerId,now);multiplayer.pings.push({id,ownerId,x:clamp(Number(payload.x),0,WORLD.w),y:clamp(Number(payload.y),0,WORLD.h),expiresAt:now+MAP_PING_LIFETIME_MS});
+ if(state.panelMode==='map'&&ui.sheet.classList.contains('open'))drawMap();setTimeout(()=>drawMap(),MAP_PING_LIFETIME_MS+50)
 }
 let miniMapDrawAt=0;
 function drawMiniMap(now=performance.now()){
