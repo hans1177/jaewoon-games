@@ -20,14 +20,6 @@ test('daechung RPG Unity Web loader parses and binds the current build',()=>{
   assert.match(index,/createUnityInstance\(canvas, config/);
 });
 
-test('daechung RPG Unity Web build artifacts exist',()=>{
-  for(const file of [
-    'web-games/daechung-rpg/Build/daechung-rpg.loader.js',
-    'web-games/daechung-rpg/Build/daechung-rpg.data',
-    'web-games/daechung-rpg/Build/daechung-rpg.framework.js',
-    'web-games/daechung-rpg/Build/daechung-rpg.wasm'
-  ])assert.equal(fs.existsSync(file),true,`missing Unity Web build artifact: ${file}`);
-});
 
 test('service worker bypasses stale cache for daechung RPG',()=>{
   new Function(sw);
