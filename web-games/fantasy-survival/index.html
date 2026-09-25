@@ -208,8 +208,8 @@ const recipes=[
 {id:'polar-wolf-blade',name:'북극늑대 검',where:'junglebench',cost:{polarWolfPelt:5,monopolyIngot:5,goldIngot:3},desc:'공격력 185 · 4티어',kind:'weapon',power:185,range:86,cooldown:720},
 {id:'polar-wolf-armor',name:'북극늑대 방어구',where:'junglebench',cost:{polarWolfPelt:7,monopolyIngot:6,flowerLeather:3},desc:'최대 체력 +220 · 피해 20% 감소 · 추위 상승 70배 느림',kind:'armor',maxHp:220,reduce:.20,coldDivisor:70},
 {id:'polar-wolf-hunter-armor',name:'북극늑대 사냥갑',where:'junglebench',cost:{polarWolfPelt:8,monopolyIngot:6,goldIngot:2,flowerLeather:3},desc:'최대 체력 +200 · 공격력 +15 · 추위 상승 70배 느림',kind:'armor',maxHp:200,reduce:.18,bonusDamage:15,coldDivisor:70},
-{id:'spider-fang-blade',name:'거대거미 송곳니검',where:'ironbench',cost:{giantSpiderSilk:4,giantSpiderFang:3,ironIngot:4,flowerLeather:3},desc:'공격력 108',kind:'weapon',power:108,range:82,cooldown:720},
-{id:'spider-silk-spear',name:'거대거미 실창',where:'ironbench',cost:{giantSpiderSilk:5,giantSpiderFang:2,ironIngot:3,flowerLeather:3,wood:2},desc:'공격력 96 · 긴 사거리',kind:'weapon',power:96,range:118,cooldown:860},
+{id:'spider-fang-blade',name:'거대거미 송곳니검',where:'ironbench',cost:{giantSpiderSilk:4,giantSpiderFang:3,ironIngot:4,flowerLeather:3},desc:'공격력 108 · 공격 시 13% 확률로 적을 2초간 완전 속박',kind:'weapon',power:108,range:82,cooldown:720,bindChance:.13},
+{id:'spider-silk-spear',name:'거대거미 실창',where:'ironbench',cost:{giantSpiderSilk:5,giantSpiderFang:2,ironIngot:3,flowerLeather:3,wood:2},desc:'공격력 96 · 긴 사거리 · 공격 시 13% 확률로 적을 2초간 완전 속박',kind:'weapon',power:96,range:118,cooldown:860,bindChance:.13},
 {id:'spider-silk-armor',name:'거대거미 실갑옷',where:'ironbench',cost:{giantSpiderSilk:8,giantSpiderFang:2,ironIngot:4,flowerLeather:3},desc:'최대 체력 +114 · 피해 10% 감소',kind:'armor',maxHp:114,reduce:.10}
 ];
 const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat','cooked-hare-meat','cooked-bird-meat','cooked-lizard-meat','cooked-crystal-goat-meat','cooked-greens','cooked-fish','cooked-crystal-deer-meat'];
@@ -323,8 +323,8 @@ primitiveArcher:{id:'primitiveArcher',name:'원거리 원시인',mood:'aggressiv
 jungleGuardian:{id:'jungleGuardian',name:'밀림 수호자',mood:'aggressive',hp:1300,dmg:70,speed:76,r:36,color:'#37654c',detect:950,area:'jungletemple-lower',templeGuardian:true},
 flowergoblin:{id:'flowergoblin',name:'꽃 고블린',mood:'neutral',hp:222,dmg:30,speed:72,r:20,color:'#a7c957',detect:470,attackCooldown:1000,flowerZone:true},
 giantbee:{id:'giantbee',name:'거대 꿀벌',mood:'neutral',hp:350,dmg:40,speed:110,r:22,color:'#e3b341',detect:620,attackCooldown:1000,flowerZone:true},
-giantspider:{id:'giantspider',name:'거대 거미',mood:'aggressive',hp:888,dmg:40,speed:76,r:30,color:'#4d3d52',detect:620,attackCooldown:1000,flowerZone:true},
-giantspiderling:{id:'giantspiderling',name:'새끼 거대거미',mood:'aggressive',hp:100,dmg:19,speed:92,r:15,color:'#76627a',detect:360,attackCooldown:850,flowerZone:true}
+giantspider:{id:'giantspider',name:'거대 거미',mood:'aggressive',hp:900,dmg:50,speed:76,r:30,color:'#4d3d52',detect:620,attackCooldown:1000,flowerZone:true},
+giantspiderling:{id:'giantspiderling',name:'새끼 거대거미',mood:'aggressive',hp:100,dmg:15,speed:92,r:15,color:'#76627a',detect:360,attackCooldown:850,flowerZone:true}
 
 };
 const DROP_MATERIAL_NAMES={
