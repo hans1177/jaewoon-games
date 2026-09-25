@@ -44,6 +44,11 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.upperPlatformReady,false);
     assert.equal(source.releaseOrDeploymentAuthority,false);
     assert.equal(source.buildMethod,'UnityWebFloorBuild.BuildWeb');
+    assert.match(source.bootstrapRuntimeSha256,/^[a-f0-9]{64}$/);
+    assert.match(source.bootstrapBuildSha256,/^[a-f0-9]{64}$/);
+    assert.equal(source.presentationDevelopmentContract.requiredState,'DEVELOPED_GAME_SPECIFIC_PRESENTATION');
+    assert.equal(source.presentationDevelopmentContract.sourceDeltaFromBootstrapRequired,true);
+    assert.equal(source.presentationDevelopmentContract.flagOnlyPromotionForbidden,true);
     assert.match(build,/public static void BuildWeb\(\)/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA BOOT/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET/);
@@ -84,4 +89,15 @@ test('Unity Web floor bootstrap rejects non-canonical output path',()=>{
     process.chdir(old);
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+
+test('Unity Web readiness workflow requires substantive presentation beyond bootstrap flags',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  assert.match(workflow,/bootstrapRuntimeSha256/);
+  assert.match(workflow,/bootstrapSourceDelta/);
+  assert.match(workflow,/DEVELOPED_GAME_SPECIFIC_PRESENTATION/);
+  assert.match(workflow,/developedAssetCount>=3\|\|primitiveCount===0/);
+  assert.match(workflow,/bootstrapGenerated&&!substantivePresentation/);
+  assert.match(workflow,/graphics:\{pass:graphicsPass,assetCounts:graphicsCounts,bootstrapGraphicsBlocked,bootstrapSourceDelta,developedAssetCount,primitiveCount,substantivePresentation\}/);
 });
