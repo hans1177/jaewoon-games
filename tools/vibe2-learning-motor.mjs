@@ -2109,11 +2109,8 @@ function verifiedRobloxStudioPlayBinding(item={}){
     &&String(evidence?.placeId||'')===String(candidate?.placeId||'')
     &&Number(evidence?.versionNumber||0)===Number(candidate?.versionNumber||0)
   );
-  const pass=Boolean(
-    evidence?.pass===true
-    &&evidence?.actualPlay===true
-    &&evidence?.runtimeVerified===true
-    &&evidence?.learningReusable===true
+  const trustedObservation=Boolean(
+    evidence?.actualPlay===true
     &&evidence?.localPlaceFile===true
     &&evidence?.onlinePlaceDirectOpen===false
     &&evidence?.robloxPlayerAutomation===false
@@ -2123,13 +2120,27 @@ function verifiedRobloxStudioPlayBinding(item={}){
     &&exactArtifact
     &&publishedCrossCheck
     &&evidence?.capabilities?.studioTestService===true
+  );
+  const pass=Boolean(
+    trustedObservation
+    &&evidence?.pass===true
+    &&evidence?.runtimeVerified===true
+    &&evidence?.learningReusable===true
     &&evidence?.capabilities?.virtualInput===true
     &&actions.some(row=>row?.dispatched===true&&row?.ok===true)
     &&requiredCheckpoints.length>0
     &&requiredCheckpoints.every(row=>row?.pass===true)
     &&errors.length===0
   );
-  return{pass,evidence,candidate,actions,checkpoints,requiredCheckpoints,sourceRevision,artifactIdentity,artifactRunId,exactArtifact,publishedCrossCheck};
+  const verifiedFailure=Boolean(
+    trustedObservation
+    &&!pass
+    &&(
+      errors.length>0
+      ||requiredCheckpoints.some(row=>row?.pass!==true)
+    )
+  );
+  return{pass,verifiedFailure,trustedObservation,evidence,candidate,actions,checkpoints,requiredCheckpoints,sourceRevision,artifactIdentity,artifactRunId,exactArtifact,publishedCrossCheck};
 }
 function verifiedRobloxStudioReusablePatterns(binding={}){
   const evidence=binding?.evidence||{};
@@ -2148,16 +2159,35 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
     const gameId=clean(item?.gameId||item?.id);
     if(!gameId)continue;
     const binding=verifiedRobloxStudioPlayBinding(item);
-    if(!binding.pass)continue;
+    if(!binding.pass&&!binding.verifiedFailure)continue;
     const evidence=binding.evidence;
     const patterns=verifiedRobloxStudioReusablePatterns(binding);
-    if(!patterns.length)continue;
+    const failedCheckpoints=binding.requiredCheckpoints.filter(row=>row?.pass!==true).map(row=>clean(row?.name||row?.id)).filter(Boolean);
+    const errorTypes=(Array.isArray(evidence?.errors)?evidence.errors:[]).map(row=>clean(row?.type||row?.name||'runtime-error')).filter(Boolean);
+    const failureCause=uniq([...errorTypes,...failedCheckpoints]).join(' | ');
+    if(binding.pass&&!patterns.length)continue;
+    if(binding.verifiedFailure&&!failureCause)continue;
     const runIdentity=clean(evidence?.runId)||clean(evidence?.workflowRunId)||[
       binding.sourceRevision,binding.artifactIdentity,String(binding.artifactRunId)
     ].join('|');
+    const outcome=binding.pass?'PASS':'FAIL';
     const outcomeId='roblox_studio_local_play_'+hash([
-      gameId,binding.sourceRevision,binding.artifactIdentity,String(binding.artifactRunId),runIdentity
+      gameId,binding.sourceRevision,binding.artifactIdentity,String(binding.artifactRunId),runIdentity,outcome,failureCause
     ].join('|'));
+    const baseEvidence=[
+      'roblox-studio-local-runtime:'+(binding.pass?'PASS':'FAIL'),
+      'roblox-studio-local-exact-artifact:PASS',
+      'published-candidate-crosscheck:OPEN_CLOUD',
+      'roblox-player-automation:NO',
+      'online-place-direct-open:NO',
+      'raw-source-stored:NO',
+      'raw-gameplay-values-stored:NO',
+      'source-revision:'+binding.sourceRevision,
+      'artifact-id:'+binding.artifactIdentity,
+      'artifact-run-id:'+String(binding.artifactRunId),
+      'roblox-studio-local-outcome-id:'+outcomeId,
+      ...(clean(evidence?.workflowRunId)?['actions-run:'+clean(evidence.workflowRunId)]:[])
+    ];
     records.push({
       id:outcomeId,
       gameId,
@@ -2166,26 +2196,14 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
       taskType:'roblox-studio-local-internal-play',
       problem:'exact local Roblox build artifact runtime behavior must be observed through StudioTestService and VirtualInput',
       goal:'reuse only verified local Roblox Studio play behavior and checkpoint outcomes for future Roblox development',
-      change:patterns.join(' | '),
-      outcome:'PASS',
-      qa:['ROBLOX_STUDIO_TEST_SERVICE','VIRTUAL_INPUT','LOCAL_EXACT_ARTIFACT_BINDING','OPEN_CLOUD_PUBLISHED_CANDIDATE_CROSSCHECK'],
+      change:binding.pass?patterns.join(' | '):'verified local Studio runtime failure captured for causal repair',
+      outcome,
+      failureCause:binding.pass?'':failureCause,
+      qa:['ROBLOX_STUDIO_TEST_SERVICE','LOCAL_EXACT_ARTIFACT_BINDING','OPEN_CLOUD_PUBLISHED_CANDIDATE_CROSSCHECK',...(binding.pass?['VIRTUAL_INPUT']:[])],
       build:binding.artifactIdentity,
-      evidence:[
-        'roblox-studio-local-runtime:PASS',
-        'roblox-studio-virtual-input:PASS',
-        'roblox-studio-local-exact-artifact:PASS',
-        'published-candidate-crosscheck:OPEN_CLOUD',
-        'roblox-player-automation:NO',
-        'online-place-direct-open:NO',
-        'raw-source-stored:NO',
-        'raw-gameplay-values-stored:NO',
-        'source-revision:'+binding.sourceRevision,
-        'artifact-id:'+binding.artifactIdentity,
-        'artifact-run-id:'+String(binding.artifactRunId),
-        'roblox-studio-local-outcome-id:'+outcomeId,
-        ...(clean(evidence?.workflowRunId)?['actions-run:'+clean(evidence.workflowRunId)]:[])
-      ],
-      reusablePatterns:patterns,
+      evidence:baseEvidence,
+      reusablePatterns:binding.pass?patterns:[],
+      avoidPatterns:binding.pass?[]:uniq([...patterns,...errorTypes.map(x=>'verified-studio-error:'+lower(x).replace(/[^a-z0-9-]+/g,'-'))]),
       verified:true,
       reusable:true,
       confirmations:1,
@@ -2197,8 +2215,8 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
     version:1,
     kind:'verified-roblox-studio-local-play-experience',
     records,
-    positive:records.length,
-    negative:0,
+    positive:records.filter(row=>upper(row.outcome)==='PASS').length,
+    negative:records.filter(row=>upper(row.outcome)==='FAIL').length,
     authority:'local-exact-artifact-studio-runtime-to-existing-learning-motor-only'
   };
 }
@@ -2218,8 +2236,8 @@ export function mergeVerifiedRobloxStudioPlayExperienceMemory(experienceInput={}
     memory,
     changed:true,
     added:fresh.length,
-    positive:fresh.length,
-    negative:0,
+    positive:fresh.filter(row=>upper(row.outcome)==='PASS').length,
+    negative:fresh.filter(row=>upper(row.outcome)==='FAIL').length,
     candidates:extracted.records.length
   };
 }
