@@ -1,5 +1,5 @@
 {
-  "version": 364,
+  "version": 365,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -4474,7 +4474,74 @@
           "INTERNAL_REDEPLOY_EXACT_CANDIDATE",
           "EXACT_CANDIDATE_REVALIDATION",
           "VIBE_INTERNAL_PLAY"
-        ]
+        ],
+        "storePresentationAutomation": {
+          "version": 1,
+          "authority": "OWNER_DIRECTIVE_2026-09-25",
+          "trigger": "ROBLOX_INTERNAL_PLATFORM_RELEASE_CONFIRMED",
+          "automatic": true,
+          "manualStudioGuiForbidden": true,
+          "studioInteractionMode": "API_ONLY",
+          "actualRobloxPlayerCaptureRequired": true,
+          "sourceCandidateBindingRequired": true,
+          "sequence": [
+            "RESOLVE_EXACT_INTERNAL_RELEASE_CANDIDATE",
+            "LAUNCH_ROBLOX_PLAYER_TO_INTERNAL_PLACE",
+            "CAPTURE_DISTINCT_ACTUAL_GAMEPLAY_FRAMES",
+            "AUTO_COMPOSE_THREE_HOMEPAGE_THUMBNAILS",
+            "SYNC_ENGLISH_PRIMARY_KOREAN_SECONDARY_TITLE",
+            "UPLOAD_THREE_THUMBNAILS_VIA_OPEN_CLOUD",
+            "ACTIVATE_OR_UPDATE_THUMBNAIL_PERSONALIZATION",
+            "READ_BACK_ROBLOX_THUMBNAILS_AND_VERIFY",
+            "WRITE_VERIFIED_ROBLOX_CDN_IMAGE_TO_COMPANY_RUNTIME_CATALOG",
+            "TRIGGER_EXISTING_HOMEPAGE_MANAGER"
+          ],
+          "thumbnailCandidateCount": 3,
+          "actualGameplayFrameOnly": true,
+          "genericSharedBackgroundForbidden": true,
+          "unrelatedHomepageBackgroundForbidden": true,
+          "generatedGameplayThatDoesNotExistForbidden": true,
+          "structuralReferenceOnly": {
+            "source": "CURRENT_ROBLOX_SUCCESSFUL_GAME_THUMBNAIL_PATTERNS",
+            "mayCopyCharactersLogosArtOrExactComposition": false,
+            "traits": [
+              "ONE_CLEAR_DOMINANT_SUBJECT",
+              "CORE_ACTION_READABLE_IMMEDIATELY",
+              "HIGH_FOREGROUND_BACKGROUND_CONTRAST",
+              "SIMPLE_BACKGROUND_HIERARCHY",
+              "STRONG_SMALL_CARD_SILHOUETTE",
+              "MINIMAL_TEXT",
+              "GENRE_MOOD_VISIBLE_WITHOUT_EXPLANATION"
+            ]
+          },
+          "title": {
+            "englishPrimary": true,
+            "koreanSecondary": true,
+            "displayFormat": "<ENGLISH_PRIMARY> | <KOREAN_SECONDARY>",
+            "koreanOnlyForbidden": true
+          },
+          "robloxOpenCloud": {
+            "homepageThumbnailApi": "POST /thumbnail-personalization-api/v1/universes/{universeId}/thumbnails/uploads",
+            "uploadField": "files",
+            "personalizationCreate": "POST /thumbnail-personalization-api/v1/universes/{universeId}/personalization/create",
+            "personalizationUpdate": "POST /thumbnail-personalization-api/v1/universes/{universeId}/personalization/update",
+            "readbackRequired": true,
+            "requiredScopes": [
+              "universe.thumbnail:write",
+              "universe.thumbnail:read",
+              "universe.place:write"
+            ]
+          },
+          "homepage": {
+            "source": "VERIFIED_ROBLOX_CDN_THUMBNAIL_URL",
+            "runtimeCatalogAuthority": "company-runtime:game-catalog.json",
+            "existingHomepageManagerRequired": true,
+            "separateHomepageShadowPipelineForbidden": true,
+            "homepageMustUseSameVerifiedRobloxThumbnail": true
+          },
+          "failureAction": "KEEP_INTERNAL_RELEASE_PLAYABLE_BLOCK_ONLY_STORE_PRESENTATION_AND_EXTERNAL_PUBLIC_RELEASE",
+          "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
+        }
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
@@ -4511,7 +4578,11 @@
           "MOBILE_INPUT_UI_AND_LOW_END_PERFORMANCE_PASS",
           "PRESENTATION_COMPLETION_EVIDENCE_PASS",
           "STABILITY_EVIDENCE_ACROSS_DISTINCT_BUILDUP_CYCLES_PASS",
-          "EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS"
+          "EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS",
+          "ROBLOX_BILINGUAL_TITLE_EVIDENCE_PASS",
+          "ROBLOX_THUMBNAIL_AUTOMATION_EVIDENCE_PASS",
+          "ROBLOX_THUMBNAIL_OPEN_CLOUD_READBACK_PASS",
+          "HOMEPAGE_USES_SAME_VERIFIED_ROBLOX_THUMBNAIL"
         ],
         "vibeInternalPlay": {
           "mustBeActualPlay": true,
@@ -4565,7 +4636,16 @@
         "passState": "PUBLIC_RELEASE_READY",
         "publicationRequiresExplicitExternalPublicationEvidenceAfterPass": true,
         "publicationSuccessState": "PUBLIC_RELEASE",
-        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP"
+        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP",
+        "robloxStorePresentation": {
+          "titleHierarchy": "ENGLISH_PRIMARY_KOREAN_SECONDARY",
+          "thumbnailCandidateCount": 3,
+          "actualGameplayFramesRequired": true,
+          "genericSharedPlaceholderForbidden": true,
+          "robloxOpenCloudApplyAndReadbackRequired": true,
+          "companyHomepageSameVerifiedImageRequired": true,
+          "evidenceField": "robloxStorePresentationEvidence"
+        }
       }
     },
     "autonomousBottleneckRecovery": {
