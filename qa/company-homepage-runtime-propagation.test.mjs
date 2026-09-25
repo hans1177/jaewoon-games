@@ -114,7 +114,7 @@ test('homepage exposes Unity Web only as an optional same-project validation sur
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
   assert.equal(web.requiredForDevelopmentAdmission,false);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST');
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkQaPassRequired,false);
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkEvidenceFilesRequired,false);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
@@ -122,6 +122,10 @@ test('homepage exposes Unity Web only as an optional same-project validation sur
   assert.match(renderer,/projectPath===`unity-games\/\$\{id\}`/);
   assert.match(renderer,/href=`\/web-games\/\$\{id\}\//);
   assert.match(renderer,/fetch\(`\$\{href\}index\.html\?ts=/);
+  assert.match(renderer,/bundleGroupsFromUnityIndex/);
+  assert.match(renderer,/Unity Web Player\|unity-container\|createUnityInstance\|\\\.loader\\\.js/);
+  assert.match(renderer,/method:'HEAD'/);
+  assert.match(renderer,/\['loader','data','framework','wasm'\]/);
   assert.match(renderer,/unityWebAvailable:true/);
   assert.match(renderer,/Unity Web · 개발중/);
   assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|'';/);
