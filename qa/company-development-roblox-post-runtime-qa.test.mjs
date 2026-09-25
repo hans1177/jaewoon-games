@@ -117,7 +117,11 @@ test('foundation runtime write contention defers only the stale write and keeps 
 });
 
 
-test('Roblox runtime foundation QA collapses stale all-game runs without cancelling the active run',()=>{
-  assert.match(workflow,/concurrency:\n  group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id \|\| 'all-pending' \}\}\n  cancel-in-progress: false/);
+test('Roblox runtime foundation QA collapses stale push runs without cancelling active or per-game verification',()=>{
+  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id/);
+  assert.match(workflow,/scheduled-scan/);
+  assert.match(workflow,/manual-scan/);
+  assert.match(workflow,/push-scan/);
+  assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
 });
