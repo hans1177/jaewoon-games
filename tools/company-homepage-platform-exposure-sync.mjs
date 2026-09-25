@@ -10,16 +10,23 @@ const write=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n
 function robloxState(item={}){
   const pub=item.robloxPublicationTarget||{};
   const rel=item.robloxReleaseEvidence||{};
+  const internal=item.robloxInternalReleaseEvidence||{};
+  const migration=item.robloxDedicatedTargetMigration||{};
   const staleSharedTarget=item.robloxSharedTargetCurrent===false
     &&pub.dedicated!==true
-    &&Boolean(clean(pub.placeId||rel.placeId));
-  const placeId=staleSharedTarget?'':clean(pub.placeId||rel.placeId);
+    &&Boolean(clean(pub.placeId||rel.placeId||internal.placeId));
+  const placeId=staleSharedTarget?'':clean(pub.placeId||rel.placeId||internal.placeId);
   const published=!staleSharedTarget&&(bool(rel.published)||bool(pub.published)||bool(rel.verified)||bool(pub.verified));
   const explicitPublic=!staleSharedTarget&&(bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC');
   const runtime=bool(item.robloxRuntimePassed)||bool(item.robloxRuntimeEvidence?.pass)||bool(item.robloxIndependentQaPassed);
   const regression=bool(item.robloxRegressionPassed)||bool(item.robloxRegressionEvidence?.pass);
   const sourceReady=Boolean(item.robloxProjectPath||item.robloxSourceCommit||item.robloxCandidateBranch||item.targetSourcePaths?.ROBLOX);
-  const internalReady=!staleSharedTarget&&(bool(item.robloxInternalReleaseReady)||(published&&!explicitPublic)||(published&&runtime&&regression));
+  const preservedInternalRelease=bool(item.robloxInternalReleasePublished)
+    ||(bool(internal.internalRelease)&&bool(internal.published))
+    ||bool(migration.internalReleasePreserved);
+  const internalReady=preservedInternalRelease
+    ||bool(item.robloxInternalReleaseReady)
+    ||(!staleSharedTarget&&((published&&!explicitPublic)||(published&&runtime&&regression)));
   const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&regression&&published));
   return{
     platform:'ROBLOX',
