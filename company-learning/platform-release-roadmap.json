@@ -1,5 +1,5 @@
 {
-  "version": 374,
+  "version": 375,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -1020,8 +1020,8 @@
           "REPROBE_REQUIRED_TOOLS"
         ],
         "automaticSessionAttempts": 3,
-        "toolReadinessAttemptsPerSession": 5,
-        "toolReadinessDelayMs": 1000,
+        "toolReadinessAttemptsPerSession": 20,
+        "toolReadinessDelayMs": 1500,
         "assistantSettingsDiagnosticOnly": true,
         "assistantSettingsMutationForbidden": true,
         "guiToggleAutomationForbidden": true,
@@ -1049,7 +1049,10 @@
         "explicitDisabledState": "NO",
         "assistantSettingsDiagnosticAdvisoryWhenMissingOrUnknown": true,
         "requiredToolHandshakeCanConfirmEnabledState": true,
-        "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT"
+        "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT",
+        "generatedBatchFailureFallbackBeforeStudioRestart": true,
+        "generatedBatchFailureFallback": "INSTALLED_OFFICIAL_STUDIOMCP_EXE_DIRECT",
+        "generatedBatchFailureMustNotRepeatAcrossRemainingSessions": true
       }
     },
     "headlessValidation": {
