@@ -1,5 +1,5 @@
 {
-  "version": 196,
+  "version": 197,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -798,7 +798,7 @@
         "controller": ".vibe2/parallelism-control.json",
         "algorithm": "tools/vibe2-adaptive-backpressure.mjs",
         "reserve": "tools/vibe2-queue-control.mjs::reserve-batch",
-        "fanIn": "neuron-complete lightweight ingress -> single vibe2-fanin-refill after per-task micro fan-in -> cohort regression/release audit",
+        "fanIn": "healthy queue: neuron-complete lightweight ingress -> single refill after per-task micro fan-in; live runner queue pressure: immutable worker result -> existing cohort fan-in without spawning another callback workflow",
         "telemetry": "tools/vibe2-parallelism-telemetry.mjs",
         "entryPaths": [
           ".github/workflows/vibe2-24h-runner.yml",
@@ -827,12 +827,12 @@
         "fixedWaveBarrier": false,
         "taskMicroFanIn": true,
         "speculativeVariantJoinScope": "PER_TASK",
-        "atomicCompletionIngress": "PERSIST_RESULT_ONLY",
+        "atomicCompletionIngress": "PRESSURE_AWARE_IMMEDIATE_OR_COHORT_COALESCED",
         "pendingVariantCallbackRunsHeavyReserve": false,
         "taskMicroFanInDispatchesSingleRefill": true,
         "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
         "workerDirectControlWrite": false,
-        "capacityRefill": "IMMEDIATE_AFTER_TASK_MICRO_FANIN",
+        "capacityRefill": "IMMEDIATE_AFTER_TASK_MICRO_FANIN_WHEN_RUNNER_QUEUE_HEALTHY; COHORT_FANIN_REFILL_WHEN_CALLBACK_IS_COALESCED_UNDER_LIVE_RUNNER_QUEUE_PRESSURE",
         "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
         "speculativeExpansionController": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
         "speculativeExpansionPressureSource": ".vibe2/parallelism-control.json",
@@ -847,7 +847,19 @@
         "primaryReservationCountUnaffected": true,
         "taskMicroFanInPreservedDuringSuppression": true,
         "speculativeExpansionRestoresAutomaticallyWhenPressureClears": true,
-        "newSchedulerCreated": false
+        "newSchedulerCreated": false,
+        "liveRunnerPressureObservation": "READ_ONLY_GITHUB_ACTIONS_RECENT_RUN_STATUS",
+        "liveRunnerPressureStatuses": [
+          "QUEUED",
+          "PENDING",
+          "REQUESTED"
+        ],
+        "callbackCoalescingTarget": "EXISTING_COHORT_FAN_IN",
+        "callbackCoalescingResultCarrier": "IMMUTABLE_WORKER_ARTIFACT",
+        "callbackCoalescingFailOpen": true,
+        "callbackCoalescingResultLossForbidden": true,
+        "newWorkflowForCallbackCoalescing": false,
+        "newSchedulerForCallbackCoalescing": false
       },
       "bottleneckFirstRuntimeCheckpoint": {
         "version": 1,
