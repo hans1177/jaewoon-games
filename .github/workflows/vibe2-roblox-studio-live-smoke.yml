@@ -47,13 +47,13 @@ jobs:
           const cfg=JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
           const target=cfg.targets.find(x=>x.id==='external-roblox-potion-shop-flow-a');
           if(!target) throw new Error('Potion Shop Roblox target missing');
-          if(target.enabled!==true) throw new Error('Potion Shop target must stay enabled after verified real Studio smoke');
+          if(target.enabled!==false) throw new Error('External Potion Shop Studio automation must remain disabled');
           if(target.engine!=='roblox'||target.runnerReady!==true) throw new Error('Potion Shop target Studio contract invalid');
           if(target.sourceAccess!=='owned-or-authorized-server-workspace') throw new Error('Potion Shop target source access must be explicitly authorized');
           if(!target.commandArgs.some(x=>String(x).includes('14215142052'))) throw new Error('official Potion Shop place id missing');
           if(!target.commandArgs.some(x=>String(x).includes('creator-enabled-place-copying'))) throw new Error('copy permission contract missing');
           if(cfg.policy?.externalRobloxActiveAutomation!==false) throw new Error('generic external Roblox automation must remain disabled');
-          if(cfg.policy?.externalCopyEnabledRobloxAutomation!==true) throw new Error('explicit copy-enabled Roblox automation policy missing');
+          if(cfg.policy?.externalCopyEnabledRobloxAutomation!==true) throw new Error('copy-enabled capability declaration missing');
           if(Number(cfg.policy?.robloxStudioConcurrency?.defaultMultiplayerClients||0)!==2) throw new Error('default Roblox multiplayer regression must be 2 clients');
           if(Number(cfg.policy?.robloxStudioConcurrency?.maxStudioTestClients||0)!==8) throw new Error('Roblox Studio client cap contract changed');
           if(cfg.policy?.robloxStudioConcurrency?.sameWindowsSessionConcurrent!==false) throw new Error('same-session production and study must stay disabled');
@@ -122,6 +122,7 @@ jobs:
           node -e "const fs=require('fs');const p=process.env.RUNNER_TEMP+'/vibe2-roblox-multiplayer.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.runtimeVerified!==true)throw new Error('multiplayer runtime not verified');if(Number(r.multiplayer?.expectedClients||0)!==2)throw new Error('expected clients mismatch');if(Number(r.multiplayer?.resultCount||0)<2)throw new Error('not all clients reported');if(Number(r.multiplayer?.verifiedClients||0)<2)throw new Error('not all clients reported ready');if(r.capabilities?.virtualInput!==false)throw new Error('automated user input unexpectedly enabled');if(r.capabilities?.assertionOnly!==true)throw new Error('assertion-only multiplayer mode missing');if(r.authorityExpanded===true)throw new Error('authority expanded');console.log('VIBE2_ROBLOX_MULTIPLAYER_2_CLIENT=PASS')"
 
       - name: Study official uncopylocked Potion Shop through dedicated Studio runner
+        if: ${{ false }}
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
