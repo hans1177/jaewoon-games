@@ -20,7 +20,7 @@
     "robloxUnauthorizedCopyDownload": false,
     "robloxStudioRunnerMustBeExplicitlyReady": true,
     "externalRobloxActiveAutomation": false,
-    "externalCopyEnabledRobloxAutomation": true,
+    "externalCopyEnabledRobloxAutomation": false,
     "clientLocalLearning": false,
     "learningInputs": {
       "studioRuntime": true,
@@ -130,13 +130,7 @@
       "sourceRoot": ".vibe2/authorized-roblox-source/potion-shop-demo",
       "runnerReady": false,
       "command": "node",
-      "commandArgs": [
-        "tools/vibe2-roblox-studio-cli-runner.mjs",
-        "--place-id=14215142052",
-        "--copy-permission=creator-enabled-place-copying",
-        "--permission-evidence=https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo",
-        "--source-root=.vibe2/authorized-roblox-source/potion-shop-demo"
-      ],
+      "commandArgs": [],
       "timeoutMs": 240000,
       "priority": "normal",
       "tags": [
@@ -148,7 +142,9 @@
         "authorized-source-distillation",
         "production-priority-session-safe"
       ],
-      "disabledReason": "24h-learning-roblox-studio-forbidden"
+      "disabledReason": "online-published-place-studio-automation-forbidden",
+      "onlinePublishedPlaceStudioAutomationForbidden": true,
+      "localPlaceFileRequiredForAnyFutureStudioReactivation": true
     }
   ]
 }
