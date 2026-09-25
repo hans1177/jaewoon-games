@@ -82,7 +82,13 @@ jobs:
           const fresh=ingestTesterDebug({developmentQueue:q,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
           const currentBlockingTickets=new Map();
           for(const ticket of fresh.tickets.tickets||[]){
-            if(ticket.status!=='OPEN'||ticket.repairEligible===false||!['CRITICAL','HIGH'].includes(ticket.severity))continue;
+            if(
+              ticket.status!=='OPEN'
+              ||ticket.repairEligible===false
+              ||ticket.internalFlowBlocking===false
+              ||ticket.externalReleaseBlockingOnly===true
+              ||!['CRITICAL','HIGH'].includes(ticket.severity)
+            )continue;
             const rows=currentBlockingTickets.get(ticket.gameId)||[];rows.push(ticket);currentBlockingTickets.set(ticket.gameId,rows);
           }
           const stamp=new Date().toISOString();
