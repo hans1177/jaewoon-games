@@ -266,6 +266,149 @@ test('conflict markers fail fast',()=>{
 });
 
 
+test('Roblox asset adaptation accepts all required core domains plus unlimited additional visual domains with native motion',()=> {
+  const root=repo();
+  const sourceRoot=path.join(root,'roblox-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client/Visual.client.luau'),[
+    'local RunService = game:GetService("RunService")',
+    'local Lighting = game:GetService("Lighting")',
+    'local character = Instance.new("Model")',
+    'character.Name = "PlayerCharacterVisual"',
+    'local enemyBody = Instance.new("MeshPart")',
+    'enemyBody.Name = "EnemyCreatureBody"',
+    'enemyBody.Material = Enum.Material.SmoothPlastic',
+    'enemyBody.Color = Color3.fromRGB(80,110,145)',
+    'enemyBody.Parent = character',
+    'local weaponEquipment = Instance.new("MeshPart")',
+    'weaponEquipment.Name = "SwordEquipment"',
+    'weaponEquipment.Material = Enum.Material.Metal',
+    'weaponEquipment.Parent = character',
+    'local terrainEnvironment = Instance.new("MeshPart")',
+    'terrainEnvironment.Name = "TerrainRockEnvironment"',
+    'terrainEnvironment.Material = Enum.Material.Slate',
+    'terrainEnvironment.Color = Color3.fromRGB(54,68,82)',
+    'terrainEnvironment.Parent = workspace',
+    'local hud = Instance.new("ScreenGui")',
+    'hud.Name = "ExtraUiDomain"',
+    'local impactVfx = Instance.new("ParticleEmitter")',
+    'impactVfx.Name = "ExtraVfxDomain"',
+    'impactVfx.Parent = terrainEnvironment',
+    'Lighting.Brightness = 2',
+    'RunService.RenderStepped:Connect(function(dt)',
+    '  enemyBody.CFrame = enemyBody.CFrame * CFrame.Angles(0, dt * 0.4, 0)',
+    '  weaponEquipment.Orientation = weaponEquipment.Orientation + Vector3.new(0, dt * 8, 0)',
+    'end)'
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'roblox-games/demo',
+    target:'roblox',
+    changedFiles:['client/Visual.client.luau'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',runtimeChecks:['golden-scene-runtime'],authorityExpanded:false}
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'roblox:full-graphics-extra-domains'});
+  assert.equal(result.presentationQa.status,'STATIC_PASS');
+  assert.equal(result.presentationQa.pass,'ASSET_ADAPTATION');
+  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_CHARACTER_ENEMY')?.pass,true);
+  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_WEAPON_EQUIPMENT')?.pass,true);
+  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_ENVIRONMENT_TERRAIN')?.pass,true);
+  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_MATERIAL_COLOR_STYLE')?.pass,true);
+  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_NATIVE_MOTION_DRIVER')?.pass,true);
+  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_NATIVE_TRANSFORM_MUTATION')?.pass,true);
+});
+
+test('Roblox asset adaptation fails when a required core visual domain is missing regardless of extra domains',()=> {
+  const root=repo();
+  const sourceRoot=path.join(root,'roblox-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client/Visual.client.luau'),[
+    'local RunService = game:GetService("RunService")',
+    'local character = Instance.new("Model")',
+    'local enemyBody = Instance.new("MeshPart")',
+    'enemyBody.Name = "EnemyCreatureBody"',
+    'enemyBody.Material = Enum.Material.SmoothPlastic',
+    'enemyBody.Color = Color3.fromRGB(80,110,145)',
+    'enemyBody.Parent = character',
+    'local terrainEnvironment = Instance.new("MeshPart")',
+    'terrainEnvironment.Name = "TerrainRockEnvironment"',
+    'terrainEnvironment.Material = Enum.Material.Slate',
+    'terrainEnvironment.Parent = workspace',
+    'local hud = Instance.new("ScreenGui")',
+    'local impactVfx = Instance.new("ParticleEmitter")',
+    'impactVfx.Parent = terrainEnvironment',
+    'RunService.RenderStepped:Connect(function(dt)',
+    '  enemyBody.CFrame = enemyBody.CFrame * CFrame.Angles(0, dt * 0.4, 0)',
+    'end)'
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'roblox-games/demo',target:'roblox',changedFiles:['client/Visual.client.luau'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false}
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'roblox:missing-core-domain'}),
+    /ROBLOX_VISUAL_DOMAIN_WEAPON_EQUIPMENT/
+  );
+});
+
+test('Roblox asset adaptation requires an actual transform mutation, not only a motion driver token',()=> {
+  const root=repo();
+  const sourceRoot=path.join(root,'roblox-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client/Visual.client.luau'),[
+    'local RunService = game:GetService("RunService")',
+    'local character = Instance.new("Model")',
+    'local enemyBody = Instance.new("MeshPart")',
+    'enemyBody.Name = "EnemyBody"',
+    'local weaponEquipment = Instance.new("MeshPart")',
+    'weaponEquipment.Name = "SwordEquipment"',
+    'local terrainEnvironment = Instance.new("MeshPart")',
+    'terrainEnvironment.Name = "TerrainEnvironment"',
+    'enemyBody.Material = Enum.Material.SmoothPlastic',
+    'enemyBody.Color = Color3.fromRGB(80,110,145)',
+    'RunService.RenderStepped:Connect(function()',
+    '  enemyBody.Color = Color3.fromRGB(82,112,148)',
+    'end)'
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'roblox-games/demo',target:'roblox',changedFiles:['client/Visual.client.luau'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false}
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'roblox:driver-without-transform'}),
+    /ROBLOX_NATIVE_TRANSFORM_MUTATION/
+  );
+});
+
+test('Roblox asset adaptation rejects a single primitive even when names mimic every required core domain',()=> {
+  const root=repo();
+  const sourceRoot=path.join(root,'roblox-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client/Visual.client.luau'),[
+    'local RunService = game:GetService("RunService")',
+    'local characterEnemy = Instance.new("Part")',
+    'characterEnemy.Name = "CharacterEnemy"',
+    'local weaponEquipment = characterEnemy',
+    'local terrainEnvironment = characterEnemy',
+    'characterEnemy.Material = Enum.Material.Metal',
+    'characterEnemy.Color = Color3.fromRGB(80,110,145)',
+    'RunService.RenderStepped:Connect(function(dt)',
+    '  characterEnemy.CFrame = characterEnemy.CFrame * CFrame.Angles(0, dt, 0)',
+    'end)'
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'roblox-games/demo',target:'roblox',changedFiles:['client/Visual.client.luau'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false}
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'roblox:single-primitive'}),
+    /NO_SINGLE_PRIMITIVE_PLACEHOLDER/
+  );
+});
+
 test('presentation living motion static QA requires continuous smooth motion signals',()=>{
   const root=repo();
   const sourceRoot=path.join(root,'web-games/presentation-motion');
