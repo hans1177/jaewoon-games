@@ -1,5 +1,5 @@
 {
-  "version": 381,
+  "version": 382,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -3640,7 +3640,20 @@
       "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
       "rawViewportDirectTrainingForbidden": true,
       "supersededSharedTargetLocalExactArtifactPlayAllowed": true,
-      "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true
+      "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true,
+      "runtimeFoundationBoundary": {
+        "version": 1,
+        "exactEngineVersionWithoutRealServerBootState": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
+        "exactEngineVersionWithoutRealServerBootBlocker": "roblox-runtime-foundation-awaiting-real-server-boot",
+        "exactEngineVersionDoesNotEqualRealGameServerBoot": true,
+        "studioMcpActualPlayPassRemainsValidWhileRuntimeFoundationObservationPending": true,
+        "runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution": true,
+        "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
+        "observationRetry": "UNLIMITED_OBSERVATION",
+        "nextAction": "WAIT_FOR_VERIFIED_REAL_GAME_SERVER_BOOT_OR_OTHER_POLICY_APPROVED_RUNTIME_OBSERVATION",
+        "robloxPlayerAutomationForbidden": true,
+        "publishedPlaceDirectStudioAutomationForbidden": true
+      }
     },
     "deterministicGateAuthority": {
       "version": 1,
