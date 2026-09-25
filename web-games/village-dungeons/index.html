@@ -170,7 +170,7 @@ var defaultState={
   quests:{},zone:0
 };
 
-scene.background=new THREE.Color(0x000000);
+function loadState(){
   var data=null;
   try{data=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){}
   var s=Object.assign({},defaultState,data||{});
@@ -193,7 +193,7 @@ function weaponPower(){
   var item=WEAPONS.find(function(x){return x.id===state.weapon;});
   return item?item.power:0;
 }
-function armorDef(){var item=ARMORS.find(function(x){return x.id===state.armor;});return item?item.def:0;
+function armorDef(){
   var item=ARMORS.find(function(x){return x.id===state.armor;});
   return item?item.def:0;
 }
@@ -231,7 +231,7 @@ scene.add(player);
 var world=new THREE.Group();
 scene.add(world);
 var enemies=[];
-var m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat(0xdde8ef));
+var interactables=[];
 var keys={};
 var joy={x:0,y:0};
 var lastFrame=performance.now();
@@ -240,7 +240,7 @@ var bossCombat=false;
 var attackReady=0;
 var attackAnim=0;
 var currentInteract=null;
-var modalOpen=true;
+var modalOpen=false;
 var toastTimer=0;
 
 var hpFill=document.getElementById("hpFill");
@@ -655,7 +655,7 @@ function nearestInteractable(){
 }
 function updatePrompt(){
   currentInteract=nearestInteractable();
-<div id="prompt">상점 · 지역 선택 · 대화</div>
+if(currentInteract){
     var label=currentInteract.type==="weapon"||currentInteract.type==="armor"?"상점":currentInteract.type==="travel"?"지역 선택":currentInteract.type==="wounded"?"치료":"대화";
     prompt.textContent=currentInteract.name+" · "+label;
     prompt.classList.add("on");
