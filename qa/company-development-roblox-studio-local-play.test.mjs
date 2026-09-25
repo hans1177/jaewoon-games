@@ -547,6 +547,12 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_MUTATION=NO/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_FINAL_SETTING_ENABLED=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_FINAL_SETTING_CANDIDATE_PATH_COUNT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_FINAL_SETTING_MUTATION=NO/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ENABLEMENT_EVIDENCE=ABSENT_AFTER_ASSISTANT_READY:/);
+  assert.match(studioMcpBlock,/VIBE2_ROBLOX_STUDIO_MCP_ENABLEMENT_REQUIRED=true/);
+  assert.match(studioMcpBlock,/--studio-mcp-server-enablement-required=/);
   assert.match(studioMcpBlock,/setting_confirmed=/);
   assert.match(studioMcpBlock,/setting_probe_required=/);
   assert.match(studioMcpBlock,/setting_blocked=/);
@@ -565,6 +571,39 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
   assert.doesNotMatch(studioMcpBlock,/Set-Content .*AssistantSettings|Out-File .*AssistantSettings|Remove-Item .*AssistantSettings/i);
   assert.doesNotMatch(studioMcpBlock,/Set-Content .*VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT|Remove-Item .*VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT/i);
   assert.doesNotMatch(studioMcpBlock,/user_mouse_input[\s\S]{0,120}(?:Manage MCP Servers|Enable Studio as MCP server)/i);
+});
+
+test('persisted Studio MCP evidence can carry read-only enablement prerequisite without rewriting runtime error signatures',()=>{
+  const item0=item();
+  const runtime={
+    authority:'roblox-official-studio-mcp-runtime',
+    runtimeVerified:false,
+    capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false},
+    actions:[],
+    checkpoints:[],
+    errors:[{type:'studio-mcp-infrastructure-or-runtime-error',signature:'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:available=:stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'}],
+    metrics:{distinctFrameChange:false,consoleErrorCount:1}
+  };
+  const result=createLocalStudioPlayEvidence({
+    item:item0,
+    runtime,
+    expected:{
+      sourceRevision:source,
+      artifactIdentity:artifact,
+      artifactRunId:777,
+      universeId:'123',
+      placeId:'456',
+      versionNumber:9,
+      studioMcpServerEnablementRequired:true
+    },
+    workflowRunId:123,
+    studioStepSucceeded:false
+  });
+  assert.equal(result.pass,false);
+  assert.equal(result.evidence.infrastructureFailure,true);
+  assert.equal(result.evidence.studioMcpServerEnablementRequired,true);
+  assert.equal(result.evidence.operatorPrerequisite,'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT');
+  assert.equal(result.evidence.errors[0].signature,'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY:available=:stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT');
 });
 
 test('MCP helper accepts bounded per-session readiness attempts from workflow arguments',()=>{
