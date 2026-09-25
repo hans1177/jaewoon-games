@@ -144,6 +144,12 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   assert.equal(loop.robloxPlayerAutomation,false);
   assert.equal(loop.externalGuiAutomation,false);
   assert.equal(loop.undocumentedStudioCliAutomation,false);
+  assert.equal(loop.thirdPartyMcpBridgeForbidden,true);
+  assert.equal(loop.generatedBatchRepairPolicy,'DO_NOT_REWRITE_USE_OFFICIAL_INSTALLED_STUDIOMCP_EXE_FALLBACK');
+  assert.equal(roadmap.roblox.studioExecution.generatedBatchBrokenOrStaleFallbackAllowed,true);
+  assert.equal(roadmap.roblox.studioExecution.generatedBatchRewriteForbidden,true);
+  assert.equal(roadmap.roblox.studioExecution.thirdPartyMcpBridgeForbidden,true);
+  assert.equal(roadmap.roblox.studioExecution.studioMcpWindowsOfficialBinaryFallback,'%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe');
   assert.equal(loop.historicalSharedTargetExactArtifactLocalPlayAllowed,true);
   assert.equal(loop.historicalSharedTargetLocalPlayDoesNotClaimCurrentPublishedRuntime,true);
   assert.equal(loop.syntheticStaticOrDeclaredPlayPassForbidden,true);
@@ -169,6 +175,8 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   assert.equal(archLoop.perpetual,true);
   assert.equal(archLoop.continuesAfterPublicRelease,true);
   assert.equal(archLoop.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
+  assert.equal(archLoop.windowsMcpOfficialBinaryFallback,'%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe');
+  assert.equal(archLoop.thirdPartyMcpBridge,false);
   assert.equal(archGate.failClosed,true);
   assert.equal(archGate.actualVibePlayRequired,true);
   assert.equal(archGate.f9InternalReleaseCannotSetPublicReady,true);
