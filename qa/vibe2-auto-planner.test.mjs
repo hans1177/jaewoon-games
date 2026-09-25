@@ -2134,6 +2134,25 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   assert.equal(core.studioQualityEvolution.requiredConnectedImprovements.max,null);
 });
 
+test('studio source discovery has no artificial 30-file ceiling',()=>{
+  const root=tempRepo();
+  const gameId='studio-wide-source-scan';
+  const source=path.join(root,'roblox-games',gameId);
+  const targetDir=path.join(source,'a-target');
+  fs.mkdirSync(targetDir,{recursive:true});
+  fs.writeFileSync(path.join(targetDir,'PlayerController.luau'),'local player = {}\n','utf8');
+  for(let i=0;i<40;i++){
+    const dir=path.join(source,`z-${String(i).padStart(2,'0')}`);
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'misc.luau'),'local misc = {}\n','utf8');
+  }
+  writeStudioDesign(root,gameId);
+  const project={gameId,name:'Studio Wide Source Scan',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(task);
+  assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/a-target/PlayerController.luau`));
+});
+
 test('failed studio pillar creates a repair generation without globally blocking the game',()=>{
   const root=tempRepo();
   const gameId='repair-parallel';
