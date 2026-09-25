@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, reconcileQueuedBuildUpDirectives, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -2237,6 +2237,66 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   assert.equal(core.studioQualityEvolution.requiredConnectedImprovements.max,null);
 });
 
+
+test('queued legacy development work receives a current directive before reserve while running work is preserved',()=>{
+  const root=tempRepo();
+  const gameId='queued-directive-reconcile';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),[
+    'local Combat = {}',
+    'function Combat.resolveAttack(player, enemy)',
+    '  return enemy ~= nil and player ~= nil',
+    'end',
+    'return Combat'
+  ].join('\n'),'utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미',progressionDirection:'전투 보상으로 다음 선택지를 해금한다.'});
+  const project={gameId,name:'Queued Directive Reconcile',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const queued={
+    id:`${gameId}-legacy-queued`,gameId,gameName:project.name,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:`roblox-games/${gameId}`,responsibleFiles:[`roblox-games/${gameId}/server/Combat.server.luau`],
+    goal:'legacy queued game work',releaseState:'development-confirmed',status:'queued',evidence:[]
+  };
+  const running={
+    ...queued,id:`${gameId}-legacy-running`,goal:'already in flight',status:'running'
+  };
+  const reconciled=reconcileQueuedBuildUpDirectives({maxConcurrentTasks:4,tasks:[running,queued]},[project],root);
+  const queuedAfter=reconciled.queue.tasks.find(row=>row.id===queued.id);
+  const runningAfter=reconciled.queue.tasks.find(row=>row.id===running.id);
+  assert.ok(queuedAfter.buildUpDirectiveId);
+  assert.equal(queuedAfter.buildUpDirective.version,2);
+  assert.ok(queuedAfter.buildUpSourceAnchors.some(row=>row.symbol==='Combat.resolveAttack'));
+  assert.ok(queuedAfter.evidence.includes('build-up-pre-reserve-binding:CHECKED'));
+  assert.ok(queuedAfter.evidence.includes('build-up-directive-freshness:CURRENT_OR_RECONCILED'));
+  assert.equal(runningAfter.buildUpDirective,undefined);
+  assert.equal(reconciled.preservedRunning,1);
+  assert.equal(reconciled.attached,1);
+});
+
+test('queued stale directive rebinds to the active shared generation without changing running generation',()=>{
+  const root=tempRepo();
+  const gameId='queued-directive-rebind';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'공격 대상을 읽고 행동을 바꾸는 재미'});
+  const project={gameId,name:'Queued Directive Rebind',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(generated?.buildUpDirective);
+  const active={...generated,id:`${gameId}-active`,status:'running'};
+  const staleDirective={...generated.buildUpDirective,directiveId:`${gameId}-old-directive`,generation:0};
+  const stale={
+    ...generated,id:`${gameId}-stale`,status:'queued',goal:'stale goal',buildUpDirective:staleDirective,
+    buildUpDirectiveId:staleDirective.directiveId,buildUpGeneration:0
+  };
+  const reconciled=reconcileQueuedBuildUpDirectives({maxConcurrentTasks:4,tasks:[active,stale]},[project],root);
+  const staleAfter=reconciled.queue.tasks.find(row=>row.id===stale.id);
+  const activeAfter=reconciled.queue.tasks.find(row=>row.id===active.id);
+  assert.equal(staleAfter.buildUpDirectiveId,active.buildUpDirectiveId);
+  assert.equal(staleAfter.buildUpGeneration,active.buildUpGeneration);
+  assert.equal(activeAfter.buildUpDirectiveId,active.buildUpDirectiveId);
+  assert.equal(reconciled.rebound,1);
+});
 
 test('BUILD_UP depth advances only when the entire shared directive generation verifies',()=>{
   const root=tempRepo();
