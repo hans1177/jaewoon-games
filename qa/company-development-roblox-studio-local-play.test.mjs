@@ -426,6 +426,14 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/WaitForInputIdle\(30000\)/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_GUI_READY=YES/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES/);
+  assert.match(studioMcpBlock,/Get-Process StudioMCP -ErrorAction SilentlyContinue/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ORPHAN_COUNT=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ORPHAN_REAPED=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RESTART_ORPHAN_REAPED=/);
+  assert.match(studioMcpBlock,/VIBE2_STUDIO_LOG_CUTOFF/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_LOG_DIAGNOSTIC=/);
+  assert.match(studioMcpBlock,/StudioMCP\|MCP\|Assistant\|tool provider\|ToolProvider\|plugin/);
+  assert.doesNotMatch(studioMcpBlock,/Set-Content .*Roblox\\logs|Out-File .*Roblox\\logs/i);
 });
 
 test('Studio MCP play lane is not blocked by an unrelated runtime-foundation failure and verified play refills existing 24H development',()=>{
