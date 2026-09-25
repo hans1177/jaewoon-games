@@ -3222,7 +3222,9 @@
     },
     "upperPlatformAdmissionMigration": {
       "existingNativeDevelopmentGrandfathered": true,
+      "grandfatherMode": "DURABLE_NATIVE_PROGRESS_EVIDENCE",
       "newNativeDevelopmentStartRequiresUnityWebReadiness": true,
+      "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true
