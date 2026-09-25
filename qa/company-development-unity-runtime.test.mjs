@@ -44,7 +44,7 @@ function fixtures(root, pass=true){
   return {baseline,web};
 }
 
-test('creates direct Unity target-platform prototypes without requiring Web first',()=>{
+test('creates Unity target-platform prototypes after admission without embedding WebGL into the native generator',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-bootstrap-'));
   const {baseline}=fixtures(root,true);
   for(const [id,name,mode] of cases){
@@ -117,6 +117,9 @@ test('Unity native executor independently enforces Unity Web upper-platform admi
   assert.match(workflowSource,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
   assert.match(admissionSource,/UPPER_PLATFORM_DEVELOPMENT_READY/);
   assert.match(admissionSource,/READINESS_SOURCE_STALE/);
+  assert.match(workflowSource,/UNITY_WEB_PREDEVELOPMENT_FLOOR=UPPER_PLATFORM_DEVELOPMENT_READY_REQUIRED_FOR_NEW_NATIVE_ENTRY/);
+  assert.match(workflowSource,/UNITY_WEB_FLOOR_OWNER=unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(workflowSource,/UNITY_WEB_VALIDATION=NON_BLOCKING_SEPARATE_WORKFLOW/);
 });
 
 test('Unity executor uses unbounded eligibility with capacity batching, canary and exact-stage resume sequence',()=>{
