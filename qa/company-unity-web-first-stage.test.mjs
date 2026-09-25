@@ -100,3 +100,13 @@ test('Unity Web build never directly fans out; main-bound readiness evidence own
   assert.doesNotMatch(workflow,/Fan verified Unity Web into exact Roblox and Unity development/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
 });
+
+
+test('Unity Web readiness failure immediately wakes Vibe2 causal repair and still fails closed',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  assert.match(workflow,/Mark Unity Web floor repair requirement/);
+  assert.match(workflow,/UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED/);
+  assert.match(workflow,/gh workflow run vibe2-24h-runner\.yml/);
+  assert.match(workflow,/UNITY_WEB_REPAIR_PLANNER_DISPATCH=YES/);
+  assert.match(workflow,/exit 42/);
+});
