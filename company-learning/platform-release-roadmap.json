@@ -1,5 +1,5 @@
 {
-  "version": 379,
+  "version": 381,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-25",
@@ -847,7 +847,17 @@
     "graphicsQaFailureDoesNotSerializeUnrelatedSameGameDevelopment": true,
     "defaultRequestedParallelism": 256,
     "verifiedExternalPressureMayTemporarilyDownshift": true,
-    "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true
+    "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true,
+    "globalHeavyExecutionSerializationForbidden": true,
+    "globalOrchestrationSerializationForbidden": true,
+    "longRunningNativeBuildMayNotBlockUnityWebDevelopment": true,
+    "longRunningRuntimeOrQaMayNotBlockIndependentGameDevelopment": true,
+    "runtimeWaitMustReleaseIndependentDevelopmentCapacity": true,
+    "distinctGamesMustRemainParallel": true,
+    "sameGameIndependentNonOverlappingWorkMustRemainParallel": true,
+    "sharedStateSerializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
+    "sharedStateWriteMayNotHoldHeavyExecutionCapacity": true,
+    "externalProviderCapacityIsOnlyHeavyExecutionSerializationBoundary": true
   },
   "phases": [
     {
@@ -7244,6 +7254,16 @@
       "implementationState": "CENTRAL_POLICY_ARCHITECTURE_AND_EXECUTOR_BOUND",
       "existingNativeMigration": "GRANDFATHER_ALREADY_STARTED_NATIVE_DEVELOPMENT_NO_DEMOTION",
       "migration": "NEW_NATIVE_ENTRY_GATED_EXISTING_NATIVE_PROGRESS_PRESERVED"
+    },
+    "unityWebFloorScope20260926": {
+      "id": "UNITY_WEB_FLOOR_SCOPE_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "grandfatherGameIds": [
+        "cozy-island",
+        "daechung-rpg"
+      ],
+      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
+      "releaseOrDeploymentAuthority": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -21569,13 +21589,31 @@
       "releaseOrDeploymentAuthority": false
     },
     "upperPlatformAdmissionMigration": {
-      "version": 1,
+      "version": 2,
       "existingNativeDevelopmentGrandfathered": true,
       "newNativeDevelopmentStartRequiresUnityWebReadiness": true,
       "existingInternalOrPublicReleaseNeverDemoted": true,
       "existingNativeRuntimeQaRepairMayContinueWithoutBacktracking": true,
       "sourceChangeOnPreNativeGameInvalidatesUnityWebReadiness": true,
-      "rule": "DO_NOT_REWIND_ALREADY_STARTED_NATIVE_GAMES; REQUIRE_UNITY_WEB_READINESS_FOR_NEW_UPPER_PLATFORM_ENTRY"
+      "rule": "ONLY_COZY_ISLAND_AND_DAECHUNG_RPG_KEEP_GRANDFATHERED_NATIVE_PROGRESS; ALL_OTHER_DEVELOPMENT_CONFIRMED_GAMES_ENTER_UNITY_WEB_FLOOR",
+      "grandfatherGameIds": [
+        "cozy-island",
+        "daechung-rpg"
+      ],
+      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
+      "existingNativeRuntimeQaRepairMayContinueForGrandfatheredOnly": true
+    },
+    "orchestrationConcurrency": {
+      "version": 1,
+      "globalSerializationForbidden": true,
+      "distinctGamesParallel": true,
+      "unityWebAndNativeParallelWhenIndependent": true,
+      "longRunningNativeMayNotBlockUnityWebFloor": true,
+      "longRunningUnityWebMayNotBlockOtherGames": true,
+      "sameGameIndependentNonOverlappingPackagesParallel": true,
+      "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT",
+      "sharedStateWriteMustReleaseHeavyExecutionCapacity": true,
+      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
     }
   },
   "centralDocumentation": {
