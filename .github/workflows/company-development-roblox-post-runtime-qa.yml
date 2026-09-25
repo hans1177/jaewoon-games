@@ -28,7 +28,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-runtime-foundation-qa-${{ inputs.game_id || (github.event_name == 'schedule' && 'scheduled-scan') || (github.event_name == 'workflow_dispatch' && 'manual-scan') || github.run_id }}
+  group: company-development-roblox-runtime-foundation-qa-${{ inputs.game_id || 'all-pending' }}
   cancel-in-progress: false
 
 env:
