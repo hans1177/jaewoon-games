@@ -513,7 +513,7 @@ test('recovery dispatch carries exact failure signature and blocked cohort metad
 });
 
 test('System AI immutable result persists failed repair fingerprints and hypothesis falsification into fan-in evidence',()=>{
-  assert.match(workflow,/version:7/);
+  assert.match(workflow,/version:8/);
   assert.match(workflow,/repairStrategyFingerprint:clean\(worker\.repairStrategyFingerprint\)/);
   assert.match(workflow,/failed-strategy-fingerprint:/);
   assert.match(workflow,/selected-hypothesis:/);
