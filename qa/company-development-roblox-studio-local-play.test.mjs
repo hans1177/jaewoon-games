@@ -96,6 +96,16 @@ test('planner selects exact immutable artifact and skips already observed candid
   assert.equal(planLocalStudioCandidates({queue:q,roadmap:roadmap()}).include.length,0);
 });
 
+test('superseded shared Roblox target cannot enter local Studio actual play',()=>{
+  const stale=item();
+  stale.robloxSharedTargetCurrent=false;
+  const q={items:[stale]};
+  assert.equal(planLocalStudioCandidates({queue:q,roadmap:roadmap()}).include.length,0);
+  assert.throws(()=>createLocalStudioPlayEvidence({
+    item:stale,runtime:runtime(),expected,workflowRunId:42,studioStepSucceeded:true
+  }),/CANDIDATE_STALE/);
+});
+
 test('verified local Studio pass records no Player or online automation',()=>{
   const result=createLocalStudioPlayEvidence({
     item:item(),runtime:runtime(),expected,workflowRunId:42,studioStepSucceeded:true,
