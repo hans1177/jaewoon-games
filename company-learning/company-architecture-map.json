@@ -1,5 +1,5 @@
 {
-  "version": 191,
+  "version": 192,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3230,10 +3230,12 @@
     "unityWebGrandfatherScope": {
       "grandfatherGameIds": [
         "cozy-island",
-        "daechung-rpg"
+        "daechung-rpg",
+        "horror-escape-room"
       ],
       "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
-      "migrationMode": "NO_DEMOTION_OF_RELEASE_STATE_BUT_WEB_FLOOR_REQUIRED_BEFORE_NEW_UPPER_PLATFORM_PROGRESS"
+      "migrationMode": "NO_DEMOTION_OF_EXISTING_INTERNAL_OR_PUBLIC_RELEASE; UNITY_WEB_FLOOR_REQUIRED_BEFORE_NEW_UPPER_PLATFORM_ENTRY_FOR_NON_RELEASED_NON_GRANDFATHERED_GAMES",
+      "existingReleasedGameEvidenceAlwaysPreserved": true
     },
     "orchestrationConcurrency": {
       "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.orchestrationConcurrency",
@@ -3747,7 +3749,7 @@
       "existingNativeDevelopmentGrandfathered": true
     }
   },
-  "updatedAt": "2026-09-26T00:49:00+09:00",
+  "updatedAt": "2026-09-26T02:18:00+09:00",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
