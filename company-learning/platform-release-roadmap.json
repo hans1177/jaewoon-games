@@ -3650,7 +3650,15 @@
         "runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution": true,
         "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
         "observationRetry": "UNLIMITED_OBSERVATION",
-        "nextAction": "WAIT_FOR_VERIFIED_REAL_GAME_SERVER_BOOT_OR_OTHER_POLICY_APPROVED_RUNTIME_OBSERVATION",
+        "developmentBlocking": false,
+        "internalQaBlocking": false,
+        "internalRegressionBlocking": false,
+        "internalReleaseBlocking": false,
+        "externalPublicReleaseBlocking": true,
+        "sameGameIndependentDevelopmentContinuesWhilePending": true,
+        "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": true,
+        "runtimeTruthFieldsMustRemainUnfabricated": true,
+        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_EXTERNAL_PUBLIC_RELEASE_WAITS_FOR_VERIFIED_REAL_GAME_SERVER_BOOT",
         "robloxPlayerAutomationForbidden": true,
         "publishedPlaceDirectStudioAutomationForbidden": true
       }
@@ -5537,8 +5545,19 @@
         ],
         "headlessOnlyInternalReleaseForbidden": true,
         "runtimeFoundationRequiredForInternalRelease": true,
+        "runtimeFoundationInternalReleaseExceptionStates": [
+          "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT"
+        ],
+        "runtimeFoundationInternalReleaseExceptionRequires": [
+          "EXACT_PRIVATE_OR_RESTRICTED_CANDIDATE",
+          "EXACT_OPEN_CLOUD_ENGINE_PLACE_VERSION",
+          "OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_PASS",
+          "NO_RELEASE_BLOCKING_STUDIO_CONSOLE_ERROR"
+        ],
+        "runtimeFoundationExceptionMaySetRuntimePass": false,
+        "runtimeFoundationExceptionMaySetExternalPublicReleaseReady": false,
         "runtimeFoundationRequiredForPublicReleaseReady": true,
-        "internalPublishWithoutRuntimeFoundationAction": "REPAIR_REQUIRED",
+        "internalPublishWithoutRuntimeFoundationAction": "ALLOW_ONLY_EXACT_AWAITING_REAL_SERVER_BOOT_EXCEPTION_OTHERWISE_REPAIR_REQUIRED",
         "staleFoundationEvidenceMayNotPromote": true,
         "newCandidateInvalidation": {
           "clearPriorInternalReleaseReady": true,
@@ -7271,11 +7290,9 @@
     "unityWebFloorScope20260926": {
       "id": "UNITY_WEB_FLOOR_SCOPE_2026-09-26",
       "authority": "OWNER_DIRECTIVE_2026-09-26",
-      "grandfatherGameIds": [
-        "cozy-island",
-        "daechung-rpg"
-      ],
-      "allOtherDevelopmentConfirmedMustRunUnityWebFloor": true,
+      "grandfatherMode": "DURABLE_NATIVE_PROGRESS_EVIDENCE",
+      "grandfatherGameIds": [],
+      "developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor": true,
       "releaseOrDeploymentAuthority": false
     }
   },
