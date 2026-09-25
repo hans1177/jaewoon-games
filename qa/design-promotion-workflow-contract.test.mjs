@@ -39,7 +39,7 @@ test('promotion persists only runtime state while machine policy comes from main
   assert.match(promotion,/refs\/heads\/company-runtime:refs\/remotes\/origin\/company-runtime/);
   assert.match(promotion,/refs\/heads\/main:refs\/remotes\/origin\/main/);
   assert.match(promotion,/for attempt in 1 2 3; do/);
-  assert.match(promotion,/git fetch origin "\+refs\/heads\/main:refs\/remotes\/origin\/main" "\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH" --depth=2 --no-tags --quiet/);
+  assert.match(promotion,/git fetch origin ['"]\+refs\/heads\/main:refs\/remotes\/origin\/main['"] ['"]\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH['"] --depth=2 --no-tags --quiet/);
   assert.match(promotion,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   const calls=promotion.match(/node tools\/design-only-promotion-sync\.mjs/g)||[];
   assert.ok(calls.length>=2);
