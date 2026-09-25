@@ -309,7 +309,7 @@ function collectImages(value,out=[]){
   return out;
 }
 
-function collectStudios(value,out=[]){
+export function collectStudios(value,out=[]){
   if(value==null)return out;
   if(Array.isArray(value)){for(const v of value)collectStudios(v,out);return out;}
   if(typeof value==='string'){
@@ -320,7 +320,21 @@ function collectStudios(value,out=[]){
     return out;
   }
   if(typeof value==='object'){
-    const studioId=clean(value.studio_id||value.studioId||value.studioID);
+    const plainIdIsStudioShape=
+      Object.prototype.hasOwnProperty.call(value,'id')
+      &&(
+        Object.prototype.hasOwnProperty.call(value,'name')
+        ||Object.prototype.hasOwnProperty.call(value,'place_id')
+        ||Object.prototype.hasOwnProperty.call(value,'placeId')
+      );
+    const studioId=clean(
+      value.studio_id
+      ||value.studioId
+      ||value.studioID
+      ||value.studio_instance_id
+      ||value.studioInstanceId
+      ||(plainIdIsStudioShape?value.id:'')
+    );
     if(studioId){
       out.push({
         studioId,

@@ -6,6 +6,7 @@ import path from 'node:path';
 import {
   validateLocalStudioPolicy,
   detectStudioMcpAssistantSetting,
+  collectStudios,
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult
@@ -486,6 +487,25 @@ test('runtime workflow uses exact local artifact plus official Studio MCP and no
   assert.doesNotMatch(studioMcpBlock,/Get-Content 'runtime\/development-queue\.json' -Raw \| ConvertFrom-Json/);
   assert.match(studioMcpBlock,/JSON\.parse\(fs\.readFileSync\('runtime\/development-queue\.json','utf8'\)\)/);
   assert.doesNotMatch(studioMcpBlock,/--mode=mcp-run[\s\S]{0,500}(--place-id=|--universe-id=)/);
+});
+
+test('Studio inventory parser accepts current id and studio instance id response fields',()=>{
+  const current=collectStudios({
+    content:[{
+      type:'text',
+      text:JSON.stringify({studios:[
+        {id:'studio-current-1',name:'daechung-rpg',place_id:null},
+        {studio_instance_id:'studio-current-2',name:'other-place',place_id:'123'}
+      ]})
+    }]
+  });
+  assert.deepEqual(current,[
+    {studioId:'studio-current-1',name:'daechung-rpg',placeId:''},
+    {studioId:'studio-current-2',name:'other-place',placeId:'123'}
+  ]);
+
+  const legacy=collectStudios({studios:[{studio_id:'studio-legacy',name:'legacy',place_id:''}]});
+  assert.deepEqual(legacy,[{studioId:'studio-legacy',name:'legacy',placeId:''}]);
 });
 
 test('Studio MCP client negotiates Roblox protocol and waits for the official tool inventory to become ready',()=>{
