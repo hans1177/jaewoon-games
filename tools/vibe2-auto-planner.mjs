@@ -1626,7 +1626,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     previousDirectiveOutcome,
     runtimeEvidence,
     qualitySignals,
-    responsibleFiles:[]
+    responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean)
   });
   return{
     ...taskInput,
@@ -1897,23 +1897,33 @@ export function reconcileQueuedBuildUpDirectives(queueInput={},projects=[],repoR
     const active=history.filter(row=>!terminal.has(clean(row?.status).toLowerCase())).sort((a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0));
     const latestOther=history.slice().sort((a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0))[0]||null;
     let next=taskInput;
+    const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
     if(active[0]?.buildUpDirective&&clean(active[0].buildUpDirective.directiveId)!==clean(taskInput?.buildUpDirective?.directiveId)){
       next=bindSharedBuildUpDirective(taskInput,active[0].buildUpDirective);
       rebound+=1;
     }else if(!taskInput?.buildUpDirective?.directiveId){
-      next=attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,null);
-      if(next?.buildUpDirective?.directiveId)attached+=1;else designPending+=1;
+      if(verifiedDesign){
+        next=attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,verifiedDesign);
+        if(next?.buildUpDirective?.directiveId)attached+=1;else designPending+=1;
+      }else{
+        designPending+=1;
+        next={...taskInput,evidence:[...new Set([...(taskInput.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
+      }
     }else if(latestOther?.buildUpDirective&&Number(latestOther.buildUpDirective.generation||0)>Number(taskInput.buildUpDirective.generation||0)){
-      const withoutCurrent=createVibeContinuousQueue({tasks:queue.tasks.filter((_,rowIndex)=>rowIndex!==index),maxConcurrentTasks:queue.maxConcurrentTasks});
-      next=attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,withoutCurrent,null);
-      if(clean(next?.buildUpDirectiveId)!==clean(taskInput?.buildUpDirectiveId))rebound+=1;
+      if(verifiedDesign){
+        const withoutCurrent=createVibeContinuousQueue({tasks:queue.tasks.filter((_,rowIndex)=>rowIndex!==index),maxConcurrentTasks:queue.maxConcurrentTasks});
+        next=attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,withoutCurrent,verifiedDesign);
+        if(clean(next?.buildUpDirectiveId)!==clean(taskInput?.buildUpDirectiveId))rebound+=1;
+      }else{
+        designPending+=1;
+      }
     }
-    if(next!==taskInput){
-      next={...next,evidence:[...new Set([
-        ...(next.evidence||[]),
-        'build-up-pre-reserve-binding:CHECKED',
-        next?.buildUpDirective?.directiveId?'build-up-directive-freshness:CURRENT_OR_RECONCILED':'build-up-directive-freshness:DESIGN_PENDING'
-      ])]};
+    next={...next,buildUpBindingMode:next?.buildUpDirective?.directiveId?'PRE_RESERVE_CURRENT_DIRECTIVE':'BASELINE_OR_REPAIR_WITHOUT_BUILD_UP_CLAIM',evidence:[...new Set([
+      ...(next.evidence||[]),
+      'build-up-pre-reserve-binding:CHECKED',
+      next?.buildUpDirective?.directiveId?'build-up-directive-freshness:CURRENT_OR_RECONCILED':'build-up-directive-freshness:DESIGN_PENDING'
+    ])]};
+    if(JSON.stringify(next)!==JSON.stringify(taskInput)){
       queue=createVibeContinuousQueue({tasks:queue.tasks.map((row,rowIndex)=>rowIndex===index?next:row),maxConcurrentTasks:queue.maxConcurrentTasks});
     }
   }
@@ -1925,7 +1935,16 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
     .map(focus=>findStudioContinuousImprovementTask(project,repoRoot,queue,focus))
     .filter(Boolean);
   const canonical=tasks.find(row=>row?.buildUpDirective?.directiveId)?.buildUpDirective||null;
-  return canonical?tasks.map(row=>bindSharedBuildUpDirective(row,canonical)):tasks;
+  if(!canonical)return tasks;
+  const bound=tasks.map(row=>bindSharedBuildUpDirective(row,canonical));
+  const primary=clean(canonical.primaryFocus).toUpperCase();
+  const order=['CORE_FUN','PROGRESSION','USABILITY','PRESENTATION','STABILITY'];
+  return bound.sort((a,b)=>{
+    const af=clean(a?.studioQualityEvolution?.focusPillar).toUpperCase(),bf=clean(b?.studioQualityEvolution?.focusPillar).toUpperCase();
+    const ap=af===primary?0:1,bp=bf===primary?0:1;
+    if(ap!==bp)return ap-bp;
+    return order.indexOf(af)-order.indexOf(bf);
+  });
 }
 
 function findSafeTasks(project,repoRoot,queue){
