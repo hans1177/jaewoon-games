@@ -1,0 +1,14 @@
+{
+  "summary": "PrototypeAnimatedVisuals.cs 수정",
+  "expectedEffect": "프로토타입 애니메이션 시스템의 실제 에셋 재사용 및 로드 로직을 수정하여 플랫폼 간 통일을 달성",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "                var x = column * frameWidth;",
+      "replace": "                var x = column * frameWidth;\n                var y = texture.height - ((row + 1) * frameHeight);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
