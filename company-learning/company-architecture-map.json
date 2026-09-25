@@ -1,5 +1,5 @@
 {
-  "version": 185,
+  "version": 186,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2896,7 +2896,9 @@
       "assistantSettingsMutation": false,
       "guiToggleAutomation": false,
       "settingEnablementRequired": true,
-      "unconfirmedSettingMayNotEmitRuntimeOrLearningPass": true
+      "unconfirmedSettingMayNotEmitRuntimeOrLearningPass": true,
+      "settingDiagnosticAdvisoryWhenMissingOrUnknown": true,
+      "requiredToolHandshakeAuthority": true
     }
   },
   "ownerRule2Topology": {
@@ -3244,16 +3246,18 @@
         "assistantSettingsMutation": false,
         "guiToggleAutomation": false,
         "finalState": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
-        "settingGate": "ASSISTANT_MCP_ENABLED_MUST_BE_CONFIRMED_YES",
+        "settingGate": "EXPLICIT_NO_BLOCKS_OTHERWISE_OFFICIAL_REQUIRED_TOOL_HANDSHAKE_IS_AUTHORITATIVE",
         "unconfirmedSettingStates": [
-          "NO",
           "MISSING",
           "UNKNOWN"
         ],
-        "unconfirmedSettingExecution": "SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS",
-        "unconfirmedSettingState": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "unconfirmedSettingExecution": "PROBE_OFFICIAL_MCP_REQUIRED_TOOLS",
+        "unconfirmedSettingState": "STUDIO_MCP_INFRASTRUCTURE_PENDING_IF_REQUIRED_TOOL_HANDSHAKE_FAILS",
         "automaticSettingMutation": false,
-        "resume": "AUTOMATIC_ON_NEXT_EXISTING_RUNTIME_QA_TRIGGER_AFTER_SETTING_CONFIRMED"
+        "resume": "AUTOMATIC_ON_NEXT_EXISTING_RUNTIME_QA_TRIGGER",
+        "explicitDisabledState": "NO",
+        "explicitDisabledExecution": "SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS",
+        "requiredToolHandshakeAuthority": true
       }
     },
     "robloxExternalPublicReleaseHardGate": {
