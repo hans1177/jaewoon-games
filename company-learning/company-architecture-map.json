@@ -1,5 +1,5 @@
 {
-  "version": 214,
+  "version": 215,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1134,10 +1134,10 @@
       "conflictSafety": "SOURCE_ROOT_FILE_AND_DEPENDENCY_LOCKS_REMAIN_ENFORCED",
       "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": "ADAPTIVE_20_TO_256_FROM_VERIFIED_THROUGHPUT",
-      "refillExample": "ACTIVE_19_FREE_237_AT_EXTERNAL_BOUND_256",
-      "externalSpareBeyond20": "AVAILABLE_TO_GAME_PRIMARY; 20_IS_PRESSURE_FLOOR_NOT_CAP",
-      "adaptiveControl": "NO_FIXED_INTERNAL_CAP; BASELINE_20; PRESSURE_FLOOR_20; VERIFIED_HEALTHY_SATURATION_SELF_EXPANDS_20_TO_32_TO_64_TO_128_TO_256",
+      "gamePrimaryActiveExecutionCap": "ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT",
+      "refillExample": "ACTIVE_29_FREE_227_AT_EXTERNAL_BOUND_256",
+      "externalSpareBeyond30": "AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP",
+      "adaptiveControl": "NO_FIXED_INTERNAL_CAP; OWNER_FLOOR_30; VERIFIED_HEALTHY_SATURATION_SELF_EXPANDS_30_TO_32_TO_64_TO_128_TO_256",
       "gamePrimaryFixedInternalCap": null,
       "reserveIngressRuntimeSync": {
         "required": true,
@@ -4886,7 +4886,10 @@
         "newCandidatePriorityOnly": true,
         "unrelatedParallelismPreserved": true,
         "sameResponsibleFileConflictStillSerializes": true,
-        "ownerExplicitP0Preserved": true
+        "ownerExplicitP0Preserved": true,
+        "ownerConcurrentGameFloor": 30,
+        "externalProviderMaximum": 256,
+        "higherConcurrencyAboveFloorPreserved": true
       }
     }
   },
