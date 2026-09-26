@@ -1,5 +1,5 @@
 {
-  "version": 419,
+  "version": 420,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -20937,6 +20937,23 @@
         "productQualityGateWeakening": false,
         "securityOrReleaseGateBypass": false,
         "gamePrimaryWorkerSlotsProtected": true
+      },
+      "latestHeadControlPlaneDedupe": {
+        "version": 1,
+        "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+        "rule": "CANCEL_SUPERSEDED_SAME_EVENT_SAME_REF_CONTROL_PLANE_VALIDATION",
+        "workflows": [
+          ".github/workflows/company-evolution-qa.yml",
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/vibe2-parallelism-contract-qa.yml",
+          ".github/workflows/company-security-immune.yml"
+        ],
+        "independentGameWorkAffected": false,
+        "securityFindingAuthorityUnchanged": true,
+        "publicReleaseGateUnchanged": true,
+        "duplicateValidationReduced": true,
+        "staleQueuedRunsMayBeCancelled": true,
+        "scheduleSeparatedFromPushAndPullRequest": true
       }
     },
     "developmentLoopOptimization": {

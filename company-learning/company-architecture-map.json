@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 231,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5250,5 +5250,18 @@
     ],
     "sharesGamePrimaryUbuntuLatestCapacity": false,
     "qualityAndSecurityAuthorityUnchanged": true
+  },
+  "controlPlaneLatestHeadDedupe": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.implementation.latestHeadControlPlaneDedupe",
+    "key": "WORKFLOW_PLUS_EVENT_PLUS_REF_OR_PR",
+    "cancelSuperseded": true,
+    "gameExecutionSerialization": false,
+    "affectedWorkflows": [
+      "company-evolution-qa",
+      "company-central-policy-contract-qa",
+      "vibe2-parallelism-contract-qa",
+      "company-security-immune"
+    ]
   }
 }

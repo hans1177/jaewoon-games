@@ -1,5 +1,5 @@
 {
-  "version": 95,
+  "version": 96,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1787,5 +1787,17 @@
     "evidenceSource": "GITHUB_ACTIONS_JOB_RUNNER_LABEL",
     "gamePrimaryCapacityClaim": false,
     "acceptanceGatesUnchanged": true
+  },
+  "controlPlaneLatestHeadDedupeEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "evidence": [
+      "GITHUB_ACTIONS_CONCURRENCY_GROUP",
+      "CANCELLED_SUPERSEDED_RUN",
+      "LATEST_REF_RUN_REMAINS"
+    ],
+    "staleRunCancellationIsExpected": true,
+    "gameRunCancellationByThisContractForbidden": true,
+    "securityAndReleaseGateClaimsUnchanged": true
   }
 }

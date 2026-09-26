@@ -1012,3 +1012,21 @@ test('administrative control-plane QA stays off game-primary ubuntu-latest capac
     assert.doesNotMatch(source,/runs-on:\s*ubuntu-latest/,workflowFile);
   }
 });
+
+test('duplicate administrative QA keeps only the latest same-ref validation',()=>{
+  const roadmap=JSON.parse(readText('company-learning/platform-release-roadmap.json'));
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.duplicateValidationWithoutEvidenceInvalidationForbidden,true);
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.duplicateReviewWithoutRelevantChangeForbidden,true);
+  for(const workflowFile of [
+    '.github/workflows/company-evolution-qa.yml',
+    '.github/workflows/company-central-policy-contract-qa.yml',
+    '.github/workflows/vibe2-parallelism-contract-qa.yml',
+    '.github/workflows/company-security-immune.yml',
+  ]){
+    const source=readText(workflowFile);
+    assert.match(source,/concurrency:\n\s+group:/,workflowFile);
+    assert.match(source,/cancel-in-progress:\s*true/,workflowFile);
+  }
+  const parallelism=readText('.github/workflows/vibe2-parallelism-contract-qa.yml');
+  assert.match(parallelism,/runs-on:\s*ubuntu-slim/);
+});
