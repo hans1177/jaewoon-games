@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 82,
-  "updatedAt": "2026-09-25",
+  "revision": 83,
+  "updatedAt": "2026-09-26",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -934,7 +934,7 @@
     "nativeReleaseAuthority": false
   },
   "productionThroughput": {
-    "concurrentGameWipTarget": null,
+    "concurrentGameWipTarget": 30,
     "concurrentGameWipMax": null,
     "concurrentGameWipScope": "EXTERNAL_CAPACITY_ONLY_MAXIMUM_SAFE_PARALLELISM",
     "webValidationParallelismControlledSeparately": false,
@@ -963,7 +963,7 @@
     "verifiedExternalPressureMayTemporarilyReduceWorkers": true,
     "recoverToExternalCapacityAfterPressure": true,
     "internalRampUpStepsForbidden": true,
-    "minimumAdaptiveWorkerFloor": 4,
+    "minimumAdaptiveWorkerFloor": 30,
     "staleOrMissingPressureEvidenceResetsTo": 256,
     "postReleaseFocusedInternalCap": null,
     "ownerFocusedInternalCap": null,

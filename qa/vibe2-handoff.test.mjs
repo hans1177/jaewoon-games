@@ -101,7 +101,7 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.generatedFrom.experienceVersion, 3);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
   assert.equal(snapshot.parallelism.configuredMax, 256);
-  assert.deepEqual(snapshot.parallelism.steps, [4, 8, 16, 20, 32, 64, 128, 256]);
+  assert.deepEqual(snapshot.parallelism.steps, [4, 8, 16, 20, 30, 32, 64, 128, 256]);
   assert.equal(snapshot.nextWorkerContinuation.objective, 'CONTINUE_SELF_EVOLVING_ATOMIC_NEURON_SCHEDULER_TOWARD_VERIFIED_EVENT_DRIVEN_DAG_WITH_TRUTHFUL_TELEMETRY');
   assert.match(snapshot.nextWorkerContinuation.freshnessRule, /FETCH_FRESH_MAIN_HEAD/);
   assert.ok(snapshot.nextWorkerContinuation.verifiedState.includes('FIXED_GLOBAL_WAVE_BARRIER_FALSE'));
@@ -110,7 +110,7 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P0_FIX_')),false);
   assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('SOURCE_ROOT_AND_GAME_WIDE_DEVELOPMENT_LOCKS_MUST_NEVER_BE_REINTRODUCED'));
   assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('ONLY_OVERLAPPING_RESPONSIBLE_FILE_WRITES_OR_BRIEF_ATOMIC_SHARED_STATE_MUTATIONS_MAY_SERIALIZE'));
-  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('GAME_PRIMARY_REQUESTS_256_BY_DEFAULT; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_4; RECOVER_TO_256_WHEN_PRESSURE_CLEARS'));
+  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('GAME_PRIMARY_REQUESTS_256_BY_DEFAULT; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_30; RECOVER_TO_256_WHEN_PRESSURE_CLEARS'));
   assert.ok(snapshot.nextWorkerContinuation.successEvidence.includes('FINAL_VARIANT_REPORTS_TASK_MICRO_FANIN_COMPLETE_AND_SLOT_RELEASE'));
   assert.ok(snapshot.workState.taskCount > 0);
 });
@@ -211,12 +211,12 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   }));
   fs.writeFileSync(resultFile, JSON.stringify({ version:1, results:rows }, null, 2));
   const fanIn = runQueueCommand({ command:'fan-in', queue:queueFile, control:controlFile, input:resultFile });
-  assert.equal(fanIn.adaptiveControl.currentMax, 20);
+  assert.equal(fanIn.adaptiveControl.currentMax, 30);
   assert.equal(fanIn.adaptiveControl.lastDecision, 'DOWN');
 
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
-  assert.equal(after.parallelism.currentPersistentMax, 20);
+  assert.equal(after.parallelism.currentPersistentMax, 30);
   assert.equal(after.workState.queuedCount, 1);
   assert.equal(after.workState.blockedCount, 30);
   assert.ok(after.workState.queuedPreview.some(task=>task.id==='e2e-01'));

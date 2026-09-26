@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 38,
+      "runtime": 39,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -121,7 +121,7 @@
         "GRAPHICS_PRESENTATION_BUILDUP_RESERVE_WORKER_QA_REQUEUE_FLOW_OBSERVED",
         "SOURCE_ROOT_AND_GAME_WIDE_LOCKS_PERMANENTLY_FORBIDDEN",
         "RESPONSIBLE_FILE_CONFLICT_SERIALIZATION_PRESERVED",
-        "GAME_PRIMARY_DEFAULT_256_VERIFIED_PRESSURE_FLOOR_4",
+        "GAME_PRIMARY_DEFAULT_256_VERIFIED_PRESSURE_FLOOR_30",
         "SAME_GAME_NON_OVERLAPPING_PACKAGES_PARALLEL"
       ],
       "liveEvidence": [
@@ -152,7 +152,7 @@
         "PHASE2_NEURAL_EXECUTION_AUTHORITY_IS_GATED_EXISTING_SCHEDULER_ONLY; POLICY_SECURITY_QA_RELEASE_AND_SELF_PROMOTION_REMAIN_FORBIDDEN",
         "SOURCE_ROOT_AND_GAME_WIDE_DEVELOPMENT_LOCKS_MUST_NEVER_BE_REINTRODUCED",
         "ONLY_OVERLAPPING_RESPONSIBLE_FILE_WRITES_OR_BRIEF_ATOMIC_SHARED_STATE_MUTATIONS_MAY_SERIALIZE",
-        "GAME_PRIMARY_REQUESTS_256_BY_DEFAULT; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_4; RECOVER_TO_256_WHEN_PRESSURE_CLEARS"
+        "GAME_PRIMARY_REQUESTS_256_BY_DEFAULT; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_30; RECOVER_TO_256_WHEN_PRESSURE_CLEARS"
       ],
       "successEvidence": [
         "GAME_PRIMARY_LIVE_TELEMETRY_DENOMINATOR_MATCHES_CURRENT_ATOMIC_RESERVATION_CAP",
@@ -327,7 +327,7 @@
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
       "baselineTarget": 256,
-      "adaptiveMinActiveWorkers": 4,
+      "adaptiveMinActiveWorkers": 30,
       "adaptiveMaxActiveWorkers": 256,
       "fixedWaveBarrier": false,
       "legacyCapacityEnvelopeOnly": true
@@ -355,7 +355,7 @@
         "adaptiveGameControlEligible": true,
         "capacityAwareFreeSlotRefill": true,
         "adaptiveBaselineTarget": 256,
-        "adaptiveMinActiveWorkers": 4,
+        "adaptiveMinActiveWorkers": 30,
         "adaptiveMaxActiveWorkers": 256
       },
       "RECOVERY_FAST": {
@@ -424,7 +424,7 @@
       "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS",
       "workerDirectControlWrite": false,
       "sourceAndFileConflictLocksPreserved": false,
-      "pressureFloor": 4,
+      "pressureFloor": 30,
       "autonomousScaleSteps": [
         4,
         8,
@@ -578,6 +578,7 @@
       8,
       16,
       20,
+      30,
       32,
       64,
       128,
@@ -608,7 +609,7 @@
     "ownerMinimumWaveAppliedTo": [
       "GAME_PRIMARY"
     ],
-    "minimumAdaptiveWave": 4,
+    "minimumAdaptiveWave": 30,
     "baselineAdaptiveWave": 256,
     "staleTelemetryResetTarget": 256
   },
@@ -807,6 +808,7 @@
       8,
       16,
       20,
+      30,
       32,
       64,
       128,

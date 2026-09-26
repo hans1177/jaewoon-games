@@ -1,7 +1,7 @@
 // 파일명: tools/vibe2-adaptive-backpressure.mjs
 // 역할: 정책상 무제한 병렬을 유지하면서 외부 GitHub matrix 배치 용량 안에서 텔레메트리 기반 압력 조절만 수행한다.
 
-export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 32, 64, 128, 256]);
+export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 30, 32, 64, 128, 256]);
 export const DEFAULT_ADAPTIVE_MAX = 256;
 export const DEFAULT_ADAPTIVE_TARGET = 256;
 export const DEFAULT_ADAPTIVE_MIN = 4;

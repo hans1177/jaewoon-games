@@ -1,5 +1,5 @@
 {
-  "version": 406,
+  "version": 407,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -2613,8 +2613,8 @@
           "priorReservedTasks": 19,
           "recoveryAdaptiveStep": 16
         },
-        "ownerPreferredCurrentWave": 20,
-        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-20",
+        "ownerPreferredCurrentWave": 30,
+        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-26",
         "gameImplementationPreemptsNonblockingSupervision": true,
         "nonblockingSupervisionUsesSpareCapacityOnly": true,
         "ownerAndSystemStewardProtectionPreserved": true,
@@ -2642,7 +2642,7 @@
         ],
         "selfAdaptiveExpansionAbovePreferredWave": true,
         "selfAdaptiveExpansionSteps": [
-          20,
+          30,
           32,
           64,
           128,
@@ -8050,6 +8050,22 @@
       "directResponsibleFunction": "tools/vibe2-auto-planner.mjs#findSafeTasks",
       "runningTaskMigration": "DO_NOT_CANCEL_ALREADY_RUNNING_SAFE_WORK; APPLY_PRIORITY_TO_NEWLY_PLANNED_WORK_AND_NEXT_GENERATIONS"
     },
+    "holisticBackfillThirtyFloor20260926": {
+      "id": "HOLISTIC_BACKFILL_THIRTY_GAME_FLOOR_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Raise the GAME_PRIMARY adaptive concurrency floor from 20 to 30 while preserving the external maximum 256, and let coherent holistic BUILD_UP packages expand to the configured minimum workload instead of being deferred by MINIMUM_WORKLOAD_GATE.",
+      "minimumConcurrentGameWorkers": 30,
+      "externalProviderBoundary": 256,
+      "maximumReducedToThirty": false,
+      "inventoryOrItemCountChanged": false,
+      "alreadyRunningSafeWorkCancelled": false,
+      "bindings": [
+        "tools/vibe2-adaptive-backpressure.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        ".github/workflows/vibe2-24h-runner.yml",
+        "vibe2-runtime.json"
+      ]
+    },
     "fanInPinnedContractOverlayRepair20260926": {
       "id": "VIBE2_FAN_IN_PINNED_CONTRACT_OVERLAY_REPAIR_2026-09-26",
       "summary": "Cohort fan-in must overlay company-runtime design state into the pinned main contract checkout owned by the fan-in job, never into the reserve job temporary snapshot.",
@@ -8066,15 +8082,15 @@
     }
   },
   "vibeExecutionLaneContract": {
-    "version": 2,
+    "version": 3,
     "status": "ATOMIC_NEURON_STREAM_WITH_AUXILIARY_VESSELS",
-    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "authority": "OWNER_DIRECTIVE_2026-09-26",
     "documentFirst": true,
     "principle": "GAME_PRIMARY_IS_CONTINUOUS_ATOMIC_NEURON_CIRCULATION; AUXILIARY_LANES_RETURN_CAUSAL_EVIDENCE_WITHOUT_STOPPING_THE_MAIN_ARTERY",
     "gamePrimary": {
       "taskClass": "DEVELOPMENT_IMPLEMENTATION",
-      "activeWorkerBaselineTarget": 20,
-      "activeWorkerAdaptiveMinimum": 20,
+      "activeWorkerBaselineTarget": 30,
+      "activeWorkerAdaptiveMinimum": 30,
       "activeWorkerInternalCap": null,
       "externalProviderBoundary": 256,
       "capacityAwareFreeSlotRefill": true,
@@ -12513,26 +12529,28 @@
       "externalProviderAndPlanningBound": 256,
       "refillFormula": "MAX(0, EXTERNAL_CAPACITY_TARGET - ACTIVE_GAME_WORKERS) WITH TEMPORARY VERIFIED_PROVIDER_PRESSURE_DOWNSHIFT_ONLY",
       "observedExample": "TARGET_256_ACTIVE_180=>REFILL_76; VERIFIED_EXTERNAL_PRESSURE_MAY_TEMPORARILY_LOWER_TARGET",
-      "adaptiveBackpressureMayLowerBelow20": true,
+      "adaptiveBackpressureMayLowerBelow20": false,
+      "adaptiveBackpressureMayLowerBelow30": false,
       "rationale": "GAME_PRIMARY requests the current external provider/planning boundary by default. Independent tasks refill immediately after per-task micro-fan-in; source-root locks are forbidden and only overlapping responsible-file writes or brief atomic shared-state mutation serialize. Verified external provider or runner pressure may temporarily reduce active workers, then recovery returns to the external boundary.",
       "gamePrimaryAdaptiveSteps": [
         4,
         8,
         16,
         20,
+        30,
         32,
         64,
         128,
         256
       ],
       "gamePrimaryBaselineTarget": 256,
-      "gamePrimaryAdaptiveMinimum": 4,
+      "gamePrimaryAdaptiveMinimum": 30,
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryFixedInternalCap": null,
       "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
-      "ownerUnlimitedConcurrencyDirective": "2026-09-20",
+      "ownerUnlimitedConcurrencyDirective": "2026-09-26",
       "authorityChange": "MAXIMUM_SAFE_EXTERNAL_CAPACITY_DEFAULT_WITH_VERIFIED_PRESSURE_ONLY_DOWNSHIFT",
-      "adaptiveBackpressureMayRaiseGamePrimaryAbove20": false,
+      "adaptiveBackpressureMayRaiseGamePrimaryAbove20": true,
       "fixedWaveBarrier": false,
       "completionEvent": "vibe2-neuron-complete",
       "taskMicroFanIn": true,
@@ -23909,7 +23927,10 @@
           "securityAndProgressBlockersRemainHigherPriority": true,
           "noNewQueueWorkerOrPipeline": true,
           "ownerExplicitP0PlatformWorkMayPreemptHolisticBackfill": true,
-          "genericWeatherPresentationStillBelowHolisticBackfill": true
+          "genericWeatherPresentationStillBelowHolisticBackfill": true,
+          "holisticPackageMayAutoExpandToConfiguredMinimumWorkload": true,
+          "minimumWorkloadExpansionMustRemainWithinExistingResponsibleSystem": true,
+          "minimumWorkloadExpansionMayNotChangeProtectedGameRules": true
         }
       }
     }

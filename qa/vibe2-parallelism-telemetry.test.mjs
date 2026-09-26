@@ -195,10 +195,10 @@ test('workload telemetry measures completed features actual change volume rework
   assert.equal(t.workload.actualChangeMetricsKnown,true);
 });
 
-test('adaptive controller steps down exactly once under saturated runner pressure but not below 20',()=>{
+test('adaptive controller honors configured game-primary floor 30 under saturated runner pressure',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:32},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'200'})),requestedMax:32,effectiveMax:32,taskCount:32});
-  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z'});
-  assert.equal(next.currentMax,20);
+  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z',minimumMax:30});
+  assert.equal(next.currentMax,30);
   assert.equal(next.lastDecision,'DOWN');
   assert.equal(next.lastRunId,'200');
   assert.match(next.lastReason,/RUNNER_CAPACITY/);
@@ -208,8 +208,8 @@ test('same actions run cannot downshift persistent cap twice',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:32},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'201'})),requestedMax:32,effectiveMax:32,taskCount:32});
   const first=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z'});
   const duplicate=decideAdaptiveBackpressure(first,telemetry,{now:'2026-09-15T10:00:30.000Z'});
-  assert.equal(first.currentMax,20);
-  assert.equal(duplicate.currentMax,20);
+  assert.equal(first.currentMax,30);
+  assert.equal(duplicate.currentMax,30);
   assert.equal(duplicate.healthyStreak,first.healthyStreak);
   assert.equal(duplicate.pressureStreak,first.pressureStreak);
   assert.equal(duplicate.lastDecision,'HOLD');
@@ -232,15 +232,15 @@ test('low workload never teaches the controller to reduce capacity',()=>{
   assert.equal(next.lastReason,'LOW_LOAD');
 });
 
-test('healthy saturated runs self-expand one adaptive step per run from floor 20',()=>{
+test('healthy saturated runs step through the exact 30 stage before 32',()=>{
   const healthy1=computeParallelismTelemetry({results:Array.from({length:20},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'204'})),requestedMax:20,effectiveMax:20,taskCount:20});
   const healthy2=computeParallelismTelemetry({results:Array.from({length:32},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'205'})),requestedMax:32,effectiveMax:32,taskCount:32});
   const first=decideAdaptiveBackpressure(createParallelismControl({currentMax:20}),healthy1,{now:'2026-09-15T10:03:00.000Z'});
-  assert.equal(first.currentMax,32);
+  assert.equal(first.currentMax,30);
   assert.equal(first.healthyStreak,0);
   assert.equal(first.lastDecision,'UP');
   const second=decideAdaptiveBackpressure(first,healthy2,{now:'2026-09-15T10:04:00.000Z'});
-  assert.equal(second.currentMax,64);
+  assert.equal(second.currentMax,32);
   assert.equal(second.lastDecision,'UP');
   assert.equal(second.lastRunId,'205');
 });
@@ -272,12 +272,12 @@ test('queue command reads adaptive cap and duplicate fan-in keeps exactly one ne
   fs.writeFileSync(fanFile,JSON.stringify({results},null,2));
   const first=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:fanFile});
   assert.equal(first.previousAdaptiveControl.currentMax,32);
-  assert.equal(first.adaptiveControl.currentMax,20);
+  assert.equal(first.adaptiveControl.currentMax,30);
   assert.equal(first.adaptiveControl.lastRunId,'300');
   const duplicate=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:fanFile});
-  assert.equal(duplicate.previousAdaptiveControl.currentMax,20);
-  assert.equal(duplicate.adaptiveControl.currentMax,20);
+  assert.equal(duplicate.previousAdaptiveControl.currentMax,30);
+  assert.equal(duplicate.adaptiveControl.currentMax,30);
   assert.equal(duplicate.adaptiveControl.lastReason,'DUPLICATE_RUN');
-  assert.equal(JSON.parse(fs.readFileSync(controlFile,'utf8')).currentMax,20);
-  assert.equal(adaptiveRequestedMax(duplicate.adaptiveControl,32),20);
+  assert.equal(JSON.parse(fs.readFileSync(controlFile,'utf8')).currentMax,30);
+  assert.equal(adaptiveRequestedMax(duplicate.adaptiveControl,32),30);
 });
