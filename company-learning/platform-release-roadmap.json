@@ -1,5 +1,5 @@
 {
-  "version": 416,
+  "version": 417,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -8351,6 +8351,52 @@
         "NO_MAX_PARALLEL_INTERNAL_CAP",
         "NO_MULTI_GAME_FOR_LOOP",
         "UNITY_RUNTIME_SHARED_STATE_WRITER_CRITICAL_SECTION_UNCHANGED"
+      ]
+    },
+    "nativeUpperPlatformBatchOrchestration20260927": {
+      "id": "NATIVE_UPPER_PLATFORM_BATCH_ORCHESTRATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "symptom": "COMMON_DEVELOPMENT_RUNTIME_CREATED_ONE_REUSABLE_ROBLOX_WORKFLOW_AND_ONE_REUSABLE_UNITY_WORKFLOW_PER_GAME_CAUSING_REPEATED_SOURCE_PLAN_JOBS_AND_ACTIONS_QUEUE_PRESSURE_BEFORE_EXISTING_CHILD_GAME_ID_MATRICES_COULD_RUN",
+      "policyBasis": [
+        "externalMatrixBatchMax_256",
+        "globalOrchestrationSerializationForbidden",
+        "distinctGamesMustRemainParallel",
+        "internalArtificialConcurrencyCapsForbidden",
+        "gameLevelExecutionParallelByDefault"
+      ],
+      "repair": "DISPATCH_ONE_ROBLOX_BATCH_AND_ONE_UNITY_BATCH_FROM_COMMON_RUNTIME; PASS_EXACT_GAME_ID_ONLY_FOR_EXPLICIT_SINGLE_GAME_REQUEST; LET_EXISTING_CHILD_GAME_ID_MATRICES_FAN_OUT_ELIGIBLE_GAMES_UP_TO_EXTERNAL_BOUNDARY",
+      "preserves": [
+        "GAME_ID_CANONICAL_TASK_IDENTITY",
+        "EXACT_GAME_ID_MANUAL_DISPATCH",
+        "ROBLOX_GAME_ID_MATRIX",
+        "UNITY_GAME_ID_MATRIX",
+        "REPRESENTATIVE_CANARY_WHEN_CANONICALLY_REQUIRED",
+        "ROBLOX_UNITY_CONCURRENT_PLATFORM_DEVELOPMENT",
+        "QA_SECURITY_RELEASE_GATES",
+        "ATOMIC_SHARED_STATE_WRITE_SERIALIZATION_ONLY"
+      ],
+      "parentRobloxPerGameChildMatrixRemoved": true,
+      "parentUnityPerGameChildMatrixRemoved": true,
+      "childGameIdMatricesPreserved": true,
+      "internalMaxParallel": null,
+      "externalBatchBoundary": 256,
+      "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "codeBindings": [
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        ".github/workflows/company-development-roblox-runtime.yml",
+        ".github/workflows/company-development-unity-runtime.yml",
+        "qa/company-central-policy-contract.test.mjs",
+        "company-learning/company-architecture-map.json"
+      ],
+      "requiredVerification": [
+        "COMMON_RUNTIME_HAS_ONE_ROBLOX_REUSABLE_CALL",
+        "COMMON_RUNTIME_HAS_ONE_UNITY_REUSABLE_CALL",
+        "NO_PARENT_PER_GAME_MATRIX_FOR_NATIVE_ROBLOX_OR_UNITY",
+        "EXACT_GAME_ID_INPUT_PASSES_THROUGH",
+        "ROBLOX_CHILD_MATRIX_STILL_USES_GAME_ID",
+        "UNITY_CHILD_MATRIX_STILL_USES_GAME_ID",
+        "NO_INTERNAL_MAX_PARALLEL_CAP"
       ]
     }
   },
@@ -22783,7 +22829,10 @@
       "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true,
       "unityWebBootstrapGameWideSerializationForbidden": true,
       "unityWebBootstrapDispatchIdentity": "GAME_ID",
-      "unityWebBootstrapInternalParallelCap": null
+      "unityWebBootstrapInternalParallelCap": null,
+      "parentPlatformBatchDispatch": true,
+      "parentPerGameReusableWorkflowFanoutForbidden": true,
+      "platformBatchInternalGameIdentity": "GAME_ID_MATRIX"
     }
   },
   "centralDocumentation": {

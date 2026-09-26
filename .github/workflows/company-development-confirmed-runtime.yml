@@ -170,36 +170,28 @@ jobs:
 
 
   dispatch-roblox:
-    name: Run ready Roblox upper-platform lanes
+    name: Run ready Roblox upper-platform batch
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
-    strategy:
-      fail-fast: false
-      matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
     permissions:
       contents: write
       pull-requests: write
       actions: write
     uses: ./.github/workflows/company-development-roblox-runtime.yml
     with:
-      game_id: ${{ matrix.game_id }}
+      game_id: ${{ inputs.game_id || '' }}
     secrets: inherit
 
   dispatch-unity:
-    name: Run ready Unity upper-platform lanes
+    name: Run ready Unity upper-platform batch
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
-    strategy:
-      fail-fast: false
-      matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
     permissions:
       contents: write
       actions: write
     uses: ./.github/workflows/company-development-unity-runtime.yml
     with:
-      game_id: ${{ matrix.game_id }}
+      game_id: ${{ inputs.game_id || '' }}
     secrets: inherit
 
   dispatch-unity-web-floor:
