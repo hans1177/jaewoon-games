@@ -1683,7 +1683,7 @@ jobs:
   fan_in:
     needs: [reserve, worker]
     if: always() && needs.reserve.outputs.worker_count != '0'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     concurrency:
       # Fan-in jobs must not share one pending GitHub concurrency slot.
