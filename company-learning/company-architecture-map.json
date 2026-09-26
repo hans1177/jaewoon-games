@@ -1,5 +1,5 @@
 {
-  "version": 224,
+  "version": 225,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3406,7 +3406,21 @@
       "readinessPassNextAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
       "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
       "newUpperPlatformEntryBlocking": true,
-      "existingNativeDevelopmentGrandfathered": true
+      "existingNativeDevelopmentGrandfathered": true,
+      "sourceBootstrapExecution": {
+        "workflow": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+        "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+        "taskIdentity": "GAME_ID",
+        "distinctGamesParallel": true,
+        "perGameMatrixFanOut": true,
+        "workflowWideConcurrencyLock": false,
+        "internalArtificialParallelCap": null,
+        "sourceRootIsolation": "unity-games/<gameId>/",
+        "serializationAllowedOnlyFor": [
+          "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT",
+          "ATOMIC_SHARED_STATE_WRITE"
+        ]
+      }
     },
     "upperPlatformTargets": [
       "ROBLOX",
@@ -4017,7 +4031,14 @@
       "mainBoundReadinessEvidence": "web-games/<gameId>/upper-platform-development-readiness.json",
       "directNativeDispatchFromBuildWorkflowForbidden": true,
       "sourceTreeExactMatchRequired": true,
-      "existingNativeDevelopmentGrandfathered": true
+      "existingNativeDevelopmentGrandfathered": true,
+      "sourceBootstrapExecution": {
+        "mode": "PER_GAME_MATRIX_PARALLEL",
+        "workflow": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+        "batchLoopForbidden": true,
+        "globalWorkflowSerializationForbidden": true,
+        "externalProviderCapacityOnlyBoundary": true
+      }
     },
     "gameSpecificBuildUpDirective": {
       "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
@@ -4045,7 +4066,7 @@
       ]
     }
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-27",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",

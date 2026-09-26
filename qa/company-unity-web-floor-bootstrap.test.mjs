@@ -131,3 +131,19 @@ test('Unity Web floor consumes the exact Vibe directive without creating a platf
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+
+test('Unity Web floor bootstrap runs per game without a global workflow serialization lock',()=>{
+  const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.match(parent,/unity_web_bootstrap_json:/);
+  assert.match(parent,/matrix:[\s\S]*game_id: \$\{\{ fromJSON\(needs\.native-plan\.outputs\.unity_web_bootstrap_json\) \}\}/);
+  assert.match(parent,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml[\s\S]*game_id: \$\{\{ matrix\.game_id \}\}/);
+  assert.match(workflow,/run-name: Unity Web Floor Bootstrap \$\{\{ inputs\.game_id \}\}/);
+  assert.match(workflow,/workflow_call:[\s\S]*game_id:/);
+  assert.doesNotMatch(header,/^concurrency:\s*$/m);
+  assert.match(workflow,/GAME_ID: \$\{\{ inputs\.game_id \}\}/);
+  assert.doesNotMatch(workflow,/for\(const gameId of ids\)/);
+  assert.match(workflow,/git add "unity-games\/\$GAME_ID"/);
+});

@@ -1,26 +1,22 @@
 name: Unity Web Floor Source Bootstrap
-run-name: Unity Web Floor Bootstrap ${{ inputs.game_ids }}
+run-name: Unity Web Floor Bootstrap ${{ inputs.game_id }}
 
 on:
   workflow_call:
     inputs:
-      game_ids:
+      game_id:
         required: true
         type: string
   workflow_dispatch:
     inputs:
-      game_ids:
-        description: 'Comma-separated DEVELOPMENT_CONFIRMED game ids that need canonical Unity Web floor source'
+      game_id:
+        description: 'Exact DEVELOPMENT_CONFIRMED game id that needs canonical Unity Web floor source'
         required: true
         type: string
 
 permissions:
   contents: write
   pull-requests: write
-
-concurrency:
-  group: unity-web-floor-source-bootstrap
-  cancel-in-progress: false
 
 jobs:
   bootstrap:
@@ -52,7 +48,7 @@ jobs:
       - name: Generate canonical Unity Web floor sources
         id: generate
         env:
-          GAME_IDS: ${{ inputs.game_ids }}
+          GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -61,68 +57,60 @@ jobs:
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
           import {nativeUpperPlatformAlreadyStarted} from './tools/company-upper-platform-admission.mjs';
-          const ids=[...new Set(String(process.env.GAME_IDS||'').split(',').map(x=>x.trim()).filter(Boolean))];
-          if(!ids.length)throw new Error('UNITY_WEB_BOOTSTRAP_IDS_REQUIRED');
+          const gameId=String(process.env.GAME_ID||'').trim();
+          if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_ID_INVALID:'+gameId);
           const queue=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
-          const generated=[];
-          for(const gameId of ids){
-            if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_ID_INVALID:'+gameId);
-            const item=(queue.items||[]).find(row=>row.gameId===gameId);
-            if(!item)throw new Error('UNITY_WEB_BOOTSTRAP_QUEUE_ITEM_MISSING:'+gameId);
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')throw new Error('UNITY_WEB_BOOTSTRAP_PRODUCTION_CLASS_INVALID:'+gameId);
-            if(nativeUpperPlatformAlreadyStarted(item))throw new Error('UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN:'+gameId);
-            const designSource=String(item.designBaselineSource||item.minimumDesignContract?.source||'').trim();
-            if(!designSource)throw new Error('UNITY_WEB_BOOTSTRAP_DESIGN_SOURCE_MISSING:'+gameId);
-            const local=path.join('/tmp/unity-web-bootstrap-design',gameId,'design-revised.json');
-            fs.mkdirSync(path.dirname(local),{recursive:true});
-            fs.writeFileSync(local,execFileSync('git',['show','origin/company-runtime:'+designSource]));
-            const directive='/tmp/unity-web-bootstrap-directive/'+gameId+'/current.json';
-            fs.mkdirSync(path.dirname(directive),{recursive:true});
-            let directiveArg=[];
-            try{
-              fs.writeFileSync(directive,execFileSync('git',['show','origin/vibe2-unreal-core:.vibe2/build-up-directives/'+gameId+'/current.json']));
-              directiveArg=['--build-up-directive='+directive];
-              console.log('UNITY_WEB_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:'+gameId);
-            }catch{
-              console.log('UNITY_WEB_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:'+gameId);
-            }
-            execFileSync(process.execPath,[
-              'tools/company-unity-web-floor-bootstrap.mjs',
-              '--game-id='+gameId,
-              '--game-name='+String(item.gameName||gameId),
-              '--baseline='+local,
-              '--output=unity-games/'+gameId,
-              ...directiveArg
-            ],{stdio:'inherit'});
-            generated.push(gameId);
+          const item=(queue.items||[]).find(row=>row.gameId===gameId);
+          if(!item)throw new Error('UNITY_WEB_BOOTSTRAP_QUEUE_ITEM_MISSING:'+gameId);
+          if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')throw new Error('UNITY_WEB_BOOTSTRAP_PRODUCTION_CLASS_INVALID:'+gameId);
+          if(nativeUpperPlatformAlreadyStarted(item))throw new Error('UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN:'+gameId);
+          const designSource=String(item.designBaselineSource||item.minimumDesignContract?.source||'').trim();
+          if(!designSource)throw new Error('UNITY_WEB_BOOTSTRAP_DESIGN_SOURCE_MISSING:'+gameId);
+          const local=path.join('/tmp/unity-web-bootstrap-design',gameId,'design-revised.json');
+          fs.mkdirSync(path.dirname(local),{recursive:true});
+          fs.writeFileSync(local,execFileSync('git',['show','origin/company-runtime:'+designSource]));
+          const directive='/tmp/unity-web-bootstrap-directive/'+gameId+'/current.json';
+          fs.mkdirSync(path.dirname(directive),{recursive:true});
+          let directiveArg=[];
+          try{
+            fs.writeFileSync(directive,execFileSync('git',['show','origin/vibe2-unreal-core:.vibe2/build-up-directives/'+gameId+'/current.json']));
+            directiveArg=['--build-up-directive='+directive];
+            console.log('UNITY_WEB_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:'+gameId);
+          }catch{
+            console.log('UNITY_WEB_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:'+gameId);
           }
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'ids='+generated.join(',')+'\n');
-          console.log('UNITY_WEB_BOOTSTRAP_GENERATED_IDS='+generated.join(','));
+          execFileSync(process.execPath,[
+            'tools/company-unity-web-floor-bootstrap.mjs',
+            '--game-id='+gameId,
+            '--game-name='+String(item.gameName||gameId),
+            '--baseline='+local,
+            '--output=unity-games/'+gameId,
+            ...directiveArg
+          ],{stdio:'inherit'});
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'game_id='+gameId+'\n');
+          console.log('UNITY_WEB_BOOTSTRAP_GENERATED_ID='+gameId);
           NODE
 
       - name: Create bootstrap PR
         env:
           GH_TOKEN: ${{ github.token }}
-          IDS: ${{ steps.generate.outputs.ids }}
+          GAME_ID: ${{ steps.generate.outputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
-          branch="unity-web-floor/bootstrap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          branch="unity-web-floor/bootstrap-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "jaewoon-unity-web-floor"
           git config user.email "actions@users.noreply.github.com"
           git checkout -b "$branch"
-          IFS=',' read -ra ids <<< "$IDS"
-          for id in "${ids[@]}"; do
-            [ -n "$id" ] || continue
-            git add "unity-games/$id"
-          done
+          git add "unity-games/$GAME_ID"
           git diff --cached --check
           if git diff --cached --quiet; then
             echo 'UNITY_WEB_BOOTSTRAP_PR=NO_CHANGE'
             exit 0
           fi
-          git commit -m "dev: bootstrap Unity Web floor sources"
+          git commit -m "dev: bootstrap Unity Web floor source $GAME_ID"
           git push origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources for: $IDS. After merge, Company DEVELOPMENT_CONFIRMED Runtime classifies games without durable native progress and dispatches the Unity Web floor build individually. Games with durable native progress are rejected by the canonical admission classifier. Generated sources still require WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor source $GAME_ID"             --body "Bootstrap canonical Unity source for: $GAME_ID. After merge, Company DEVELOPMENT_CONFIRMED Runtime dispatches the Unity Web floor build for this exact game. Games with durable native progress are rejected by the canonical admission classifier. Generated source still requires WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
           echo "UNITY_WEB_BOOTSTRAP_PR=$pr_url"
           echo 'UNITY_WEB_BOOTSTRAP_DIRECT_MAIN_WRITE=NO'
