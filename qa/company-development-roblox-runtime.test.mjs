@@ -565,6 +565,9 @@ test('superseded Roblox batch scheduler exits before heavy work while exact game
   assert.match(workflow,/if \[ -n "\$REQUESTED_GAME_ID" \]; then/);
   assert.match(workflow,/ROBLOX_BATCH_FRESHNESS=EXACT_GAME:/);
   assert.match(workflow,/ROBLOX_BATCH_SUPERSEDED=/);
+  assert.match(workflow,/GH_TOKEN: \$\{\{ github\.token \}\}/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(workflow,/ROBLOX_BATCH_SUPERSEDED_REDISPATCH=YES:/);
   assert.match(workflow,/count: \$\{\{ steps\.targets\.outputs\.count \|\| '0' \}\}/);
   assert.match(workflow,/matrix: \$\{\{ steps\.targets\.outputs\.matrix \|\| '\{"include":\[\]\}' \}\}/);
   assert.ok((workflow.match(/if: steps\.freshness\.outputs\.run == 'true'/g)||[]).length>=4);

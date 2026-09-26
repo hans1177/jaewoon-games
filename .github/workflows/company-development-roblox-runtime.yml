@@ -77,6 +77,7 @@ jobs:
         id: freshness
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -90,6 +91,8 @@ jobs:
           if [ "$current_main" != "$GITHUB_SHA" ]; then
             echo 'run=false' >> "$GITHUB_OUTPUT"
             echo "ROBLOX_BATCH_SUPERSEDED=$GITHUB_SHA:$current_main"
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "ROBLOX_BATCH_SUPERSEDED_REDISPATCH=YES:$current_main"
           else
             echo 'run=true' >> "$GITHUB_OUTPUT"
             echo "ROBLOX_BATCH_FRESHNESS=CURRENT:$current_main"
