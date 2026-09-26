@@ -179,6 +179,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
   const motionAtoms=Object.freeze([...(selected.MOTION||[])]);
   return Object.freeze({
     version:3,
+    bindingVersion:2,
     applied:selectedAtomCount>=12&&missingFamilies.length===0,
     source:'company-asset-library.json#baseMaterialLibrary',
     libraryVersion:Number(assetLibrary?.version||0),
