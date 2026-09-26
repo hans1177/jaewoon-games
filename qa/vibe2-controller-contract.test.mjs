@@ -476,9 +476,9 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
 
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
   assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
-  assert(workflow.includes("github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-{0}', github.run_id)"));
+  assert(workflow.includes("github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes("startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id)"));
-  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes('vibe2-fanin-refill-singleton'));
   assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const end=workflow.indexOf('  model_cache:',start);
@@ -668,13 +668,15 @@ test('recovery-fast lane is event-driven and never directly consumes a game work
   assert(recoveryFastWorkflow.includes('tools/company-recovery-escalation.mjs'));
   assert(recoveryFastWorkflow.includes('tools/company-recovery-dispatch.mjs'));
   assert(recoveryFastWorkflow.includes('--route=all'));
-  assert(recoveryFastWorkflow.includes('VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFER_TO_GAME_PRIMARY_FANIN'));
+  assert(recoveryFastWorkflow.includes('VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=GAME_PRIMARY_ATOMIC_REFILL'));
+  assert(recoveryFastWorkflow.includes('"event_type":"vibe2-fanin-refill"'));
+  assert(recoveryFastWorkflow.includes('"execution_lane":"game-primary"'));
+  assert(recoveryFastWorkflow.includes("if: steps.recovery.outputs.vibe_requeued != '0'"));
   assert(recoveryFastWorkflow.includes('company-system-ai-cycle'));
   assert(recoveryFastWorkflow.includes('system_ai_recovery_dispatched'));
   assert(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_recovery_dispatched != '0'"));
   assert.equal(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_queued != '0'"),false);
   assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
-  assert.equal(recoveryFastWorkflow.includes('vibe2-fanin-refill'),false);
   assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
 });
 
@@ -1158,4 +1160,12 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
   assert.doesNotMatch(recoveryFastWorkflow,/runs-on: ubuntu-latest/);
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.consumesGamePrimarySlot,false);
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.workerFanoutPerTask,1);
+});
+
+test('fan-in refill concurrency is lane-scoped and never serializes GAME_PRIMARY behind auxiliary lanes',()=>{
+  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}', github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'EXECUTION_LANE');
+  assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
+  assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.gameWorkerDispatch,'GAME_PRIMARY_ATOMIC_REFILL_EVENT');
 });
