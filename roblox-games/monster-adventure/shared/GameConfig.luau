@@ -83,8 +83,8 @@ local Config = {
   -- STUDIO_ASSET_BINDING_BEGIN
   StudioAssets = {
     Applied = true,
-    BindingVersion = 1,
-    LibraryVersion = 16,
+    BindingVersion = 2,
+    LibraryVersion = 18,
     Source = "company-asset-library.json#baseMaterialLibrary",
     AtomState = "PREPARED_SEMANTIC_ATOM_LIBRARY",
     RecipeId = "NORMAL_VARIANT",
@@ -96,10 +96,22 @@ local Config = {
       BUILDING = { "FOUNDATION_RECT", "WALL_SOLID", "DOOR_SINGLE", "ROOF_GABLE" },
       PROP = { "CHEST", "CRATE", "LAMP" },
       MATERIAL = { "WOOD", "STONE", "METAL" },
+      AUDIO = { "ENV_WIND", "ENV_WATER", "UI_CONFIRM" },
       VFX = { "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST" },
+      SKILL = { "CAST_HAND", "TELEGRAPH_CIRCLE", "IMPACT_SMALL" },
       WEAPON = { "BLADE_LONG", "GUARD_CROSS", "GRIP_LONG" },
       CHARACTER = { "TORSO_CLOTH", "SHOULDER_LIGHT", "BACK_CAPE" },
       CREATURE = { "HEAD_CANINE", "JAW_LONG", "CLAW" },
+      MOTION = { "IDLE_RELAXED", "WALK", "JOG", "RUN", "START", "STOP", "TURN_90", "JUMP_START", "LAND", "HIT_FRONT", "DEATH_FRONT" },
+    },
+    MotionQuality = {
+      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      LibraryFirst = true,
+      ArticulatedRigRequired = true,
+      AnimatorRequired = true,
+      BlendAndSpeedSyncRequired = true,
+      RuntimeVerificationRequired = true,
+      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",
     },
   },
   -- STUDIO_ASSET_BINDING_END
