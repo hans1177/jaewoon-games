@@ -1234,7 +1234,10 @@
         "lightweightReserveSeparatedFromArmFanIn": true,
         "queueReservationAndStateFanInOnly": true,
         "heavyGameExecutionUnchanged": true,
-        "ingressControl": "ubuntu-slim"
+        "ingressControl": "ubuntu-slim",
+        "coreQaRunner": "ubuntu-slim",
+        "coreQaConcurrencyMode": "ACTIVE_ONE_PLUS_LATEST_PENDING",
+        "coreQaCancelInProgress": false
       },
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
