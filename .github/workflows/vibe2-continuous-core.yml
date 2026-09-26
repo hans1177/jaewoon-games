@@ -38,7 +38,7 @@ permissions:
 # Collapse duplicate fan-in refill events to one pending workflow while never cancelling
 # the currently running control-state mutation.
 concurrency:
-  group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'vibe2-fanin-refill-singleton' || format('vibe2-continuous-{0}', github.run_id) }}
+  group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'vibe2-fanin-refill-singleton' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
