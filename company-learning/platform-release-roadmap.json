@@ -1,5 +1,5 @@
 {
-  "version": 413,
+  "version": 414,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -906,9 +906,9 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 6,
+      "version": 7,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "FOCUSED_TIMEOUT_POLICY_RESYNC_IMPLEMENTED_PENDING_CI_AND_LIVE_VERIFICATION",
+      "status": "FOCUSED_TIMEOUT_POLICY_RESYNC_CI_VERIFIED_PENDING_LIVE_VERIFICATION",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -1156,7 +1156,7 @@
         "sharedContextResultContaminationObserved": "SOURCE_FAILURE_EXITED_BEFORE_AFTER_WORK_REVALIDATION"
       },
       "focusedTimeoutPolicyResync": {
-        "state": "IMPLEMENTED_PENDING_CI_AND_LIVE_VERIFICATION",
+        "state": "CI_VERIFIED_PENDING_LIVE_PRODUCTION_WAVE",
         "authorityChange": "NONE",
         "executionScopeChange": "NONE",
         "qaBypassAllowed": false,
@@ -1173,7 +1173,22 @@
           ".github/workflows/vibe2-continuous-core.yml",
           "qa/vibe2-source-worker.test.mjs"
         ],
-        "nextGate": "CI_PASS_THEN_VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE"
+        "nextGate": "VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE",
+        "implementationMergeCommit": "3e2fd85f784c35a925c1ea8581e4069e2c18115c",
+        "ciVerification": {
+          "centralPolicyContract": {
+            "runId": 36233532116,
+            "result": "PASS"
+          },
+          "companyEvolutionQa": {
+            "runId": 36233532137,
+            "result": "PASS"
+          },
+          "vibe2CoreQa": {
+            "runId": 36233532221,
+            "result": "PASS"
+          }
+        }
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
@@ -8219,7 +8234,23 @@
       "sharedContextFailurePath": "ALWAYS_REVALIDATE_AFTER_WORK_BEFORE_EXIT",
       "noAuthorityExpansion": true,
       "noQualityGateWeakening": true,
-      "noRetryBudgetIncrease": true
+      "noRetryBudgetIncrease": true,
+      "implementationMergeCommit": "3e2fd85f784c35a925c1ea8581e4069e2c18115c",
+      "ciVerification": {
+        "centralPolicyContract": {
+          "runId": 36233532116,
+          "result": "PASS"
+        },
+        "companyEvolutionQa": {
+          "runId": 36233532137,
+          "result": "PASS"
+        },
+        "vibe2CoreQa": {
+          "runId": 36233532221,
+          "result": "PASS"
+        }
+      },
+      "liveVerification": "PENDING_NEXT_PRODUCTION_WAVE"
     }
   },
   "vibeExecutionLaneContract": {
