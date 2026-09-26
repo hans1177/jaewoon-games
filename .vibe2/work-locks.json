@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1hopfsf",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:54:22.642Z",
-      "expiresAt": "2026-09-26T17:39:22.642Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1gs61jg",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:54:23.760Z",
-      "expiresAt": "2026-09-26T17:39:23.760Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-11fzn3i",
       "worker": "vibe2",
       "taskId": "horror-escape-room-unity-web-base-implementation-v1",
@@ -803,6 +767,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-10uixll",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
+      ],
+      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
+      "acquiredAt": "2026-09-26T17:39:27.364Z",
+      "expiresAt": "2026-09-26T18:24:27.364Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
