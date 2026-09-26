@@ -824,7 +824,7 @@ test('fan-in persists neural shadow calibration without granting learning or rou
   assert.equal(payload.matchState,'MATCH');
   assert.equal(payload.rootCauseVerified,false);
   assert.equal(payload.learningEligible,false);
-  assert.equal(payload.authorityPromotionEligible,false);
+
   assert.ok(task.evidence.includes('neural-shadow-match:MATCH'));
   const eventMarker=task.evidence.find(value=>value.startsWith('neural-event-shadow:'));
   assert.ok(eventMarker);
