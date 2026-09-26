@@ -45,7 +45,7 @@ env:
 jobs:
   native-plan:
     name: Resolve direct native development
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 8
     outputs:
       eligible_count: ${{ steps.plan.outputs.eligible_count }}
