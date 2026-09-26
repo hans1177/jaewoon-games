@@ -539,7 +539,8 @@
       "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
       "fanInRefillConcurrencyScope": "RUN_SCOPED_PARALLEL_RESERVE",
       "globalFanInRefillSingletonForbidden": true,
-      "sameLaneFanInRefillSerialization": false
+      "sameLaneFanInRefillSerialization": false,
+      "pressureCoalescingIndependentFreeSlotRefillPreserved": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -632,6 +633,17 @@
       "taskFailure": false,
       "resultLossForbidden": true,
       "workerDirectControlWrite": false,
+      "capacityRefillMayProceedWhileResultCoalesced": true,
+      "pressureCapacityRefill": {
+        "enabled": true,
+        "scope": "GAME_PRIMARY_PRIMARY_VARIANT_WAVE_LEADER_ONLY",
+        "event": "vibe2-fanin-refill",
+        "maxSignalsPerWave": 1,
+        "resultConsumption": false,
+        "resultRemainsCohortFanInOwned": true,
+        "workerDirectControlWrite": false,
+        "newWorkflowCreated": false
+      },
       "immediateDispatchResumesWhenPressureClears": true
     },
     "cohortFanInPressureIngressEnabled": true,
