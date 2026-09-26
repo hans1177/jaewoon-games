@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-461znh",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T17:03:55.735Z",
-      "expiresAt": "2026-09-26T17:48:55.735Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-5a2bzz",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-studio-evolution-unity-web-presentation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T17:04:04.055Z",
-      "expiresAt": "2026-09-26T17:49:04.055Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1spyiyt",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T17:04:29.024Z",
-      "expiresAt": "2026-09-26T17:49:29.024Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1un4qsw",
       "worker": "vibe2",
       "taskId": "cozy-island-unity-web-base-implementation-v1",
@@ -713,6 +658,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1ra66nm",
+      "worker": "vibe2",
+      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "files": [
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
+      "acquiredAt": "2026-09-26T17:50:26.900Z",
+      "expiresAt": "2026-09-26T18:35:26.900Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
