@@ -1,5 +1,5 @@
 {
-  "version": 48,
+  "version": 49,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -748,5 +748,20 @@
       "publicReleaseAndExternalPromotionSecurityEvidencePreserved": true,
       "procedureMinimizationCannotDisableSecurityFindings": true
     }
+  },
+  "robloxNativeCodingQualitySecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxNativeCodingQualityContract",
+    "serverAuthorityRequired": true,
+    "remoteInputValidationRequired": true,
+    "clientMayNotAuthorizeDamageRewardCurrencyInventoryOrProgress": true,
+    "dataStoreRetryMustBeBounded": true,
+    "staleCharacterReferencesAcrossRespawnMustBeRejectedOrRefreshed": true,
+    "multiplayerStateMustRemainServerAuthoritative": true,
+    "officialStudioMcpOnlyForAutomatedStudioPlay": true,
+    "robloxPlayerAutomationForbidden": true,
+    "externalGuiMacroForbidden": true,
+    "actualPlayFeedbackMayNotBypassSecurityQaOrReleaseGates": true,
+    "verifiedLearningMayNotPromoteUnsafeRemoteOrSavePatterns": true
   }
 }
