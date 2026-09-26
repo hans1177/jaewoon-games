@@ -31,6 +31,25 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
   }
 });
 
+test('steward preserves expired lease while its GitHub Actions reservation run is live',()=>{
+  const result=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    liveReservationRunIds:new Set(['36229097447']),
+    queueInput:{maxConcurrentTasks:256,tasks:[{
+      id:'live-stale-age',gameId:'a',target:'web',department:'development',type:'implementation',goal:'x',
+      status:'running',reservationId:'36229097447:1',reservationRunId:'36229097447',reservationRunAttempt:1,
+      reservedAt:'2026-09-19T10:00:00Z'
+    }]},
+    controlInput:{version:4,currentMax:256,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  const task=result.queue.tasks.find(t=>t.id==='live-stale-age');
+  assert.equal(task.status,'running');
+  assert.equal(task.reservationId,'36229097447:1');
+  assert.equal(result.actions.includes('RECOVER_STALE_RUNNING_RESERVATION'),false);
+  assert.equal(result.liveReservationRunCount,1);
+  assert.equal(result.liveReservationProtectedCount,1);
+});
+
 test('steward resumes safe development failure with unlimited causal repair without erasing retry history',()=>{
   const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[{id:'dead',gameId:'b',target:'web',department:'development',type:'implementation',goal:'x',status:'failed',retries:3,maxRetries:2,recoveryGeneration:1}]},controlInput:{currentMax:256}});
   const task=result.queue.tasks[0];
