@@ -1,5 +1,5 @@
 {
-  "version": 441,
+  "version": 442,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8781,6 +8781,31 @@
       "canonicalQaMustStillRunOnRelevantMainChanges": true,
       "duplicateValidationForbidden": true,
       "gameDispatchWaitsForDuplicateQa": false,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "independentGameParallelismPreserved": true
+    },
+    "unityPlannerDuplicateContractQaRemoval20260927": {
+      "id": "UNITY_PLANNER_DUPLICATE_CONTRACT_QA_REMOVAL_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_CENTRALLY_DUPLICATED_CONTRACT_TESTS_FROM_PER_RUN_UNITY_PREPARE_WHILE_PRESERVING_UNITY_RESPONSIBILITY_LOCAL_TESTS",
+      "workflow": ".github/workflows/company-development-unity-runtime.yml",
+      "canonicalQaAuthority": ".github/workflows/company-central-policy-contract-qa.yml",
+      "removedFromRuntimeCriticalPath": [
+        "qa/company-shared-context.test.mjs",
+        "qa/company-selected-platform-router.test.mjs",
+        "qa/company-development-unity-runtime.test.mjs"
+      ],
+      "retainedResponsibilityLocalTests": [
+        "qa/company-upper-platform-admission.test.mjs",
+        "qa/unity-package-fatal-logcat.test.mjs"
+      ],
+      "staticSyntaxChecksPreserved": true,
+      "sharedContextRuntimeCompilationPreserved": true,
+      "canonicalQaMustStillRunOnRelevantMainChanges": true,
+      "duplicateValidationForbidden": true,
+      "gameDispatchWaitsForDuplicateQa": false,
+      "canonicalUnityStageOrderUnchanged": true,
       "qualitySecurityReleaseGatesUnchanged": true,
       "independentGameParallelismPreserved": true
     }
