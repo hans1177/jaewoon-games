@@ -1089,6 +1089,34 @@ test('core QA keeps one active regression alive during same-ref main churn',()=>
   assert.equal(architecture.executionTopology?.vibe2?.vibeGameControlRunnerPool?.coreQaConcurrencyMode,'ACTIVE_ONE_PLUS_LATEST_PENDING');
 });
 
+test('focused retry history reuse stays evidence-gated without weakening QA',()=>{
+  const policy=roadmap.changeRecord?.vibeFocusedRetryHistoryReuse20260927;
+  assert.equal(policy?.action,'REUSE_EXISTING_FOCUSED_WEB_FIRST_EDIT_STREAM_PATH_ON_ATTEMPT_ONE');
+  assert.deepEqual(policy?.eligibility,[
+    'TARGET_WEB',
+    'ONE_RESPONSIBLE_HTML_FILE',
+    'TASK_RETRIES_GT_0',
+    'PRIOR_CODING_FOCUSED_REPLACE_ONLY_YES',
+    'PRIOR_GENERATION_ATTEMPTS_GE_2',
+    'PRIOR_MATERIAL_CANDIDATE_SHA_PRESENT'
+  ]);
+  assert.equal(policy?.fullRewriteExcluded,true);
+  assert.equal(policy?.newTaskExcluded,true);
+  assert.equal(policy?.candidateValidationUnchanged,true);
+  assert.equal(policy?.incrementalQaUnchanged,true);
+  assert.equal(policy?.fanInRegressionUnchanged,true);
+  assert.equal(policy?.retryBudgetUnchanged,true);
+  const topology=architecture.vibeSourceGenerationFocusedRecoveryTopology;
+  assert.equal(topology?.version,3);
+  assert.equal(topology?.historicalFocusedRetryReuse?.enabled,true);
+  assert.equal(topology?.historicalFocusedRetryReuse?.scope,'RETRIED_SINGLE_HTML_WEB_TASK_ONLY');
+  assert.equal(topology?.historicalFocusedRetryReuse?.firstAttemptMode,'EXISTING_FOCUSED_WEB_FIRST_EDIT_STREAM');
+  const worker=readText('tools/vibe2-source-worker.mjs');
+  assert.match(worker,/const retriedFocusedGeneration=Number\(order\?\.selectedTask\?\.retries\|\|0\)>0/);
+  assert.match(worker,/evidence\.has\('coding-focused-replace-only:YES'\)/);
+  assert.match(worker,/\^candidate-sha:\[0-9a-f\]\{40\}\$/i);
+});
+
 test('duplicate administrative QA keeps only the latest same-ref validation',()=>{
   const roadmap=JSON.parse(readText('company-learning/platform-release-roadmap.json'));
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.duplicateValidationWithoutEvidenceInvalidationForbidden,true);
