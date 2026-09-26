@@ -13476,13 +13476,10 @@
         },
         "policy": {
           "externalProviderBoundary": 256,
-          "initialBaselineTarget": 20,
-          "adaptiveMinimum": 4,
+          "initialBaselineTarget": 30,
+          "adaptiveMinimum": 30,
           "adaptiveSteps": [
-            4,
-            8,
-            16,
-            20,
+            30,
             32,
             64,
             128,
@@ -20714,7 +20711,7 @@
         "QUEUE_WAIT_P95",
         "CHECKOUT_P95"
       ],
-      "adaptiveMinimum": 20,
+      "adaptiveMinimum": 30,
       "externalBoundary": 256,
       "healthyScaleUpAllowed": true,
       "pressureScaleDownBelowOwnerMinimumForbidden": true,
