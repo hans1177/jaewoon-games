@@ -219,12 +219,12 @@ jobs:
               &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
               &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
             const currentReconciliationPass=reconciledPass.has(item.gameId);
-            const resolvedAssetBindingFalseDebt=!secondaryOwnerFocus
+            const resolvedSourceBindDebt=!secondaryOwnerFocus
               &&currentReconciliationPass
-              &&String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'
-              &&String(item.robloxFailureSignature||'')==='existing-source-studio-asset-binding-required';
-            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedAssetBindingFalseDebt)||f0FoundationRepair;
-            if(resolvedAssetBindingFalseDebt)console.log('ROBLOX_STALE_ASSET_BINDING_DEBT_RESOLVED_BY_EXACT_RECONCILIATION='+item.gameId);
+              &&String(item.currentStep||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'
+              &&String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
+            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedSourceBindDebt)||f0FoundationRepair;
+            if(resolvedSourceBindDebt)console.log('ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION='+item.gameId);
             const candidateReady=secondaryOwnerFocus
               ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
               :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
