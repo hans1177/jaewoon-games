@@ -1,5 +1,5 @@
 {
-  "version": 77,
+  "version": 78,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1485,7 +1485,7 @@
     ]
   },
   "existingGameHolisticBackfillEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
     "requiredFor": "EVERY_ELIGIBLE_EXISTING_ACTIVE_OR_REBUILD_GAME_UNTIL_HOLISTIC_BASELINE_VERIFIED",
     "requiredCorrelationKeys": [
@@ -1494,7 +1494,9 @@
       "buildUpGeneration",
       "developmentDepth",
       "studioQualityFocusPillar",
-      "sourceTreeFingerprint"
+      "sourceTreeFingerprint",
+      "platformLane",
+      "sourceRoot"
     ],
     "requiredEvidence": [
       "EXISTING_HOLISTIC_BACKFILL_REQUIRED",
@@ -1525,7 +1527,20 @@
     "markers": {
       "active": "existing-holistic-backfill:v1",
       "grandfather": "existing-game-grandfather-exemption:NO",
-      "baseline": "EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED"
+      "baseline": "EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED",
+      "platformLane": "studio-quality-platform-lane:<lane>"
+    },
+    "platformLaneEvidence": {
+      "allowed": [
+        "WEB",
+        "ROBLOX",
+        "UNITY_WEB",
+        "UNITY_NATIVE"
+      ],
+      "allFivePillarsVerifiedPerLane": true,
+      "siblingLaneEvidenceCannotSubstitute": true,
+      "unityWebRequiresWebglBrowserRuntimeEvidence": true,
+      "sameUnitySourceDoesNotMergeUnityWebAndUnityNativePassState": true
     }
   }
 }
