@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-ddgl4b",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "roblox-games/monster-adventure/client/Game.client.luau",
-        "roblox-games/monster-adventure/server/Game.server.luau",
-        "roblox-games/monster-adventure/shared/GameConfig.luau"
-      ],
-      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
-      "acquiredAt": "2026-09-26T17:40:55.112Z",
-      "expiresAt": "2026-09-26T18:25:55.112Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1dm25qb",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
@@ -565,6 +546,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
+      ]
+    },
+    {
+      "id": "wl-16yeupy",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+      ],
+      "baseSha": "81435c833397a8cecff4a1b7ac335681b6ea2a8b",
+      "acquiredAt": "2026-09-26T18:26:15.341Z",
+      "expiresAt": "2026-09-26T19:11:15.341Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
