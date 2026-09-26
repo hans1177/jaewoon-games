@@ -79,10 +79,10 @@ test('reserve scheduling isolates execution lanes and learning defers before pro
   assert.equal(reserve.crossLaneGlobalReserveLock,false);
   assert.equal(reserve.sameLaneReserveSerialization,true);
   assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5');
-  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v3');
+  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v4');
   assert.equal(reserve.gamePrimaryExternalBoundary,256);
 
-  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v3');
+  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v4');
   assert.equal(runtime.continuous.reserveConcurrency.crossLaneGlobalReserveLock,false);
   assert.equal(runtime.continuous.reserveConcurrency.gamePrimaryExternalBoundary,256);
   assert.equal(learning.liveRunnerPressureGateImplemented,true);
@@ -94,7 +94,15 @@ test('reserve scheduling isolates execution lanes and learning defers before pro
   assert.doesNotMatch(core,/format\('vibe2-continuous-\{0\}', github\.run_id\)/);
   assert.match(core,/vibe2-fanin-refill-singleton/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v3/);
+  assert.match(runner,/group: vibe2-24h-cycle-singleton-v4/);
+  const planBlock=runner.slice(runner.indexOf('  plan:\n'),runner.indexOf('\n  recovery_fast:',runner.indexOf('  plan:\n')));
+  const refillBlock=runner.slice(runner.indexOf('  refill:\n'));
+  const reserveBlock=core.slice(core.indexOf('  reserve:\n'),core.indexOf('\n  model_cache:',core.indexOf('  reserve:\n')));
+  const fanInBlock=core.slice(core.indexOf('  fan_in:\n'));
+  assert.match(planBlock,/runs-on: ubuntu-slim/);
+  assert.match(refillBlock,/runs-on: ubuntu-slim/);
+  assert.match(reserveBlock,/runs-on: ubuntu-slim/);
+  assert.match(fanInBlock,/runs-on: ubuntu-slim/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0' && needs\.plan\.outputs\.runner_pressure != 'YES'/);
