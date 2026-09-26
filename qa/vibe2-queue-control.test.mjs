@@ -22,6 +22,7 @@ import {
   recoverTransientWorkLockBlocks,
   recoverFanInRegressionFailure,
   verifyVibeWorkerSynchronization,
+  speculativeExpansionPolicy,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
@@ -1227,6 +1228,29 @@ test('exact Web base source generation failure can recover once', () => {
   assert.equal(recovered.queue.tasks[0].lastOutcome,'RETRY_AFTER_SOURCE_GENERATION_INFRA_REPAIR');
 });
 
+
+test('live runner pressure suppresses speculative expansion while preserving the 256 primary capacity contract',()=>{
+  const pressured=speculativeExpansionPolicy({
+    currentMax:256,
+    lastDecision:'RESET',
+    lastReason:'STALE_TELEMETRY_RESET_TO_256',
+    lastTelemetry:null
+  },{liveRunnerPressure:true});
+  assert.equal(pressured.allowed,false);
+  assert.equal(pressured.reason,'LIVE_RUNNER_PRESSURE');
+  assert.equal(pressured.primaryCoveragePreserved,true);
+  assert.equal(pressured.liveRunnerPressure,true);
+
+  const clear=speculativeExpansionPolicy({
+    currentMax:256,
+    lastDecision:'RESET',
+    lastReason:'STALE_TELEMETRY_RESET_TO_256',
+    lastTelemetry:null
+  },{liveRunnerPressure:false});
+  assert.equal(clear.allowed,true);
+  assert.equal(clear.reason,'AVAILABLE');
+  assert.equal(clear.primaryCoveragePreserved,true);
+});
 
 test('continuous reserve keeps preflight cheap and defers full core regression to fan-in', () => {
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
