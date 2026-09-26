@@ -1,5 +1,5 @@
 {
-  "version": 208,
+  "version": 209,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4844,5 +4844,55 @@
     "releasePromotionWorkflowExtendedOnly": true,
     "verifiedUniverseIdRequired": true,
     "gameCatalogBackwardCompatibilityPreserved": true
+  },
+  "universalAssetFirstUpgradeTopology": {
+    "version": 1,
+    "policy": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+    "existingPipelineOnly": true,
+    "noNewWorker": true,
+    "noNewQueue": true,
+    "noShadowAssetPipeline": true,
+    "chain": [
+      "assets/vibe-art-pipeline.js",
+      "tools/vibe2-asset-production-plan.mjs",
+      "tools/vibe2-source-worker.mjs",
+      "tools/vibe2-incremental-qa.mjs",
+      "NATIVE_RUNTIME_QA",
+      "REGRESSION_SECURITY_FAN_IN",
+      "tools/vibe2-learning-motor.mjs"
+    ],
+    "allFamilies": [
+      "CHARACTER",
+      "CREATURE",
+      "BUILDING",
+      "ENVIRONMENT",
+      "WEAPON",
+      "SKILL",
+      "MATERIAL",
+      "AUDIO",
+      "VFX",
+      "UI",
+      "MOTION",
+      "PROP"
+    ],
+    "mapWorldBindings": {
+      "planner": "tools/vibe2-asset-production-plan.mjs",
+      "environmentDirector": "assets/vibe-environment-director.js",
+      "qualityGate": "assets/vibe-visual-quality-gate.js",
+      "requiredWorldLayers": [
+        "BACKGROUND",
+        "TERRAIN",
+        "BUILDING",
+        "LANDMARK",
+        "SET_DRESSING",
+        "PROP"
+      ]
+    },
+    "sourceOwnership": {
+      "selectionPlannerMayNotMutateGameSource": true,
+      "vibe2Vibe3OwnActualGameSourceBinding": true,
+      "actualBindingMustUseExistingResponsibleFiles": true,
+      "markerOnlyBindingForbidden": true
+    }
   }
 }
