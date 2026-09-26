@@ -1,5 +1,5 @@
 {
-  "version": 398,
+  "version": 399,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -23321,7 +23321,9 @@
       "HOME_PAGE_RENDERER_READS_CANONICAL_MARKETING_THUMBNAIL_FIRST",
       "RENDER_UPLOAD_PNG_FROM_SAME_SOURCE",
       "UPLOAD_TO_VERIFIED_ROBLOX_UNIVERSE_WITH_OPEN_CLOUD",
-      "VERIFY_ROBLOX_THUMBNAIL_PROCESSING_AND_LISTING",
+      "VERIFY_ROBLOX_THUMBNAIL_PROCESSING",
+      "CREATE_OR_UPDATE_ACTIVE_THUMBNAIL_PERSONALIZATION_WITH_UPLOADED_THUMBNAIL_ID",
+      "READ_BACK_ACTIVE_PERSONALIZATION_AND_THUMBNAIL_LIST",
       "PERSIST_UPLOAD_EVIDENCE",
       "HOMEPAGE_MANAGER_PUBLISHES_SAME_ASSET_REFERENCE"
     ],
@@ -23334,7 +23336,12 @@
       "existingSecret": "ROBLOX_OPEN_CLOUD_API_KEY",
       "failClosedWhenScopeMissing": true,
       "neverLogApiKey": true,
-      "verifiedUniverseOnly": true
+      "verifiedUniverseOnly": true,
+      "activePersonalizationRequired": true,
+      "personalizationCreatePath": "/thumbnail-personalization-api/v1/universes/{universeId}/personalization/create",
+      "personalizationUpdatePath": "/thumbnail-personalization-api/v1/universes/{universeId}/personalization/update",
+      "activeReadbackRequired": true,
+      "httpSuccessAloneIsNotPass": true
     },
     "compatibility": {
       "gameCatalogLegacyImageMaintainedForBackwardCompatibility": true,
