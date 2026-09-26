@@ -1,5 +1,5 @@
 {
-  "version": 69,
+  "version": 70,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1322,5 +1322,18 @@
     "repeatedFailureDedupeRequired": true,
     "rawLogAloneCannotProvePass": true,
     "verifiedLearningMustReferenceSourceAndOutcome": true
+  },
+  "vibeModelCacheLookupOnlyWarmup": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.modelCacheLookupOnlyWarmupRelief20260926",
+    "requiredMarkers": [
+      "VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES",
+      "VIBE2_MODEL_CACHE_WARMUP_HIT="
+    ],
+    "baselineRunId": 36204978877,
+    "baselineCacheBytes": 2814033971,
+    "expectedEffect": "REMOVE_REDUNDANT_PREWARM_CACHE_PAYLOAD_DOWNLOAD_AND_EXTRACTION_ON_HIT",
+    "workerRestoreMustRemain": true,
+    "gamePrimaryBoundaryMustRemain": 256
   }
 }

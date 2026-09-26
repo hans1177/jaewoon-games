@@ -296,6 +296,26 @@ test('controller pins each isolated candidate to the reserve-time main contract 
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
+test('model cache prewarm probes lookup-only on hit while isolated workers still restore the runtime cache',()=>{
+  const modelStart=workflow.indexOf('\n  model_cache:');
+  const workerStart=workflow.indexOf('\n  worker:',modelStart);
+  const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
+  assert.ok(modelStart>=0&&workerStart>modelStart&&fanInStart>workerStart);
+  const modelBlock=workflow.slice(modelStart,workerStart);
+  const workerBlock=workflow.slice(workerStart,fanInStart);
+  assert.match(modelBlock,/Probe or persist shared Ollama runtime cache/);
+  assert.match(modelBlock,/lookup-only: true/);
+  assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES/);
+  assert.match(modelBlock,/if: steps\.ollama_cache\.outputs\.cache-hit != 'true'/);
+  assert.match(workerBlock,/Restore shared Ollama runtime cache/);
+  assert.match(workerBlock,/uses: actions\/cache\/restore@v4/);
+  assert.doesNotMatch(workerBlock,/lookup-only: true/);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmCacheProbeLookupOnlyOnHit,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmFullRestoreOnHitForbidden,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRemainsRequiredPerIsolatedRunner,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerModelBehaviorChanged,false);
+});
+
 test('every atomic worker synchronizes with Vibe control state before any worker work',()=>{
   const start=workflow.indexOf('  worker:');
   const end=workflow.indexOf('  fan_in:',start);

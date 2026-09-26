@@ -458,7 +458,7 @@ jobs:
     timeout-minutes: 12
     continue-on-error: true
     steps:
-      - name: Restore or persist shared Ollama runtime cache
+      - name: Probe or persist shared Ollama runtime cache
         id: ollama_cache
         uses: actions/cache@v4
         with:
@@ -467,6 +467,13 @@ jobs:
             ~/.cache/vibe2-ollama/bin/ollama
             ~/.cache/vibe2-ollama/lib/ollama
           key: vibe2-ollama-v3-Linux-qwen3-1.7b
+          lookup-only: true
+
+      - name: Record model cache probe
+        shell: bash
+        run: |
+          echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES'
+          echo "VIBE2_MODEL_CACHE_WARMUP_HIT=${{ steps.ollama_cache.outputs.cache-hit }}"
 
       - name: Warm local coding model once on cache miss
         if: steps.ollama_cache.outputs.cache-hit != 'true'
