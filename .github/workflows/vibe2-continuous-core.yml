@@ -66,8 +66,9 @@ env:
 
 jobs:
   reserve:
-    # Queue reservation / atomic result ingress is lightweight ingress control, not heavy model execution.
-    runs-on: ubuntu-slim
+    # Default ingress stays on slim. Pressure-driven fan-in refill bypasses a saturated slim control queue
+    # through the existing ARM game-control pool; heavy model workers remain on ubuntu-latest.
+    runs-on: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim' }}
     timeout-minutes: 7
     # Reserve jobs may run concurrently. Only the existing optimistic shared-state
     # fetch/reset/replan/push retry section serializes on an actual write conflict.
