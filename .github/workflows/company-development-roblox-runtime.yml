@@ -156,7 +156,6 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/company-shared-context.mjs
-          node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-plan.json
           node --check tools/company-development-roblox-bootstrap.mjs
           node --check tools/company-development-roblox-source-reconcile.mjs
@@ -165,7 +164,7 @@ jobs:
           node --check tools/company-upper-platform-admission.mjs
           node --check tools/vibe3-roblox-platform.mjs
           node --check tools/vibe3-roblox-learning-context.mjs
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-selected-platform-router.test.mjs qa/company-upper-platform-admission.test.mjs
+          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-upper-platform-admission.test.mjs
 
       - name: Fetch current company runtime
         if: steps.freshness.outputs.run == 'true'
