@@ -1,5 +1,5 @@
 {
-  "version": 397,
+  "version": 398,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7653,6 +7653,12 @@
         ".github/workflows/company-development-roblox-post-runtime-qa.yml",
         "qa/company-development-roblox-studio-local-play.test.mjs"
       ],
+      "authorityChange": "NONE"
+    },
+    "robloxHomepageThumbnailSync20260926": {
+      "id": "ROBLOX_HOMEPAGE_THUMBNAIL_SYNC_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Bind one canonical marketing thumbnail asset to both Roblox experience thumbnails and homepage game-card rendering, using verified universe IDs and Open Cloud thumbnail scopes.",
       "authorityChange": "NONE"
     }
   },
@@ -23275,6 +23281,83 @@
       "qa/vibe2-source-worker.test.mjs",
       "qa/company-development-roblox-studio-local-play.test.mjs",
       "qa/vibe2-learning-motor.test.mjs"
+    ]
+  },
+  "robloxHomepageThumbnailSyncContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "authority": "OWNER_DIRECTIVE_2026-09-26",
+    "objective": "USE_ONE_GAME_MARKETING_IMAGE_AUTHORITY_FOR_ROBLOX_HOMEPAGE_THUMBNAIL_AND_COMPANY_HOMEPAGE_GAME_CARD",
+    "scope": {
+      "currentInternalRobloxExposureGames": [
+        "cozy-island",
+        "daechung-rpg",
+        "horror-escape-room",
+        "village-dungeons"
+      ],
+      "futureEligibleGames": "ANY_ROBLOX_GAME_WITH_VERIFIED_UNIVERSE_ID_AND_CANONICAL_MARKETING_IMAGE"
+    },
+    "canonicalImageAuthority": {
+      "field": "canonical.marketing.thumbnail",
+      "fallbackLegacyField": "canonical.identity.image",
+      "sourceAssetRoot": "assets/roblox-thumbnails",
+      "homepageUsesSameAsset": true,
+      "robloxUploadUsesSameAsset": true,
+      "duplicateIndependentRobloxAndHomepageArtForbidden": true
+    },
+    "requiredFormat": {
+      "source": "SVG_16_9_960x540_OR_EQUIVALENT",
+      "uploadRender": "PNG_16_9",
+      "homepageMayUseSourceSvgDirectly": true,
+      "titleReadableAtSmallCardSize": true,
+      "gameSpecificVisualIdentityRequired": true,
+      "genericPageBackgroundForbidden": true,
+      "unrelatedGameArtForbidden": true
+    },
+    "publicationFlow": [
+      "CREATE_OR_UPDATE_CANONICAL_GAME_MARKETING_THUMBNAIL",
+      "VALIDATE_FILE_EXISTS_UNIQUE_NON_PLACEHOLDER_AND_16_9",
+      "SYNC_GAME_CATALOG_CANONICAL_MARKETING_THUMBNAIL",
+      "HOME_PAGE_RENDERER_READS_CANONICAL_MARKETING_THUMBNAIL_FIRST",
+      "RENDER_UPLOAD_PNG_FROM_SAME_SOURCE",
+      "UPLOAD_TO_VERIFIED_ROBLOX_UNIVERSE_WITH_OPEN_CLOUD",
+      "VERIFY_ROBLOX_THUMBNAIL_PROCESSING_AND_LISTING",
+      "PERSIST_UPLOAD_EVIDENCE",
+      "HOMEPAGE_MANAGER_PUBLISHES_SAME_ASSET_REFERENCE"
+    ],
+    "robloxOpenCloud": {
+      "apiFamily": "THUMBNAIL_PERSONALIZATION",
+      "uploadPath": "/thumbnail-personalization-api/v1/universes/{universeId}/thumbnails/uploads",
+      "statusPath": "/thumbnail-personalization-api/v1/universes/{universeId}/thumbnails/uploads/status",
+      "requiredScope": "universe.thumbnail:write",
+      "readScopeRecommended": "universe.thumbnail:read",
+      "existingSecret": "ROBLOX_OPEN_CLOUD_API_KEY",
+      "failClosedWhenScopeMissing": true,
+      "neverLogApiKey": true,
+      "verifiedUniverseOnly": true
+    },
+    "compatibility": {
+      "gameCatalogLegacyImageMaintainedForBackwardCompatibility": true,
+      "canonicalIdentityImageMirrorsCanonicalMarketingThumbnail": true,
+      "homepageFallbackToLegacyImageAllowed": true,
+      "titleImageAssetMayBeReplacedByMarketingThumbnailButNotViceVersa": true
+    },
+    "protectedSemantics": {
+      "noGameplaySourceChange": true,
+      "noRobloxPlayerAutomation": true,
+      "noExternalGuiMacro": true,
+      "noPublicationTargetChange": true,
+      "noPublicReleaseClaim": true
+    },
+    "implementationBindings": [
+      "game-catalog.json",
+      "assets/homepage-enhancements.js",
+      "tools/game-catalog-normalization.mjs",
+      "tools/homepage-manager.mjs",
+      "tools/company-roblox-thumbnail-sync.mjs",
+      ".github/workflows/company-development-roblox-release-promotion.yml",
+      "qa/company-roblox-thumbnail-sync.test.mjs",
+      "qa/company-homepage-runtime-propagation.test.mjs"
     ]
   }
 }
