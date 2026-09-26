@@ -96,18 +96,14 @@ jobs:
           console.log('UPPER_PLATFORM_MACHINE_CONTRACT=PASS');
           NODE
 
-      - name: Fetch queue authority
-        run: |
-          set -euo pipefail
-          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
-          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
-
-      - name: Fetch active native lane identities
+      - name: Fetch queue authority and active native lane identities in parallel
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" &
+          queue_fetch_pid=$!
           pids=()
           labels=()
           for page in 1 2 3; do
@@ -118,6 +114,14 @@ jobs:
             pids+=("$!")
             labels+=("UNITY:$page")
           done
+          queue_fetch_status=0
+          wait "$queue_fetch_pid" || queue_fetch_status=$?
+          if (( queue_fetch_status != 0 )); then
+            echo "NATIVE_QUEUE_AUTHORITY_FETCH=FAIL:$queue_fetch_status" >&2
+            exit 13
+          fi
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+          echo 'NATIVE_QUEUE_AUTHORITY_FETCH=PASS'
           scan_failed=0
           for i in "${!pids[@]}"; do
             if ! wait "${pids[$i]}"; then
