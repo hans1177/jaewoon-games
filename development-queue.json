@@ -1646,10 +1646,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T17:22:07.020Z",
+      "updatedAt": "2026-09-26T17:23:23.144Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1658,8 +1658,8 @@
       "robloxSourceCommit": "90e45859dac8258dd3e3c0ab429fa7d842df9f3a",
       "robloxSourceBootstrapPassedAt": "2026-09-26T17:22:07.020Z",
       "robloxSourceBootstrapFailedAt": null,
-      "robloxSourceCandidateBranch": null,
-      "robloxSourceCandidateReadyAt": null,
+      "robloxSourceCandidateBranch": "development/roblox-village-dungeons-36255677517-1",
+      "robloxSourceCandidateReadyAt": "2026-09-26T17:23:23.144Z",
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
@@ -1709,7 +1709,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-promotion-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -8291,7 +8291,7 @@
       "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:16:19.123Z"
     }
   ],
-  "updatedAt": "2026-09-26T17:23:17.836Z",
+  "updatedAt": "2026-09-26T17:23:23.144Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
