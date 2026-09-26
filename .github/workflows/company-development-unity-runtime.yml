@@ -32,13 +32,13 @@ permissions:
   actions: write
 
 concurrency:
-  group: unity-native-exact-${{ inputs.game_id || github.run_id }}
+  group: unity-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
   cancel-in-progress: false
 
 jobs:
   prepare:
     name: prepare selected-platform Unity queue
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 12
     outputs:
       run: ${{ steps.queue.outputs.run }}
