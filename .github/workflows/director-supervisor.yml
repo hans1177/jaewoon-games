@@ -62,8 +62,7 @@ jobs:
                 --header 'X-GitHub-Api-Version: 2022-11-28' \
                 "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?${query}" || true)"
               if [ "$code" = '200' ]; then
-                cat "$body" >> /tmp/director-run-drain.ndjson
-                printf '\n' >> /tmp/director-run-drain.ndjson
+                node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(JSON.stringify(j)+'\\n')" "$body" >> /tmp/director-run-drain.ndjson
                 rm -f "$body"
                 return 0
               fi
