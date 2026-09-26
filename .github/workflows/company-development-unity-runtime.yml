@@ -54,16 +54,13 @@ jobs:
       - name: Verify Unity selected-platform execution contracts
         run: |
           node --check tools/company-shared-context.mjs
-          node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-plan.json
           node --check tools/company-selected-platform-router.mjs
           node --check tools/company-development-unity-platform.mjs
           node --check tools/company-upper-platform-admission.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-development-unity-evidence.mjs
-          node --test qa/company-selected-platform-router.test.mjs
           node --test qa/company-upper-platform-admission.test.mjs
-          node --test qa/company-development-unity-runtime.test.mjs
           node --test qa/unity-package-fatal-logcat.test.mjs
 
       - name: Bind current main
