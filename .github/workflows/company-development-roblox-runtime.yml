@@ -36,7 +36,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-native-exact-${{ inputs.game_id || github.run_id }}
+  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
   cancel-in-progress: false
 
 env:
@@ -55,7 +55,7 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count || '0' }}
