@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "                var x = column * frameWidth;",
+      "replace": "                var x = column * frameWidth;\n                var y = row * frameHeight;\n                var frameCount = manifest.frames;\n                var frames = new Sprite[frameCount];"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
