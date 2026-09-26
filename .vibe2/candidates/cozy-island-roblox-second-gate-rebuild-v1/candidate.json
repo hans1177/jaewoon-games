@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "local function render()\n  local idx=p:GetAttribute(\"NextBaseIndex\")or 1\n  local b=C.Bases[idx]\n  local target=b and (b.Name..\" · \"..(b.Enemy or\"수비대\")..\" · 전력 \"..b.Strength)or\"5개 거점 정복 완료\"\n  resources.Text=string.format(\"나무 %d · 식량 %d · 코인 %d\n병사 %d · 병영 Lv.%d · 점령 %d/5\",\n    p:GetAttribute(\"Wood\")or 0,p:GetAttribute(\"Food\")or 0,p:GetAttribute(\"Coins\")or 0,\n    p:GetAttribute(\"Troops\")or 0,p:GetAttribute(\"BarracksLevel\")or 1,p:GetAttribute(\"CapturedBases\")or 0)\n\n  local inBattle=p:GetAttribute(\"InBattle\")==true\n  local activity=p:GetAttribute(\"LastActivity\")or\"나무/작물에 가까이 가서 직접 채집\"\n  objective.Text=inBattle and (\"⚔ \"..target..\" · 전투 \"..(p:GetAttribute(\"BattleProgress\")or 0)..\"%\") or (activity..\"  |  다음: \"..target)\n\n  if inBattle then\n    if bgm.IsPlaying then bgm:Stop()end\n    if not battleBgm.IsPlaying then battleBgm:Play()end\n  else\n    if battleBgm.IsPlaying then battleBgm:Stop()end\n    if not bgm.IsPlaying then bgm:Play()end\n  end\n\n  local captured=p:GetAttribute(\"CapturedBases\")or 0\n  if captured>lastCaptured then victorySfx.TimePosition=0;victorySfx:Play()end\n  lastCaptured=captured\nend\n\nfor _,k in ipairs({\"Wood\",\"Food\",\"Coins\",\"Iron\",\"Horses\",\"Stone\",\"Gold\",\"Sulfur\",\"Residents\",\"WoodWorkers\",\"Farmers\",\"BarracksLevel\",\"Troops\",\"CapturedBases\",\"CapturedIslands\",\"NextBaseIndex\",\"BattleProgress\",\"LastActivity\",\"InBattle\"})do\n  p:GetAttributeChangedSignal(k):Connect(render)\nend\n\np:GetAttributeChangedSignal(\"FeedbackEvent\"):Co"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
