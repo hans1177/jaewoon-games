@@ -1,5 +1,5 @@
 {
-  "version": 87,
+  "version": 88,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1364,7 +1364,7 @@
       "VIBE2_24H_LEARNING_IDLE_DEFERRED=NO"
     ],
     "reserveConcurrencyKey": "vibe2-control-state-{execution_lane}",
-    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
     "gamePrimaryBoundaryMustRemain": 256,
     "productionMustNotWaitForLearningReserve": true,
     "directWorkerControlWriteForbidden": true,
@@ -1657,6 +1657,32 @@
       "zeroOutputTimeoutsObserved": true,
       "sharedContextMissingFalseEvidenceObserved": true
     },
+    "authorityChange": "NONE"
+  },
+  "vibe24hStaleSingletonEpochRelease": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibe24hStaleSingletonEpochRelease20260926",
+    "workflow": ".github/workflows/vibe2-24h-runner.yml",
+    "previousEpoch": "vibe2-24h-cycle-singleton-v2",
+    "currentEpoch": "vibe2-24h-cycle-singleton-v3",
+    "observedEvidence": {
+      "holdingRunId": 36231868218,
+      "holdingRunNumber": 4554,
+      "holdingJobId": 108376800973,
+      "holdingStage": "Generate isolated candidate from pinned main contract",
+      "joblessPendingCancelledRunIds": [
+        36231885689,
+        36232156226,
+        36232191628,
+        36232791575
+      ],
+      "nextPatchedPendingRunId": 36233623707
+    },
+    "expectedLiveEvidence": [
+      "V3_RUN_CREATES_PLAN_JOB",
+      "LATEST_PATCHED_MAIN_CONTRACT_REACHES_RESERVE_AND_WORKER",
+      "NO_REPEATED_JOBLESS_PENDING_REPLACEMENT_WITHIN_V3_EPOCH"
+    ],
     "authorityChange": "NONE"
   }
 }

@@ -120,7 +120,7 @@ env:
 # Keep one continuous scheduler chain. v2 releases stale pre-lane-isolation concurrency
 # while still collapsing wake signals into one pending cycle per current scheduler epoch.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v2
+  group: vibe2-24h-cycle-singleton-v3
   cancel-in-progress: false
 
 jobs:
