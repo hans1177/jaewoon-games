@@ -97,25 +97,27 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
 });
 
-test('game control jobs stay on ARM while heavy execution stays on ubuntu-latest',()=>{
+test('lightweight reserve uses slim while fan-in stays on ARM and heavy execution stays on ubuntu-latest',()=>{
   const pool=runtime.continuous?.gamePrimaryControlRunnerPool||{};
   const architecturePool=architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool||{};
 
-  assert.equal(pool.reserve,'ubuntu-24.04-arm');
+  assert.equal(pool.reserve,'ubuntu-slim');
   assert.equal(pool.fanIn,'ubuntu-24.04-arm');
   assert.equal(pool.worker,'ubuntu-latest');
   assert.equal(pool.modelCache,'ubuntu-latest');
+  assert.equal(pool.lightweightReserveSeparatedFromArmFanIn,true);
   assert.equal(pool.queueReservationAndStateFanInOnly,true);
   assert.equal(pool.heavyGameExecutionUnchanged,true);
 
-  assert.equal(architecturePool.reserve,'ubuntu-24.04-arm');
+  assert.equal(architecturePool.reserve,'ubuntu-slim');
   assert.equal(architecturePool.fanIn,'ubuntu-24.04-arm');
   assert.equal(architecturePool.worker,'ubuntu-latest');
   assert.equal(architecturePool.modelCache,'ubuntu-latest');
+  assert.equal(architecturePool.lightweightReserveSeparatedFromArmFanIn,true);
   assert.equal(architecturePool.queueReservationAndStateFanInOnly,true);
   assert.equal(architecturePool.heavyGameExecutionUnchanged,true);
 
-  assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: ubuntu-24\.04-arm/);
+  assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: ubuntu-slim/);
   assert.match(core,/\n  fan_in:[\s\S]{0,260}?\n    runs-on: ubuntu-24\.04-arm/);
   assert.match(core,/\n  model_cache:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
   assert.match(core,/\n  worker:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
