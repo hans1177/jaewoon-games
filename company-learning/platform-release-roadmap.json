@@ -1,5 +1,5 @@
 {
-  "version": 409,
+  "version": 410,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8093,6 +8093,30 @@
       "ownerReservedDecisionCategoriesUnchanged": true,
       "securityReleasePermissionAndSaveBreakingGatesUnchanged": true,
       "authorityExpansion": false
+    },
+    "unityWebBootstrapExplorationRepair20260926": {
+      "id": "UNITY_WEB_BOOTSTRAP_EXPLORATION_REPAIR_2026-09-26",
+      "summary": "Unity Web base implementation tasks with explicit source-root bootstrap authority must be explorable before the Unity project root exists, using the same narrow two-file bootstrap contract already emitted by the continuous runner.",
+      "liveFailureEvidence": [
+        "RUN_36225893107",
+        "JOB_108360981334",
+        "ERROR_EXPLORATION_SOURCE_ROOT_MISSING_UNITY_GAMES_COZY_ISLAND"
+      ],
+      "directResponsibleFunctions": [
+        "tools/vibe2-continuous-runner.mjs::unityWebSourceRootBootstrapAllowed",
+        "tools/vibe2-exploration-worker.mjs::sourceRootBootstrapAllowed"
+      ],
+      "requiredEvidence": [
+        "source-root-bootstrap-required",
+        "unity-web-source-root-bootstrap-required"
+      ],
+      "requiredResponsibleFiles": [
+        "Assets/Scripts/GameCore.cs",
+        "Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "ordinaryMissingUnitySourceStillBlocked": true,
+      "bootstrapAuthorityExpansion": false,
+      "itemContentMutation": false
     },
     "fanInPinnedContractOverlayRepair20260926": {
       "id": "VIBE2_FAN_IN_PINNED_CONTRACT_OVERLAY_REPAIR_2026-09-26",
