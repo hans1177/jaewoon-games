@@ -88,7 +88,8 @@
         "CHARACTER_ARC",
         "CAMERA_LANGUAGE",
         "UNITY_RUNTIME",
-        "AI"
+        "AI",
+        "STORYTELLING"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -228,7 +229,8 @@
         "CHARACTER_ARC",
         "CAMERA_LANGUAGE",
         "UNITY_RUNTIME",
-        "AI"
+        "AI",
+        "STORYTELLING"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -1878,16 +1880,6 @@
       ]
     },
     {
-      "id": "gap-unity_runtime-l5",
-      "kind": "UNITY_NATIVE_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UNITY_RUNTIME"
-      ]
-    },
-    {
       "id": "gap-asset_adaptation-l6",
       "kind": "ASSET_ADAPTATION_DRILL",
       "priority": "low",
@@ -1898,13 +1890,13 @@
       ]
     },
     {
-      "id": "gap-vfx-l6",
-      "kind": "VFX_READABILITY_DRILL",
+      "id": "gap-unity_runtime-l6",
+      "kind": "UNITY_NATIVE_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "VFX"
+        "UNITY_RUNTIME"
       ]
     },
     {
@@ -1915,6 +1907,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "VISUAL_IDENTITY"
+      ]
+    },
+    {
+      "id": "gap-vfx-l7",
+      "kind": "VFX_READABILITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VFX"
       ]
     },
     {
@@ -1948,16 +1950,6 @@
       ]
     },
     {
-      "id": "gap-ui_state-l9",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UI_STATE"
-      ]
-    },
-    {
       "id": "gap-ai-l10",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1968,13 +1960,13 @@
       ]
     },
     {
-      "id": "gap-mobile_input-l11",
+      "id": "gap-ui_state-l10",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "MOBILE_INPUT"
+        "UI_STATE"
       ]
     },
     {
@@ -1995,6 +1987,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ECONOMY"
+      ]
+    },
+    {
+      "id": "gap-mobile_input-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT"
       ]
     },
     {
@@ -2058,7 +2060,7 @@
       ]
     },
     {
-      "id": "gap-debugging-l19",
+      "id": "gap-debugging-l20",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -2068,7 +2070,7 @@
       ]
     },
     {
-      "id": "gap-state_machine-l19",
+      "id": "gap-state_machine-l20",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
