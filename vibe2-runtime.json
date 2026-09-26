@@ -1,5 +1,5 @@
 {
-  "version": 33,
+  "version": 34,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -389,7 +389,11 @@
         "queuedWorkItemLimit": null,
         "practiceGenerationAlwaysOn": true,
         "productionPresenceDoesNotSuppressPracticeGeneration": true,
-        "priorityMayYieldToGamePrimaryWithoutTerminatingLearning": true
+        "priorityMayYieldToGamePrimaryWithoutTerminatingLearning": true,
+        "liveRunnerPressureGateImplemented": true,
+        "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
+        "pressureObservationFailureDefersLearning": true,
+        "productionMayNotWaitForLearningReserve": true
       },
       "RELEASE_WAIT": {
         "consumesGamePrimarySlot": false,
@@ -551,7 +555,15 @@
       "workerDirectControlWrite": false,
       "immediateDispatchResumesWhenPressureClears": true
     },
-    "cohortFanInPressureIngressEnabled": true
+    "cohortFanInPressureIngressEnabled": true,
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
+    "reserveConcurrency": {
+      "mode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
+      "crossLaneGlobalReserveLock": false,
+      "sameLaneReserveSerialization": true,
+      "sharedQueueWriteRetryAttempts": 5,
+      "gamePrimaryExternalBoundary": 256
+    }
   },
   "adaptiveBackpressure": {
     "enabled": true,
