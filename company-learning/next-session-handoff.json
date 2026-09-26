@@ -5,10 +5,13 @@
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "repository": "hans1177/jaewoon-games",
   "branch": "main",
-  "observedMainHead": "3443b667d3ea131e8c1796abf5578022d6d876ac",
+  "observedMainHead": "30b31877ce6078bbea764d6a567c3d96923f7e33",
   "objective": "NORMALIZE_THE_LARGEST_DEVELOPMENT_BOTTLENECK_FIRST_THEN_CONTINUE_THE_AUTONOMOUS_OPERATING_PLAN",
   "sourceOfTruth": [
     "company-learning/platform-release-roadmap.json",
+    "company-learning/company-log-map.json",
+    "company-learning/company-architecture-map.json",
+    "company-learning/security-immune-system.json",
     "company-learning/autonomous-development-operating-plan.json",
     "vibe2-runtime.json",
     ".vibe2/queue.json",
@@ -16,10 +19,13 @@
   ],
   "firstActionOnNextSession": [
     "FETCH_FRESH_MAIN_HEAD_AND_LATEST_WORKFLOW_STATUS",
+    "LOAD_SHARED_CONTEXT_IN_CANONICAL_ORDER_ROADMAP_LOG_ARCHITECTURE_SECURITY",
     "DO_NOT_ASSUME_THIS_HANDOFF_SNAPSHOT_IS_STILL_CURRENT",
+    "VERIFY_WORKER_CONTEXT_SYNC_BEFORE_MUTATION",
     "IDENTIFY_THE_SINGLE_LARGEST_ACTIVE_DEVELOPMENT_BOTTLENECK_FROM_LIVE_EVIDENCE",
     "FIX_THAT_BOTTLENECK_BEFORE_LOWER_PRIORITY_FEATURE_WORK",
-    "RUN_RELEVANT_QA_AND_RECHECK_RUNTIME_STATE"
+    "RUN_RELEVANT_QA_AND_RECHECK_RUNTIME_STATE",
+    "REVALIDATE_SHARED_CONTEXT_AFTER_WORK_BEFORE_COMPLETION"
   ],
   "priorityOrder": [
     "P0_CRITICAL_PRODUCTION_AND_PLATFORM_INCIDENT",
@@ -44,94 +50,74 @@
     "AI_MUST_NOT_HAVE_STAGE_PASS_FAIL_AUTHORITY"
   ],
   "activeArchitecture": {
-    "adaptiveGlobalCeiling": 30,
-    "adaptiveSteps": [
-      4,
-      8,
-      12,
-      16,
-      20,
-      24,
-      30
-    ],
-    "scheduling": "SOFT_RESERVATION_PLUS_WORK_STEALING",
-    "systemSteward": "RESIDENT_DETERMINISTIC_WATCHDOG_PLUS_BORROWABLE_REPAIR_SLOT",
-    "releasedGames": "ONE_LOGICAL_PERSISTENT_CARETAKER_PER_ELIGIBLE_GAME",
-    "ownerFocusedGames": "ONE_LOGICAL_PERSISTENT_CARETAKER_PER_FOCUSED_GAME",
+    "currentPhase": "UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_UPPER_PLATFORM_DEVELOPMENT",
+    "unityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
+    "unityWebCanonicalSource": "unity-games/<gameId>/",
+    "unityWebOutputRoot": "web-games/<gameId>/",
+    "unityWebPassSignal": "UPPER_PLATFORM_DEVELOPMENT_READY",
+    "upperPlatformPassAction": "ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT",
+    "gamePrimaryAdaptiveMinimum": 30,
+    "gamePrimaryInternalCap": null,
+    "externalProviderBoundary": 256,
+    "scheduling": "ATOMIC_GAME_PRIMARY_WITH_AUXILIARY_RECOVERY_CONTROL_AND_LEARNING_LANES",
+    "controlFast": "MUTATING_RECONCILE_ONLY_ON_ACTUAL_STATE_DIVERGENCE",
+    "recoveryFast": "EVENT_DRIVEN_NON_GAME_PRIMARY_SLOT",
+    "learningIdle": "PRODUCTION_PREEMPTS_LEARNING",
+    "systemSteward": "DETERMINISTIC_NONBLOCKING_REPAIR",
     "ownerWebEdits": "PROTECT_AND_PROPAGATE_SEMANTIC_INTENT_NOT_LITERAL_WEB_CODE",
-    "designProviderContinuity": "GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK",
-    "learningProvider": "VIBE_LOCAL_OLLAMA_WITH_NON_MODEL_VERIFIED_FALLBACK",
-    "gateAuthority": "DETERMINISTIC_EVIDENCE_ONLY"
+    "gateAuthority": "DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES",
+    "primaryAiRole": "NON_BLOCKING_ASSISTANT_AND_COLLABORATOR"
   },
   "currentObservedWorkflowSnapshot": {
-    "capturedAt": "2026-09-19T13:36:00+09:00",
-    "note": "Fresh-check on next session before acting.",
-    "companyDevelopmentConfirmedRuntime": [
+    "capturedAt": "2026-09-26",
+    "note": "This handoff does not freeze live workflow state. Refresh GitHub Actions and runtime/control branches before acting.",
+    "liveWorkflowStateRequiredBeforeAction": true,
+    "recentMainEvidence": [
       {
-        "runId": 35421739087,
-        "status": "queued",
-        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
+        "commit": "5270685bb5f46ee172d5ef3f2cf433701d489467",
+        "result": "DEVELOPMENT_QUEUE_POLICY_GUARD_ALIGNED_WITH_UNITY_WEB_ADMISSION"
       },
       {
-        "runId": 35421673333,
-        "status": "in_progress",
-        "headSha": "7e4854209ea074ca1ff69da20cef8ad8a8380c01"
-      }
-    ],
-    "companySeedDesignOnlyRuntime": [
-      {
-        "runId": 35421726225,
-        "status": "queued",
-        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
-      }
-    ],
-    "developmentQueueReconcile": [
-      {
-        "runId": 35421729632,
-        "status": "in_progress",
-        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
-      }
-    ],
-    "vibe224hRunner": [
-      {
-        "runId": 35421725285,
-        "status": "pending",
-        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
-      }
-    ],
-    "latestKnownQaSignals": [
-      {
-        "workflow": "Vibe2 Parallelism Contract QA",
-        "runId": 35421628614,
-        "status": "success",
-        "headSha": "7e4854209ea074ca1ff69da20cef8ad8a8380c01"
+        "commit": "cd5044ec1e90e1cb1aa149e58a49201cbab5b95c",
+        "result": "DEVELOPMENT_QUEUE_RECONCILE_CHECKOUT_BOUNDED"
       },
       {
-        "workflow": "Vibe QA",
-        "runId": 35421696511,
-        "status": "failure",
-        "headSha": "d0adce279174e64dcd739062f8522fe00d201ce8"
+        "commit": "f27dcea2901f27d9755a0827163c42857b4b0a14",
+        "result": "REMOTE_VIBE_WORK_LOCK_CAS_RACE_RECOVERY_DISPERSED_AND_HARDENED"
+      },
+      {
+        "commit": "b52496f64cd8c9fac35e8dacdf33f987821ee55c",
+        "result": "RECONCILE_STATUS_FEEDBACK_CHANGED_TO_QUEUE_MUTATION_DRIVEN"
+      },
+      {
+        "commit": "56d93004ad48712600faefbdfcc88d5195a75ead",
+        "result": "OTHER_AI_DIRECTIVE_RESYNCED_TO_CURRENT_VIBE_POLICY"
+      },
+      {
+        "commit": "30b31877ce6078bbea764d6a567c3d96923f7e33",
+        "result": "OTHER_AI_DIRECTIVE_QA_UPDATED_TO_CURRENT_POLICY_SEMANTICS"
       }
     ]
   },
   "knownRecentDevelopmentBottleneckContext": [
-    "CONTROL_BRANCH_PREVIOUSLY_LAGGED_MAIN_30_LANE_POLICY_AND_SYSTEM_STEWARD_CHANGES",
-    "VIBE2_QUEUE_PREVIOUSLY_CONTAINED_RETRY_EXHAUSTED_FAILED_TASKS_AND_STALE_BACKPRESSURE",
-    "DESIGN_AND_DEVELOPMENT_RUNTIME_MUST_BE_CHECKED_LIVE_BECAUSE_MULTIPLE_WORKFLOWS_ARE_NOW_ACTIVE",
-    "OLDER_TESTS_AND_RUNTIME_STATE_PREVIOUSLY_EXPECTED_20_LANES_OR_GEMINI_ONLY_AND_HAVE_BEEN_MIGRATING",
-    "DO_NOT_TREAT_A_WAITING_MODEL_OR_STUDIO_RUNNER_AS_A_PORTFOLIO_WIDE_DEVELOPMENT_FAILURE"
+    "LATEST_CENTRAL_SOURCE_GENERATION_EVIDENCE_REMAINS_THE_LIVE_CAUSAL_REFERENCE_NOT_OLD_HANDOFF_RUNS",
+    "ZERO_OUTPUT_TIMEOUT_RECOVERY_USES_EXISTING_WORKER_PINNED_FOCUSED_REPLACE_PATH_WITH_90000MS_384_TOKEN_8192_CONTEXT_BUDGET",
+    "FAILED_SOURCE_WORKER_PATH_MUST_RUN_AFTER_WORK_SHARED_CONTEXT_REVALIDATION_BEFORE_EXIT",
+    "GAME_PRIMARY_ADAPTIVE_MINIMUM_IS_30_WITH_EXTERNAL_PROVIDER_BOUNDARY_256",
+    "REMOTE_WORK_LOCK_CAS_RACES_USE_DISPERSED_RETRY_AND_MUST_NOT_REINTRODUCE_THREE_ATTEMPT_HERD_BEHAVIOR",
+    "QUEUE_RECONCILE_STATUS_SYNC_IS_CHANGE_DRIVEN; NO_QUEUE_CHANGE_MUST_STOP_FEEDBACK",
+    "UNITY_WEB_FLOOR_IS_REQUIRED_BEFORE_NEW_UPPER_PLATFORM_ENTRY_WHEN_APPLICABLE; IT_IS_NOT_A_SEPARATE_LEGACY_WEB_GAME_POLICY"
   ],
   "nextImplementationTargetsAfterDevelopmentNormalization": [
-    "COMPLETE_CONTROL_BRANCH_30_LANE_STATE_MIGRATION",
-    "COMPLETE_DEAD_TASK_REGENERATION_AND_QUEUE_SELF_REFILL",
-    "REMOVE_ROBLOX_STUDIO_GAME_STUDY_EXECUTION_PATH",
-    "CONNECT_REAL_DESIGN_AUTHORING_FAILOVER_TO_VIBE_LOCAL",
-    "COMPLETE_PER_GAME_PERSISTENT_CARETAKER_SCHEDULER",
-    "COMPLETE_OWNER_WEB_EDIT_DETECTION_AND_SEMANTIC_PROPAGATION",
-    "COMPLETE_MUTATION_AND_FAILURE_TO_REGRESSION_BINDINGS",
-    "GREEN_ALL_RELEVANT_CENTRAL_AND_VIBE_QA"
+    "VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE",
+    "VERIFY_CURRENT_V3_SCHEDULER_EPOCH_DRAINS_STALE_PREPATCH_CHAIN_WITHOUT_NEW_V2_WAKE_SIGNALS",
+    "OBSERVE_NATURAL_LIVE_LEARNING_IDLE_RUN_WHEN_GAME_PRIMARY_QUEUE_IS_EMPTY",
+    "MEASURE_RECOVERY_FAST_EVENT_TO_REDISPATCH_LATENCY_IN_LIVE_RUNS",
+    "MEASURE_CONTROL_FAST_LATENCY_AND_RUNNER_PRESSURE",
+    "MEASURE_POST_RELIEF_RUNNER_AND_MODEL_CACHE_STARTUP_PRESSURE",
+    "KEEP_RECONCILE_STATUS_FEEDBACK_CHANGE_DRIVEN_AND_REVERIFY_IF_QUEUE_MUTATION_PATH_CHANGES"
   ],
-  "executionInstruction": "ACT_ON_THE_REPOSITORY_DIRECTLY_WHEN_THE_OWNER_SAYS_CONTINUE_OR_PROCEED. DO_NOT_ONLY_DESCRIBE A PLAN. MAKE_SCOPED_CHANGES, RUN_QA, AND REPORT_VERIFIED_STATE.",
+  "executionInstruction": "ACT_ON_THE_REPOSITORY_DIRECTLY_WHEN_THE_OWNER_SAYS_CONTINUE_OR_PROCEED. LOAD_ROADMAP_LOG_ARCHITECTURE_SECURITY_FIRST, PRESERVE CENTRAL AUTHORITY, MAKE_SCOPED DIRECT RESPONSIBLE-SYSTEM CHANGES, RUN RELEVANT QA, REVALIDATE SHARED CONTEXT AFTER WORK, AND REPORT ONLY VERIFIED STATE.",
   "pendingRobloxHomepageThumbnailContinuation": {
     "status": "DOCUMENTED_ONLY_NOT_APPLIED",
     "ownerInstruction": "CONTINUE_NEXT_SESSION",
@@ -232,5 +218,36 @@
       "note": "NO_COMPLETED_REPOSITORY_THUMBNAIL_APPLICATION_WAS_CONFIRMED_FROM_THIS_SESSION; DO_NOT_ASSUME_THIS_BRANCH_IS_AUTHORITATIVE",
       "action": "START_FROM_FRESH_MAIN_AND_CHERRY_PICK_NOTHING_UNLESS_DIFF_IS_REVIEWED"
     }
+  },
+  "centralDocumentSnapshot": {
+    "capturedAt": "2026-09-26",
+    "snapshotSemantics": "OBSERVED_BEFORE_THIS_HANDOFF_WRITE_ALWAYS_REFRESH_LIVE_MAIN_BEFORE_WORK",
+    "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+    "loadOrder": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "documents": {
+      "roadmap": {
+        "version": 414,
+        "blobSha": "1ac083288aa5839fbb769d17bd1cd2abbdd4b4f9"
+      },
+      "logMap": {
+        "version": 89,
+        "blobSha": "58b8cadb3b22d9c35e7cc52ac3c537ee4fd6a267"
+      },
+      "architecture": {
+        "version": 223,
+        "blobSha": "fa9dc1cba8b09dc318e0b457dc69cf4c33546961"
+      },
+      "security": {
+        "version": 59,
+        "blobSha": "03ff2774f8f6e231864935cc547124baad7b42de"
+      }
+    },
+    "runtimeStateMayCreatePolicy": false,
+    "postCentralDocumentWriteSharedContextResyncRequired": true
   }
 }
