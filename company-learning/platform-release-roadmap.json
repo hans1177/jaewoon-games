@@ -1,5 +1,5 @@
 {
-  "version": 416,
+  "version": 417,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -1516,16 +1516,11 @@
     "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
     "stages": [
       "MINIMUM_DESIGN_CONTRACT_READY",
-      "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
-      "UNITY_WEBGL_BUILD",
-      "UNITY_WEB_ACTUAL_BROWSER_PLAY",
-      "UNITY_WEB_INDEPENDENT_QA",
-      "UNITY_WEB_REGRESSION",
-      "UPPER_PLATFORM_DEVELOPMENT_READY",
-      "ROBLOX_UNITY_NATIVE_SOURCE_BIND",
-      "TARGET_PLATFORM_RUNTIME",
-      "TARGET_PLATFORM_INDEPENDENT_QA",
-      "TARGET_PLATFORM_REGRESSION",
+      "PARALLEL_FAN_OUT_UNITY_WEB_ROBLOX_UNITY",
+      "LANE_LOCAL_SOURCE_BUILD",
+      "LANE_LOCAL_RUNTIME",
+      "LANE_LOCAL_INDEPENDENT_QA",
+      "LANE_LOCAL_REGRESSION",
       "INTERNAL_PLATFORM_RELEASE",
       "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "PUBLIC_RELEASE_READY",
@@ -8329,7 +8324,7 @@
       "executionBatchBoundary": 256,
       "externalProviderCapacityOnlyHeavyExecutionBoundary": true,
       "qaSecurityReleaseGateWeakening": false,
-      "implementationState": "DOCUMENTED_BEFORE_CODE"
+      "implementationState": "CODE_UPDATED_PENDING_QA"
     }
   },
   "vibeExecutionLaneContract": {
