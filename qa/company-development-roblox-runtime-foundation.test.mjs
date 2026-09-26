@@ -464,6 +464,10 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.equal(parallel.runtimeQaMayQueueOnlyWhenExternalProviderCapacityIsExhausted,true);
   assert.equal(parallel.serverBootEvidenceReuse.reuseOnlyWhenExactCandidateUnchanged,true);
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.doesNotMatch(workflow,/candidates\.slice\(0,4\)/);
+  assert.match(workflow,/Promise\.all\(candidates\.map\(async item=>/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT=/);
 });
 
 

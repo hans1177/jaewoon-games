@@ -149,8 +149,7 @@ jobs:
             }
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           });
-          const probes=[];
-          for(const item of candidates.slice(0,4)){
+          const probes=await Promise.all(candidates.map(async item=>{
             const c=item.robloxRuntimeCandidateEvidence;
             const result=await probeRobloxOpenCloudEngine({
               universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
@@ -158,9 +157,10 @@ jobs:
               expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
             });
             const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result};
-            probes.push(probe);
             console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
-          }
+            return probe;
+          }));
+          console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT='+probes.length);
           fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json',JSON.stringify(probes,null,2)+'\n');
           NODE
 
