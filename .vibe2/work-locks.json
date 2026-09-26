@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-10o6862",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-roblox-second-gate-rebuild-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau"
+      ],
+      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
+      "acquiredAt": "2026-09-26T10:15:24.898Z",
+      "expiresAt": "2026-09-26T11:00:24.898Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-roblox-second-gate-rebuild-v1"
+      ]
+    }
+  ]
 }
