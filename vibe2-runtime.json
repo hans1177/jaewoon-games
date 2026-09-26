@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 39,
+      "runtime": 40,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -63,7 +63,8 @@
     "sharedContextRequired": [
       "company-learning/platform-release-roadmap.json",
       "company-learning/company-log-map.json",
-      "company-learning/company-architecture-map.json"
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
     ],
     "systemWorkReviewLoop": [
       "AUTONOMOUS_WORK_CONTINUES_FROM_CENTRAL_CONTRACT",
@@ -560,7 +561,7 @@
       "immediateDispatchResumesWhenPressureClears": true
     },
     "cohortFanInPressureIngressEnabled": true,
-    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v4",
     "reserveConcurrency": {
       "mode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
@@ -637,7 +638,8 @@
     "missingDesignIntake": "tools/company-all-games-design-reset.mjs --auto-missing-design-intake",
     "seedDesignRuntime": ".github/workflows/company-seed-design-runtime.yml",
     "companyRuntimeDesignEvidence": "company-runtime:design",
-    "companyRuntimeSeedState": "company-runtime:game-seed-state.json"
+    "companyRuntimeSeedState": "company-runtime:game-seed-state.json",
+    "securityPolicy": "company-learning/security-immune-system.json"
   },
   "workers": {
     "exploration": {
