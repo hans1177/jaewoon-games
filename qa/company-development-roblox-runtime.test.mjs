@@ -261,7 +261,7 @@ test('Roblox source workflow redispatches against fresh main when reconciliation
 test('Roblox source workflow keeps compiled candidates pending when Actions cannot create PRs',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/Attempt validated Roblox source promotion through PR[\s\S]*continue-on-error: true/);
-  assert.ok(workflow.includes("failure=!generated?'source-generation-failed':!promoted?'source-promotion-pending':null"));
+  assert.ok(workflow.includes("failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null"));
   assert.ok(workflow.includes("routingBlockers:['roblox-source-promotion-pending']"));
   assert.ok(workflow.includes("item.robloxSourceCandidateReadyAt"));
   assert.ok(workflow.includes("item.robloxSourceCandidateBranch"));
@@ -556,8 +556,8 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
     const start=workflow.indexOf(`  ${job}:\n`);
     assert.ok(start>=0,job+' missing');
-    const next=workflow.indexOf('\n  ',start+3);
-    const block=workflow.slice(start,next<0?workflow.length:next);
+    const nextJob=workflow.indexOf('\n  ',start+`  ${job}:\n`.length);
+    const block=workflow.slice(start,nextJob<0?workflow.length:nextJob);
     assert.match(block,/runs-on: ubuntu-slim/);
   }
   const technicalWorkerStart=workflow.indexOf('  technical-worker:\n');
