@@ -48,9 +48,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-roblox_native-l4-g1",
+      "id": "mastery-roblox_native-l5-g1",
       "track": "ROBLOX_NATIVE",
-      "level": 4,
+      "level": 5,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -63,9 +63,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-unity_native-l2-g1",
+      "id": "mastery-unity_native-l3-g1",
       "track": "UNITY_NATIVE",
-      "level": 2,
+      "level": 3,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -138,9 +138,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-asset_production-l8-g1",
+      "id": "mastery-asset_production-l9-g1",
       "track": "ASSET_PRODUCTION",
-      "level": 8,
+      "level": 9,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -228,9 +228,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-camera_language-l1-g1",
+      "id": "mastery-camera_language-l2-g1",
       "track": "CAMERA_LANGUAGE",
-      "level": 1,
+      "level": 2,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -273,9 +273,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-character_arc-l3-g1",
+      "id": "mastery-character_arc-l4-g1",
       "track": "CHARACTER_ARC",
-      "level": 3,
+      "level": 4,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -633,46 +633,6 @@
       "authority": "practice-and-measurement-only"
     },
     {
-      "id": "phase4-generalization-capability_ctrace_1a453e3e34004eb1c376197d",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_1a453e3e34004eb1c376197d",
-      "sourceGameId": "bug-defense",
-      "targetEngine": "web",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-sp37bj",
-      "unseenProblemFingerprint": "phase4-unseen-c9tgi1",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
       "id": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -793,6 +753,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 10,
+  "phase4GeneralizationCases": 9,
   "authority": "practice-and-measurement-only"
 }

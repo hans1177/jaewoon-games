@@ -23,7 +23,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 20,
+  "phase4GeneralizationDrills": 18,
   "drills": [
     {
       "id": "review-fail_1agpu1k",
@@ -54,7 +54,8 @@
         "VISUAL_IDENTITY",
         "ROBLOX_STUDIO",
         "CAMERA_LANGUAGE",
-        "STORYTELLING"
+        "STORYTELLING",
+        "CONCEPT_DIRECTION"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -86,7 +87,8 @@
         "ROBLOX_STUDIO",
         "CHARACTER_ARC",
         "CAMERA_LANGUAGE",
-        "UNITY_RUNTIME"
+        "UNITY_RUNTIME",
+        "AI"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -192,7 +194,8 @@
         "VISUAL_IDENTITY",
         "ROBLOX_STUDIO",
         "CAMERA_LANGUAGE",
-        "STORYTELLING"
+        "STORYTELLING",
+        "CONCEPT_DIRECTION"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -224,7 +227,8 @@
         "ROBLOX_STUDIO",
         "CHARACTER_ARC",
         "CAMERA_LANGUAGE",
-        "UNITY_RUNTIME"
+        "UNITY_RUNTIME",
+        "AI"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -479,44 +483,6 @@
       "holdoutGameId": "amusement-tycoon",
       "targetEngine": "web",
       "unseenProblemFingerprint": "phase4-unseen-5ljgy4",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_1a453e3e34004eb1c376197d-control",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_1a453e3e34004eb1c376197d",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_1a453e3e34004eb1c376197d",
-      "phase4PairId": "phase4-pair-sp37bj",
-      "phase4Role": "CONTROL",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-c9tgi1",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_1a453e3e34004eb1c376197d-challenger",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_1a453e3e34004eb1c376197d",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_1a453e3e34004eb1c376197d",
-      "phase4PairId": "phase4-pair-sp37bj",
-      "phase4Role": "CHALLENGER",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-c9tgi1",
       "mayPromoteGeneralization": false
     },
     {
@@ -1492,16 +1458,6 @@
       ]
     },
     {
-      "id": "gap-camera_language-l1",
-      "kind": "CAMERA_LANGUAGE_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAMERA_LANGUAGE"
-      ]
-    },
-    {
       "id": "gap-character_behavior-l1",
       "kind": "CHARACTER_BEHAVIOR_DRILL",
       "priority": "low",
@@ -1882,23 +1838,23 @@
       ]
     },
     {
-      "id": "gap-character_arc-l3",
+      "id": "gap-camera_language-l2",
+      "kind": "CAMERA_LANGUAGE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "gap-character_arc-l4",
       "kind": "CHARACTER_ARC_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
         "CHARACTER_ARC"
-      ]
-    },
-    {
-      "id": "gap-unity_runtime-l4",
-      "kind": "UNITY_NATIVE_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UNITY_RUNTIME"
       ]
     },
     {
@@ -1919,6 +1875,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "SECURITY"
+      ]
+    },
+    {
+      "id": "gap-unity_runtime-l5",
+      "kind": "UNITY_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UNITY_RUNTIME"
       ]
     },
     {
@@ -1952,23 +1918,13 @@
       ]
     },
     {
-      "id": "gap-roblox_studio-l7",
+      "id": "gap-roblox_studio-l8",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
         "ROBLOX_STUDIO"
-      ]
-    },
-    {
-      "id": "gap-asset_production-l8",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ASSET_PRODUCTION"
       ]
     },
     {
@@ -1979,6 +1935,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "SAVE"
+      ]
+    },
+    {
+      "id": "gap-asset_production-l9",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_PRODUCTION"
       ]
     },
     {
