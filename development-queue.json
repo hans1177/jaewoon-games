@@ -1600,10 +1600,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T23:34:56.672Z",
+      "updatedAt": "2026-09-26T23:35:35.399Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1796,7 +1796,25 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "village-dungeons",
+        "platform": "ROBLOX",
+        "sourceRevision": "18c1b127b8ebfa0a41aa7810fabe4ad8bd07e56f",
+        "artifactIdentity": "sha256:d52eb7e74184445e981f70877f3424ac4911417ac4f50f936209d0027c6a58a1",
+        "artifactRunId": 36278382606,
+        "universeId": "10767957971",
+        "placeId": "122627666882942",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 4,
+        "workflowRunId": 36279900446,
+        "publishedAt": "2026-09-26T23:35:35.399Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -1826,11 +1844,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1988,7 +2006,7 @@
         "placeId": "122627666882942",
         "verified": true,
         "verifiedAt": "2026-09-25T07:35:22.625Z",
-        "lastVerifiedAt": "2026-09-25T07:35:22.625Z",
+        "lastVerifiedAt": "2026-09-26T23:35:35.399Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-canonical-publication-target",
         "dedicated": true,
@@ -2000,7 +2018,7 @@
       },
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
-      "robloxReleaseVersionNumber": 2,
+      "robloxReleaseVersionNumber": 4,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
@@ -2059,9 +2077,9 @@
         "independentQaPassed": false,
         "regressionPassed": false,
         "exactRevision": false,
-        "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "SINGLE_BUILD_OR_PACKAGE",
-        "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
+        "lastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+        "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
@@ -8299,7 +8317,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-26T23:34:56.672Z",
+  "updatedAt": "2026-09-26T23:35:35.399Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
