@@ -1,5 +1,5 @@
 {
-  "version": 439,
+  "version": 440,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8748,6 +8748,36 @@
       "distinctGamesRemainParallel": true,
       "matrixParallelismCapAdded": false,
       "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "robloxPlannerDuplicateContractQaRemoval20260927": {
+      "id": "ROBLOX_PLANNER_DUPLICATE_CONTRACT_QA_REMOVAL_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_CENTRALLY_DUPLICATED_CONTRACT_TESTS_FROM_PER_RUN_ROBLOX_PLANNERS_WHILE_PRESERVING_RESPONSIBILITY_LOCAL_TESTS",
+      "workflows": [
+        ".github/workflows/company-development-roblox-runtime.yml",
+        ".github/workflows/company-development-roblox-runtime-continuation.yml"
+      ],
+      "canonicalQaAuthority": ".github/workflows/company-central-policy-contract-qa.yml",
+      "removedFromRuntimeCriticalPath": [
+        "qa/company-shared-context.test.mjs",
+        "qa/company-development-roblox-runtime.test.mjs",
+        "qa/company-selected-platform-router.test.mjs",
+        "qa/company-development-roblox-runtime-continuation.test.mjs"
+      ],
+      "retainedResponsibilityLocalTests": [
+        "qa/company-development-roblox-source-reconcile.test.mjs",
+        "qa/company-development-roblox-package.test.mjs",
+        "qa/company-development-roblox-independent-promotion.test.mjs",
+        "qa/company-upper-platform-admission.test.mjs"
+      ],
+      "staticSyntaxChecksPreserved": true,
+      "sharedContextRuntimeCompilationPreserved": true,
+      "canonicalQaMustStillRunOnRelevantMainChanges": true,
+      "duplicateValidationForbidden": true,
+      "gameDispatchWaitsForDuplicateQa": false,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "independentGameParallelismPreserved": true
     }
   },
   "vibeExecutionLaneContract": {
