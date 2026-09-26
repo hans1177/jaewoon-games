@@ -1,8 +1,8 @@
 {
-  "version": 2,
+  "version": 3,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-09-20",
+  "recordedAt": "2026-09-26",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -230,6 +230,44 @@
         "raw trace authority remains provenance-only"
       ],
       "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_central_vibe_document_sync_20260926",
+      "date": "2026-09-26",
+      "gameId": "SYSTEM",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The non-authoritative AI execution guide and next-session handoff had drifted from the current central Vibe policy: legacy WEB_FIRST semantics remained, the handoff referenced stale main/workflow context, and the canonical four-document shared-context order was not explicit in the guide.",
+      "decision": "Keep platform-release-roadmap.json as the only policy authority. Synchronize the non-authoritative guide, its QA contract, and the durable handoff to the current roadmap/log/architecture/security context without adding execution authority or changing gameplay/release gates.",
+      "change": "Bound the guide to roadmap -> log map -> architecture map -> security load order; redefined legacy webFirst as a deprecated compatibility alias for the Unity Web development floor; bound UPPER_PLATFORM_DEVELOPMENT_READY to concurrent Roblox and Unity development; refreshed the handoff snapshot and current bottleneck context.",
+      "evidence": [
+        "roadmap:v414:1ac083288aa5839fbb769d17bd1cd2abbdd4b4f9",
+        "log-map:v89:58b8cadb3b22d9c35e7cc52ac3c537ee4fd6a267",
+        "architecture:v223:fa9dc1cba8b09dc318e0b457dc69cf4c33546961",
+        "security:v59:03ff2774f8f6e231864935cc547124baad7b42de",
+        "directive-sync-commit:56d93004ad48712600faefbdfcc88d5195a75ead",
+        "directive-qa-commit:30b31877ce6078bbea764d6a567c3d96923f7e33",
+        "handoff-sync-commit:35bf11f6a9bb1d574190e3a5f218ecaa5b98c2cd"
+      ],
+      "reusablePatterns": [
+        "ROADMAP_FIRST_FAIL_CLOSED",
+        "KEEP_NON_AUTHORITATIVE_GUIDES_AS_REFERENCES_NOT_POLICY",
+        "CANONICAL_FOUR_DOCUMENT_LOAD_ORDER_BEFORE_AND_AFTER_WORK",
+        "PRESERVE_COMPATIBILITY_KEYS_WHILE_REBINDING_THEIR_MEANING_TO_CURRENT_CANONICAL_POLICY",
+        "REFRESH_HANDOFF_LIVE_CONTEXT_INSTEAD_OF_TREATING_OLD_WORKFLOW_SNAPSHOTS_AS_CURRENT"
+      ],
+      "avoidPatterns": [
+        "LEGACY_WEB_FIRST_AS_INDEPENDENT_WEB_GAME_POLICY",
+        "STALE_HANDOFF_HEAD_AS_CURRENT_STATE",
+        "MANUAL_POLICY_SEMANTIC_DUPLICATION_IN_NON_AUTHORITATIVE_DOCS",
+        "RUNTIME_STATE_CREATING_POLICY"
+      ],
+      "qa": [
+        "all modified JSON documents reparsed successfully from main",
+        "directive requiredReads first four exactly match architecture.sharedContextLoadOrder",
+        "directive sharedContext load order exactly matches architecture.sharedContextLoadOrder",
+        "directive QA now asserts Unity Web floor and concurrent Roblox/Unity upper-platform semantics"
+      ],
+      "learningState": "TRACE_ONLY"
     }
   ]
 }
