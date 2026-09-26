@@ -184,6 +184,7 @@ jobs:
               target,
               secondaryOwnerFocus,
               existingSourceAssetRebind,
+              reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||''),
               foundationRepair:f0FoundationRepair,
               knownSourceRepairDebt,
             });
@@ -252,6 +253,7 @@ jobs:
           TARGET_SOURCE: ${{ matrix.target }}
           FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
           BUILD_UP_DIRECTIVE: /tmp/build-up-directive-${{ matrix.gameId }}.json
+          RECONCILIATION_SOURCE_TREE_SHA: ${{ matrix.reconciliationSourceTreeSha || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -269,6 +271,14 @@ jobs:
             echo 'ROBLOX_ARTBOOK_INPUT=NONBLOCKING_FALLBACK'
           fi
           node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const p=d?.content?.platformProfiles?.ROBLOX;if(!p||p.platform!=='ROBLOX')process.exit(2);console.log('ROBLOX_PLATFORM_PROFILE_INPUT=READY')" "$baseline"
+          if [ -n "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
+            live_tree="$(git rev-parse "origin/main:$TARGET_SOURCE" 2>/dev/null || true)"
+            if [ "$live_tree" != "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
+              echo "ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER=$GAME_ID:$RECONCILIATION_SOURCE_TREE_SHA:${live_tree:-MISSING}" >&2
+              exit 75
+            fi
+            echo "ROBLOX_SOURCE_TREE_IDENTITY_CURRENT=$GAME_ID:$live_tree"
+          fi
           branch="development/roblox-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           evidence="/tmp/roblox-source-bootstrap-${safe}.json"
           git config user.name 'jaewoon-roblox-development'
@@ -441,10 +451,21 @@ jobs:
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
             const reconciliationRevision=String(result.sourceRevision||'').trim();
-            if(reconciliationRevision!==currentMainRevision){
+            const reconciliationTreeSha=String(result.sourceTreeSha||'').trim();
+            let liveSourceTreeSha='';
+            if(reconciliationTreeSha&&result.sourcePath){
+              try{liveSourceTreeSha=execFileSync('git',['rev-parse',`origin/main:${result.sourcePath}`],{encoding:'utf8'}).trim();}catch{}
+            }
+            const sourceIdentityStale=reconciliationTreeSha
+              ?(!liveSourceTreeSha||liveSourceTreeSha!==reconciliationTreeSha)
+              :reconciliationRevision!==currentMainRevision;
+            if(sourceIdentityStale){
               staleReconciliationCount++;
-              console.log(`ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=${result.gameId}:${reconciliationRevision||'MISSING'}:${currentMainRevision}`);
+              console.log(`ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=${result.gameId}:tree=${reconciliationTreeSha||'MISSING'}->${liveSourceTreeSha||'MISSING'}:main=${reconciliationRevision||'MISSING'}->${currentMainRevision}`);
               continue;
+            }
+            if(reconciliationRevision!==currentMainRevision){
+              console.log(`ROBLOX_SOURCE_RECONCILIATION_UNRELATED_MAIN_ADVANCE_ACCEPTED=${result.gameId}:${reconciliationRevision}:${currentMainRevision}:tree=${reconciliationTreeSha}`);
             }
             if(result.pass===true){
               Object.assign(item,{
