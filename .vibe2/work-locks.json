@@ -3,44 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-11bdz4e",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:15:27.799Z",
-      "expiresAt": "2026-09-26T11:00:27.799Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1xfgevd",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/server/Game.server.luau",
-        "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:15:28.568Z",
-      "expiresAt": "2026-09-26T11:00:28.568Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
-      ]
-    },
-    {
       "id": "wl-oevbs7",
       "worker": "vibe2",
       "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
@@ -876,6 +838,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-1aliimt",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "be4c105308428533a9228de8eaa41ac11784fa05",
+      "acquiredAt": "2026-09-26T11:00:28.952Z",
+      "expiresAt": "2026-09-26T11:45:28.952Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
