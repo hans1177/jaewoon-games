@@ -454,3 +454,17 @@ test('shared Ollama model cache is opt-in for native development workers and pre
   assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheHitSkipsModelPull,true);
   assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheSaveFailureMayBlockDevelopment,false);
 });
+
+
+test('Unity Web actual play supplies boot proof without a duplicate browser smoke launch',()=>{
+  const web=read('.github/workflows/unity-web-first-stage-build.yml');
+  assert.match(web,/Prepare Unity Web browser runtime/);
+  assert.match(web,/UNITY_WEB_BROWSER_RUNTIME=READY/);
+  assert.doesNotMatch(web,/name: Browser boot smoke/);
+  assert.doesNotMatch(web,/boot-mobile\.png/);
+  assert.match(web,/UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED/);
+  assert.match(web,/UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE/);
+  assert.match(web,/play\.boot\?\.pass!==true/);
+  assert.match(web,/bootSmoke:'PASS'/);
+  assert.match(web,/Run Unity Web actual browser play/);
+});
