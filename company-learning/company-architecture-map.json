@@ -1,5 +1,5 @@
 {
-  "version": 200,
+  "version": 201,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1214,7 +1214,16 @@
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5",
         "workerDirectControlWrite": false,
         "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
-        "gamePrimaryExternalBoundary": 256
+        "gamePrimaryExternalBoundary": 256,
+        "liveVerification": {
+          "runId": 36204978877,
+          "stalePreV2RunId": 36204043933,
+          "recoveryFastReserve": "PASS",
+          "gamePrimaryReserve": "PASS",
+          "schedulerEpochEscape": "PASS",
+          "crossLaneGlobalReserveLockObserved": false,
+          "gamePrimaryExternalBoundaryObserved": 256
+        }
       },
       "learningIdlePressureGate": {
         "version": 1,
@@ -1228,8 +1237,17 @@
         "actionOnPressure": "DEFER_LEARNING_IDLE",
         "actionOnObservationFailure": "DEFER_LEARNING_IDLE",
         "gamePrimaryUnaffected": true,
-        "recoveryFastUnaffected": true
-      }
+        "recoveryFastUnaffected": true,
+        "liveVerification": {
+          "runId": 36204978877,
+          "observation": "PASS",
+          "runnerQueuePressure": 9,
+          "learningIdleDisposition": "DEFERRED_RUNNER_PRESSURE",
+          "gamePrimaryUnaffected": true,
+          "recoveryFastUnaffected": true
+        }
+      },
+      "nextObservedInfrastructureBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE"
     },
     "liveShadowRepairLoop": {
       "path": [
