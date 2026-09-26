@@ -246,13 +246,19 @@ function focusedSymbolContext(root,target,responsibleFiles=[],exploration={}){
 }
 function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
   if(target!=='web'||allowFullRewrite||responsibleFiles.length!==1||!responsibleFiles[0].toLowerCase().endsWith('.html'))return false;
-  const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
+  const evidenceList=(order?.selectedTask?.evidence||[]).map(clean).filter(Boolean);
+  const evidence=new Set(evidenceList);
   const goal=clean(order?.goal);
+  const retriedFocusedGeneration=Number(order?.selectedTask?.retries||0)>0
+    &&evidence.has('coding-focused-replace-only:YES')
+    &&evidenceList.some(value=>/^coding-generation-attempts:(?:[2-9]|[1-9][0-9]+)$/i.test(value))
+    &&evidenceList.some(value=>/^candidate-sha:[0-9a-f]{40}$/i.test(value));
   return /\[WEB_REPAIR\]|VIBE_WEB_REPAIR|WEB_VIBE_REPAIR_REQUIRED|\[DIAGNOSTIC_BUNDLE\]/i.test(goal)
     || evidence.has('web-stage:WEB_REPAIR')
     || evidence.has('recovery-exact-stage:WEB_REPAIR')
     || evidence.has('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED')
-    || evidence.has('recovery-exact-stage:SOURCE_CANDIDATE_GENERATION');
+    || evidence.has('recovery-exact-stage:SOURCE_CANDIDATE_GENERATION')
+    || retriedFocusedGeneration;
 }
 function exactDiagnosticAnchor(source='',needle=''){
   const text=String(source??''),target=String(needle??'');
