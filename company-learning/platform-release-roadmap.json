@@ -3206,9 +3206,12 @@
           "gamePrimaryExternalBoundary": 256,
           "lastLanePressureLiveVerificationRun": 36204978877,
           "lastLanePressureLiveVerificationResult": "PASS",
-          "modelCacheHitRestoreRelief": "IMPLEMENTED_PENDING_QA_AND_LIVE",
+          "modelCacheHitRestoreRelief": "LIVE_VERIFIED",
+          "modelCacheHitRestoreLiveRun": 36208311596,
           "modelCacheWarmupProbe": "RESERVE_LOOKUP_ONLY_ON_HIT",
-          "modelCacheWarmupRunnerRelief": "SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT"
+          "modelCacheWarmupRunnerRelief": "LIVE_VERIFIED_SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT",
+          "currentExecutionInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK",
+          "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE"
         },
         "incidentHistory": [
           {
@@ -7687,7 +7690,7 @@
       "workerSourceGenerationSemanticsChanged": false,
       "workerQaSemanticsChanged": false,
       "gamePrimaryExternalBoundary": 256,
-      "implementationState": "DESIGN_APPROVED_IMPLEMENTATION_PENDING"
+      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
     }
     "robloxNativeNonblockingStudioPlanner20260926": {
       "id": "ROBLOX_NATIVE_NONBLOCKING_STUDIO_PLANNER_2026-09-26",
