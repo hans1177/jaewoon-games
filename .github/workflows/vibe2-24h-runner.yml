@@ -786,6 +786,7 @@ jobs:
     with:
       execution_lane: recovery-fast
       lane_max: '5'
+      runner_pressure: ${{ needs.plan.outputs.runner_pressure }}
     permissions:
       contents: write
       actions: write
@@ -797,6 +798,7 @@ jobs:
     with:
       execution_lane: game-primary
       lane_max: '256'
+      runner_pressure: ${{ needs.plan.outputs.runner_pressure }}
     permissions:
       contents: write
       actions: write
@@ -810,6 +812,7 @@ jobs:
     with:
       execution_lane: learning-idle
       lane_max: '4'
+      runner_pressure: ${{ needs.plan.outputs.runner_pressure }}
     permissions:
       contents: write
       actions: write
