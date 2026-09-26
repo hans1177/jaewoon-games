@@ -1066,3 +1066,11 @@ test('administrative operational control workflows stay off game-primary ubuntu-
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(directorSupervisor,/supervise:[\s\S]*?runs-on:\s*ubuntu-slim/);
 });
+
+test('director runner drain remains parallel while supervise alone is serialized',()=>{
+  const jobsAt=directorSupervisor.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(directorSupervisor.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-24\.04-arm/);
+  assert.match(directorSupervisor,/supervise:[\s\S]*?concurrency:\n\s+group:\s*director-central-company-supervise-v3/);
+});
