@@ -791,12 +791,13 @@
         "workerRestoreRemainsRequiredPerIsolatedRunner": true,
         "workerRestoreDeferredUntilWorkOrder": true,
         "workerRestoreRequiresLocalModel": true,
-        "workerRestoreSkippedWithoutSourceLock": true,
+        "workerRestoreSkippedWithoutSourceLock": false,
+        "workerRestoreIndependentOfSourceLock": true,
         "workerRuntimePreparation": "shared-prepare-ollama-action",
         "workerRuntimePreparationPath": ".github/actions/prepare-ollama/action.yml",
         "workerInlineInstallPipeForbidden": true,
         "workerLocalModelRoutes": [
-          "text-source-worker-with-lock",
+          "text-source-worker",
           "analysis-only",
           "learning-web-artifact"
         ],
