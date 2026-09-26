@@ -1,5 +1,5 @@
 {
-  "version": 224,
+  "version": 226,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5172,5 +5172,33 @@
     "sourceRootWideLockForbidden": true,
     "qaSecurityReleaseGatesUnchanged": true,
     "authorityExpanded": false
+  },
+  "unityWebBootstrapParallelismProjection": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebBootstrapParallelFanout20260927",
+    "parentWorkflow": ".github/workflows/company-development-confirmed-runtime.yml",
+    "workerWorkflow": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+    "taskIdentity": "GAME_ID",
+    "distinctGameMatrixParallel": true,
+    "topLevelGlobalWorkflowLock": false,
+    "multiGameLoop": false,
+    "maxParallelInternalCap": null,
+    "externalProviderCapacityOnlyBoundary": true,
+    "sharedStateCriticalSectionChanged": false
+  },
+  "nativeUpperPlatformBatchOrchestrationProjection": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeUpperPlatformBatchOrchestration20260927",
+    "parentWorkflow": ".github/workflows/company-development-confirmed-runtime.yml",
+    "robloxChild": ".github/workflows/company-development-roblox-runtime.yml",
+    "unityChild": ".github/workflows/company-development-unity-runtime.yml",
+    "parentRobloxInvocationCountPerBatch": 1,
+    "parentUnityInvocationCountPerBatch": 1,
+    "explicitSingleGamePassThrough": true,
+    "childTaskIdentity": "GAME_ID",
+    "childMatricesParallel": true,
+    "maxParallelInternalCap": null,
+    "externalMatrixBatchMax": 256,
+    "globalOrchestrationSerializationAdded": false
   }
 }
