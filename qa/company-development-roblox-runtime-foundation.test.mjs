@@ -482,3 +482,14 @@ test('shared FAST_MVP runtime QA keeps only newest shared candidate current and 
   assert.match(workflow,/if\(isSharedCandidate\(candidate\)&&item\.robloxSharedTargetCurrent===false\)return false/);
   assert.match(workflow,/ROBLOX_SHARED_TARGET_SUPERSEDED=/);
 });
+
+
+test('Roblox post-runtime QA and F9 do not serialize whole workflows by game id',()=>{
+  const post=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const postJobs=post.indexOf('\njobs:\n');
+  const f9Jobs=f9.indexOf('\njobs:\n');
+  assert.ok(postJobs>0&&f9Jobs>0);
+  assert.doesNotMatch(post.slice(0,postJobs),/\nconcurrency:/);
+  assert.doesNotMatch(f9.slice(0,f9Jobs),/\nconcurrency:/);
+});
