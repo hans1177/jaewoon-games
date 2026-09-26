@@ -3,115 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-p3yla9",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:32:13.352Z",
-      "expiresAt": "2026-09-26T11:17:13.352Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-v1ezsy",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:32:39.009Z",
-      "expiresAt": "2026-09-26T11:17:39.009Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-v2gaoy",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:32:55.820Z",
-      "expiresAt": "2026-09-26T11:17:55.820Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1da6bj1",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:33:20.575Z",
-      "expiresAt": "2026-09-26T11:18:20.575Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-ge25cq",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:34:38.496Z",
-      "expiresAt": "2026-09-26T11:19:38.496Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-gffgw4",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:34:40.041Z",
-      "expiresAt": "2026-09-26T11:19:40.041Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1ickf2h",
       "worker": "vibe2",
       "taskId": "cozy-island-studio-evolution-presentation-v1",
@@ -677,6 +568,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-9pijmh",
+      "worker": "vibe2",
+      "taskId": "survival-studio-evolution-unity-web-usability-v1",
+      "gameId": "survival",
+      "files": [
+        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "301c7b31195783b594327baee8c066ffafa9d1ed",
+      "acquiredAt": "2026-09-26T11:19:42.308Z",
+      "expiresAt": "2026-09-26T12:04:42.308Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
