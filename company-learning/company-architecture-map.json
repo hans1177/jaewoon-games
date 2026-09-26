@@ -1,5 +1,5 @@
 {
-  "version": 246,
+  "version": 247,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5509,15 +5509,16 @@
     "centralPlanner": {
       "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
       "blockingScope": "ADMISSION_CRITICAL_ONLY",
-      "contractAudit": {
-        "runner": "ubuntu-slim",
-        "blocking": false,
-        "continueOnError": true
-      },
       "activeLaneIdentityFetch": "ROBLOX_AND_UNITY_PARALLEL_FAIL_CLOSED",
       "partialScanDispatchForbidden": true,
       "runner": "ubuntu-24.04-arm",
-      "gameControlPoolSeparatedFromAdministrativeAudit": true
+      "gameControlPoolSeparatedFromAdministrativeAudit": true,
+      "duplicateRuntimeContractAuditRemoved": true,
+      "canonicalQaOwners": [
+        ".github/workflows/company-game-seed-qa.yml",
+        ".github/workflows/company-central-policy-contract-qa.yml"
+      ],
+      "gameDispatchDependsOnCanonicalQaCompletion": false
     },
     "unityWebFloor": {
       "callerConcurrency": "unity-web-floor-call-<gameId>",
