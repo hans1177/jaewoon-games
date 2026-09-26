@@ -587,7 +587,7 @@ jobs:
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
             --output /tmp/vibe2-24h-actions-runs.json; then
-            pressure_count="$(node <<'NODE'
+            if pressure_count="$(node <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-24h-actions-runs.json','utf8'));
           const currentRun=String(process.env.GITHUB_RUN_ID||'');
@@ -598,9 +598,13 @@ jobs:
           ).length;
           process.stdout.write(String(count));
           NODE
-            )"
-            if [ "${pressure_count:-0}" -eq 0 ]; then runner_pressure='NO'; fi
-            echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'
+            )" && [[ "$pressure_count" =~ ^[0-9]+$ ]]; then
+              if [ "$pressure_count" -eq 0 ]; then runner_pressure='NO'; fi
+              echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'
+            else
+              pressure_count='unknown'
+              echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'
+            fi
           else
             echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'
           fi
