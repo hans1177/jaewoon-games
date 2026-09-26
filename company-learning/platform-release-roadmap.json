@@ -4181,6 +4181,12 @@
         "allowedWorker": "tools/vibe2-source-worker.mjs",
         "isolatedCandidateBranchRequired": true,
         "branchPattern": "vibe2/candidate/*",
+        "candidateRemoteRefPrecreateAtPinnedBase": true,
+        "candidateRemoteRefApi": "POST /repos/{owner}/{repo}/git/refs",
+        "candidateCommitPushScope": "APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY",
+        "untouchedWorkflowFilesMustNotRequireWorkflowWriteAuthority": true,
+        "candidateRemoteRefCleanupOnPushFailure": true,
+        "candidatePublicationFailureClass": "CANDIDATE_BRANCH_PUBLISH",
         "directMainWrite": false,
         "externalPaidApiRequired": false,
         "openAiPaidApiAllowed": false
