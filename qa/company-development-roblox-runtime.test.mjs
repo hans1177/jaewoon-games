@@ -411,31 +411,22 @@ test('Roblox compiler is admitted by native platform design and does not consume
   assert.ok(compiled.result.sharedConfig.includes('AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY"'));
 });
 
-test('central development orchestrator gates new native lanes on Unity Web readiness',()=>{
+test('central development orchestrator fans Unity Web Roblox and Unity concurrently by game id',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
-  const admission=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
   assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(workflow,/gh workflow run (?:company-development|unity-web)/);
-  assert.match(admission,/upper-platform-development-readiness\.json/);
-  assert.match(admission,/READINESS_SOURCE_STALE/);
-  assert.match(workflow,/grandfatherGameIds/);
-  assert.match(admission,/grandfatherGameIds/);
-  assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
+  assert.match(workflow,/PARALLEL_LANES=UNITY_WEB,ROBLOX,UNITY/);
+  assert.match(workflow,/PARALLEL_GAME_ID=/);
+  assert.doesNotMatch(workflow,/classifyUpperPlatformAdmission/);
 });
 
-test('Roblox native executor independently enforces Unity Web upper-platform admission',()=>{
+test('Roblox native executor starts from minimum design without waiting for Unity Web',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  const admission=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
-  assert.match(workflow,/company-upper-platform-admission\.mjs/);
-  assert.match(workflow,/classifyUpperPlatformAdmission/);
-  assert.match(workflow,/grandfatherGameIds/);
-  assert.match(workflow,/admission\.state!=='UPPER_PLATFORM'/);
-  assert.match(workflow,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
-  assert.match(admission,/UPPER_PLATFORM_DEVELOPMENT_READY/);
-  assert.match(admission,/READINESS_SOURCE_STALE/);
+  assert.doesNotMatch(workflow,/classifyUpperPlatformAdmission/);
+  assert.doesNotMatch(workflow,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
+  assert.match(workflow,/ROBLOX_PARALLEL_ADMISSION=/);
 });
 
 test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
