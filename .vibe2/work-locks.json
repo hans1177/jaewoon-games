@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1dm25qb",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
-      "acquiredAt": "2026-09-26T17:42:56.181Z",
-      "expiresAt": "2026-09-26T18:27:56.181Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-zsinro",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
@@ -620,6 +602,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-wdi69p",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "roblox-games/village-dungeons/client/Game.client.luau",
+        "roblox-games/village-dungeons/server/Game.server.luau",
+        "roblox-games/village-dungeons/shared/GameConfig.luau"
+      ],
+      "baseSha": "81435c833397a8cecff4a1b7ac335681b6ea2a8b",
+      "acquiredAt": "2026-09-26T18:28:28.449Z",
+      "expiresAt": "2026-09-26T19:13:28.449Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
