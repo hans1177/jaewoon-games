@@ -906,6 +906,65 @@ test('studio edit-match at the base budget gets one exact-anchor recovery attemp
   assert.match(candidate,/local gamma = 2/);
 });
 
+test('studio holistic quality delta at the base budget gets one causal recovery attempt',async()=>{
+  const cwd=tempRoot();
+  const root='unity-games/demo';
+  const relative='Assets/Scripts/GameCore.cs';
+  const source=[
+    'class GameCore {',
+    '  int alpha = 1;',
+    '  int beta = 1;',
+    '  int gamma = 1;',
+    '}'
+  ].join('\n')+'\n';
+  const workOrder=order({
+    target:'unity',
+    root,
+    responsibleFiles:[`${root}/${relative}`],
+    taskId:'studio-quality-delta-credit'
+  });
+  workOrder.selectedTask={
+    id:workOrder.taskId,
+    gameId:'demo',
+    target:'unity',
+    evidence:['studio-quality-loop:v1','existing-holistic-backfill:v1'],
+    studioQualityEvolution:{
+      phase:'BUILD_UP',
+      focusPillar:'USABILITY',
+      existingHolisticBackfillRequired:true,
+      realSourceDeltaRequired:true,
+      requiredConnectedImprovements:{min:3,max:6}
+    }
+  };
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+
+  const responseFiles=[];
+  for(let i=1;i<=3;i+=1){
+    const file=path.join(cwd,`weak-studio-${i}.json`);
+    write(file,JSON.stringify({edits:[
+      {path:relative,find:'int alpha = 1;',replace:'int alpha = 2;'}
+    ]}));
+    responseFiles.push(file);
+  }
+  const good=path.join(cwd,'good-studio-connected.json');
+  write(good,JSON.stringify({edits:[
+    {path:relative,find:'int alpha = 1;',replace:'int alpha = 2;'},
+    {path:relative,find:'int beta = 1;',replace:'int beta = 2;'},
+    {path:relative,find:'int gamma = 1;',replace:'int gamma = 2;'}
+  ]}));
+  responseFiles.push(good);
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.baseAttemptBudget,3);
+  assert.equal(result.generation.effectiveAttemptBudget,4);
+  assert.equal(result.generation.studioCausalRecoveryCreditUsed,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.studioQualityDelta.pass,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.studioQualityDelta.sourceDeltaUnits,3);
+  assert.deepEqual(result.changedFiles,[relative]);
+});
+
 test('repeated identical failure signature escalates to root cause mode instead of counting unrelated failures',()=>{
   const result=classifyVibePatchSaturation({
     responsibleFiles:['web-games/demo/index.html'],
