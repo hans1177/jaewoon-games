@@ -274,6 +274,9 @@ test('new Roblox bootstrap binds Studio material atoms into generated Luau witho
         PROP:['CHEST','CRATE','LAMP','WORKBENCH'],
         MATERIAL:['WOOD','STONE','METAL','CLOTH'],
         VFX:['IMPACT_FLASH','TRAIL_SHORT','SHAPE_BURST'],
+        SKILL:['CAST_HAND','PROJECTILE_ORB','IMPACT_SMALL'],
+        AUDIO:['ENV_WIND','UI_CONFIRM','ATTACK_SWING_LIGHT'],
+        MOTION:['IDLE_RELAXED','WALK','RUN'],
         WEAPON:['BLADE_LONG','GUARD_CROSS','GRIP_LONG'],
         CHARACTER:['TORSO_CLOTH','SHOULDER_LIGHT','BACK_CAPE'],
         CREATURE:['HEAD_CANINE','JAW_LONG','CLAW']
