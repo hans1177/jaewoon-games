@@ -1,5 +1,5 @@
 {
-  "version": 411,
+  "version": 412,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8131,6 +8131,40 @@
       "reserveJobTempRootReuseForbiddenAcrossJobs": true,
       "qaSecurityReleaseSemanticsChanged": false,
       "purpose": "RESTORE_FAN_IN_STATE_SETTLEMENT_SO_NEW_HOLISTIC_BACKFILL_GENERATIONS_CAN_ENTER_AND_PROGRESS"
+    },
+    "holisticWorkerMatrixPriorityOrderRepair20260926": {
+      "id": "HOLISTIC_WORKER_MATRIX_PRIORITY_ORDER_REPAIR_2026-09-26",
+      "authority": "IMPLEMENTATION_REPAIR_UNDER_EXISTING_OWNER_DIRECTIVE_2026-09-26",
+      "summary": "The queue scheduler already selected critical holistic existing-game backfill ahead of lower-priority generic polish, but reservation output rebuilt selected tasks in persistent queue order. Preserve scheduler selection order through reservation output and worker matrix so older generic work cannot start ahead of newly selected critical holistic backfill solely because it appears earlier in the state file.",
+      "liveEvidence": {
+        "runId": 36229097447,
+        "reservationId": "36229097447:1",
+        "reservedPrimaryTasks": 53,
+        "workerFanOut": 57,
+        "observedHolisticRunningTasks": 15,
+        "observedLowerPriorityWorkersStartingBeforeHolistic": true
+      },
+      "directResponsibleFunctions": [
+        "assets/vibe-continuous-queue.js::beginVibeQueueBatch",
+        "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch"
+      ],
+      "requiredBehavior": [
+        "SELECT_VIBE_QUEUE_BATCH_SCORE_ORDER_IS_CANONICAL_FOR_RESERVED_TASK_OUTPUT",
+        "RESERVATION_BATCH_TASK_ORDER_PRESERVES_SELECTION_ORDER",
+        "WORKER_MATRIX_ORDER_PRESERVES_RESERVATION_SELECTION_ORDER",
+        "PERSISTENT_QUEUE_STORAGE_ORDER_MAY_NOT_OVERRIDE_SCHEDULER_PRIORITY"
+      ],
+      "preserves": [
+        "RESPONSIBLE_FILE_CONFLICT_GUARDS",
+        "EXECUTION_LANE_BOUNDARIES",
+        "EXTERNAL_PROVIDER_BOUNDARY_256",
+        "ADAPTIVE_MINIMUM_30",
+        "RUNNING_TASKS_NOT_CANCELLED",
+        "QUALITY_SECURITY_RELEASE_GATES"
+      ],
+      "policyAuthorityExpanded": false,
+      "newWorkerQueueOrShadowPipeline": false,
+      "itemContentMutation": false
     }
   },
   "vibeExecutionLaneContract": {
