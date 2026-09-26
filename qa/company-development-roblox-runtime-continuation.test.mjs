@@ -7,6 +7,7 @@ const preflight=fs.readFileSync(new URL('../.github/workflows/company-developmen
 const headless=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
 const headlessEvaluator=fs.readFileSync(new URL('../tools/company-development-roblox-headless-fast-mvp.mjs',import.meta.url),'utf8');
 const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
 test('Roblox native path is package -> shared preflight -> F0 -> private runtime candidate -> actual tester QA',()=>{
@@ -18,7 +19,8 @@ test('Roblox native path is package -> shared preflight -> F0 -> private runtime
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(headless.includes('Roblox F0 Source Preflight'));
   assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
-  assert.ok(headless.includes('company-development-roblox-release-promotion.yml'));
+  assert.ok(headless.includes('company-development-roblox-runtime.yml'));
+  assert.ok(runtime.includes('company-development-roblox-release-promotion.yml'));
 });
 
 test('shared preflight requires exact immutable build and one shared model',()=>{
@@ -52,9 +54,10 @@ test('F0 source preflight validates source integrity and explicitly cannot claim
   assert.ok(headless.includes("item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'"));
 });
 
-test('canonical parent watches both fast-path workflows',()=>{
-  assert.ok(parent.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
-  assert.ok(parent.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
+test('canonical native parent calls Roblox runtime while Roblox runtime watches both fast-path workflow contracts',()=>{
+  assert.ok(parent.includes('uses: ./.github/workflows/company-development-roblox-runtime.yml'));
+  assert.ok(runtime.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
+  assert.ok(runtime.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });
 
 test('already preflight-ready games wake F0 without requiring a new preflight pass in the same run',()=>{
