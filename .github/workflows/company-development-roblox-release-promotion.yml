@@ -24,17 +24,54 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-roblox-release-promotion-${{ inputs.game_id || github.run_id }}
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
+  release-dedupe:
+    name: select one active private runtime deployment per game
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.thumbnail_only != true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      run: ${{ steps.guard.outputs.run }}
+    steps:
+      - name: Keep only the oldest active run for this game
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-release-promotion.yml/runs?per_page=100")"
+          winner="$(printf '%s' "$payload" | GAME_ID="$GAME_ID" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s);
+              const states=new Set(['queued','pending','in_progress','requested']);
+              const title='Roblox private runtime · '+String(process.env.GAME_ID||'');
+              const ids=(j.workflow_runs||[])
+                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
+                .map(r=>Number(r.id))
+                .filter(Number.isFinite)
+                .sort((a,b)=>a-b);
+              process.stdout.write(ids.length?String(ids[0]):'');
+            });
+          ")"
+          echo "ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER=${winner:-NONE}"
+          echo "ROBLOX_PRIVATE_RUNTIME_DEDUPE_CURRENT=$GITHUB_RUN_ID"
+          if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=$GAME_ID:$GITHUB_RUN_ID:$winner"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_PRIVATE_RUNTIME_DEDUPE_PASS=$GAME_ID:$GITHUB_RUN_ID"
+          fi
+
   release:
     name: deploy exact F0-passed Roblox artifact as private runtime candidate
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.thumbnail_only != true }}
+    needs: release-dedupe
+    if: ${{ needs.release-dedupe.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:

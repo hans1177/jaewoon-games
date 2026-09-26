@@ -286,11 +286,17 @@ test('public release rejects static-only multiplayer evidence and requires the s
   assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));
 });
 
-test('private runtime candidate deployment serializes only duplicate work for the same game and exposes per-game run identity',()=>{
+test('private runtime candidate deployment dedupes same-game work without workflow-level pending cancellation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/run-name: Roblox private runtime · \$\{\{ inputs\.game_id \|\| 'push' \}\}/);
-  assert.match(workflow,/group: company-development-roblox-release-promotion-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
-  assert.doesNotMatch(workflow,/group: company-development-roblox-release-promotion\s*$/m);
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow,/release-dedupe:/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER=/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=/);
+  assert.match(workflow,/needs: release-dedupe/);
+  assert.match(workflow,/needs\.release-dedupe\.outputs\.run == 'true'/);
 });
 
 
