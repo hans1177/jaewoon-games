@@ -279,7 +279,36 @@ namespace JaewoonGames.DaechungRpg
             {
                 var column = i % columns;
                 var row = i / columns;
-                var x = column * frameWidth;
+var frameCount = manifest.frames;
+var columns = manifest.columns;
+var frameWidth = manifest.frameWidth;
+var frameHeight = manifest.frameHeight;
+var rows = ((long)frameCount + columns - 1L) / columns;
+var requiredWidth = (long)Mathf.Min(frameCount, columns) * frameWidth;
+var requiredHeight = rows * frameHeight;
+if (requiredWidth > texture.width || requiredHeight > texture.height)
+{
+    Destroy(texture);
+    try { File.Delete(manifestPath); } catch { }
+    try { File.Delete(spritePath); } catch { }
+    _loadError = "asset bounds " + actorId + "" + action;
+    yield break;
+}
+
+var frames = new Sprite[frameCount];
+
+for (var i = 0; i < frameCount; i++)
+{
+    var column = i % columns;
+    var row = i / columns;
+    var x = column * frameWidth;
+    var y = texture.height - ((row + 1) * frameHeight);
+    var rect = new Rect(x, y, frameWidth, frameHeight);
+    frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);
+    frames[i].name = "" + actorId + "" + action + "" + i:00;
+}
+
+actor.AddClip(action, frames, manifest.fps);
                 var y = texture.height - ((row + 1) * frameHeight);
                 var rect = new Rect(x, y, frameWidth, frameHeight);
                 frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);
