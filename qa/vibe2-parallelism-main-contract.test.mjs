@@ -169,6 +169,11 @@ test('stale main push wake exits before expensive reserve work without cancellin
   assert.equal(policyWake.staleWakeMayMutateControlState,false);
   assert.equal(policyWake.staleWakeMayStartGameWorker,false);
   assert.equal(policyWake.runningOrCompletedGameWorkerCancellationForbidden,true);
+  assert.equal(policyWake.duplicateWakeSignalsCoalesced,true);
+  assert.equal(policyWake.concurrencyGroup,'vibe2-main-push-game-primary-wake');
+  assert.equal(policyWake.activeWakeCancellationForbidden,true);
+  assert.equal(evidence.concurrencyGroup,'vibe2-main-push-game-primary-wake');
+  assert.equal(evidence.onlyNewestPendingMainWakeRetained,true);
   assert.equal(evidence.staleWakeControlStateWriteForbidden,true);
   assert.equal(evidence.staleWakeGameWorkerFanoutForbidden,true);
 
