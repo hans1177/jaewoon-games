@@ -6,8 +6,8 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 test('legacy parallelism test path now enforces maximum-safe parallelism',()=>{
   const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
   const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[]});
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,256);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,4);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,30);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,30);
   assert.equal(runtime.coordination.sourceRootExclusive,false);
   assert.equal(queue.scheduling.sourceRootExclusive,false);
   assert.equal(queue.scheduling.responsibleFileExclusive,true);
