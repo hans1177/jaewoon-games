@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 38,
+      "runtime": 39,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -323,11 +323,11 @@
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "GAME_PRIMARY requests external provider capacity 256 by default. Same-game non-overlapping responsible files run in parallel; source-root/game-wide locks are forbidden. Verified external runner/provider pressure may temporarily downshift and stale/missing pressure evidence recovers to 256.",
+      "note": "GAME_PRIMARY requests external provider capacity 256 by default. Same-game non-overlapping responsible files run in parallel; source-root/game-wide locks are forbidden. Owner minimum active floor is 30 when actionable work exists; verified pressure may downshift only to 30 and stale/missing pressure evidence recovers to 256.",
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
       "baselineTarget": 256,
-      "adaptiveMinActiveWorkers": 4,
+      "adaptiveMinActiveWorkers": 30,
       "adaptiveMaxActiveWorkers": 256,
       "fixedWaveBarrier": false,
       "legacyCapacityEnvelopeOnly": true
@@ -355,7 +355,7 @@
         "adaptiveGameControlEligible": true,
         "capacityAwareFreeSlotRefill": true,
         "adaptiveBaselineTarget": 256,
-        "adaptiveMinActiveWorkers": 4,
+        "adaptiveMinActiveWorkers": 30,
         "adaptiveMaxActiveWorkers": 256
       },
       "RECOVERY_FAST": {
@@ -574,10 +574,7 @@
     "mode": "GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
-      4,
-      8,
-      16,
-      20,
+      30,
       32,
       64,
       128,
@@ -604,11 +601,11 @@
     "laneSpecificPressurePreferred": true,
     "policyConcurrencyLimit": null,
     "externalBatchMax": 256,
-    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-09-25_MAX_EXTERNAL_CAPACITY_DEFAULT_VERIFIED_PRESSURE_ONLY_DOWNSHIFT",
+    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-09-26_MINIMUM_30_EXTERNAL_CAPACITY_MAX_256",
     "ownerMinimumWaveAppliedTo": [
       "GAME_PRIMARY"
     ],
-    "minimumAdaptiveWave": 4,
+    "minimumAdaptiveWave": 30,
     "baselineAdaptiveWave": 256,
     "staleTelemetryResetTarget": 256
   },
@@ -803,10 +800,7 @@
     ],
     "loadProbeTargetWorkers": 256,
     "backpressureSteps": [
-      4,
-      8,
-      16,
-      20,
+      30,
       32,
       64,
       128,
