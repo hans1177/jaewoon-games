@@ -12,11 +12,11 @@
       "lastEvidence": "capability_ctrace_5f74ba87502b8d922847049e"
     },
     "STATE_MACHINE": {
-      "xp": 2825,
+      "xp": 2850,
       "level": 20,
       "verifiedSuccesses": 127,
-      "verifiedFailureLessons": 269,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864"
+      "verifiedFailureLessons": 274,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389"
     },
     "COMBAT": {
       "xp": 1478,
@@ -54,25 +54,25 @@
       "lastEvidence": "capability_ctrace_5f74ba87502b8d922847049e"
     },
     "MOBILE_INPUT": {
-      "xp": 1211,
+      "xp": 1226,
       "level": 12,
       "verifiedSuccesses": 66,
-      "verifiedFailureLessons": 91,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864"
+      "verifiedFailureLessons": 94,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389"
     },
     "UI_STATE": {
-      "xp": 839,
+      "xp": 859,
       "level": 10,
       "verifiedSuccesses": 15,
-      "verifiedFailureLessons": 139,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864"
+      "verifiedFailureLessons": 143,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389"
     },
     "DEBUGGING": {
-      "xp": 2837,
+      "xp": 2862,
       "level": 20,
       "verifiedSuccesses": 130,
-      "verifiedFailureLessons": 269,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864"
+      "verifiedFailureLessons": 274,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389"
     },
     "RECOVERY": {
       "xp": 1413,
@@ -166,11 +166,11 @@
       "lastEvidence": "capability_ctrace_5276f0f8e315c7d46573a710"
     },
     "CHARACTER_ARC": {
-      "xp": 133,
+      "xp": 138,
       "level": 4,
       "verifiedSuccesses": 9,
-      "verifiedFailureLessons": 5,
-      "lastEvidence": "capability_ctrace_56ff4ac7392ffe4b2659b827"
+      "verifiedFailureLessons": 6,
+      "lastEvidence": "capability_ctrace_105753b5a9bc74f42012f0fe"
     },
     "DIALOGUE": {
       "xp": 0,
@@ -341,18 +341,18 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 2319,
-      "level": 17,
+      "xp": 2339,
+      "level": 18,
       "verifiedSuccesses": 117,
-      "verifiedFailureLessons": 183,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864"
+      "verifiedFailureLessons": 187,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389"
     },
     "ROBLOX_STUDIO": {
-      "xp": 589,
+      "xp": 614,
       "level": 9,
       "verifiedSuccesses": 2,
-      "verifiedFailureLessons": 113,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864"
+      "verifiedFailureLessons": 118,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389"
     },
     "ROBLOX_DATASTORE": {
       "xp": 0,
@@ -404,11 +404,11 @@
       "lastEvidence": "capability_ctrace_93e1c99c47d95b840096b89c"
     },
     "UNITY_RUNTIME": {
-      "xp": 337,
-      "level": 6,
+      "xp": 357,
+      "level": 7,
       "verifiedSuccesses": 1,
-      "verifiedFailureLessons": 65,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864"
+      "verifiedFailureLessons": 69,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389"
     },
     "UNITY_PHYSICS": {
       "xp": 0,
@@ -839,7 +839,12 @@
     "capability_ctrace_834fb78ee010e43e6d53e16b",
     "capability_ctrace_21fd402e32ee7bab78b3b0b1",
     "capability_ctrace_5276f0f8e315c7d46573a710",
-    "capability_ctrace_064ab16cff942538f035d864"
+    "capability_ctrace_064ab16cff942538f035d864",
+    "capability_ctrace_105753b5a9bc74f42012f0fe",
+    "capability_ctrace_f619f1356982e4360d070b3a",
+    "capability_ctrace_1a0cdcce0a4d0cd74b476329",
+    "capability_ctrace_55f7b66eb225eac735cc2fd4",
+    "capability_ctrace_ed60654da054c331a20e7389"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -963,8 +968,8 @@
       ]
     },
     "fail_3e38u6": {
-      "count": 22,
-      "lastEvidence": "capability_ctrace_56ff4ac7392ffe4b2659b827",
+      "count": 24,
+      "lastEvidence": "capability_ctrace_f619f1356982e4360d070b3a",
       "example": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
       "domains": [
         "CORE_LOOP",
@@ -984,12 +989,13 @@
         "VISUAL_IDENTITY",
         "CONCEPT_DIRECTION",
         "ROBLOX_STUDIO",
-        "CHARACTER_ARC"
+        "CHARACTER_ARC",
+        "UNITY_RUNTIME"
       ]
     },
     "fail_wu3qnk": {
-      "count": 63,
-      "lastEvidence": "capability_ctrace_064ab16cff942538f035d864",
+      "count": 66,
+      "lastEvidence": "capability_ctrace_ed60654da054c331a20e7389",
       "example": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
       "domains": [
         "STATE_MACHINE",
@@ -12900,7 +12906,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-26T15:14:50.409Z",
+    "lastBuiltAt": "2026-09-26T15:29:59.428Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -18771,5 +18777,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-26T15:14:50.409Z"
+  "updatedAt": "2026-09-26T15:29:59.428Z"
 }
