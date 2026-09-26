@@ -123,14 +123,18 @@ test('daechung-rpg runtime foundation survives late player binding and transient
  assert.match(client,/for _=1,20 do[\s\S]*foundationRemote:FireServer\("REMOTE_PING"\)[\s\S]*task\.wait\(\.5\)/);
 });
 
-test('F0 checkout and validation fan out across the full external-capacity matrix',()=>{
+test('F0 checkout and validation fan out across the full external-capacity matrix without workflow-wide serialization',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.doesNotMatch(workflow,/rows\.length>=6/);
   assert.match(workflow,/rows\.length>=256/);
   assert.doesNotMatch(workflow,/max-parallel:\s*6/);
   assert.match(workflow,/ROBLOX_F0_PARALLELISM=EXTERNAL_PROVIDER_CAPACITY_ONLY/);
   assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
-  assert.match(workflow,/group: company-development-roblox-f0-source-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(header,/run-name: Roblox F0 · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.doesNotMatch(header,/^concurrency:\s*$/m);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_COUNT=/);
 });
 
 test('F0 planner uses central Roblox validation mode and does not require a queue-local robloxValidationMode cache',()=>{
