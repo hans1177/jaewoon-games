@@ -8586,6 +8586,7 @@
         "unityPrepare": ".github/workflows/company-development-unity-runtime.yml::prepare",
         "directorRunnerDrain": ".github/workflows/director-supervisor.yml::runner-drain"
       },
+      "directorRunnerDrainCancelInProgress": false,
       "preservedOnArm": {
         "vibeFanIn": ".github/workflows/vibe2-continuous-core.yml::fan_in",
         "nativeGameControlBeyondIngress": true
