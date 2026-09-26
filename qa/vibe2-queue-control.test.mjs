@@ -508,6 +508,49 @@ test('recovery-fast lane runs disjoint system work in parallel while responsible
   assert.ok(bounded.deferredConflicts.some(row=>row.task.id==='sys-a-conflict'&&row.reason==='responsible-file-conflict'));
 });
 
+test('recovery-fast speculative variants yield to active game-primary demand without dropping recovery tasks',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-aux-spare-only-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[
+    {id:'game-primary-waiting',gameId:'game-primary-waiting',target:'web',department:'development',type:'implementation',goal:'game work',status:'queued',sourceRoot:'web-games/game-primary-waiting',responsibleFiles:['index.html']},
+    {id:'sys-a',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-a',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/a.mjs']},
+    {id:'sys-b',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-b',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/b.mjs']}
+  ]},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD',lastReason:'LOW_LOAD',lastTelemetry:{workerCount:0,effectiveMax:20,effectivePeakUtilizationPct:100,bottleneck:'NONE'}},null,2));
+  const result=runQueueCommand({
+    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'recovery-fast',max:'5',min:'1',
+    'reservation-id':'aux:1','reservation-run':'aux','reserved-at':'2026-09-26T10:15:00Z'
+  });
+  assert.equal(result.tasks.length,2);
+  assert.equal(result.speculativeExpansionAllowed,false);
+  assert.equal(result.speculativeExpansionReason,'AUXILIARY_SPARE_ONLY_GAME_PRIMARY_ACTIVE');
+  assert.equal(result.workerCount,2);
+  assert.deepEqual(result.matrix.map(row=>row.speculativeVariants),[1,1]);
+  const persisted=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  assert.equal(persisted.tasks.find(task=>task.id==='game-primary-waiting')?.status,'queued');
+});
+
+test('recovery-fast speculative variants resume when game-primary is idle and adaptive pressure is clear',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-aux-spare-resume-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[
+    {id:'sys-a',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-a',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/a.mjs']},
+    {id:'sys-b',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-b',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/b.mjs']}
+  ]},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD',lastReason:'LOW_LOAD',lastTelemetry:{workerCount:0,effectiveMax:20,effectivePeakUtilizationPct:100,bottleneck:'NONE'}},null,2));
+  const result=runQueueCommand({
+    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'recovery-fast',max:'5',min:'1',
+    'reservation-id':'aux:2','reservation-run':'aux','reserved-at':'2026-09-26T10:16:00Z'
+  });
+  assert.equal(result.tasks.length,2);
+  assert.equal(result.speculativeExpansionAllowed,true);
+  assert.equal(result.speculativeExpansionReason,'AUXILIARY_SPARE_CAPACITY_AVAILABLE');
+  assert.equal(result.workerCount,5);
+  assert.equal(result.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),5);
+});
+
 test('running nondevelopment lane work does not consume game-primary worker capacity',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
     {id:'control-running',gameId:'system-control',target:'web',department:'system-supervision',type:'research',goal:'control',status:'running',priority:'critical'},
