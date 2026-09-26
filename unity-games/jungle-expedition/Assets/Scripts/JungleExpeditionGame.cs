@@ -45,7 +45,6 @@ namespace JaewoonGames.JungleExpedition
         private Enemy boss;
         private bool qaMode;
         private int qaProgress;
-        private bool qaMode;
         private bool qaStartLogged;
 
         private const string SavePrefix = "jungle_expedition_";
@@ -61,7 +60,6 @@ namespace JaewoonGames.JungleExpedition
         {
             Application.targetFrameRate = 60;
             qaMode = Application.absoluteURL.Contains("qa=1");
-            qaMode = Application.absoluteURL.Contains("qa=1");
             LoadGame();
             BuildWorld();
             SpawnPlayer();
@@ -76,7 +74,6 @@ namespace JaewoonGames.JungleExpedition
                 QaState();
             }
             Show(Objective(), 4f);
-            if (qaMode) { QaLog("BOOT game=jungle-expedition status=PASS"); QaLog("MOBILE_TARGET role=action x=0.88 y=0.92"); QaState(); }
         }
 
         private void Update()
@@ -847,15 +844,16 @@ namespace JaewoonGames.JungleExpedition
             if (qaMode) Debug.Log("JAEWOON_UNITY_WEB_QA " + payload);
         }
 
+        private void QaLog(string payload)
+        {
+            Qa(payload);
+        }
+
         private void QaState()
         {
             if (!qaMode) return;
-            Qa("STATE game=jungle-expedition stage=" + stage + " kills=" + kills + " hp=" + hp + " maxHp=100 region=jungle");
+            Qa("STATE game=jungle-expedition stage=" + stage + " qaProgress=" + qaProgress + " kills=" + kills + " hp=" + hp + " maxHp=100 region=jungle");
         }
-
-        private void QaLog(string payload) { if (qaMode) Debug.Log("JAEWOON_UNITY_WEB_QA " + payload); }
-
-        private void QaState() { QaLog("STATE game=jungle-expedition stage=" + stage + " qaProgress=" + qaProgress + " hp=" + hp); }
 
         private void Show(string text, float sec)
         {
