@@ -148,6 +148,7 @@ jobs:
           version: '0.33.3'
           pull-model: 'true'
           department-role: development
+          cache-model: 'true'
       - name: Ensure shared preflight model is local
         shell: bash
         run: |
