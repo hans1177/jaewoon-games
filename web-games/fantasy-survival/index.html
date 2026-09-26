@@ -60,7 +60,8 @@ const CANYON_POLY=[{x:11950,y:5100},{x:14300,y:6000},{x:14300,y:8500},{x:12650,y
 const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},SHADOW_WOLF_EGG={x:11660,y:9560,r:30},SHADOW_WOLF_EGG_2={x:11480,y:9750,r:30},MAP_CELL=400;
 const GIANT_LAKE_SURFACE={x:0,y:0,w:14400,h:2000};
 const GIANT_LAKE_WATER={x:900,y:180,w:12600,h:1380};
-const UNDERWATER={w:18000,h:3200,entry:{x:9000,y:220},exitY:65};
+const UNDERWATER={w:36000,h:8000,entry:{x:18000,y:220},exitY:65};
+const DEEP_CORAL_FOREST={x:23000,y:4300,w:9000,h:2800};
 const VOLCANO_POLY=[{x:2400,y:2000},{x:14400,y:2000},{x:14400,y:5200},{x:2400,y:5200}];
 const COLOSSEUM={x:6800,y:2120,w:3600,h:900},CONSTRUCTION={x:6800,y:4380,w:3600,h:700},WASTELAND={x:2580,y:2180,w:3800,h:2820},VOLCANO_CORE={x:7200,y:3120,w:2800,h:1100};
 const OASIS={x:4300,y:3650,r:470},LAB={x:8600,y:2900},LAB_RECORDER={x:8600,y:2845},CONSTRUCTION_DIARY={x:8600,y:4710};
@@ -338,7 +339,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderFang','crystalShard'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],beds:[],crops:[],snowChests:[false,false],respawnPos:null,blueprint:null,activeWallId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],flowerGiantFlowers:[],flowerWebs:[],enemies:[],projectiles:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],beds:[],crops:[],snowChests:[false,false],respawnPos:null,blueprint:null,activeWallId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],flowerGiantFlowers:[],flowerWebs:[],enemies:[],projectiles:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
 const RAID_WAVES=[
  [{id:'mossboar',count:3},{id:'golem',count:1},{id:'shadowwolf',count:2}],
  [{id:'goblin',count:4},{id:'ironspirit',count:2},{id:'shadowwolf',count:2}],
@@ -633,11 +634,19 @@ function markExplored(){
     if(x>=0&&y>=0&&x<Math.ceil(WORLD.w/MAP_CELL)&&y<Math.ceil(WORLD.h/MAP_CELL))state.explored[x+','+y]=1
   }
 }
+function markUnderwaterExplored(){
+  const p=state.player,gx=Math.floor(p.x/MAP_CELL),gy=Math.floor(p.y/MAP_CELL);
+  for(let ox=-1;ox<=1;ox++)for(let oy=-1;oy<=1;oy++){
+    const x=gx+ox,y=gy+oy;
+    if(x>=0&&y>=0&&x<Math.ceil(UNDERWATER.w/MAP_CELL)&&y<Math.ceil(UNDERWATER.h/MAP_CELL))state.underwaterExplored[x+','+y]=1
+  }
+}
 function discoverRegion(){
   if(state.area!=='surface')return;
   const r=regionAt(state.player.x,state.player.y);
   if(r==='snow'&&!state.discovered.snow){state.discovered.snow=true;state.dirty=true;showNotice('발견함 설원')}
-  if((r==='flowerfield'||r==='giantgarden')&&!state.discovered.flowerfield){state.discovered.flowerfield=true;state.dirty=true;showNotice('발견함 꽃밭 지역')}
+  if(r==='flowerfield'&&!state.discovered.flowerfield){state.discovered.flowerfield=true;state.dirty=true;showNotice('발견함 꽃밭 지역')}
+  if(r==='giantgarden'&&!state.discovered.giantgarden){state.discovered.giantgarden=true;state.dirty=true;showNotice('미니 바이옴 발견 · 거대화원')}
   if(r==='jungle'&&!state.discovered.jungle){state.discovered.jungle=true;state.dirty=true;showNotice('발견함 밀림')}
   if(r==='canyon'&&!state.discovered.canyon){state.discovered.canyon=true;state.dirty=true;showNotice('발견함 협곡')}
   if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}
@@ -645,6 +654,13 @@ function discoverRegion(){
   if(r==='crystal'&&!state.discovered.crystal){state.discovered.crystal=true;state.dirty=true;showNotice('발견함 수정 지대')}
   if(r==='giantlake'&&!state.discovered.giantlake){state.discovered.giantlake=true;state.dirty=true;showNotice('발견함 거대 호수')}
   checkAchievementProgress(true)
+}
+function discoverUnderwaterRegion(){
+  if(state.area!=='underwater')return;
+  const p=state.player;
+  if(pointInRect(p.x,p.y,DEEP_CORAL_FOREST)&&!state.discovered.deepcoralforest){
+    state.discovered.deepcoralforest=true;state.dirty=true;showNotice('미니 바이옴 발견 · 심해 산호숲')
+  }
 }
 function randomCanyonPoint(){let x,y,guard=0;do{x=rand(11550,14320);y=rand(5050,8520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
 function makeNode(kind,i){
@@ -783,9 +799,9 @@ function initWorld(){
   for(const p of [{x:5200,y:1860},{x:9400,y:1700}])state.enemies.push(spawnAt(creatures.crystaldeer,p.x,p.y,null));
   for(const p of [{x:4100,y:1650},{x:7600,y:1910},{x:11600,y:1660}])state.enemies.push(spawnAt(creatures.lakeheron,p.x,p.y,null));
   // 수중: 악어 1 + 상어 3 + 물고기 6
-  {const e=spawnAt(creatures.lakecroc,10400,1880,null);e.area='underwater';e.noRespawn=true;state.enemies.push(e)}
-  for(const p of [{x:5200,y:1700},{x:9800,y:900},{x:14300,y:2300}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
-  for(let i=0;i<6;i++){const p={x:2200+i*2450,y:650+(i%3)*720};const e=spawnAt(creatures.lakefish,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
+  {const e=spawnAt(creatures.lakecroc,21400,2600,null);e.area='underwater';e.noRespawn=true;state.enemies.push(e)}
+  for(const p of [{x:7600,y:2500},{x:18400,y:5200},{x:30700,y:3000}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
+  for(let i=0;i<6;i++){const p={x:3500+i*5600,y:1300+(i%3)*1800};const e=spawnAt(creatures.lakefish,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   // 꽃밭 생태계
   for(let i=0;i<8;i++){const p=randomFlowerPoint(false);state.enemies.push(spawnAt(creatures.flowergoblin,p.x,p.y,null))}for(let pack=0;pack<6;pack++){const a=randomFlowerPoint(false),count=Math.random()<.2?1:2;for(let i=0;i<count;i++)state.enemies.push(spawnAt(creatures.giantbee,a.x+rand(-55,55),a.y+rand(-55,55),pack))}for(let i=0;i<5;i++){const a=randomFlowerPoint(true),adult=spawnAt(creatures.giantspider,a.x,a.y,100+i);state.enemies.push(adult);const kids=2+Math.floor(Math.random()*3);for(let k=0;k<kids;k++){const c=spawnAt(creatures.giantspiderling,a.x+rand(-85,85),a.y+rand(-85,85),100+i);c.leaderId=adult.netId;state.enemies.push(c)}}for(let i=0;i<2;i++){const p=randomFlowerPoint(true);state.enemies.push(spawnAt(creatures.giantspiderling,p.x,p.y,null))}
   // 설원 생태계
@@ -1098,8 +1114,32 @@ function mapTerrainColorAt(x,y){
  if(r==='giantlake')return pointInGiantLakeWater(x,y)?'#1e668d':'#527868';
  return r==='worldtree'?'#173d24':r==='canyon'?'#523824':r==='crystal'?'#392c5c':'#1d392b'
 }
+function drawLakeMap(mc){
+ const m=mc.getContext('2d'),sx=mc.width/UNDERWATER.w,sy=mc.height/UNDERWATER.h;
+ m.fillStyle='#03131d';m.fillRect(0,0,mc.width,mc.height);
+ for(const key of Object.keys(state.underwaterExplored)){
+  const [gx,gy]=key.split(',').map(Number),wx=gx*MAP_CELL,wy=gy*MAP_CELL,cx=wx+MAP_CELL/2,cy=wy+MAP_CELL/2;
+  const depth=cy/UNDERWATER.h;m.fillStyle=depth>.72?'#082737':depth>.42?'#145774':'#2f8eb3';
+  m.fillRect(wx*sx,wy*sy,MAP_CELL*sx+1,MAP_CELL*sy+1)
+ }
+ m.strokeStyle='#4ba6c8';m.lineWidth=2;m.strokeRect(1,1,mc.width-2,mc.height-2);
+ m.fillStyle='#a8e8ff';m.font='bold 11px system-ui';m.textAlign='center';m.fillText('거대 호수 수중',mc.width/2,16);
+ if(state.discovered.deepcoralforest){
+  m.fillStyle='#245f67';m.fillRect(DEEP_CORAL_FOREST.x*sx,DEEP_CORAL_FOREST.y*sy,DEEP_CORAL_FOREST.w*sx,DEEP_CORAL_FOREST.h*sy);
+  m.strokeStyle='#7bd6ca';m.strokeRect(DEEP_CORAL_FOREST.x*sx,DEEP_CORAL_FOREST.y*sy,DEEP_CORAL_FOREST.w*sx,DEEP_CORAL_FOREST.h*sy);
+  m.fillStyle='#bffcf0';m.font='bold 10px system-ui';m.fillText('심해 산호숲',(DEEP_CORAL_FOREST.x+DEEP_CORAL_FOREST.w/2)*sx,(DEEP_CORAL_FOREST.y+DEEP_CORAL_FOREST.h/2)*sy)
+ }
+ if(multiplayer.connected){
+  const now=performance.now();m.fillStyle='#54d8ff';
+  for(const r of multiplayer.remote.values()){if(!r||r.area!=='underwater'||now-(r.seenAt||0)>2500)continue;m.beginPath();m.arc(Number(r.x)*sx,Number(r.y)*sy,4,0,Math.PI*2);m.fill()}
+ }
+ multiplayer.pings=multiplayer.pings.filter(p=>p.expiresAt>Date.now());
+ for(const ping of multiplayer.pings){if((ping.area||'surface')!=='underwater')continue;const x=ping.x*sx,y=ping.y*sy;m.strokeStyle='#ffd85a';m.lineWidth=2;m.beginPath();m.arc(x,y,6,0,Math.PI*2);m.stroke()}
+ m.fillStyle='#fff';m.beginPath();m.arc(state.player.x*sx,state.player.y*sy,4,0,Math.PI*2);m.fill()
+}
 function drawMap(){
  const mc=document.getElementById('mapCanvas');if(!mc)return;
+ if(state.area==='underwater'){drawLakeMap(mc);return}
  const m=mc.getContext('2d'),sx=mc.width/WORLD.w,sy=mc.height/WORLD.h;
  m.fillStyle='#040806';m.fillRect(0,0,mc.width,mc.height);
  for(const key of Object.keys(state.explored)){
@@ -1107,7 +1147,8 @@ function drawMap(){
    m.fillStyle=mapTerrainColorAt(cx,cy);
    m.fillRect(wx*sx,wy*sy,MAP_CELL*sx+1,MAP_CELL*sy+1)
  }
- if(state.discovered.flowerfield){m.strokeStyle='#d39bc6';m.lineWidth=2;m.strokeRect(FLOWER_FIELD.x*sx,FLOWER_FIELD.y*sy,FLOWER_FIELD.w*sx,FLOWER_FIELD.h*sy);m.strokeStyle='#b66ea8';m.strokeRect(GIANT_GARDEN.x*sx,GIANT_GARDEN.y*sy,GIANT_GARDEN.w*sx,GIANT_GARDEN.h*sy)}
+ if(state.discovered.flowerfield){m.strokeStyle='#d39bc6';m.lineWidth=2;m.strokeRect(FLOWER_FIELD.x*sx,FLOWER_FIELD.y*sy,FLOWER_FIELD.w*sx,FLOWER_FIELD.h*sy);m.fillStyle='#ffd9ef';m.font='bold 11px system-ui';m.fillText('꽃밭',(FLOWER_FIELD.x+FLOWER_FIELD.w*.38)*sx,(FLOWER_FIELD.y+FLOWER_FIELD.h*.5)*sy)}
+ if(state.discovered.giantgarden){m.strokeStyle='#b66ea8';m.lineWidth=2;m.strokeRect(GIANT_GARDEN.x*sx,GIANT_GARDEN.y*sy,GIANT_GARDEN.w*sx,GIANT_GARDEN.h*sy);m.fillStyle='#ffc9ef';m.font='bold 10px system-ui';m.fillText('거대화원',(GIANT_GARDEN.x+GIANT_GARDEN.w*.5)*sx,(GIANT_GARDEN.y+GIANT_GARDEN.h*.5)*sy)}
  if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,(SNOW_REGION.y+SNOW_REGION.h/2)*sy);for(const o of SNOW_OUTPOSTS){m.fillStyle='#7ba0ad';m.fillRect(o.x*sx-3,o.y*sy-3,6,6)}}
  if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
  const tx=JUNGLE_TEMPLE_ENTRANCE.x*sx,ty=JUNGLE_TEMPLE_ENTRANCE.y*sy;
@@ -1127,38 +1168,64 @@ function drawMap(){
    }
  }
  multiplayer.pings=multiplayer.pings.filter(p=>p.expiresAt>Date.now());
- for(const p of multiplayer.pings){const x=p.x*sx,y=p.y*sy;m.strokeStyle='#ffd85a';m.lineWidth=2;m.beginPath();m.arc(x,y,7,0,Math.PI*2);m.stroke();m.beginPath();m.moveTo(x-10,y);m.lineTo(x+10,y);m.moveTo(x,y-10);m.lineTo(x,y+10);m.stroke()}
+ for(const p of multiplayer.pings){if((p.area||'surface')!=='surface')continue;const x=p.x*sx,y=p.y*sy;m.strokeStyle='#ffd85a';m.lineWidth=2;m.beginPath();m.arc(x,y,7,0,Math.PI*2);m.stroke();m.beginPath();m.moveTo(x-10,y);m.lineTo(x+10,y);m.moveTo(x,y-10);m.lineTo(x,y+10);m.stroke()}
  const mapPlayerPos=state.area.startsWith('jungletemple')?JUNGLE_TEMPLE_ENTRANCE:state.player;m.fillStyle='#ffffff';m.beginPath();m.arc(mapPlayerPos.x*sx,mapPlayerPos.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){
- tabState();ui.sheetBody.innerHTML='<div class="info"><b>지도</b><br>직접 가본 곳만 표시돼. 핑은 10초에 1개씩 찍을 수 있고 10초 뒤 사라져.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';
+ tabState();const title=state.area==='underwater'?'거대 호수 지도':'지도';
+ ui.sheetBody.innerHTML='<div class="info"><b>'+title+'</b><br>직접 가본 곳만 표시돼. 발견하지 않은 미니 바이옴은 지도에 나오지 않아. 핑은 10초에 1개씩 찍을 수 있어.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';
  drawMap();const mc=document.getElementById('mapCanvas');if(mc)mc.addEventListener('pointerdown',placeMapPing)
 }
 
 function placeMapPing(e){
  const mc=document.getElementById('mapCanvas');if(!mc)return;const now=Date.now(),wait=(multiplayer.pingReadyAt||0)-now;
  if(wait>0){showNotice('핑 재사용까지 '+Math.ceil(wait/1000)+'초');return}
- const r=mc.getBoundingClientRect(),x=clamp((e.clientX-r.left)/Math.max(1,r.width)*WORLD.w,0,WORLD.w),y=clamp((e.clientY-r.top)/Math.max(1,r.height)*WORLD.h,0,WORLD.h);
- const ping={id:multiplayer.playerId+'-'+now,ownerId:multiplayer.playerId,x,y,expiresAt:now+MAP_PING_LIFETIME_MS};
+ const r=mc.getBoundingClientRect(),underwater=state.area==='underwater',mapW=underwater?UNDERWATER.w:WORLD.w,mapH=underwater?UNDERWATER.h:WORLD.h;
+ const x=clamp((e.clientX-r.left)/Math.max(1,r.width)*mapW,0,mapW),y=clamp((e.clientY-r.top)/Math.max(1,r.height)*mapH,0,mapH),area=underwater?'underwater':'surface';
+ const ping={id:multiplayer.playerId+'-'+now,ownerId:multiplayer.playerId,x,y,area,expiresAt:now+MAP_PING_LIFETIME_MS};
  multiplayer.pingReadyAt=now+MAP_PING_COOLDOWN_MS;multiplayer.pingSeenAt.set(multiplayer.playerId,now);multiplayer.pings.push(ping);
- if(multiplayer.connected)multiSend('map-ping',{id:ping.id,ownerId:ping.ownerId,x,y});
+ if(multiplayer.connected)multiSend('map-ping',{id:ping.id,ownerId:ping.ownerId,x,y,area});
  drawMap();setTimeout(()=>drawMap(),MAP_PING_LIFETIME_MS+50)
 }
 function receiveMapPing(payload){
  if(!payload||!Number.isFinite(Number(payload.x))||!Number.isFinite(Number(payload.y)))return;
  const id=String(payload.id||''),ownerId=String(payload.ownerId||'');if(!id||!ownerId||multiplayer.pings.some(p=>p.id===id))return;
  const now=Date.now(),last=Number(multiplayer.pingSeenAt.get(ownerId)||0);if(now-last<MAP_PING_COOLDOWN_MS)return;
- multiplayer.pingSeenAt.set(ownerId,now);multiplayer.pings.push({id,ownerId,x:clamp(Number(payload.x),0,WORLD.w),y:clamp(Number(payload.y),0,WORLD.h),expiresAt:now+MAP_PING_LIFETIME_MS});
+ const area=payload.area==='underwater'?'underwater':'surface',mapW=area==='underwater'?UNDERWATER.w:WORLD.w,mapH=area==='underwater'?UNDERWATER.h:WORLD.h;
+ multiplayer.pingSeenAt.set(ownerId,now);multiplayer.pings.push({id,ownerId,x:clamp(Number(payload.x),0,mapW),y:clamp(Number(payload.y),0,mapH),area,expiresAt:now+MAP_PING_LIFETIME_MS});
  if(state.panelMode==='map'&&ui.sheet.classList.contains('open'))drawMap();setTimeout(()=>drawMap(),MAP_PING_LIFETIME_MS+50)
 }
 let miniMapDrawAt=0;
+function drawUnderwaterMiniMap(c,m,w,h,cx,cy,r,now){
+ const p=state.player,viewRadius=2100,scale=r/viewRadius,toMini=(x,y)=>({x:cx+(x-p.x)*scale,y:cy+(y-p.y)*scale});
+ m.clearRect(0,0,w,h);m.save();m.beginPath();m.arc(cx,cy,r,0,Math.PI*2);m.clip();m.fillStyle='#082737';m.fillRect(0,0,w,h);
+ const cell=8;
+ for(let py=0;py<h;py+=cell)for(let px=0;px<w;px+=cell){
+  const dx=px+cell/2-cx,dy=py+cell/2-cy;if(dx*dx+dy*dy>r*r)continue;
+  const wx=p.x+dx/scale,wy=p.y+dy/scale;if(wx<0||wy<0||wx>UNDERWATER.w||wy>UNDERWATER.h){m.fillStyle='#020b10'}else{
+   const depth=wy/UNDERWATER.h;m.fillStyle=depth>.72?'#082737':depth>.42?'#145774':'#2f8eb3';
+   if(state.discovered.deepcoralforest&&pointInRect(wx,wy,DEEP_CORAL_FOREST))m.fillStyle='#245f67'
+  }m.fillRect(px,py,cell+1,cell+1)
+ }
+ if(state.discovered.deepcoralforest){
+  const a=toMini(DEEP_CORAL_FOREST.x,DEEP_CORAL_FOREST.y),b=toMini(DEEP_CORAL_FOREST.x+DEEP_CORAL_FOREST.w,DEEP_CORAL_FOREST.y+DEEP_CORAL_FOREST.h);
+  m.strokeStyle='#7bd6ca88';m.lineWidth=1;m.strokeRect(a.x,a.y,b.x-a.x,b.y-a.y)
+ }
+ if(multiplayer.connected){m.fillStyle='#54d8ff';for(const rp of multiplayer.remote.values()){if(!rp||rp.area!=='underwater'||now-(rp.seenAt||0)>2500)continue;const q=toMini(Number(rp.x)||0,Number(rp.y)||0),dx=q.x-cx,dy=q.y-cy;if(dx*dx+dy*dy>r*r)continue;m.beginPath();m.arc(q.x,q.y,3.2,0,Math.PI*2);m.fill()}}
+ multiplayer.pings=multiplayer.pings.filter(x=>x.expiresAt>Date.now());m.strokeStyle='#ffd85a';m.lineWidth=2;
+ for(const ping of multiplayer.pings){if((ping.area||'surface')!=='underwater')continue;const q=toMini(ping.x,ping.y),dx=q.x-cx,dy=q.y-cy;if(dx*dx+dy*dy>r*r)continue;m.beginPath();m.arc(q.x,q.y,5,0,Math.PI*2);m.stroke()}
+ const fx=Number(p.faceX)||1,fy=Number(p.faceY)||0,fl=Math.hypot(fx,fy)||1,ux=fx/fl,uy=fy/fl,px2=-uy,py2=ux;
+ m.fillStyle='#fff';m.strokeStyle='#163025';m.lineWidth=1.5;m.beginPath();m.moveTo(cx+ux*8,cy+uy*8);m.lineTo(cx-ux*5+px2*5,cy-uy*5+py2*5);m.lineTo(cx-ux*5-px2*5,cy-uy*5-py2*5);m.closePath();m.fill();m.stroke();
+ m.restore();m.strokeStyle='#e4f3ea88';m.lineWidth=2;m.beginPath();m.arc(cx,cy,r,0,Math.PI*2);m.stroke();m.fillStyle='#e9fff1';m.font='bold 8px system-ui';m.textAlign='center';m.fillText('N',cx,10)
+}
 function drawMiniMap(now=performance.now()){
  if(now-miniMapDrawAt<180)return;miniMapDrawAt=now;
  const c=document.getElementById('miniMap');if(!c)return;const m=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,r=Math.min(w,h)/2-3;
+ if(state.area==='underwater'){drawUnderwaterMiniMap(c,m,w,h,cx,cy,r,now);return}
  let anchor;
  if(state.area==='surface')anchor={x:state.player.x,y:state.player.y};
  else if(state.area.startsWith('jungletemple'))anchor={...JUNGLE_TEMPLE_ENTRANCE};
- else if(state.area==='underwater')anchor=state.lakeReturnPos?{x:state.lakeReturnPos.x,y:state.lakeReturnPos.y}:{x:GIANT_LAKE_WATER.x+GIANT_LAKE_WATER.w/2,y:GIANT_LAKE_WATER.y+GIANT_LAKE_WATER.h/2};
+
  else anchor=state.surfacePos?{x:state.surfacePos.x,y:state.surfacePos.y}:{...START};
  const viewRadius=1550,scale=r/viewRadius;
  const toMini=(x,y)=>({x:cx+(x-anchor.x)*scale,y:cy+(y-anchor.y)*scale});
@@ -1177,7 +1244,7 @@ function drawMiniMap(now=performance.now()){
   const a=toMini(rect.x,rect.y),b=toMini(rect.x+rect.w,rect.y+rect.h);
   m.strokeStyle=stroke;m.lineWidth=width;m.strokeRect(a.x,a.y,b.x-a.x,b.y-a.y)
  };
- drawRect(SNOW_REGION,'#d7f4ff77',1);drawRect(FLOWER_FIELD,'#ffd1ef88',1);drawRect(GIANT_GARDEN,'#e28bcf88',1);drawRect(JUNGLE_REGION,'#78b86c77',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
+ drawRect(SNOW_REGION,'#d7f4ff77',1);if(state.discovered.flowerfield)drawRect(FLOWER_FIELD,'#ffd1ef88',1);if(state.discovered.giantgarden)drawRect(GIANT_GARDEN,'#e28bcf88',1);drawRect(JUNGLE_REGION,'#78b86c77',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
  const landmark=(x,y,color,size=3)=>{
   const q=toMini(x,y);if((q.x-cx)*(q.x-cx)+(q.y-cy)*(q.y-cy)>r*r)return;
   m.fillStyle=color;m.beginPath();m.arc(q.x,q.y,size,0,Math.PI*2);m.fill()
@@ -3081,6 +3148,8 @@ function update(dt,now){
   if(state.area==='surface'){
     markExplored();discoverRegion();
     if(dist(p.x,p.y,TREE_HOLE.x,TREE_HOLE.y)<72){enterCave()}
+  }else if(state.area==='underwater'){
+    markUnderwaterExplored();discoverUnderwaterRegion()
   }
   if(state.area==='underground'&&state.bossDefeated&&state.bossExitAt>0&&Date.now()>=state.bossExitAt){leaveCave(true)}
   if(!p.downedUntil)updateHazards(now);updateTempleTrap(now);updateRaid(Date.now())
@@ -3914,7 +3983,10 @@ function drawUnderwater(cx,cy,w,h){
  const g=ctx.createLinearGradient(0,0,0,UNDERWATER.h);g.addColorStop(0,'#2f8eb3');g.addColorStop(.45,'#145774');g.addColorStop(1,'#082737');ctx.fillStyle=g;ctx.fillRect(0,0,UNDERWATER.w,UNDERWATER.h);
  ctx.fillStyle='#b8e8f055';ctx.fillRect(0,0,UNDERWATER.w,120);
  ctx.fillStyle='#756d58';ctx.fillRect(0,UNDERWATER.h-180,UNDERWATER.w,180);
- for(let i=0;i<70;i++){const x=(i*941)%UNDERWATER.w,y=350+(i*353)%(UNDERWATER.h-650);ctx.fillStyle=i%2?'#7bc5c455':'#b4e1d744';ctx.beginPath();ctx.arc(x,y,5+(i%4)*3,0,Math.PI*2);ctx.fill()}
+ ctx.fillStyle='#174e58';ctx.fillRect(DEEP_CORAL_FOREST.x,DEEP_CORAL_FOREST.y,DEEP_CORAL_FOREST.w,DEEP_CORAL_FOREST.h);
+ for(let i=0;i<190;i++){const x=(i*941)%UNDERWATER.w,y=350+(i*353)%(UNDERWATER.h-650);ctx.fillStyle=i%2?'#7bc5c455':'#b4e1d744';ctx.beginPath();ctx.arc(x,y,5+(i%4)*3,0,Math.PI*2);ctx.fill()}
+ for(let i=0;i<85;i++){const x=DEEP_CORAL_FOREST.x+80+(i*977)%(DEEP_CORAL_FOREST.w-160),y=DEEP_CORAL_FOREST.y+120+(i*613)%(DEEP_CORAL_FOREST.h-240);ctx.strokeStyle=i%3===0?'#e28ccf':'#7bd6ca';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y+28);ctx.lineTo(x,y-22);ctx.lineTo(x-14,y-42);ctx.moveTo(x,y-8);ctx.lineTo(x+17,y-34);ctx.stroke()}
+ if(state.discovered.deepcoralforest){ctx.fillStyle='#bffcf0';ctx.font='bold 20px system-ui';ctx.textAlign='center';ctx.fillText('심해 산호숲',DEEP_CORAL_FOREST.x+DEEP_CORAL_FOREST.w/2,DEEP_CORAL_FOREST.y+90)}
  ctx.fillStyle='#d9f6ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('위로 계속 올라가면 지상으로 나감',UNDERWATER.w/2,58);
  ctx.restore();
  ctx.fillStyle='rgba(0,18,30,.22)';ctx.fillRect(0,0,w,h)
@@ -3966,7 +4038,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,beds:state.beds,crops:state.crops,flowerWebs:state.flowerWebs,snowChests:state.snowChests,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,beds:state.beds,crops:state.crops,flowerWebs:state.flowerWebs,snowChests:state.snowChests,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -3996,7 +4068,7 @@ function loadGame(){
   for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);for(const [id,list] of [['storage-chest',state.chests],['wood-wall',state.walls],['wood-door',state.doors],['bed',state.beds]])if(list.length)rememberItem(id);
   if(version<30){for(const r of recipes)if(state.knownItems[r.id])for(const [k,v] of Object.entries(r.cost||{}))if(Number(v)>0)rememberMaterial(k)}
   if(s.weather&&typeof s.weather==='object')setWeather(s.weather.kind,{fromNetwork:true,changedAt:s.weather.changedAt,nextAt:s.weather.nextAt,seed:s.weather.seed});
-  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle,snow:!!s.discovered?.snow};
+  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle,snow:!!s.discovered?.snow,flowerfield:!!s.discovered?.flowerfield,giantgarden:!!s.discovered?.giantgarden,deepcoralforest:!!s.discovered?.deepcoralforest};
   if(s.explored&&typeof s.explored==='object'){
    state.explored={};
    for(const key of Object.keys(s.explored)){
@@ -4007,6 +4079,7 @@ function loadGame(){
      state.explored[Math.floor(wx/MAP_CELL)+','+Math.floor(wy/MAP_CELL)]=1
    }
   }else state.explored={};
+  state.underwaterExplored=s.underwaterExplored&&typeof s.underwaterExplored==='object'?{...s.underwaterExplored}:{};
   state.area=s.area==='underwater'?'underwater':s.area==='underground'?'underground':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':s.area==='jungletemple'?'jungletemple':s.area==='jungletemple-upper'?'jungletemple-upper':s.area==='jungletemple-lower'?'jungletemple-lower':s.area==='jungletemple-secret'?'jungletemple-secret':'surface';if(version<43&&(state.area==='storylab1'||state.area==='storylab2')){p.x*=.4;p.y*=.4}state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
   state.rootTaken=!!s.rootTaken;state.rootRespawnAt=Math.max(0,Number(s.rootRespawnAt)||0);state.lakeReturnPos=s.lakeReturnPos&&Number.isFinite(Number(s.lakeReturnPos.x))?{x:Number(s.lakeReturnPos.x),y:Number(s.lakeReturnPos.y)}:null;state.templeReturnPos=s.templeReturnPos&&Number.isFinite(Number(s.templeReturnPos.x))?{x:Number(s.templeReturnPos.x),y:Number(s.templeReturnPos.y)}:null;state.templeOfferingUsed=!!s.templeOfferingUsed;state.templeChestOpened=!!s.templeChestOpened;state.templeUpperSpawned=false;state.templeGuardianSpawned=false;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.achievements=s.achievements&&typeof s.achievements==='object'?{...s.achievements}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}state.questCaveInit=!!s.questCaveInit;
   const savedSettings=s.settings&&typeof s.settings==='object'?s.settings:{};state.settings.difficulty=DIFFICULTY_PROFILES[savedSettings.difficulty]?savedSettings.difficulty:'normal';state.gathering.auto=!!savedSettings.autoGather;music.enabled=savedSettings.bgmEnabled!==false;const savedVolume=Number(savedSettings.bgmVolume);setBgmVolume(Number.isFinite(savedVolume)?savedVolume:100);applyDifficultyToEnemies();syncOptionsUi();
