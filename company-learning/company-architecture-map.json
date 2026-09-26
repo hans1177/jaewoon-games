@@ -1,5 +1,5 @@
 {
-  "version": 253,
+  "version": 254,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5629,6 +5629,18 @@
     "queueFetchSerializedBehindContractChecks": false,
     "canonicalStageOrderPreserved": true,
     "eligibilitySemanticsUnchanged": true,
+    "qualityGateWeakening": false
+  },
+  "unityWebLibraryCacheReuse": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebLibraryCacheReuse20260927",
+    "workflow": ".github/workflows/unity-web-first-stage-build.yml",
+    "cachePath": "unity-games/<gameId>/Library",
+    "cacheScope": "SAME_OS_SAME_GAME_WITH_PACKAGE_AND_EDITOR_VERSION_KEY",
+    "buildArtifactReuse": false,
+    "qaEvidenceReuse": false,
+    "runtimeEvidenceReuse": false,
+    "independentGameParallelism": true,
     "qualityGateWeakening": false
   }
 }
