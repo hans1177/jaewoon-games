@@ -1,5 +1,5 @@
 {
-  "version": 426,
+  "version": 427,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8544,6 +8544,22 @@
       "sharedStateWriteRulesUnchanged": true,
       "independentGameParallelismReduced": false,
       "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "homepageRunnerIsolation20260926": {
+      "id": "HOMEPAGE_RUNNER_ISOLATION_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_HOMEPAGE_NODE_GIT_ARTIFACT_CONTROL_WORK_FROM_HEAVY_GAME_RUNNER_POOL",
+      "workflow": ".github/workflows/homepage-manager.yml",
+      "runners": {
+        "prFastQa": "ubuntu-slim",
+        "manageAndSelfQa": "ubuntu-slim",
+        "directorSupervision": "ubuntu-slim"
+      },
+      "browserOrEngineRuntimeRequired": false,
+      "publicationOrderUnchanged": true,
+      "gamePrimaryCapacityProtected": true,
+      "qualityGateWeakening": false
     }
   },
   "vibeExecutionLaneContract": {

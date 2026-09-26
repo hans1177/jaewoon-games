@@ -1,5 +1,5 @@
 {
-  "version": 237,
+  "version": 238,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5392,5 +5392,13 @@
       ]
     },
     "serializationScopeUnchanged": "RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY"
+  },
+  "homepageRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.homepageRunnerIsolation20260926",
+    "workflow": ".github/workflows/homepage-manager.yml",
+    "allJobs": "ubuntu-slim",
+    "sharesHeavyGameRunnerPool": false,
+    "managerSupervisorTopologyUnchanged": true
   }
 }

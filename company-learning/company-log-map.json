@@ -1,5 +1,5 @@
 {
-  "version": 102,
+  "version": 103,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1880,5 +1880,17 @@
     },
     "purpose": "PREVENT_GAME_CONTROL_AND_DEDUPE_FROM_WAITING_BEHIND_HEAVY_GAME_EXECUTION",
     "gateSemanticsUnchanged": true
+  },
+  "homepageRunnerIsolationEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "expectedRunnerLabel": "ubuntu-slim",
+    "jobs": [
+      "pr-fast-qa",
+      "manage-and-self-qa",
+      "director-supervision"
+    ],
+    "gamePrimaryCapacityClaim": false,
+    "publicationEvidenceUnchanged": true
   }
 }

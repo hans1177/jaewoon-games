@@ -109,7 +109,7 @@ jobs:
   pr-fast-qa:
     name: Homepage PR Fast QA
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 4
     steps:
       - name: Checkout PR impact surface
@@ -156,7 +156,7 @@ jobs:
   manage-and-self-qa:
     name: Homepage Manager Self-QA
     if: github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 15
     outputs:
       base_sha: ${{ steps.capture.outputs.base_sha }}
@@ -498,7 +498,7 @@ jobs:
     name: Director Review and Publish
     needs: manage-and-self-qa
     if: github.event_name != 'pull_request' && needs.manage-and-self-qa.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - name: Checkout supervised base revision

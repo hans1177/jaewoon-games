@@ -516,3 +516,16 @@ test('homepage platform exposure derives supported platforms from the central ro
   assert.match(sync,/HOMEPAGE_PLATFORM_ADAPTER_MISSING/);
   assert.doesNotMatch(sync,/supportedPlatforms:\['ROBLOX','UNITY'\]/);
 });
+
+test('homepage manager control and publication jobs stay off the game-primary runner pool',()=>{
+  const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  for(const job of ['pr-fast-qa','manage-and-self-qa','director-supervision']){
+    const start=workflow.indexOf('\n  '+job+':\n');
+    assert.ok(start>=0,job);
+    const tail=workflow.slice(start+1);
+    const next=tail.slice(1).search(/\n  [A-Za-z0-9_-]+:\n/);
+    const block=next>=0?workflow.slice(start,start+1+next+1):workflow.slice(start);
+    assert.match(block,/runs-on:\s*ubuntu-slim/,job);
+  }
+  assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
+});
