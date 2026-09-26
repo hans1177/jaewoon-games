@@ -31,10 +31,6 @@ permissions:
   contents: read
   actions: write
 
-concurrency:
-  group: director-central-company-supervisor-v3
-  cancel-in-progress: false
-
 jobs:
   runner-drain:
     name: drain superseded queued work
@@ -238,6 +234,9 @@ jobs:
   supervise:
     needs: game-primary-gate
     if: needs.game-primary-gate.outputs.defer != 'true'
+    concurrency:
+      group: director-central-company-supervise-v3
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 8
     steps:
