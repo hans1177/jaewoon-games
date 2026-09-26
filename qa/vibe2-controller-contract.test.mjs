@@ -248,7 +248,9 @@ test('controller reserves a batch and fans workers out to the external matrix bo
   assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
   assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,4);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
-  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
   assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
@@ -484,7 +486,8 @@ test('reserve preflight uses the pinned main contract and blocks broken GAME_PRI
 });
 
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
-  assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(!workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
   assert(!workflow.includes("format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes("startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id)"));
@@ -525,7 +528,8 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE'));
   assert.equal(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS'),false);
-  assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(!workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
   assert.equal(runtime.continuous.executionTopology,'ATOMIC_NEURON_STREAM');
   assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
   assert.equal(runtime.continuous.atomicNeuronStream.taskMicroFanIn,true);
@@ -681,7 +685,9 @@ test('continuous core and 24H runner isolate game-primary and learning-idle exec
   assert(workflow.includes('execution_lane:'));
   assert(workflow.includes("VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}"));
   assert(workflow.includes('--lane="$VIBE2_EXECUTION_LANE"'));
-  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
   assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   assert(workflow.includes('VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:'));
   assert(workflow.includes('AUXILIARY_LANE_NO_RELEASE'));
