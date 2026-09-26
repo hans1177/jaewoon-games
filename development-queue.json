@@ -3041,11 +3041,21 @@
         "authority": "OWNER_DIRECTIVE",
         "gameId": "fantasy-survival",
         "sourcePath": "web-games/fantasy-survival",
-        "sourceBefore": "2c0c6d7e207957d7e6a205dedffcb5c4cda8ff4d",
-        "sourceAfter": "2ad46e55e29c5b798a4eb87194b7d44fc0ac660c",
-        "semanticIntentFingerprint": "f341e5a7f4fffb9a4de432aa0b04106a066e1158b0f1a1802fc0f8610b7cf97c",
+        "sourceBefore": "008e36d86127b16953d6e3e6973c1d48972bb597",
+        "sourceAfter": "6bf48710a103a66c75fa2e5ef28efc5e82365e99",
+        "semanticIntentFingerprint": "0369f0e204f1ccb6a0817691be30471d5d686f9f9499500a7462d9f397ae87fc",
         "affectedSystems": [
-          "COMBAT"
+          "MOVEMENT",
+          "COMBAT",
+          "CRAFTING",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "AUDIO",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
         ],
         "platformTargets": [
           "ROBLOX",
@@ -3055,11 +3065,11 @@
         "semanticIntentPropagationRequired": true,
         "affectedWebQaRequired": true,
         "affectedPlatformQaRequired": true,
-        "detectedAt": "2026-09-26T08:23:04.147Z",
+        "detectedAt": "2026-09-26T08:36:07.599Z",
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-26T08:23:04.147Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-09-26T08:36:07.599Z"
     },
     {
       "gameId": "monster-adventure",
@@ -5402,7 +5412,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-26T08:23:04.147Z",
+  "updatedAt": "2026-09-26T08:36:07.599Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
