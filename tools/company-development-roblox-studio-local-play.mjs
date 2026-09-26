@@ -124,6 +124,20 @@ function artifactRunIdFor(item={},candidate={}){
   return Number(candidate?.artifactRunId||item?.robloxFoundationF0Evidence?.artifactRunId||item?.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
 }
 
+function runtimeFoundationObserved(item={},candidate={}){
+  const runtime=item?.robloxRuntimeFoundationEvidence||{};
+  const sourceRevision=clean(item?.robloxSourceCommit);
+  const artifactIdentity=clean(item?.robloxBuildArtifactIdentity);
+  return Boolean(
+    item?.robloxRuntimeFoundationPassed===true
+    &&runtime?.runtimeFoundationPassed===true
+    &&clean(runtime?.sourceRevision)===sourceRevision
+    &&clean(runtime?.artifactIdentity)===artifactIdentity
+    &&String(runtime?.placeId||'')===String(candidate?.placeId||'')
+    &&Number(runtime?.candidateVersionNumber||0)===Number(candidate?.versionNumber||0)
+  );
+}
+
 function internalReleaseObserved(item={},candidate={}){
   const internal=item?.robloxInternalReleaseEvidence||{};
   const sourceRevision=clean(item?.robloxSourceCommit);
@@ -172,13 +186,21 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&Number(candidate?.versionNumber||0)>0
     );
 
+    const runtimeFoundationExact=Boolean(
+      candidateExact
+      &&item?.robloxBuildOrPackagePassed===true
+      &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
+      &&currentSourceRevision===candidateSourceRevision
+      &&currentArtifactIdentity===candidateArtifactIdentity
+      &&runtimeFoundationObserved(item,candidate)
+    );
     const currentExact=Boolean(
       candidateExact
       &&item?.robloxBuildOrPackagePassed===true
       &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
       &&currentSourceRevision===candidateSourceRevision
       &&currentArtifactIdentity===candidateArtifactIdentity
-      &&internalReleaseObserved(item,candidate)
+      &&(runtimeFoundationExact||internalReleaseObserved(item,candidate))
     );
 
     const historicalInternalReleaseExact=Boolean(
@@ -245,7 +267,8 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       versionNumber:Number(candidate.versionNumber),
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
       historicalExactPublishedArtifact:infrastructurePrerequisiteReplay||item?.robloxSharedTargetCurrent!==true,
-      infrastructurePrerequisiteReplay
+      infrastructurePrerequisiteReplay,
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY'
     });
   }
 
@@ -872,10 +895,15 @@ export function createLocalStudioPlayEvidence({
     clean(item?.robloxSourceCommit)===sourceRevision
     &&clean(item?.robloxBuildArtifactIdentity)===artifactIdentity
   );
+  const runtimeFoundationExact=Boolean(
+    currentSourceArtifactBinding
+    &&candidateMatchesExpected
+    &&runtimeFoundationObserved(item,candidate)
+  );
   const currentExactPublishedArtifact=Boolean(
     currentSourceArtifactBinding
     &&candidateMatchesExpected
-    &&internalReleaseObserved(item,candidate)
+    &&(runtimeFoundationExact||internalReleaseObserved(item,candidate))
   );
   const historicalExactPublishedArtifact=Boolean(
     !currentSourceArtifactBinding
@@ -941,6 +969,26 @@ export function createLocalStudioPlayEvidence({
     :!dispatched?'STUDIO_MCP_INPUT_NOT_OBSERVED'
     :!screenChanged?'STUDIO_MCP_VIEWPORT_NOT_CHANGED'
     :'STUDIO_MCP_LOCAL_PLAY_FAILED';
+  const nativeFailureText=[
+    ...errors.map(row=>[row.type,row.actionId,row.signature].filter(Boolean).join(' ')),
+    ...checkpoints.filter(row=>row.pass!==true).map(row=>row.name||row.id),
+    ...actions.filter(row=>row.ok!==true).map(row=>row.type||row.id)
+  ].join(' ');
+  const robloxFailureClass=pass?null
+    :/DataStore|GetDataStore|SetAsync|UpdateAsync|save|load/i.test(nativeFailureText)?'ROBLOX_DATASTORE_SAVE_LOAD'
+    :/RemoteEvent|RemoteFunction|OnServer|FireServer|InvokeServer|remote/i.test(nativeFailureText)?'ROBLOX_REMOTE_EVENT_OR_FUNCTION'
+    :/touch|input|keyboard|mouse|button/i.test(nativeFailureText)?'ROBLOX_TOUCH_INPUT'
+    :/character|humanoid|respawn|spawn/i.test(nativeFailureText)?'ROBLOX_CHARACTER_RESPAWN_STATE'
+    :/gui|ui|screen|viewport/i.test(nativeFailureText)?'ROBLOX_UI_STATE'
+    :/replic|sync|multiplayer|join|rejoin|late.?join/i.test(nativeFailureText)?'ROBLOX_MULTIPLAYER_SYNC'
+    :/server|client|authority/i.test(nativeFailureText)?'ROBLOX_SERVER_CLIENT_BOUNDARY'
+    :'ROBLOX_STUDIO_RUNTIME';
+  const scenarioCoverage=[
+    {id:'BOOT_TO_FIRST_ACTION',pass:playMode&&dispatched},
+    {id:'MOVE_AND_PRIMARY_ACTION',pass:actions.some(row=>row.ok===true&&/keyboard|mouse|navigation/i.test(row.type+' '+row.id))},
+    {id:'UI_ACTION_TO_AUTHORITATIVE_STATE_CHANGE',pass:requiredPass&&runtime?.runtimeVerified===true}
+  ];
+  const scenarioCoveragePass=scenarioCoverage.every(row=>row.pass===true);
   const learningSignals=[
     'roblox official studio mcp local runtime',
     ...actions.filter(row=>row.ok===true).map(row=>clean(row.type||row.id||'input')),
@@ -961,6 +1009,8 @@ export function createLocalStudioPlayEvidence({
       learningScope:'STRUCTURED_VERIFIED_QA_FACTS_ONLY',
       infrastructureFailure,
       failureClass,
+      robloxFailureClass,
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
       studioMcpServerEnablementRequired,
       operatorPrerequisite:studioMcpServerEnablementRequired?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
       localPlaceFile:true,
@@ -990,12 +1040,12 @@ export function createLocalStudioPlayEvidence({
         consoleErrorCount:Number(runtime?.metrics?.consoleErrorCount||0),
         distinctFrameChange:screenChanged
       },
-      learningSignals,
+      learningSignals:unique([...learningSignals,robloxFailureClass].filter(Boolean)),
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
       rawViewportIncluded:false,
-      scenarioCoverage:[],
-      scenarioCoveragePass:false,
+      scenarioCoverage,
+      scenarioCoveragePass,
       testedAt,
       workflowRunId:Number(workflowRunId||0),
       publicationAuthority:false,
@@ -1041,7 +1091,7 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   }else{
     item.canonicalState='REPAIR_REQUIRED';
     item.robloxFailureStage='VIBE_INTERNAL_PLAY';
-    item.robloxFailureSignature=result.evidence.errors.length?'ROBLOX_STUDIO_MCP_RUNTIME_ERROR':'ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED';
+    item.robloxFailureSignature=result.evidence.robloxFailureClass|| (result.evidence.errors.length?'ROBLOX_STUDIO_MCP_RUNTIME_ERROR':'ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED');
     item.routingBlockers=['roblox-studio-mcp-play-repair-required'];
   }
   item.robloxPublicReleaseReady=false;
@@ -1147,6 +1197,9 @@ async function main(){
     });
     writeJson(a.queue,applied.queue);
     console.log('ROBLOX_STUDIO_MCP_PLAY_RESULT='+clean(a['game-id'])+':'+(applied.result.pass?'PASS':'FAIL'));
+    console.log('ROBLOX_NATIVE_ACTUAL_PLAY_FEEDBACK='+(applied.result.pass?'PASS':applied.result.evidence.infrastructureFailure?'UNKNOWN_INFRA':'FAIL'));
+    console.log('ROBLOX_NATIVE_FAILURE_CLASS='+(applied.result.evidence.robloxFailureClass||'NONE'));
+    console.log('ROBLOX_NATIVE_FUNCTIONAL_CHAIN='+(applied.result.evidence.scenarioCoveragePass?'PASS':'PARTIAL_OR_FAIL'));
     console.log('ROBLOX_STUDIO_MCP_PLAY_LEARNING='+(applied.result.evidence.learningReusable?'STRUCTURED_VERIFIED':'NO'));
     return;
   }
