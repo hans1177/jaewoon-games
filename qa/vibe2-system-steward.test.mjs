@@ -168,10 +168,13 @@ test('steward migrates explicit legacy v3 parallelism state to v4',()=>{
 });
 
 test('system steward stale lease recovery stays synchronized with central architecture and log maps',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
   const recovery=architecture?.autonomousBottleneckRecovery?.staleRunningReservationRecovery;
   const logRecovery=logMap?.orchestrationLogContract?.systemStewardRecovery;
+  assert.equal(policy?.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticRecovery?.staleRunningReservation,'RELEASE_AND_REQUEUE_WITH_RECOVERY_EVIDENCE');
+  assert.equal(recovery?.source,'company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticRecovery.staleRunningReservation');
   assert.equal(recovery?.implementation,'tools/vibe2-system-steward.mjs::staleRunningIds');
   assert.equal(recovery?.staleAfterMinutes,45);
   assert.equal(recovery?.actionMarker,'RECOVER_STALE_RUNNING_RESERVATION');
