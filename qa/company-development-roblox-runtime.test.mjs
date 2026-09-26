@@ -567,7 +567,7 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
     const nextJobMatch=tail.match(/\n  [A-Za-z0-9_-]+:\n/);
     const end=nextJobMatch?start+header.length+nextJobMatch.index:workflow.length;
     const block=workflow.slice(start,end);
-    assert.match(block,/runs-on: ubuntu-slim/);
+    assert.match(block,/runs-on: ubuntu-24\.04-arm/);
   }
   const technicalWorkerStart=workflow.indexOf('  technical-worker:\n');
   const technicalWorkerEnd=workflow.indexOf('\n  technical-persist:',technicalWorkerStart);
@@ -844,13 +844,27 @@ test('Roblox runtime collapses duplicate exact-game and batch planners without a
   assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:/);
 });
 
-test('source-plan dedupe job itself has no concurrency lock and stays on slim control capacity',()=>{
+test('source-plan dedupe job itself has no concurrency lock and stays on ARM game-control capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('\n  source-plan:\n');
   const end=workflow.indexOf('\n  source-worker:\n',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
-  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.match(block,/runs-on:\s*ubuntu-24\.04-arm/);
   assert.doesNotMatch(block,/concurrency:/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
+});
+
+test('Roblox game-control jobs use ARM while heavy source and technical workers stay on full runners',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
+    const start=workflow.indexOf('\n  '+job+':\n');
+    assert.ok(start>=0,job);
+    const tail=workflow.slice(start+1);
+    const next=tail.slice(1).search(/\n  [A-Za-z0-9_-]+:\n/);
+    const block=next>=0?workflow.slice(start,start+1+next+1):workflow.slice(start);
+    assert.match(block,/runs-on:\s*ubuntu-24\.04-arm/,job);
+  }
+  assert.match(workflow,/\n  source-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+  assert.match(workflow,/\n  technical-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
 });

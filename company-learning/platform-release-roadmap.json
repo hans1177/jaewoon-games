@@ -1,5 +1,5 @@
 {
-  "version": 425,
+  "version": 426,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8515,6 +8515,34 @@
       "designPromotionDirectBatchDispatchForbidden": true,
       "designPromotionWake": "CENTRAL_EXACT_FANOUT",
       "independentGamesRemainParallel": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "gameControlRunnerPoolSeparation20260926": {
+      "id": "GAME_CONTROL_RUNNER_POOL_SEPARATION_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "START_NATIVE_GAME_PLANNERS_AND_DEDUPE_GUARDS_WITHOUT_WAITING_BEHIND_HEAVY_X64_GAME_WORKERS",
+      "pools": {
+        "gameControl": "ubuntu-24.04-arm",
+        "administrativeControl": "ubuntu-slim",
+        "heavyGameExecution": "ubuntu-latest"
+      },
+      "robloxGameControlJobs": [
+        "source-plan",
+        "source-bootstrap",
+        "technical-plan",
+        "technical-persist"
+      ],
+      "robloxHeavyJobs": [
+        "source-worker",
+        "technical-worker"
+      ],
+      "privateRuntimeGuard": "ubuntu-24.04-arm",
+      "privateRuntimePublish": "ubuntu-latest",
+      "unityPrepare": "ubuntu-24.04-arm",
+      "unityTechnicalValidation": "ubuntu-latest",
+      "sharedStateWriteRulesUnchanged": true,
+      "independentGameParallelismReduced": false,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },

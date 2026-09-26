@@ -1,5 +1,5 @@
 {
-  "version": 101,
+  "version": 102,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1866,5 +1866,19 @@
     ],
     "duplicateChildQueueEntryIsWaste": true,
     "independentPlatformLaneMayProceedWhenSiblingAlreadyActive": true
+  },
+  "gameControlRunnerPoolEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "expectedRunnerLabels": {
+      "robloxControl": "ubuntu-24.04-arm",
+      "robloxHeavy": "ubuntu-latest",
+      "privateRuntimeDedupe": "ubuntu-24.04-arm",
+      "privateRuntimePublish": "ubuntu-latest",
+      "unityPrepare": "ubuntu-24.04-arm",
+      "unityTechnicalValidation": "ubuntu-latest"
+    },
+    "purpose": "PREVENT_GAME_CONTROL_AND_DEDUPE_FROM_WAITING_BEHIND_HEAVY_GAME_EXECUTION",
+    "gateSemanticsUnchanged": true
   }
 }

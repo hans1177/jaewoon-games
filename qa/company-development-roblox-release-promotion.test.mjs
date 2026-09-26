@@ -425,8 +425,14 @@ test('private runtime dedupe job itself never waits behind a same-game runner lo
   const start=workflow.indexOf('  release-dedupe:');
   const end=workflow.indexOf('\n  release:',start);
   const block=workflow.slice(start,end);
-  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.match(block,/runs-on:\s*ubuntu-24\.04-arm/);
   assert.doesNotMatch(block,/concurrency:/);
   assert.doesNotMatch(block,/runs-on:\s*ubuntu-latest/);
   assert.match(block,/ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER=/);
+});
+
+test('private runtime guard uses ARM while publish remains on a full runner',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(workflow,/\n  release-dedupe:\n[\s\S]*?runs-on:\s*ubuntu-24\.04-arm/);
+  assert.match(workflow,/\n  release:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
 });

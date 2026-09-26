@@ -1,5 +1,5 @@
 {
-  "version": 236,
+  "version": 237,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5362,5 +5362,35 @@
     "promotionPath": ".github/workflows/company-design-promotion-sync.yml -> company-development-confirmed-runtime.yml -> exact per-game native fan-out",
     "directPromotionBatchDispatch": false,
     "gameParallelismReduced": false
+  },
+  "gameControlRunnerPools": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.gameControlRunnerPoolSeparation20260926",
+    "gameControl": "ubuntu-24.04-arm",
+    "administrativeControl": "ubuntu-slim",
+    "heavyExecution": "ubuntu-latest",
+    "roblox": {
+      "control": [
+        "source-plan",
+        "source-bootstrap",
+        "technical-plan",
+        "technical-persist",
+        "private-runtime-dedupe"
+      ],
+      "heavy": [
+        "source-worker",
+        "technical-worker",
+        "private-runtime-publish"
+      ]
+    },
+    "unity": {
+      "control": [
+        "prepare"
+      ],
+      "heavy": [
+        "unity-technical-validation"
+      ]
+    },
+    "serializationScopeUnchanged": "RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY"
   }
 }
