@@ -554,10 +554,13 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.doesNotMatch(workflow,/format\('batch-\{0\}', github\.run_id\)/);
   assert.match(workflow,/cancel-in-progress: false/);
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
-    const start=workflow.indexOf(`  ${job}:\n`);
+    const header=`  ${job}:\n`;
+    const start=workflow.indexOf(header);
     assert.ok(start>=0,job+' missing');
-    const nextJob=workflow.indexOf('\n  ',start+`  ${job}:\n`.length);
-    const block=workflow.slice(start,nextJob<0?workflow.length:nextJob);
+    const tail=workflow.slice(start+header.length);
+    const nextJobMatch=tail.match(/\n  [A-Za-z0-9_-]+:\n/);
+    const end=nextJobMatch?start+header.length+nextJobMatch.index:workflow.length;
+    const block=workflow.slice(start,end);
     assert.match(block,/runs-on: ubuntu-slim/);
   }
   const technicalWorkerStart=workflow.indexOf('  technical-worker:\n');
