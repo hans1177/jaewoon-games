@@ -43,13 +43,21 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-runtime-${{ inputs.game_id || 'batch-v2' }}
+  group: company-development-roblox-runtime-${{ inputs.game_id || 'batch-v3' }}
   cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '8'
+  ROBLOX_SOURCE_PLAN_CONTRACT_PATHS: >-
+    .github/workflows/company-development-roblox-runtime.yml
+    tools/company-development-roblox-bootstrap.mjs
+    tools/company-development-roblox-source-reconcile.mjs
+    tools/company-selected-platform-router.mjs
+    tools/company-upper-platform-admission.mjs
+    company-asset-library.json
+    company-learning/platform-release-roadmap.json
 
 jobs:
   source-plan:
@@ -88,14 +96,19 @@ jobs:
           fi
           git fetch --no-tags --depth=1 origin main
           current_main="$(git rev-parse origin/main)"
-          if [ "$current_main" != "$GITHUB_SHA" ]; then
-            echo 'run=false' >> "$GITHUB_OUTPUT"
-            echo "ROBLOX_BATCH_SUPERSEDED=$GITHUB_SHA:$current_main"
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo "ROBLOX_BATCH_SUPERSEDED_REDISPATCH=YES:$current_main"
-          else
+          read -r -a contract_paths <<< "$ROBLOX_SOURCE_PLAN_CONTRACT_PATHS"
+          if git diff --quiet "$GITHUB_SHA" "$current_main" -- "${contract_paths[@]}"; then
             echo 'run=true' >> "$GITHUB_OUTPUT"
-            echo "ROBLOX_BATCH_FRESHNESS=CURRENT:$current_main"
+            if [ "$current_main" = "$GITHUB_SHA" ]; then
+              echo "ROBLOX_BATCH_FRESHNESS=CURRENT:$current_main"
+            else
+              echo "ROBLOX_BATCH_UNRELATED_MAIN_ADVANCE_ACCEPTED=$GITHUB_SHA:$current_main"
+            fi
+          else
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_BATCH_CONTRACT_SUPERSEDED=$GITHUB_SHA:$current_main"
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=YES:$current_main"
           fi
 
       - name: Bind Roblox source-plan contract fingerprint
@@ -107,15 +120,8 @@ jobs:
           fingerprint="$(node - <<'NODE'
           const {execFileSync}=require('child_process');
           const crypto=require('crypto');
-          const paths=[
-            '.github/workflows/company-development-roblox-runtime.yml',
-            'tools/company-development-roblox-bootstrap.mjs',
-            'tools/company-development-roblox-source-reconcile.mjs',
-            'tools/company-selected-platform-router.mjs',
-            'tools/company-upper-platform-admission.mjs',
-            'company-asset-library.json',
-            'company-learning/platform-release-roadmap.json',
-          ];
+          const paths=String(process.env.ROBLOX_SOURCE_PLAN_CONTRACT_PATHS||'').trim().split(/\s+/).filter(Boolean);
+          if(!paths.length)throw new Error('ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING');
           const rows=paths.map(path=>path+':'+execFileSync('git',['rev-parse',`HEAD:${path}`],{encoding:'utf8'}).trim());
           process.stdout.write(crypto.createHash('sha256').update(rows.join('\n')).digest('hex'));
           NODE
@@ -496,15 +502,8 @@ jobs:
           const {execFileSync}=require('child_process');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const currentMainRevision=execFileSync('git',['rev-parse','origin/main'],{encoding:'utf8'}).trim();
-          const contractPaths=[
-            '.github/workflows/company-development-roblox-runtime.yml',
-            'tools/company-development-roblox-bootstrap.mjs',
-            'tools/company-development-roblox-source-reconcile.mjs',
-            'tools/company-selected-platform-router.mjs',
-            'tools/company-upper-platform-admission.mjs',
-            'company-asset-library.json',
-            'company-learning/platform-release-roadmap.json',
-          ];
+          const contractPaths=String(process.env.ROBLOX_SOURCE_PLAN_CONTRACT_PATHS||'').trim().split(/\s+/).filter(Boolean);
+          if(!contractPaths.length)throw new Error('ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING');
           const crypto=require('crypto');
           const liveContractRows=contractPaths.map(path=>path+':'+execFileSync('git',['rev-parse',`origin/main:${path}`],{encoding:'utf8'}).trim());
           const liveContractFingerprint=crypto.createHash('sha256').update(liveContractRows.join('\n')).digest('hex');
