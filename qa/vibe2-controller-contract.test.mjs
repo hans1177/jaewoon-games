@@ -1141,3 +1141,13 @@ test('continuous planners overlay company-runtime design evidence before autonom
   assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main checkout origin\/company-runtime -- "\$runtime_design_path"/);
   assert.match(safetyNetWorkflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
 });
+
+
+test('Vibe2 control-plane jobs use slim runners while heavy workers retain full runners',()=>{
+  const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
+  assert.match(coreWorkflow,/\n  reserve:\n\s+runs-on: ubuntu-slim/);
+  assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: ubuntu-latest/);
+  assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-slim/);
+  assert.match(runnerWorkflow,/\n  refill:[\s\S]{0,220}?runs-on: ubuntu-slim/);
+});
