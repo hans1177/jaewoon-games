@@ -1,5 +1,5 @@
 {
-  "version": 407,
+  "version": 408,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8065,6 +8065,19 @@
         ".github/workflows/vibe2-24h-runner.yml",
         "vibe2-runtime.json"
       ]
+    },
+    "holisticQueuedPolishDeferral20260926": {
+      "id": "HOLISTIC_QUEUED_POLISH_DEFERRAL_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Queued generic presentation, asset, or weather polish for an eligible existing-game platform lane yields scheduling priority to the missing holistic baseline without deleting the queued work. Running work, owner-explicit work, and exact causal repair remain untouched.",
+      "directResponsibleFunctions": [
+        "tools/vibe2-auto-planner.mjs::deprioritizeQueuedGenericPolishForHolisticBackfill",
+        "tools/vibe2-auto-planner.mjs::plannerConflict"
+      ],
+      "queuedOnly": true,
+      "runningTaskCancellationForbidden": true,
+      "ownerExplicitOrExactRepairPreserved": true,
+      "itemContentMutation": false
     },
     "fanInPinnedContractOverlayRepair20260926": {
       "id": "VIBE2_FAN_IN_PINNED_CONTRACT_OVERLAY_REPAIR_2026-09-26",
@@ -23778,7 +23791,7 @@
         }
       },
       "existingGameHolisticBackfill": {
-        "version": 3,
+        "version": 4,
         "authority": "OWNER_DIRECTIVE_2026-09-26",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "objective": "RETROACTIVELY_APPLY_THE_CURRENT_HOLISTIC_BUILD_UP_STANDARD_TO_EVERY_EXISTING_ELIGIBLE_GAME_WITHOUT_RESETTING_OR_GRANDFATHERING_LOW_QUALITY_IMPLEMENTATION",
@@ -23930,7 +23943,12 @@
           "genericWeatherPresentationStillBelowHolisticBackfill": true,
           "holisticPackageMayAutoExpandToConfiguredMinimumWorkload": true,
           "minimumWorkloadExpansionMustRemainWithinExistingResponsibleSystem": true,
-          "minimumWorkloadExpansionMayNotChangeProtectedGameRules": true
+          "minimumWorkloadExpansionMayNotChangeProtectedGameRules": true,
+          "queuedGenericPresentationMayNotHoldResponsibleFileConflictAgainstEligibleHolisticBackfill": true,
+          "queuedGenericPresentationIsDeprioritizedNotDeleted": true,
+          "alreadyRunningGenericPresentationIsPreserved": true,
+          "ownerOrExactCausalRepairPresentationIsNeverDeprioritizedByThisRule": true,
+          "deferredGenericPresentationReturnsNaturallyAfterHolisticConflictClears": true
         }
       }
     }

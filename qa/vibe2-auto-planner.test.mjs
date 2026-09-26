@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
-import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
+import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -2312,6 +2312,108 @@ test('existing game holistic backfill is planned before generic Roblox presentat
   assert.ok(first.packageWorkUnits>=8);
   assert.notEqual(first.id,`${gameId}-roblox-studio-asset-backfill-v1`);
   assert.doesNotMatch(first.id,/presentation-asset-adaptation-v1$/);
+});
+
+test('queued generic presentation yields to eligible holistic backfill without deletion',()=>{
+  const root=tempRepo();
+  const gameId='holistic-yields-generic-polish';
+  const clientDir=path.join(root,'roblox-games',gameId,'client');
+  const serverDir=path.join(root,'roblox-games',gameId,'server');
+  const sharedDir=path.join(root,'roblox-games',gameId,'shared');
+  fs.mkdirSync(clientDir,{recursive:true});
+  fs.mkdirSync(serverDir,{recursive:true});
+  fs.mkdirSync(sharedDir,{recursive:true});
+  fs.writeFileSync(path.join(clientDir,'Game.client.luau'),'local camera = workspace.CurrentCamera\nlocal input = game:GetService("UserInputService")\n','utf8');
+  fs.writeFileSync(path.join(serverDir,'Game.server.luau'),'local combat = {}\n','utf8');
+  fs.writeFileSync(path.join(sharedDir,'GameConfig.luau'),'local config = {}\nreturn config\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'전투와 탐험 선택을 연결하는 재미',progressionDirection:'지역과 장비 해금으로 다음 선택을 확장한다.'});
+
+  const generic={
+    id:`${gameId}-roblox-presentation-asset-adaptation-v1`,
+    gameId,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:`roblox-games/${gameId}`,
+    responsibleFiles:[
+      `roblox-games/${gameId}/client/Game.client.luau`,
+      `roblox-games/${gameId}/server/Game.server.luau`,
+      `roblox-games/${gameId}/shared/GameConfig.luau`
+    ],
+    goal:'generic presentation asset adaptation',
+    releaseState:'development-confirmed',status:'queued',priority:'critical',
+    ownerDirective:false,packageLongWorkProtected:true,packageRole:'implementation-owner',packageWorkUnits:7,
+    evidence:['presentation-quality-pipeline:v1','presentation-pass:ASSET_ADAPTATION']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Holistic Yield',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    queue:{maxConcurrentTasks:256,tasks:[generic]},
+    repoRoot:root,
+    maxConcurrentTasks:10,
+    queueMaxConcurrentTasks:256,
+    planningBacklogTarget:10,
+    planningBacklogMinimum:0
+  });
+
+  assert.equal(result.planned,true);
+  assert.equal(result.holisticPriorityDeferralCount,1);
+  const deferred=result.queue.tasks.find(row=>row.id===generic.id);
+  assert.ok(deferred);
+  assert.equal(deferred.status,'queued');
+  assert.equal(deferred.priority,'low');
+  assert.ok(deferred.evidence.includes('deferred-behind:EXISTING_GAME_HOLISTIC_BACKFILL'));
+  const holistic=result.tasks.find(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1'));
+  assert.ok(holistic);
+  const batch=selectVibeQueueBatch(result.queue,{maxConcurrentTasks:1,lane:'game-primary'});
+  assert.equal(batch.selected.length,1);
+  assert.equal(batch.selected[0].id,holistic.id);
+  assert.notEqual(batch.selected[0].id,generic.id);
+});
+
+test('running generic presentation is preserved and still conflicts with holistic work',()=>{
+  const root=tempRepo();
+  const gameId='holistic-preserves-running-polish';
+  const clientDir=path.join(root,'roblox-games',gameId,'client');
+  const serverDir=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(clientDir,{recursive:true});
+  fs.mkdirSync(serverDir,{recursive:true});
+  fs.writeFileSync(path.join(clientDir,'Game.client.luau'),'local camera = workspace.CurrentCamera\n','utf8');
+  fs.writeFileSync(path.join(serverDir,'Game.server.luau'),'local combat = {}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'전투 선택이 상태를 바꾸는 재미',progressionDirection:'보상으로 새 선택을 연다.'});
+
+  const running={
+    id:`${gameId}-roblox-presentation-asset-adaptation-v1`,
+    gameId,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:`roblox-games/${gameId}`,
+    responsibleFiles:[
+      `roblox-games/${gameId}/client/Game.client.luau`,
+      `roblox-games/${gameId}/server/Game.server.luau`
+    ],
+    goal:'generic presentation asset adaptation',
+    releaseState:'development-confirmed',status:'running',priority:'critical',
+    ownerDirective:false,reservationId:'r1',reservationRunId:'1',reservationRunAttempt:1,reservedAt:'2026-09-26T00:00:00Z',
+    evidence:['presentation-quality-pipeline:v1','presentation-pass:ASSET_ADAPTATION']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Holistic Running Preserve',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    queue:{maxConcurrentTasks:256,tasks:[running]},
+    repoRoot:root,
+    maxConcurrentTasks:10,
+    queueMaxConcurrentTasks:256,
+    planningBacklogTarget:10,
+    planningBacklogMinimum:0
+  });
+
+  assert.equal(result.holisticPriorityDeferralCount,0);
+  const preserved=result.queue.tasks.find(row=>row.id===running.id);
+  assert.equal(preserved.status,'running');
+  assert.equal(preserved.priority,'critical');
+  assert.ok(!(preserved.evidence||[]).includes('deferred-behind:EXISTING_GAME_HOLISTIC_BACKFILL'));
 });
 
 test('existing games receive holistic backfill on all five quality pillars without grandfather exemption',()=>{
