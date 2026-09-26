@@ -2312,6 +2312,58 @@ test('existing game holistic backfill is planned before generic Roblox presentat
   assert.doesNotMatch(first.id,/presentation-asset-adaptation-v1$/);
 });
 
+test('holistic backfill auto-expansion reaches an adaptive package floor instead of stalling',()=>{
+  const root=tempRepo();
+  const gameId='existing-holistic-adaptive-floor';
+  const clientDir=path.join(root,'roblox-games',gameId,'client');
+  const serverDir=path.join(root,'roblox-games',gameId,'server');
+  const sharedDir=path.join(root,'roblox-games',gameId,'shared');
+  fs.mkdirSync(clientDir,{recursive:true});
+  fs.mkdirSync(serverDir,{recursive:true});
+  fs.mkdirSync(sharedDir,{recursive:true});
+  fs.writeFileSync(path.join(clientDir,'Game.client.luau'),'local camera = workspace.CurrentCamera\nlocal input = game:GetService("UserInputService")\n','utf8');
+  fs.writeFileSync(path.join(serverDir,'Combat.server.luau'),'local Combat = {}\nfunction Combat.resolveAttack(player, enemy) return player ~= nil and enemy ~= nil end\nreturn Combat\n','utf8');
+  fs.writeFileSync(path.join(sharedDir,'Save.luau'),'local Save = {}\nreturn Save\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'전투와 지역 선택을 연결하는 재미',progressionDirection:'보상과 장비로 새 지역 선택을 확장한다.'});
+
+  const history=Array.from({length:4},(_,index)=>({
+    id:`history-micro-${index}`,gameId:'history',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/history',responsibleFiles:[`web-games/history/${index}.js`],goal:'legacy micro',
+    releaseState:'development-confirmed',status:'verified',priority:'low',estimatedRisk:'low',
+    packageId:`history-package-${index}`,taskWorkUnits:1,evidence:[`work-package:history-package-${index}`]
+  }));
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Existing Holistic Adaptive Floor',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    queue:{maxConcurrentTasks:256,tasks:history},
+    repoRoot:root,
+    maxConcurrentTasks:1,
+    queueMaxConcurrentTasks:256,
+    planningBacklogTarget:1,
+    planningBacklogMinimum:0,
+    workPackagePolicy:{
+      minWorkUnitsPerPackage:6,
+      adaptiveMinMax:8,
+      maxAdaptiveBoost:3,
+      lowEfficiencyMicroTaskRatePct:35,
+      efficiencyAdaptation:{enabled:true,maxMinWorkUnitsPerPackage:8}
+    }
+  });
+
+  assert.equal(result.workPackagePolicy.minWorkUnitsPerPackage,7);
+  assert.equal(result.planned,true);
+  assert.notEqual(result.reason,'MINIMUM_WORKLOAD_GATE');
+  assert.equal(result.tasks.length,1);
+  const first=result.tasks[0];
+  assert.ok((first.evidence||[]).includes('existing-holistic-backfill:v1'));
+  assert.ok((first.evidence||[]).includes('work-package-auto-expanded-min:7'));
+  assert.ok((first.evidence||[]).filter(value=>value.startsWith('work-package-scope:')).length>=3);
+  assert.ok(Number(first.packageWorkUnits)>=7);
+});
+
 test('existing games receive holistic backfill on all five quality pillars without grandfather exemption',()=>{
   const root=tempRepo();
   const gameId='existing-holistic';
