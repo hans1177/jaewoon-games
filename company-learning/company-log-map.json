@@ -1,5 +1,5 @@
 {
-  "version": 98,
+  "version": 99,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1819,5 +1819,22 @@
     "staleThresholdMinutes": 15,
     "scanPagesMax": 20,
     "exactNamedGameInProgressCancellationForbidden": true
+  },
+  "controlPlaneGameRunnerEvictionEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "expectedRunnerLabels": {
+      "companyStatusSync": "ubuntu-slim",
+      "developmentQueueReconcile": "ubuntu-slim",
+      "designPromotionSync": "ubuntu-slim",
+      "platformExposureSync": "ubuntu-slim",
+      "recoveryFast": "ubuntu-slim",
+      "directorDrain": "ubuntu-24.04-arm",
+      "directorGate": "ubuntu-slim",
+      "directorSupervise": "ubuntu-slim"
+    },
+    "gameHeavyRunnerLabel": "ubuntu-latest",
+    "gamePrimaryCapacityClaim": false,
+    "acceptanceGatesUnchanged": true
   }
 }
