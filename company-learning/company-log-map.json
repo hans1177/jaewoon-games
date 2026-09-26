@@ -1,5 +1,5 @@
 {
-  "version": 82,
+  "version": 83,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1574,7 +1574,10 @@
       "minimumWorkloadExpansionEvidenceRequiredWhenApplied": true,
       "queuedGenericPolishDeferralMarker": "deferred-behind:EXISTING_GAME_HOLISTIC_BACKFILL",
       "queuedGenericPolishPriorityAfterDeferral": "low",
-      "runningGenericPolishMayNotBeRewritten": true
+      "runningGenericPolishMayNotBeRewritten": true,
+      "existingBackfillExecutionGateIntentMarker": "existing-game-preservation-intent:NOT_NEW_GAME_CREATION",
+      "realNewGameExecutionGateMarker": "company-owner-gate-required",
+      "falsePositiveFailureEvidence": "RUN_36225893107_EXECUTION_GATE_BLOCKED_COMPANY_OWNER_GATE_REQUIRED"
     }
   }
 }
