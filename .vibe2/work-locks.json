@@ -3,97 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-170tcme",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-      "acquiredAt": "2026-09-26T13:05:57.699Z",
-      "expiresAt": "2026-09-26T13:50:57.699Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1wh04bw",
-      "worker": "vibe2",
-      "taskId": "cozy-island-existing-web-assessment-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "web-games/cozy-island/index.html"
-      ],
-      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-      "acquiredAt": "2026-09-26T13:05:59.910Z",
-      "expiresAt": "2026-09-26T13:50:59.910Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-existing-web-assessment-v1"
-      ]
-    },
-    {
-      "id": "wl-1y6iwcr",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/server/Game.server.luau",
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/GameConfig.luau"
-      ],
-      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-      "acquiredAt": "2026-09-26T13:06:02.921Z",
-      "expiresAt": "2026-09-26T13:51:02.921Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
-      ]
-    },
-    {
-      "id": "wl-p81vqr",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-      "acquiredAt": "2026-09-26T13:06:04.881Z",
-      "expiresAt": "2026-09-26T13:51:04.881Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-ur0mbd",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/server/Game.server.luau",
-        "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau"
-      ],
-      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-      "acquiredAt": "2026-09-26T13:06:05.879Z",
-      "expiresAt": "2026-09-26T13:51:05.879Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
-      ]
-    },
-    {
       "id": "wl-1u347wu",
       "worker": "vibe2",
       "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
@@ -766,6 +675,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-9jmeyk",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
+      "acquiredAt": "2026-09-26T13:51:06.517Z",
+      "expiresAt": "2026-09-26T14:36:06.517Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
