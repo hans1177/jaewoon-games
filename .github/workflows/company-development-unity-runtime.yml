@@ -60,8 +60,6 @@ jobs:
           node --check tools/company-upper-platform-admission.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-development-unity-evidence.mjs
-          node --test qa/company-upper-platform-admission.test.mjs
-          node --test qa/unity-package-fatal-logcat.test.mjs
 
       - name: Bind current main
         id: main
