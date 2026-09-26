@@ -993,6 +993,7 @@ jobs:
           version: '0.33.3'
           pull-model: 'true'
           department-role: development
+          cache-model: 'true'
 
       - name: Ensure fused shared preflight model is local
         if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
