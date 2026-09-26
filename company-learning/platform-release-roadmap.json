@@ -1,5 +1,5 @@
 {
-  "version": 433,
+  "version": 434,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8660,7 +8660,9 @@
         "admissionCriticalValidationOnly": true,
         "duplicateContractTestsMovedToNonblockingSlimAudit": true,
         "activeRobloxAndUnityRunScansParallel": true,
-        "gameDispatchWaitsForContractAudit": false
+        "gameDispatchWaitsForContractAudit": false,
+        "activeLaneIdentityScanFailClosed": true,
+        "partialActiveLaneScanMayDispatch": false
       },
       "unityWebPerGameConcurrency": {
         "callerGroup": "unity-web-floor-call-<gameId>",
