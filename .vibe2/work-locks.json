@@ -3,170 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-5px3ut",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:45:50.663Z",
-      "expiresAt": "2026-09-26T16:30:50.663Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1llzbkr",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:45:55.128Z",
-      "expiresAt": "2026-09-26T16:30:55.128Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-41kvev",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:45:56.789Z",
-      "expiresAt": "2026-09-26T16:30:56.789Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-19fhz94",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:45:58.557Z",
-      "expiresAt": "2026-09-26T16:30:58.557Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-15dhz1r",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "unity-games/amusement-tycoon/Assets/Scripts/GameCore.cs",
-        "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:46:01.444Z",
-      "expiresAt": "2026-09-26T16:31:01.444Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-17ylmho",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/server/Game.server.luau",
-        "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:46:31.263Z",
-      "expiresAt": "2026-09-26T16:31:31.263Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
-      ]
-    },
-    {
-      "id": "wl-d3hx3t",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:46:40.840Z",
-      "expiresAt": "2026-09-26T16:31:40.840Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1kb1021",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:46:53.714Z",
-      "expiresAt": "2026-09-26T16:31:53.714Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-ha32az",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T15:47:04.824Z",
-      "expiresAt": "2026-09-26T16:32:04.824Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1dmfxk5",
       "worker": "vibe2",
       "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
@@ -932,6 +768,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1lsbp3k",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
+      "acquiredAt": "2026-09-26T16:32:19.038Z",
+      "expiresAt": "2026-09-26T17:17:19.038Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
