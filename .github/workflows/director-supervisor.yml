@@ -14,6 +14,7 @@ on:
       - Public Game Health
       - Unity Hybrid Android Build
       - Unity Android Runtime Smoke
+      - Vibe2 Continuous Core
     types: [completed]
   push:
     branches: [main]
@@ -258,7 +259,35 @@ jobs:
             and (((.department // "") | ascii_downcase) == "development")
             and (((.type // "") | ascii_downcase) == "implementation"))
           ] | length' <<<"$queue_json")"
+          queued_game_work="$(jq '[.tasks[]? | select(
+            (((.status // "") | ascii_downcase) == "queued")
+            and (((.department // "") | ascii_downcase) == "development")
+            and (((.type // "") | ascii_downcase) == "implementation"))
+          ] | length' <<<"$queue_json")"
           echo "active_game_work=$active_game_work" >> "$GITHUB_OUTPUT"
+          echo "queued_game_work=$queued_game_work" >> "$GITHUB_OUTPUT"
+
+          if [ "$queued_game_work" -gt 0 ]; then
+            core_runs_api="repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/runs?per_page=100"
+            if core_runs="$(gh api "$core_runs_api" 2>/dev/null)"; then
+              active_scoped_core="$(jq '[.workflow_runs[]? | . as $run | select(
+                (($run.event // "") != "push")
+                and ((["queued","pending","requested","in_progress"] | index((($run.status // "") | ascii_downcase))) != null)
+              )] | length' <<<"$core_runs")"
+              echo "DIRECTOR_GAME_PRIMARY_SCOPED_CORE_ACTIVE=$active_scoped_core"
+              if [ "$active_scoped_core" -eq 0 ]; then
+                gh api --method POST                   "repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/dispatches"                   -f ref=main                   -f 'inputs[execution_lane]=game-primary'                   -f 'inputs[lane_max]=256' >/dev/null
+                echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED'
+              else
+                echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE'
+              fi
+            else
+              echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_SCAN_UNAVAILABLE'
+            fi
+          else
+            echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_NO_QUEUED_WORK'
+          fi
+
           if [ "$active_game_work" -gt 0 ]; then
             echo 'defer=true' >> "$GITHUB_OUTPUT"
             echo "GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK:$active_game_work"
