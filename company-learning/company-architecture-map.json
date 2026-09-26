@@ -1,5 +1,5 @@
 {
-  "version": 254,
+  "version": 255,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5641,6 +5641,27 @@
     "qaEvidenceReuse": false,
     "runtimeEvidenceReuse": false,
     "independentGameParallelism": true,
+    "qualityGateWeakening": false
+  },
+  "sharedOllamaModelCache": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.sharedOllamaModelCache20260927",
+    "action": ".github/actions/prepare-ollama/action.yml",
+    "optInDefault": false,
+    "cachePath": "~/.ollama/models",
+    "keyScope": "RUNNER_OS_ARCH_AND_SANITIZED_MODEL",
+    "restore": "actions/cache/restore@v4",
+    "save": "actions/cache/save@v4",
+    "saveImmediatelyAfterRequestedModelReady": true,
+    "saveFailureBlocksDevelopment": false,
+    "enabledCallers": [
+      ".github/workflows/company-development-roblox-runtime.yml#package-worker",
+      ".github/workflows/company-development-roblox-runtime-continuation.yml#preflight-worker",
+      ".github/workflows/company-development-unity-runtime.yml#unity-technical-validation"
+    ],
+    "vibe2DedicatedCachePathPreserved": true,
+    "nonOptInCallersPreserved": true,
+    "modelSelectionUnchanged": true,
     "qualityGateWeakening": false
   }
 }
