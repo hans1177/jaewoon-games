@@ -300,6 +300,30 @@ test('existing source reconciliation refuses malformed source instead of advanci
 });
 
 
+test('current Roblox Studio asset binding version does not re-enter refresh forever',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-current-binding-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    assert.equal(applied.studioAssets.bindingVersion,2);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].failure,null,rows[0].blockers.join(','));
+    assert.equal(rows[0].pass,true,rows[0].blockers.join(','));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('existing Roblox source automatically enters rebind when company library binding is missing even without source drift',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-rebind-detect-'));
   try{
