@@ -56,13 +56,14 @@ test('thumbnail target resolves verified runtime universe without changing publi
   assert.equal(validated.sha256.length,64);
 });
 
-test('Open Cloud thumbnail upload uses files multipart and verifies Finished operation',async()=>{
+test('Open Cloud thumbnail upload activates and reads back the uploaded thumbnail',async()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-thumb-'));
   const png=path.join(tmp,'thumbnail.png');
   fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10,0,0,0,0]));
   const requests=[];
+  let activeReads=0;
   const fetchImpl=async(url,init={})=>{
-    requests.push({url,init});
+    requests.push({url:String(url),init});
     if(String(url).endsWith('/thumbnails/uploads')){
       assert.equal(init.method,'POST');
       assert.equal(init.headers['x-api-key'],'secret');
@@ -70,12 +71,28 @@ test('Open Cloud thumbnail upload uses files multipart and verifies Finished ope
       assert.ok(init.body.get('files') instanceof Blob);
       return new Response(JSON.stringify({fileToOperationIdDict:{'thumbnail.png':'op-1'}}),{status:200,headers:{'content-type':'application/json'}});
     }
-    assert.match(String(url),/\/thumbnails\/uploads\/status\?operationIds=op-1$/);
-    assert.equal(init.headers['x-api-key'],'secret');
-    return new Response(JSON.stringify({
-      uploadStatus:'Finished',
-      uploadThumbnailStatusDict:{'op-1':{homepageThumbnailId:'thumb-77'}}
-    }),{status:200,headers:{'content-type':'application/json'}});
+    if(String(url).includes('/thumbnails/uploads/status')){
+      return new Response(JSON.stringify({
+        uploadStatus:'Finished',
+        uploadThumbnailStatusDict:{'op-1':{homepageThumbnailId:'789'}}
+      }),{status:200,headers:{'content-type':'application/json'}});
+    }
+    if(String(url).endsWith('/personalization?status=Active')){
+      activeReads+=1;
+      return new Response(JSON.stringify({
+        personalizedConfigs:[{id:'cfg-1',homepageThumbnailIds:activeReads===1?[456]:[789]}]
+      }),{status:200,headers:{'content-type':'application/json'}});
+    }
+    if(String(url).endsWith('/personalization/update')){
+      assert.equal(init.method,'POST');
+      assert.equal(init.headers['content-type'],'application/json');
+      assert.deepEqual(JSON.parse(init.body),{homepageThumbnailIds:[789],id:'cfg-1'});
+      return new Response(JSON.stringify({}),{status:200,headers:{'content-type':'application/json'}});
+    }
+    if(String(url).endsWith('/thumbnails')){
+      return new Response(JSON.stringify({homepageThumbnails:[{homepageThumbnailId:789}]}),{status:200,headers:{'content-type':'application/json'}});
+    }
+    throw new Error('unexpected '+url);
   };
   const result=await uploadRobloxHomepageThumbnail({
     universeId:'10767445741',
@@ -85,8 +102,30 @@ test('Open Cloud thumbnail upload uses files multipart and verifies Finished ope
     sleepImpl:async()=>{}
   });
   assert.equal(result.uploaded,true);
-  assert.equal(result.thumbnailId,'thumb-77');
-  assert.equal(requests.length,2);
+  assert.equal(result.thumbnailId,'789');
+  assert.equal(result.personalizationMode,'UPDATE');
+  assert.equal(result.activePersonalizationVerified,true);
+  assert.ok(requests.some(row=>row.url.endsWith('/personalization/update')));
+  assert.ok(requests.some(row=>row.url.endsWith('/thumbnails')));
+  assert.equal(activeReads,2);
+});
+
+test('Open Cloud thumbnail write fails closed when active readback does not contain uploaded thumbnail',async()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-thumb-readback-'));
+  const png=path.join(tmp,'thumbnail.png');
+  fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10,0,0,0,0]));
+  const fetchImpl=async(url,init={})=>{
+    if(String(url).endsWith('/thumbnails/uploads'))return new Response(JSON.stringify({fileToOperationIdDict:{'thumbnail.png':'op-1'}}),{status:200});
+    if(String(url).includes('/thumbnails/uploads/status'))return new Response(JSON.stringify({uploadStatus:'Finished',uploadThumbnailStatusDict:{'op-1':{homepageThumbnailId:'789'}}}),{status:200});
+    if(String(url).endsWith('/personalization?status=Active'))return new Response(JSON.stringify({personalizedConfigs:[{id:'cfg-1',homepageThumbnailIds:[456]}]}),{status:200});
+    if(String(url).endsWith('/personalization/update'))return new Response('{}',{status:200});
+    if(String(url).endsWith('/thumbnails'))return new Response(JSON.stringify({homepageThumbnails:[{homepageThumbnailId:789}]}),{status:200});
+    throw new Error('unexpected '+url);
+  };
+  await assert.rejects(
+    uploadRobloxHomepageThumbnail({universeId:'10767445741',pngPath:png,apiKey:'secret',fetchImpl,sleepImpl:async()=>{}}),
+    /ROBLOX_THUMBNAIL_ACTIVE_READBACK_MISMATCH/
+  );
 });
 
 test('release promotion auto-syncs thumbnails on main push without republishing place',()=>{
@@ -113,6 +152,11 @@ test('central contract requires same thumbnail source for Roblox and homepage',(
   assert.equal(contract.canonicalImageAuthority.homepageUsesSameAsset,true);
   assert.equal(contract.canonicalImageAuthority.robloxUploadUsesSameAsset,true);
   assert.equal(contract.robloxOpenCloud.requiredScope,'universe.thumbnail:write');
+  assert.equal(contract.robloxOpenCloud.activePersonalizationRequired,true);
+  assert.equal(contract.robloxOpenCloud.activeReadbackRequired,true);
+  assert.equal(contract.robloxOpenCloud.httpSuccessAloneIsNotPass,true);
   assert.equal(architecture.robloxHomepageThumbnailSyncTopology.sameSourceAssetForHomepageAndRoblox,true);
+  assert.equal(architecture.robloxHomepageThumbnailSyncTopology.uploadOnlyCannotSatisfyAppliedState,true);
   assert.equal(security.robloxThumbnailOpenCloudSecurity.verifiedUniverseTargetRequired,true);
+  assert.equal(security.robloxThumbnailOpenCloudSecurity.activePersonalizationReadbackRequired,true);
 });
