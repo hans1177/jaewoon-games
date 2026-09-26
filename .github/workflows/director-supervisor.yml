@@ -223,7 +223,6 @@ jobs:
           echo 'DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN'
 
   game-primary-gate:
-    needs: runner-drain
     if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
     concurrency:
       group: director-game-primary-gate-v1
@@ -271,21 +270,33 @@ jobs:
           echo "queued_game_work=$queued_game_work" >> "$GITHUB_OUTPUT"
 
           if [ "$queued_game_work" -gt 0 ]; then
-            core_runs_api="repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/runs?per_page=100"
-            if core_runs="$(gh api "$core_runs_api" 2>/dev/null)"; then
-              active_scoped_core="$(jq '[.workflow_runs[]? | . as $run | select(
-                (($run.event // "") != "push")
-                and ((["queued","pending","requested","in_progress"] | index((($run.status // "") | ascii_downcase))) != null)
-              )] | length' <<<"$core_runs")"
-              echo "DIRECTOR_GAME_PRIMARY_SCOPED_CORE_ACTIVE=$active_scoped_core"
-              if [ "$active_scoped_core" -eq 0 ]; then
+            current_main="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha' 2>/dev/null || true)"
+            if [ -z "$current_main" ]; then
+              echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_CURRENT_MAIN_UNAVAILABLE'
+            else
+              echo "DIRECTOR_GAME_PRIMARY_CURRENT_MAIN=$current_main"
+              core_runs_api="repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/runs?per_page=100"
+              if core_runs="$(gh api "$core_runs_api" 2>/dev/null)"; then
+                active_scoped_core="$(jq --arg currentMain "$current_main" '[.workflow_runs[]? | . as $run | select(
+                  (($run.event // "") != "push")
+                  and (
+                    ((($run.status // "") | ascii_downcase) == "in_progress")
+                    or (
+                      ((["queued","pending","requested"] | index((($run.status // "") | ascii_downcase))) != null)
+                      and (($run.head_sha // "") == $currentMain)
+                    )
+                  )
+                )] | length' <<<"$core_runs")"
+                echo "DIRECTOR_GAME_PRIMARY_SCOPED_CORE_ACTIVE=$active_scoped_core"
+                if [ "$active_scoped_core" -eq 0 ]; then
                 gh api --method POST                   "repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/dispatches"                   -f ref=main                   -f 'inputs[execution_lane]=game-primary'                   -f 'inputs[lane_max]=256' >/dev/null
                 echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED'
+                else
+                  echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE'
+                fi
               else
-                echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE'
+                echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_SCAN_UNAVAILABLE'
               fi
-            else
-              echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_SCAN_UNAVAILABLE'
             fi
           else
             echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_NO_QUEUED_WORK'
@@ -300,8 +311,8 @@ jobs:
           fi
 
   supervise:
-    needs: game-primary-gate
-    if: (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled') && needs.game-primary-gate.outputs.defer != 'true'
+    needs: [runner-drain, game-primary-gate]
+    if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled') && (needs.runner-drain.result == 'success' || needs.runner-drain.result == 'skipped') && needs.game-primary-gate.outputs.defer != 'true'
     concurrency:
       group: director-central-company-supervise-v3
       cancel-in-progress: false
