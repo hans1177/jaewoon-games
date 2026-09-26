@@ -33,33 +33,33 @@ function tempFiles(){
 
 test('default requests the external boundary immediately',()=>{
   assert.equal(DEFAULT_ADAPTIVE_TARGET,256);
-  assert.equal(DEFAULT_ADAPTIVE_MIN,4);
+  assert.equal(DEFAULT_ADAPTIVE_MIN,30);
   assert.equal(createParallelismControl({}).currentMax,256);
   assert.equal(adaptiveRequestedMax(createParallelismControl({}),256),256);
 });
 
-test('verified external pressure downshifts one step without an internal floor at 20',()=>{
+test('verified external pressure downshifts one step but never below owner floor 30',()=>{
   const from256=decideAdaptiveBackpressure(createParallelismControl({currentMax:256}),pressuredTelemetry({runId:'p256'}));
   assert.equal(from256.currentMax,128);
   assert.equal(from256.lastDecision,'DOWN');
-  const from20=decideAdaptiveBackpressure(
-    createParallelismControl({currentMax:20}),
-    pressuredTelemetry({runId:'p20',workerCount:20,effectiveMax:20,actualPeakConcurrency:10}),
-    {minimumMax:4}
+  const from32=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:32}),
+    pressuredTelemetry({runId:'p32',workerCount:32,effectiveMax:32,actualPeakConcurrency:16}),
+    {minimumMax:30}
   );
-  assert.equal(from20.currentMax,16);
-  assert.equal(from20.lastDecision,'DOWN');
+  assert.equal(from32.currentMax,30);
+  assert.equal(from32.lastDecision,'DOWN');
 });
 
-test('verified pressure can reach floor 4 but never lower',()=>{
-  const at4=decideAdaptiveBackpressure(
-    createParallelismControl({currentMax:4}),
-    pressuredTelemetry({runId:'p4',workerCount:4,effectiveMax:4,actualPeakConcurrency:2}),
-    {minimumMax:4}
+test('verified pressure holds floor 30 and never lowers it',()=>{
+  const at30=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:30}),
+    pressuredTelemetry({runId:'p30',workerCount:30,effectiveMax:30,actualPeakConcurrency:15}),
+    {minimumMax:30}
   );
-  assert.equal(at4.currentMax,4);
-  assert.equal(at4.lastDecision,'HOLD');
-  assert.match(at4.lastReason,/OWNER_MINIMUM_WAVE_4/);
+  assert.equal(at30.currentMax,30);
+  assert.equal(at30.lastDecision,'HOLD');
+  assert.match(at30.lastReason,/OWNER_MINIMUM_WAVE_30/);
 });
 
 test('healthy saturated capacity recovers upward after pressure',()=>{
