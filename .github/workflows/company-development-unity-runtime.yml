@@ -649,6 +649,7 @@ jobs:
           version: '0.33.3'
           pull-model: 'true'
           department-role: development
+          cache-model: 'true'
 
       - name: Ensure configured department models only for evidence meeting
         if: steps.regressionstate.outputs.passed == 'true'
