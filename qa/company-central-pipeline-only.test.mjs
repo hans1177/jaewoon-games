@@ -120,14 +120,24 @@ test('native development trigger ownership avoids duplicate central plus child p
   const unityPush=unity.slice(unity.indexOf('on:'),unity.indexOf('workflow_call:'));
   for(const commonPath of [
     'company-learning/platform-release-roadmap.json',
-    'company-learning/company-architecture-map.json',
-    'company-learning/company-log-map.json',
     'tools/company-shared-context.mjs',
     'tools/company-selected-platform-router.mjs',
     'tools/company-upper-platform-admission.mjs',
     'tools/company-minimum-design-contract.mjs',
     'company-asset-library.json',
   ]) assert.ok(developmentPush.includes(commonPath),commonPath);
+  for(const nonRuntimeWake of [
+    'company-learning/company-architecture-map.json',
+    'company-learning/company-log-map.json',
+    'qa/company-selected-platform-router.test.mjs',
+    'qa/company-minimum-design-contract.test.mjs',
+    'qa/company-upper-platform-admission.test.mjs',
+    'qa/company-unity-web-gameplay-validation.test.mjs',
+  ]) assert.ok(!developmentPush.includes(nonRuntimeWake),nonRuntimeWake);
+  assert.match(development,/group: company-development-confirmed-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'main-push'\) \|\| github\.run_id \}\}/);
+  assert.match(development,/group: company-development-confirmed-[\s\S]{0,180}?cancel-in-progress: false/);
+  assert.match(roblox,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
+  assert.match(unity,/group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
   for(const childPath of [
     '.github/workflows/company-development-roblox-runtime.yml',
     '.github/workflows/company-development-roblox-runtime-continuation.yml',
@@ -146,7 +156,7 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.ok(jobsAt>0);
   assert.doesNotMatch(director.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(director,/supervise:[\s\S]*?concurrency:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
-  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04-arm/);
+  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-slim/);
   assert.match(director,/game-primary-gate:[\s\S]*needs: runner-drain[\s\S]*runs-on: ubuntu-slim/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/cancel/);
   assert.match(director,/CONTROL_PLANE_SUPERSEDED/);
@@ -156,7 +166,7 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
   assert.match(director,/JSON\.stringify\(j\)\+'\\\\n'/);
   assert.match(director,/director-run-drain\.ndjson/);
-  assert.doesNotMatch(director,/DUPLICATE_TITLE:[^\n]*company-development-unity-runtime\.yml/);
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
 });
 
 test('runner drain uses a YAML-safe delimiter and preserves the game gate block',()=>{
@@ -173,7 +183,7 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.ok(jobsAt>0);
   assert.doesNotMatch(director.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3/);
-  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04-arm/);
+  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-slim/);
   assert.doesNotMatch(director,/for page in \$\(seq 1 20\); do/);
   assert.match(director,/fetch_runs 'status=in_progress&per_page=100'/);
   assert.match(director,/fetch_runs 'status=queued&per_page=100'/);
@@ -222,7 +232,7 @@ test('director runner drain advances latest scheduler without cancelling running
 
 test('director coalesces disposable pre-supervision control jobs but preserves supervise completion',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
-  assert.match(director,/runner-drain:[\s\S]*?group: director-runner-drain-v1[\s\S]*?cancel-in-progress: true/);
+  assert.match(director,/runner-drain:[\s\S]*?group: director-runner-drain-v1[\s\S]*?cancel-in-progress: false/);
   assert.match(director,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: true/);
   assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
 });
@@ -234,7 +244,7 @@ test('central development planner removes duplicate runtime contract QA from the
   const dispatchStart=development.indexOf('\n  dispatch-roblox:\n');
   assert.ok(nativeStart>0&&dispatchStart>nativeStart);
   const nativePlan=development.slice(nativeStart,dispatchStart);
-  assert.match(nativePlan,/runs-on: ubuntu-24\.04-arm/);
+  assert.match(nativePlan,/runs-on: ubuntu-slim/);
   assert.match(nativePlan,/Validate direct-native admission contract/);
   assert.doesNotMatch(nativePlan,/node --test qa\/company-selected-platform-router\.test\.mjs/);
   assert.doesNotMatch(nativePlan,/node --test qa\/company-minimum-design-contract\.test\.mjs/);
