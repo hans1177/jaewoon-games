@@ -1,5 +1,5 @@
 {
-  "version": 250,
+  "version": 251,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5564,7 +5564,11 @@
     "exactGameActiveRunSuppression": true,
     "partialScanFailClosed": true,
     "matrixMaxParallelCap": null,
-    "distinctGamesRemainParallel": true
+    "distinctGamesRemainParallel": true,
+    "queueAuthorityFetchParallelWithRunScan": true,
+    "queueAuthoritySource": "company-runtime:development-queue.json",
+    "dispatchPlannerBarrier": "WAIT_FOR_QUEUE_AUTHORITY_AND_ALL_ACTIVE_RUN_SCAN_PAGES_ONLY",
+    "heavyGameWorkBlockedByInputFetchSerialization": false
   },
   "robloxPlannerDuplicateContractQaRemoval": {
     "version": 1,
