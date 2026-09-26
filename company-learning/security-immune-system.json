@@ -1,5 +1,5 @@
 {
-  "version": 49,
+  "version": 50,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -763,5 +763,22 @@
     "externalGuiMacroForbidden": true,
     "actualPlayFeedbackMayNotBypassSecurityQaOrReleaseGates": true,
     "verifiedLearningMayNotPromoteUnsafeRemoteOrSavePatterns": true
+  },
+  "robloxThumbnailOpenCloudSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
+    "requiredScope": "universe.thumbnail:write",
+    "readScopeRecommended": "universe.thumbnail:read",
+    "apiKeyHeader": "x-api-key",
+    "apiKeyMayNotBeLogged": true,
+    "apiKeyMayNotBePersisted": true,
+    "verifiedUniverseTargetRequired": true,
+    "arbitraryUniverseUploadForbidden": true,
+    "sourcePathMustBeRepositoryCanonicalAsset": true,
+    "contentTypeAllowlist": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "publicReleaseAuthorityUnchanged": true
   }
 }

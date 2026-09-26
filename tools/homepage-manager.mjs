@@ -40,7 +40,7 @@ const games=catalog.games||[];
 const canonicalOf=game=>game?.canonical&&typeof game.canonical==='object'?game.canonical:{};
 const canonicalId=game=>String(canonicalOf(game)?.identity?.gameId||game?.id||'').trim();
 const canonicalClass=game=>String(canonicalOf(game)?.production?.class||game?.productionClass||'').toUpperCase();
-const canonicalImage=game=>String(canonicalOf(game)?.identity?.image||game?.image||'').trim();
+const canonicalImage=game=>String(canonicalOf(game)?.marketing?.thumbnail||canonicalOf(game)?.identity?.image||game?.marketingThumbnail||game?.image||'').trim();
 const canonicalWeb=game=>canonicalOf(game)?.sources?.web&&typeof canonicalOf(game).sources.web==='object'?canonicalOf(game).sources.web:{};
 const canonicalOrder=game=>{const n=Number(canonicalOf(game)?.catalogOrder??game?.catalogOrder);return Number.isFinite(n)&&n>0?n:null;};
 const canonicalOrderValid=games.every((game,index)=>canonicalOrder(game)===index+1);
