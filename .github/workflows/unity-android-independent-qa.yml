@@ -233,7 +233,7 @@ jobs:
           echo "INDEPENDENT_SOURCE_TREE=$BUILD_SOURCE_TREE"
 
       - name: Dispatch exact artifact regression
-        if: success()
+        if: success() && github.event_name == 'workflow_run'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -244,6 +244,13 @@ jobs:
             --ref main \
             -f run_id="${{ steps.upstream.outputs.run_id }}"
           echo "UNITY_ANDROID_REGRESSION_DISPATCHED=${{ steps.upstream.outputs.run_id }}"
+          echo 'UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=INDEPENDENT_QA_AUTO_CHAIN'
+
+      - name: Record parent-owned regression dispatch
+        if: success() && github.event_name == 'workflow_dispatch'
+        run: |
+          echo 'UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=COMPANY_DEVELOPMENT_UNITY_RUNTIME'
+          echo "UNITY_ANDROID_REGRESSION_PARENT_BUILD_RUN=${{ steps.upstream.outputs.run_id }}"
 
       - name: Upload independent Unity QA evidence
         if: always()

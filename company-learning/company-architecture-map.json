@@ -1,5 +1,5 @@
 {
-  "version": 204,
+  "version": 205,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3374,7 +3374,8 @@
         "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT"
       ],
       "sharedStateCriticalSectionMayNotEncloseHeavyExecution": true,
-      "externalProviderCapacityOnlyHeavyExecutionBoundary": true
+      "externalProviderCapacityOnlyHeavyExecutionBoundary": true,
+      "sameUnityBuildRegressionDuplicateDispatchForbidden": true
     }
   },
   "releaseExposureLifecycle": {
@@ -4287,7 +4288,25 @@
       "unityWebRegressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
       "unityWebUpperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "unityWebReadinessPassDispatch": "ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT",
-      "unityWebReadinessFailure": "REPAIR_REQUIRED"
+      "unityWebReadinessFailure": "REPAIR_REQUIRED",
+      "unityAndroidRegressionDispatchTopology": {
+        "version": 1,
+        "upstreamIdentity": "UNITY_BUILD_RUN_ID",
+        "regressionWorkflow": ".github/workflows/unity-android-regression.yml",
+        "standalonePath": {
+          "source": ".github/workflows/unity-android-independent-qa.yml",
+          "trigger": "workflow_run",
+          "dispatchOwner": "INDEPENDENT_QA_AUTO_CHAIN"
+        },
+        "parentOrchestratedPath": {
+          "source": ".github/workflows/company-development-unity-runtime.yml",
+          "independentQaTrigger": "workflow_dispatch",
+          "dispatchOwner": "COMPANY_DEVELOPMENT_UNITY_RUNTIME"
+        },
+        "manualIndependentQaDirectRegressionDispatch": false,
+        "duplicateDispatchForSameUpstreamForbidden": true,
+        "regressionConcurrencyKey": "unity-android-regression-{run_id}"
+      }
     },
     "revisions": {
       "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",

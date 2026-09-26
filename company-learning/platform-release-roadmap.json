@@ -1,5 +1,5 @@
 {
-  "version": 396,
+  "version": 397,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3207,7 +3207,9 @@
           "lastLanePressureLiveVerificationRun": 36204978877,
           "lastLanePressureLiveVerificationResult": "PASS",
           "modelCacheHitRestoreRelief": "IMPLEMENTED_PENDING_QA_AND_LIVE",
-          "modelCacheWarmupProbe": "LOOKUP_ONLY_ON_HIT"
+          "modelCacheWarmupProbe": "LOOKUP_ONLY_ON_HIT",
+          "unityAndroidRegressionDispatchDedupe": "IMPLEMENTED_PENDING_QA_AND_LIVE",
+          "unityAndroidRegressionDuplicateBaseline": "TWO_EXACT_BUILD_RUNS_EACH_CREATED_IN_PROGRESS_PLUS_PENDING_REGRESSION"
         },
         "incidentHistory": [
           {
@@ -7647,6 +7649,56 @@
         "qa/company-development-roblox-studio-local-play.test.mjs"
       ],
       "authorityChange": "NONE"
+    },
+    "unityAndroidRegressionDispatchDedupe20260926": {
+      "id": "UNITY_ANDROID_REGRESSION_DISPATCH_DEDUPE_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "ENSURE_ONE_EXACT_ARTIFACT_REGRESSION_DISPATCH_PER_UPSTREAM_UNITY_BUILD_WHILE_PRESERVING_BOTH_STANDALONE_AND_PARENT_ORCHESTRATED_QA_CHAINS",
+      "existingArchitectureOnly": true,
+      "newWorkflowCreated": false,
+      "newWorkerCreated": false,
+      "newQueueCreated": false,
+      "duplicateBaselineEvidence": [
+        {
+          "upstreamBuildRunId": 36205269709,
+          "observedRegressionRunIds": [
+            36206546746,
+            36206555517
+          ],
+          "observedState": "ONE_IN_PROGRESS_ONE_PENDING"
+        },
+        {
+          "upstreamBuildRunId": 36205334785,
+          "observedRegressionRunIds": [
+            36206554858,
+            36206562633
+          ],
+          "observedState": "ONE_IN_PROGRESS_ONE_PENDING"
+        }
+      ],
+      "dispatchOwnership": {
+        "standaloneAutoChain": "UNITY_ANDROID_INDEPENDENT_QA_WORKFLOW_RUN",
+        "parentOrchestratedChain": "COMPANY_DEVELOPMENT_UNITY_RUNTIME",
+        "manualIndependentQaMayDispatchRegression": false,
+        "exactDedupeKey": "UPSTREAM_BUILD_RUN_ID"
+      },
+      "preserves": [
+        "EXACT_APK_IDENTITY",
+        "INDEPENDENT_QA_REQUIRED",
+        "REGRESSION_REQUIRED",
+        "ANDROID_ARM64_RUNTIME",
+        "SOURCE_REVISION_BINDING",
+        "QA_AND_RELEASE_GATES"
+      ],
+      "bindings": [
+        ".github/workflows/unity-android-independent-qa.yml",
+        "qa/company-development-unity-runtime.test.mjs"
+      ],
+      "requiredEvidence": [
+        "UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=INDEPENDENT_QA_AUTO_CHAIN",
+        "UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=COMPANY_DEVELOPMENT_UNITY_RUNTIME"
+      ],
+      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
     }
   },
   "vibeExecutionLaneContract": {
@@ -22044,7 +22096,14 @@
       "sameGameIndependentNonOverlappingPackagesParallel": true,
       "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT",
       "sharedStateWriteMustReleaseHeavyExecutionCapacity": true,
-      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
+      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true,
+      "unityAndroidRegressionDispatchOwnership": {
+        "exactBuildRunSingleDispatchRequired": true,
+        "standaloneIndependentQaDispatchesOnlyOn": "workflow_run",
+        "parentOrchestratedIndependentQaDispatchesRegression": false,
+        "parentRuntimeOwnsRegressionAfterManualIndependentQa": true,
+        "duplicatePendingRegressionForbidden": true
+      }
     }
   },
   "centralDocumentation": {
