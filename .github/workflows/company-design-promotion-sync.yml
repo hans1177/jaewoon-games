@@ -167,10 +167,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-          gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f trigger_source=DESIGN_PROMOTION
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY'
+          echo 'DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT'
+          echo 'DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN'
           echo 'VERIFIED_DESIGN_VIBE_REFILL_DISPATCH=YES'
           echo 'VERIFIED_DESIGN_VIBE_REFILL_SCHEDULER=vibe2-24h-runner.yml'
           echo 'VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES'

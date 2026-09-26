@@ -192,3 +192,18 @@ test('director cancellation cleanup does not recursively wake another drain whil
   assert.match(director,/game-primary-gate:\n[\s\S]{0,220}?if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)/);
   assert.match(director,/supervise:\n[\s\S]{0,260}?github\.event\.workflow_run\.conclusion != 'cancelled'/);
 });
+
+test('central native planner suppresses already-active per-game child dispatches',()=>{
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  const unity=read('.github/workflows/company-development-unity-runtime.yml');
+  assert.match(unity,/run-name: Unity runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(development,/Fetch active native lane identities/);
+  assert.match(development,/active-roblox-native-runs\.json/);
+  assert.match(development,/active-unity-native-runs\.json/);
+  assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/roblox_count=/);
+  assert.match(development,/unity_count=/);
+  assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
+  assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.unity_json\)/);
+});

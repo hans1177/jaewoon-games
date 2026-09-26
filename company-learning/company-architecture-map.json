@@ -1,5 +1,5 @@
 {
-  "version": 235,
+  "version": 236,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5348,6 +5348,19 @@
       "STATUS_SYNC",
       "LIGHTWEIGHT_POLICY_AND_STATE_CONTROL"
     ],
+    "gameParallelismReduced": false
+  },
+  "nativeChildDispatchDedupeTopology": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeChildPreDispatchDedupe20260926",
+    "planner": ".github/workflows/company-development-confirmed-runtime.yml#native-plan",
+    "activeIdentity": {
+      "ROBLOX": "Roblox runtime · <gameId>",
+      "UNITY": "Unity runtime · <gameId>"
+    },
+    "dispatchFiltersIndependentByPlatform": true,
+    "promotionPath": ".github/workflows/company-design-promotion-sync.yml -> company-development-confirmed-runtime.yml -> exact per-game native fan-out",
+    "directPromotionBatchDispatch": false,
     "gameParallelismReduced": false
   }
 }

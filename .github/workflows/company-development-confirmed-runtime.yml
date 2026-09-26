@@ -51,6 +51,10 @@ jobs:
       eligible_count: ${{ steps.plan.outputs.eligible_count }}
       eligible_ids: ${{ steps.plan.outputs.eligible_ids }}
       eligible_json: ${{ steps.plan.outputs.eligible_json }}
+      roblox_count: ${{ steps.plan.outputs.roblox_count }}
+      roblox_json: ${{ steps.plan.outputs.roblox_json }}
+      unity_count: ${{ steps.plan.outputs.unity_count }}
+      unity_json: ${{ steps.plan.outputs.unity_json }}
       unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
       unity_web_json: ${{ steps.plan.outputs.unity_web_json }}
       unity_web_bootstrap_ids: ${{ steps.plan.outputs.unity_web_bootstrap_ids }}
@@ -102,6 +106,16 @@ jobs:
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
 
+      - name: Fetch active native lane identities
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/active-roblox-native-runs.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=100" > /tmp/active-unity-native-runs.json
+          echo 'NATIVE_ACTIVE_RUN_SCAN=PASS'
+
       - name: Resolve Unity Web floor and upper-platform eligibility
         id: plan
         env:
@@ -124,11 +138,31 @@ jobs:
             String(item.status||'').toUpperCase()!=='DISABLED'&&
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
-          const nativeIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
+          const activeStates=new Set(['queued','pending','in_progress','requested']);
+          const activeIds=(file,prefix)=>{
+            let payload={workflow_runs:[]};
+            try{payload=JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
+            const ids=new Set();
+            for(const run of payload.workflow_runs||[]){
+              if(!activeStates.has(String(run.status||'').toLowerCase()))continue;
+              const title=String(run.display_title||'');
+              if(!title.startsWith(prefix))continue;
+              const id=title.slice(prefix.length).trim();
+              if(/^[a-z0-9][a-z0-9-]{1,80}$/.test(id)&&id!=='batch')ids.add(id);
+            }
+            return ids;
+          };
+          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ');
+          const activeUnity=activeIds('/tmp/active-unity-native-runs.json','Unity runtime · ');
+          const nativeIds=[],robloxIds=[],unityIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
             const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
             if(decision.state==='UPPER_PLATFORM'){
               nativeIds.push(item.gameId);
+              if(activeRoblox.has(item.gameId))console.log('ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
+              else robloxIds.push(item.gameId);
+              if(activeUnity.has(item.gameId))console.log('UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
+              else unityIds.push(item.gameId);
               if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
               continue;
             }
@@ -148,6 +182,10 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_json='+JSON.stringify(nativeIds)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'roblox_count='+robloxIds.length+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'roblox_json='+JSON.stringify(robloxIds)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_count='+unityIds.length+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_json='+JSON.stringify(unityIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_json='+JSON.stringify(webIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_ids='+bootstrapIds.join(',')+'\n');
@@ -155,6 +193,8 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
           console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
+          console.log('ROBLOX_NATIVE_DISPATCH_IDS='+(robloxIds.join(',')||'NONE'));
+          console.log('UNITY_NATIVE_DISPATCH_IDS='+(unityIds.join(',')||'NONE'));
           console.log('UNITY_WEB_FLOOR_IDS='+(webIds.join(',')||'NONE'));
           console.log('UNITY_WEB_FLOOR_BOOTSTRAP_IDS='+(bootstrapIds.join(',')||'NONE'));
           console.log('UPPER_PLATFORM_GRANDFATHERED_IDS='+(grandfatheredIds.join(',')||'NONE'));
@@ -167,11 +207,11 @@ jobs:
   dispatch-roblox:
     name: Run ready Roblox upper-platform lanes
     needs: native-plan
-    if: needs.native-plan.outputs.eligible_count != '0'
+    if: needs.native-plan.outputs.roblox_count != '0'
     strategy:
       fail-fast: false
       matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
+        game_id: ${{ fromJSON(needs.native-plan.outputs.roblox_json) }}
     permissions:
       contents: write
       pull-requests: write
@@ -184,11 +224,11 @@ jobs:
   dispatch-unity:
     name: Run ready Unity upper-platform lanes
     needs: native-plan
-    if: needs.native-plan.outputs.eligible_count != '0'
+    if: needs.native-plan.outputs.unity_count != '0'
     strategy:
       fail-fast: false
       matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.eligible_json) }}
+        game_id: ${{ fromJSON(needs.native-plan.outputs.unity_json) }}
     permissions:
       contents: write
       actions: write

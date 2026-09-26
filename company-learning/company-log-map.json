@@ -1,5 +1,5 @@
 {
-  "version": 100,
+  "version": 101,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1851,5 +1851,20 @@
     ],
     "gameHeavyCapacityProtected": true,
     "gateSemanticsUnchanged": true
+  },
+  "nativeChildPreDispatchDedupeEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "markers": [
+      "NATIVE_ACTIVE_RUN_SCAN=PASS",
+      "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
+      "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE",
+      "ROBLOX_NATIVE_DISPATCH_IDS",
+      "UNITY_NATIVE_DISPATCH_IDS",
+      "DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT",
+      "DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN"
+    ],
+    "duplicateChildQueueEntryIsWaste": true,
+    "independentPlatformLaneMayProceedWhenSiblingAlreadyActive": true
   }
 }

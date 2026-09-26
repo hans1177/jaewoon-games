@@ -1,5 +1,6 @@
 # owner-first-gate platform kick: fantasy-survival 2026-09-21
 name: Company DEVELOPMENT_CONFIRMED Unity Runtime
+run-name: Unity runtime · ${{ inputs.game_id || 'batch' }}
 
 on:
   push:

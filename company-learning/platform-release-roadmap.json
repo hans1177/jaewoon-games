@@ -1,5 +1,5 @@
 {
-  "version": 424,
+  "version": 425,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8491,6 +8491,30 @@
       "heavyWorkerSemanticsChanged": false,
       "gameParallelismReduced": false,
       "sharedStateWriteRulesUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "nativeChildPreDispatchDedupe20260926": {
+      "id": "NATIVE_CHILD_PRE_DISPATCH_DEDUPE_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#departmentDrivenPortfolioDevelopmentControl.runtimeExecution.developmentExecutionOwner",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "PREVENT_DUPLICATE_PER_GAME_NATIVE_RUNS_BEFORE_CHILD_WORKFLOWS_ENTER_THE_ACTIONS_QUEUE",
+      "centralOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+      "activeIdentity": {
+        "ROBLOX": "Roblox runtime · <gameId>",
+        "UNITY": "Unity runtime · <gameId>"
+      },
+      "activeStates": [
+        "queued",
+        "pending",
+        "in_progress",
+        "requested"
+      ],
+      "platformIndependentFiltering": true,
+      "alreadyActiveRobloxDoesNotBlockUnity": true,
+      "alreadyActiveUnityDoesNotBlockRoblox": true,
+      "designPromotionDirectBatchDispatchForbidden": true,
+      "designPromotionWake": "CENTRAL_EXACT_FANOUT",
+      "independentGamesRemainParallel": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },

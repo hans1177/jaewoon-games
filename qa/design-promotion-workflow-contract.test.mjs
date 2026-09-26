@@ -65,9 +65,11 @@ test('stale development admission is removed instead of preserving an invalid qu
 test('promotion dispatches both native lanes and does not use Unity Web as a promotion gate',()=>{
   assert.match(designRuntime,/PER_GAME_PROMOTION_DISPATCH=YES/);
   assert.match(designRuntime,/PORTFOLIO_WIDE_PASS_WAIT=NO/);
-  assert.match(promotion,/company-development-roblox-runtime\.yml/);
-  assert.match(promotion,/company-development-unity-runtime\.yml/);
-  assert.match(promotion,/DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY/);
+  assert.match(promotion,/company-development-confirmed-runtime\.yml/);
+  assert.match(promotion,/DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT/);
+  assert.match(promotion,/DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN/);
+  assert.doesNotMatch(promotion,/gh workflow run company-development-roblox-runtime\.yml/);
+  assert.doesNotMatch(promotion,/gh workflow run company-development-unity-runtime\.yml/);
   assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NO/);
   assert.match(promotion,/ONE_PLATFORM_REQUEST_STARTS_BOTH=YES/);
 });
