@@ -160,10 +160,6 @@ jobs:
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
-            const candidateReady=secondaryOwnerFocus
-              ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
-              :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
-            if(candidateReady)continue;
             const target=`roblox-games/${item.gameId}`;
             const reconciliationRow=reconciliationById.get(item.gameId);
             const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
@@ -173,6 +169,14 @@ jobs:
               &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
               &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
             const knownSourceRepairDebt=Boolean(bootstrapFailed)||f0FoundationRepair;
+            const candidateReady=secondaryOwnerFocus
+              ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
+              :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
+            const repairSupersedesCandidate=existingSourceAssetRebind||knownSourceRepairDebt;
+            if(candidateReady&&!repairSupersedesCandidate)continue;
+            if(candidateReady&&repairSupersedesCandidate){
+              console.log('ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR='+item.gameId+':'+(existingSourceAssetRebind?'STUDIO_ASSET_REBIND':'KNOWN_SOURCE_REPAIR_DEBT'));
+            }
             if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId)&&!knownSourceRepairDebt)continue;
             if(fs.existsSync(target)&&!knownSourceRepairDebt&&!existingSourceAssetRebind)continue;
             rows.push({
