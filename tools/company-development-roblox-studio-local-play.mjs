@@ -434,7 +434,8 @@ export function classifyStudioConsoleOutput(consoleResult){
   };
   const criticalConsolePatterns=[
     /Infinite yield possible.*WaitForChild\(["']GameAction["']\)/i,
-    /DataStoreService.*(?:Studio access to APIs is not allowed|API Services are disabled)/i
+    /DataStoreService.*(?:Studio access to APIs is not allowed|API Services are disabled)/i,
+    /You must publish this place to the web to access DataStore/i
   ];
 
   for(const entry of structured){
@@ -1247,12 +1248,15 @@ async function main(){
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_ERROR_COUNT='+Number(result?.metrics?.consoleErrorCount||0));
     console.log('ROBLOX_CHARACTER_MOTION_RUNTIME_REQUIRED='+(result?.characterMotionRuntime?.required===true?'YES':'NO'));
     console.log('ROBLOX_CHARACTER_MOTION_RUNTIME_RESULT='+(result?.characterMotionRuntime?.required===true?(result?.characterMotionRuntime?.pass===true?'PASS':'FAIL'):'NOT_APPLICABLE'));
+    const runtimeErrorCount=Number(Array.isArray(result?.errors)?result.errors.length:0);
     console.log('ROBLOX_STUDIO_MCP_RUNTIME='+(result.runtimeVerified?'PASS':'FAIL'));
+    console.log('ROBLOX_STUDIO_MCP_SESSION_COMPLETED=YES');
     if(!result.runtimeVerified){
-      throw new Error(
-        'ROBLOX_STUDIO_MCP_RUNTIME_NOT_VERIFIED:failed='
+      console.log('ROBLOX_STUDIO_MCP_RUNTIME_FAILURE_PERSIST_REQUIRED=YES');
+      console.log(
+        'ROBLOX_STUDIO_MCP_RUNTIME_FAILURE_SUMMARY:failed='
         +(failedCheckpoints.join(',')||'NONE')
-        +':errors='+Number(Array.isArray(result?.errors)?result.errors.length:0)
+        +':errors='+runtimeErrorCount
       );
     }
     return;
