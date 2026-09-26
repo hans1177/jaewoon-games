@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
@@ -106,6 +107,44 @@ test('game control jobs stay on ARM while heavy execution stays on ubuntu-latest
   assert.match(core,/\n  fan_in:[\s\S]{0,260}?\n    runs-on: ubuntu-24\.04-arm/);
   assert.match(core,/\n  model_cache:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
   assert.match(core,/\n  worker:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
+});
+
+test('director fallback wake reuses the canonical game-primary core without creating work',()=>{
+  const fallback=runtime.continuous?.directorGamePrimaryFallbackWake||{};
+  const architectureFallback=architecture.neuralWorkGraphTopology?.currentWaveExecution?.directorGamePrimaryFallbackWake||{};
+  const policyFallback=roadmap.changeRecord?.directorGamePrimaryFallbackWake20260927||{};
+
+  assert.equal(fallback.enabled,true);
+  assert.equal(fallback.dispatchTarget,'.github/workflows/vibe2-continuous-core.yml');
+  assert.equal(fallback.executionLane,'GAME_PRIMARY');
+  assert.equal(fallback.existingQueuedTasksOnly,true);
+  assert.equal(fallback.newSchedulerCreated,false);
+  assert.equal(fallback.newQueueCreated,false);
+  assert.equal(fallback.canonicalReservePathPreserved,true);
+  assert.equal(fallback.activeNonPushCoreSuppressesFallbackDispatch,true);
+
+  assert.equal(architectureFallback.enabled,true);
+  assert.equal(architectureFallback.dispatchTarget,'.github/workflows/vibe2-continuous-core.yml');
+  assert.equal(architectureFallback.existingQueuedTasksOnly,true);
+  assert.equal(architectureFallback.newSchedulerCreated,false);
+  assert.equal(architectureFallback.newQueueCreated,false);
+  assert.equal(architectureFallback.canonicalReservePathPreserved,true);
+
+  assert.equal(policyFallback.existingQueuedTaskDispatchOnly,true);
+  assert.equal(policyFallback.newSchedulerCreated,false);
+  assert.equal(policyFallback.newQueueCreated,false);
+  assert.equal(policyFallback.newTaskCreated,false);
+  assert.equal(policyFallback.canonicalReservePathPreserved,true);
+  assert.equal(policyFallback.mainPushWakePolicyUnchanged,true);
+  assert.equal(policyFallback.responsibleFileConflictProtectionPreserved,true);
+
+  assert.match(director,/\n      - Vibe2 Continuous Core\n    types: \[completed\]/);
+  assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED/);
+  assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE/);
+  assert.match(director,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
+  assert.match(director,/-f 'inputs\[execution_lane\]=game-primary'/);
+  assert.match(director,/-f 'inputs\[lane_max\]=256'/);
+  assert.match(director,/\(\$run\.event \/\/ ""\) != "push"/);
 });
 
 test('reserve batch persists control state only through the explicit Vibe2 control root',()=>{
