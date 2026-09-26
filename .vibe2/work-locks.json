@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1aujz1g",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:39:57.975Z",
-      "expiresAt": "2026-09-26T11:24:57.975Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-517dzy",
       "worker": "vibe2",
       "taskId": "horror-escape-room-unity-web-base-implementation-v1",
@@ -698,6 +680,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-gn3zx7",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
+      ],
+      "baseSha": "301c7b31195783b594327baee8c066ffafa9d1ed",
+      "acquiredAt": "2026-09-26T11:26:27.449Z",
+      "expiresAt": "2026-09-26T12:11:27.449Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
       ]
     }
   ]
