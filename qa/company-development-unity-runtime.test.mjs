@@ -409,8 +409,8 @@ test('Unity direct native changes override unrelated representative canary selec
   assert.match(workflowSource,/const selected=requestedRows\.length\?requestedRows\.slice/);
 });
 
-test('Unity prepare uses ARM game-control capacity while technical validation stays on the full runner pool',()=>{
-  assert.match(workflowSource,/\n  prepare:\n[\s\S]*?runs-on:\s*ubuntu-24\.04-arm/);
+test('Unity prepare uses slim ingress capacity while technical validation stays on the full runner pool',()=>{
+  assert.match(workflowSource,/\n  prepare:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(workflowSource,/\n  unity-technical-validation:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
 });
 
