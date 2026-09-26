@@ -464,9 +464,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T14:22:45.765Z",
+      "updatedAt": "2026-09-26T14:30:13.857Z",
       "robloxSourceCommit": "8816db394640fb0fc2c8ba4013bac7a810dcfcfa",
       "robloxSourceBootstrapPassedAt": "2026-09-26T12:54:53.288Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -741,10 +741,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-real-server-boot"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -777,7 +777,190 @@
       },
       "robloxReleaseVersionNumber": 22,
       "robloxPublicRelease": false,
-      "robloxInternalVibePlayEvidence": null,
+      "robloxInternalVibePlayEvidence": {
+        "version": 2,
+        "gameId": "horror-escape-room",
+        "authority": "roblox-official-studio-mcp-runtime",
+        "pass": false,
+        "actualPlay": true,
+        "runtimeVerified": false,
+        "learningReusable": true,
+        "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
+        "infrastructureFailure": false,
+        "failureClass": "STUDIO_MCP_RUNTIME_ERROR",
+        "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+        "actualPlayEligibility": "INTERNAL_RELEASE_OR_HISTORICAL_REPLAY",
+        "studioMcpServerEnablementRequired": false,
+        "operatorPrerequisite": null,
+        "localPlaceFile": true,
+        "officialStudioMcp": true,
+        "onlinePlaceDirectOpen": false,
+        "robloxPlayerAutomation": false,
+        "externalGuiAutomation": false,
+        "undocumentedStudioCliAutomation": false,
+        "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
+        "sourceRevision": "8816db394640fb0fc2c8ba4013bac7a810dcfcfa",
+        "artifactIdentity": "sha256:04acccc859af4332c3c7901c828fd9caaa07e6bbd0a091c0d4ebce31c173be2b",
+        "artifactRunId": 36238682627,
+        "universeId": "10767445796",
+        "placeId": "98222620265768",
+        "versionNumber": 22,
+        "historicalSharedTargetExactArtifact": false,
+        "historicalExactBuildReplay": false,
+        "currentSourceArtifactBinding": true,
+        "currentPublishedRuntimeClaim": false,
+        "publishedCandidateCrossCheckPassed": true,
+        "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
+        "capabilities": {
+          "officialStudioMcp": true,
+          "playMode": true,
+          "mcpInput": true,
+          "screenCapture": true,
+          "consoleCapture": true
+        },
+        "actions": [
+          {
+            "id": "keyboard-w",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "keyboard-a",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "keyboard-d",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "keyboard-space",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "official-studio-mcp-connected",
+            "name": "official-studio-mcp-connected",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "local-studio-selected",
+            "name": "local-studio-selected",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "studio-state-readable",
+            "name": "studio-state-readable",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "play-mode-started",
+            "name": "play-mode-started",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "viewport-before-captured",
+            "name": "viewport-before-captured",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "mcp-input-dispatched",
+            "name": "mcp-input-dispatched",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "viewport-changed-after-input",
+            "name": "viewport-changed-after-input",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "console-output-captured",
+            "name": "console-output-captured",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "no-release-blocking-runtime-errors",
+            "name": "no-release-blocking-runtime-errors",
+            "required": true,
+            "pass": false
+          },
+          {
+            "id": "play-mode-stopped",
+            "name": "play-mode-stopped",
+            "required": true,
+            "pass": true
+          }
+        ],
+        "errors": [
+          {
+            "type": "studio-console-error",
+            "actionId": null,
+            "signature": "You must publish this place to the web to access DataStore. Stack Begin Script 'ServerScriptService.GameServer.Game', Line 11 Stack End Infinite yield possible on 'ReplicatedStorage:WaitForChild(\"GameAction\")' Stack Begin Script 'Players.anyanguy1981.PlayerScripts.GameClient.Game', Line 27 Stack End text"
+          }
+        ],
+        "runtimeSummary": {
+          "consoleErrorCount": 1,
+          "distinctFrameChange": true,
+          "characterMotionRuntimeRequired": false,
+          "characterMotionRuntimePassed": true
+        },
+        "characterMotionRuntime": {
+          "required": false,
+          "observed": false,
+          "started": false,
+          "pass": false,
+          "failed": false,
+          "failureReasons": [],
+          "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+        },
+        "learningSignals": [
+          "roblox official studio mcp local runtime",
+          "mcp-keyboard-input",
+          "official-studio-mcp-connected",
+          "local-studio-selected",
+          "studio-state-readable",
+          "play-mode-started",
+          "viewport-before-captured",
+          "mcp-input-dispatched",
+          "viewport-changed-after-input",
+          "console-output-captured",
+          "play-mode-stopped",
+          "debugging",
+          "runtime error",
+          "ROBLOX_DATASTORE_SAVE_LOAD"
+        ],
+        "rawSourceIncluded": false,
+        "rawGameplayValuesIncluded": false,
+        "rawViewportIncluded": false,
+        "scenarioCoverage": [],
+        "scenarioCoveragePass": false,
+        "functionalChainEvidence": {
+          "inputDispatched": true,
+          "runtimeVerified": false,
+          "screenChanged": true,
+          "authoritativeStateChangeObserved": false,
+          "exactScenarioObserved": false
+        },
+        "testedAt": "2026-09-26T14:30:13.857Z",
+        "workflowRunId": 36248178552,
+        "publicationAuthority": false,
+        "publicationTargetDiscovery": false
+      },
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
       "robloxSecurityReleaseEvidence": null,
@@ -7714,7 +7897,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-26T14:29:50.348Z",
+  "updatedAt": "2026-09-26T14:30:13.857Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
