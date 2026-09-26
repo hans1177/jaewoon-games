@@ -30,9 +30,9 @@ permissions:
   actions: write
 
 concurrency:
-  # Engine pushes replace only stale push-triggered runs. Continuation/schedule runs keep their checkpointed cycle.
+  # Preserve the active design cycle; GitHub replaces only the older pending run in this group.
   group: company-seed-design-runtime-${{ github.event_name == 'push' && 'engine-push' || 'continuation' }}
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
