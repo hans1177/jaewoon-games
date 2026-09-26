@@ -1,6 +1,7 @@
 # FAST_MVP_INTERNAL_GATE_V2: exact package -> shared preflight -> core headless QA -> private/restricted publish
 # MANUAL_RELEASE_TRIGGER: final primary-three design-art-title sync
 name: Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
+run-name: Roblox private runtime · ${{ inputs.game_id || 'push' }}
 
 on:
   push:

@@ -790,6 +790,10 @@ test('pending private runtime candidates retry even when technical target count 
   assert.match(workflow,/name: Dispatch pending private runtime candidates[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DEDUPED_COUNT=/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/actions\/workflows\/company-development-roblox-release-promotion\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/display_title/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT=/);
   assert.match(workflow,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
   assert.match(workflow,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
