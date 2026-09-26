@@ -154,7 +154,7 @@ test('planning backlog target stops plan expansion without changing persistent q
   assert.equal(result.queue.maxConcurrentTasks,256);
 });
 
-test('queued low-value micro diagnostics are consolidated so studio presentation work can enter the queue',()=>{
+test('queued low-value micro diagnostics are consolidated so holistic studio build-up can enter before generic presentation polish',()=>{
   const root=tempRepo();
   const gameId='studio-web';
   const webRoot=path.join(root,'web-games',gameId);
@@ -185,7 +185,8 @@ test('queued low-value micro diagnostics are consolidated so studio presentation
   assert.equal(cancelled.blocker,'superseded-by:STUDIO_QUALITY_PACKAGE');
   assert.ok(cancelled.evidence.includes('studio-quality-micro-task-consolidation:v1'));
   assert.equal(result.planningBacklog.supersededLegacyMicroTasks,1);
-  assert.ok(result.tasks.some(row=>row.id===`${gameId}-presentation-asset-adaptation-v1`));
+  assert.ok(result.tasks.some(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1')));
+  assert.ok(result.tasks.some(row=>row.studioQualityEvolution?.existingHolisticBackfillRequired===true));
 });
 
 test('effective wave cap does not overwrite persistent external queue max',()=>{
@@ -1109,8 +1110,13 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,null);
   assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
+  const firstFocus=first.studioQualityEvolution?.focusPillar;
   working={...working,tasks:working.tasks.map(row=>
-    row.id===first.id?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}:row
+    row.gameId===gameId
+      &&row.studioQualityEvolution?.cycle===first.studioQualityEvolution?.cycle
+      &&(row.evidence||[]).includes('studio-quality-loop:v1')
+      ?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}
+      :row
   )};
   let second=null;
   for(let i=0;i<12&&!second;i++){
@@ -1122,6 +1128,7 @@ test('full planner replaces low-value micro work with queued studio packages and
     second=working.tasks.find(row=>
       row.gameId===gameId
       &&row.id!==first.id
+      &&row.studioQualityEvolution?.focusPillar===firstFocus
       &&String(row.status||'').trim().toLowerCase()==='queued'
       &&(row.evidence||[]).includes('studio-quality-loop:v1')
     )||null;
@@ -2261,6 +2268,48 @@ test('existing holistic backfill is independent for Roblox Unity Web and Unity N
   assert.ok(nextUnityWeb);
   assert.equal(nextUnityWeb.studioQualityEvolution.existingHolisticBaselineVerified,true);
   assert.equal(nextUnityWeb.studioQualityEvolution.siblingPlatformPassCannotSubstitute,true);
+});
+
+test('existing game holistic backfill is planned before generic Roblox presentation polish',()=>{
+  const root=tempRepo();
+  const gameId='existing-holistic-priority';
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true,firstAdoption:{gameId:'other'}};
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2),'utf8');
+
+  const clientDir=path.join(root,'roblox-games',gameId,'client');
+  const serverDir=path.join(root,'roblox-games',gameId,'server');
+  const sharedDir=path.join(root,'roblox-games',gameId,'shared');
+  fs.mkdirSync(clientDir,{recursive:true});
+  fs.mkdirSync(serverDir,{recursive:true});
+  fs.mkdirSync(sharedDir,{recursive:true});
+  fs.writeFileSync(path.join(clientDir,'Game.client.luau'),'local camera = workspace.CurrentCamera\nlocal input = game:GetService("UserInputService")\n','utf8');
+  fs.writeFileSync(path.join(serverDir,'Combat.server.luau'),'local Combat = {}\nfunction Combat.resolveAttack(player, enemy) return player ~= nil and enemy ~= nil end\nreturn Combat\n','utf8');
+  fs.writeFileSync(path.join(sharedDir,'Save.luau'),'local Save = {}\nreturn Save\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'전투와 지역 선택을 연결하는 재미',progressionDirection:'보상과 장비로 새 지역 선택을 확장한다.'});
+
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Existing Holistic Priority',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    queue:{maxConcurrentTasks:256,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:1,
+    queueMaxConcurrentTasks:256,
+    planningBacklogTarget:1,
+    planningBacklogMinimum:0
+  });
+
+  assert.equal(result.planned,true);
+  assert.equal(result.tasks.length,1);
+  const first=result.tasks[0];
+  assert.ok((first.evidence||[]).includes('existing-holistic-backfill:v1'));
+  assert.equal(first.studioQualityEvolution?.existingHolisticBackfillRequired,true);
+  assert.notEqual(first.id,`${gameId}-roblox-studio-asset-backfill-v1`);
+  assert.doesNotMatch(first.id,/presentation-asset-adaptation-v1$/);
 });
 
 test('existing games receive holistic backfill on all five quality pillars without grandfather exemption',()=>{
