@@ -59,7 +59,7 @@ function readParallelismControl(args) {
   }
 }
 
-export function speculativeExpansionPolicy(controlInput = {}) {
+export function speculativeExpansionPolicy(controlInput = {}, { liveRunnerPressure = false } = {}) {
   const control=createParallelismControl(controlInput);
   const telemetry=control.lastTelemetry&&typeof control.lastTelemetry==='object'?control.lastTelemetry:{};
   const lastReason=clean(control.lastReason).toUpperCase();
@@ -67,17 +67,20 @@ export function speculativeExpansionPolicy(controlInput = {}) {
   const workerCount=Math.max(0,Math.floor(Number(telemetry.workerCount)||0));
   const effectiveMax=Math.max(0,Math.floor(Number(telemetry.effectiveMax)||0));
   const peakUtilization=Math.max(0,Number(telemetry.effectivePeakUtilizationPct)||0);
+  const livePressure=bool(liveRunnerPressure);
   const explicitPressure=/(?:RUNNER_CAPACITY|RUNNER_QUEUE_WAIT|CHECKOUT_NETWORK)/.test(lastReason)
     || ['RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION','CHECKOUT_NETWORK'].includes(bottleneck);
   const loadedUnderutilization=workerCount>=4&&effectiveMax>=4&&peakUtilization>0&&peakUtilization<80;
-  if(explicitPressure||loadedUnderutilization){
+  if(livePressure||explicitPressure||loadedUnderutilization){
     const reasons=[];
+    if(livePressure)reasons.push('LIVE_RUNNER_PRESSURE');
     if(explicitPressure)reasons.push('ADAPTIVE_RUNNER_PRESSURE');
     if(loadedUnderutilization)reasons.push('LOW_EFFECTIVE_PEAK_UTILIZATION');
     return Object.freeze({
       allowed:false,
       reason:reasons.join('+'),
       primaryCoveragePreserved:true,
+      liveRunnerPressure:livePressure,
       lastReason:clean(control.lastReason)||null,
       bottleneck:bottleneck||null,
       workerCount,
@@ -89,6 +92,7 @@ export function speculativeExpansionPolicy(controlInput = {}) {
     allowed:true,
     reason:'AVAILABLE',
     primaryCoveragePreserved:true,
+    liveRunnerPressure:livePressure,
     lastReason:clean(control.lastReason)||null,
     bottleneck:bottleneck||null,
     workerCount,
@@ -882,9 +886,10 @@ export function runQueueCommand(args = {}) {
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const liveRunnerPressure=bool(args['runner-pressure']);
     const speculativeExpansion=executionLane==='game-primary'
-      ?speculativeExpansionPolicy(adaptiveControl)
-      :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true});
+      ?speculativeExpansionPolicy(adaptiveControl,{liveRunnerPressure})
+      :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true,liveRunnerPressure});
     const reserved = reserveVibeTaskBatch(queue, {
       maxConcurrentTasks: reservationMaxConcurrentTasks,
       reservation: reservationFromArgs(args),
@@ -907,6 +912,7 @@ export function runQueueCommand(args = {}) {
           reservationMaxConcurrentTasks,
           speculativeExpansionAllowed:reserved.speculativeExpansionAllowed===true,
           speculativeExpansionReason:reserved.speculativeExpansionReason||speculativeExpansion.reason,
+          liveRunnerPressure,
           primaryTaskCount:reserved.primaryTaskCount||0,
           workerCount:reserved.workerCount||0,
           requestedMaxConcurrentTasks,
@@ -926,7 +932,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, speculativeExpansion, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, liveRunnerPressure, speculativeExpansion, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
