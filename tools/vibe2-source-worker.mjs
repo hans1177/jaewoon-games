@@ -1973,7 +1973,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         studioEditMatchCreditRetry=true;
         console.log(`VIBE2_STUDIO_EDIT_MATCH_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}`);
       }
-      const studioCausalRecoveryClass=studioExpansion&&['NO_OP','INVALID_PATH','STUDIO_QUALITY_DELTA'].includes(failureClass);
+      const studioCausalRecoveryClass=studioExpansion&&['NO_OP','TIMEOUT','INVALID_PATH','STUDIO_QUALITY_DELTA'].includes(failureClass);
       let studioCausalRecoveryCreditRetry=false;
       if(!allowFullRewrite&&studioCausalRecoveryClass&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts&&!studioCausalRecoveryCreditUsed){
         maxAttempts=Math.min(configuredBaseMaxAttempts,attempt+1);
