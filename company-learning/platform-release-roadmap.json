@@ -1,5 +1,5 @@
 {
-  "version": 396,
+  "version": 397,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7646,6 +7646,12 @@
         ".github/workflows/company-development-roblox-post-runtime-qa.yml",
         "qa/company-development-roblox-studio-local-play.test.mjs"
       ],
+      "authorityChange": "NONE"
+    },
+    "robloxMarketingThumbnailSync20260926": {
+      "id": "ROBLOX_MARKETING_THUMBNAIL_SYNC_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Bind one game-specific 16:9 marketing image to both homepage cards and Roblox experience thumbnails, using existing Open Cloud release promotion.",
       "authorityChange": "NONE"
     }
   },
@@ -23269,5 +23275,72 @@
       "qa/company-development-roblox-studio-local-play.test.mjs",
       "qa/vibe2-learning-motor.test.mjs"
     ]
+  },
+  "robloxMarketingThumbnailSyncContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "authority": "OWNER_DIRECTIVE_2026-09-26",
+    "objective": "USE_ONE_GAME_SPECIFIC_MARKETING_IMAGE_AS_THE_CANONICAL_HOMEPAGE_CARD_AND_ROBLOX_EXPERIENCE_THUMBNAIL_SOURCE",
+    "canonicalSource": {
+      "catalogField": "game-catalog.json#games[].marketingImage",
+      "canonicalProjection": "game-catalog.json#games[].canonical.identity.image",
+      "homepageConsumer": "assets/homepage-enhancements.js#cardModel",
+      "robloxConsumer": ".github/workflows/company-development-roblox-release-promotion.yml#thumbnail-sync"
+    },
+    "imageContract": {
+      "format": "PNG",
+      "aspectRatio": "16:9",
+      "preferredWidth": 1920,
+      "preferredHeight": 1080,
+      "maxBytes": 3145728,
+      "gameSpecific": true,
+      "placeholderForbidden": true,
+      "duplicateAcrossDifferentGamesForbidden": true,
+      "titleReadableOnMobile": true,
+      "gameplayThemeMustMatchGame": true,
+      "essentialTextBottomSafeArea": true,
+      "canonicalFormat": "SVG_OR_PNG",
+      "robloxUploadFormat": "PNG",
+      "robloxUploadWidth": 1920,
+      "robloxUploadHeight": 1080,
+      "svgRasterizer": "rsvg-convert",
+      "homepageUsesCanonicalVectorWithoutDerivative": true,
+      "robloxUsesDeterministicRasterDerivative": true
+    },
+    "robloxUpload": {
+      "provider": "ROBLOX_OPEN_CLOUD",
+      "endpoint": "/thumbnail-personalization-api/v1/universes/{universeId}/thumbnails/uploads",
+      "requiredScope": "universe.thumbnail:write",
+      "apiKeySecret": "ROBLOX_OPEN_CLOUD_API_KEY",
+      "cookieFallbackForbidden": true,
+      "uploadAfterExactPrivateRuntimeCandidatePublish": true,
+      "exactUniverseBindingRequired": true,
+      "verifyProcessingStatusRequired": true,
+      "moderationPendingIsNotPass": true,
+      "renderCanonicalSvgBeforeUpload": true,
+      "renderedPngMustRemainEphemeral": true
+    },
+    "homepageCompatibility": {
+      "homepageMustUseSameMarketingImage": true,
+      "canonicalIdentityImageMustMatchMarketingImage": true,
+      "legacyGenericCardImageMayNotOverrideMarketingImage": true,
+      "missingMarketingImageAction": "FAIL_HOMEPAGE_AND_ROBLOX_PRESENTATION_QA"
+    },
+    "currentInternalReleaseTargets": [
+      "cozy-island",
+      "daechung-rpg",
+      "horror-escape-room",
+      "village-dungeons"
+    ],
+    "implementationBindings": [
+      "tools/game-catalog-normalization.mjs",
+      "tools/company-roblox-thumbnail-sync.mjs",
+      ".github/workflows/company-development-roblox-release-promotion.yml",
+      "tools/homepage-manager.mjs",
+      "qa/game-catalog-normalization.test.mjs",
+      "qa/company-development-roblox-release-promotion.test.mjs",
+      "qa/company-roblox-thumbnail-sync.test.mjs"
+    ],
+    "authorityChange": "NONE"
   }
 }
