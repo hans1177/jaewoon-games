@@ -8737,6 +8737,32 @@
       "sharedStateSerialization": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
       "qualitySecurityReleaseGatesUnchanged": true
     },
+    "fanInRefillRunnerPressureBypass20260927": {
+      "id": "FAN_IN_REFILL_RUNNER_PRESSURE_BYPASS_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "KEEP_GAME_PRIMARY_FREE_SLOT_REFILL_LIVE_WHEN_THE_DEFAULT_UBUNTU_SLIM_CONTROL_QUEUE_IS_SATURATED_WITH_UNRELATED_ADMINISTRATIVE_WORK",
+      "observedEvidence": {
+        "runId": 36277477506,
+        "job": "reserve",
+        "event": "vibe2-fanin-refill",
+        "defaultRunner": "ubuntu-slim",
+        "state": "QUEUED_BEHIND_SLIM_CONTROL_PRESSURE"
+      },
+      "runnerRouting": {
+        "defaultReserve": "ubuntu-slim",
+        "fanInRefillReserve": "ubuntu-24.04-arm",
+        "heavyWorker": "ubuntu-latest"
+      },
+      "scope": "VIBE2_FANIN_REFILL_REPOSITORY_DISPATCH_ONLY",
+      "mainPushReserveUnchanged": true,
+      "neuronCompletionIngressUnchanged": true,
+      "reserveConcurrencyUnchanged": true,
+      "optimisticSharedStateWriteUnchanged": true,
+      "workerCapacityUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "newWorkflowOrQueueCreated": false
+    },
     "unityExactChildRunDedupe20260927": {
       "id": "UNITY_EXACT_CHILD_RUN_DEDUPE_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
