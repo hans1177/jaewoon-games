@@ -185,40 +185,34 @@ test('every accepted Roblox buildup modification must rebuild before revalidatio
 });
 
 
-test('native executors cannot bypass Unity Web upper-platform readiness',()=>{
+test('native executors start from minimum design and never wait for Unity Web readiness',()=>{
   const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
   const roblox=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   for(const workflow of [unity,roblox]){
-    assert.match(workflow,/company-upper-platform-admission\.mjs/);
-    assert.match(workflow,/classifyUpperPlatformAdmission/);
-    assert.match(workflow,/grandfatherGameIds/);
-    assert.match(workflow,/admission\.state!=='UPPER_PLATFORM'/);
+    assert.doesNotMatch(workflow,/classifyUpperPlatformAdmission/);
+    assert.doesNotMatch(workflow,/NATIVE_ADMISSION_BLOCKED/);
   }
-  assert.match(unity,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
-  assert.match(roblox,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
-  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherMode,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.grandfatherGameIds,[]);
-  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,true);
+  assert.match(unity,/UNITY_PARALLEL_ADMISSION=/);
+  assert.match(roblox,/ROBLOX_PARALLEL_ADMISSION=/);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.developmentConfirmedWithoutNativeProgressMustRunUnityWebFloor,false);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.newNativeDevelopmentStartRequiresUnityWebReadiness,false);
 });
 
-test('Unity Web source bootstrap is fail-closed for any durable native progress without fixed game ids',()=>{
+test('Unity Web source bootstrap is game-id scoped and may run beside native development',()=>{
   const workflow=fs.readFileSync('.github/workflows/unity-web-floor-source-bootstrap.yml','utf8');
   const generator=fs.readFileSync('tools/company-unity-web-floor-bootstrap.mjs','utf8');
-  assert.match(workflow,/nativeUpperPlatformAlreadyStarted/);
-  assert.doesNotMatch(workflow,/const forbidden=new Set\(\['cozy-island','daechung-rpg'\]\)/);
-  assert.match(workflow,/UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN/);
+  assert.doesNotMatch(workflow,/nativeUpperPlatformAlreadyStarted/);
+  assert.doesNotMatch(workflow,/UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN/);
+  assert.match(workflow,/group: unity-web-source-bootstrap-\$\{\{ inputs\.game_ids \}\}/);
   assert.match(workflow,/company-unity-web-floor-bootstrap\.mjs/);
   assert.match(workflow,/git add "unity-games\/\$id"/);
-  assert.doesNotMatch(workflow,/git add "unity-games\/\$id" "\.build-requests\/unity-web\/\$id\.json"/);
   assert.match(generator,/BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP/);
   assert.match(generator,/upperPlatformReady:false/);
   assert.match(generator,/releaseOrDeploymentAuthority:false/);
-  assert.match(generator,/public static void BuildWeb\(\)/);
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
-  assert.match(webWorkflow,/bootstrapGraphicsBlocked/);
-  assert.match(webWorkflow,/presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'/);
+  assert.match(webWorkflow,/UNITY_WEB_QUALITY_CHECKPOINT=/);
+  assert.match(webWorkflow,/nativeGateAuthority:false/);
 });
-
 
 test('development orchestrator never globally serializes heavy platform or Unity Web execution',()=>{
   assert.doesNotMatch(runtime,/^concurrency:\s*\n\s*group:\s*company-development-confirmed-runtime\s*$/m);
