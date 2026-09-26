@@ -1,5 +1,5 @@
 {
-  "version": 112,
+  "version": 113,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1957,7 +1957,6 @@
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentFloorParallelBottleneckRepair20260927",
     "markers": [
-      "CENTRAL_DEVELOPMENT_CONTRACT_AUDIT=PASS",
       "NATIVE_ACTIVE_RUN_SCAN=PASS",
       "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
       "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE",
@@ -1974,9 +1973,13 @@
     "partialLaneScanAccepted": false,
     "expectedRunnerLabels": {
       "centralNativePlan": "ubuntu-24.04-arm",
-      "contractAudit": "ubuntu-slim",
       "unityWebHeavyExecution": "ubuntu-latest"
-    }
+    },
+    "duplicateRuntimeAuditPresent": false,
+    "canonicalQaEvidenceSources": [
+      "Company GAME_SEED Production QA / contract",
+      "Company Central Policy Contract QA / central-policy-contract"
+    ]
   },
   "mainPushWakeFreshnessEvidence": {
     "version": 1,
