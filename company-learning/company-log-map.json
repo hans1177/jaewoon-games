@@ -1,5 +1,5 @@
 {
-  "version": 88,
+  "version": 89,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1126,11 +1126,16 @@
     "runtimeReconcileMustActuallyExecute": true
   },
   "reconcileCancellationChurnContract": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.execution.stateReconciliation",
-    "observedFailure": "RECONCILE_JOB_STARTED_AFTER_NONBLOCKING_GATE_THEN_WAS_CANCELLED_BY_A_LATER_WORKFLOW_RUN_TRIGGER",
-    "correction": "CANCEL_IN_PROGRESS_FALSE_AND_SERIALIZED_STATE_WRITES",
-    "runtimePersistRequired": true
+    "observedFailure": "UNCONDITIONAL_QUEUE_RECONCILE_STATUS_SYNC_BIDIRECTIONAL_FEEDBACK_CREATED_REPEATED_PENDING_TRIGGER_REPLACEMENT",
+    "correction": "PRESERVE_SERIALIZED_RUNNING_WRITER_AND_DISPATCH_STATUS_SYNC_ONLY_AFTER_ACTUAL_QUEUE_MUTATION",
+    "runtimePersistRequired": true,
+    "unconditionalQueueCompletionStatusSyncTrigger": false,
+    "statusSyncCompletionMayTriggerReconcile": true,
+    "queueMutationStatusSyncMarker": "COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED",
+    "queueMutationMarker": "DEVELOPMENT_QUEUE_RUNTIME_CHANGED=1",
+    "noMutationTerminalMarker": "DEVELOPMENT_QUEUE_RUNTIME_CHANGED=0"
   },
   "gameSpecificBuildUpDirectiveEvidenceContract": {
     "version": 2,
