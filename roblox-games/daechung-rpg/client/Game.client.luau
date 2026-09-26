@@ -8,7 +8,7 @@ local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 -- STUDIO_ASSET_BINDING_CLIENT_BEGIN
-local STUDIO_ASSET_BINDING_VERSION = 1
+local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = C.StudioAssets or {}
 local studioAssetFamilies = studioAssetConfig.Families or {}
 local studioUi = studioAssetFamilies.UI or {}
