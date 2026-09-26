@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-49qhg1",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:27:43.364Z",
-      "expiresAt": "2026-09-26T11:12:43.364Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-fbn7ou",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
@@ -712,6 +694,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1mtzed2",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "301c7b31195783b594327baee8c066ffafa9d1ed",
+      "acquiredAt": "2026-09-26T11:13:38.707Z",
+      "expiresAt": "2026-09-26T11:58:38.707Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
       ]
     }
   ]
