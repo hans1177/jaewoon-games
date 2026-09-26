@@ -1,5 +1,5 @@
 {
-  "version": 221,
+  "version": 222,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5096,7 +5096,7 @@
     }
   },
   "vibeSourceGenerationFocusedRecoveryTopology": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
     "sourceWorker": "tools/vibe2-source-worker.mjs",
     "workflow": ".github/workflows/vibe2-continuous-core.yml",
@@ -5121,6 +5121,22 @@
       "EXISTING_RESPONSIBLE_FILE_BOUNDARY",
       "EXISTING_CANDIDATE_BRANCH_ISOLATION"
     ],
-    "authorityExpanded": false
+    "authorityExpanded": false,
+    "implementationState": "CI_VERIFIED_PENDING_LIVE_PRODUCTION_WAVE",
+    "implementationMergeCommit": "3e2fd85f784c35a925c1ea8581e4069e2c18115c",
+    "ciVerification": {
+      "centralPolicyContract": {
+        "runId": 36233532116,
+        "result": "PASS"
+      },
+      "companyEvolutionQa": {
+        "runId": 36233532137,
+        "result": "PASS"
+      },
+      "vibe2CoreQa": {
+        "runId": 36233532221,
+        "result": "PASS"
+      }
+    }
   }
 }
