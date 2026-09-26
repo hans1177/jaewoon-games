@@ -543,6 +543,23 @@ test('reservation identity is persisted on reserved tasks and worker matrix', ()
   assert.equal(reserved.matrix[0].reservedAt,reservation.reservedAt);
 });
 
+test('reservation batch and worker matrix preserve scheduler priority order instead of persistent queue order', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:3,tasks:[]});
+  queue=add(queue,'older-generic','older-generic','unity',{priority:'low',releaseState:'development-confirmed'});
+  queue=add(queue,'middle-generic','middle-generic','unity',{priority:'high',releaseState:'development-confirmed'});
+  queue=add(queue,'newer-holistic','newer-holistic','unity',{
+    priority:'critical',
+    releaseState:'development-confirmed',
+    evidence:['existing-holistic-backfill:v1'],
+    studioQualityEvolution:{version:1,cycle:1,phase:'BUILD_UP',focusPillar:'USABILITY',existingHolisticBackfillRequired:true}
+  });
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary'});
+  const selectedOrder=reserved.selection.selected.map(task=>task.id);
+  assert.deepEqual(selectedOrder,['newer-holistic','middle-generic','older-generic']);
+  assert.deepEqual(reserved.tasks.map(task=>task.id),selectedOrder);
+  assert.deepEqual(reserved.matrix.map(row=>row.taskId),selectedOrder);
+});
+
 test('same source root may fan out when responsibility files are concrete and disjoint', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
   queue=add(queue,'a','same','web',{responsibleFiles:['a.js']});
