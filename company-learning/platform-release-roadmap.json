@@ -1,5 +1,5 @@
 {
-  "version": 444,
+  "version": 445,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8855,6 +8855,34 @@
       "releaseAuthorityUnchanged": true,
       "independentGameParallelismPreserved": true,
       "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "sharedOllamaModelCache20260927": {
+      "id": "SHARED_OLLAMA_MODEL_CACHE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REDUCE_REPEAT_FREE_LOCAL_MODEL_DOWNLOAD_STARTUP_PRESSURE_IN_ROBLOX_AND_UNITY_DEVELOPMENT_WORKERS",
+      "action": ".github/actions/prepare-ollama/action.yml",
+      "cacheOptInDefault": false,
+      "cachePath": "~/.ollama/models",
+      "cacheKey": "jaewoon-ollama-model-v1-<runner.os>-<runner.arch>-<sanitized-model>",
+      "modelNameSanitizedForKey": true,
+      "restoreAction": "actions/cache/restore@v4",
+      "saveAction": "actions/cache/save@v4",
+      "saveTiming": "IMMEDIATELY_AFTER_REQUESTED_MODEL_IS_CONFIRMED_LOCAL",
+      "saveFailureBlocksDevelopment": false,
+      "reasonSaveFailureNonblocking": "MODEL_IS_ALREADY_LOCAL_BEFORE_CACHE_SAVE_AND_CACHE_IS_ONLY_STARTUP_OPTIMIZATION",
+      "enabledCallers": [
+        ".github/workflows/company-development-roblox-runtime.yml#package-worker",
+        ".github/workflows/company-development-roblox-runtime-continuation.yml#preflight-worker",
+        ".github/workflows/company-development-unity-runtime.yml#unity-technical-validation"
+      ],
+      "existingVibe2DedicatedModelCacheUnchanged": true,
+      "nonOptInPrepareOllamaCallersUnchanged": true,
+      "paidApiPolicyUnchanged": true,
+      "modelSelectionUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "independentGameParallelismPreserved": true,
+      "canonicalQaTriggerIncludesActionAndContinuation": true
     }
   },
   "vibeExecutionLaneContract": {
