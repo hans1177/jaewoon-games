@@ -43,6 +43,8 @@ namespace JaewoonGames.JungleExpedition
         private string notice = "정글 흔적 3개를 조사해.";
         private Vector3 respawnPoint = new Vector3(0, 1.1f, -4f);
         private Enemy boss;
+        private bool qaMode;
+        private bool qaStartLogged;
 
         private const string SavePrefix = "jungle_expedition_";
 
@@ -56,12 +58,20 @@ namespace JaewoonGames.JungleExpedition
         private void Start()
         {
             Application.targetFrameRate = 60;
+            qaMode = Application.absoluteURL.Contains("qa=1");
             LoadGame();
             BuildWorld();
             SpawnPlayer();
             SpawnSamplesAndGear();
             SpawnEnemiesForStage();
             WarpToCheckpoint();
+            if (qaMode)
+            {
+                AddEnemy("QA 탐사 표적", player.transform.position + new Vector3(0, 0, 1.7f), 20, 0, 0f, 0f, new Color(0.85f, 0.25f, 0.2f), PrimitiveType.Sphere, EnemyKind.Normal);
+                Qa("BOOT game=jungle-expedition status=PASS");
+                Qa("MOBILE_TARGET role=action x=0.88 y=0.90");
+                QaState();
+            }
             Show(Objective(), 4f);
         }
 
@@ -70,6 +80,18 @@ namespace JaewoonGames.JungleExpedition
             attackCd -= Time.deltaTime;
             toolCd -= Time.deltaTime;
             hurtCd -= Time.deltaTime;
+
+            if (qaMode && Input.GetKeyDown(KeyCode.Alpha1) && !qaStartLogged)
+            {
+                qaStartLogged = true;
+                Qa("START region=jungle status=PASS");
+            }
+            if (qaMode && Input.GetKeyDown(KeyCode.R))
+            {
+                WarpToCheckpoint();
+                Qa("RETURN region=checkpoint status=PASS");
+                QaState();
+            }
 
             ReadInput();
             MovePlayer();
@@ -210,6 +232,15 @@ namespace JaewoonGames.JungleExpedition
             for (int i = 0; i < Input.touchCount; i++)
             {
                 var t = Input.GetTouch(i);
+                if (qaMode && t.phase == TouchPhase.Began && t.position.x >= Screen.width * 0.72f)
+                {
+                    Qa("MOBILE_INPUT role=action status=PASS");
+                    if (!qaStartLogged)
+                    {
+                        qaStartLogged = true;
+                        Qa("START region=jungle status=PASS");
+                    }
+                }
                 if (t.position.x >= Screen.width * 0.48f) continue;
 
                 if (t.phase == TouchPhase.Began)
@@ -509,6 +540,7 @@ namespace JaewoonGames.JungleExpedition
         private void Attack()
         {
             if (attackCd > 0 || player == null) return;
+            if (qaMode) Qa("ACTION type=attack status=PASS");
             attackCd = 0.48f;
 
             float range = hasMachete ? 3.0f : 2.4f;
@@ -553,6 +585,12 @@ namespace JaewoonGames.JungleExpedition
             Destroy(e.go);
             enemies.Remove(e);
             kills++;
+            if (qaMode)
+            {
+                Qa("PROGRESS type=enemy-defeated status=PASS");
+                Qa("CORE_FUN type=explore-combat-progress status=PASS");
+                QaState();
+            }
 
             if (kind == EnemyKind.TempleGuardian && stage == 10)
             {
@@ -795,6 +833,17 @@ namespace JaewoonGames.JungleExpedition
         // =========================
         // UI
         // =========================
+        private void Qa(string payload)
+        {
+            if (qaMode) Debug.Log("JAEWOON_UNITY_WEB_QA " + payload);
+        }
+
+        private void QaState()
+        {
+            if (!qaMode) return;
+            Qa("STATE game=jungle-expedition stage=" + stage + " kills=" + kills + " hp=" + hp + " maxHp=100 region=jungle");
+        }
+
         private void Show(string text, float sec)
         {
             notice = text;
