@@ -3108,6 +3108,26 @@ test('second malformed JSON receives the bounded focused third retry', async () 
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
+test('model edit paths may carry line locators without becoming invalid file paths', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'model.json');
+  const relative='Assets/Scripts/UnityWebFloorGame.cs';
+  write(path.join(cwd,'unity-games/demo',relative),'class UnityWebFloorGame { int Floor() { return 1; } }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({
+    target:'unity',
+    root:'unity-games/demo',
+    responsibleFiles:[`unity-games/demo/${relative}`],
+    taskId:'unity-line-locator-path'
+  }),null,2));
+  write(responseFile,JSON.stringify({
+    edits:[{path:`${relative}:149`,find:'return 1;',replace:'return 2;'}],
+    newFiles:[]
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.deepEqual(result.changedFiles,[relative]);
+  assert.match(fs.readFileSync(path.join(cwd,'unity-games/demo',relative),'utf8'),/return 2;/);
+});
+
 test('Ollama transport uses streaming instead of one giant non-streaming response', () => {
   const workerSource = fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs', import.meta.url), 'utf8');
   assert.match(workerSource, /stream:true/);
