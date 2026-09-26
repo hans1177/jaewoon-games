@@ -121,6 +121,6 @@ jobs:
           fi
           git commit -m "dev: bootstrap Unity Web floor sources"
           git push origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources for: $IDS. After merge, Company DEVELOPMENT_CONFIRMED Runtime classifies games without durable native progress and dispatches the Unity Web floor build individually. Games with durable native progress are rejected by the canonical admission classifier. Generated sources still require WebGL build, actual browser play, independent QA, and regression, but Web evidence never blocks native development.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor sources"             --body "Bootstrap canonical Unity sources for: $IDS. Unity Web, Roblox, and Unity native development are independent parallel lanes keyed by the same game id. Generated Web sources still require WebGL build, actual browser play, independent QA, and regression, but Web evidence never blocks native development.")"
           echo "UNITY_WEB_BOOTSTRAP_PR=$pr_url"
           echo 'UNITY_WEB_BOOTSTRAP_DIRECT_MAIN_WRITE=NO'
