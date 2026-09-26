@@ -110,7 +110,69 @@ export async function uploadRobloxHomepageThumbnail({
     const thumbnailId=clean(rows[0]?.homepageThumbnailId||rows[0]?.thumbnailId);
     if(state.toLowerCase()==='finished'){
       if(!thumbnailId)throw new Error('ROBLOX_THUMBNAIL_FINISHED_WITHOUT_ID');
-      return Object.freeze({uploaded:true,operationId,thumbnailId,uploadStatus:state,attempt});
+
+      const activeResponse=await fetchImpl(base+'/personalization?status=Active',{
+        headers:{'x-api-key':apiKey}
+      });
+      const activeText=await activeResponse.text();
+      let activeBody={};
+      try{activeBody=activeText?JSON.parse(activeText):{};}catch{}
+      if(!activeResponse.ok)throw new Error('ROBLOX_THUMBNAIL_ACTIVE_READ_FAILED:'+activeResponse.status+':'+activeText.slice(0,500));
+      const activeRows=Array.isArray(activeBody?.personalizedConfigs)?activeBody.personalizedConfigs
+        :Array.isArray(activeBody?.personalizations)?activeBody.personalizations
+        :Array.isArray(activeBody?.data)?activeBody.data:[];
+      const activeConfig=activeRows[0]||null;
+      const normalizedThumbnailId=/^[0-9]+$/.test(thumbnailId)?Number(thumbnailId):thumbnailId;
+      const personalizationPath=activeConfig?.id?'/personalization/update':'/personalization/create';
+      const personalizationPayload=activeConfig?.id
+        ?{homepageThumbnailIds:[normalizedThumbnailId],id:activeConfig.id}
+        :{homepageThumbnailIds:[normalizedThumbnailId]};
+      const applyResponse=await fetchImpl(base+personalizationPath,{
+        method:'POST',
+        headers:{'x-api-key':apiKey,'content-type':'application/json'},
+        body:JSON.stringify(personalizationPayload)
+      });
+      const applyText=await applyResponse.text();
+      if(!applyResponse.ok)throw new Error('ROBLOX_THUMBNAIL_PERSONALIZATION_FAILED:'+applyResponse.status+':'+applyText.slice(0,500));
+
+      const [thumbnailResponse,verifyActiveResponse]=await Promise.all([
+        fetchImpl(base+'/thumbnails',{headers:{'x-api-key':apiKey}}),
+        fetchImpl(base+'/personalization?status=Active',{headers:{'x-api-key':apiKey}})
+      ]);
+      const thumbnailText=await thumbnailResponse.text();
+      const verifyActiveText=await verifyActiveResponse.text();
+      if(!thumbnailResponse.ok)throw new Error('ROBLOX_THUMBNAIL_LIST_READ_FAILED:'+thumbnailResponse.status+':'+thumbnailText.slice(0,500));
+      if(!verifyActiveResponse.ok)throw new Error('ROBLOX_THUMBNAIL_ACTIVE_VERIFY_FAILED:'+verifyActiveResponse.status+':'+verifyActiveText.slice(0,500));
+      let thumbnailBody={},verifyActiveBody={};
+      try{thumbnailBody=thumbnailText?JSON.parse(thumbnailText):{};}catch{}
+      try{verifyActiveBody=verifyActiveText?JSON.parse(verifyActiveText):{};}catch{}
+      const containsThumbnailId=value=>{
+        let found=false;
+        const visit=node=>{
+          if(found||node==null)return;
+          if(Array.isArray(node)){for(const row of node)visit(row);return;}
+          if(typeof node!=='object')return;
+          for(const [key,val] of Object.entries(node)){
+            if(/homepageThumbnailId|thumbnailId/i.test(key)&&clean(val)===thumbnailId){found=true;return;}
+            visit(val);
+          }
+        };
+        visit(value);
+        return found;
+      };
+      if(!containsThumbnailId(thumbnailBody)||!containsThumbnailId(verifyActiveBody)){
+        throw new Error('ROBLOX_THUMBNAIL_ACTIVE_READBACK_MISMATCH:'+thumbnailId);
+      }
+      return Object.freeze({
+        uploaded:true,
+        operationId,
+        thumbnailId,
+        uploadStatus:state,
+        attempt,
+        personalizationId:clean(activeConfig?.id)||null,
+        personalizationMode:activeConfig?.id?'UPDATE':'CREATE',
+        activePersonalizationVerified:true
+      });
     }
     if(/failed|error|rejected/i.test(state))throw new Error('ROBLOX_THUMBNAIL_PROCESSING_FAILED:'+statusText.slice(0,500));
     await sleepImpl(1000);
@@ -152,13 +214,17 @@ export async function syncRobloxHomepageThumbnail({
     operationId:uploaded.operationId,
     homepageThumbnailId:uploaded.thumbnailId,
     uploadStatus:uploaded.uploadStatus,
+    personalizationId:uploaded.personalizationId,
+    personalizationMode:uploaded.personalizationMode,
+    activePersonalizationVerified:uploaded.activePersonalizationVerified===true,
     uploaded:true,
-    verified:true,
+    verified:uploaded.activePersonalizationVerified===true,
     uploadedAt:new Date().toISOString(),
     authority:'ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION'
   };
   if(clean(outputPath))writeJson(path.resolve(root,outputPath),evidence);
   console.log('ROBLOX_THUMBNAIL_UPLOAD=PASS:operation='+uploaded.operationId);
+  console.log('ROBLOX_THUMBNAIL_PERSONALIZATION=PASS:mode='+uploaded.personalizationMode);
   console.log('ROBLOX_THUMBNAIL_VERIFY=PASS:thumbnailId='+uploaded.thumbnailId);
   console.log('HOMEPAGE_MARKETING_IMAGE_SYNC=PASS:'+target.source);
   return evidence;
