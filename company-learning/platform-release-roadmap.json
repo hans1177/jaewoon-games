@@ -1,5 +1,5 @@
 {
-  "version": 412,
+  "version": 413,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -906,9 +906,9 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 5,
+      "version": 6,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "MALFORMED_FAST_PATH_CI_VERIFIED_DIAGNOSTIC_REVALIDATION_PENDING",
+      "status": "FOCUSED_TIMEOUT_POLICY_RESYNC_IMPLEMENTED_PENDING_CI_AND_LIVE_VERIFICATION",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -1135,6 +1135,45 @@
         },
         "authorityChange": "NONE",
         "nextGate": "CI_PASS_THEN_PRODUCTION_WAVE_VERIFY_PLACEHOLDER_FAILURE_DISAPPEARS_OR_RECLASSIFIES_WITH_REAL_CAUSAL_CLASS"
+      },
+      "latestProductionBottleneckEvidence": {
+        "runId": 36229097447,
+        "observedAt": "2026-09-26",
+        "sourceGenerationFailures": 37,
+        "failureClasses": {
+          "TIMEOUT": 9,
+          "NO_OP": 12,
+          "INVALID_PATH": 12,
+          "OTHER": 2,
+          "ROBLOX_VISUAL_DOMAINS": 1,
+          "STUDIO_QUALITY_DELTA": 1
+        },
+        "repeatedZeroOutputTimeoutsObserved": true,
+        "repeatedFullGraphicsRecoveryBudget": {
+          "timeoutMs": 240000,
+          "maxPredict": 3072
+        },
+        "sharedContextResultContaminationObserved": "SOURCE_FAILURE_EXITED_BEFORE_AFTER_WORK_REVALIDATION"
+      },
+      "focusedTimeoutPolicyResync": {
+        "state": "IMPLEMENTED_PENDING_CI_AND_LIVE_VERIFICATION",
+        "authorityChange": "NONE",
+        "executionScopeChange": "NONE",
+        "qaBypassAllowed": false,
+        "workerCountIncrease": false,
+        "retryBudgetIncrease": false,
+        "corrections": [
+          "ZERO_OUTPUT_TIMEOUT_ESCALATES_TO_EXISTING_WORKER_PINNED_FOCUSED_REPLACE_RECOVERY",
+          "FOCUSED_REPLACE_USES_CANONICAL_90000MS_384_TOKEN_8192_CONTEXT_BUDGET",
+          "POST_WORK_SHARED_CONTEXT_REVALIDATION_RUNS_BEFORE_FAILED_SOURCE_WORKER_EXIT",
+          "FAILED_SOURCE_GENERATION_EVIDENCE_MUST_NOT_REPORT_SHARED_CONTEXT_MISSING_WHEN_VALIDATION_RAN"
+        ],
+        "sourceFiles": [
+          "tools/vibe2-source-worker.mjs",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "qa/vibe2-source-worker.test.mjs"
+        ],
+        "nextGate": "CI_PASS_THEN_VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE"
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
@@ -8165,6 +8204,22 @@
       "policyAuthorityExpanded": false,
       "newWorkerQueueOrShadowPipeline": false,
       "itemContentMutation": false
+    },
+    "vibeSourceGenerationFocusedTimeoutSync20260926": {
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "reason": "SYNC_VIBE_WITH_CURRENT_CENTRAL_CONTRACT_AND_REMOVE_REPEATED_SOURCE_GENERATION_TIMEOUT_EVIDENCE_BOTTLENECK",
+      "liveEvidenceRun": 36229097447,
+      "sourceGenerationFailureCount": 37,
+      "focusedRecoveryBudget": {
+        "timeoutMs": 90000,
+        "maxPredict": 384,
+        "contextWindow": 8192
+      },
+      "zeroOutputTimeoutAction": "WORKER_PINNED_FOCUSED_REPLACE_RECOVERY",
+      "sharedContextFailurePath": "ALWAYS_REVALIDATE_AFTER_WORK_BEFORE_EXIT",
+      "noAuthorityExpansion": true,
+      "noQualityGateWeakening": true,
+      "noRetryBudgetIncrease": true
     }
   },
   "vibeExecutionLaneContract": {
