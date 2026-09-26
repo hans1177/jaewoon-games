@@ -887,9 +887,7 @@ jobs:
           done < /tmp/roblox-f9-ids
 
   studio-local-plan:
-    name: plan exact local Studio MCP playtests after runtime foundation
-    needs: runtime-foundation-qa
-    if: always() && needs.runtime-foundation-qa.result == 'success'
+    name: plan exact local Studio MCP playtests for earliest eligible artifacts
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 8
     outputs:
