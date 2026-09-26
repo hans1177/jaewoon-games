@@ -1,5 +1,5 @@
 {
-  "version": 256,
+  "version": 257,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5694,5 +5694,20 @@
     "existingSameGameConcurrency": true,
     "crossGameParallelism": true,
     "globalSerialization": false
+  },
+  "unityWebBootProofReuse": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebBootProofReuse20260927",
+    "workflow": ".github/workflows/unity-web-first-stage-build.yml",
+    "removedExecution": "SEPARATE_BROWSER_BOOT_LAUNCH",
+    "retainedExecution": [
+      "PLAYWRIGHT_BROWSER_RUNTIME_PREPARE",
+      "ACTUAL_BROWSER_PLAY",
+      "INDEPENDENT_QA",
+      "REGRESSION"
+    ],
+    "bootProofOwner": "ACTUAL_BROWSER_PLAY",
+    "buildEvidenceRequiresBootPass": true,
+    "qualityGateWeakening": false
   }
 }
