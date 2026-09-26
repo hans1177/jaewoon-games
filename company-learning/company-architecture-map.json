@@ -1,5 +1,5 @@
 {
-  "version": 222,
+  "version": 223,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1212,7 +1212,7 @@
         "qaSecurityReleaseAuthorityChanged": false
       },
       "reserveConcurrency": {
-        "version": 1,
+        "version": 2,
         "mode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
         "executionLanes": [
@@ -1236,6 +1236,25 @@
           "schedulerEpochEscape": "PASS",
           "crossLaneGlobalReserveLockObserved": false,
           "gamePrimaryExternalBoundaryObserved": 256
+        },
+        "auxiliarySpeculativeExpansionPolicy": {
+          "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerPressureSpeculativeRelief20260926",
+          "behavior": "AUXILIARY_PRIMARY_TASKS_PRESERVED_SPARE_SPECULATIVE_VARIANTS_ONLY",
+          "suppressWhen": [
+            "GAME_PRIMARY_QUEUED_OR_CAPACITY_RUNNING",
+            "ADAPTIVE_RUNNER_PRESSURE"
+          ],
+          "resumeWhen": "NO_GAME_PRIMARY_DEMAND_AND_NO_ADAPTIVE_RUNNER_PRESSURE",
+          "gamePrimaryCoverageChanged": false,
+          "auxiliaryPrimaryCoverageChanged": false,
+          "implementation": "tools/vibe2-queue-control.mjs::runQueueCommand(reserve-batch)",
+          "preFixEvidence": {
+            "runId": 36235195075,
+            "lane": "RECOVERY_FAST",
+            "primaryTaskCount": 2,
+            "speculativeWorkerCount": 4,
+            "workerFanOut": 6
+          }
         }
       },
       "learningIdlePressureGate": {
