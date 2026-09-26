@@ -5283,12 +5283,14 @@
       "SHARED_STATE_WRITER_IN_PROGRESS"
     ],
     "gamePrimaryParallelismPreserved": true,
-    "concurrencyGroup": "director-central-company-supervisor-v2",
-    "paginationMax": 20,
+    "concurrencyGroup": "director-central-company-supervisor-v3",
+    "paginationMax": null,
     "staleRobloxThresholdMinutes": 15,
     "staleLegacyOrBatchMayForceCancel": true,
     "exactNamedGameInProgressMayCancel": false,
-    "independentGameRunMayCancel": false
+    "independentGameRunMayCancel": false,
+    "previousConcurrencyGroup": "director-central-company-supervisor-v2",
+    "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES"
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
