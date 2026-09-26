@@ -1158,6 +1158,15 @@
         "excludedFromSourceGenerationFailureRate": true,
         "remoteRefCleanupOnPushFailure": true,
         "directMainWriteAllowed": false
+      },
+      "focusedRetryPromptCompaction": {
+        "owner": "tools/vibe2-source-worker.mjs::buildFocusedReplaceOnlyPrompt",
+        "sourceContext": "EXACT_ANCHOR_BOUNDED",
+        "buildUpContext": "ESSENTIAL_GAME_SPECIFIC_FIELDS_ONLY",
+        "preservesGoalAndAcceptance": true,
+        "omitsNonResponsibleDetail": true,
+        "telemetry": "VIBE2_FOCUSED_RETRY_PROMPT_BYTES",
+        "writableScopeExpansionAllowed": false
       }
     },
     "activation": {
