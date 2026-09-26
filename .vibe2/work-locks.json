@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1powthj",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "051b003a0d51d669104e347c197b0ab26999f0a5",
-      "acquiredAt": "2026-09-26T08:27:46.443Z",
-      "expiresAt": "2026-09-26T09:12:46.443Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-10ue4ye",
       "worker": "vibe2",
       "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
@@ -710,6 +692,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1o22pjx",
+      "worker": "vibe2",
+      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "baseSha": "f5c139b09f1ec719e3cd6ebddf040dc9afcb97ed",
+      "acquiredAt": "2026-09-26T09:13:04.043Z",
+      "expiresAt": "2026-09-26T09:58:04.043Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
       ]
     }
   ]
