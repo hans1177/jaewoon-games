@@ -85,13 +85,27 @@ runs:
         key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
         lookup-only: ${{ inputs.pull-model == 'false' }}
 
+    - name: Resolve requested Ollama model cache key
+      id: model-cache-key
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
+      shell: bash
+      env:
+        MODEL: ${{ inputs.model }}
+      run: |
+        set -euo pipefail
+        safe_model="$(printf '%s' "$MODEL" | sed -E 's/[^A-Za-z0-9._-]+/-/g; s/^-+|-+$//g')"
+        test -n "$safe_model"
+        key="jaewoon-ollama-model-v1-${{ runner.os }}-${{ runner.arch }}-$safe_model"
+        echo "key=$key" >> "$GITHUB_OUTPUT"
+        echo "OLLAMA_SHARED_MODEL_CACHE_KEY=$key"
+
     - name: Restore requested Ollama model cache
       id: model-cache
       if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache/restore@v4
       with:
         path: ~/.ollama/models
-        key: jaewoon-ollama-model-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.model }}
+        key: ${{ steps.model-cache-key.outputs.key }}
 
     - name: Report requested model cache decision
       if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
@@ -216,3 +230,11 @@ runs:
         ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$model"
         echo 'OLLAMA_MODEL_PULL_RETRY_TRANSIENT=YES'
         echo 'PAID_API=NO'
+
+    - name: Save requested Ollama model cache immediately
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true' && steps.model-cache.outputs.cache-hit != 'true'
+      continue-on-error: true
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.ollama/models
+        key: ${{ steps.model-cache-key.outputs.key }}
