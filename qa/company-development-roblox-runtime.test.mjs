@@ -550,7 +550,7 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
   assert.equal(execution.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
   assert.equal(execution.defaultRequestedGameWorkers,256);
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v3' \}\}/);
+  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v4' \}\}/);
   assert.doesNotMatch(workflow,/format\('batch-\{0\}', github\.run_id\)/);
   assert.match(workflow,/cancel-in-progress: false/);
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
