@@ -36,7 +36,7 @@ sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=48,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=49,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -1264,6 +1264,7 @@ function drawMiniMap(now=performance.now()){
  }
  multiplayer.pings=multiplayer.pings.filter(p=>p.expiresAt>Date.now());m.strokeStyle='#ffd85a';m.lineWidth=2;
  for(const ping of multiplayer.pings){
+  if((ping.area||'surface')!=='surface')continue;
   const q=toMini(ping.x,ping.y),dx=q.x-cx,dy=q.y-cy;if(dx*dx+dy*dy>r*r)continue;
   m.beginPath();m.arc(q.x,q.y,5,0,Math.PI*2);m.stroke()
  }
