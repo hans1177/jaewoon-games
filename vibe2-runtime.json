@@ -292,10 +292,13 @@
     "gamePrimaryControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
       "reserve": "ubuntu-slim",
+      "reserveDefault": "ubuntu-slim",
+      "fanInRefillReserve": "ubuntu-24.04-arm",
       "fanIn": "ubuntu-24.04-arm",
       "worker": "ubuntu-latest",
       "modelCache": "ubuntu-latest",
       "lightweightReserveSeparatedFromArmFanIn": true,
+      "fanInRefillBypassesSlimPressure": true,
       "heavyGameExecutionUnchanged": true,
       "queueReservationAndStateFanInOnly": true,
       "ingressControl": "ubuntu-slim"
