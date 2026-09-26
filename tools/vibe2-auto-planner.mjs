@@ -1493,18 +1493,46 @@ function expandTaskToMinimumWorkload(taskInput,project,policy){
   const min=Math.max(2,Number(policy?.minWorkUnitsPerPackage||3));
   const current=estimateTaskWorkUnits(taskInput);
   if(taskInput.ownerDirective===true||current>=min)return taskInput;
-  const scopes=project?.engine==='web'
-    ? ['bug-hardening','ux-mobile-readability','qa-regression','performance-sanity']
-    : ['bug-hardening','qa-regression','contract-safety'];
-  const scopeText=project?.engine==='web'
-    ? '1. 직접 관련 오류 처리/예외 경로 보강\n2. 모바일 입력·가독성·접근성 회귀 점검 및 발견 문제 수정\n3. 변경 영향 incremental QA 통과\n4. 같은 책임 범위의 기본 성능 퇴행 점검 및 발견 문제 수정'
-    : '1. 직접 관련 오류 처리·불변조건 보강\n2. 변경 영향 incremental QA 통과\n3. 기존 계약·세이브·게임 규칙 회귀 점검 및 발견 문제 수정';
-  const evidence=[...(taskInput.evidence||[]),'work-package-auto-expanded',...scopes.map(scope=>`work-package-scope:${scope}`)];
-  return{
-    ...taskInput,
-    goal:`${taskInput.goal}\n\n[WORK PACKAGE AUTO-EXPANSION]\n${scopeText}`,
-    evidence:[...new Set(evidence)]
-  };
+
+  const shared=[
+    ['implementation-completeness','현재 책임 기능의 미완성 상태·예외 경로를 같은 기존 시스템 안에서 끝까지 연결한다.'],
+    ['system-connection','변경 기능이 기존 진행·장비·UI·세이브 등 실제 연결 대상과 끊기지 않게 상태 흐름을 확인하고 필요한 연결을 직접 보강한다.'],
+    ['bug-hardening','직접 관련 오류 처리와 실패·취소·재시도 경로를 보강하고 재현 가능한 고착 상태를 제거한다.'],
+    ['feedback-clarity','성공·실패·상태 변화가 플레이어에게 즉시 보이도록 기존 피드백 경로를 명확히 한다.'],
+    ['input-usability','현재 플랫폼의 터치·키보드·패드 입력에서 같은 행동이 안정적으로 이어지는지 확인하고 발견 문제를 수정한다.'],
+    ['performance-sanity','같은 책임 범위에서 불필요한 반복 처리·객체 증가·프레임 퇴행이 없는지 점검하고 발견 문제를 수정한다.'],
+    ['qa-regression','변경 책임과 직접 연결된 incremental QA 및 회귀 시나리오를 통과시킨다.'],
+    ['contract-safety','기존 게임 규칙·밸런스·세이브 키/의미·네트워크 권한을 보존하고 임시 우회나 wrapper 누적 없이 기존 책임 함수에서 마무리한다.']
+  ];
+  const web=[
+    ['implementation-completeness','현재 책임 기능의 미완성 상태·예외 경로를 같은 기존 시스템 안에서 끝까지 연결한다.'],
+    ['system-connection','변경 기능이 기존 진행·인벤토리·UI·세이브와 실제 상태를 주고받도록 끊긴 연결을 보강한다.'],
+    ['bug-hardening','직접 관련 오류 처리와 실패·취소·재시도 경로를 보강하고 재현 가능한 고착 상태를 제거한다.'],
+    ['ux-mobile-readability','모바일 입력·가독성·safe area·스크롤·팝업 흐름에서 발견되는 직접 관련 문제를 수정한다.'],
+    ['feedback-clarity','성공·실패·상태 변화가 플레이어에게 즉시 보이도록 기존 피드백 경로를 명확히 한다.'],
+    ['performance-sanity','같은 책임 범위의 기본 프레임·메모리·반복 처리 퇴행을 점검하고 발견 문제를 수정한다.'],
+    ['qa-regression','변경 책임과 직접 연결된 incremental QA 및 회귀 시나리오를 통과시킨다.'],
+    ['save-state-safety','기존 세이브 키와 상태 의미를 보존하고 새 임시 상태나 우회 저장 구조를 만들지 않는다.']
+  ];
+  const available=project?.engine==='web'?web:shared;
+  const selected=[];
+  let expanded=taskInput;
+  const requiredRelated=Math.max(1,Number(policy?.minRelatedImprovementsPerPackage||3));
+  for(const entry of available){
+    selected.push(entry);
+    const scopeEvidence=selected.map(([scope])=>`work-package-scope:${scope}`);
+    const evidence=[...(taskInput.evidence||[]),'work-package-auto-expanded',`work-package-auto-expanded-min:${min}`,...scopeEvidence];
+    const scopeText=selected.map(([,instruction],index)=>`${index+1}. ${instruction}`).join('\n');
+    expanded={
+      ...taskInput,
+      goal:`${taskInput.goal}\n\n[WORK PACKAGE AUTO-EXPANSION]\n${scopeText}`,
+      evidence:[...new Set(evidence)]
+    };
+    const relatedScopes=new Set(expanded.evidence.filter(value=>clean(value).startsWith('work-package-scope:'))).size;
+    const projected=estimateTaskWorkUnits(expanded)+relatedScopes;
+    if(projected>=min&&relatedScopes>=requiredRelated)break;
+  }
+  return expanded;
 }
 function uniqueTaskCandidates(rows=[]){const seen=new Set();return rows.filter(task=>{if(!task||seen.has(task.id))return false;seen.add(task.id);return true;});}
 function findWebStrictImprovementTask(project,repoRoot,queue){if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;const v=project.developmentValidation||{},score=Number(v.score);if(!Number.isFinite(score)||score<80||score>88)return null;const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative);if(!fs.existsSync(file))return null;const id=`${project.gameId}-web-strict-improvement-to-89`;if(hasTask(queue,id))return null;const blockerText=(v.blockers||[]).join(' | ')||'latest validation weak axes';const goal=`[WEB_STRICT_80_88_TO_89] 현재 Web Strict 점수 ${score}점이다. 기존 실제 게임과 승인 설계는 보존하고 최신 development validation의 약한 축/차단 근거를 직접 수정해 89점 목표까지 품질을 올린다. 검증 근거: ${v.path||"unknown"}. blockers=${blockerText}. 숫자·라벨·검증 버튼만 바꾸는 점수 조작은 금지한다. 실제 플레이 변화, 시스템 연결, 장르 품질, Web 플랫폼 품질 중 근거가 약한 책임 영역을 구현하고 모바일/저장/회귀 QA를 다시 통과시킨다. 90점 승격 게이트나 독립 재검증 규칙은 변경하지 않는다.`;return task(id,project,goal,[relative],'high','medium',[`web-strict-score:${score}`,`development-validation:${v.path||"missing"}`,...(v.blockers||[]).map(x=>`validation-blocker:${x}`)]);}
