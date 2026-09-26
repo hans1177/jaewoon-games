@@ -192,7 +192,7 @@ jobs:
 
   game-primary-gate:
     needs: runner-drain
-    if: always()
+    if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
     concurrency:
       group: director-game-primary-gate-v1
       cancel-in-progress: false
@@ -239,7 +239,7 @@ jobs:
 
   supervise:
     needs: game-primary-gate
-    if: needs.game-primary-gate.outputs.defer != 'true'
+    if: (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled') && needs.game-primary-gate.outputs.defer != 'true'
     concurrency:
       group: director-central-company-supervise-v3
       cancel-in-progress: false
