@@ -997,3 +997,18 @@ test('seed design runtime keeps owner reset priority without starving missing-de
   assert.doesNotMatch(workflow,/activeResetPending\.length\?activeResetSeeds:active/);
   assert.match(workflow,/OWNER_RESET_SCHEDULING=PRIORITY_NOT_EXCLUSIVE/);
 });
+
+test('administrative control-plane QA stays off game-primary ubuntu-latest capacity',()=>{
+  const roadmap=JSON.parse(readText('company-learning/platform-release-roadmap.json'));
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy.execution.nonblockingChecksUseSpareOrSeparateCapacity,true);
+  for(const workflowFile of [
+    '.github/workflows/company-evolution-qa.yml',
+    '.github/workflows/company-central-policy-contract-qa.yml',
+    '.github/workflows/main-write-guard.yml',
+  ]){
+    const source=readText(workflowFile);
+    assert.match(source,/runs-on:\s*ubuntu-slim/,workflowFile);
+    assert.doesNotMatch(source,/runs-on:\s*ubuntu-latest/,workflowFile);
+  }
+});

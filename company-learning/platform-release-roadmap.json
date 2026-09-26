@@ -1,5 +1,5 @@
 {
-  "version": 418,
+  "version": 419,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -20923,6 +20923,20 @@
         "scopeMayExpandOnlyWhenRelevantEvidenceRequiresIt": true,
         "existingSecurityPathScopePreserved": true,
         "existingHomepageAndRecordsPathScopesPreserved": true
+      },
+      "controlPlaneRunnerIsolation": {
+        "version": 1,
+        "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+        "runner": "ubuntu-slim",
+        "workflows": [
+          ".github/workflows/company-evolution-qa.yml",
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/main-write-guard.yml"
+        ],
+        "purpose": "KEEP_NONBLOCKING_ADMINISTRATIVE_VALIDATION_OFF_GAME_PRIMARY_UBUNTU_LATEST_CAPACITY",
+        "productQualityGateWeakening": false,
+        "securityOrReleaseGateBypass": false,
+        "gamePrimaryWorkerSlotsProtected": true
       }
     },
     "developmentLoopOptimization": {

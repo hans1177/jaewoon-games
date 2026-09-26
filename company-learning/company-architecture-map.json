@@ -1,5 +1,5 @@
 {
-  "version": 229,
+  "version": 230,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5238,5 +5238,17 @@
     "privateRuntimeOldestActiveSameGameWins": true,
     "pendingReplacementCancellationEliminated": true,
     "duplicatePrivateRuntimeRunsSelfSkipBeforeHeavyWork": true
+  },
+  "controlPlaneQaRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.implementation.controlPlaneRunnerIsolation",
+    "runner": "ubuntu-slim",
+    "workflows": [
+      ".github/workflows/company-evolution-qa.yml",
+      ".github/workflows/company-central-policy-contract-qa.yml",
+      ".github/workflows/main-write-guard.yml"
+    ],
+    "sharesGamePrimaryUbuntuLatestCapacity": false,
+    "qualityAndSecurityAuthorityUnchanged": true
   }
 }
