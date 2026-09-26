@@ -3,43 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-18b9anb",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "fb9aaf22e3baac31448fd59fa87fe85eea41938a",
-      "acquiredAt": "2026-09-26T05:45:29.468Z",
-      "expiresAt": "2026-09-26T06:30:29.468Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-16o4vb9",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "fb9aaf22e3baac31448fd59fa87fe85eea41938a",
-      "acquiredAt": "2026-09-26T05:46:56.792Z",
-      "expiresAt": "2026-09-26T06:31:56.792Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-36v0f4",
       "worker": "vibe2",
       "taskId": "cozy-island-studio-evolution-presentation-v1",
@@ -184,6 +147,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1jc10gd",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+      ],
+      "baseSha": "2eaf9ff76e59773677a7662b426724dccd628972",
+      "acquiredAt": "2026-09-26T06:31:57.739Z",
+      "expiresAt": "2026-09-26T07:16:57.739Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-studio-evolution-presentation-v1"
       ]
     }
   ]
