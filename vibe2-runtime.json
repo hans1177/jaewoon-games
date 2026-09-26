@@ -610,7 +610,11 @@
       "requeueWithoutRetryPenalty": true,
       "blockedStateForbidden": true,
       "failureLearningForbidden": true,
-      "reserveCycleRecovery": true
+      "reserveCycleRecovery": true,
+      "acquireTiming": "AFTER_MODEL_PREPARATION_AND_READ_ONLY_EXPLORATION_IMMEDIATELY_BEFORE_SOURCE_WRITE",
+      "preLockReadOnlyPreparationAllowed": true,
+      "lockMayNotCoverModelPreparation": true,
+      "lockMayNotCoverReadOnlyExploration": true
     },
     "sourceCandidateGeneration": {
       "missingEditPathRecovery": "UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES",
