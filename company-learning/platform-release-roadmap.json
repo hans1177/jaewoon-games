@@ -8254,7 +8254,15 @@
       ],
       "authorityChange": "NONE",
       "qualityGateWeakening": false,
-      "securityBoundaryChange": false
+      "securityBoundaryChange": false,
+      "runtimeFile": "vibe2-runtime.json",
+      "sourceFiles": [
+        ".github/workflows/vibe2-24h-runner.yml",
+        "vibe2-runtime.json",
+        "qa/vibe2-controller-contract.test.mjs",
+        "qa/vibe2-queue-control.test.mjs",
+        "qa/vibe2-parallelism-main-contract.test.mjs"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
