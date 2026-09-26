@@ -1,5 +1,5 @@
 {
-  "version": 401,
+  "version": 402,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8023,6 +8023,12 @@
       "workerQaSemanticsChanged": false,
       "gamePrimaryExternalBoundary": 256,
       "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
+    },
+    "holisticVibeBuildUp20260926": {
+      "id": "HOLISTIC_VIBE_GAME_BUILD_UP_2026-09-26",
+      "summary": "Existing BUILD_UP directive now forces PASS/GAP/NOT_APPLICABLE classification and actionable design/implementation coverage for map expansion, world density/navigation, gameplay agency, content/session depth, inventory/equipment, UI/UX/convenience, system connections, save/reconnect, accessibility and performance budgets.",
+      "existingPipelineOnly": true,
+      "newWorkerQueueOrShadowPipeline": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -22968,7 +22974,7 @@
     }
   },
   "continuousGameplaySystemEvolutionContract": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-25",
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "intent": "GAME_MUST_KEEP_ADVANCING_TOWARD_AND_BEYOND_APPROVED_DESIGN_COMPLETENESS_WHILE_PRESENTATION_EVOLVES_IN_PARALLEL",
@@ -23102,7 +23108,9 @@
       "oneGenericCrossGameGoalForAllTitlesForbidden": true,
       "perVerifiedCycleMustAttemptCoreFunAndProgressionAlongsidePresentationWhenSafe": true,
       "terminalCompletionStateForbidden": true,
-      "nextVerifiedGapCycleRequired": true
+      "nextVerifiedGapCycleRequired": true,
+      "holisticGameEvolutionRequiredEveryVerifiedCycle": true,
+      "presentationOnlyCycleCannotSilentlyDeferApplicableGameplayWorldUiInventoryGaps": true
     },
     "verification": {
       "realSourceDeltaRequired": true,
@@ -23128,7 +23136,7 @@
       "directiveRoot": ".vibe2/build-up-directives/<gameId>/current.json"
     },
     "gameSpecificBuildUpDirective": {
-      "version": 2,
+      "version": 3,
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "authority": "OWNER_DIRECTIVE_2026-09-26",
       "objective": "AUTONOMOUSLY_GENERATE_A_GAME_SPECIFIC_LOOP_SPECIFIC_DETAILED_BUILD_UP_DIRECTIVE_FROM_VERIFIED_DESIGN_CURRENT_SOURCE_PREVIOUS_VERSION_AND_PLAY_RUNTIME_EVIDENCE_THEN_FEED_THE_SAME_COMMON_GOAL_TO_UNITY_WEB_ROBLOX_AND_UNITY_APP_WITH_PLATFORM_NATIVE_IMPLEMENTATION",
@@ -23219,11 +23227,42 @@
           "NPC_SOCIAL_BEHAVIOR",
           "NARRATIVE_STORY",
           "AUDIO_MUSIC_SFX",
-          "REPLAYABILITY_VARIATION"
+          "REPLAYABILITY_VARIATION",
+          "PLAYER_AGENCY",
+          "ANTI_GRIND",
+          "CONTENT_DENSITY",
+          "CONTENT_DISCOVERY",
+          "MID_LATE_GAME_DEPTH",
+          "MAP_EXPANSION",
+          "WORLD_DENSITY",
+          "WORLD_NAVIGATION",
+          "INTERACTION_DISCOVERABILITY",
+          "INVENTORY_USABILITY",
+          "EQUIPMENT_LOADOUT",
+          "SYSTEM_CONNECTION",
+          "SESSION_FLOW",
+          "FIRST_10_MINUTES",
+          "SAVE_COMPLETENESS",
+          "RECONNECT_RECOVERY",
+          "SETTINGS_ACCESSIBILITY",
+          "MENU_FLOW",
+          "CONVENIENCE",
+          "UI_DESIGN_SYSTEM",
+          "UI_INFORMATION_PRIORITY",
+          "FEEDBACK_CLARITY",
+          "PERFORMANCE_BUDGET"
         ],
         "notApplicableMustBeExplicitlyClassified": true,
         "silentDomainOmissionForbidden": true,
-        "genericGenreOnlyDiagnosisForbidden": true
+        "genericGenreOnlyDiagnosisForbidden": true,
+        "allowedDomainStates": [
+          "PASS",
+          "GAP",
+          "NOT_APPLICABLE"
+        ],
+        "evaluatedWithoutDecisionStateForbidden": true,
+        "applicableWeakSystemMustBecomeGap": true,
+        "notApplicableRequiresCurrentDesignOrSourceAbsenceEvidence": true
       },
       "gameSpecificity": {
         "identityFirst": true,
@@ -23285,7 +23324,8 @@
           "RESPONSIBLE_SYSTEMS_AND_FILES",
           "ACCEPTANCE_EVIDENCE",
           "NEXT_ESCALATION_CANDIDATES",
-          "ALL_DOMAIN_IMPLEMENTATION_DIRECTIVES"
+          "ALL_DOMAIN_IMPLEMENTATION_DIRECTIVES",
+          "HOLISTIC_CORE_DOMAIN_STATUS"
         ],
         "implementationInstructionMustSpecify": [
           "WHAT_CHANGES",
@@ -23314,7 +23354,14 @@
           "directive",
           "implementationContract",
           "acceptance"
-        ]
+        ],
+        "perDomainAllowedStates": [
+          "PASS",
+          "GAP",
+          "NOT_APPLICABLE"
+        ],
+        "gapCannotRemainMonitorOnly": true,
+        "priorityDirectivePromptLimitMinimum": 28
       },
       "visualBuildUpDirective": {
         "required": true,
@@ -23463,11 +23510,14 @@
         ],
         "primaryGoalPriority": [
           "PROGRESS_BLOCKER_OR_BROKEN_CONTROL",
-          "CORE_FUN_AND_PRIMARY_INTERACTION",
-          "PROGRESSION_AND_MEANINGFUL_CONTENT",
-          "USABILITY_AND_GAME_FEEL",
+          "CORE_FUN_PRIMARY_INTERACTION_AND_PLAYER_AGENCY",
+          "FIRST_SESSION_AND_SESSION_FLOW",
+          "MAP_WORLD_CONTENT_AND_DISCOVERY_DEPTH",
+          "PROGRESSION_INVENTORY_EQUIPMENT_AND_SYSTEM_CONNECTION",
+          "UI_UX_CONVENIENCE_AND_ACCESSIBILITY",
+          "GAME_FEEL_AND_FEEDBACK",
           "PRESENTATION_AND_IDENTITY",
-          "MINOR_NONBLOCKING_QUALITY_DEBT"
+          "PERFORMANCE_BUDGET_AND_MINOR_NONBLOCKING_DEBT"
         ],
         "priorityDoesNotDisableParallelSafeLanes": true,
         "nextActionMustExplainWhyItHasHigherPlayerValueThanDeferredAlternatives": true,
@@ -23496,7 +23546,179 @@
       "creationAuthority": "VIBE_DIRECTOR_ONLY",
       "platformExecutorsConsumerOnly": true,
       "platformLocalDirectiveGenerationForbidden": true,
-      "missingDirectivePlatformBehavior": "BASELINE_OR_REPAIR_WORK_MAY_CONTINUE_BUT_BUILD_UP_COMPLETION_MUST_REMAIN_UNCLAIMED_UNTIL_VIBE_DIRECTIVE_EXISTS_AND_IS_IMPLEMENTED"
+      "missingDirectivePlatformBehavior": "BASELINE_OR_REPAIR_WORK_MAY_CONTINUE_BUT_BUILD_UP_COMPLETION_MUST_REMAIN_UNCLAIMED_UNTIL_VIBE_DIRECTIVE_EXISTS_AND_IS_IMPLEMENTED",
+      "holisticGameEvolution": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-26",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "objective": "FORCE_EVERY_VIBE_BUILD_UP_GENERATION_TO_ASSESS_AND_ADVANCE_THE_ACTUAL_GAME_BEYOND_VISUAL_POLISH_ACROSS_GAMEPLAY_WORLD_MAP_CONTENT_PROGRESSION_INVENTORY_EQUIPMENT_UI_UX_CONVENIENCE_SESSION_FLOW_SAVE_ACCESSIBILITY_AND_PERFORMANCE",
+        "existingPipelineOnly": true,
+        "requiredEveryGeneration": [
+          "CORE_FUN",
+          "PLAYER_ACTIONS",
+          "PLAYER_AGENCY",
+          "PROGRESSION",
+          "CONTENT_VARIETY",
+          "CONTENT_DENSITY",
+          "WORLD_MAP_TOPOLOGY",
+          "MAP_EXPANSION",
+          "REGIONS",
+          "WORLD_DENSITY",
+          "WORLD_NAVIGATION",
+          "INTERACTION_DISCOVERABILITY",
+          "INVENTORY",
+          "INVENTORY_USABILITY",
+          "EQUIPMENT_LOADOUT",
+          "SYSTEM_CONNECTION",
+          "SESSION_FLOW",
+          "FIRST_10_MINUTES",
+          "MID_LATE_GAME_DEPTH",
+          "SAVE_COMPLETENESS",
+          "INPUT",
+          "MOBILE_UX",
+          "SETTINGS_ACCESSIBILITY",
+          "MENU_FLOW",
+          "CONVENIENCE",
+          "UI_DESIGN_SYSTEM",
+          "UI_INFORMATION_PRIORITY",
+          "FEEDBACK_CLARITY",
+          "ANTI_GRIND",
+          "CONTENT_DISCOVERY",
+          "PERFORMANCE_BUDGET",
+          "RUNTIME_STABILITY"
+        ],
+        "classification": {
+          "allowed": [
+            "PASS",
+            "GAP",
+            "NOT_APPLICABLE"
+          ],
+          "passiveEvaluatedStateForbidden": true,
+          "gapMustEnterFixNowOrBuildUpNow": true,
+          "notApplicableRequiresDesignOrSourceAbsenceEvidence": true,
+          "existingApplicableSystemCannotBeSkippedAsNotApplicable": true,
+          "silentGapOmissionForbidden": true
+        },
+        "mapExpansion": {
+          "areaOnlyExpansionForbidden": true,
+          "mustConsider": [
+            "REGION_ROLE",
+            "CONNECTION_PATHS",
+            "LOCK_UNLOCK",
+            "LANDMARKS",
+            "RESOURCE_ENEMY_EVENT_DIFFERENTIATION",
+            "RETURN_REASON_TO_OLD_REGIONS",
+            "NAVIGATION_READABILITY",
+            "WORLD_DENSITY"
+          ],
+          "emptySpaceExpansionCannotPass": true
+        },
+        "inventoryEquipment": {
+          "whenPresentMustConsider": [
+            "ACQUIRE",
+            "STACK_OR_SLOT_STATE",
+            "SORT_OR_DISPLAY",
+            "USE",
+            "EQUIP",
+            "UNEQUIP_OR_REPLACE",
+            "COMPARISON",
+            "FULL_CAPACITY_BEHAVIOR",
+            "AUTHORITATIVE_STATE_SYNC",
+            "VISIBLE_EQUIPPED_STATE"
+          ],
+          "isolatedMenuOnlyImplementationCannotPass": true
+        },
+        "uiUxConvenience": {
+          "mustConsider": [
+            "HUD_INFORMATION_PRIORITY",
+            "MENU_FLOW",
+            "BACK_CLOSE_SCROLL_POPUP_BEHAVIOR",
+            "TOUCH_FIRST_LAYOUT",
+            "INTERACTION_DISCOVERABILITY",
+            "FAILURE_REASON_FEEDBACK",
+            "QUICK_USE_OR_EQUIP_WHEN_APPROPRIATE",
+            "MISSING_RESOURCE_AND_CRAFTABILITY_FEEDBACK",
+            "SETTINGS_ACCESSIBILITY"
+          ],
+          "convenienceMayReduceRepeatedInputButMayNotAutomateCorePlayerChoice": true,
+          "genericTemporaryUiCannotPassUiDesignSystem": true
+        },
+        "sessionAndDepth": {
+          "firstTenMinutesMustReach": [
+            "BASIC_INPUT",
+            "CORE_INTERACTION",
+            "FIRST_SUCCESS_FEEDBACK",
+            "FIRST_REWARD_OR_GROWTH",
+            "NEXT_GOAL"
+          ],
+          "sessionMustConnect": [
+            "JOIN_OR_START",
+            "CORE_FUN",
+            "REWARD",
+            "UPGRADE_OR_CHOICE",
+            "NEXT_GOAL",
+            "FAIL_OR_SUCCESS",
+            "SAVE_OR_EXIT"
+          ],
+          "midLateGameMustAddMeaningfulStrategyOrContentDepthBeyondNumericScaling": true,
+          "earlyGameOnlyCompletenessCannotClaimGameDepthPass": true
+        },
+        "systemConnection": {
+          "mustTraceExistingStateConnections": true,
+          "examples": [
+            "DROP_TO_INVENTORY",
+            "INVENTORY_TO_EQUIPMENT",
+            "RESOURCE_TO_CRAFT",
+            "CRAFT_TO_GAMEPLAY_USE",
+            "QUEST_TO_REWARD",
+            "REWARD_TO_UNLOCK",
+            "MAP_REGION_TO_RESOURCE_ENEMY_OBJECTIVE"
+          ],
+          "disconnectedFeatureCollectionCannotPass": true
+        },
+        "playerAgencyAndAntiGrind": {
+          "meaningfulChoiceRequiredWhenCoreLoopSupportsChoice": true,
+          "singleDominantRepeatedAnswerShouldBecomeGap": true,
+          "numericRepetitionWithoutNewRiskChoiceContentOrShortcutShouldBecomeGap": true
+        },
+        "saveAndReconnect": {
+          "preserveExistingSaveKeysAndMeaning": true,
+          "whenApplicableReview": [
+            "PROGRESSION",
+            "INVENTORY",
+            "EQUIPMENT",
+            "UNLOCKS",
+            "QUESTS",
+            "DISCOVERED_REGIONS",
+            "SETTINGS"
+          ],
+          "reconnectMustAvoidDuplicateRewardLostEquipmentAndStateRollback": true
+        },
+        "performanceBudget": {
+          "growthMustReview": [
+            "INSTANCE_COUNT",
+            "NPC_CONCURRENCY",
+            "PARTICLE_CONCURRENCY",
+            "UPDATE_FREQUENCY",
+            "OBJECT_LIFETIME",
+            "STREAMING_OR_LOD",
+            "MEMORY",
+            "MOBILE_FRAME_STABILITY"
+          ],
+          "reducePresentationCostBeforeGameplayMeaning": true
+        },
+        "implementation": {
+          "generator": "tools/company-build-up-directive.mjs",
+          "planner": "tools/vibe2-auto-planner.mjs",
+          "worker": "tools/vibe2-source-worker.mjs",
+          "incrementalQa": "tools/vibe2-incremental-qa.mjs",
+          "tests": [
+            "qa/company-build-up-directive.test.mjs",
+            "qa/vibe2-auto-planner.test.mjs"
+          ],
+          "newPipelineCreated": false
+        }
+      }
     }
   },
   "robloxNativeCodingQualityContract": {
