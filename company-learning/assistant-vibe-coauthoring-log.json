@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
   "recordedAt": "2026-09-26",
@@ -268,6 +268,53 @@
         "directive QA now asserts Unity Web floor and concurrent Roblox/Unity upper-platform semantics"
       ],
       "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_roblox_stale_reconcile_asset_binding_repair_20260926",
+      "date": "2026-09-26",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Roblox Studio MCP itself had recent verified successful connections, but current Roblox development was blocked earlier. A 16-game source reconciliation detected ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED, then main advanced before persistence and every reconciliation result was discarded by full-main-SHA stale comparison, yielding zero source targets and preventing asset rebind from reaching later Studio MCP runtime.",
+      "decision": "Preserve official Studio MCP and all native QA/release gates. Repair only the existing Roblox source reconciliation path: requeue stale reconciliation and bind freshness to the exact per-game Roblox source-tree identity so unrelated main commits do not invalidate valid game-source work.",
+      "change": "Added stale reconciliation redispatch, exact game_id preservation on redispatch, per-game sourceTreeSha in reconciliation evidence, pre-worker live source-tree verification, and persistence comparison against origin/main:<game-source-path> with full-main-SHA fallback only when no source-tree identity exists.",
+      "evidence": [
+        "live-run:36237552295:ROBLOX_SOURCE_RECONCILIATION_FAIL=16",
+        "live-run:36237552295:ROBLOX_SOURCE_TARGET_COUNT=0",
+        "live-run:36237552295:ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED_16",
+        "company-runtime:cozy-island:official-studio-mcp-connected=PASS",
+        "company-runtime:horror-escape-room:official-studio-mcp-connected=PASS_RUNTIME_ERROR_DOWNSTREAM",
+        "commit:01cd59d0ef40efc730016701bcb38377b90a9159",
+        "commit:410c7599b1bf657027eddbf12a7574644b35bbf7",
+        "commit:add3b8bb522a5981997938e7f28f5c176202178a",
+        "commit:bcdbaab42312d6f92504b13911f74a46bc248174",
+        "commit:c8c299aeb5442c8a2ff546a34a178ae773d5843d",
+        "qa:Company Evolution QA:36237983849:PASS",
+        "qa:Vibe3 Engine Contract:36237983894:PASS",
+        "qa:Vibe QA:36237983884:PASS",
+        "live-verification:ROBLOX_RUNTIME_QUEUED_RUN_36238035097"
+      ],
+      "reusablePatterns": [
+        "USE_EXACT_GAME_SOURCE_TREE_IDENTITY_FOR_SOURCE_FRESHNESS",
+        "UNRELATED_MAIN_COMMIT_MUST_NOT_INVALIDATE_UNCHANGED_GAME_SOURCE",
+        "REQUEUE_EXACT_STAGE_WHEN_GAME_SOURCE_TREE_ACTUALLY_CHANGES",
+        "PRESERVE_EXACT_GAME_ID_ON_RECOVERY_REDISPATCH",
+        "DISTINGUISH_STUDIO_MCP_INFRASTRUCTURE_FROM_PRE_MCP_SOURCE_PIPELINE_BLOCKERS"
+      ],
+      "avoidPatterns": [
+        "FULL_MAIN_SHA_AS_GAME_SOURCE_STALE_SIGNAL",
+        "SILENT_STALE_RESULT_DROP_WITHOUT_REDISPATCH",
+        "MISCLASSIFYING_PRE_MCP_SOURCE_BLOCKER_AS_MCP_FAILURE",
+        "WEAKENING_STUDIO_MCP_OR_NATIVE_RUNTIME_GATES_TO_HIDE_PIPELINE_DELAY"
+      ],
+      "qa": [
+        "company-development-roblox-runtime stale redispatch regression PASS",
+        "source-tree reconciliation regression PASS",
+        "Company Evolution QA PASS",
+        "Vibe3 Engine Contract PASS",
+        "Vibe QA PASS"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE",
+      "liveState": "CODE_AND_QA_VERIFIED_LIVE_ROBLOX_RUNTIME_PENDING"
     }
   ]
 }
