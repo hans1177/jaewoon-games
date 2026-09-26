@@ -1166,6 +1166,7 @@
         "duplicateWakeSignalsCoalesced": true,
         "concurrencyGroup": "vibe2-main-push-game-primary-wake",
         "activeWakeCancellationForbidden": true,
+        "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
         "sharedStateSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
         "responsibleFileConflictProtectionPreserved": true,
         "freshnessGateBeforeContractPreflight": true,
