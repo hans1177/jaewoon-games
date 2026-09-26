@@ -109,13 +109,15 @@ test('Roblox continuation avoids workflow-wide serialization and dispatches exac
   assert.doesNotMatch(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:BATCH/);
 });
 
-test('shared preflight continuation is isolated per game while batch compatibility remains available',()=>{
+test('shared preflight continuation keeps exact game targeting without a workflow-level game lock',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.match(workflow,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/workflow_dispatch:[\s\S]*game_id:/);
-  assert.match(workflow,/group: company-development-roblox-runtime-continuation-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.doesNotMatch(header,/^concurrency:\s*$/m);
   assert.match(workflow,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)continue/);
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)return false/);
-  assert.match(workflow,/company-development-roblox-headless-fast-mvp\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID"/);
+  assert.match(workflow,/company-development-roblox-headless-fast-mvp\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE:/);
 });
