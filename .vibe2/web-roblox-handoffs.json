@@ -14,66 +14,6 @@
   ],
   "projects": [
     {
-      "gameId": "amusement-tycoon",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
-      "GENRE": null,
-      "WEB_BASELINE": {
-        "required": true,
-        "state": "PENDING",
-        "sourcePath": "unity-games/amusement-tycoon",
-        "evidencePath": null,
-        "sourceIndexSha256": null,
-        "designBaselineSha256": null,
-        "validationSchemaVersion": null,
-        "strictScore": null,
-        "promotionRevalidationPassed": false,
-        "CORE_LOOP": null,
-        "STATE_MODEL": null,
-        "PROGRESSION_MODEL": null,
-        "UI_FLOW": null,
-        "INPUT_INTENT": null,
-        "SAVE_MEANING": null,
-        "CONTENT_STRUCTURE": null,
-        "BALANCE_INTENT": null
-      },
-      "ROBLOX_HANDOFF": null,
-      "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
-        "assigned": false,
-        "state": "WAITING_FOR_VERIFIED_RELEASE",
-        "logicalRunnerPerProject": 1,
-        "activeTaskMaxPerProject": 1,
-        "sharedProtectedRunnerSlots": 1,
-        "scheduler": "vibe2-24h-runner",
-        "worker": "vibe2-continuous-core",
-        "continuousRefill": true
-      },
-      "LEARNING_CONTEXT": {
-        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
-        "verifiedSemanticExperienceIds": [
-          "capability_ctrace_0ce73fa4ec23024bd474ad30",
-          "capability_ctrace_a5381be270464bcf8da90edf",
-          "capability_ctrace_7022dd1d29e03580f9fab379",
-          "capability_ctrace_8dd29220b77c4ca8abc65221",
-          "capability_ctrace_34ea3c973567e3f12c27991f",
-          "capability_ctrace_2c0a700824026293385a417b",
-          "capability_ctrace_333cb035bd13d117708a9b9d",
-          "capability_ctrace_f49ceda6ae548d42d4988242",
-          "capability_ctrace_88f8684f246efe921dcfe4d7",
-          "capability_ctrace_e7e55e935b908cb4b73cf020"
-        ],
-        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
-        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        "webBaselinePortableToRoblox": true,
-        "rawSourceCopyAllowed": false,
-        "rawAssetCopyAllowed": false,
-        "gateBypass": false,
-        "continuousLearning": true
-      },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
-    },
-    {
       "gameId": "daechung-rpg",
       "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
       "PLATFORM": "ROBLOX",
@@ -198,7 +138,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/village-dungeons",
+        "sourcePath": "unity-games/village-dungeons",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -248,6 +188,66 @@
         "continuousLearning": true
       },
       "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
+    },
+    {
+      "gameId": "amusement-tycoon",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "UNITY",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "unity-games/amusement-tycoon",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": null,
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": false,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [
+          "capability_ctrace_0ce73fa4ec23024bd474ad30",
+          "capability_ctrace_a5381be270464bcf8da90edf",
+          "capability_ctrace_7022dd1d29e03580f9fab379",
+          "capability_ctrace_8dd29220b77c4ca8abc65221",
+          "capability_ctrace_34ea3c973567e3f12c27991f",
+          "capability_ctrace_2c0a700824026293385a417b",
+          "capability_ctrace_333cb035bd13d117708a9b9d",
+          "capability_ctrace_f49ceda6ae548d42d4988242",
+          "capability_ctrace_88f8684f246efe921dcfe4d7",
+          "capability_ctrace_e7e55e935b908cb4b73cf020"
+        ],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     },
     {
       "gameId": "bug-defense",
@@ -407,14 +407,14 @@
       "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
-      "gameId": "seed-puzzle-chromatic-cascade",
+      "gameId": "survival",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
       "PLATFORM": "UNITY",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "unity-games/seed-puzzle-chromatic-cascade",
+        "sourcePath": "unity-games/survival",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -445,77 +445,6 @@
       "LEARNING_CONTEXT": {
         "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
         "verifiedSemanticExperienceIds": [
-          "capability_ctrace_6dd89a561f15024cf27efb3a",
-          "capability_ctrace_83b230d0ec19e1c21dc0a54c",
-          "capability_ctrace_1dddb157b995373d41017a1d",
-          "capability_ctrace_4046e195870c0ad506bb6c96",
-          "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
-          "capability_ctrace_db33a860c9ec6c50c490b0c4",
-          "capability_ctrace_1043ce56a6f9995f20532594",
-          "capability_ctrace_c3bc2a099c5fb6f45b6c3743",
-          "capability_ctrace_c7b3d14091e873af94be215b",
-          "capability_ctrace_f038255663016abe97e071ba",
-          "capability_ctrace_57338ef0f553485ab60a913f",
-          "capability_ctrace_9f14da563096c112cf915950",
-          "capability_ctrace_0d2630a9c5fc72b6115ab032",
-          "capability_ctrace_1f1be9a0c88f2a521e3fb20f",
-          "capability_ctrace_4b94b752795e48ea58b2aa27",
-          "capability_ctrace_b8d48cb4bef5453d919f5f04",
-          "capability_ctrace_3f42fd4631f98b44cfc79532"
-        ],
-        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
-        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        "webBaselinePortableToRoblox": true,
-        "rawSourceCopyAllowed": false,
-        "rawAssetCopyAllowed": false,
-        "gateBypass": false,
-        "continuousLearning": true
-      },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
-    },
-    {
-      "gameId": "survival",
-      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
-      "PLATFORM": "ROBLOX",
-      "GENRE": null,
-      "WEB_BASELINE": {
-        "required": true,
-        "state": "PENDING",
-        "sourcePath": "roblox-games/survival",
-        "evidencePath": null,
-        "sourceIndexSha256": null,
-        "designBaselineSha256": null,
-        "validationSchemaVersion": null,
-        "strictScore": null,
-        "promotionRevalidationPassed": false,
-        "CORE_LOOP": null,
-        "STATE_MODEL": null,
-        "PROGRESSION_MODEL": null,
-        "UI_FLOW": null,
-        "INPUT_INTENT": null,
-        "SAVE_MEANING": null,
-        "CONTENT_STRUCTURE": null,
-        "BALANCE_INTENT": null
-      },
-      "ROBLOX_HANDOFF": {
-        "required": true,
-        "ready": false,
-        "reason": "WEB_BASELINE_NOT_VERIFIED"
-      },
-      "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": true,
-        "assigned": false,
-        "state": "WAITING_FOR_VERIFIED_RELEASE",
-        "logicalRunnerPerProject": 1,
-        "activeTaskMaxPerProject": 1,
-        "sharedProtectedRunnerSlots": 1,
-        "scheduler": "vibe2-24h-runner",
-        "worker": "vibe2-continuous-core",
-        "continuousRefill": true
-      },
-      "LEARNING_CONTEXT": {
-        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
-        "verifiedSemanticExperienceIds": [
           "capability_ctrace_1d9be1f71564bdbf830142e8",
           "capability_ctrace_44fd7d6e2f9274367465034b",
           "capability_ctrace_f62bcf597b6821f4400c5b04"
@@ -528,7 +457,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     },
     {
       "gameId": "fantasy-survival",
@@ -793,6 +722,73 @@
         "verifiedSemanticExperienceIds": [
           "capability_ctrace_ed2a6c67518c81af4c733f25",
           "capability_ctrace_db8052fee108da15e637bd32"
+        ],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+    },
+    {
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "UNITY",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "unity-games/seed-puzzle-chromatic-cascade",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": null,
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": false,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [
+          "capability_ctrace_6dd89a561f15024cf27efb3a",
+          "capability_ctrace_83b230d0ec19e1c21dc0a54c",
+          "capability_ctrace_1dddb157b995373d41017a1d",
+          "capability_ctrace_4046e195870c0ad506bb6c96",
+          "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+          "capability_ctrace_db33a860c9ec6c50c490b0c4",
+          "capability_ctrace_1043ce56a6f9995f20532594",
+          "capability_ctrace_c3bc2a099c5fb6f45b6c3743",
+          "capability_ctrace_c7b3d14091e873af94be215b",
+          "capability_ctrace_f038255663016abe97e071ba",
+          "capability_ctrace_57338ef0f553485ab60a913f",
+          "capability_ctrace_9f14da563096c112cf915950",
+          "capability_ctrace_0d2630a9c5fc72b6115ab032",
+          "capability_ctrace_1f1be9a0c88f2a521e3fb20f",
+          "capability_ctrace_4b94b752795e48ea58b2aa27",
+          "capability_ctrace_b8d48cb4bef5453d919f5f04",
+          "capability_ctrace_3f42fd4631f98b44cfc79532"
         ],
         "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
         "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
