@@ -1,5 +1,5 @@
 {
-  "version": 121,
+  "version": 122,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2112,5 +2112,26 @@
     "enabledDevelopmentCallers": 3,
     "paidApiPolicyUnchanged": true,
     "qualitySecurityReleaseEvidenceUnchanged": true
+  },
+  "unityWebActiveRunDedupeEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebActiveRunDedupe20260927",
+    "markers": [
+      "UNITY_WEB_ACTIVE_RUN_SCAN_FLOOR_ROWS",
+      "UNITY_WEB_ACTIVE_RUN_SCAN_BOOTSTRAP_ROWS",
+      "UNITY_WEB_ACTIVE_RUN_SCAN_PAGES=3",
+      "UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE",
+      "UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE"
+    ],
+    "activeStates": [
+      "queued",
+      "pending",
+      "in_progress",
+      "requested"
+    ],
+    "sameGameDuplicateDispatchForbidden": true,
+    "independentGameParallelismRequired": true,
+    "scanFailureMayNotDispatch": true
   }
 }
