@@ -398,7 +398,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -1887,7 +1888,10 @@
         "game-repair-repeat-count:41",
         "game-repair-repeat-count:42",
         "game-repair-repeat-count:43",
-        "game-repair-repeat-count:44"
+        "game-repair-repeat-count:44",
+        "game-repair-repeat-count:45",
+        "recovery-queue:recovery-ticket-bug-024f4b97b649e6962b9e",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -3356,7 +3360,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -5433,7 +5438,10 @@
         "game-repair-repeat-count:41",
         "game-repair-repeat-count:42",
         "game-repair-repeat-count:43",
-        "game-repair-repeat-count:44"
+        "game-repair-repeat-count:44",
+        "game-repair-repeat-count:45",
+        "recovery-queue:recovery-ticket-bug-024f4b97b649e6962b9e",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -7632,7 +7640,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -9378,7 +9387,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -11087,7 +11097,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -12195,7 +12206,7 @@
         "roblox-games/monster-adventure/shared/GameConfig.luau"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 33,
@@ -12708,7 +12719,16 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22monster-adventure-roblox-presentation-asset-adaptation-v1%7C36200595142%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22monster-adventure-roblox-presentation-asset-adaptation-v1%7C36200595142%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_INPUT%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22monster-adventure-roblox-presentation-asset-adaptation-v1%7C36200595142%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22monster-adventure-roblox-presentation-asset-adaptation-v1%7C36200595142%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22monster-adventure-roblox-presentation-asset-adaptation-v1%7C36200595142%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22monster-adventure-roblox-presentation-asset-adaptation-v1%7C36200595142%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22monster-adventure-roblox-presentation-asset-adaptation-v1%7C36200595142%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "recovery-queue:recovery-ticket-bug-464ed398325e5af6fd49",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -14393,7 +14413,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -16012,7 +16033,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -17677,7 +17699,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -19390,7 +19413,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -21336,7 +21360,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -23041,7 +23066,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -24727,7 +24753,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -26431,7 +26458,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -29365,7 +29393,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -29735,7 +29764,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -30136,7 +30166,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -30261,7 +30292,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -31180,7 +31212,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -31806,7 +31839,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -31930,7 +31964,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -32377,10 +32412,6 @@
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36200637563%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3Anull%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36200637563%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36200637563%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36200637563%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A5%2C%22edgeCount%22%3A3%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A1%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
-        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PASS",
-        "architecture-neural-expansion-allowed:YES",
         "vibe2/candidate/SYS-ARCH-28a2f2747401-v1-speculative-1-36225953449-1",
         "candidate-sha:4fbb9aca1281ae6e30f7327b569cd0676d0744c9",
         "base-main:2c213f688242a54f33644301e7906313a5b76c37",
@@ -32409,7 +32440,11 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36225953449%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36225953449%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36225953449%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A5%2C%22edgeCount%22%3A3%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A1%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "speculative-result:speculative-2:FAIL",
-        "speculative-variants:3"
+        "speculative-variants:3",
+        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
+        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -32541,7 +32576,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -32665,7 +32701,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -32789,7 +32826,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -32913,7 +32951,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33037,7 +33076,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33161,7 +33201,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33285,7 +33326,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -43893,7 +43935,10 @@
         "game-repair-repeat-count:41",
         "game-repair-repeat-count:42",
         "game-repair-repeat-count:43",
-        "game-repair-repeat-count:44"
+        "game-repair-repeat-count:44",
+        "game-repair-repeat-count:45",
+        "recovery-queue:recovery-ticket-bug-024f4b97b649e6962b9e",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -45375,7 +45420,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -46834,7 +46880,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -48693,7 +48740,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -50700,7 +50748,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -50829,7 +50878,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -50953,7 +51003,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51082,7 +51133,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51211,7 +51263,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51335,7 +51388,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51459,7 +51513,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51583,7 +51638,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51707,7 +51763,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51831,7 +51888,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52137,7 +52195,10 @@
         "game-repair-repeat-count:41",
         "game-repair-repeat-count:42",
         "game-repair-repeat-count:43",
-        "game-repair-repeat-count:44"
+        "game-repair-repeat-count:44",
+        "game-repair-repeat-count:45",
+        "recovery-queue:recovery-ticket-bug-024f4b97b649e6962b9e",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -53378,7 +53439,10 @@
         "game-repair-repeat-count:41",
         "game-repair-repeat-count:42",
         "game-repair-repeat-count:43",
-        "game-repair-repeat-count:44"
+        "game-repair-repeat-count:44",
+        "game-repair-repeat-count:45",
+        "recovery-queue:recovery-ticket-bug-024f4b97b649e6962b9e",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -54754,7 +54818,8 @@
         "retry-failure-signature:source-candidate-generation-failed",
         "retry-policy:UNLIMITED_OR_WITHIN_BOUND",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -56066,7 +56131,8 @@
         "game-repair-repeat-count:17",
         "game-repair-repeat-count:18",
         "game-repair-repeat-count:19",
-        "game-repair-repeat-count:20"
+        "game-repair-repeat-count:20",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -57511,7 +57577,8 @@
         "game-repair-repeat-count:61",
         "game-repair-repeat-count:62",
         "system-steward:stale-running-reservation-recovered",
-        "game-repair-repeat-count:63"
+        "game-repair-repeat-count:63",
+        "game-repair-repeat-count:64"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36225893107:1",
@@ -59510,7 +59577,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-ea186d71ff8c7f6300a7",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:64",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -61430,7 +61506,7 @@
         "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -61482,7 +61558,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-9435eb3559169c01c615",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -63405,7 +63490,7 @@
         "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -63457,7 +63542,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-5969b7fa0747b9b98d70",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -65380,7 +65474,7 @@
         "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -65431,7 +65525,21 @@
         "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "recovery-queue:recovery-ticket-bug-7d114ff3812bf7516f00",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:522",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-777444144cf066f31475",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "game-repair-repeat-count:21",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -67606,7 +67714,7 @@
         "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -67658,7 +67766,20 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-b021616100dca0c3a206",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:F0_SOURCE_INTEGRITY",
+        "source-mutation-required:YES",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:2",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "recovery-queue:recovery-ticket-bug-99f6b8c5bbd5d227e80c",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -69604,7 +69725,7 @@
         "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -69656,7 +69777,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-51a493ed692a93859476",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -71578,7 +71708,7 @@
         "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -71630,7 +71760,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-464ed398325e5af6fd49",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -73554,7 +73693,7 @@
         "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -73606,7 +73745,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-2b87c88847d0411e01ed",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -75529,7 +75677,7 @@
         "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -75581,7 +75729,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-78a6425d32dc2f9ac5c0",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -77506,7 +77663,7 @@
         "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -77558,7 +77715,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-b4b1c72b7a6a20f90ced",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -79481,7 +79647,7 @@
         "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -79533,7 +79699,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-f3941a7d905b6b13854f",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -81456,7 +81631,7 @@
         "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -81508,7 +81683,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-15c487a53274377db05f",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -83430,7 +83614,7 @@
         "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -83482,7 +83666,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-c4eb20e6fded0c841bfe",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -85405,7 +85598,7 @@
         "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -85457,7 +85650,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-10ca802409cd056b4944",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -87381,7 +87583,7 @@
         "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -87433,7 +87635,16 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:CURRENT_NO_NEWER_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-49df76759806a609a16d",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -89423,7 +89634,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-ea186d71ff8c7f6300a7",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:64",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -91392,7 +91614,7 @@
         "unity-games/amusement-tycoon/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -91456,7 +91678,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-9435eb3559169c01c615",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -93428,7 +93661,7 @@
         "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -93492,7 +93725,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-5969b7fa0747b9b98d70",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -95464,7 +95708,7 @@
         "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -95537,7 +95781,22 @@
         "graphics-atomic-candidate-isolation-required",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-b021616100dca0c3a206",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:F0_SOURCE_INTEGRITY",
+        "source-mutation-required:YES",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:2",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "recovery-queue:recovery-ticket-bug-99f6b8c5bbd5d227e80c",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -97532,7 +97791,7 @@
         "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -97596,7 +97855,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-51a493ed692a93859476",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -99567,7 +99837,7 @@
         "unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -99642,7 +99912,18 @@
         "graphics-atomic-candidate-isolation-required",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-464ed398325e5af6fd49",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -101615,7 +101896,7 @@
         "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -101679,7 +101960,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-2b87c88847d0411e01ed",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -103651,7 +103943,7 @@
         "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -103715,7 +104007,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-78a6425d32dc2f9ac5c0",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -105689,7 +105992,7 @@
         "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -105753,7 +106056,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-b4b1c72b7a6a20f90ced",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -107725,7 +108039,7 @@
         "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -107789,7 +108103,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-f3941a7d905b6b13854f",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -109761,7 +110086,7 @@
         "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -109825,7 +110150,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-15c487a53274377db05f",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -111796,7 +112132,7 @@
         "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -111860,7 +112196,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-c4eb20e6fded0c841bfe",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -113832,7 +114179,7 @@
         "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -113896,7 +114243,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-10ca802409cd056b4944",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
@@ -115869,7 +116227,7 @@
         "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -115933,7 +116291,18 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "build-up-pre-reserve-binding:CHECKED",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-49df76759806a609a16d",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:21",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "36225893107:1",
