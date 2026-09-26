@@ -1375,7 +1375,8 @@ jobs:
           $result = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
           "VIBE2_STUDIO_RUNTIME_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $maxSessionAttempts = 3
-          $success = $false
+          $sessionCompleted = $false
+          $runtimeVerified = $false
           $enablementRequired = $false
           $toolProviderTimeoutObserved = $false
           $studioAttachmentFailureObserved = $false
@@ -1401,8 +1402,12 @@ jobs:
             )
             & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
             if ($LASTEXITCODE -eq 0) {
-              $success = $true
-              Write-Host "ROBLOX_STUDIO_MCP_SESSION_RECOVERY=PASS_ATTEMPT_$attempt"
+              $sessionCompleted = $true
+              $runtimeState = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));process.stdout.write(r?.runtimeVerified===true?'PASS':'FAIL')" $result).Trim()
+              if ($LASTEXITCODE -ne 0) { throw 'Studio MCP completed-session runtime evidence parse failed' }
+              $runtimeVerified = $runtimeState -eq 'PASS'
+              Write-Host "ROBLOX_STUDIO_MCP_SESSION_COMPLETED=YES:attempt=$attempt"
+              Write-Host "ROBLOX_STUDIO_MCP_RUNTIME_VERIFIED=$runtimeState"
               break
             }
 
@@ -1522,7 +1527,7 @@ jobs:
             Start-Sleep -Seconds 3
           }
 
-          if (-not $success) {
+          if (-not $sessionCompleted) {
             Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED"
             if ($toolProviderTimeoutObserved -or $studioAttachmentFailureObserved) {
               $studioLogsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
@@ -1555,7 +1560,12 @@ jobs:
             }
             throw 'official Roblox Studio MCP play failed after 3 official restart sessions'
           }
-          Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=PASS'
+          if ($runtimeVerified) {
+            Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=PASS'
+          } else {
+            Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=RUNTIME_FAIL'
+            Write-Host 'ROBLOX_STUDIO_MCP_RUNTIME_FAILURE_RETRY=SKIPPED_SESSION_HEALTHY'
+          }
 
       - name: Persist exact Studio MCP play evidence
         id: persist
