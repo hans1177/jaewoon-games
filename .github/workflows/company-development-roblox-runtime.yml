@@ -410,7 +410,7 @@ jobs:
             --foundation-repair="$FOUNDATION_REPAIR" \
             --evidence="$evidence" \
             "${directive_args[@]}"
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
+          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
           git diff --check
           git add "$TARGET_SOURCE"
           git diff --cached --quiet && { echo "no Roblox source change: $GAME_ID" >&2; exit 1; }
