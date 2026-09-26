@@ -324,6 +324,7 @@ jobs:
           FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
           BUILD_UP_DIRECTIVE: /tmp/build-up-directive-${{ matrix.gameId }}.json
           RECONCILIATION_SOURCE_TREE_SHA: ${{ matrix.reconciliationSourceTreeSha || '' }}
+          SOURCE_PLAN_CONTRACT_FINGERPRINT: ${{ needs.source-plan.outputs.contract_fingerprint }}
         shell: bash
         run: |
           set -euo pipefail
@@ -341,6 +342,21 @@ jobs:
             echo 'ROBLOX_ARTBOOK_INPUT=NONBLOCKING_FALLBACK'
           fi
           node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const p=d?.content?.platformProfiles?.ROBLOX;if(!p||p.platform!=='ROBLOX')process.exit(2);console.log('ROBLOX_PLATFORM_PROFILE_INPUT=READY')" "$baseline"
+          live_contract_fingerprint="$(node - <<'NODE'
+          const {execFileSync}=require('child_process');
+          const crypto=require('crypto');
+          const paths=String(process.env.ROBLOX_SOURCE_PLAN_CONTRACT_PATHS||'').trim().split(/\s+/).filter(Boolean);
+          if(!paths.length)throw new Error('ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING');
+          const rows=paths.map(path=>path+':'+execFileSync('git',['rev-parse','origin/main:'+path],{encoding:'utf8'}).trim());
+          process.stdout.write(crypto.createHash('sha256').update(rows.join('\n')).digest('hex'));
+          NODE
+          )"
+          if [ -z "$SOURCE_PLAN_CONTRACT_FINGERPRINT" ] || [ "$live_contract_fingerprint" != "$SOURCE_PLAN_CONTRACT_FINGERPRINT" ]; then
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_SOURCE_PLAN_CONTRACT_STALE_BEFORE_WORKER=$GAME_ID:${SOURCE_PLAN_CONTRACT_FINGERPRINT:-MISSING}:$live_contract_fingerprint"
+            exit 0
+          fi
+          echo "ROBLOX_SOURCE_PLAN_CONTRACT_CURRENT=$GAME_ID:$live_contract_fingerprint"
           if [ -n "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
             live_tree="$(git rev-parse "origin/main:$TARGET_SOURCE" 2>/dev/null || true)"
             if [ "$live_tree" != "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
@@ -353,7 +369,8 @@ jobs:
           evidence="/tmp/roblox-source-bootstrap-${safe}.json"
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
-          git checkout -b "$branch"
+          git checkout -B "$branch" origin/main
+          echo "ROBLOX_SOURCE_BRANCH_BASE=$GAME_ID:$(git rev-parse HEAD)"
           directive_args=()
           if [ -f "$BUILD_UP_DIRECTIVE" ]; then directive_args+=(--build-up-directive="$BUILD_UP_DIRECTIVE"); fi
           timeout 2m node tools/company-development-roblox-bootstrap.mjs \
@@ -382,7 +399,7 @@ jobs:
 
       - name: Attempt validated Roblox source promotion through PR
         id: merge
-        if: steps.generate.outcome == 'success'
+        if: steps.generate.outcome == 'success' && steps.generate.outputs.superseded != 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -410,6 +427,7 @@ jobs:
           MERGE_OUTCOME: ${{ steps.merge.outcome }}
           PR_URL: ${{ steps.merge.outputs.pr_url }}
           SOURCE_REVISION: ${{ steps.merge.outputs.source_revision }}
+          SUPERSEDED: ${{ steps.generate.outputs.superseded }}
         shell: bash
         run: |
           set -euo pipefail
@@ -419,15 +437,17 @@ jobs:
           const path=require('path');
           const id=process.env.GAME_ID;
           const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
-          const generated=process.env.GENERATE_OUTCOME==='success';
+          const superseded=process.env.SUPERSEDED==='true';
+          const generated=!superseded&&process.env.GENERATE_OUTCOME==='success';
           const promoted=generated&&process.env.MERGE_OUTCOME==='success';
           const candidateReady=generated&&Boolean(String(process.env.SOURCE_BRANCH||'').trim());
-          const failure=!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          const failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
           const bootstrapEvidencePath=path.join('/tmp',`roblox-source-bootstrap-${safe}.json`);
           const bootstrapEvidence=fs.existsSync(bootstrapEvidencePath)?JSON.parse(fs.readFileSync(bootstrapEvidencePath,'utf8')):{};
           const result={
             gameId:id,
             pass:promoted,
+            superseded,
             candidateReady,
             candidateBranch:process.env.SOURCE_BRANCH||null,
             sourcePath:process.env.TARGET_SOURCE,
@@ -440,7 +460,7 @@ jobs:
             failure,
           };
           fs.writeFileSync(path.join('/tmp/roblox-worker/results',`${safe}.json`),JSON.stringify(result,null,2)+'\n');
-          console.log(`ROBLOX_WORKER_RESULT=${id}:${promoted?'MERGED':candidateReady?'PROMOTION_PENDING':'FAIL'}`);
+          console.log(`ROBLOX_WORKER_RESULT=${id}:${superseded?'SUPERSEDED':promoted?'MERGED':candidateReady?'PROMOTION_PENDING':'FAIL'}`);
           NODE
 
       - name: Upload isolated Roblox worker result
@@ -525,10 +545,14 @@ jobs:
           }
           const stamp=new Date().toISOString();
           let reconciliationPass=0,reconciliationFail=0,staleReconciliationCount=0;
+          const supersededWorkerCount=results.filter(result=>result?.superseded===true).length;
           if(sourcePlanContractStale){
             staleReconciliationCount=Math.max(reconciliation.length,expected.length,1);
             console.log(`ROBLOX_SOURCE_PLAN_CONTRACT_STALE=${plannedContractFingerprint}:${liveContractFingerprint}`);
+          }else{
+            staleReconciliationCount+=supersededWorkerCount;
           }
+          console.log(`ROBLOX_SOURCE_WORKER_SUPERSEDED_COUNT=${supersededWorkerCount}`);
           for(const result of sourcePlanContractStale?[]:reconciliation){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
@@ -595,7 +619,7 @@ jobs:
             }
           }
           let passCount=0,candidateCount=0,failCount=0;
-          for(const result of sourcePlanContractStale?[]:results){
+          for(const result of sourcePlanContractStale?[]:results.filter(result=>result?.superseded!==true)){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
             const target=expectedById.get(result.gameId)||{};
