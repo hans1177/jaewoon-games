@@ -5278,12 +5278,13 @@
     }
   },
   "vibeSourceGenerationFocusedRecoveryTopology": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
+    "historyReuseSource": "company-learning/platform-release-roadmap.json#changeRecord.vibeFocusedRetryHistoryReuse20260927",
     "sourceWorker": "tools/vibe2-source-worker.mjs",
     "workflow": ".github/workflows/vibe2-continuous-core.yml",
     "timeoutPath": {
-      "initialGeneration": "UNCHANGED",
+      "initialGeneration": "UNCHANGED_FOR_NEW_OR_UNPROVEN_TASKS",
       "zeroOutputTimeout": "WORKER_PINNED_FOCUSED_REPLACE_ONLY",
       "focusedTimeoutMs": 90000,
       "focusedMaxPredict": 384,
@@ -5294,6 +5295,20 @@
       "retryBudgetIncrease": false,
       "qualityGateWeakening": false,
       "scope": "ROBLOX_ASSET_ADAPTATION_ZERO_OUTPUT_TIMEOUT_CHAIN"
+    },
+    "historicalFocusedRetryReuse": {
+      "enabled": true,
+      "scope": "RETRIED_SINGLE_HTML_WEB_TASK_ONLY",
+      "requiresPriorFocusedReplaceOnlyEvidence": true,
+      "requiresPriorGenerationAttemptsAtLeast": 2,
+      "requiresPriorMaterialCandidateSha": true,
+      "firstAttemptMode": "EXISTING_FOCUSED_WEB_FIRST_EDIT_STREAM",
+      "fullRewriteExcluded": true,
+      "newTaskExcluded": true,
+      "candidateValidationUnchanged": true,
+      "incrementalQaUnchanged": true,
+      "fanInRegressionUnchanged": true,
+      "retryBudgetUnchanged": true
     },
     "sharedContextPath": {
       "beforeWorkValidation": true,
