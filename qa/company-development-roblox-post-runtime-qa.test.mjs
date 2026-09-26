@@ -118,3 +118,16 @@ test('foundation runtime write contention defers only the stale write and keeps 
   assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE/);
   assert.match(workflow,/if ! git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"; then[\s\S]*git rebase --abort \|\| true[\s\S]*exit 0/);
 });
+
+
+test('post-runtime QA collapses duplicate scans before heavy work without workflow-wide concurrency',()=>{
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
+  assert.match(workflow,/runtime-foundation-qa:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
+  assert.match(workflow,/studio-local-plan:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
+});
