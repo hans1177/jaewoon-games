@@ -1,5 +1,5 @@
 {
-  "version": 449,
+  "version": 450,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8575,7 +8575,7 @@
     "lightweightGameIngressRunnerRelief20260927": {
       "id": "LIGHTWEIGHT_GAME_INGRESS_RUNNER_RELIEF_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE",
       "objective": "FREE_ARM_GAME_CONTROL_CAPACITY_BY_MOVING_ONLY_LIGHTWEIGHT_INGRESS_AND_QUEUE_RESERVATION_WORK_TO_UBUNTU_SLIM_WHILE_KEEPING_STATE_SETTLEMENT_AND_HEAVY_GAME_EXECUTION_ON_THEIR_EXISTING_POOLS",
       "lightweightIngressPool": "ubuntu-slim",
       "gameControlPool": "ubuntu-24.04-arm",
@@ -8584,7 +8584,8 @@
         "vibeReserve": ".github/workflows/vibe2-continuous-core.yml::reserve",
         "robloxSourcePlan": ".github/workflows/company-development-roblox-runtime.yml::source-plan",
         "unityPrepare": ".github/workflows/company-development-unity-runtime.yml::prepare",
-        "directorRunnerDrain": ".github/workflows/director-supervisor.yml::runner-drain"
+        "directorRunnerDrain": ".github/workflows/director-supervisor.yml::runner-drain",
+        "centralNativePlan": ".github/workflows/company-development-confirmed-runtime.yml::native-plan"
       },
       "directorRunnerDrainCancelInProgress": false,
       "preservedOnArm": {
@@ -8597,7 +8598,36 @@
       "independentGameParallelismPreserved": true,
       "qualitySecurityReleaseGatesUnchanged": true,
       "newSchedulerCreated": false,
-      "newQueueCreated": false
+      "newQueueCreated": false,
+      "observedBeforeChange": {
+        "queuedWorkflowRuns": 105,
+        "robloxFirstJob": "resolve Roblox source work",
+        "unityFirstJob": "prepare selected-platform Unity queue",
+        "vibe2FirstJob": "reserve",
+        "centralFirstJob": "Resolve direct native development",
+        "blockedRunnerPool": "ubuntu-24.04-arm",
+        "slimControlEvidence": "Vibe2 24H Runner plan completed while downstream ARM reserve remained queued"
+      },
+      "wakeCoalescing": {
+        "centralMainPush": true,
+        "robloxPushBatch": true,
+        "unityPushBatch": true,
+        "cancelInProgress": false,
+        "exactGameDispatchParallelismPreserved": true
+      },
+      "centralPushTriggerNoiseReduction": {
+        "descriptiveArchitectureMapWakeRemoved": true,
+        "descriptiveLogMapWakeRemoved": true,
+        "qaOnlyWakeRemoved": true,
+        "runtimeAuthorityAndExecutableContractWakesPreserved": true
+      },
+      "directorDrain": {
+        "activeDrainCancellation": false,
+        "duplicateQueuedUnityBatchDrain": true,
+        "independentGameCancellationForbidden": true,
+        "inProgressGameCancellationForbidden": true
+      },
+      "noArtificialGlobalGameCountCap": true
     },
     "homepageRunnerIsolation20260926": {
       "id": "HOMEPAGE_RUNNER_ISOLATION_2026-09-26",
@@ -9028,53 +9058,6 @@
       "centralActiveRunDedupePreserved": true,
       "centralActiveRunDedupeRaceClosedByWorkflowConcurrency": true,
       "qualitySecurityReleaseGatesUnchanged": true
-    },
-    "developmentIngressRunnerRelief20260927": {
-      "id": "DEVELOPMENT_INGRESS_RUNNER_RELIEF_2026-09-27",
-      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE",
-      "observedBeforeChange": {
-        "queuedWorkflowRuns": 105,
-        "robloxFirstJob": "resolve Roblox source work",
-        "unityFirstJob": "prepare selected-platform Unity queue",
-        "vibe2FirstJob": "reserve",
-        "centralFirstJob": "Resolve direct native development",
-        "blockedRunnerPool": "ubuntu-24.04-arm",
-        "slimControlEvidence": "Vibe2 24H Runner plan completed while downstream ARM reserve remained queued"
-      },
-      "ingressRunners": {
-        "centralNativePlan": "ubuntu-slim",
-        "robloxSourcePlan": "ubuntu-slim",
-        "unityPrepare": "ubuntu-slim",
-        "vibe2Reserve": "ubuntu-slim",
-        "directorRunnerDrain": "ubuntu-slim"
-      },
-      "retainedRunners": {
-        "vibe2FanIn": "ubuntu-24.04-arm",
-        "heavyGameExecution": "ubuntu-latest"
-      },
-      "wakeCoalescing": {
-        "centralMainPush": true,
-        "robloxPushBatch": true,
-        "unityPushBatch": true,
-        "cancelInProgress": false,
-        "exactGameDispatchParallelismPreserved": true
-      },
-      "centralPushTriggerNoiseReduction": {
-        "descriptiveArchitectureMapWakeRemoved": true,
-        "descriptiveLogMapWakeRemoved": true,
-        "qaOnlyWakeRemoved": true,
-        "runtimeAuthorityAndExecutableContractWakesPreserved": true
-      },
-      "directorDrain": {
-        "activeDrainCancellation": false,
-        "duplicateQueuedUnityBatchDrain": true,
-        "independentGameCancellationForbidden": true,
-        "inProgressGameCancellationForbidden": true
-      },
-      "qualitySecurityReleaseGatesUnchanged": true,
-      "sharedStateConflictRulesUnchanged": true,
-      "noArtificialGlobalGameCountCap": true
     }
   },
   "vibeExecutionLaneContract": {
