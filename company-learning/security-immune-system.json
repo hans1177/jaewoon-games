@@ -774,6 +774,12 @@
     "arbitraryUniverseInputForbidden": true,
     "localAssetPathMustResolveInsideRepository": true,
     "maxUploadBytes": 3145728,
-    "executableContentForbidden": true
+    "executableContentForbidden": true,
+    "canonicalSvgAllowed": true,
+    "svgScriptForbidden": true,
+    "svgForeignObjectForbidden": true,
+    "svgExternalReferenceForbidden": true,
+    "renderedPngMustRemainInsideWorkingRepository": true,
+    "renderedPngMayNotBeCommittedAsRuntimeState": true
   }
 }
