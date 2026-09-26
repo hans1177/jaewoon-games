@@ -8283,6 +8283,30 @@
       "noQualityGateWeakening": true,
       "noRetryBudgetIncrease": true
     },
+    "vibeFocusedRetryHistoryReuse20260927": {
+      "id": "VIBE_FOCUSED_RETRY_HISTORY_REUSE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "STOP_REPEATED_FULL_LENGTH_FIRST_GENERATION_ON_RETRIED_SINGLE_HTML_WEB_TASKS_WHEN_THE_SAME_TASK_ALREADY_PRODUCED_A_MATERIAL_CANDIDATE_THROUGH_FOCUSED_RECOVERY",
+      "eligibility": [
+        "TARGET_WEB",
+        "ONE_RESPONSIBLE_HTML_FILE",
+        "TASK_RETRIES_GT_0",
+        "PRIOR_CODING_FOCUSED_REPLACE_ONLY_YES",
+        "PRIOR_GENERATION_ATTEMPTS_GE_2",
+        "PRIOR_MATERIAL_CANDIDATE_SHA_PRESENT"
+      ],
+      "action": "REUSE_EXISTING_FOCUSED_WEB_FIRST_EDIT_STREAM_PATH_ON_ATTEMPT_ONE",
+      "fullRewriteExcluded": true,
+      "newTaskExcluded": true,
+      "candidateValidationUnchanged": true,
+      "incrementalQaUnchanged": true,
+      "fanInRegressionUnchanged": true,
+      "retryBudgetUnchanged": true,
+      "responsibleFileBoundaryUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "newWorkerOrQueueCreated": false
+    },
     "vibe24hStaleSingletonEpochRelease20260926": {
       "authority": "OWNER_DIRECTIVE_2026-09-26",
       "reason": "RELEASE_STALE_PRE_PATCH_V2_SCHEDULER_CHAIN_BLOCKING_NEW_FOCUSED_TIMEOUT_RECOVERY_LIVE_VERIFICATION",
