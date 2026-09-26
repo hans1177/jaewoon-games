@@ -245,6 +245,19 @@ test('Roblox source workflow persists Studio selection handoff for downstream ru
   assert.match(workflow,/robloxStudioAssetRuntimeBindingEvidence:null/);
 });
 
+test('Roblox source workflow redispatches against fresh main when reconciliation became stale mid-run',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/id: persist_state/);
+  assert.match(workflow,/staleReconciliationCount\+\+/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=/);
+  assert.match(workflow,/stale_reconciliation_count=/);
+  assert.match(workflow,/steps\.persist_state\.outputs\.stale_reconciliation_count != '0'/);
+  assert.match(workflow,/ROBLOX_FRESH_MAIN_RECONCILIATION_REQUIRED=YES/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(workflow,/-f game_id="\$REQUESTED_GAME_ID"/);
+  assert.doesNotMatch(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED=/);
+});
+
 test('Roblox source workflow keeps compiled candidates pending when Actions cannot create PRs',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/Attempt validated Roblox source promotion through PR[\s\S]*continue-on-error: true/);
