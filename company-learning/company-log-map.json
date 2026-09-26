@@ -1,5 +1,5 @@
 {
-  "version": 86,
+  "version": 87,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -151,6 +151,18 @@
         "VIBE2_SYSTEM_STEWARD_ADAPTIVE_MAX"
       ],
       "staleLeaseRecoveryKeepsTaskIdentity": true
+    },
+    "sharedWorkLockLifecycle": {
+      "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformPlaytestDevelopment.phase1Implementation.workLock",
+      "implementation": ".github/workflows/vibe2-continuous-core.yml",
+      "acquireMarker": "VIBE2_SHARED_WORK_LOCK_ACQUIRED=YES|NO",
+      "acquireReasonMarker": "VIBE2_SHARED_WORK_LOCK_REASON=",
+      "releaseCountMarker": "VIBE2_SHARED_WORK_LOCK_RELEASED=",
+      "alreadyReleasedCountMarker": "VIBE2_SHARED_WORK_LOCK_ALREADY_RELEASED=",
+      "remoteReleasedMarker": "VIBE_REMOTE_WORK_LOCK_RELEASED=YES|NO",
+      "remoteReasonMarker": "VIBE_REMOTE_WORK_LOCK_REASON=",
+      "lockNotFoundDuringFanInCleanup": "IDEMPOTENT_ALREADY_RELEASED_NOT_BATCH_FAILURE",
+      "unexpectedReleaseFailureStillFailClosed": true
     }
   },
   "systemAiWorkerLogContract": {
