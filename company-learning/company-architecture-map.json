@@ -1,5 +1,5 @@
 {
-  "version": 224,
+  "version": 225,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1260,17 +1260,17 @@
           "recoveryFastUnaffected": true
         }
       },
-      "nextObservedInfrastructureBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE",
+      "nextObservedInfrastructureBottleneck": "GITHUB_HOSTED_RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
       "modelCacheStartupRelief": {
-        "version": 2,
+        "version": 3,
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
         "cacheKey": "vibe2-ollama-v3-Linux-qwen3-1.7b",
         "cacheProbeJob": "reserve",
         "cacheProbeBehavior": "LOOKUP_ONLY_NO_PAYLOAD_RESTORE",
         "prewarmJob": "model_cache",
         "prewarmHitBehavior": "SKIP_JOB_WITHOUT_RUNNER",
-        "prewarmMissBehavior": "RUN_EXISTING_WARM_AND_PERSIST",
-        "workerNeedsPrewarm": true,
+        "prewarmMissBehavior": "RUN_EXISTING_WARM_AND_PERSIST_NONBLOCKING",
+        "workerNeedsPrewarm": false,
         "workerSkippedPrewarmBehavior": "CONTINUE_VIA_EXISTING_ALWAYS_JOB_CONDITION",
         "workerRestoreBehavior": "CONDITIONAL_AFTER_WORK_ORDER_AND_LOCK",
         "workerRuntimePreparation": "SHARED_PREPARE_OLLAMA_COMPOSITE_ACTION",
@@ -1291,7 +1291,10 @@
         "gamePrimaryExternalBoundary": 256,
         "liveVerificationRun": 36208311596,
         "prewarmRunnerReliefLiveVerified": true,
-        "nextObservedInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK"
+        "nextObservedInfrastructureBottleneck": "GITHUB_HOSTED_RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+        "workerStartDependency": "RESERVE_ONLY",
+        "globalWarmupBarrier": false,
+        "backgroundWarmupMayOverlapWorkers": true
       },
       "externalSpareBeyond30": "AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP"
     },

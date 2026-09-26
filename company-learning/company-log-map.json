@@ -1,5 +1,5 @@
 {
-  "version": 89,
+  "version": 90,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1689,5 +1689,25 @@
       "NO_REPEATED_JOBLESS_PENDING_REPLACEMENT_WITHIN_V3_EPOCH"
     ],
     "authorityChange": "NONE"
+  },
+  "workerModelCacheGlobalBarrierRemoval": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.workerModelCacheGlobalBarrierRemoval20260926",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "expectedTopology": {
+      "workerNeeds": "reserve",
+      "workerMustNotNeed": "model_cache",
+      "modelCacheJobRetained": true,
+      "modelCacheBlocksWorkerStart": false,
+      "workerConditionalRestore": true,
+      "externalBoundary": 256
+    },
+    "requiredMarkers": [
+      "VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES",
+      "VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO",
+      "VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS",
+      "VIBE2_WORKER_PREFLIGHT_SYNC=PASS"
+    ],
+    "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE"
   }
 }

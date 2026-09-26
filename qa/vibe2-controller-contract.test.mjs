@@ -316,7 +316,8 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.match(modelBlock,/Recheck or persist shared Ollama runtime cache/);
   assert.match(modelBlock,/lookup-only: true/);
   assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
-  assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
+  assert.match(workerBlock,/needs: reserve/);
+  assert.doesNotMatch(workerBlock,/needs: \[reserve, model_cache\]/);
   assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
   assert.match(workerBlock,/Restore shared Ollama runtime cache/);
   assert.match(workerBlock,/uses: actions\/cache\/restore@v4/);
@@ -329,6 +330,9 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreDeferredUntilWorkOrder,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRequiresLocalModel,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreSkippedWithoutSourceLock,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.globalPrewarmBarrier,false);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerStartsAfterReserveWithoutPrewarmWait,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmMissRunsNonBlocking,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerModelBehaviorChanged,false);
 });
 
@@ -386,7 +390,8 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert(workflow.includes('--project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json"'));
   assert(workflow.includes('Build task-local exploration handoff'));
   assert(workflow.includes('VIBE2_TASK_LOCAL_EXPLORATION=PASS'));
-  assert(workflow.includes('needs: [reserve, model_cache]'));
+  assert(workflow.includes('needs: reserve'));
+  assert.equal(workflow.includes('needs: [reserve, model_cache]'),false);
   assert.equal(workflow.includes('needs: [reserve, model_cache, exploration]'),false);
   assert.equal(workflow.includes('\n  exploration:\n'),false);
   assert(workflow.includes('Generate isolated candidate from pinned main contract'));
