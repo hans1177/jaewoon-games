@@ -39,6 +39,10 @@ function stateFromCatalog(game={}){const cls=clean(game.productionClass).toUpper
 function engineFromProject(project={}){const projectPath=posix(project.robloxProjectPath||project.projectPath||project.source),target=clean(project.selectedPlatform||project.targetPlatform||project.target).toLowerCase();if(projectPath.startsWith('roblox-games/')||target.startsWith('roblox'))return'roblox';if(projectPath.startsWith('unity-games/')||target.startsWith('unity'))return'unity';if(projectPath.startsWith('web-games/')||target==='web')return'web';if(projectPath.startsWith('unreal-games/')||target.startsWith('unreal'))return'unreal';if(projectPath.startsWith('godot-games/')||target.startsWith('godot'))return'godot';return null;}
 function webRootFromCatalog(game={}){const webPath=posix(game.webPath).replace(/^\//,'');return /^web-games\/[a-zA-Z0-9._-]+$/.test(webPath)?webPath:null;}
 function robloxRootFromCatalog(game={}){const explicit=posix(game.robloxProjectPath||game.robloxPath||game?.canonical?.sources?.roblox?.projectPath||'');if(/^roblox-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`roblox-games/${id}`:null;}
+function unityRootFromCatalog(game={}){const explicit=posix(game.unityProjectPath||game.unityPath||game?.canonical?.sources?.unity?.projectPath||'');if(/^unity-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`unity-games/${id}`:null;}
+function studioQualityLane(project={}){const engine=clean(project.engine).toLowerCase();if(engine==='unity'&&project.firstStageUnityWeb===true)return'unity-web';if(engine==='unity')return'unity-native';if(engine==='roblox')return'roblox';if(engine==='web')return'web';return engine||'unknown';}
+function studioQualityTaskLane(item={}){const explicit=clean(item?.studioQualityEvolution?.platformLane).toLowerCase();if(explicit)return explicit;const evidence=new Set((item?.evidence||[]).map(value=>clean(value).toLowerCase()));const target=clean(item?.target).toLowerCase(),root=posix(item?.sourceRoot);if(evidence.has('unity-web-first-stage')||evidence.has('studio-quality-platform-lane:unity-web'))return'unity-web';if(target==='unity'||target.startsWith('unity-')||root.startsWith('unity-games/'))return'unity-native';if(target==='roblox'||root.startsWith('roblox-games/'))return'roblox';if(target==='web'||root.startsWith('web-games/'))return'web';return target||'unknown';}
+function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(item)===studioQualityLane(project);}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
@@ -313,7 +317,49 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     presentationFirstPass:clean(item?.presentationFirstPass)
   });
 }
-for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id);if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
+for(const game of Array.isArray(catalog.games)?catalog.games:[]){
+  const id=clean(game.id);
+  if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;
+  const state=stateFromCatalog(game);
+  const eligibleProduction=['release-confirmed','development-confirmed'].includes(state);
+
+  const robloxRoot=robloxRootFromCatalog(game);
+  if(id&&eligibleProduction&&robloxRoot&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox')){
+    rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,lifecycleState:gameLifecycleState(game),existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});
+  }
+
+  const unityRoot=unityRootFromCatalog(game);
+  const unityProjectExists=id&&unityRoot&&fs.existsSync(path.join(repoRoot,unityRoot,'ProjectSettings','ProjectVersion.txt'));
+  const unityWebAlreadyPresent=rows.some(r=>r.gameId===id&&r.engine==='unity'&&r.firstStageUnityWeb===true);
+  if(id&&eligibleProduction&&unityProjectExists&&!unityWebAlreadyPresent){
+    rows.push({
+      gameId:id,
+      name:clean(game.name),
+      engine:'unity',
+      target:'unity',
+      projectPath:unityRoot,
+      lifecycleState:gameLifecycleState(game),
+      existing:true,
+      releaseState:state,
+      progress:0,
+      source:'game-catalog-existing-unity-web-backfill',
+      developmentBaseline:null,
+      developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
+      firstStageUnityWeb:true,
+      firstStageEngine:'UNITY_WEB',
+      unityWebDevelopmentFloor:true,
+      existingHolisticBackfillCatalog:true
+    });
+  }
+
+  const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;
+  if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;
+  if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;
+  const exists=fs.existsSync(path.join(repoRoot,root));
+  rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
+}
+return rows;
+}
 function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
   return{
@@ -352,6 +398,7 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.engine==='unity'){
+    if(project.firstStageUnityWeb===true&&project.existingHolisticBackfillCatalog===true)return['release-confirmed','development-confirmed'].includes(project.releaseState);
     if(project.releaseState==='development-confirmed'&&project.firstStageUnityWeb===true)return true;
     if(project.releaseState==='development-confirmed')return project.source==='company-status'&&assetProductionEnabled(repoRoot);
     return project.releaseState==='release-confirmed'&&project.developmentBaseline?.ready===true;
@@ -1540,8 +1587,10 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       evidence:[...new Set([...(taskInput.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]
     };
   }
+  const platformLane=studioQualityLane(project);
   const taskHistory=[...(queue?.tasks||[])].filter(item=>
     clean(item?.gameId)===clean(project.gameId)
+    &&sameStudioQualityLane(item,project)
     &&item?.buildUpDirective
     &&typeof item.buildUpDirective==='object'
   );
@@ -1566,6 +1615,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       buildUpGoal:directive.thisLoopPrimaryGoal,
       buildUpSourceTree:directive.sourceTreeFingerprint,
       buildUpStatus:'DIRECTIVE_BOUND',
+      buildUpPlatformLane:platformLane,
       previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
       lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
       developmentDepth:Number(directive.developmentDepth||1),
@@ -1617,13 +1667,13 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     independentQaPassed:project?.queueRuntimeIndependentQaPassed===true,
     regressionPassed:project?.queueRuntimeRegressionPassed===true
   };
-  const sourceRoots=[project.projectPath,`roblox-games/${project.gameId}`,`unity-games/${project.gameId}`,`web-games/${project.gameId}`]
+  const sourceRoots=[project.projectPath]
     .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
   const sourceObservation=inspectGameSources({repoRoot,sourceRoots});
   const directive=buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
-    platform:'COMMON',
+    platform:platformLane==='unity-web'?'UNITY_WEB':clean(project.engine).toUpperCase()||'COMMON',
     designRecord:designContext.record,
     sourceObservation,
     repoRoot,
@@ -1643,6 +1693,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     buildUpGoal:directive.thisLoopPrimaryGoal,
     buildUpSourceTree:directive.sourceTreeFingerprint,
     buildUpStatus:'DIRECTIVE_BOUND',
+    buildUpPlatformLane:studioQualityTaskLane(taskInput),
     previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
     lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
     developmentDepth:Number(directive.developmentDepth||1),
@@ -1675,17 +1726,20 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const sourceRoot=posix(project.projectPath),sourceDir=sourceFile(repoRoot,sourceRoot);
   if(!fs.existsSync(sourceDir)||!fs.statSync(sourceDir).isDirectory())return null;
   const requestedFocus=clean(forcedFocusPillar).toUpperCase();
+  const platformLane=studioQualityLane(project);
+  const laneToken=platformLane==='web'?'':'-'+platformLane;
   const generationBase=requestedFocus
-    ?`${project.gameId}-studio-evolution-${requestedFocus.toLowerCase().replaceAll('_','-')}`
-    :`${project.gameId}-studio-evolution`;
-  const id=nextCausalGenerationId(queue,generationBase);
-  if(!id)return null;
-
+    ?`${project.gameId}-studio-evolution${laneToken}-${requestedFocus.toLowerCase().replaceAll('_','-')}`
+    :`${project.gameId}-studio-evolution${laneToken}`;
   const history=(queue.tasks||[]).filter(item=>
     clean(item.gameId)===clean(project.gameId)
+    &&sameStudioQualityLane(item,project)
     &&(item.evidence||[]).map(clean).includes('studio-quality-loop:v1')
     &&(!requestedFocus||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()===requestedFocus)
   );
+  if(history.some(item=>['queued','running'].includes(clean(item.status).toLowerCase())))return null;
+  const id=nextCausalGenerationId({tasks:history},generationBase);
+  if(!id)return null;
   const verified=history.filter(item=>clean(item.status).toLowerCase()==='verified');
   const previous=verified.at(-1)||null;
   const previousPhase=clean(previous?.studioQualityEvolution?.phase).toUpperCase();
@@ -1720,6 +1774,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const existingHolisticBackfillPillars=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
   const existingHolisticVerifiedFocuses=new Set((queue.tasks||[]).filter(item=>
     clean(item?.gameId)===clean(project.gameId)
+    &&sameStudioQualityLane(item,project)
     &&clean(item?.status).toLowerCase()==='verified'
     &&(item?.evidence||[]).map(clean).includes('existing-holistic-backfill:v1')
   ).map(item=>clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()).filter(value=>existingHolisticBackfillPillars.includes(value)));
@@ -1802,7 +1857,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     ?' 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.'
     :'';
   const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
-${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}
+${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}${platformLane==='unity-web'?' Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리 예산, 핵심 루프 실제 진행을 독립 검증한다. Unity Native PASS나 Roblox PASS로 대체하지 않는다.':''}
 현재 근거=${explicitGap}
 설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
 작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
@@ -1813,6 +1868,7 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
   ]:[];
   const out=task(id,project,goal,responsibleFiles,project.ownerFocusedCaretaker?'critical':'high','medium',[
     'studio-quality-loop:v1',
+    'studio-quality-platform-lane:'+platformLane,
     `studio-quality-cycle:${cycle}`,
     `studio-quality-phase:${phase}`,
     `studio-quality-focus:${focusPillar}`,
@@ -1855,7 +1911,9 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
     ])];
   }
   out.studioQualityEvolution={
-    version:2,cycle,phase,focusPillar,baselineId,
+    version:3,cycle,phase,focusPillar,baselineId,platformLane,
+    laneIndependentVerificationRequired:true,
+    siblingPlatformPassCannotSubstitute:true,
     baselineSource:previous?.id?'VERIFIED_QUEUE_TASK':'CURRENT_SOURCE',
     explicitGap,
     designSource,
@@ -1897,6 +1955,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
     buildUpGoal:directive.thisLoopPrimaryGoal,
     buildUpSourceTree:directive.sourceTreeFingerprint,
     buildUpStatus:'DIRECTIVE_BOUND',
+    buildUpPlatformLane:studioQualityTaskLane(taskInput),
     previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
     lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
     developmentDepth:Number(directive.developmentDepth||1),
@@ -1922,10 +1981,11 @@ function bindSharedBuildUpDirective(taskInput,directive){
 }
 
 function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
-  const projectByGameId=new Map();
+  const projectByScope=new Map();
   for(const project of projects||[]){
     const gameId=clean(project?.gameId);
-    if(gameId&&!projectByGameId.has(gameId))projectByGameId.set(gameId,project);
+    if(!gameId)continue;
+    projectByScope.set(gameId+'|'+studioQualityLane(project),project);
   }
   const supportedTarget=item=>{
     const target=clean(item?.target).toLowerCase();
@@ -1933,24 +1993,24 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   };
   const terminalStatuses=new Set(['verified','done','completed','failed','error','rejected','cancelled','superseded']);
   const tasks=[...(queue?.tasks||[])];
-  const canonicalByGameId=new Map();
+  const canonicalByScope=new Map();
   for(const row of tasks){
-    const gameId=clean(row?.gameId),directive=row?.buildUpDirective;
+    const gameId=clean(row?.gameId),directive=row?.buildUpDirective,lane=studioQualityTaskLane(row),scope=gameId+'|'+lane;
     if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running')continue;
-    const current=canonicalByGameId.get(gameId);
-    if(!current||Number(directive?.generation||0)>Number(current?.generation||0))canonicalByGameId.set(gameId,directive);
+    const current=canonicalByScope.get(scope);
+    if(!current||Number(directive?.generation||0)>Number(current?.generation||0))canonicalByScope.set(scope,directive);
   }
   let changed=0,mutated=0,attached=0,rebound=0,designPending=0,checked=0;
   const preReserveStatuses=new Set(['queued','failed','blocked']);
   for(let index=0;index<tasks.length;index+=1){
     const item=tasks[index];
     if(!preReserveStatuses.has(clean(item?.status).toLowerCase())||!isDevelopmentImplementation(item)||!supportedTarget(item))continue;
-    const gameId=clean(item?.gameId),project=projectByGameId.get(gameId);
+    const gameId=clean(item?.gameId),lane=studioQualityTaskLane(item),scope=gameId+'|'+lane,project=projectByScope.get(scope);
     if(!gameId||!project)continue;
     checked+=1;
-    const history=tasks.filter((row,rowIndex)=>rowIndex!==index&&clean(row?.gameId)===gameId&&clean(row?.buildUpDirective?.directiveId));
+    const history=tasks.filter((row,rowIndex)=>rowIndex!==index&&clean(row?.gameId)===gameId&&studioQualityTaskLane(row)===lane&&clean(row?.buildUpDirective?.directiveId));
     const byGeneration=(a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0);
-    const mappedCanonical=canonicalByGameId.get(gameId)||null;
+    const mappedCanonical=canonicalByScope.get(scope)||null;
     const activeCanonical=mappedCanonical
       ?{buildUpDirective:mappedCanonical,status:'queued'}
       :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())).sort(byGeneration)[0]||null;
@@ -1961,7 +2021,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
     if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
       candidate=bindSharedBuildUpDirective(item,activeCanonical.buildUpDirective);
-      canonicalByGameId.set(gameId,activeCanonical.buildUpDirective);
+      canonicalByScope.set(scope,activeCanonical.buildUpDirective);
       if(!currentId){
         candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
       }
@@ -1977,7 +2037,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,{...queue,tasks},verifiedDesign);
         if(clean(candidate?.buildUpDirective?.directiveId)){
           attached+=1;changed+=1;
-          canonicalByGameId.set(gameId,candidate.buildUpDirective);
+          canonicalByScope.set(scope,candidate.buildUpDirective);
           freshness='CURRENT_OR_RECONCILED';
           candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
         }else{
@@ -1996,17 +2056,17 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         const refreshed=attachGameSpecificBuildUpDirective(item,project,repoRoot,queueWithoutCurrent,verifiedDesign);
         if(clean(refreshed?.buildUpDirective?.directiveId)){
           candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
-          canonicalByGameId.set(gameId,refreshed.buildUpDirective);
+          canonicalByScope.set(scope,refreshed.buildUpDirective);
           candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),...(refreshed.evidence||[]),'build-up-directive-stale-refresh:queued-existing-work'])]};
           rebound+=1;changed+=1;
           freshness='REGENERATED_AFTER_NEWER_TERMINAL_GENERATION';
         }
       }
     }else if(activeCanonical?.buildUpDirective){
-      canonicalByGameId.set(gameId,activeCanonical.buildUpDirective);
+      canonicalByScope.set(scope,activeCanonical.buildUpDirective);
       freshness='CURRENT_ACTIVE_GENERATION';
     }else if(currentId&&item?.buildUpDirective){
-      canonicalByGameId.set(gameId,item.buildUpDirective);
+      canonicalByScope.set(scope,item.buildUpDirective);
       freshness='CURRENT_NO_NEWER_GENERATION';
     }
     const checkedCandidate={

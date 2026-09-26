@@ -2202,6 +2202,67 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
 });
 
 
+test('catalog discovers existing Unity project as an independent Unity Web holistic backfill surface',()=>{
+  const root=tempRepo();
+  const gameId='legacy-unity-web';
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.0.0f1\n','utf8');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','GameCore.cs'),'public class GameCore {}\n','utf8');
+  const catalog={games:[{id:gameId,name:'Legacy Unity Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'REBUILD'}]};
+  const projects=collectProjects({projects:[]},catalog,root,{items:[]});
+  const webgl=projects.find(row=>row.gameId===gameId&&row.engine==='unity'&&row.firstStageUnityWeb===true);
+  assert.ok(webgl);
+  assert.equal(webgl.projectPath,`unity-games/${gameId}`);
+  assert.equal(webgl.source,'game-catalog-existing-unity-web-backfill');
+  assert.equal(webgl.existingHolisticBackfillCatalog,true);
+  assert.equal(webgl.firstStageEngine,'UNITY_WEB');
+});
+
+test('existing holistic backfill is independent for Roblox Unity Web and Unity Native lanes',()=>{
+  const root=tempRepo();
+  const gameId='multi-lane-existing';
+  const robloxRoot=path.join(root,'roblox-games',gameId);
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(robloxRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(robloxRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(robloxRoot,'client','Game.client.luau'),'local ui = {}\n','utf8');
+  fs.writeFileSync(path.join(robloxRoot,'server','Game.server.luau'),'local combat = {}\n','utf8');
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','GameCore.cs'),'public class GameCore {}\n','utf8');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','RuntimeBootstrap.cs'),'public class RuntimeBootstrap {}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'탐험과 전투 선택을 연결한다',progressionDirection:'지역과 장비 해금으로 선택을 확장한다.'});
+
+  const roblox={gameId,name:'Multi Lane',engine:'roblox',target:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,existing:true,lifecycleState:'ACTIVE'};
+  const unityWeb={gameId,name:'Multi Lane',engine:'unity',target:'unity',releaseState:'development-confirmed',projectPath:`unity-games/${gameId}`,existing:true,lifecycleState:'ACTIVE',firstStageUnityWeb:true,firstStageEngine:'UNITY_WEB'};
+  const unityNative={gameId,name:'Multi Lane',engine:'unity',target:'unity',releaseState:'development-confirmed',projectPath:`unity-games/${gameId}`,existing:true,lifecycleState:'ACTIVE'};
+
+  const robloxTasks=findStudioContinuousImprovementTasks(roblox,root,{tasks:[]});
+  assert.equal(robloxTasks.length,5);
+  assert.ok(robloxTasks.every(row=>row.studioQualityEvolution.platformLane==='roblox'));
+  const robloxVerified=robloxTasks.map(row=>({...row,status:'verified'}));
+
+  const unityWebTasks=findStudioContinuousImprovementTasks(unityWeb,root,{tasks:robloxVerified});
+  assert.equal(unityWebTasks.length,5);
+  assert.ok(unityWebTasks.every(row=>row.studioQualityEvolution.platformLane==='unity-web'));
+  assert.ok(unityWebTasks.every(row=>row.studioQualityEvolution.existingHolisticBackfillRequired===true));
+  assert.ok(unityWebTasks.every(row=>/Unity Web 백필/.test(row.goal)));
+  assert.ok(unityWebTasks.every(row=>row.id.includes('-unity-web-')));
+
+  const unityWebVerified=unityWebTasks.map(row=>({...row,status:'verified'}));
+  const unityNativeTasks=findStudioContinuousImprovementTasks(unityNative,root,{tasks:[...robloxVerified,...unityWebVerified]});
+  assert.equal(unityNativeTasks.length,5);
+  assert.ok(unityNativeTasks.every(row=>row.studioQualityEvolution.platformLane==='unity-native'));
+  assert.ok(unityNativeTasks.every(row=>row.studioQualityEvolution.existingHolisticBackfillRequired===true));
+  assert.ok(unityNativeTasks.every(row=>row.id.includes('-unity-native-')));
+
+  const nextUnityWeb=findStudioContinuousImprovementTask(unityWeb,root,{tasks:[...robloxVerified,...unityWebVerified]},'CORE_FUN');
+  assert.ok(nextUnityWeb);
+  assert.equal(nextUnityWeb.studioQualityEvolution.existingHolisticBaselineVerified,true);
+  assert.equal(nextUnityWeb.studioQualityEvolution.siblingPlatformPassCannotSubstitute,true);
+});
+
 test('existing games receive holistic backfill on all five quality pillars without grandfather exemption',()=>{
   const root=tempRepo();
   const gameId='existing-holistic';
@@ -2502,7 +2563,7 @@ test('Roblox queue projection uses Roblox design genre instead of generic catalo
 });
 
 
-test('backlog gate still binds one shared BUILD_UP directive to existing queued game work',()=>{
+test('backlog gate binds queued existing game work to platform-lane-specific BUILD_UP directives',()=>{
   const root=tempRepo();
   const gameId='backlog-build-up';
   for(const [dir,file,body] of [
@@ -2529,7 +2590,10 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
     }
   ];
   const result=planVibe2AutonomousTasks({
-    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    status:{projects:[
+      {gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80},
+      {gameId,ownerDecision:'PASS',target:'unity',projectPath:`unity-games/${gameId}`,progress:80}
+    ]},
     catalog:{games:[{id:gameId,name:'Backlog Build Up',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
     queue:{maxConcurrentTasks:20,tasks:queued},
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
@@ -2539,10 +2603,12 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
   assert.equal(result.buildUpDirectiveBackfillCount,2);
   const rows=result.queue.tasks.filter(row=>row.gameId===gameId);
   assert.equal(rows.length,2);
-  assert.equal(new Set(rows.map(row=>row.buildUpDirectiveId)).size,1);
+  assert.equal(new Set(rows.map(row=>row.buildUpDirectiveId)).size,2);
   assert.equal(rows[0].buildUpGeneration,1);
   assert.equal(rows[1].buildUpGeneration,1);
-  assert.deepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
+  assert.notDeepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
+  assert.deepEqual(new Set(rows.map(row=>row.buildUpDirective.platform)),new Set(['ROBLOX','UNITY']));
+  assert.deepEqual(new Set(rows.map(row=>row.buildUpDirective.sourceRoot)),new Set([`roblox-games/${gameId}`,`unity-games/${gameId}`]));
   assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
   assert.ok(rows.every(row=>row.buildUpDirective.version===2));
   assert.ok(rows.every(row=>row.buildUpStatus==='DIRECTIVE_BOUND'));

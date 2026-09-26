@@ -1,5 +1,5 @@
 {
-  "version": 211,
+  "version": 212,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4810,7 +4810,7 @@
       "existingGameHolisticBaselineRequiresFivePillarFanIn": true
     },
     "existingGameHolisticBackfill": {
-      "version": 1,
+      "version": 2,
       "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
       "noNewPipeline": true,
       "existingProjectCollection": "tools/vibe2-auto-planner.mjs::collectProjects",
@@ -4844,7 +4844,29 @@
       "missingVerifiedDesignUsesCanonicalDesignFlow": true,
       "failedPillarKeepsDepthAndRoutesCausalRepair": true,
       "shadowWorkerCreated": false,
-      "shadowQueueCreated": false
+      "shadowQueueCreated": false,
+      "scopeKey": "GAME_ID_PLUS_PLATFORM_LANE",
+      "platformLanes": [
+        "WEB",
+        "ROBLOX",
+        "UNITY_WEB",
+        "UNITY_NATIVE"
+      ],
+      "catalogExistingSourceDiscovery": {
+        "roblox": true,
+        "unityWebFromCanonicalUnityProject": true,
+        "unityNativeUsesExistingAuthorizedNativeProject": true,
+        "web": true
+      },
+      "unityWebTopology": {
+        "sourceProject": "SAME_CANONICAL_UNITY_PROJECT",
+        "executionSurface": "WEBGL_BROWSER",
+        "evidenceIndependentFromUnityNative": true,
+        "siblingPlatformPassCannotSubstitute": true
+      },
+      "sharedDirectiveReuseBoundary": "SAME_GAME_SAME_PLATFORM_LANE_ONLY_FOR_SOURCE_ANCHORS_AND_GENERATION_FAN_IN",
+      "crossPlatformGameIntentMayBeShared": true,
+      "crossPlatformSourceAnchorsMayNotBeReusedAsProof": true
     }
   },
   "nonblockingCoordinationTelemetryTopology": {
