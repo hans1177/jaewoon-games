@@ -128,7 +128,13 @@ function editDirectives(request,target,systems,quality){
   if(has(request,['저장 구조','저장 키','세이브 구조']))a.push('저장 변경이 불가피하면 기존 데이터를 읽는 명시적 마이그레이션 경로를 함께 구현');
   return unique(a);
 }
-function isNewGameDevelopmentRequest(request){return has(request,['새 게임','신작','게임 만들어','게임 제작','새 프로젝트','처음부터 만들어','프로토타입 만들어']);}
+function isNewGameDevelopmentRequest(request){
+  const text=clean(request);
+  const existingGameContext=/(?:기존\s*게임|existing\s+game)/i.test(text);
+  const negativeNewGamePreservation=/새\s*게임(?:처럼|으로)?[^.\n]{0,96}(?:초기화하지|재생성하지|재구축하지|새로\s*만들지|만들지|바꾸지|하지\s*말|금지)/i.test(text);
+  if(existingGameContext&&negativeNewGamePreservation)return false;
+  return has(text,['새 게임','신작','게임 만들어','게임 제작','새 프로젝트','처음부터 만들어','프로토타입 만들어']);
+}
 function majorCategoryOf(request){
   if(has(request,['장르']))return'genre';
   if(has(request,['핵심 루프','게임 방식','플레이 방식']))return'core-loop';
