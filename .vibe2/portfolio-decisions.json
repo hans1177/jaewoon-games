@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-09-26T06:17:52.145Z",
+  "generatedAt": "2026-09-26T06:34:13.428Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -245,8 +245,8 @@
     },
     {
       "gameId": "fantasy-survival",
-      "decision": "CONTINUE",
-      "reason": "NORMAL_ACTIVE_DEVELOPMENT",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "evidence": {
@@ -261,7 +261,7 @@
           "repeatedFailureSignal": 1
         },
         "qa": {
-          "criticalRuntimeOrGateBlocker": false
+          "criticalRuntimeOrGateBlocker": true
         },
         "balance": {
           "structuralCoreFailure": false
