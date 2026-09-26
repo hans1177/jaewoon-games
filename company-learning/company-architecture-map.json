@@ -1,5 +1,5 @@
 {
-  "version": 216,
+  "version": 217,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4892,7 +4892,11 @@
         "holisticWorkPackageExpansion": "EXPAND_EXISTING_TASK_SCOPE_TO_CONFIGURED_MINIMUM_WITHOUT_NEW_PIPELINE_OR_PROTECTED_RULE_CHANGE",
         "queuedGenericPolishDeferral": "KEEP_QUEUED_BUT_DEPRIORITIZE_AND_IGNORE_AS_PLANNER_CONFLICT_FOR_ELIGIBLE_HOLISTIC_CANDIDATE",
         "runningGenericPolishPreserved": true,
-        "ownerAndExactRepairPreemptionPreserved": true
+        "ownerAndExactRepairPreemptionPreserved": true,
+        "existingBackfillNegativeNewGamePhraseDoesNotTriggerCreationGate": true,
+        "realNewGameCreationStillUsesOwnerGate": true,
+        "ownerReservedDecisionCategoriesUnchanged": true,
+        "executionGateRepairFunction": "assets/vibe-workbench.js::isNewGameDevelopmentRequest"
       }
     }
   },
