@@ -235,6 +235,7 @@ test('central development planner keeps duplicate contract QA off the game dispa
   const dispatchStart=development.indexOf('\n  dispatch-roblox:\n');
   assert.ok(nativeStart>0&&auditStart>nativeStart&&dispatchStart>auditStart);
   const nativePlan=development.slice(nativeStart,auditStart);
+  assert.match(nativePlan,/runs-on: ubuntu-24\.04-arm/);
   assert.match(nativePlan,/Validate direct-native admission contract/);
   assert.doesNotMatch(nativePlan,/node --test qa\/company-selected-platform-router\.test\.mjs/);
   assert.doesNotMatch(nativePlan,/node --test qa\/company-minimum-design-contract\.test\.mjs/);
