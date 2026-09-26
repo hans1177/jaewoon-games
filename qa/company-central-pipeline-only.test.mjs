@@ -378,3 +378,21 @@ test('Unity prepare delegates all contract tests to canonical QA and keeps only 
   assert.equal(logMap.unityPlannerDuplicateContractQaRemovalEvidence?.runtimeContractTestsRemaining,0);
   assert.equal(logMap.unityPlannerDuplicateContractQaRemovalEvidence?.duplicateRuntimeTestsPresent,false);
 });
+
+
+test('Unity Web reuses the existing per-game Unity Library cache pattern without weakening build QA',()=>{
+  const web=read('.github/workflows/unity-web-first-stage-build.yml');
+  const android=read('.github/workflows/unity-cloud-android-test.yml');
+  assert.match(android,/Cache Unity Library/);
+  assert.match(web,/Cache Unity Web Library/);
+  assert.match(web,/id: library_cache/);
+  assert.match(web,/path: \$\{\{ steps\.request\.outputs\.project_path \}\}\/Library/);
+  assert.match(web,/key: unity-web-library-\$\{\{ runner\.os \}\}-\$\{\{ steps\.request\.outputs\.game_id \}\}-/);
+  assert.match(web,/Packages\/manifest\.json/);
+  assert.match(web,/ProjectSettings\/ProjectVersion\.txt/);
+  assert.match(web,/UNITY_WEB_LIBRARY_CACHE_HIT=/);
+  assert.match(web,/Build Unity Web/);
+  assert.match(web,/Run Unity Web actual browser play/);
+  assert.match(web,/Run Unity Web independent QA/);
+  assert.match(web,/Run Unity Web regression/);
+});
