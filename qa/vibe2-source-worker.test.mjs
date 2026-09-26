@@ -3365,6 +3365,9 @@ test('Roblox zero-output timeout stays on focused recovery for the remaining exi
   assert.match(source,/ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES\.has\(priorFailureClass\)[\s\S]*?&&!zeroOutputTimeoutRecovery[\s\S]*?&&!robloxZeroOutputTimeoutFocusedRecoveryActive/);
   assert.match(source,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
   assert.match(source,/VIBE2_ROBLOX_TIMEOUT_RECOVERY_CHAIN_FOCUSED/);
+  assert.match(source,/robloxZeroOutputTimeoutFocusedRecovery:generation\.robloxZeroOutputTimeoutFocusedRecovery===true/);
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflow,/coding-roblox-zero-timeout-focused-recovery:YES/);
   assert.match(source,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\)/);
   assert.match(source,/presentationPatchDeltaRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive/);
   assert.match(source,/\(systemAtomicPairCompletion\|\|focusedReplaceOnly\)\?\(systemAtomicPairCompletion\?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS\)/);
