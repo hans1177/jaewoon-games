@@ -46,7 +46,7 @@ permissions:
 
 concurrency:
   group: company-status-sync-runtime
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
