@@ -419,3 +419,14 @@ test('dedicated target bootstrap may use existing Roblox security credential onl
   assert.match(candidate,/createRobloxDedicatedExperience\([\s\S]*cookie/);
   assert.match(candidate,/publishRobloxPlace\(\{plan,retryDelaysMs:\[\]\}\)/);
 });
+
+test('private runtime dedupe job itself never waits behind a same-game runner lock',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  const start=workflow.indexOf('  release-dedupe:');
+  const end=workflow.indexOf('\n  release:',start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(block,/concurrency:/);
+  assert.doesNotMatch(block,/runs-on:\s*ubuntu-latest/);
+  assert.match(block,/ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER=/);
+});
