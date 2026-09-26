@@ -98,6 +98,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const root=path.join(repoRoot,sourcePath);
     const sourceBind=clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
     const currentRevision=clean(sourceRevision);
+    const sourceTreeSha=fs.existsSync(root)?currentSourceTreeSha({repoRoot,sourcePath}):'';
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
     if(studioState.refreshRequired===true){
       results.push({
@@ -105,6 +106,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:false,
         sourcePath,
         sourceRevision:currentRevision,
+        sourceTreeSha,
         sourceDrift:!sourceBind,
         saveRequired:false,
         blockers:['ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'],
@@ -128,6 +130,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
             pass:false,
             sourcePath,
             sourceRevision:currentRevision,
+            sourceTreeSha,
             sourceDrift:true,
             saveRequired:false,
             blockers:['SOURCE_DRIFT_DETECTION_UNAVAILABLE'],
@@ -143,6 +146,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:false,
         sourcePath,
         sourceRevision:currentRevision,
+        sourceTreeSha:'',
         sourceDrift:!sourceBind,
         saveRequired:false,
         blockers:['SOURCE_TREE_MISSING'],
@@ -160,6 +164,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
           pass:false,
           sourcePath,
           sourceRevision:clean(sourceRevision),
+          sourceTreeSha:actualTree,
           sourceDrift:!sourceBind,
           saveRequired:false,
           blockers:['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH'],
@@ -172,6 +177,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:true,
         sourcePath,
         sourceRevision:clean(sourceRevision),
+        sourceTreeSha:actualTree,
         sourceDrift:!sourceBind,
         saveRequired:false,
         blockers:[],
@@ -188,6 +194,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:verdict.pass,
         sourcePath,
         sourceRevision:clean(sourceRevision),
+        sourceTreeSha,
         sourceDrift:!sourceBind,
         saveRequired:verdict.saveRequired,
         blockers:verdict.blockers,
@@ -199,6 +206,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:false,
         sourcePath,
         sourceRevision:clean(sourceRevision),
+        sourceTreeSha,
         sourceDrift:!sourceBind,
         saveRequired:false,
         blockers:['SOURCE_BASELINE_OR_VALIDATION_UNAVAILABLE'],
