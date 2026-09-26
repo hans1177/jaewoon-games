@@ -821,3 +821,14 @@ test('Roblox continuation dispatch is per-game and does not wait behind one glob
   assert.doesNotMatch(workflow,/&& "\$active_continuations" == '0'/);
   assert.doesNotMatch(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE/);
 });
+
+test('Roblox runtime self-redispatch dedupes queued or running work for the same main SHA without global serialization',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===String\(process\.env\.TARGET_SHA\|\|''\)/);
+  assert.match(workflow,/String\(r\.id\)!==String\(process\.env\.CURRENT_RUN_ID\|\|''\)/);
+  assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:/);
+  assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
+  assert.doesNotMatch(workflow,/^concurrency:\s*$/m);
+});
