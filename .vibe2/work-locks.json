@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1foq3mx",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T16:11:16.461Z",
-      "expiresAt": "2026-09-26T16:56:16.461Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1wa0dx0",
       "worker": "vibe2",
       "taskId": "survival-studio-evolution-unity-web-usability-v1",
@@ -589,6 +571,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
+      ]
+    },
+    {
+      "id": "wl-qknitr",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
+      "acquiredAt": "2026-09-26T16:56:55.241Z",
+      "expiresAt": "2026-09-26T17:41:55.241Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
       ]
     }
   ]
