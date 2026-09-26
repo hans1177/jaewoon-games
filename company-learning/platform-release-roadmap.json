@@ -1,5 +1,5 @@
 {
-  "version": 448,
+  "version": 449,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8540,15 +8540,15 @@
     "gameControlRunnerPoolSeparation20260926": {
       "id": "GAME_CONTROL_RUNNER_POOL_SEPARATION_2026-09-26",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "objective": "START_NATIVE_GAME_PLANNERS_AND_DEDUPE_GUARDS_WITHOUT_WAITING_BEHIND_HEAVY_X64_GAME_WORKERS",
+      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE",
+      "objective": "KEEP_LIGHTWEIGHT_DEVELOPMENT_INGRESS_OFF_THE_SATURATED_ARM_GAME_CONTROL_QUEUE_WHILE_PRESERVING_HEAVY_EXECUTION_AND_QUALITY_GATES",
       "pools": {
         "gameControl": "ubuntu-24.04-arm",
         "administrativeControl": "ubuntu-slim",
-        "heavyGameExecution": "ubuntu-latest"
+        "heavyGameExecution": "ubuntu-latest",
+        "ingressControl": "ubuntu-slim"
       },
       "robloxGameControlJobs": [
-        "source-plan",
         "source-bootstrap",
         "technical-plan",
         "technical-persist"
@@ -8559,11 +8559,18 @@
       ],
       "privateRuntimeGuard": "ubuntu-24.04-arm",
       "privateRuntimePublish": "ubuntu-latest",
-      "unityPrepare": "ubuntu-24.04-arm",
+      "unityPrepare": "ubuntu-slim",
       "unityTechnicalValidation": "ubuntu-latest",
       "sharedStateWriteRulesUnchanged": true,
       "independentGameParallelismReduced": false,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "centralNativePlan": "ubuntu-slim",
+      "robloxIngressControlJobs": [
+        "source-plan"
+      ],
+      "vibe2Reserve": "ubuntu-slim",
+      "vibe2FanIn": "ubuntu-24.04-arm",
+      "directorRunnerDrain": "ubuntu-slim"
     },
     "lightweightGameIngressRunnerRelief20260927": {
       "id": "LIGHTWEIGHT_GAME_INGRESS_RUNNER_RELIEF_2026-09-27",
@@ -9020,6 +9027,53 @@
       "centralActiveRunDedupePreserved": true,
       "centralActiveRunDedupeRaceClosedByWorkflowConcurrency": true,
       "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "developmentIngressRunnerRelief20260927": {
+      "id": "DEVELOPMENT_INGRESS_RUNNER_RELIEF_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE",
+      "observedBeforeChange": {
+        "queuedWorkflowRuns": 105,
+        "robloxFirstJob": "resolve Roblox source work",
+        "unityFirstJob": "prepare selected-platform Unity queue",
+        "vibe2FirstJob": "reserve",
+        "centralFirstJob": "Resolve direct native development",
+        "blockedRunnerPool": "ubuntu-24.04-arm",
+        "slimControlEvidence": "Vibe2 24H Runner plan completed while downstream ARM reserve remained queued"
+      },
+      "ingressRunners": {
+        "centralNativePlan": "ubuntu-slim",
+        "robloxSourcePlan": "ubuntu-slim",
+        "unityPrepare": "ubuntu-slim",
+        "vibe2Reserve": "ubuntu-slim",
+        "directorRunnerDrain": "ubuntu-slim"
+      },
+      "retainedRunners": {
+        "vibe2FanIn": "ubuntu-24.04-arm",
+        "heavyGameExecution": "ubuntu-latest"
+      },
+      "wakeCoalescing": {
+        "centralMainPush": true,
+        "robloxPushBatch": true,
+        "unityPushBatch": true,
+        "cancelInProgress": false,
+        "exactGameDispatchParallelismPreserved": true
+      },
+      "centralPushTriggerNoiseReduction": {
+        "descriptiveArchitectureMapWakeRemoved": true,
+        "descriptiveLogMapWakeRemoved": true,
+        "qaOnlyWakeRemoved": true,
+        "runtimeAuthorityAndExecutableContractWakesPreserved": true
+      },
+      "directorDrain": {
+        "activeDrainCancellation": false,
+        "duplicateQueuedUnityBatchDrain": true,
+        "independentGameCancellationForbidden": true,
+        "inProgressGameCancellationForbidden": true
+      },
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "sharedStateConflictRulesUnchanged": true,
+      "noArtificialGlobalGameCountCap": true
     }
   },
   "vibeExecutionLaneContract": {
