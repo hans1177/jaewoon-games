@@ -2563,7 +2563,7 @@ test('Roblox queue projection uses Roblox design genre instead of generic catalo
 });
 
 
-test('backlog gate still binds one shared BUILD_UP directive to existing queued game work',()=>{
+test('backlog gate binds queued existing game work to platform-lane-specific BUILD_UP directives',()=>{
   const root=tempRepo();
   const gameId='backlog-build-up';
   for(const [dir,file,body] of [
@@ -2590,7 +2590,10 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
     }
   ];
   const result=planVibe2AutonomousTasks({
-    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    status:{projects:[
+      {gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80},
+      {gameId,ownerDecision:'PASS',target:'unity',projectPath:`unity-games/${gameId}`,progress:80}
+    ]},
     catalog:{games:[{id:gameId,name:'Backlog Build Up',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
     queue:{maxConcurrentTasks:20,tasks:queued},
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
@@ -2600,10 +2603,11 @@ test('backlog gate still binds one shared BUILD_UP directive to existing queued 
   assert.equal(result.buildUpDirectiveBackfillCount,2);
   const rows=result.queue.tasks.filter(row=>row.gameId===gameId);
   assert.equal(rows.length,2);
-  assert.equal(new Set(rows.map(row=>row.buildUpDirectiveId)).size,1);
+  assert.equal(new Set(rows.map(row=>row.buildUpDirectiveId)).size,2);
   assert.equal(rows[0].buildUpGeneration,1);
   assert.equal(rows[1].buildUpGeneration,1);
-  assert.deepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
+  assert.notDeepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
+  assert.deepEqual(new Set(rows.map(row=>row.buildUpPlatformLane)),new Set(['roblox','unity-native']));
   assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
   assert.ok(rows.every(row=>row.buildUpDirective.version===2));
   assert.ok(rows.every(row=>row.buildUpStatus==='DIRECTIVE_BOUND'));
