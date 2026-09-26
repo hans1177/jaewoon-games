@@ -219,6 +219,24 @@
         "VIBE2_MAIN_PUSH_WAKE_FRESH"
       ]
     },
+    "directorGamePrimaryFallbackWake": {
+      "enabled": true,
+      "workflow": ".github/workflows/director-supervisor.yml",
+      "trigger": "QUEUED_GAME_PRIMARY_AND_NO_ACTIVE_NON_PUSH_VIBE_CORE",
+      "completionWakeSource": "VIBE2_CONTINUOUS_CORE_WORKFLOW_RUN_COMPLETED",
+      "dispatchTarget": ".github/workflows/vibe2-continuous-core.yml",
+      "dispatchEvent": "WORKFLOW_DISPATCH",
+      "executionLane": "GAME_PRIMARY",
+      "laneMax": 256,
+      "existingQueuedTasksOnly": true,
+      "newSchedulerCreated": false,
+      "newQueueCreated": false,
+      "canonicalReservePathPreserved": true,
+      "activeNonPushCoreSuppressesFallbackDispatch": true,
+      "cancelledCoreCompletionSuppressed": true,
+      "responsibleFileConflictProtectionPreserved": true,
+      "qaAndReleaseAuthorityUnchanged": true
+    },
     "refillMode": "task-micro-fanin-repository-dispatch-with-five-minute-safety-net",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,
