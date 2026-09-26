@@ -1,5 +1,5 @@
 {
-  "version": 87,
+  "version": 88,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1239,7 +1239,22 @@
     ],
     "primaryCoverageMustRemainUnchangedWhenSuppressed": true,
     "suppressionIsNotFailure": true,
-    "automaticRecoveryExpected": true
+    "automaticRecoveryExpected": true,
+    "suppressionReasons": [
+      "ADAPTIVE_RUNNER_PRESSURE",
+      "LOW_EFFECTIVE_PEAK_UTILIZATION",
+      "ADAPTIVE_SEVERE_WORK_PRESSURE"
+    ],
+    "liveBackfillEvidence": {
+      "runId": 36229097447,
+      "averageWorkerQueueWaitSeconds": 1260,
+      "averageModelCacheRestoreSeconds": 25,
+      "averageCandidateGenerationSeconds": 546,
+      "priorControlReason": "LOW_LOAD",
+      "pressureLevel": "SEVERE",
+      "failureRatePct": 100,
+      "bottleneck": "SOURCE_CANDIDATE_GENERATION"
+    }
   },
   "vibeRunnerPressureCallbackCoalescing": {
     "version": 1,
