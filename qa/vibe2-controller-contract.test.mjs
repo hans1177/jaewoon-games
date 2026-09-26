@@ -342,6 +342,7 @@ test('worker decides local-model need only after sync, work order, and source lo
   const modelNeed=workerPart.indexOf('- name: Decide worker local model requirement');
   const cache=workerPart.indexOf('- name: Restore shared Ollama runtime cache');
   const prepare=workerPart.indexOf('- name: Prepare cached Ollama runtime');
+  const metrics=workerPart.indexOf('- name: Measure worker Ollama preparation');
   assert.ok(sync>=0);
   assert.ok(constitution>sync);
   assert.ok(order>constitution);
@@ -349,6 +350,7 @@ test('worker decides local-model need only after sync, work order, and source lo
   assert.ok(modelNeed>lock);
   assert.ok(cache>modelNeed);
   assert.ok(prepare>cache);
+  assert.ok(metrics>prepare);
   assert.ok(workerPart.includes('node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json'));
   assert.ok(workerPart.includes('verify-worker-sync'));
   assert.ok(workerPart.includes('--reservation-id="$RESERVATION_ID"'));
@@ -368,6 +370,10 @@ test('worker decides local-model need only after sync, work order, and source lo
   const practice=workerPart.indexOf('- name: Run isolated learning practice');
   const prepareBlock=workerPart.slice(prepare,practice);
   assert.match(prepareBlock,/if: steps\.model_need\.outputs\.required == 'true'/);
+  assert.match(prepareBlock,/uses: \.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
+  assert.match(prepareBlock,/pull-model: 'true'/);
+  assert.match(prepareBlock,/VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA/);
+  assert.equal(workerPart.includes('ollama.com/install.sh'),false);
   assert.match(workerPart,/MODEL_CACHE_REQUIRED: \${{ steps\.model_need\.outputs\.required }}/);
   assert.match(workerPart,/MODEL_CACHE_REASON: \${{ steps\.model_need\.outputs\.reason }}/);
   assert.match(workerPart,/modelCacheRequired:clean\(process\.env\.MODEL_CACHE_REQUIRED\)\.toLowerCase\(\)==='true'/);
