@@ -1,5 +1,5 @@
 {
-  "version": 251,
+  "version": 252,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5586,6 +5586,20 @@
       "duplicateCentralTestsRemoved": true,
       "responsibilityLocalChecksPreserved": true
     },
+    "runtimeCriticalPathWaitsForDuplicateQa": false,
+    "independentGameParallelismPreserved": true,
+    "qualityGateWeakening": false
+  },
+  "unityPlannerDuplicateContractQaRemoval": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityPlannerDuplicateContractQaRemoval20260927",
+    "canonicalQaWorkflow": ".github/workflows/company-central-policy-contract-qa.yml",
+    "prepareWorkflow": ".github/workflows/company-development-unity-runtime.yml",
+    "duplicateCentralTestsRemoved": true,
+    "responsibilityLocalTestsPreserved": true,
+    "staticSyntaxChecksPreserved": true,
+    "sharedContextCompilationPreserved": true,
+    "canonicalStageOrderPreserved": true,
     "runtimeCriticalPathWaitsForDuplicateQa": false,
     "independentGameParallelismPreserved": true,
     "qualityGateWeakening": false
