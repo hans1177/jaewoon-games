@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" role="img" aria-label="5포탈 RPG 던전 파티">
+<defs>
+ <radialGradient id="bg"><stop stop-color="#26345b"/><stop offset="1" stop-color="#090d1c"/></radialGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="13" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <filter id="shadow"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-opacity=".5"/></filter>
+</defs>
+<rect width="1920" height="1080" fill="url(#bg)"/>
+<path d="M0 870 290 600 520 760 760 510 1040 750 1320 450 1600 720 1920 520V1080H0Z" fill="#12182b"/>
+<circle cx="1510" cy="235" r="105" fill="#7f55d9" opacity=".28" filter="url(#glow)"/>
+<g transform="translate(1110 355)" stroke-width="18" fill="none" filter="url(#glow)">
+ <ellipse cx="0" cy="0" rx="90" ry="150" stroke="#ff6b58"/><ellipse cx="190" cy="-10" rx="90" ry="150" stroke="#f4bf48"/>
+ <ellipse cx="380" cy="0" rx="90" ry="150" stroke="#54c978"/><ellipse cx="570" cy="-10" rx="90" ry="150" stroke="#54a9ff"/>
+ <ellipse cx="760" cy="0" rx="90" ry="150" stroke="#b06cff"/>
+</g>
+<g fill="#060914" opacity=".94">
+ <path d="M1500 390c80-145 150-170 210-70l45 180-65-46-30 88-45-82-55 54Z"/>
+ <circle cx="1600" cy="285" r="48"/>
+</g>
+<g transform="translate(1020 760)" filter="url(#shadow)">
+ <circle cx="0" cy="-120" r="38" fill="#d6d9e5"/><path d="M-55-75h110l55 210H-110Z" fill="#40527e"/>
+ <path d="m40-65 245-260 30 27-232 285Z" fill="#d9d8d0"/><path d="m270-330 62-55-18 80Z" fill="#ffbe43"/>
+</g>
+<g transform="translate(1240 815)" fill="#2c3b66"><circle cx="0" cy="-90" r="30"/><path d="M-45-52h90l32 150H-77Z"/></g>
+<g transform="translate(1380 835)" fill="#354875"><circle cx="0" cy="-80" r="28"/><path d="M-42-45h84l28 138H-70Z"/></g>
+<rect x="60" y="70" width="900" height="330" rx="48" fill="#120f24" opacity=".93" stroke="#ae76ff" stroke-width="5"/>
+<text x="115" y="235" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="130" font-weight="900" fill="#ffd354" stroke="#4d1a0f" stroke-width="6" paint-order="stroke">5포탈 RPG</text>
+<text x="115" y="335" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="58" font-weight="800" fill="#fff">던전 파티 · 클래스 성장 · 보스 공략</text>
+<rect x="80" y="835" width="600" height="112" rx="32" fill="#5b3da4" stroke="#fff" stroke-width="4"/>
+<text x="380" y="907" text-anchor="middle" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="46" font-weight="800" fill="#fff">친구와 파티를 꾸려 5개 던전 돌파</text>
+</svg>
