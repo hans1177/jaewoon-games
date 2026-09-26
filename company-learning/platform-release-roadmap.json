@@ -1,5 +1,5 @@
 {
-  "version": 447,
+  "version": 448,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8966,6 +8966,30 @@
       "mobileActualPlayStillRequired": true,
       "releaseAuthorityUnchanged": true,
       "duplicateValidationRemoved": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "nativeExactGameWorkflowConcurrency20260927": {
+      "id": "NATIVE_EXACT_GAME_WORKFLOW_CONCURRENCY_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "PREVENT_RACE_DUPLICATE_HEAVY_NATIVE_EXECUTION_FOR_THE_SAME_GAME_WITHOUT_SERIALIZING_DISTINCT_GAMES_OR_BATCH_RUNS",
+      "workflows": {
+        "ROBLOX": ".github/workflows/company-development-roblox-runtime.yml",
+        "UNITY": ".github/workflows/company-development-unity-runtime.yml"
+      },
+      "groups": {
+        "ROBLOX": "roblox-native-exact-<gameId-or-runId>",
+        "UNITY": "unity-native-exact-<gameId-or-runId>"
+      },
+      "exactGameIdentity": "inputs.game_id",
+      "batchAndPushFallbackIdentity": "github.run_id",
+      "cancelInProgress": false,
+      "runningExactGameMayCancel": false,
+      "distinctGamesParallel": true,
+      "batchRunsGloballySerialized": false,
+      "globalNativeSerializationForbidden": true,
+      "centralActiveRunDedupePreserved": true,
+      "centralActiveRunDedupeRaceClosedByWorkflowConcurrency": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },
