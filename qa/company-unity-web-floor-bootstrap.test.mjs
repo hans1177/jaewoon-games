@@ -147,3 +147,9 @@ test('Unity Web floor bootstrap runs per game without a global workflow serializ
   assert.doesNotMatch(workflow,/for\(const gameId of ids\)/);
   assert.match(workflow,/git add "unity-games\/\$GAME_ID"/);
 });
+
+test('Unity Web source bootstrap uses slim control capacity',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  assert.match(workflow,/\n  bootstrap:\n\s+runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
+});

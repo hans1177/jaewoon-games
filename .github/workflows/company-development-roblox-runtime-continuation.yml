@@ -23,7 +23,7 @@ jobs:
     concurrency:
       group: roblox-shared-preflight-plan-${{ inputs.game_id || 'batch' }}
       cancel-in-progress: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count }}
@@ -199,7 +199,7 @@ jobs:
     name: persist Roblox shared-model preflight checkpoints
     needs: [preflight-plan, preflight-worker]
     if: always() && needs.preflight-plan.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 12
     outputs:
       pass_count: ${{ steps.persist.outputs.pass_count }}
@@ -310,7 +310,7 @@ jobs:
     name: dispatch Roblox F0 source preflight
     needs: [preflight-plan, preflight-persist]
     if: always() && needs.preflight-persist.result == 'success' && (needs.preflight-plan.outputs.f0_ready_count != '0' || needs.preflight-persist.outputs.pass_count != '0')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
         with:

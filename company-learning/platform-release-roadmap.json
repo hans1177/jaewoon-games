@@ -1,5 +1,5 @@
 {
-  "version": 430,
+  "version": 431,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8621,6 +8621,32 @@
       "superviseCancelInProgress": false,
       "sharedStateWriterCancellationChurnForbidden": true,
       "independentGameRunCancellationForbidden": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "nativeControlRunnerIsolationExpansion20260927": {
+      "id": "NATIVE_CONTROL_RUNNER_ISOLATION_EXPANSION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "KEEP_NATIVE_GAME_BUILD_MODEL_AND_RUNTIME_CAPACITY_FOR_HEAVY_WORK_ONLY",
+      "robloxContinuation": {
+        "workflow": ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        "slimJobs": [
+          "preflight-plan",
+          "preflight-persist",
+          "dispatch-headless"
+        ],
+        "fullRunnerJobs": [
+          "preflight-worker"
+        ]
+      },
+      "unityWebBootstrap": {
+        "workflow": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+        "runner": "ubuntu-slim",
+        "role": "SOURCE_GENERATION_AND_PR_CONTROL_ONLY"
+      },
+      "heavyBuildOrModelRunnerReduced": false,
+      "independentGameParallelismPreserved": true,
+      "sharedStateWriterRulesPreserved": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },
@@ -21170,7 +21196,7 @@
         "existingHomepageAndRecordsPathScopesPreserved": true
       },
       "controlPlaneRunnerIsolation": {
-        "version": 3,
+        "version": 4,
         "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
         "runner": "ubuntu-slim",
         "workflows": [
@@ -21181,7 +21207,9 @@
           ".github/workflows/company-development-queue-reconcile.yml",
           ".github/workflows/company-design-promotion-sync.yml",
           ".github/workflows/company-platform-exposure-sync.yml",
-          ".github/workflows/vibe2-recovery-fast.yml"
+          ".github/workflows/vibe2-recovery-fast.yml",
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          ".github/workflows/unity-web-floor-source-bootstrap.yml"
         ],
         "purpose": "KEEP_NONBLOCKING_ADMINISTRATIVE_VALIDATION_OFF_GAME_PRIMARY_UBUNTU_LATEST_CAPACITY",
         "productQualityGateWeakening": false,
@@ -21189,7 +21217,8 @@
         "gamePrimaryWorkerSlotsProtected": true,
         "systemAiReserveAndFanInSlim": true,
         "seedDesignNonModelControlJobsSlim": true,
-        "heavyGameAndModelWorkersRemainFullRunner": true
+        "heavyGameAndModelWorkersRemainFullRunner": true,
+        "nativeHeavyWorkerSplit": true
       },
       "latestHeadControlPlaneDedupe": {
         "version": 1,

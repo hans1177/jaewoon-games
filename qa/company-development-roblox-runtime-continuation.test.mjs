@@ -130,3 +130,17 @@ test('continuation planner job collapses duplicate same-game dispatches without 
   assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(workflow,/preflight-plan:[\s\S]{0,220}group: roblox-shared-preflight-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
 });
+
+test('continuation control jobs use slim runners while model preflight stays on full game capacity',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  const section=(name,next)=>{
+    const start=workflow.indexOf('\n  '+name+':\n');
+    assert.ok(start>=0,name);
+    const end=next?workflow.indexOf('\n  '+next+':\n',start):workflow.length;
+    return workflow.slice(start,end);
+  };
+  assert.match(section('preflight-plan','preflight-worker'),/runs-on:\s*ubuntu-slim/);
+  assert.match(section('preflight-worker','preflight-persist'),/runs-on:\s*ubuntu-latest/);
+  assert.match(section('preflight-persist','dispatch-headless'),/runs-on:\s*ubuntu-slim/);
+  assert.match(section('dispatch-headless',null),/runs-on:\s*ubuntu-slim/);
+});

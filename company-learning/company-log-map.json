@@ -1,5 +1,5 @@
 {
-  "version": 106,
+  "version": 107,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1938,5 +1938,18 @@
     "preservedCompletionJob": "supervise",
     "expectedSupersededConclusion": "cancelled",
     "independentGameCancellationForbidden": true
+  },
+  "nativeControlRunnerIsolationEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "expectedRunnerLabels": {
+      "robloxPreflightPlan": "ubuntu-slim",
+      "robloxPreflightWorker": "ubuntu-latest",
+      "robloxPreflightPersist": "ubuntu-slim",
+      "robloxDispatchHeadless": "ubuntu-slim",
+      "unityWebSourceBootstrap": "ubuntu-slim"
+    },
+    "heavyGameRunnerClaimUnchanged": true,
+    "acceptanceGatesUnchanged": true
   }
 }

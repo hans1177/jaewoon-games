@@ -1,5 +1,5 @@
 {
-  "version": 241,
+  "version": 242,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5457,5 +5457,18 @@
       "completionPreserved": true
     },
     "gameWorkCancellation": false
+  },
+  "nativeControlRunnerIsolationExpansion": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeControlRunnerIsolationExpansion20260927",
+    "robloxContinuation": {
+      "preflightPlan": "ubuntu-slim",
+      "preflightWorker": "ubuntu-latest",
+      "preflightPersist": "ubuntu-slim",
+      "dispatchHeadless": "ubuntu-slim"
+    },
+    "unityWebSourceBootstrap": "ubuntu-slim",
+    "gameHeavyCapacityReserved": true,
+    "gameParallelismReduced": false
   }
 }
