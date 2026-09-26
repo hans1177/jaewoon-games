@@ -1,5 +1,5 @@
 {
-  "version": 67,
+  "version": 68,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1266,6 +1266,24 @@
     "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
     "gamePrimaryBoundaryMustRemain": 256,
     "productionMustNotWaitForLearningReserve": true,
-    "directWorkerControlWriteForbidden": true
+    "directWorkerControlWriteForbidden": true,
+    "liveVerification": {
+      "runId": 36204978877,
+      "stalePreV2RunId": 36204043933,
+      "markers": {
+        "runnerPressureObservation": "PASS",
+        "runnerQueuePressure": 9,
+        "learningIdleDeferred": "RUNNER_PRESSURE",
+        "freeGameWorkerSlots": 235,
+        "gameRefillReady": "YES",
+        "gamePrimaryQueued": 4,
+        "recoveryFastQueued": 3
+      },
+      "reserveResults": {
+        "recoveryFast": "PASS",
+        "gamePrimary": "PASS"
+      },
+      "nextBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE"
+    }
   }
 }
