@@ -15,9 +15,7 @@
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
-  "generatedFiles": [
-    "shared/GameConfig.luau"
-  ],
+  "generatedFiles": [],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
@@ -26,6 +24,7 @@
   "recombinationRecipeId": null,
   "studioAssetBinding": {
     "version": 3,
+    "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
     "libraryVersion": 18,
@@ -169,12 +168,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "seed-single-defense-strat-celestial-bastion-build-up-g1-bb8763a752ed",
+  "buildUpDirectiveId": "seed-single-defense-strat-celestial-bastion-build-up-g1-b3b1011b220a",
   "buildUpGeneration": 1,
-  "buildUpGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "buildUpDirectiveFingerprint": "bb8763a752ed29787b716d258a4c7f5fd8c588c2432031c996503a4f7c1f9caa",
+  "buildUpGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+  "buildUpDirectiveFingerprint": "b3b1011b220a33626e55776c48d2c0e78eea23c4a361e845d61f9dc9fcac986d",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-26T03:44:33.994Z"
+  "createdAt": "2026-09-26T12:30:54.585Z"
 }
