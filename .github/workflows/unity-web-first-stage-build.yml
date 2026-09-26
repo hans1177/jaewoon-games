@@ -210,6 +210,21 @@ jobs:
           console.log('UNITY_WEB_CANONICAL_SOURCE_TREE_SHA256='+digest);
           NODE
 
+      - name: Cache Unity Web Library
+        id: library_cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.request.outputs.project_path }}/Library
+          key: unity-web-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-${{ hashFiles(format('{0}/Packages/manifest.json', steps.request.outputs.project_path), format('{0}/ProjectSettings/ProjectVersion.txt', steps.request.outputs.project_path)) }}
+          restore-keys: |
+            unity-web-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-
+
+      - name: Record Unity Web Library cache decision
+        shell: bash
+        run: |
+          echo "UNITY_WEB_LIBRARY_CACHE_HIT=${{ steps.library_cache.outputs.cache-hit }}"
+          echo "UNITY_WEB_LIBRARY_CACHE_GAME=${{ steps.request.outputs.game_id }}"
+
       - name: Verify Unity credentials
         shell: bash
         env:
