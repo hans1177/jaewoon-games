@@ -1,5 +1,5 @@
 {
-  "version": 124,
+  "version": 125,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1832,7 +1832,7 @@
     ],
     "cancelledRunReasonRequired": true,
     "independentGameCancellationForbidden": true,
-    "runnerLabel": "ubuntu-24.04-arm",
+    "runnerLabel": "ubuntu-slim",
     "staleLegacyOrBatchReason": "ROBLOX_STALE_LEGACY_OR_BATCH",
     "staleThresholdMinutes": 15,
     "scanPagesMax": null,
@@ -1848,7 +1848,7 @@
       "designPromotionSync": "ubuntu-slim",
       "platformExposureSync": "ubuntu-slim",
       "recoveryFast": "ubuntu-slim",
-      "directorDrain": "ubuntu-24.04-arm",
+      "directorDrain": "ubuntu-slim",
       "directorGate": "ubuntu-slim",
       "directorSupervise": "ubuntu-slim"
     },
@@ -1888,14 +1888,19 @@
     "version": 1,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "expectedRunnerLabels": {
+      "robloxIngress": "ubuntu-slim",
       "robloxControl": "ubuntu-24.04-arm",
       "robloxHeavy": "ubuntu-latest",
       "privateRuntimeDedupe": "ubuntu-24.04-arm",
       "privateRuntimePublish": "ubuntu-latest",
-      "unityPrepare": "ubuntu-24.04-arm",
-      "unityTechnicalValidation": "ubuntu-latest"
+      "unityPrepare": "ubuntu-slim",
+      "unityTechnicalValidation": "ubuntu-latest",
+      "centralNativePlan": "ubuntu-slim",
+      "vibe2Reserve": "ubuntu-slim",
+      "vibe2FanIn": "ubuntu-24.04-arm",
+      "directorDrain": "ubuntu-slim"
     },
-    "purpose": "PREVENT_GAME_CONTROL_AND_DEDUPE_FROM_WAITING_BEHIND_HEAVY_GAME_EXECUTION",
+    "purpose": "START_LIGHTWEIGHT_DEVELOPMENT_INGRESS_WITHOUT_WAITING_BEHIND_ARM_OR_HEAVY_GAME_EXECUTION",
     "gateSemanticsUnchanged": true
   },
   "homepageRunnerIsolationEvidence": {
@@ -1992,7 +1997,7 @@
     "qualitySecurityReleaseEvidenceUnchanged": true,
     "partialLaneScanAccepted": false,
     "expectedRunnerLabels": {
-      "centralNativePlan": "ubuntu-24.04-arm",
+      "centralNativePlan": "ubuntu-slim",
       "unityWebHeavyExecution": "ubuntu-latest"
     },
     "duplicateRuntimeAuditPresent": false,
@@ -2183,5 +2188,36 @@
       "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
     ],
     "qualitySecurityReleaseEvidenceUnchanged": true
+  },
+  "developmentIngressRunnerReliefEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentIngressRunnerRelief20260927",
+    "observedBeforeChange": {
+      "queuedWorkflowRuns": 105,
+      "armIngressQueueObserved": true,
+      "slimPlannerCompletionObserved": true
+    },
+    "expectedRunnerLabels": {
+      "centralNativePlan": "ubuntu-slim",
+      "robloxSourcePlan": "ubuntu-slim",
+      "unityPrepare": "ubuntu-slim",
+      "vibe2Reserve": "ubuntu-slim",
+      "directorRunnerDrain": "ubuntu-slim",
+      "vibe2FanIn": "ubuntu-24.04-arm",
+      "heavyGameExecution": "ubuntu-latest"
+    },
+    "expectedConcurrency": {
+      "centralMainPushCoalesced": true,
+      "robloxBatchPushCoalesced": true,
+      "unityBatchPushCoalesced": true,
+      "cancelInProgress": false
+    },
+    "expectedDrainBehavior": {
+      "duplicateQueuedUnityBatch": true,
+      "independentGameCancellationForbidden": true,
+      "inProgressGameCancellationForbidden": true
+    },
+    "qualityGateSemanticsUnchanged": true
   }
 }
