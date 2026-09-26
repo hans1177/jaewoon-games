@@ -8,13 +8,16 @@ local AssetService=game:GetService("AssetService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
-local store=DSS:GetDataStore("midnight-tag-v3")
+local store
+pcall(function()store=DSS:GetDataStore("midnight-tag-v3")end)
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
-local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
+local qaCaptureStore
+pcall(function()qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")end)
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
-local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")
+local foundationStore
+pcall(function()foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")end)
 local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
 foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
 local qaCaptureLast={}
@@ -57,6 +60,7 @@ local escapedPlayers={}
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
 local function loadFoundationState()
+ if not foundationStore then return end
  local ok,old=pcall(function()return foundationStore:GetAsync("latest")end)
  if not ok or typeof(old)~="table"then return end
  if tostring(old.gameId or"")~=tostring(C.GameId)or tonumber(old.placeId)~=game.PlaceId or tonumber(old.placeVersion)~=game.PlaceVersion then return end
@@ -69,6 +73,11 @@ local function loadFoundationState()
 end
 local function foundationCheckpoint(name,p,extra)
  if foundationSeen[name]then return true end
+ if not foundationStore then
+  foundationSeen[name]=true
+  workspace:SetAttribute("Foundation_"..name,true)
+  return true
+ end
  local payload={name=name,at=os.time(),userId=p and p.UserId or 0,gameId=C.GameId,placeId=tostring(game.PlaceId),placeVersion=game.PlaceVersion}
  if typeof(extra)=="table"then for k,v in pairs(extra)do if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then payload[k]=v end end end
  local committedSequence=foundationSequence
