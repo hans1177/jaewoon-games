@@ -243,7 +243,26 @@ test('central development planner keeps duplicate contract QA off the game dispa
   assert.match(development,/Audit central development contracts without blocking game dispatch/);
   assert.match(development,/active-roblox-native-runs\.json &/);
   assert.match(development,/active-unity-native-runs\.json &/);
-  assert.match(development,/wait "\$roblox_scan_pid" "\$unity_scan_pid"/);
+  assert.match(development,/wait "\$roblox_scan_pid" \|\| roblox_scan_status=\$\?/);
+  assert.match(development,/wait "\$unity_scan_pid" \|\| unity_scan_status=\$\?/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=FAIL:ROBLOX=/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=PASS/);
+});
+
+test('central policy architecture and log maps bind the development floor parallel repair',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const change=roadmap.changeRecord?.developmentFloorParallelBottleneckRepair20260927;
+  assert.equal(change?.centralPlanner?.gameDispatchWaitsForContractAudit,false);
+  assert.equal(change?.centralPlanner?.activeRobloxAndUnityRunScansParallel,true);
+  assert.equal(change?.unityWebPerGameConcurrency?.independentGamesRemainParallel,true);
+  assert.equal(change?.unityWebPerGameConcurrency?.globalUnityWebSerializationForbidden,true);
+  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
+  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.centralPlanner?.blockingScope,'ADMISSION_CRITICAL_ONLY');
+  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.independentGameParallelism,true);
+  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.contractAuditMayBlockGameDispatch,false);
+  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.independentGameParallelismRequired,true);
 });
 
 test('Unity Web floor serializes only the same game while independent games remain parallel',()=>{
