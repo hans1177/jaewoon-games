@@ -78,6 +78,7 @@ jobs:
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
+      model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
     steps:
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
@@ -451,14 +452,38 @@ jobs:
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
 
+      - name: Probe shared Ollama cache from reserve runner
+        id: ollama_cache_probe
+        if: steps.batch.outputs.worker_count != '0'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v3-Linux-qwen3-1.7b
+          lookup-only: true
+
+      - name: Record reserve model cache decision
+        if: steps.batch.outputs.worker_count != '0'
+        shell: bash
+        run: |
+          echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
+          echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=${{ steps.ollama_cache_probe.outputs.cache-hit }}"
+          if [ "${{ steps.ollama_cache_probe.outputs.cache-hit }}" = 'true' ]; then
+            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT'
+          else
+            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
+          fi
+
   model_cache:
     needs: reserve
-    if: needs.reserve.outputs.worker_count != '0'
+    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     continue-on-error: true
     steps:
-      - name: Probe or persist shared Ollama runtime cache
+      - name: Recheck or persist shared Ollama runtime cache
         id: ollama_cache
         uses: actions/cache@v4
         with:
@@ -474,6 +499,7 @@ jobs:
         run: |
           echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES'
           echo "VIBE2_MODEL_CACHE_WARMUP_HIT=${{ steps.ollama_cache.outputs.cache-hit }}"
+          echo 'VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS'
 
       - name: Warm local coding model once on cache miss
         if: steps.ollama_cache.outputs.cache-hit != 'true'

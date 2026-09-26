@@ -1,5 +1,5 @@
 {
-  "version": 396,
+  "version": 397,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3207,7 +3207,8 @@
           "lastLanePressureLiveVerificationRun": 36204978877,
           "lastLanePressureLiveVerificationResult": "PASS",
           "modelCacheHitRestoreRelief": "IMPLEMENTED_PENDING_QA_AND_LIVE",
-          "modelCacheWarmupProbe": "LOOKUP_ONLY_ON_HIT"
+          "modelCacheWarmupProbe": "RESERVE_LOOKUP_ONLY_ON_HIT",
+          "modelCacheWarmupRunnerRelief": "SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT"
         },
         "incidentHistory": [
           {
@@ -7616,15 +7617,21 @@
         "cacheRestoreObserved": "FULL_RESTORE_ON_HIT",
         "observedRestoreWindow": "2026-09-26T00:31:52Z_TO_2026-09-26T00:32:23Z"
       },
-      "change": "MODEL_CACHE_PREWARM_JOB_USES_LOOKUP_ONLY_PROBE_ON_HIT_AND_WARMS_ONLY_ON_MISS",
+      "change": "RESERVE_JOB_PROBES_CACHE_LOOKUP_ONLY_AND_MODEL_CACHE_JOB_RUNS_ONLY_ON_RESERVE_CACHE_MISS",
       "workerCacheRestoreBehavior": "UNCHANGED_FULL_RESTORE_PER_ISOLATED_WORKER_RUNNER",
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryBoundaryUnchanged": true,
       "qaSecurityReleaseAuthorityChanged": false,
       "requiredEvidence": [
-        "VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES",
-        "VIBE2_MODEL_CACHE_WARMUP_HIT="
+        "VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES",
+        "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=",
+        "VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT|RUN_CACHE_MISS"
       ],
+      "reserveCacheProbe": "LOOKUP_ONLY",
+      "modelCacheJobOnReserveHit": "SKIPPED_WITHOUT_RUNNER",
+      "modelCacheJobOnReserveMiss": "RUN_EXISTING_WARM_AND_PERSIST",
+      "workerNeedsRelationship": "UNCHANGED_WITH_ALWAYS_SEMANTICS_SO_SKIPPED_PREWARM_DOES_NOT_BLOCK_WORKERS",
+      "dedicatedWarmupRunnerRequiredOnCacheHit": false,
       "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
     },
     "robloxNativeNonblockingStudioPlanner20260926": {
