@@ -29,14 +29,14 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(prePlan.workerWorkflow,'.github/workflows/vibe2-continuous-core.yml');
   assert.equal(prePlan.dispatchMode,'WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER');
   assert.equal(prePlan.preservesCanonicalReservation,true);
-  const architecturePrePlan=architectureWave.prePlanGamePrimaryRefill||{};
-  assert.equal(architecturePrePlan.enabled,true);
-  assert.equal(architecturePrePlan.fullPlannerCompletionRequiredBeforeDispatch,false);
-  assert.equal(architecturePrePlan.canonicalReservationAndConflictRulesPreserved,true);
   assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY');
   assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY');
   assert.equal(runtime.adaptiveBackpressure.primaryReservationDownshiftAllowed,false);
   const architectureWave=architecture.neuralWorkGraphTopology.currentWaveExecution;
+  const architecturePrePlan=architectureWave.prePlanGamePrimaryRefill||{};
+  assert.equal(architecturePrePlan.enabled,true);
+  assert.equal(architecturePrePlan.fullPlannerCompletionRequiredBeforeDispatch,false);
+  assert.equal(architecturePrePlan.canonicalReservationAndConflictRulesPreserved,true);
   assert.equal(architectureWave.gamePrimaryActiveExecutionCap,'ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT');
   assert.equal(architectureWave.externalSpareBeyond30,'AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP');
   assert.match(architectureWave.adaptiveControl,/PRESSURE_FLOOR_30/);
