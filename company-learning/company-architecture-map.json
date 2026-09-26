@@ -1,5 +1,5 @@
 {
-  "version": 213,
+  "version": 214,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -431,7 +431,7 @@
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerSynchronization": {
-    "version": 2,
+    "version": 3,
     "documentIsCode": true,
     "roadmapFirst": true,
     "validator": "tools/company-shared-context.mjs",
@@ -454,7 +454,12 @@
     "centralDocumentationContract": "company-learning/platform-release-roadmap.json#centralDocumentation",
     "currentMainPolicyShaBindingRequired": true,
     "afterWorkSharedContextRevalidationRequired": true,
-    "postCentralDocumentWriteResyncRequired": true
+    "postCentralDocumentWriteResyncRequired": true,
+    "fanInPinnedContractRoot": "$GITHUB_WORKSPACE/vibe2-contract",
+    "fanInRuntimeDesignOverlaySource": "company-runtime:design,game-seed-state.json",
+    "fanInRuntimeDesignOverlayRoot": "PINNED_CONTRACT_ROOT",
+    "fanInReserveJobTempRootReuseForbidden": true,
+    "fanInRegressionAndReviewUseSamePinnedContractRoot": true
   },
   "longHorizonTopology": {
     "version": 2,
