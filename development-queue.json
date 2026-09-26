@@ -5054,7 +5054,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T03:55:50.037Z",
+      "updatedAt": "2026-09-26T03:55:53.775Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5457,7 +5457,27 @@
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:21:04.387Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:21:04.387Z",
+      "robloxPublicationTarget": {
+        "version": 3,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "universeId": "10768075882",
+        "placeId": "134878355589659",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-canonical-publication-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-09-26T03:55:53.775Z"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -8146,7 +8166,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-26T03:55:50.037Z",
+  "updatedAt": "2026-09-26T03:55:53.775Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
