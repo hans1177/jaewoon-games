@@ -1464,16 +1464,6 @@
       ]
     },
     {
-      "id": "gap-level_design-l1",
-      "kind": "LEVEL_DESIGN_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "LEVEL_DESIGN"
-      ]
-    },
-    {
       "id": "gap-living_motion-l1",
       "kind": "MOTION_CONTINUITY_DRILL",
       "priority": "low",
@@ -1634,16 +1624,6 @@
       ]
     },
     {
-      "id": "gap-route_design-l1",
-      "kind": "ROUTE_DESIGN_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ROUTE_DESIGN"
-      ]
-    },
-    {
       "id": "gap-streaming-l1",
       "kind": "STREAMING_OPTIMIZATION_DRILL",
       "priority": "low",
@@ -1764,6 +1744,26 @@
       ]
     },
     {
+      "id": "gap-level_design-l2",
+      "kind": "LEVEL_DESIGN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "LEVEL_DESIGN"
+      ]
+    },
+    {
+      "id": "gap-route_design-l2",
+      "kind": "ROUTE_DESIGN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROUTE_DESIGN"
+      ]
+    },
+    {
       "id": "gap-storytelling-l2",
       "kind": "NARRATIVE_STRUCTURE_DRILL",
       "priority": "low",
@@ -1784,16 +1784,6 @@
       ]
     },
     {
-      "id": "gap-concept_direction-l5",
-      "kind": "CONCEPT_DIRECTION_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CONCEPT_DIRECTION"
-      ]
-    },
-    {
       "id": "gap-security-l5",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1811,6 +1801,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ASSET_ADAPTATION"
+      ]
+    },
+    {
+      "id": "gap-concept_direction-l6",
+      "kind": "CONCEPT_DIRECTION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CONCEPT_DIRECTION"
       ]
     },
     {
