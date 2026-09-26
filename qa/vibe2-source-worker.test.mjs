@@ -1264,6 +1264,45 @@ test('missing edit path is recovered from the unique responsible source match wi
   assert.match(fs.readFileSync(path.join(cwd,root,client),'utf8'),/visualState = 1/);
 });
 
+test('exact responsible path line locator is normalized without widening writes', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'line-locator.json');
+  const root='unity-games/demo';
+  const relative='Assets/Scripts/UnityWebFloorGame.cs';
+  const responsible=`${root}/${relative}`;
+  const workOrder=order({target:'unity',root,responsibleFiles:[responsible],taskId:'line-locator-normalization'});
+  write(path.join(cwd,responsible),'class UnityWebFloorGame { int Speed = 1; }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({
+    edits:[{path:`${relative}:141`,find:'int Speed = 1;',replace:'int Speed = 2;'}],
+    newFiles:[]
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.deepEqual(result.changedFiles,[relative]);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8'),/Speed = 2/);
+  assert.match(fs.readFileSync(path.join(cwd,responsible),'utf8'),/Speed = 1/);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/lineLocator&&responsibleFiles\.includes\(lineLocator\[1\]\)/);
+});
+
+test('line locator cannot widen the responsible file boundary', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'line-locator-outside.json');
+  const root='unity-games/demo';
+  const responsible='Assets/Scripts/GameCore.cs';
+  const outside='Assets/Scripts/UnityWebFloorGame.cs';
+  const workOrder=order({target:'unity',root,responsibleFiles:[`${root}/${responsible}`],taskId:'line-locator-boundary'});
+  write(path.join(cwd,root,responsible),'class GameCore { int Speed = 1; }\n');
+  write(path.join(cwd,root,outside),'class UnityWebFloorGame { int Speed = 1; }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({
+    edits:[{path:`${outside}:149`,find:'int Speed = 1;',replace:'int Speed = 2;'}],
+    newFiles:[]
+  }));
+  await assert.rejects(()=>runVibe2SourceWorker({cwd,responseFile}),/텍스트 worker 허용 확장자 아님|책임 파일 범위 밖 수정 금지/);
+  assert.match(fs.readFileSync(path.join(cwd,root,outside),'utf8'),/Speed = 1/);
+});
+
 test('system architecture worker filters control metadata from source context without widening writes', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
