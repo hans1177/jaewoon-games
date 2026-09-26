@@ -2862,7 +2862,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T14:16:17.399Z",
+      "updatedAt": "2026-09-26T14:19:12.780Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3075,14 +3075,52 @@
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 2,
+        "gameId": "cozy-island",
+        "sourceRevision": "98d560d1e81ef42b49d29077dd44ff0c59814030",
+        "artifactIdentity": "sha256:d5b381a729ddd0d1ecb1d1e2ae1c619854546cc35ca23ecc85dcfc0067dc66a5",
+        "artifactRunId": 36238682627,
+        "universeId": "10767445741",
+        "placeId": "116850096561713",
+        "candidateVersionNumber": 23,
+        "expectedVersionNumber": 23,
+        "observedVersionNumber": 22,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": false,
+        "exactEngineVersion": true,
+        "engineExecuted": true,
+        "simulationRunning": false,
+        "serverBootObserved": false,
+        "blockers": [
+          "exactVersion",
+          "checkpointOrder",
+          "checkpoint:SERVER_BOOT",
+          "checkpoint:MODULE_GRAPH_READY",
+          "checkpoint:WORLD_READY",
+          "checkpoint:SPAWN_READY",
+          "checkpoint:CHARACTER_READY",
+          "checkpoint:GROUND_CONTACT",
+          "checkpoint:CAMERA_READY",
+          "checkpoint:INPUT_READY",
+          "checkpoint:MOVEMENT_CONFIRMED",
+          "checkpoint:REMOTE_ROUNDTRIP",
+          "checkpoint:CORE_LOOP_READY",
+          "checkpoint:SAVE_ROUNDTRIP",
+          "checkpoint:MULTIPLAYER_SYNC"
+        ],
+        "observedAt": "2026-09-26T14:19:12.780Z",
+        "workflowRunId": 36247941800,
+        "authority": "exact-engine-version-awaiting-real-server-boot"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -3105,9 +3143,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-runtime-foundation-awaiting-real-server-boot"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -3359,7 +3397,8 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD"
+      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T14:19:12.780Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -7449,7 +7488,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-26T14:19:01.023Z",
+  "updatedAt": "2026-09-26T14:19:12.780Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
