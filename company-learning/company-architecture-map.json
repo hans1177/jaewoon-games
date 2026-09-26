@@ -1,5 +1,5 @@
 {
-  "version": 219,
+  "version": 220,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -525,7 +525,7 @@
     }
   },
   "neuralWorkGraphTopology": {
-    "version": 4,
+    "version": 5,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
     "currentState": "ALWAYS_RUNNING_ATOMIC_SIGNAL_MESH_WITH_VIBE_SYNCED_WORKERS",
@@ -1866,6 +1866,21 @@
       "positiveGrowthRequiresVerifiedEvidence": true,
       "strongerThanHumanReferenceRequiresMatchedBenchmarkEvidence": true,
       "selfModelUpdatesFromEvidenceOnly": true,
+      "authorityExpansion": false
+    },
+    "schedulerSelectionOrder": {
+      "version": 1,
+      "source": "company-learning/platform-release-roadmap.json#changeRecord.holisticWorkerMatrixPriorityOrderRepair20260926",
+      "selector": "assets/vibe-continuous-queue.js::selectVibeQueueBatch",
+      "reservation": "assets/vibe-continuous-queue.js::beginVibeQueueBatch",
+      "matrixCompiler": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
+      "orderContract": "SCHEDULER_SCORE_ORDER_PRESERVED_END_TO_END",
+      "persistentQueueOrderMayOverrideSelection": false,
+      "matrixMayResortSelectedTasks": false,
+      "liveEvidence": {
+        "runId": 36229097447,
+        "reservationId": "36229097447:1"
+      },
       "authorityExpansion": false
     }
   },
