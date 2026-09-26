@@ -1030,3 +1030,12 @@ test('duplicate administrative QA keeps only the latest same-ref validation',()=
   const parallelism=readText('.github/workflows/vibe2-parallelism-contract-qa.yml');
   assert.match(parallelism,/runs-on:\s*ubuntu-slim/);
 });
+
+
+test('director supervisor runner drain remains structurally valid and jobs are unique',()=>{
+  assert.equal((directorSupervisor.match(/\n  runner-drain:\n/g)||[]).length,1);
+  assert.equal((directorSupervisor.match(/\n  game-primary-gate:\n/g)||[]).length,1);
+  assert.equal((directorSupervisor.match(/\n  supervise:\n/g)||[]).length,1);
+  assert.match(directorSupervisor,/while IFS=\$'\\t' read -r run_id reason; do/);
+  assert.doesNotMatch(directorSupervisor,/while IFS=\s+outputs:/);
+});
