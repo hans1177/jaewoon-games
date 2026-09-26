@@ -302,6 +302,17 @@ test('controller pins each isolated candidate to the reserve-time main contract 
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
+test('candidate publication precreates the remote ref at the pinned base before pushing task source',()=>{
+  const refCreate=workflow.indexOf('"https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs"');
+  const push=workflow.indexOf('git push origin "HEAD:$candidate_branch"');
+  assert.ok(refCreate>=0&&push>refCreate);
+  assert(workflow.includes('--arg sha "$base_sha"'));
+  assert(workflow.includes('--arg ref "refs/heads/$candidate_branch"'));
+  assert(workflow.includes('failure_class=CANDIDATE_BRANCH_PUBLISH'));
+  assert(workflow.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/$candidate_branch"'));
+  assert(!workflow.includes('workflow: write'));
+});
+
 test('reserve probes model cache lookup-only and skips the dedicated warmup runner on hit',()=>{
   const reserveStart=workflow.indexOf('\n  reserve:');
   const modelStart=workflow.indexOf('\n  model_cache:',reserveStart);
