@@ -1,5 +1,5 @@
 {
-  "version": 111,
+  "version": 112,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1992,6 +1992,10 @@
     "staleWakeControlStateWriteForbidden": true,
     "staleWakeGameWorkerFanoutForbidden": true,
     "activeGameWorkerCancellationForbidden": true,
-    "callbackIngressEvidenceUnchanged": true
+    "callbackIngressEvidenceUnchanged": true,
+    "concurrencyGroup": "vibe2-main-push-game-primary-wake",
+    "activeWakeCancellationForbidden": true,
+    "onlyNewestPendingMainWakeRetained": true,
+    "repositoryDispatchAndCallableRunScope": "RUN_SCOPED"
   }
 }
