@@ -199,3 +199,22 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
 }
 
 assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeatureExpansionFreezeForbidden,true);
+
+
+test('canonical marketing images drive both homepage cards and Roblox thumbnail source',()=>{
+  const targets=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
+  const images=new Set();
+  for(const gameId of targets){
+    const game=catalog.games.find(row=>row.id===gameId);
+    assert(game,'missing '+gameId);
+    assert.match(game.marketingImage,new RegExp('^assets/roblox-thumbnails/'+gameId+'\\\\.svg$'));
+    assert.equal(game.image,game.marketingImage);
+    assert.equal(game.canonical.identity.image,game.marketingImage);
+    assert.equal(game.canonical.identity.marketingImage,game.marketingImage);
+    assert.equal(fs.existsSync(game.marketingImage),true,'missing marketing image '+game.marketingImage);
+    assert.equal(images.has(game.marketingImage),false,'duplicate marketing image '+game.marketingImage);
+    images.add(game.marketingImage);
+  }
+  assert.match(manager,/homepageMarketingImageSync/);
+  assert.match(manager,/HOMEPAGE_MARKETING_IMAGE_SYNC=/);
+});
