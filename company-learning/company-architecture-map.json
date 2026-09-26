@@ -1,5 +1,5 @@
 {
-  "version": 209,
+  "version": 210,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4567,7 +4567,7 @@
     }
   },
   "continuousGameplaySystemEvolutionTopology": {
-    "version": 1,
+    "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract",
     "planner": "tools/vibe2-auto-planner.mjs",
     "designDiscovery": "design/<gameId>/<latest-date>/design-revised.json",
@@ -4641,6 +4641,8 @@
         "COMPARE_PREVIOUS_VERIFIED_GAME_VERSION",
         "CONSUME_LATEST_PLAYTEST_RUNTIME_QA_EVIDENCE",
         "CLASSIFY_ALL_GAMEPLAY_WORLD_VISUAL_UX_STABILITY_DOMAINS",
+        "CLASSIFY_HOLISTIC_GAMEPLAY_MAP_INVENTORY_UI_UX_SESSION_SAVE_AND_PERFORMANCE_DOMAINS_AS_PASS_GAP_OR_NOT_APPLICABLE",
+        "ROUTE_EVERY_APPLICABLE_GAP_TO_ACTIONABLE_EXISTING_RESPONSIBILITY_WORK",
         "GENERATE_ONE_EXPLICIT_DIRECTIVE_FOR_EVERY_APPLICABLE_DOMAIN",
         "CALCULATE_VERIFIED_LOOP_DEVELOPMENT_DEPTH",
         "SELECT_HIGHEST_VALUE_GAME_SPECIFIC_GOAL",
@@ -4755,6 +4757,52 @@
         ],
         "parallelSafeLanesRemainEligible": true,
         "securityQaReleaseAuthorityUnchanged": true
+      },
+      "holisticGameEvolution": {
+        "policy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.holisticGameEvolution",
+        "generator": "tools/company-build-up-directive.mjs",
+        "existingPipelineOnly": true,
+        "newWorker": false,
+        "newQueue": false,
+        "newScheduler": false,
+        "flow": [
+          "INSPECT_CURRENT_SOURCE_FOR_GAMEPLAY_WORLD_INVENTORY_UI_SESSION_SAVE_AND_PERFORMANCE_SIGNALS",
+          "CLASSIFY_EVERY_REQUIRED_HOLISTIC_DOMAIN_PASS_GAP_OR_NOT_APPLICABLE",
+          "REJECT_PASSIVE_EVALUATED_WITHOUT_DECISION",
+          "ROUTE_GAP_TO_FIX_NOW_OR_BUILD_UP_NOW",
+          "BIND_TO_CURRENT_RESPONSIBLE_SOURCE_ANCHOR",
+          "IMPLEMENT_WITH_EXISTING_VIBE_WORKER",
+          "RUN_INCREMENTAL_QA_AND_PLATFORM_RUNTIME_WHEN_BEHAVIOR_CHANGES",
+          "MEASURE_PLAYER_VALUE_EFFECT_AND_FEED_NEXT_BUILD_UP_GENERATION"
+        ],
+        "mandatoryCoverage": [
+          "MAP_EXPANSION",
+          "WORLD_DENSITY",
+          "WORLD_NAVIGATION",
+          "INTERACTION_DISCOVERABILITY",
+          "INVENTORY_USABILITY",
+          "EQUIPMENT_LOADOUT",
+          "SYSTEM_CONNECTION",
+          "SESSION_FLOW",
+          "FIRST_10_MINUTES",
+          "MID_LATE_GAME_DEPTH",
+          "MENU_FLOW",
+          "CONVENIENCE",
+          "UI_DESIGN_SYSTEM",
+          "UI_INFORMATION_PRIORITY",
+          "FEEDBACK_CLARITY",
+          "PLAYER_AGENCY",
+          "ANTI_GRIND",
+          "CONTENT_DENSITY",
+          "CONTENT_DISCOVERY",
+          "SAVE_COMPLETENESS",
+          "RECONNECT_RECOVERY",
+          "SETTINGS_ACCESSIBILITY",
+          "PERFORMANCE_BUDGET"
+        ],
+        "applicableGapCannotBeSilentlyDeferredByPresentationWork": true,
+        "responsibleFileConflictSerializationOnly": true,
+        "platformNativeExecutionPreserved": true
       }
     }
   },
