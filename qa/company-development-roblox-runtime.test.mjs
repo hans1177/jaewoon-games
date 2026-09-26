@@ -832,3 +832,14 @@ test('Roblox runtime self-redispatch dedupes queued or running work for the same
   assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.doesNotMatch(workflow,/^concurrency:\s*$/m);
 });
+
+
+test('Roblox runtime collapses duplicate exact-game and batch planners without a workflow-wide lock',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=/);
+  assert.match(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:/);
+});
