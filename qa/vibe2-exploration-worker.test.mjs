@@ -63,6 +63,37 @@ test('missing source root stays blocked unless explicit Web bootstrap authority 
   assert.equal(fs.existsSync(path.join(cwd,'web-games/missing-web')),false);
 });
 
+test('missing Unity root stays blocked unless exact Unity Web bootstrap authority is present',()=>{
+  const cwd=tempRoot();
+  const blocked=workOrder();
+  blocked.taskId='missing-unity-bootstrap-blocked';
+  blocked.gameId='missing-unity';
+  blocked.target='unity';
+  blocked.source={
+    root:'unity-games/missing-unity',
+    responsibleFiles:[
+      'unity-games/missing-unity/Assets/Scripts/GameCore.cs',
+      'unity-games/missing-unity/Assets/Scripts/RuntimeBootstrap.cs'
+    ],
+    ignoredPaths:[]
+  };
+  assert.throws(()=>exploreVibe2WorkOrder({cwd,order:blocked}),/exploration source root 없음/);
+
+  const allowed=structuredClone(blocked);
+  allowed.taskId='missing-unity-bootstrap';
+  allowed.selectedTask={evidence:['source-root-bootstrap-required','unity-web-source-root-bootstrap-required']};
+  allowed.workerPolicy={sourceRootBootstrapAllowed:true};
+  const result=exploreVibe2WorkOrder({cwd,order:allowed});
+  assert.equal(result.bootstrap,true);
+  assert.equal(result.sourceWrite,false);
+  assert.deepEqual(result.responsibleFiles,['Assets/Scripts/GameCore.cs','Assets/Scripts/RuntimeBootstrap.cs']);
+  assert.equal(fs.existsSync(path.join(cwd,'unity-games/missing-unity')),false);
+
+  const wrongFiles=structuredClone(allowed);
+  wrongFiles.source.responsibleFiles=['unity-games/missing-unity/Assets/Scripts/GameCore.cs'];
+  assert.throws(()=>exploreVibe2WorkOrder({cwd,order:wrongFiles}),/exploration source root 없음/);
+});
+
 test('precomputed exploration artifact is reused instead of rescanning',()=>{
   const cwd=tempRoot();
   write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');
