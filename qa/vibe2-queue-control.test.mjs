@@ -1245,7 +1245,7 @@ test('exact Web base source generation failure can recover once', () => {
 });
 
 
-test('continuous reserve keeps preflight cheap and defers full core regression to fan-in', () => {
+test('continuous reserve reuses exact-sha Core QA or fail-closes on the same fan-in regression before worker start', () => {
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   const start=workflow.indexOf('- name: Fast scheduler preflight');
   const reserveAt=workflow.indexOf('- name: Reserve conflict-free DAG batch');
@@ -1254,12 +1254,20 @@ test('continuous reserve keeps preflight cheap and defers full core regression t
   const preflightBlock=workflow.slice(start,reserveAt);
   assert.match(preflightBlock,/node --check "\/tmp\/vibe2-main\/\$file"/);
   assert.match(preflightBlock,/vibe2-handoff\.mjs --check/);
-  assert.doesNotMatch(preflightBlock,/node --test /);
-  assert.doesNotMatch(preflightBlock,/VIBE2_RESERVE_FULL_REGRESSION_PREFLIGHT=PASS/);
+  assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS/);
+  assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION/);
+  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
+  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(preflightBlock,/node --test --test-concurrency=4/);
+  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
   const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
-  assert.equal(runtime.qaOptimization.reservePreflight,'syntax-and-machine-state-only');
-  assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
-  assert.equal(runtime.qaOptimization.fullCoreRegressionOnceAtFanIn,true);
+  const regression=runtime.continuous.reserveContractRegressionPreflight;
+  assert.equal(regression.enabled,true);
+  assert.equal(regression.exactContractShaRequired,true);
+  assert.equal(regression.reuseSuccessfulCoreQaForExactSha,true);
+  assert.equal(regression.fallback,'LOCAL_SAME_FAN_IN_CORE_REGRESSION');
+  assert.equal(regression.blocksReservationOnFailure,true);
+  assert.equal(regression.gameWorkerStartBeforePass,false);
 });
 
 test('atomic neuron variants micro-fan-in one task and release capacity without waiting for the cohort',()=>{
