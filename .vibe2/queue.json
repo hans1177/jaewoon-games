@@ -123342,6 +123342,41 @@
         "PRODUCTION_PASS_NO"
       ],
       "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-gap-storytelling-l2-g1",
+      "gameId": null,
+      "target": "web",
+      "department": "learning",
+      "type": "research",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=NARRATIVE_STRUCTURE_DRILL\ndomains=STORYTELLING\npracticeGeneration=1\npracticeMode=ANALYSIS\n소스 파일을 수정하지 않는다. 원문 문장이나 특정 작가 표현을 복사하지 않는다. 세계 규칙, 인물 욕망/갈등, 사건 인과, 스토리 전이의 선행 조건과 source event, 긴장 상승, 복선과 회수, 결말 보상을 구조 수준에서 분석하고 검증 방법을 제시한다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "sourceRoot": "learning-practice:gap-storytelling-l2",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:NARRATIVE_STRUCTURE_DRILL",
+        "practice-generation:1",
+        "learning-analysis-practice",
+        "practice-domain:STORYTELLING"
+      ],
+      "completionCriteria": [
+        "PRACTICE_ANALYSIS_COMPLETED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO"
+      ]
     }
   ]
 }

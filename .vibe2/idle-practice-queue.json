@@ -26,40 +26,6 @@
   "phase4GeneralizationDrills": 18,
   "drills": [
     {
-      "id": "review-fail_1agpu1k",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "CORE_LOOP",
-        "COMBAT",
-        "RECOVERY",
-        "SECURITY",
-        "ANIMATION_FEEL",
-        "UI_STATE",
-        "UNITY_RUNTIME",
-        "ASSET_ADAPTATION",
-        "LIVING_MOTION",
-        "AI",
-        "ASSET_PRODUCTION",
-        "VFX",
-        "SAVE",
-        "VISUAL_IDENTITY",
-        "ROBLOX_STUDIO",
-        "CAMERA_LANGUAGE",
-        "STORYTELLING",
-        "CONCEPT_DIRECTION"
-      ],
-      "sourceFailure": "fail_1agpu1k"
-    },
-    {
       "id": "review-fail_wu3qnk",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -92,6 +58,40 @@
         "STORYTELLING"
       ],
       "sourceFailure": "fail_wu3qnk"
+    },
+    {
+      "id": "review-fail_1agpu1k",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "CORE_LOOP",
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL",
+        "UI_STATE",
+        "UNITY_RUNTIME",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION",
+        "AI",
+        "ASSET_PRODUCTION",
+        "VFX",
+        "SAVE",
+        "VISUAL_IDENTITY",
+        "ROBLOX_STUDIO",
+        "CAMERA_LANGUAGE",
+        "STORYTELLING",
+        "CONCEPT_DIRECTION"
+      ],
+      "sourceFailure": "fail_1agpu1k"
     },
     {
       "id": "review-fail_17sa11i",
@@ -167,40 +167,6 @@
       "sourceFailure": "fail_lhx93q"
     },
     {
-      "id": "relearn-fail_1agpu1k",
-      "kind": "RELEARNING_REPLAY_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "CORE_LOOP",
-        "COMBAT",
-        "RECOVERY",
-        "SECURITY",
-        "ANIMATION_FEEL",
-        "UI_STATE",
-        "UNITY_RUNTIME",
-        "ASSET_ADAPTATION",
-        "LIVING_MOTION",
-        "AI",
-        "ASSET_PRODUCTION",
-        "VFX",
-        "SAVE",
-        "VISUAL_IDENTITY",
-        "ROBLOX_STUDIO",
-        "CAMERA_LANGUAGE",
-        "STORYTELLING",
-        "CONCEPT_DIRECTION"
-      ],
-      "sourceFailure": "fail_1agpu1k"
-    },
-    {
       "id": "relearn-fail_wu3qnk",
       "kind": "RELEARNING_REPLAY_DRILL",
       "priority": "high",
@@ -233,6 +199,40 @@
         "STORYTELLING"
       ],
       "sourceFailure": "fail_wu3qnk"
+    },
+    {
+      "id": "relearn-fail_1agpu1k",
+      "kind": "RELEARNING_REPLAY_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "CORE_LOOP",
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL",
+        "UI_STATE",
+        "UNITY_RUNTIME",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION",
+        "AI",
+        "ASSET_PRODUCTION",
+        "VFX",
+        "SAVE",
+        "VISUAL_IDENTITY",
+        "ROBLOX_STUDIO",
+        "CAMERA_LANGUAGE",
+        "STORYTELLING",
+        "CONCEPT_DIRECTION"
+      ],
+      "sourceFailure": "fail_1agpu1k"
     },
     {
       "id": "relearn-fail_17sa11i",
@@ -1720,16 +1720,6 @@
       ]
     },
     {
-      "id": "gap-storytelling-l1",
-      "kind": "NARRATIVE_STRUCTURE_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STORYTELLING"
-      ]
-    },
-    {
       "id": "gap-streaming-l1",
       "kind": "STREAMING_OPTIMIZATION_DRILL",
       "priority": "low",
@@ -1850,6 +1840,16 @@
       ]
     },
     {
+      "id": "gap-storytelling-l2",
+      "kind": "NARRATIVE_STRUCTURE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STORYTELLING"
+      ]
+    },
+    {
       "id": "gap-character_arc-l4",
       "kind": "CHARACTER_ARC_DRILL",
       "priority": "low",
@@ -1900,16 +1900,6 @@
       ]
     },
     {
-      "id": "gap-visual_identity-l6",
-      "kind": "GAME_VISUAL_DNA_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "VISUAL_IDENTITY"
-      ]
-    },
-    {
       "id": "gap-vfx-l7",
       "kind": "VFX_READABILITY_DRILL",
       "priority": "low",
@@ -1920,13 +1910,13 @@
       ]
     },
     {
-      "id": "gap-roblox_studio-l8",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-visual_identity-l7",
+      "kind": "GAME_VISUAL_DNA_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ROBLOX_STUDIO"
+        "VISUAL_IDENTITY"
       ]
     },
     {
@@ -1947,6 +1937,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "gap-roblox_studio-l9",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_STUDIO"
       ]
     },
     {
