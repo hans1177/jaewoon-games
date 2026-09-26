@@ -35,6 +35,10 @@ permissions:
   pull-requests: write
   actions: write
 
+concurrency:
+  group: roblox-native-exact-${{ inputs.game_id || github.run_id }}
+  cancel-in-progress: false
+
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
