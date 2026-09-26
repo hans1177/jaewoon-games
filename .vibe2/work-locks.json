@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-36v0f4",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "fb9aaf22e3baac31448fd59fa87fe85eea41938a",
-      "acquiredAt": "2026-09-26T05:47:28.575Z",
-      "expiresAt": "2026-09-26T06:32:28.575Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-h3mx4r",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
@@ -165,6 +147,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-studio-evolution-presentation-v1"
+      ]
+    },
+    {
+      "id": "wl-784yxi",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau"
+      ],
+      "baseSha": "2eaf9ff76e59773677a7662b426724dccd628972",
+      "acquiredAt": "2026-09-26T06:32:39.138Z",
+      "expiresAt": "2026-09-26T07:17:39.138Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
