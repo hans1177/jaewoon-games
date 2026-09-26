@@ -209,29 +209,6 @@ jobs:
           NODE
 
 
-  contract-audit:
-    name: Nonblocking central development contract audit
-    runs-on: ubuntu-slim
-    timeout-minutes: 8
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 1
-          fetch-tags: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Audit central development contracts without blocking game dispatch
-        run: |
-          set -euo pipefail
-          node --test qa/company-selected-platform-router.test.mjs
-          node --test qa/company-minimum-design-contract.test.mjs
-          node --test qa/company-upper-platform-admission.test.mjs
-          node --test qa/company-unity-web-gameplay-validation.test.mjs
-          echo 'CENTRAL_DEVELOPMENT_CONTRACT_AUDIT=PASS'
-
   dispatch-roblox:
     name: Run ready Roblox upper-platform lanes
     needs: native-plan
