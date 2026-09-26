@@ -21,9 +21,10 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const config=fs.readFileSync(configFile,'utf8');
   const libraryVersion=Number(config.match(/LibraryVersion\s*=\s*(\d+)/)?.[1]||0);
   const bindingVersion=Number(config.match(/BindingVersion\s*=\s*(\d+)/)?.[1]||0);
+  const expectedBindingVersion=Number(expected.bindingVersion||0);
   const applied=/StudioAssets\s*=\s*\{[\s\S]*?Applied\s*=\s*true/.test(config);
-  const refreshRequired=!applied||bindingVersion!==1||libraryVersion!==Number(expected.libraryVersion||0);
-  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,applied,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
+  const refreshRequired=!applied||bindingVersion!==expectedBindingVersion||libraryVersion!==Number(expected.libraryVersion||0);
+  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,expectedBindingVersion,applied,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
 }
 
 export function hasVerifiedVibe2SourceHandoff(item={}){
