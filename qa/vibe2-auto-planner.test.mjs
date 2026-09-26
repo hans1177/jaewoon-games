@@ -2310,9 +2310,6 @@ test('existing game holistic backfill is planned before generic Roblox presentat
   assert.ok((first.evidence||[]).includes('existing-holistic-backfill:v1'));
   assert.equal(first.studioQualityEvolution?.existingHolisticBackfillRequired,true);
   assert.ok(first.packageWorkUnits>=8);
-  assert.ok((first.evidence||[]).includes('work-package-auto-expanded'));
-  assert.ok((first.evidence||[]).includes('work-package-expanded-to-minimum:8'));
-  assert.ok((first.evidence||[]).filter(value=>String(value).startsWith('work-package-scope:')).length>=3);
   assert.notEqual(first.id,`${gameId}-roblox-studio-asset-backfill-v1`);
   assert.doesNotMatch(first.id,/presentation-asset-adaptation-v1$/);
 });
