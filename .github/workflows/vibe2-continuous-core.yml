@@ -61,7 +61,7 @@ env:
 
 jobs:
   reserve:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 7
     concurrency:
       # Atomic callbacks keep unique slots; normal reserve work is isolated by execution lane.
@@ -1689,7 +1689,7 @@ jobs:
   fan_in:
     needs: [reserve, worker]
     if: always() && needs.reserve.outputs.worker_count != '0'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     concurrency:
       # Fan-in jobs must not share one pending GitHub concurrency slot.
