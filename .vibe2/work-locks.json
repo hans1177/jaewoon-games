@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-119w0c8",
-      "worker": "vibe2",
-      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:02:56.433Z",
-      "expiresAt": "2026-09-26T20:47:56.433Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-10q551c",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
@@ -766,6 +748,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:fantasy-survival-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-3v3sx4",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+      ],
+      "baseSha": "cf19b2e0c26ae7cffa42abab9c6b30372285d78d",
+      "acquiredAt": "2026-09-26T20:48:01.056Z",
+      "expiresAt": "2026-09-26T21:33:01.056Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-studio-evolution-presentation-v1"
       ]
     }
   ]
