@@ -19,6 +19,7 @@ const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-r
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+const prepareOllamaAction=fs.readFileSync(new URL('../.github/actions/prepare-ollama/action.yml',import.meta.url),'utf8');
 
 test('legacy presentation tasks expand to existing native visual responsibility files at execution time',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-presentation-scope-'));
@@ -701,11 +702,19 @@ test('worker never mutates shared queue state and only emits an atomic completio
   assert(workerPart.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
 });
 
-test('worker Ollama cache includes the runtime sidecar and rejects binary-only cache hits',()=>{
+test('worker model cache keeps the existing key while runtime preparation reuses the shared pinned action',()=>{
   assert(workflow.includes('~/.cache/vibe2-ollama/lib/ollama'));
   assert(workflow.includes('vibe2-ollama-v3-Linux-qwen3-1.7b'));
-  assert(workflow.includes("find \"$cached_lib\" -type f -name 'llama-server'"));
-  assert(workflow.includes('sudo cp -a "$cached_lib/." /usr/local/lib/ollama/'));
+  assert(workflow.includes('uses: ./vibe2-contract/.github/actions/prepare-ollama'));
+  assert(workflow.includes("pull-model: 'true'"));
+  const workerStart=workflow.indexOf('\n  worker:');
+  const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
+  const workerPart=workflow.slice(workerStart,fanInStart);
+  assert.equal(workerPart.includes('ollama.com/install.sh'),false);
+  assert(prepareOllamaAction.includes("default: '0.33.3'"));
+  assert(prepareOllamaAction.includes('https://ollama.com/download/ollama-linux-amd64.tar.zst?version='));
+  assert(prepareOllamaAction.includes("grep -qx 'lib/ollama/llama-server'"));
+  assert(prepareOllamaAction.includes('sudo tar --zstd -xf "$slim" -C /usr'));
   assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
 });
 
