@@ -1,5 +1,5 @@
 {
-  "version": 454,
+  "version": 455,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -1432,7 +1432,16 @@
         "explicitDisabledState": "NO",
         "assistantSettingsDiagnosticAdvisoryWhenMissingOrUnknown": true,
         "requiredToolHandshakeCanConfirmEnabledState": true,
-        "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT"
+        "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT",
+        "sessionRestartEligibleFailureScope": [
+          "MCP_TOOL_READINESS",
+          "MCP_SERVER_ENABLEMENT",
+          "STUDIO_ATTACHMENT",
+          "MCP_TRANSPORT"
+        ],
+        "completedMcpSessionRuntimeFailureAction": "PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART",
+        "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true,
+        "completedSessionExitContract": "MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS"
       },
       "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
       "earliestBehaviorFeedbackCheckpoint": "AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING"
