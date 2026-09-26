@@ -13,10 +13,6 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: company-development-roblox-f9-final-review-${{ inputs.game_id || (github.event_name == 'schedule' && 'scheduled-scan') || (github.event_name == 'workflow_dispatch' && 'manual-scan') || github.run_id }}
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
