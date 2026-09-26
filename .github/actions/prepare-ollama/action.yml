@@ -16,6 +16,10 @@ inputs:
     description: Optional autonomous department role. FAST lanes only need development and qa model reviews.
     required: false
     default: ''
+  cache-model:
+    description: Opt in to the shared GitHub Actions cache for the requested Ollama model store. Default false preserves callers with their own model cache.
+    required: false
+    default: 'false'
 runs:
   using: composite
   steps:
@@ -80,6 +84,21 @@ runs:
         path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst
         key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
         lookup-only: ${{ inputs.pull-model == 'false' }}
+
+    - name: Restore requested Ollama model cache
+      id: model-cache
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/.ollama/models
+        key: jaewoon-ollama-model-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.model }}
+
+    - name: Report requested model cache decision
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
+      shell: bash
+      run: |
+        echo "OLLAMA_SHARED_MODEL_CACHE_HIT=${{ steps.model-cache.outputs.cache-hit }}"
+        echo "OLLAMA_SHARED_MODEL_CACHE_MODEL=${{ inputs.model }}"
 
     - name: Build slim CPU runtime on cache miss
       if: steps.model-need.outputs.skip != 'true' && steps.runtime-cache.outputs.cache-hit != 'true'
