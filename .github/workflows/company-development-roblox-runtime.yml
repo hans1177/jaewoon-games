@@ -15,6 +15,7 @@ on:
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/company-roblox-source-drift-sync.mjs'
+      - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'tools/company-development-roblox-build-preflight.mjs'
       - 'tools/company-development-roblox-runtime-smoke.luau'
   workflow_call:
