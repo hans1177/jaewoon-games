@@ -514,8 +514,8 @@ test('recovery-fast speculative variants yield to active game-primary demand wit
   const controlFile=path.join(dir,'control.json');
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[
     {id:'game-primary-waiting',gameId:'game-primary-waiting',target:'web',department:'development',type:'implementation',goal:'game work',status:'queued',sourceRoot:'web-games/game-primary-waiting',responsibleFiles:['index.html']},
-    {id:'sys-a',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-a',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/a.mjs']},
-    {id:'sys-b',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-b',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/b.mjs']}
+    {id:'sys-a',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-a',status:'queued',priority:'critical',estimatedRisk:'high',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/a.mjs']},
+    {id:'sys-b',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-b',status:'queued',priority:'critical',estimatedRisk:'high',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/b.mjs']}
   ]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD',lastReason:'LOW_LOAD',lastTelemetry:{workerCount:0,effectiveMax:20,effectivePeakUtilizationPct:100,bottleneck:'NONE'}},null,2));
   const result=runQueueCommand({
@@ -536,8 +536,8 @@ test('recovery-fast speculative variants resume when game-primary is idle and ad
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[
-    {id:'sys-a',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-a',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/a.mjs']},
-    {id:'sys-b',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-b',status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/b.mjs']}
+    {id:'sys-a',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-a',status:'queued',priority:'critical',estimatedRisk:'high',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/a.mjs']},
+    {id:'sys-b',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',goal:'repair sys-b',status:'queued',priority:'critical',estimatedRisk:'high',systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/b.mjs']}
   ]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD',lastReason:'LOW_LOAD',lastTelemetry:{workerCount:0,effectiveMax:20,effectivePeakUtilizationPct:100,bottleneck:'NONE'}},null,2));
   const result=runQueueCommand({
