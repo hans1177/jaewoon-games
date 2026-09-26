@@ -1,5 +1,5 @@
 {
-  "version": 406,
+  "version": 407,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8063,18 +8063,35 @@
       "reserveJobTempRootReuseForbiddenAcrossJobs": true,
       "qaSecurityReleaseSemanticsChanged": false,
       "purpose": "RESTORE_FAN_IN_STATE_SETTLEMENT_SO_NEW_HOLISTIC_BACKFILL_GENERATIONS_CAN_ENTER_AND_PROGRESS"
+    },
+    "holisticBackfillPackageFloorAndThirtyGameBaseline20260926": {
+      "id": "HOLISTIC_BACKFILL_PACKAGE_FLOOR_AND_30_GAME_BASELINE_2026-09-26",
+      "summary": "Existing-game holistic BUILD_UP auto-expansion must satisfy the currently resolved work-package minimum instead of stalling at MINIMUM_WORKLOAD_GATE, and GAME_PRIMARY may not pressure-downshift below 30 concurrent game workers while the external boundary remains 256.",
+      "liveFailureEvidence": [
+        "RUN_36223991015_AUTO_PLAN_REASON_MINIMUM_WORKLOAD_GATE",
+        "RUN_36223991015_DEVELOPMENT_BACKLOG_26_BELOW_TARGET_60"
+      ],
+      "directResponsibleFunctions": [
+        "tools/vibe2-auto-planner.mjs#expandTaskToMinimumWorkload",
+        ".github/workflows/vibe2-24h-runner.yml#GAME_PRIMARY_ADAPTIVE_MIN"
+      ],
+      "concurrentGameOperationalFloor": 30,
+      "externalProviderBoundaryUnchanged": 256,
+      "existingHigherConcurrencyMayContinue": true,
+      "itemCatalogChange": "NONE",
+      "existingItemCountsMustNotBeReducedByThisChange": true
     }
   },
   "vibeExecutionLaneContract": {
-    "version": 2,
+    "version": 3,
     "status": "ATOMIC_NEURON_STREAM_WITH_AUXILIARY_VESSELS",
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "documentFirst": true,
     "principle": "GAME_PRIMARY_IS_CONTINUOUS_ATOMIC_NEURON_CIRCULATION; AUXILIARY_LANES_RETURN_CAUSAL_EVIDENCE_WITHOUT_STOPPING_THE_MAIN_ARTERY",
     "gamePrimary": {
       "taskClass": "DEVELOPMENT_IMPLEMENTATION",
-      "activeWorkerBaselineTarget": 20,
-      "activeWorkerAdaptiveMinimum": 20,
+      "activeWorkerBaselineTarget": 30,
+      "activeWorkerAdaptiveMinimum": 30,
       "activeWorkerInternalCap": null,
       "externalProviderBoundary": 256,
       "capacityAwareFreeSlotRefill": true,
@@ -23760,7 +23777,7 @@
         }
       },
       "existingGameHolisticBackfill": {
-        "version": 3,
+        "version": 4,
         "authority": "OWNER_DIRECTIVE_2026-09-26",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "objective": "RETROACTIVELY_APPLY_THE_CURRENT_HOLISTIC_BUILD_UP_STANDARD_TO_EVERY_EXISTING_ELIGIBLE_GAME_WITHOUT_RESETTING_OR_GRANDFATHERING_LOW_QUALITY_IMPLEMENTATION",
@@ -23909,7 +23926,13 @@
           "securityAndProgressBlockersRemainHigherPriority": true,
           "noNewQueueWorkerOrPipeline": true,
           "ownerExplicitP0PlatformWorkMayPreemptHolisticBackfill": true,
-          "genericWeatherPresentationStillBelowHolisticBackfill": true
+          "genericWeatherPresentationStillBelowHolisticBackfill": true,
+          "resolvedWorkPackageMinimumMustBeSatisfiedByAutoExpansion": true,
+          "minimumWorkloadGateCannotStarveEligibleHolisticBackfill": true,
+          "concurrentGameOperationalFloor": 30,
+          "externalProviderBoundary": 256,
+          "existingHigherSafeConcurrencyMayContinue": true,
+          "itemCatalogUnchangedByThisDirective": true
         }
       }
     }
