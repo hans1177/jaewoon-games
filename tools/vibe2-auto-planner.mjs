@@ -2189,10 +2189,10 @@ function findSafeTasks(project,repoRoot,queue){
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
     return uniqueTaskCandidates([
+      findUnityTask(project,repoRoot,queue),
       ...holisticBackfillTasks,
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
-      findUnityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
@@ -2200,7 +2200,7 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='web'){
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-      return uniqueTaskCandidates([...holisticBackfillTasks,findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
+      return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
     }
     // Preserve canonical Web bootstrap/exact-repair authority before quality backfill.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
