@@ -785,6 +785,16 @@
       "model": "qwen3:1.7b",
       "candidateBranchPrefix": "vibe2/candidate/",
       "directMainWrite": false,
+      "candidatePublication": {
+        "localBranchBase": "RESERVE_TIME_PINNED_MAIN_SHA",
+        "remoteRefCreation": "PRECREATE_AT_PINNED_BASE_VIA_GIT_REFS_API",
+        "commitPushScope": "TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY",
+        "untouchedBaseWorkflowWriteAuthorityRequired": false,
+        "failureClass": "CANDIDATE_BRANCH_PUBLISH",
+        "telemetryStage": "CANDIDATE_PUBLICATION",
+        "excludedFromSourceGenerationFailureRate": true,
+        "remoteRefCleanupOnPushFailure": true
+      },
       "freeCapacityScaling": "UNBOUNDED_BY_POLICY_ONE_WORKER_PER_INDEPENDENT_TASK",
       "modelLoadOptimization": {
         "sharedActionsCache": true,
