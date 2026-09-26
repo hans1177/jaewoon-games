@@ -1,5 +1,5 @@
 {
-  "version": 224,
+  "version": 226,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5156,8 +5156,8 @@
     "runtimeFile": "vibe2-runtime.json"
   },
   "robloxDevelopmentParallelismProjection": {
-    "version": 1,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxGameWideWorkflowSerializationRemoval20260926",
+    "version": 3,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxContinuationWorkflowSerializationRemoval20260926",
     "workflow": ".github/workflows/company-development-roblox-runtime.yml",
     "taskIdentity": "GAME_ID_PLUS_RESPONSIBILITY_AND_EXACT_SOURCE_IDENTITY",
     "topLevelGameWideWorkflowLock": false,
@@ -5168,9 +5168,27 @@
     "externalProviderBoundary": 256,
     "sameGameIndependentWorkParallel": true,
     "responsibleFileConflictOnlySerialization": true,
-    "sharedStateWriteSerialization": "ATOMIC_OPTIMISTIC_RETRY_ONLY",
+    "sharedStateWriteSerialization": "COMPANY_RUNTIME_WRITER_CRITICAL_SECTION_ONLY",
     "sourceRootWideLockForbidden": true,
     "qaSecurityReleaseGatesUnchanged": true,
-    "authorityExpanded": false
+    "authorityExpanded": false,
+    "workflows": [
+      ".github/workflows/company-development-roblox-runtime.yml",
+      ".github/workflows/company-development-roblox-runtime-continuation.yml",
+      ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+      ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+      ".github/workflows/company-development-roblox-release-promotion.yml"
+    ],
+    "topLevelContinuationWorkflowLock": false,
+    "sharedPreflightParallel": true,
+    "preflightMatrixParallel": true,
+    "topLevelF0WorkflowLock": false,
+    "topLevelFoundationQaWorkflowLock": false,
+    "topLevelF9WorkflowLock": false,
+    "topLevelPromotionWorkflowLock": false,
+    "foundationQaParallel": true,
+    "finalReviewParallel": true,
+    "promotionParallel": true
   }
 }

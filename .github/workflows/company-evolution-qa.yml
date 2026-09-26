@@ -93,6 +93,10 @@ on:
       - '.github/workflows/company-evolution-qa.yml'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('company-evolution-qa-pr-{0}', github.event.pull_request.number) || format('company-evolution-qa-{0}-{1}-{2}', github.event_name, github.ref, github.run_id) }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

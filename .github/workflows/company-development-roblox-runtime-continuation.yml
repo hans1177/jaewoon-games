@@ -7,10 +7,6 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-roblox-runtime-continuation
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '9'

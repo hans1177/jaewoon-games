@@ -68,11 +68,12 @@ test('canonical evaluator preserves fail-closed multiplayer and release gates', 
 });
 
 
-test('exact Roblox F9 review is isolated per game after multiplayer acceptance',()=>{
-  assert.match(workflow,/group: company-development-roblox-f9-final-review-\$\{\{ inputs\.game_id/);
+test('exact Roblox F9 review targets games without workflow-level serialization',()=>{
+  const prefix=workflow.slice(0,workflow.indexOf('\njobs:'));
+  assert.doesNotMatch(prefix,/\nconcurrency:\n/);
+  assert.match(workflow,/inputs\.game_id/);
   assert.match(workflow,/scheduled-scan/);
   assert.match(workflow,/manual-scan/);
-  assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
 test('F9 allows internal release when exact engine and official Studio MCP pass while real-server observation remains public-only',()=>{

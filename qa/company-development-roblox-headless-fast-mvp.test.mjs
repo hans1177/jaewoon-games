@@ -130,7 +130,7 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.doesNotMatch(workflow,/max-parallel:\s*6/);
   assert.match(workflow,/ROBLOX_F0_PARALLELISM=EXTERNAL_PROVIDER_CAPACITY_ONLY/);
   assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
-  assert.match(workflow,/group: company-development-roblox-f0-source-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  const prefix=workflow.slice(0,workflow.indexOf('\njobs:'));\n  assert.doesNotMatch(prefix,/\nconcurrency:\n/);
 });
 
 test('F0 planner uses central Roblox validation mode and does not require a queue-local robloxValidationMode cache',()=>{

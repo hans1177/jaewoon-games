@@ -1,5 +1,5 @@
 {
-  "version": 416,
+  "version": 417,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8311,7 +8311,7 @@
     "robloxContinuationWorkflowSerializationRemoval20260926": {
       "id": "ROBLOX_REMAINING_WORKFLOW_SERIALIZATION_REMOVAL_2026-09-26",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution",
-      "status": "DOCUMENTED_EXPANDED_BEFORE_CODE",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
       "symptom": "ROBLOX_RUNTIME_MAIN_WORKFLOW_WAS_FIXED_BUT F0_SHARED_PREFLIGHT_FOUNDATION_QA_FINAL_REVIEW_AND_RELEASE_PROMOTION_STILL_USED_TOP_LEVEL_WORKFLOW_CONCURRENCY_GROUPS_THAT_SERIALIZED_HEAVY_GAME_EXECUTION_BEYOND_THE_EXISTING_ATOMIC_COMPANY_RUNTIME_WRITER",
       "policyBasis": [
         "sharedPreflightParallel",
@@ -8333,7 +8333,7 @@
       "gameIdStillCanonicalTaskIdentity": true,
       "sharedStateWriterSerializationPreserved": true,
       "internalArtificialParallelCapAdded": false,
-      "implementationState": "DOCUMENTED_EXPANDED_BEFORE_CODE",
+      "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE",
       "codeBindings": [
         ".github/workflows/company-development-roblox-runtime-continuation.yml",
         ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
@@ -8371,7 +8371,7 @@
     "pullRequestValidationCoalescing20260926": {
       "id": "PULL_REQUEST_VALIDATION_COALESCING_2026-09-26",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "DOCUMENTED_BEFORE_CODE",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
       "symptom": "SAME_PR_OLDER_HEAD_COMPANY_EVOLUTION_AND_SECURITY_VALIDATIONS_ACCUMULATED_IN_GITHUB_ACTIONS_QUEUE_AND_DELAYED_GAME_PRIMARY_WORKER_START",
       "policyBasis": [
         "duplicateValidationWithoutEvidenceInvalidationForbidden",
@@ -8387,7 +8387,14 @@
       "currentHeadValidationRequired": true,
       "securityGateUnchanged": true,
       "mainPushValidationUnchanged": true,
-      "implementationState": "DOCUMENTED_BEFORE_CODE"
+      "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "requiredVerification": [
+        "ONLY_LATEST_SAME_PR_COMPANY_EVOLUTION_VALIDATION_REMAINS",
+        "ONLY_LATEST_SAME_PR_SECURITY_VALIDATION_REMAINS",
+        "CURRENT_PR_HEAD_STILL_RUNS_BOTH_VALIDATIONS",
+        "MAIN_PUSH_AND_SCHEDULE_SECURITY_BEHAVIOR_REMAINS_SEPARATE",
+        "NO_GAME_PRIMARY_GATE_WEAKENING"
+      ]
     }
   },
   "vibeExecutionLaneContract": {

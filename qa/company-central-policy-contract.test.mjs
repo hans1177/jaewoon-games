@@ -871,6 +871,16 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.ok(p.forbiddenInterpretations.includes('SKIP_RELEVANT_SECURITY_FINDING'));
   assert.ok(p.forbiddenInterpretations.includes('REUSE_INVALIDATED_EVIDENCE'));
 
+  const validationCoalescing=roadmap.changeRecord?.pullRequestValidationCoalescing20260926;
+  assert.equal(validationCoalescing.currentHeadValidationRequired,true);
+  assert.equal(validationCoalescing.securityGateUnchanged,true);
+  for(const workflowFile of validationCoalescing.affectedWorkflows){
+    const source=readText(workflowFile);
+    assert.match(source,/concurrency:\n\s+group:/,workflowFile);
+    assert.match(source,/github\.event_name == 'pull_request'/,workflowFile);
+    assert.match(source,/cancel-in-progress: true/,workflowFile);
+  }
+
   const projection=architecture.minimumNecessaryProcedurePolicyProjection;
   assert.equal(projection.defaultValidationScope,'CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCIES_ONLY');
   assert.equal(projection.duplicateValidationForbidden,true);
