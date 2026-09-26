@@ -1,5 +1,5 @@
 {
-  "version": 436,
+  "version": 437,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8658,14 +8658,17 @@
       "unityWebWorkflow": ".github/workflows/unity-web-first-stage-build.yml",
       "centralPlanner": {
         "admissionCriticalValidationOnly": true,
-        "duplicateContractTestsMovedToNonblockingSlimAudit": true,
         "activeRobloxAndUnityRunScansParallel": true,
-        "gameDispatchWaitsForContractAudit": false,
         "activeLaneIdentityScanFailClosed": true,
         "partialActiveLaneScanMayDispatch": false,
         "runner": "ubuntu-24.04-arm",
-        "contractAuditRunner": "ubuntu-slim",
-        "gameControlAndAdministrativeAuditRunnerSeparated": true
+        "duplicateRuntimeContractAuditRemoved": true,
+        "canonicalQaAuthorityPreserved": true,
+        "canonicalQaOwners": [
+          ".github/workflows/company-game-seed-qa.yml",
+          ".github/workflows/company-central-policy-contract-qa.yml"
+        ],
+        "gameDispatchWaitsForDuplicateContractQa": false
       },
       "unityWebPerGameConcurrency": {
         "callerGroup": "unity-web-floor-call-<gameId>",
