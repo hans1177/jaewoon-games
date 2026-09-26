@@ -1,5 +1,5 @@
 {
-  "version": 243,
+  "version": 244,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5507,7 +5507,8 @@
         "blocking": false,
         "continueOnError": true
       },
-      "activeLaneIdentityFetch": "ROBLOX_AND_UNITY_PARALLEL"
+      "activeLaneIdentityFetch": "ROBLOX_AND_UNITY_PARALLEL_FAIL_CLOSED",
+      "partialScanDispatchForbidden": true
     },
     "unityWebFloor": {
       "callerConcurrency": "unity-web-floor-call-<gameId>",
