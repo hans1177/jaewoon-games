@@ -45,6 +45,7 @@ function evidenceValues(row,prefix){return(Array.isArray(row?.evidence)?row.evid
 function sourceGenerationFailureClass(row={}){
   if(clean(row?.outcome).toUpperCase()!=='FAIL')return'';
   const direct=clean(row?.candidateFailure?.class).toUpperCase();
+  if(direct==='CANDIDATE_BRANCH_PUBLISH')return'';
   if(direct)return direct;
   const evidence=evidenceValues(row,'source-generation-failure:').map(value=>clean(value).toUpperCase()).filter(Boolean);
   if(evidence.length)return evidence.at(-1);
@@ -163,17 +164,20 @@ export function computeParallelismTelemetry(input={}){
   for(const row of rows){
     if(clean(row?.outcome).toUpperCase()!=='FAIL')continue;
     const blocker=clean(row?.blocker).toLowerCase();
-    const stage=blocker==='incremental-qa-failed'
-      ?'INCREMENTAL_QA'
-      :blocker==='performance-sanity-failed'
-        ?'PERFORMANCE_SANITY'
-        :'';
+    const candidateFailureClass=clean(row?.candidateFailure?.class).toUpperCase();
+    const stage=candidateFailureClass==='CANDIDATE_BRANCH_PUBLISH'
+      ?'CANDIDATE_PUBLICATION'
+      :blocker==='incremental-qa-failed'
+        ?'INCREMENTAL_QA'
+        :blocker==='performance-sanity-failed'
+          ?'PERFORMANCE_SANITY'
+          :'';
     if(stage)workerFailureStages[stage]=(workerFailureStages[stage]||0)+1;
   }
   const classifiedWorkerFailureCount=Object.values(workerFailureStages).reduce((sum,value)=>sum+value,0);
   const directFailureCoverageSufficient=classifiedWorkerFailureCount>0
     &&classifiedWorkerFailureCount>=Math.max(1,Math.ceil(failedWorkerCount*.5));
-  const directFailureOrder=['SOURCE_CANDIDATE_GENERATION','INCREMENTAL_QA','PERFORMANCE_SANITY'];
+  const directFailureOrder=['SOURCE_CANDIDATE_GENERATION','CANDIDATE_PUBLICATION','INCREMENTAL_QA','PERFORMANCE_SANITY'];
   const rankedDirectFailureStages=Object.entries(workerFailureStages)
     .sort((a,b)=>b[1]-a[1]||directFailureOrder.indexOf(a[0])-directFailureOrder.indexOf(b[0]))
     .map(([stage])=>stage);
