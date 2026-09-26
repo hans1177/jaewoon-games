@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -209317,38 +209315,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_a4e0c28e95dd980d4d4a2dfc",
-          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-studio-asset-backfill-v1",
-          "workKey": null,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_812f2f50cb5292673f9203c3",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_694d98ebd713acfd3b0a9289",
-            "capability_ctrace_f45db69cb6d78d39724618a6",
-            "capability_ctrace_e24add62615bf96a065576ab"
-          ],
-          "evidence": [
-            "actions-run:35966446850",
-            "reservation-id:35966446850:1",
-            "capability-application-sample:ab1058863454fcc786cd"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_70c4bb9dcda01f16646c3137",
           "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-studio-asset-backfill-v1",
           "workKey": null,
@@ -211430,6 +211396,39 @@
             "actions-run:36083259465",
             "reservation-id:36083259465:1",
             "capability-application-sample:55e6697a5143736a77e4"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7624b45d45ce91df977f3b37",
+          "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_694d98ebd713acfd3b0a9289",
+            "capability_ctrace_e24add62615bf96a065576ab",
+            "capability_ctrace_8e48a7db9ae2c9be9596da00",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba"
+          ],
+          "evidence": [
+            "base-main:ca3c7bb156666517e1b590290525d85a4107efcd",
+            "actions-run:36223991015",
+            "reservation-id:36223991015:1",
+            "capability-application-sample:f7cba2faff3827c3383d"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -221920,39 +221919,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_257cecdecc5281e9077b774d",
-          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_7203426ac1b5f0818e6a0d53",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:5f4a23415a36dbe4170a693479eaf7be03bbc18b",
-            "actions-run:35957290452",
-            "reservation-id:35957290452:1",
-            "capability-application-sample:7b61cd524ce436daa0e7"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_4f738ba222a7f0fb7fb45776",
           "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
           "workKey": null,
@@ -224012,6 +223978,39 @@
             "actions-run:36046520882",
             "reservation-id:36046520882:1",
             "capability-application-sample:395af0b1dc32063af834"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d644c21bc22589e01198961c",
+          "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_694d98ebd713acfd3b0a9289",
+            "capability_ctrace_e24add62615bf96a065576ab",
+            "capability_ctrace_8e48a7db9ae2c9be9596da00",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba"
+          ],
+          "evidence": [
+            "base-main:ca3c7bb156666517e1b590290525d85a4107efcd",
+            "actions-run:36223991015",
+            "reservation-id:36223991015:1",
+            "capability-application-sample:f7cba2faff3827c3383d"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -229030,39 +229029,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_0de4ec8fa20db386a274efdd",
-          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_7203426ac1b5f0818e6a0d53",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:5f4a23415a36dbe4170a693479eaf7be03bbc18b",
-            "actions-run:35957290452",
-            "reservation-id:35957290452:1",
-            "capability-application-sample:7b61cd524ce436daa0e7"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_beed2b9dc6195a91929bf268",
           "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
           "workKey": null,
@@ -231128,6 +231094,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b3660b5d3a029d01ef4c5174",
+          "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_694d98ebd713acfd3b0a9289",
+            "capability_ctrace_e24add62615bf96a065576ab",
+            "capability_ctrace_8e48a7db9ae2c9be9596da00",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba"
+          ],
+          "evidence": [
+            "base-main:ca3c7bb156666517e1b590290525d85a4107efcd",
+            "actions-run:36223991015",
+            "reservation-id:36223991015:1",
+            "capability-application-sample:f7cba2faff3827c3383d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -232048,43 +232047,6 @@
       "confirmations": 6,
       "confidence": 0.8571,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_605e59318bcf66ddb556e993",
-          "taskId": "horror-escape-room-post-release-focus-e56c97ce6a4391ff",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_257da6a3fae15f846f251574",
-            "capability_ctrace_89bdf8efa5ad3402d34d018b",
-            "capability_ctrace_53cddc351499f0a7464c2af4",
-            "capability_ctrace_e24add62615bf96a065576ab"
-          ],
-          "evidence": [
-            "candidate-sha:8ab8d354a32c7277f94db69e15937fae1795e4f4",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "incremental-qa-hash:4dbd95c56aadc96c280735082250be69f4757ed19dc728aba3a5b2f3d5493ee2",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:35825318944",
-            "reservation-id:35825318944:1",
-            "capability-application-sample:d44f130e7ddcbfe52dc3"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_899528008d306ba500217945",
@@ -234208,6 +234170,39 @@
             "actions-run:36081111243",
             "reservation-id:36081111243:1",
             "capability-application-sample:c0169c0a6452631f3e35"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_06725dc2d057aa07a1fde992",
+          "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_694d98ebd713acfd3b0a9289",
+            "capability_ctrace_e24add62615bf96a065576ab",
+            "capability_ctrace_8e48a7db9ae2c9be9596da00",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba"
+          ],
+          "evidence": [
+            "base-main:ca3c7bb156666517e1b590290525d85a4107efcd",
+            "actions-run:36223991015",
+            "reservation-id:36223991015:1",
+            "capability-application-sample:f7cba2faff3827c3383d"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -242793,6 +242788,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fa8b31621fcb5fce6a48adab",
+          "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_694d98ebd713acfd3b0a9289",
+            "capability_ctrace_e24add62615bf96a065576ab",
+            "capability_ctrace_8e48a7db9ae2c9be9596da00",
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba"
+          ],
+          "evidence": [
+            "base-main:ca3c7bb156666517e1b590290525d85a4107efcd",
+            "actions-run:36223991015",
+            "reservation-id:36223991015:1",
+            "capability-application-sample:f7cba2faff3827c3383d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -242811,7 +242839,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 33,
+        "applicationCount": 34,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -258195,6 +258223,89 @@
       "avoidPatterns": [
         "CAPABILITY_AVOID:SOURCE_GENERATION:INVALID_PATH",
         "CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:INVALID_PATH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_e03ae5deef079cddce79f044",
+      "fingerprint": "fp_11trs1l",
+      "gameId": "cozy-island",
+      "engine": "roblox",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
+      "goal": "[SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX]\ncozy-island의 실제 Vibe 내부 플레이 증거와 tester/debug 증거를 기준으로 기존 Roblox 구현을 직접 빌드업한다.\n빠른 진입, 모바일 우선 입력/UI, 반복 가능한 목표, 소셜/멀티 흐름(설계가 요구할 때), 서버 권위 동기화, Roblox 네이티브 서비스, 저사양 표현 밀도를 실제 런타임에 반영한다.\n핵심 게임 정체성·승인 밸런스 의미·세이브 의미·진행 의미는 보존한다.\n외부 공개를 시도하지 않는다. 수정 후 기존 Roblox runtime/QA/regression으로 정확 후보를 다시 검증하고 다시 Vibe 내부 플레이로 순환한다.\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid=cozy-island-build-up-g1-c8aa66f0c387; generation=1; depth=1; stage=FOUNDATION_COMPLETENESS; focus=PRESENTATION\nGAME_IDENTITY: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.\nPRIMARY_GOAL: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 직접 채집와 주민 자동화가 캐릭터·적·환경",
+      "change": "strategy PRIMARY_RESPONSIBILITY_MINIMAL | variant primary | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36223991015",
+      "evidence": [
+        "base-main:ca3c7bb156666517e1b590290525d85a4107efcd",
+        "source-generation-failure:TIMEOUT",
+        "actions-run:36223991015",
+        "reservation-id:36223991015:1",
+        "coding-trace:ctrace_e03ae5deef079cddce79f044",
+        "verified-coding-failure:TIMEOUT"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:TIMEOUT",
+        "CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:TIMEOUT"
       ],
       "verified": true,
       "reusable": true,
