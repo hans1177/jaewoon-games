@@ -80,7 +80,8 @@ jobs:
     needs: dedupe
     if: needs.dedupe.outputs.run == 'true'
     name: existing game tester and QA validate exact Roblox runtime candidate
-    runs-on: ubuntu-latest
+    # Remote Open Cloud probe + deterministic Node QA only. Studio execution remains on authenticated self-hosted Windows jobs.
+    runs-on: ubuntu-slim
     timeout-minutes: 30
     steps:
       - name: Checkout current canonical implementation
