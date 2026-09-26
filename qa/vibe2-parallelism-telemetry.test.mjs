@@ -195,10 +195,10 @@ test('workload telemetry measures completed features actual change volume rework
   assert.equal(t.workload.actualChangeMetricsKnown,true);
 });
 
-test('adaptive controller steps down exactly once under saturated runner pressure but not below 20',()=>{
+test('adaptive controller honors configured game-primary floor 30 under saturated runner pressure',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:32},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'200'})),requestedMax:32,effectiveMax:32,taskCount:32});
-  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z'});
-  assert.equal(next.currentMax,20);
+  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z',minimumMax:30});
+  assert.equal(next.currentMax,30);
   assert.equal(next.lastDecision,'DOWN');
   assert.equal(next.lastRunId,'200');
   assert.match(next.lastReason,/RUNNER_CAPACITY/);
