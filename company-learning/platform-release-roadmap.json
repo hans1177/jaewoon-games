@@ -1,5 +1,5 @@
 {
-  "version": 438,
+  "version": 439,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8717,6 +8717,37 @@
       "inProgressWakeCancellationForbidden": true,
       "staleQueuedWakeCancellationScope": "MAIN_PUSH_WAKE_ONLY",
       "staleQueuedWakeCancellationRequiresHeadShaNotCurrentMain": true
+    },
+    "activeNativeRunDedupeCoverage20260927": {
+      "id": "ACTIVE_NATIVE_RUN_DEDUPE_COVERAGE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "COVER_THE_FULL_256_GAME_EXECUTION_WINDOW_WHEN_SUPPRESSING_DUPLICATE_PER_GAME_ROBLOX_AND_UNITY_DISPATCH",
+      "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "externalExecutionWindow": 256,
+      "scan": {
+        "workflows": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/company-development-unity-runtime.yml"
+        ],
+        "pagesPerWorkflow": 3,
+        "rowsPerPage": 100,
+        "maximumRowsPerWorkflow": 300,
+        "pageFetchParallel": true,
+        "mergeAfterAllPagesPass": true,
+        "partialScanAccepted": false
+      },
+      "exactGameIdentitySource": "RUN_DISPLAY_TITLE",
+      "activeStates": [
+        "queued",
+        "pending",
+        "in_progress",
+        "requested"
+      ],
+      "duplicateExactGameDispatchSuppressed": true,
+      "distinctGamesRemainParallel": true,
+      "matrixParallelismCapAdded": false,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
