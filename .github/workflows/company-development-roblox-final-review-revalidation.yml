@@ -20,9 +20,6 @@ env:
 jobs:
   dedupe:
     name: collapse duplicate F9 reviews
-    concurrency:
-      group: roblox-f9-dedupe-${{ inputs.game_id || 'scan' }}
-      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 3
     outputs:
