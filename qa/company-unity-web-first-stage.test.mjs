@@ -29,16 +29,17 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     const req=JSON.parse(fs.readFileSync(path.join(tmp,'.build-requests','unity-web','sample-game.json'),'utf8'));
     assert.equal(req.projectPath,'unity-games/sample-game');
     assert.equal(req.outputRoot,'web-games/sample-game');
-    assert.equal(req.kind,'UNITY_WEB_DEVELOPMENT_FLOOR_BUILD');
+    assert.equal(req.kind,'UNITY_WEB_PARALLEL_DEVELOPMENT_BUILD');
     assert.equal(req.fullGameplayPassAuthority,false);
     assert.equal(req.requestEvidenceOnly,true);
     assert.equal(req.nativeGateAuthority,false);
     assert.equal(req.developmentAdmissionAuthority,false);
-    assert.equal(req.upperPlatformReadinessRequired,true);
+    assert.equal(req.upperPlatformReadinessRequired,false);
     assert.equal(req.upperPlatformReadinessEvidence,'web-games/sample-game/upper-platform-development-readiness.json');
     assert.equal(req.releaseAuthority,false);
     assert.equal(req.homepageTestSurface,true);
-    assert.equal(req.postGateAction,'EVALUATE_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_START_ROBLOX_UNITY');
+    assert.equal(req.postGateAction,'RECORD_WEB_QUALITY_CHECKPOINT_NATIVE_ALREADY_RUNNING');
+    assert.equal(req.nativeDevelopmentAlreadyIndependent,true);
   } finally {
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
@@ -82,25 +83,23 @@ test('Unity Web readiness publication uses PR instead of direct main write',()=>
 });
 
 
-test('Unity Web build never directly fans out; main-bound readiness evidence owns upper-platform admission',()=>{
+test('Unity Web quality checkpoint never owns native development admission',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const policy=JSON.parse(fs.readFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),'utf8'));
-  const fan=policy.directNativeDualPlatformDevelopment.unityWebNativeFanOut;
-  assert.equal(fan.enabled,true);
-  assert.equal(fan.trigger,'UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN');
-  assert.deepEqual(fan.targets,['ROBLOX','UNITY']);
-  assert.equal(fan.exactGameOnly,true);
-  assert.equal(fan.developmentAdmissionAuthority,true);
-  assert.equal(fan.releaseAuthority,false);
-  assert.equal(fan.directDispatchFromUnityWebBuildForbidden,true);
-  assert.equal(fan.sourceTreeExactMatchRequired,true);
-  assert.match(workflow,/Evaluate upper-platform development readiness/);
+  const fan=policy.directNativeDualPlatformDevelopment.parallelDevelopmentFanOut;
+  assert.equal(fan.trigger,'MINIMUM_DESIGN_CONTRACT_READY');
+  assert.deepEqual(fan.lanes,['UNITY_WEB','ROBLOX','UNITY']);
+  assert.equal(fan.sameGameConcurrentStart,true);
+  assert.equal(fan.crossLaneDevelopmentAdmissionDependencyForbidden,true);
+  assert.match(workflow,/Evaluate Unity Web quality checkpoint/);
   assert.match(workflow,/upper-platform-development-readiness\.json/);
-  assert.match(workflow,/Create verified Unity Web readiness PR/);
+  assert.match(workflow,/nativeGateAuthority:false/);
+  assert.match(workflow,/developmentAdmissionAuthority:false/);
+  assert.match(workflow,/nativeDevelopmentAlreadyIndependent:true/);
+  assert.match(workflow,/UNITY_WEB_QUALITY_CHECKPOINT=/);
   assert.doesNotMatch(workflow,/Fan verified Unity Web into exact Roblox and Unity development/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
 });
-
 
 test('Unity Web readiness failure enters reusable Vibe2 causal repair and still fails closed',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
