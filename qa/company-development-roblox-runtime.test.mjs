@@ -843,3 +843,14 @@ test('Roblox runtime collapses duplicate exact-game and batch planners without a
   assert.match(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
   assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:/);
 });
+
+test('source-plan dedupe job itself has no concurrency lock and stays on slim control capacity',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('\n  source-plan:\n');
+  const end=workflow.indexOf('\n  source-worker:\n',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(block,/concurrency:/);
+  assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
+});
