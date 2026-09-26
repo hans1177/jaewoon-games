@@ -154,7 +154,7 @@ test('planning backlog target stops plan expansion without changing persistent q
   assert.equal(result.queue.maxConcurrentTasks,256);
 });
 
-test('queued low-value micro diagnostics are consolidated so studio presentation work can enter the queue',()=>{
+test('queued low-value micro diagnostics are consolidated so holistic studio build-up can enter before generic presentation polish',()=>{
   const root=tempRepo();
   const gameId='studio-web';
   const webRoot=path.join(root,'web-games',gameId);
@@ -185,7 +185,8 @@ test('queued low-value micro diagnostics are consolidated so studio presentation
   assert.equal(cancelled.blocker,'superseded-by:STUDIO_QUALITY_PACKAGE');
   assert.ok(cancelled.evidence.includes('studio-quality-micro-task-consolidation:v1'));
   assert.equal(result.planningBacklog.supersededLegacyMicroTasks,1);
-  assert.ok(result.tasks.some(row=>row.id===`${gameId}-presentation-asset-adaptation-v1`));
+  assert.ok(result.tasks.some(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1')));
+  assert.ok(result.tasks.some(row=>row.studioQualityEvolution?.existingHolisticBackfillRequired===true));
 });
 
 test('effective wave cap does not overwrite persistent external queue max',()=>{
@@ -1110,7 +1111,11 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
   working={...working,tasks:working.tasks.map(row=>
-    row.id===first.id?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}:row
+    row.gameId===gameId
+      &&row.studioQualityEvolution?.cycle===first.studioQualityEvolution?.cycle
+      &&(row.evidence||[]).includes('studio-quality-loop:v1')
+      ?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}
+      :row
   )};
   let second=null;
   for(let i=0;i<12&&!second;i++){
