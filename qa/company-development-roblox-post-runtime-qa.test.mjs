@@ -7,7 +7,8 @@ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-pos
 test('Roblox runtime foundation lane remains Open Cloud only while post-release actual play is a separate Studio MCP lane',()=>{
   const foundation=workflow.split('\n  studio-local-plan:')[0];
   assert.match(foundation,/name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA/);
-  assert.match(foundation,/runs-on: ubuntu-latest/);
+  assert.match(foundation,/runs-on: ubuntu-slim/);
+  assert.doesNotMatch(foundation,/runs-on: ubuntu-latest/);
   assert.match(foundation,/ROBLOX_OPEN_CLOUD_API_KEY/);
   assert.match(foundation,/fetchRobloxRuntimeFoundationEvidence/);
   assert.match(foundation,/validateRobloxRuntimeFoundationEvidence/);
