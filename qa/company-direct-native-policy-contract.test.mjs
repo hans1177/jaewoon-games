@@ -268,8 +268,8 @@ test('Unity Web source bootstrap is fail-closed for any durable native progress 
   assert.doesNotMatch(workflow,/const forbidden=new Set\(\['cozy-island','daechung-rpg'\]\)/);
   assert.match(workflow,/UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN/);
   assert.match(workflow,/company-unity-web-floor-bootstrap\.mjs/);
-  assert.match(workflow,/git add "unity-games\/\$id"/);
-  assert.doesNotMatch(workflow,/git add "unity-games\/\$id" "\.build-requests\/unity-web\/\$id\.json"/);
+  assert.match(workflow,/git add "unity-games\/$GAME_ID"/);
+  assert.doesNotMatch(workflow,/git add "unity-games\/$GAME_ID" "\.build-requests\/unity-web\/\$id\.json"/);
   assert.match(generator,/BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP/);
   assert.match(generator,/upperPlatformReady:false/);
   assert.match(generator,/releaseOrDeploymentAuthority:false/);
