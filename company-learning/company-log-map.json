@@ -1,5 +1,5 @@
 {
-  "version": 76,
+  "version": 77,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1159,7 +1159,11 @@
       "FIRST_10_MINUTES_AND_SESSION_FLOW_DECISION",
       "MID_LATE_GAME_DEPTH_DECISION_WHEN_APPLICABLE",
       "SAVE_RECONNECT_SETTINGS_ACCESSIBILITY_DECISION_WHEN_APPLICABLE",
-      "PERFORMANCE_BUDGET_DECISION"
+      "PERFORMANCE_BUDGET_DECISION",
+      "EXISTING_GAME_HOLISTIC_BACKFILL_STATE",
+      "HOLISTIC_CORE_DOMAIN_PASS_GAP_NOT_APPLICABLE_RESULT",
+      "FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEW",
+      "MAP_INVENTORY_UI_CONVENIENCE_SYSTEM_CONNECTION_REVIEW_WHEN_APPLICABLE"
     ],
     "visualEvidenceDomains": [
       "CHARACTER",
@@ -1206,7 +1210,10 @@
     "passiveEvaluatedStateForbidden": true,
     "applicableGapCannotBeOmittedFromPriorityEvidence": true,
     "notApplicableRequiresDesignOrSourceAbsenceEvidence": true,
-    "presentationOnlyEvidenceCannotHideApplicableGameplayWorldInventoryUiGap": true
+    "presentationOnlyEvidenceCannotHideApplicableGameplayWorldInventoryUiGap": true,
+    "existingGamesUseCurrentHolisticStandard": true,
+    "existingGameGrandfatherExemptionForbidden": true,
+    "allFiveBackfillPillarsRequiredBeforeExistingHolisticBaseline": true
   },
   "minimumNecessaryProcedureDevelopmentEvidence": {
     "version": 1,
@@ -1476,5 +1483,49 @@
       "PRIMITIVE_ONLY_VISUAL_UPGRADE",
       "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
     ]
+  },
+  "existingGameHolisticBackfillEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
+    "requiredFor": "EVERY_ELIGIBLE_EXISTING_ACTIVE_OR_REBUILD_GAME_UNTIL_HOLISTIC_BASELINE_VERIFIED",
+    "requiredCorrelationKeys": [
+      "gameId",
+      "buildUpDirectiveId",
+      "buildUpGeneration",
+      "developmentDepth",
+      "studioQualityFocusPillar",
+      "sourceTreeFingerprint"
+    ],
+    "requiredEvidence": [
+      "EXISTING_HOLISTIC_BACKFILL_REQUIRED",
+      "EXISTING_HOLISTIC_BACKFILL_FOCUS",
+      "EXISTING_GAME_SOURCE_PRESERVE",
+      "EXISTING_GAME_GRANDFATHER_EXEMPTION_NO",
+      "HOLISTIC_DOMAIN_TRI_STATE_RESULT",
+      "CHANGED_RESPONSIBLE_GAME_FILES_WHEN_GAP_REPAIRED",
+      "FOCUS_PILLAR_QA_OR_RUNTIME_RESULT",
+      "SHARED_DIRECTIVE_FAN_IN_STATUS",
+      "ALL_FIVE_PILLAR_BACKFILL_OUTCOMES"
+    ],
+    "requiredPillars": [
+      "CORE_FUN",
+      "PROGRESSION",
+      "PRESENTATION",
+      "USABILITY",
+      "STABILITY"
+    ],
+    "completionRules": {
+      "allFiveVerifiedRequired": true,
+      "failedOrUnknownPillarCannotEmitBaselinePass": true,
+      "legacyPassCannotSubstituteCurrentEvidence": true,
+      "exactFailureStageAndSignatureRequired": true,
+      "noMeaningfulEffectCannotAdvanceDepth": true,
+      "markerOnlyEvidenceCannotProveQuality": true
+    },
+    "markers": {
+      "active": "existing-holistic-backfill:v1",
+      "grandfather": "existing-game-grandfather-exemption:NO",
+      "baseline": "EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED"
+    }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": 53,
+  "version": 54,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -752,7 +752,11 @@
       "saveCompletenessMayNotChangeExistingSaveKeysOrMeaningWithoutMigrationAuthority": true,
       "uiUxUpgradeMayNotMoveGameplayAuthorityToClient": true,
       "performanceBudgetOptimizationMayReducePresentationCostButNotProtectedGameplayMeaning": true,
-      "holisticCoverageCannotInventAbsentGameplaySystemsSolelyToSatisfyChecklist": true
+      "holisticCoverageCannotInventAbsentGameplaySystemsSolelyToSatisfyChecklist": true,
+      "existingGameGrandfatherExemptionForbidden": true,
+      "existingGameHolisticBackfillCannotResetGameByDefault": true,
+      "existingGameBackfillMustPreserveProtectedSemantics": true,
+      "allFiveRequiredBackfillPillarsMustVerifyBeforeHolisticBaseline": true
     },
     "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT"
   },
@@ -820,5 +824,25 @@
       "rawExternalProtectedAssetCopyForbidden": true,
       "gameStyleLockMustBePreserved": true
     }
+  },
+  "existingGameHolisticBackfillSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
+    "protections": {
+      "existingGameBackfillCannotExpandDevelopmentAuthority": true,
+      "catalogMembershipAloneCannotAuthorizeSourceMutation": true,
+      "existingWorkingFeatureRemovalRequiresExistingAuthorityAndEvidence": true,
+      "destructiveResetOrFullRebuildCannotBeChosenOnlyBecauseCurrentQualityIsLow": true,
+      "saveKeysSaveMeaningAndMigrationRulesRemainProtected": true,
+      "balanceEconomyDropCooldownHitboxAndNetworkAuthorityRemainProtected": true,
+      "oldPassCannotSuppressCurrentGapDetection": true,
+      "notApplicableCannotHideAnExistingSystem": true,
+      "presentationDebtCannotMonopolizeOrSuppressGameplayWorldInventoryUiUsabilityGaps": true,
+      "missingVerifiedDesignCannotBeBypassedForCoreFunOrProgression": true,
+      "failedBackfillPillarCannotBeSilentlyMarkedVerified": true,
+      "markerOnlyOrDocumentationOnlyChangeCannotCompleteBackfill": true,
+      "newWorkerQueueShadowPipelineForbidden": true
+    },
+    "failureAction": "REPAIR_EXACT_EXISTING_RESPONSIBLE_SYSTEM_AT_CURRENT_DEPTH_WHILE_UNRELATED_SAFE_PILLARS_CONTINUE"
   }
 }

@@ -1717,6 +1717,16 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   if(!requestedFocus&&phase!=='REPAIR'&&!hasVerifiedPresentation)focusPillar='PRESENTATION';
   if(requestedFocus)focusPillar=requestedFocus;
 
+  const existingHolisticBackfillPillars=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
+  const existingHolisticVerifiedFocuses=new Set((queue.tasks||[]).filter(item=>
+    clean(item?.gameId)===clean(project.gameId)
+    &&clean(item?.status).toLowerCase()==='verified'
+    &&(item?.evidence||[]).map(clean).includes('existing-holistic-backfill:v1')
+  ).map(item=>clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()).filter(value=>existingHolisticBackfillPillars.includes(value)));
+  const existingHolisticMissingFocuses=existingHolisticBackfillPillars.filter(value=>!existingHolisticVerifiedFocuses.has(value));
+  const existingHolisticBaselineVerified=project?.existing===true&&existingHolisticMissingFocuses.length===0;
+  const existingHolisticBackfillRequired=project?.existing===true&&existingHolisticMissingFocuses.includes(focusPillar);
+
   const designContext=latestVerifiedDesign(repoRoot,project.gameId);
   const gameplayDesignRequired=['CORE_FUN','PROGRESSION'].includes(focusPillar);
   if(gameplayDesignRequired&&!designContext)return null;
@@ -1774,7 +1784,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const responsibleFileLimit=requestedFocus?2:6;
   const responsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b)).slice(0,responsibleFileLimit);
   const baselineId=clean(previous?.id)||`source:${sourceRoot}`;
-  const explicitGap=knownSignals[0]||`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`;
+  const explicitGap=knownSignals[0]||(existingHolisticBackfillRequired?`EXISTING_GAME_HOLISTIC_BACKFILL:${focusPillar}`:`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`);
   const phaseInstruction=phase==='BUILD_UP'
     ?'설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 3개 이상 필요한 만큼 한 패키지에서 완성하고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다.'
     :phase==='REPAIR'
@@ -1788,8 +1798,11 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     :focusPillar==='PROGRESSION'
       ?` 승인 설계의 progressionDirection/coreLoop/signatureSystems를 실제 목표·보상·해금·웨이브·퀘스트·인벤토리·경제·콘텐츠 깊이 중 해당 게임에 존재하는 책임 시스템으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
       :(designContext?` 승인 설계 맥락을 보존한다. APPROVED_DESIGN_SOURCE=${designSource}`:'');
+  const existingBackfillInstruction=existingHolisticBackfillRequired
+    ?' 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.'
+    :'';
   const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
-${phaseInstruction}${visualInstruction}${designInstruction}
+${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}
 현재 근거=${explicitGap}
 설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
 작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
@@ -1807,6 +1820,16 @@ ${phaseInstruction}${visualInstruction}${designInstruction}
     'studio-quality-design-is-not-implementation-ceiling',
     'studio-quality-real-source-delta-required',
     'studio-quality-next-cycle-required:YES',
+    ...(existingHolisticBackfillRequired?[
+      'existing-holistic-backfill:v1',
+      'existing-holistic-backfill-focus:'+focusPillar,
+      'existing-holistic-backfill-verified-focus-count:'+String(existingHolisticVerifiedFocuses.size),
+      'existing-holistic-backfill-missing-focuses:'+existingHolisticMissingFocuses.join(','),
+      'existing-game-source-preserve:YES',
+      'holistic-domain-tristate-required:YES',
+      'existing-game-grandfather-exemption:NO'
+    ]:[]),
+    ...(existingHolisticBaselineVerified?['EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED']:[]),
     'work-package-scope:implementation-completeness',
     'work-package-scope:quality-delta',
     'work-package-scope:optimization',
@@ -1843,6 +1866,14 @@ ${phaseInstruction}${visualInstruction}${designInstruction}
     approvedDesignElements:gameplayDesignRequired?designSummary:null,
     designIsImplementationCeiling:false,
     requiredConnectedImprovements:{min:3,max:null},
+    existingHolisticBackfillRequired,
+    existingHolisticBackfillVersion:project?.existing===true?1:null,
+    existingHolisticBackfillFocus:existingHolisticBackfillRequired?focusPillar:null,
+    existingHolisticBackfillVerifiedFocuses:[...existingHolisticVerifiedFocuses],
+    existingHolisticBackfillMissingFocuses:existingHolisticMissingFocuses,
+    existingHolisticBaselineVerified,
+    existingGameGrandfatherExemption:false,
+    holisticDomainStatesRequired:['PASS','GAP','NOT_APPLICABLE'],
     realSourceDeltaRequired:true,
     gameplaySourceDeltaRequired:gameplayDesignRequired,
     visibleRenderDeltaRequired:focusPillar==='PRESENTATION',

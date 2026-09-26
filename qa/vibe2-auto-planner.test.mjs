@@ -2202,6 +2202,43 @@ test('company-runtime nested Roblox execution evidence survives planner projecti
 });
 
 
+test('existing games receive holistic backfill on all five quality pillars without grandfather exemption',()=>{
+  const root=tempRepo();
+  const gameId='existing-holistic';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.mkdirSync(path.join(source,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(source,'client','Visual.client.luau'),'local camera = workspace.CurrentCamera\n','utf8');
+  fs.writeFileSync(path.join(source,'client','Input.client.luau'),'local input = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Combat.server.luau'),'local combat = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Progression.server.luau'),'local progression = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'shared','Save.luau'),'local save = {}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'탐험과 전투 선택을 연결하는 재미',progressionDirection:'장비와 새 지역 해금으로 선택을 확장한다.'});
+  const project={
+    gameId,name:'Existing Holistic',engine:'roblox',releaseState:'development-confirmed',
+    projectPath:`roblox-games/${gameId}`,existing:true,lifecycleState:'ACTIVE'
+  };
+  const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
+  assert.equal(tasks.length,5);
+  assert.ok(tasks.every(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1')));
+  assert.ok(tasks.every(row=>(row.evidence||[]).includes('existing-game-grandfather-exemption:NO')));
+  assert.ok(tasks.every(row=>row.studioQualityEvolution.existingHolisticBackfillRequired===true));
+  assert.deepEqual(new Set(tasks.map(row=>row.studioQualityEvolution.existingHolisticBackfillFocus)),new Set(['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']));
+  assert.ok(tasks.every(row=>/기존 게임 품질 백필 세대/.test(row.goal)));
+
+  const verified=tasks.map(row=>({...row,status:'verified'}));
+  for(const focus of ['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']){
+    const next=findStudioContinuousImprovementTask(project,root,{tasks:verified},focus);
+    assert.ok(next);
+    assert.equal(next.studioQualityEvolution.existingHolisticBackfillRequired,false);
+    assert.equal(next.studioQualityEvolution.existingHolisticBaselineVerified,true);
+    assert.deepEqual(next.studioQualityEvolution.existingHolisticBackfillMissingFocuses,[]);
+    assert.ok(!(next.evidence||[]).includes('existing-holistic-backfill:v1'));
+    assert.ok((next.evidence||[]).includes('EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED'));
+  }
+});
+
 test('studio evolution emits all five quality pillars for one game',()=>{
   const root=tempRepo();
   const gameId='parallel-studio';
