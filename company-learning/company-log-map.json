@@ -1,5 +1,5 @@
 {
-  "version": 92,
+  "version": 93,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1736,5 +1736,28 @@
     "differentGamesMustRemainIndependent": true,
     "privateRuntimeDedupeRule": "OLDEST_ACTIVE_SAME_GAME_RUN_EXECUTES_HEAVY_WORK_OTHERS_SELF_SKIP",
     "workflowConcurrencyQueueReplacementForbidden": true
+  },
+  "unityRuntimeParallelCheckpointEvidence": {
+    "version": 1,
+    "policySource": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+    "workflow": ".github/workflows/company-development-unity-runtime.yml",
+    "correlationKeys": [
+      "GAME_ID",
+      "SOURCE_REVISION",
+      "ARTIFACT_IDENTITY",
+      "BUILD_RUN_ID"
+    ],
+    "requiredMarkers": [
+      "UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT",
+      "UNITY_RUNTIME_GAME_PERSIST_CONFLICT_RETRY",
+      "DEVELOPMENT_UNITY_GAME_PERSIST",
+      "COMPANY_RUNTIME_UNITY_GAME_PERSIST=PASS",
+      "IMMEDIATE_NEXT_STAGE_DISPATCH=YES",
+      "COHORT_PERSIST_FAN_IN=DISABLED"
+    ],
+    "cohortPersistFanInForbidden": true,
+    "sharedStateWriteOnlyMayRetry": true,
+    "heavyRuntimeQaMayNotWaitInsideSharedStateWrite": true,
+    "exactGameContinuationRequired": true
   }
 }

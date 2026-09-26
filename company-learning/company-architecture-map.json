@@ -1,5 +1,5 @@
 {
-  "version": 227,
+  "version": 228,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4064,9 +4064,23 @@
         "ROBLOX",
         "UNITY_APP"
       ]
+    },
+    "unityRuntimeCheckpointPersistence": {
+      "workflow": ".github/workflows/company-development-unity-runtime.yml",
+      "mode": "PER_GAME_IMMEDIATE_OPTIMISTIC_PERSIST",
+      "cohortPersistFanIn": false,
+      "distinctGamesMayPersistIndependently": true,
+      "heavyRuntimeQaOutsideSharedStateCriticalSection": true,
+      "companyRuntimeWrite": "ATOMIC_OPTIMISTIC_RETRY",
+      "nextStageDispatch": "EXACT_GAME_IMMEDIATELY_AFTER_SUCCESSFUL_PERSIST",
+      "qualityGateOrderPreserved": [
+        "TARGET_PLATFORM_RUNTIME",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ]
     }
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-27",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",

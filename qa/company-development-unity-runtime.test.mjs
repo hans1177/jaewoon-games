@@ -207,11 +207,14 @@ test('Unity executor fetches only required refs and migrates one historical sour
   assert.match(workflowSource,/CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED/);
 });
 
-test('checkpoint persistence accepts the actual upload-artifact extraction root',()=>{
+test('checkpoint persistence is game-local and does not wait for cohort artifact fan-in',()=>{
   assert.match(workflowSource,/runtime-persist\/queue/);
-  assert.match(workflowSource,/development-unity-runtime\/queue/);
-  assert.match(workflowSource,/CHECKPOINT_ROOT/);
-  assert.match(workflowSource,/checkpoint queue directory missing after artifact extraction/);
+  assert.match(workflowSource,/Persist this game's checkpoint immediately/);
+  assert.match(workflowSource,/UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(workflowSource,/UNITY_RUNTIME_GAME_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflowSource,/DEVELOPMENT_UNITY_GAME_PERSIST=/);
+  assert.doesNotMatch(workflowSource,/\n  persist-runtime:\n/);
+  assert.doesNotMatch(workflowSource,/CHECKPOINT_ROOT/);
 });
 
 test('Unity executor accepts exact game dispatch from the shared native orchestrator',()=>{
@@ -376,15 +379,17 @@ test('Unity hybrid router avoids full repository history and fetches only the ev
 });
 
 
-test('distinct Unity runtime and persistence jobs are not globally serialized while runtime writes retry exact state conflicts',()=>{
+test('distinct Unity games persist immediately without a cohort fan-in or global writer lock',()=>{
   assert.doesNotMatch(workflowSource,/^concurrency:\s*\n\s*group:\s*company-development-unity-runtime\s*$/m);
-  const start=workflowSource.indexOf('\n  persist-runtime:\n');
-  assert.ok(start>=0);
-  const persist=workflowSource.slice(start);
-  assert.doesNotMatch(persist,/group:\s*company-runtime-writer/);
-  assert.match(persist,/UNITY_RUNTIME_PERSIST_OPTIMISTIC_ATTEMPT=/);
-  assert.match(persist,/UNITY_RUNTIME_PERSIST_CONFLICT_RETRY=/);
-  assert.doesNotMatch(persist,/git rebase origin\/company-runtime/);
+  assert.doesNotMatch(workflowSource,/\n  persist-runtime:\n/);
+  assert.doesNotMatch(workflowSource,/group:\s*company-runtime-writer/);
+  assert.match(workflowSource,/Persist this game's checkpoint immediately/);
+  assert.match(workflowSource,/UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(workflowSource,/UNITY_RUNTIME_GAME_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflowSource,/git worktree add --force --detach "\$state_dir" origin\/company-runtime/);
+  assert.match(workflowSource,/company-development-confirmed-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
+  assert.match(workflowSource,/COHORT_PERSIST_FAN_IN=DISABLED/);
+  assert.doesNotMatch(workflowSource,/git rebase origin\/company-runtime/);
 });
 
 
