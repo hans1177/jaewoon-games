@@ -384,6 +384,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   const queue = recovered.queue;
   const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane });
   let tasks = started.tasks || [];
+  const reservedTaskOrder = tasks.map((task) => task.id);
   const workerBudget = Math.max(
     tasks.length,
     Math.floor(Number(started.selection?.effectiveMaxConcurrentTasks ?? maxConcurrentTasks ?? queue.maxConcurrentTasks) || tasks.length || 1)
@@ -419,7 +420,8 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
       neuronResults: []
     } : task)
   });
-  tasks = annotatedQueue.tasks.filter((task) => selectedIds.has(task.id));
+  const annotatedById = new Map(annotatedQueue.tasks.filter((task) => selectedIds.has(task.id)).map((task) => [task.id, task]));
+  tasks = reservedTaskOrder.map((id) => annotatedById.get(id)).filter(Boolean);
   return {
     reserved: started.started,
     tasks,
