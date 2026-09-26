@@ -2658,6 +2658,59 @@ test('focused Web repair keeps target selection on the first attempt before caus
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-attempt/files/index.html'),'utf8'),/Continue/);
 });
 
+test('retried Web task reuses prior focused generation evidence on the first attempt',async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'focused-history-reuse.json');
+  const workOrder=order({
+    target:'web',
+    root:'web-games/demo',
+    responsibleFiles:['web-games/demo/index.html'],
+    taskId:'focused-history-reuse'
+  });
+  workOrder.goal='continue the existing game implementation without changing protected gameplay values';
+  workOrder.selectedTask={
+    retries:1,
+    evidence:[
+      'coding-focused-replace-only:YES',
+      'coding-generation-attempts:2',
+      'candidate-sha:0123456789abcdef0123456789abcdef01234567'
+    ]
+  };
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.generation.focusedWebRepair,true);
+  assert.equal(result.generation.completionMode,'JSON_EDIT_PARTIAL');
+  assert.equal(result.generation.focusedFirstEditEarlyStop,true);
+  assert.equal(result.generation.maxPredict,1024);
+  assert.equal(result.generation.contextWindow,12288);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-history-reuse/files/index.html'),'utf8'),/Continue/);
+});
+
+test('focused history is not reused without a prior material candidate',async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'focused-history-no-candidate.json');
+  const workOrder=order({
+    target:'web',
+    root:'web-games/demo',
+    responsibleFiles:['web-games/demo/index.html'],
+    taskId:'focused-history-no-candidate'
+  });
+  workOrder.selectedTask={
+    retries:1,
+    evidence:['coding-focused-replace-only:YES','coding-generation-attempts:2']
+  };
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({summary:'update',expectedEffect:'visible change',edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],newFiles:[],replaceFiles:[],tests:['button']}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.focusedWebRepair,false);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.generation.focusedFirstEditEarlyStop,false);
+});
+
 test('focused replace string recovery is exported to immutable worker telemetry',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
