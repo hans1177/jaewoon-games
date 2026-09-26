@@ -143,7 +143,7 @@ test('native development trigger ownership avoids duplicate central plus child p
 test('director drains superseded runner backlog before noncritical supervision',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/group: director-central-company-supervisor[\s\S]*cancel-in-progress: false/);
-  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-slim/);
+  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04-arm/);
   assert.match(director,/game-primary-gate:[\s\S]*needs: runner-drain[\s\S]*runs-on: ubuntu-slim/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/cancel/);
   assert.match(director,/CONTROL_PLANE_SUPERSEDED/);
@@ -151,6 +151,8 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/company-development-roblox-runtime\.yml/);
   assert.match(director,/company-development-roblox-release-promotion\.yml/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+  assert.match(director,/JSON\.stringify\(j\)\+'\\\\n'/);
+  assert.match(director,/director-run-drain\.ndjson/);
   assert.doesNotMatch(director,/DUPLICATE_TITLE:[^\n]*company-development-unity-runtime\.yml/);
 });
 
