@@ -320,8 +320,12 @@ export function canonicalizeGameRecord(game={}){
       name:clean(game.name),
       description:clean(game.description),
       genres,
-      image:clean(game.image)||'assets/pwa-icon-512.png',
+      image:clean(game.marketingThumbnail)||clean(game.image)||'assets/pwa-icon-512.png',
       aliases:list(game.aliases)
+    },
+    marketing:{
+      thumbnail:clean(game.marketingThumbnail)||clean(game.image)||'assets/pwa-icon-512.png',
+      source:'CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET'
     },
     lifecycle:{
       state:lifecycleState,
