@@ -1,5 +1,5 @@
 {
-  "version": 114,
+  "version": 115,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2007,5 +2007,23 @@
     "staleQueuedWakeDrainAllowed": true,
     "inProgressWakeCancellationForbidden": true,
     "staleQueuedWakeDrainScope": "MAIN_PUSH_WAKE_HEAD_SHA_NOT_CURRENT_MAIN_ONLY"
+  },
+  "activeNativeRunDedupeCoverageEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.activeNativeRunDedupeCoverage20260927",
+    "markers": [
+      "NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS",
+      "NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS",
+      "NATIVE_ACTIVE_RUN_SCAN_PAGES=3",
+      "NATIVE_ACTIVE_RUN_SCAN_PAGE_FAIL",
+      "NATIVE_ACTIVE_RUN_SCAN=PASS",
+      "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
+      "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
+    ],
+    "minimumCoverageRowsPerWorkflow": 300,
+    "externalExecutionWindowCovered": 256,
+    "partialScanMayDispatch": false,
+    "independentGameParallelismRequired": true
   }
 }
