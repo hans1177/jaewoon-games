@@ -53,7 +53,8 @@ permissions:
 
 jobs:
   contract:
-    runs-on: ubuntu-latest
+    # Contract, syntax and deterministic QA only; do not consume heavy game worker capacity.
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
 
