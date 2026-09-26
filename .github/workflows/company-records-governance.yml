@@ -39,7 +39,7 @@ concurrency:
 jobs:
   records-governance:
     name: Records Schema and File Hygiene
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - name: Checkout governed revision
