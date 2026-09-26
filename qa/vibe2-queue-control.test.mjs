@@ -995,6 +995,24 @@ test('stale running development reservation is requeued without consuming retry'
   assert.ok(task.evidence.includes('recovery:stale-running-reservation-v1'));
 });
 
+test('stale-age reservation owned by a live workflow run is preserved', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'live-reservation',gameId:'live',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/live',goal:'implementation',status:'running',retries:1,maxRetries:2,
+    reservationId:'36229097447:1',reservationRunId:'36229097447',reservationRunAttempt:1,reservedAt:'2026-09-18T08:00:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{
+    nowMs:Date.parse('2026-09-18T10:00:00Z'),
+    liveReservationRunIds:new Set(['36229097447'])
+  });
+  const task=recovered.queue.tasks[0];
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.protectedLive,1);
+  assert.equal(task.status,'running');
+  assert.equal(task.reservationId,'36229097447:1');
+  assert.equal(task.lastOutcome ?? null,null);
+});
+
 test('awaiting QA running reservation is not reclaimed as stale worker capacity', () => {
   const queue=createVibeContinuousQueue({tasks:[{
     id:'awaiting',gameId:'awaiting',target:'web',department:'development',type:'implementation',
