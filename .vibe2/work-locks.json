@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-cb56s1",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
-      "acquiredAt": "2026-09-26T17:52:11.410Z",
-      "expiresAt": "2026-09-26T18:37:11.410Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-67yh3i",
       "worker": "vibe2",
       "taskId": "horror-escape-room-unity-web-base-implementation-v1",
@@ -731,6 +713,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-5uf03o",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
+      ],
+      "baseSha": "81435c833397a8cecff4a1b7ac335681b6ea2a8b",
+      "acquiredAt": "2026-09-26T18:37:20.785Z",
+      "expiresAt": "2026-09-26T19:22:20.785Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
