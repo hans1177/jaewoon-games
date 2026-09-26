@@ -1180,7 +1180,7 @@ test('missing diagnostic postcondition is a retryable generation failure',()=>{
   assert.equal(shouldRetryGenerationError(error),true);
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(source,/const diagnosticFocusedReplaceOnly=!allowFullRewrite/);
-  assert.match(source,/diagnosticFocusedReplaceOnly\|\|\(focusedFinal/);
+  assert.match(source,/diagnosticFocusedReplaceOnly\|\|studioFocusedSeed\|\|\(focusedFinal/);
 });
 
 test('speculative interval diagnostic uses deterministic repair before model retry', async()=>{
