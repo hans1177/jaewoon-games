@@ -452,7 +452,7 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
 });
 
-test('reserve preflight stays syntax-and-machine-state only and uses main contract with control state',()=>{
+test('reserve preflight uses the pinned main contract and blocks broken GAME_PRIMARY contracts before reservation',()=>{
   const start=workflow.indexOf('- name: Prepare latest main machine contract');
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
   assert(start>=0 && end>start);
@@ -469,9 +469,18 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
   assert(preflight.includes('--queue="$control_root/.vibe2/queue.json"'));
   assert(preflight.includes('--control="$control_root/.vibe2/parallelism-control.json"'));
   assert(!preflight.includes('node tools/vibe2-handoff.mjs --check'));
-  assert(!preflight.includes('node --test '));
-  assert.equal(runtime.qaOptimization.reservePreflight,'syntax-and-machine-state-only');
-  assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
+  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'));
+  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'));
+  assert(preflight.includes('node --test --test-concurrency=4'));
+  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
+  const regression=runtime.continuous.reserveContractRegressionPreflight;
+  assert.equal(regression.enabled,true);
+  assert.equal(regression.exactContractShaRequired,true);
+  assert.equal(regression.reuseSuccessfulCoreQaForExactSha,true);
+  assert.equal(regression.fallback,'LOCAL_SAME_FAN_IN_CORE_REGRESSION');
+  assert.equal(regression.observationFailureAction,'RUN_LOCAL_REGRESSION');
+  assert.equal(regression.blocksReservationOnFailure,true);
+  assert.equal(regression.gameWorkerStartBeforePass,false);
 });
 
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
