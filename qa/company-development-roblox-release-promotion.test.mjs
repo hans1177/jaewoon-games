@@ -412,3 +412,26 @@ test('dedicated target bootstrap may use existing Roblox security credential onl
   assert.match(candidate,/createRobloxDedicatedExperience\([\s\S]*cookie/);
   assert.match(candidate,/publishRobloxPlace\(\{plan,retryDelaysMs:\[\]\}\)/);
 });
+
+
+test('existing release workflow applies canonical marketing art through Open Cloud thumbnail scope',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const c=roadmap.robloxMarketingThumbnailSyncContract;
+  assert.equal(c.canonicalSource.catalogField,'game-catalog.json#games[].marketingImage');
+  assert.equal(c.robloxUpload.provider,'ROBLOX_OPEN_CLOUD');
+  assert.equal(c.robloxUpload.requiredScope,'universe.thumbnail:write');
+  assert.equal(c.robloxUpload.cookieFallbackForbidden,true);
+  assert.deepEqual(c.currentInternalReleaseTargets,['cozy-island','daechung-rpg','horror-escape-room','village-dungeons']);
+
+  const start=workflow.indexOf('\n  thumbnail-sync:');
+  assert.ok(start>=0,'thumbnail-sync job missing');
+  const block=workflow.slice(start);
+  assert.match(block,/github\.event_name == 'push'/);
+  assert.match(block,/tools\/company-roblox-thumbnail-sync\.mjs/);
+  assert.match(block,/ROBLOX_OPEN_CLOUD_API_KEY: \$\{\{ secrets\.ROBLOX_OPEN_CLOUD_API_KEY \}\}/);
+  assert.match(block,/librsvg2-bin/);
+  assert.match(block,/fonts-noto-cjk/);
+  assert.doesNotMatch(block,/ROBLOX_ROBLOSECURITY|ROBLOX_SECURITY_COOKIE/);
+  assert.match(workflow,/assets\/roblox-thumbnails\/\*\*/);
+  assert.match(workflow,/game-catalog\.json/);
+});
