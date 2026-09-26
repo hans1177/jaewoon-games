@@ -7,7 +7,7 @@ local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 -- STUDIO_ASSET_BINDING_CLIENT_BEGIN
-local STUDIO_ASSET_BINDING_VERSION = 1
+local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = Config.StudioAssets or {}
 local studioAssetFamilies = studioAssetConfig.Families or {}
 local studioUi = studioAssetFamilies.UI or {}
