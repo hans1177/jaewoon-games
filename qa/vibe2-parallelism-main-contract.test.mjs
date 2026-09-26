@@ -98,6 +98,9 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(learning.liveRunnerPressureGateImplemented,true);
   assert.equal(learning.pressureObservationFailureDefersLearning,true);
   assert.equal(learning.productionMayNotWaitForLearningReserve,true);
+  assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'EXECUTION_LANE');
+  assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
 
   const reserveStart=core.indexOf('\n  reserve:\n');
   const reserveOutputs=core.indexOf('    outputs:',reserveStart);
@@ -106,7 +109,8 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(core,/format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/format\('vibe2-continuous-\{0\}', github\.run_id\)/);
-  assert.match(core,/vibe2-fanin-refill-singleton/);
+  assert.doesNotMatch(core,/vibe2-fanin-refill-singleton/);
+  assert.match(core,/format\('vibe2-fanin-refill-\{0\}', github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
   assert.match(runner,/group: vibe2-24h-cycle-singleton-v3/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
