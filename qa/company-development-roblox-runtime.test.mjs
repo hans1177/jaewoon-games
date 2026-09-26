@@ -656,6 +656,10 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/const bootstrapFailed=secondaryOwnerFocus\?item\.ownerFocusRobloxSourceBootstrapFailedAt:item\.robloxSourceBootstrapFailedAt/);
   assert.match(workflow,/item\.robloxFoundationF0Passed!==true/);
   assert.match(workflow,/const knownSourceRepairDebt=Boolean\(bootstrapFailed\)\|\|f0FoundationRepair/);
+  assert.match(workflow,/const repairSupersedesCandidate=existingSourceAssetRebind\|\|knownSourceRepairDebt/);
+  assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
+  assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
+  assert.ok(workflow.indexOf('const repairSupersedesCandidate=')<workflow.indexOf('if(candidateReady&&!repairSupersedesCandidate)continue'));
   assert.match(workflow,/reconciledPass\.has\(item\.gameId\)&&!knownSourceRepairDebt/);
   assert.doesNotMatch(workflow,/f0FoundationRepair=!secondaryOwnerFocus\s*\n\s*&&state==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'/);
 });
