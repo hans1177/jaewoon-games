@@ -175,8 +175,9 @@ permissions:
   contents: read
 
 concurrency:
+  # Keep one active regression alive during main churn; GitHub keeps only the newest pending run.
   group: vibe2-core-qa-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   test:
