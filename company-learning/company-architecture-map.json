@@ -1,5 +1,5 @@
 {
-  "version": 219,
+  "version": 220,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3637,7 +3637,8 @@
       "state": "tools/company-recovery-queue.mjs",
       "dispatch": "tools/company-recovery-dispatch.mjs",
       "systemAi": "tools/company-system-ai-worker.mjs",
-      "scheduler": ".github/workflows/vibe2-24h-runner.yml"
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "systemSteward": "tools/vibe2-system-steward.mjs"
     },
     "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
     "terminalFailureFromRetryCount": false,
@@ -3666,6 +3667,38 @@
       "failureFeedback": "tools/company-system-ai-queue.mjs",
       "noShadowPipeline": true,
       "noNewAuthority": true
+    },
+    "staleRunningReservationRecovery": {
+      "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticRecovery.staleRunningReservation",
+      "implementation": "tools/vibe2-system-steward.mjs::staleRunningIds",
+      "contractTest": "qa/vibe2-system-steward.test.mjs",
+      "queue": "vibe2-unreal-core:.vibe2/queue.json",
+      "eligibleState": "running",
+      "waitBlockersExcluded": true,
+      "staleAfterMinutes": 45,
+      "detection": "MISSING_OR_OLDER_THAN_STALE_THRESHOLD_RESERVED_AT",
+      "action": "CLEAR_RESERVATION_AND_REQUEUE_SAME_TASK",
+      "clearedFields": [
+        "reservationId",
+        "reservationRunId",
+        "reservationRunAttempt",
+        "reservedAt",
+        "blocker"
+      ],
+      "preservedState": [
+        "taskId",
+        "gameId",
+        "goal",
+        "retryHistory",
+        "evidence",
+        "protectedSemantics"
+      ],
+      "actionMarker": "RECOVER_STALE_RUNNING_RESERVATION",
+      "lastOutcomeMarker": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "evidenceMarker": "system-steward:stale-running-reservation-recovered",
+      "directMainWrite": false,
+      "policyMutation": false,
+      "runningSafeWorkCancellation": false
     }
   },
   "learningRetrievalRouting": {
