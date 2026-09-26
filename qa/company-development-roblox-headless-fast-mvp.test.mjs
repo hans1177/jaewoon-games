@@ -133,8 +133,10 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
   assert.match(header,/run-name: Roblox F0 · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.doesNotMatch(header,/^concurrency:\s*$/m);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH=DEDUPED_ACTIVE:/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_COUNT=/);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF=DEDUPED_ACTIVE_RUNTIME:/);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF_DISPATCH_COUNT=/);
+  assert.match(workflow,/company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-release-promotion\.yml/);
 });
 
 test('F0 planner uses central Roblox validation mode and does not require a queue-local robloxValidationMode cache',()=>{
@@ -158,7 +160,7 @@ test('F0 accepts approved non-combat action loops without inventing combat marke
 test('F0 persistence does not serialize the whole job and reapplies evidence after runtime write conflicts',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
   const start=workflow.indexOf('\n  persist:\n');
-  const end=workflow.indexOf('\n      - name: Dispatch private runtime candidate deployment',start);
+  const end=workflow.indexOf('\n      - name: Dispatch exact Roblox runtime private-candidate handoff',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.doesNotMatch(block,/group:\s*company-runtime-writer/);
@@ -187,4 +189,14 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
   const persistStart=workflow.indexOf('\n  persist:\n');
   const persistBlock=workflow.slice(persistStart);
   assert.match(persistBlock,/runs-on:\s*ubuntu-slim/);
+});
+
+
+test('F0 hands exact game ids back to Roblox runtime instead of racing the private deployment workflow',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(workflow,/name: Dispatch exact Roblox runtime private-candidate handoff/);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF=EXACT_RUNTIME:/);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF=DEDUPED_ACTIVE_RUNTIME:/);
+  assert.match(workflow,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-release-promotion\.yml/);
 });
