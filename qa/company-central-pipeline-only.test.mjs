@@ -341,3 +341,34 @@ test('Roblox runtime planners reuse central contract QA and keep responsibility-
   assert.equal(architecture.robloxPlannerDuplicateContractQaRemoval?.runtimeCriticalPathWaitsForDuplicateQa,false);
   assert.equal(logMap.robloxPlannerDuplicateContractQaRemovalEvidence?.duplicateRuntimeTestsPresent,false);
 });
+
+
+test('Unity prepare reuses central contract QA and keeps Unity responsibility-local tests only',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const unity=read('.github/workflows/company-development-unity-runtime.yml');
+  const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
+  const change=roadmap.changeRecord?.unityPlannerDuplicateContractQaRemoval20260927;
+
+  for(const testFile of [
+    'qa/company-shared-context.test.mjs',
+    'qa/company-selected-platform-router.test.mjs',
+    'qa/company-development-unity-runtime.test.mjs',
+  ]){
+    assert.ok(centralQa.includes(testFile),testFile+' central QA authority');
+  }
+  assert.doesNotMatch(unity,/node --test qa\/company-shared-context\.test\.mjs/);
+  assert.doesNotMatch(unity,/node --test qa\/company-selected-platform-router\.test\.mjs/);
+  assert.doesNotMatch(unity,/node --test qa\/company-development-unity-runtime\.test\.mjs/);
+  assert.match(unity,/node --test qa\/company-upper-platform-admission\.test\.mjs/);
+  assert.match(unity,/node --test qa\/unity-package-fatal-logcat\.test\.mjs/);
+
+  assert.equal(change?.canonicalQaAuthority,'.github/workflows/company-central-policy-contract-qa.yml');
+  assert.equal(change?.duplicateValidationForbidden,true);
+  assert.equal(change?.gameDispatchWaitsForDuplicateQa,false);
+  assert.equal(change?.canonicalUnityStageOrderUnchanged,true);
+  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
+  assert.equal(architecture.unityPlannerDuplicateContractQaRemoval?.runtimeCriticalPathWaitsForDuplicateQa,false);
+  assert.equal(logMap.unityPlannerDuplicateContractQaRemovalEvidence?.duplicateRuntimeTestsPresent,false);
+});
