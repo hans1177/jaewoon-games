@@ -442,13 +442,13 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T04:00:07.296Z",
-      "robloxSourceCommit": "51eadc7b331419af8319c664c539023aed1e7403",
-      "robloxSourceBootstrapPassedAt": "2026-09-25T17:30:08.745Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-26T04:00:07.296Z",
+      "updatedAt": "2026-09-26T04:08:41.337Z",
+      "robloxSourceCommit": "80e9b670ea840a75830db22a8f0f211afd584549",
+      "robloxSourceBootstrapPassedAt": "2026-09-26T04:08:41.337Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -500,7 +500,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-studio-asset-binding-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -809,7 +809,145 @@
       "robloxF9Blockers": [
         "roblox-f9-open-tester-failure"
       ],
-      "robloxInternalMultiplayerSimplifiedPassed": false
+      "robloxInternalMultiplayerSimplifiedPassed": false,
+      "robloxStudioAssetBindingApplied": true,
+      "robloxStudioAssetBinding": {
+        "version": 3,
+        "applied": true,
+        "source": "company-asset-library.json#baseMaterialLibrary",
+        "libraryVersion": 18,
+        "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+        "selectedAtomCount": 46,
+        "families": {
+          "UI": [
+            "FRAME_PANEL",
+            "BUTTON_PRIMARY",
+            "BAR_HEALTH"
+          ],
+          "ENVIRONMENT": [
+            "TREE_TRUNK_THICK",
+            "TREE_CROWN_ROUND",
+            "ROCK_MEDIUM",
+            "ROAD_DIRT"
+          ],
+          "BUILDING": [
+            "FOUNDATION_RECT",
+            "WALL_SOLID",
+            "DOOR_SINGLE",
+            "ROOF_GABLE"
+          ],
+          "PROP": [
+            "CHEST",
+            "CRATE",
+            "LAMP"
+          ],
+          "MATERIAL": [
+            "WOOD",
+            "STONE",
+            "METAL"
+          ],
+          "AUDIO": [
+            "ENV_WIND",
+            "ENV_WATER",
+            "UI_CONFIRM"
+          ],
+          "VFX": [
+            "IMPACT_FLASH",
+            "TRAIL_SHORT",
+            "SHAPE_BURST"
+          ],
+          "SKILL": [
+            "CAST_HAND",
+            "TELEGRAPH_CIRCLE",
+            "IMPACT_SMALL"
+          ],
+          "WEAPON": [
+            "BLADE_LONG",
+            "GUARD_CROSS",
+            "GRIP_LONG"
+          ],
+          "CHARACTER": [
+            "TORSO_CLOTH",
+            "SHOULDER_LIGHT",
+            "BACK_CAPE"
+          ],
+          "CREATURE": [
+            "HEAD_CANINE",
+            "JAW_LONG",
+            "CLAW"
+          ],
+          "MOTION": [
+            "IDLE_RELAXED",
+            "WALK",
+            "JOG",
+            "RUN",
+            "START",
+            "STOP",
+            "TURN_90",
+            "JUMP_START",
+            "LAND",
+            "HIT_FRONT",
+            "DEATH_FRONT"
+          ]
+        },
+        "universalAssetFirst": {
+          "required": true,
+          "allFamilies": [
+            "CHARACTER",
+            "CREATURE",
+            "BUILDING",
+            "ENVIRONMENT",
+            "WEAPON",
+            "SKILL",
+            "MATERIAL",
+            "AUDIO",
+            "VFX",
+            "UI",
+            "MOTION",
+            "PROP"
+          ],
+          "allFamiliesEvaluated": true,
+          "missingFamilies": [],
+          "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+          "actualSourceBindingRequired": true,
+          "markerOnlyApplicationForbidden": true,
+          "mapEnvironmentBuildingPropRequired": true
+        },
+        "recipeId": "NORMAL_VARIANT",
+        "motionQuality": {
+          "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "motionAtoms": [
+            "IDLE_RELAXED",
+            "WALK",
+            "JOG",
+            "RUN",
+            "START",
+            "STOP",
+            "TURN_90",
+            "JUMP_START",
+            "LAND",
+            "HIT_FRONT",
+            "DEATH_FRONT"
+          ],
+          "libraryFirst": true,
+          "semanticAtomsAreNotAnimationClips": true,
+          "nativeAnimationClipRuntimeVerificationRequired": true,
+          "actorClasses": [
+            "PLAYER",
+            "HUMANOID_NPC",
+            "CREATURE"
+          ],
+          "articulatedRigRequired": true,
+          "animatorRequired": true,
+          "blendAndSpeedSyncRequired": true,
+          "ikAndProceduralCorrectionPreferred": true,
+          "mannequinHardFailure": "CHARACTER_MOTION_MANNEQUIN"
+        },
+        "productionVerified": false,
+        "runtimeVerificationRequired": true,
+        "verifiedPromotionAllowed": false,
+        "gameplayAuthority": false
+      }
     },
     {
       "gameId": "horror-escape-room",
@@ -2864,10 +3002,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T04:08:33.416Z",
+      "updatedAt": "2026-09-26T04:08:41.337Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2877,7 +3015,7 @@
       "robloxSourceBootstrapPassedAt": "2026-09-26T04:03:29.223Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": "development/roblox-monster-adventure-36216443044-1",
-      "robloxSourceCandidateReadyAt": "2026-09-26T04:08:02.682Z",
+      "robloxSourceCandidateReadyAt": "2026-09-26T04:08:41.337Z",
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "f4ea0625978894fffa45589f876fe08c8b573144",
       "robloxBuildArtifactIdentity": "sha256:cd6d866832db9734ced908fc5152db527e8c98e4aae9238e5f2918e3dd4a8724",
@@ -3112,7 +3250,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-source-promotion-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -5334,7 +5472,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-26T04:08:33.416Z",
+  "updatedAt": "2026-09-26T04:08:41.337Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
