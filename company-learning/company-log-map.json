@@ -1,5 +1,5 @@
 {
-  "version": 90,
+  "version": 91,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1706,6 +1706,11 @@
       "UNITY"
     ],
     "internalPlatformOrderForbidden": true,
-    "qaSecurityReleaseGateWeakeningForbidden": true
+    "qaSecurityReleaseGateWeakeningForbidden": true,
+    "canaryMarkers": [
+      "REPRESENTATIVE_CANARY_MODE=PARALLEL_OBSERVATION_ONLY",
+      "CANARY_SERIALIZES_GAME_ID_WAVE=NO"
+    ],
+    "canaryMaySerializeGameIds": false
   }
 }
