@@ -1,5 +1,5 @@
 {
-  "version": 72,
+  "version": 73,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1346,7 +1346,8 @@
       "ROBLOX_THUMBNAIL_RENDER=PASS",
       "ROBLOX_THUMBNAIL_UPLOAD=",
       "ROBLOX_THUMBNAIL_VERIFY=",
-      "HOMEPAGE_MARKETING_IMAGE_SYNC=PASS"
+      "HOMEPAGE_MARKETING_IMAGE_SYNC=PASS",
+      "ROBLOX_THUMBNAIL_AUTH="
     ],
     "correlationKeys": [
       "GAME_ID",
@@ -1358,6 +1359,12 @@
     "secretRedactionRequired": true,
     "rawApiKeyForbidden": true,
     "uploadPassRequiresHttpSuccessAndOperationEvidence": true,
-    "verifyPassRequiresProcessingOrListedThumbnailEvidence": true
+    "verifyPassRequiresProcessingOrListedThumbnailEvidence": true,
+    "allowedAuthMarkers": [
+      "API_KEY",
+      "COOKIE_CSRF_SCOPE_FALLBACK"
+    ],
+    "cookieValueMayNotAppearInLogs": true,
+    "csrfValueMayNotAppearInLogs": true
   }
 }
