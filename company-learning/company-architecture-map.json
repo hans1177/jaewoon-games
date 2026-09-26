@@ -1197,11 +1197,12 @@
       },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "vibeGameControlRunnerPool": {
-        "source": "company-learning/platform-release-roadmap.json#changeRecord.gameControlRunnerPoolSeparation20260926",
-        "reserve": "ubuntu-24.04-arm",
+        "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
+        "reserve": "ubuntu-slim",
         "fanIn": "ubuntu-24.04-arm",
         "worker": "ubuntu-latest",
         "modelCache": "ubuntu-latest",
+        "lightweightReserveSeparatedFromArmFanIn": true,
         "queueReservationAndStateFanInOnly": true,
         "heavyGameExecutionUnchanged": true
       },
