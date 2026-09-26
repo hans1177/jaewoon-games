@@ -1392,6 +1392,10 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   assert.match(fanIn,/git reset --hard origin\/vibe2-unreal-core/);
   assert.match(fanIn,/vibe2-queue-control\.mjs" fan-in/);
   assert.match(fanIn,/VIBE2_FAN_IN_STATE_ALREADY_APPLIED=YES/);
+  assert.match(fanIn,/rm -rf "\\$contract_root\\/\\$runtime_design_path"/);
+  assert.match(fanIn,/tar -x -C "\\$contract_root"/);
+  assert.doesNotMatch(fanIn,/rm -rf "\/tmp\/vibe2-main\/\\$runtime_design_path"/);
+  assert.doesNotMatch(fanIn,/tar -x -C \/tmp\/vibe2-main/);
   assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
 });
 
