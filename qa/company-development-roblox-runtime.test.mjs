@@ -606,8 +606,25 @@ test('Roblox source persistence rejects results when the source-plan control con
   assert.match(workflow,/const sourcePlanContractStale=Boolean\(plannedContractFingerprint&&plannedContractFingerprint!==liveContractFingerprint\)/);
   assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_STALE=/);
   assert.match(workflow,/for\(const result of sourcePlanContractStale\?\[\]:reconciliation\)/);
-  assert.match(workflow,/for\(const result of sourcePlanContractStale\?\[\]:results\)/);
+  assert.match(workflow,/for\(const result of sourcePlanContractStale\?\[\]:results\.filter\(result=>result\?\.superseded!==true\)\)/);
+  assert.match(workflow,/ROBLOX_SOURCE_WORKER_SUPERSEDED_COUNT=/);
   assert.match(workflow,/staleReconciliationCount=Math\.max\(reconciliation\.length,expected\.length,1\)/);
+});
+
+test('Roblox source worker bases candidate on current main without leaking workflow diffs and requeues stale contracts',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const workerStart=workflow.indexOf('  source-worker:');
+  const workerEnd=workflow.indexOf('  source-bootstrap:',workerStart);
+  const worker=workflow.slice(workerStart,workerEnd);
+  assert.match(worker,/SOURCE_PLAN_CONTRACT_FINGERPRINT: \$\{\{ needs\.source-plan\.outputs\.contract_fingerprint \}\}/);
+  assert.match(worker,/ROBLOX_SOURCE_PLAN_CONTRACT_STALE_BEFORE_WORKER=/);
+  assert.match(worker,/ROBLOX_SOURCE_PLAN_CONTRACT_CURRENT=/);
+  assert.match(worker,/git checkout -B "\$branch" origin\/main/);
+  assert.doesNotMatch(worker,/git checkout -b "\$branch"/);
+  assert.match(worker,/ROBLOX_SOURCE_BRANCH_BASE=/);
+  assert.match(worker,/if: steps\.generate\.outcome == 'success' && steps\.generate\.outputs\.superseded != 'true'/);
+  assert.match(worker,/failure=superseded\?'source-plan-contract-superseded'/);
+  assert.match(worker,/ROBLOX_WORKER_RESULT=\$\{id\}:\$\{superseded\?'SUPERSEDED'/);
 });
 
 test('Roblox batch scheduler v5 uses slim control-plane capacity without capping per-game matrix parallelism',()=>{
