@@ -1,5 +1,5 @@
 {
-  "version": 435,
+  "version": 436,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8699,7 +8699,13 @@
       "runningOrCompletedGameWorkerCancellationForbidden": true,
       "sharedStateOptimisticRetryUnchanged": true,
       "independentGameParallelismPreserved": true,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "duplicateWakeSignalsCoalesced": true,
+      "concurrencyGroup": "vibe2-main-push-game-primary-wake",
+      "concurrencyScope": "MAIN_PUSH_WAKE_ONLY",
+      "activeWakeCancellationForbidden": true,
+      "pendingWakePolicy": "KEEP_ACTIVE_AND_ONLY_NEWEST_PENDING_WAKE",
+      "repositoryDispatchAndCallableRunsRemainRunScoped": true
     }
   },
   "vibeExecutionLaneContract": {
