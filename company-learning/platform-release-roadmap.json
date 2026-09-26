@@ -1,5 +1,5 @@
 {
-  "version": 413,
+  "version": 414,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -908,7 +908,7 @@
     "sourceCandidateGenerationBottleneckMitigation": {
       "version": 6,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "FOCUSED_TIMEOUT_POLICY_RESYNC_IMPLEMENTED_PENDING_CI_AND_LIVE_VERIFICATION",
+      "status": "FOCUSED_TIMEOUT_POLICY_RESYNC_CI_VERIFIED_LIVE_PENDING",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -1156,7 +1156,7 @@
         "sharedContextResultContaminationObserved": "SOURCE_FAILURE_EXITED_BEFORE_AFTER_WORK_REVALIDATION"
       },
       "focusedTimeoutPolicyResync": {
-        "state": "IMPLEMENTED_PENDING_CI_AND_LIVE_VERIFICATION",
+        "state": "CI_VERIFIED_LIVE_PENDING_STALE_SCHEDULER_EPOCH_RELEASE",
         "authorityChange": "NONE",
         "executionScopeChange": "NONE",
         "qaBypassAllowed": false,
@@ -3543,7 +3543,7 @@
           "workerControlCheckoutGamePrimaryBoundary": 256,
           "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
           "reserveConcurrencyRelief": "LIVE_VERIFIED",
-          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
+          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
           "learningIdleRunnerPressureDeferral": "LIVE_VERIFIED",
           "gamePrimaryExternalBoundary": 256,
           "lastLanePressureLiveVerificationRun": 36204978877,
@@ -3552,7 +3552,9 @@
           "modelCacheWarmupProbe": "RESERVE_LOOKUP_ONLY_ON_HIT",
           "modelCacheWarmupRunnerRelief": "LIVE_VERIFIED_SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT",
           "modelCacheHitRestoreLiveRun": 36208311596,
-          "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE"
+          "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
+          "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_LIVE",
+          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING"
         },
         "incidentHistory": [
           {
@@ -8220,6 +8222,39 @@
       "noAuthorityExpansion": true,
       "noQualityGateWeakening": true,
       "noRetryBudgetIncrease": true
+    },
+    "vibe24hStaleSingletonEpochRelease20260926": {
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "reason": "RELEASE_STALE_PRE_PATCH_V2_SCHEDULER_CHAIN_BLOCKING_NEW_FOCUSED_TIMEOUT_RECOVERY_LIVE_VERIFICATION",
+      "observed": {
+        "holdingRunId": 36231868218,
+        "holdingRunNumber": 4554,
+        "holdingHead": "28d775225c3c763a04454eee826175b89d2dacfb",
+        "holdingJobId": 108376800973,
+        "holdingStage": "GENERATE_ISOLATED_CANDIDATE_FROM_PINNED_MAIN_CONTRACT",
+        "replacedPendingRuns": [
+          36231885689,
+          36232156226,
+          36232191628,
+          36232791575
+        ],
+        "currentPendingRunId": 36233623707
+      },
+      "previousEpoch": "vibe2-24h-cycle-singleton-v2",
+      "currentEpoch": "vibe2-24h-cycle-singleton-v3",
+      "invariant": "ONE_CONTINUOUS_SCHEDULER_CHAIN_PER_CURRENT_EPOCH",
+      "stalePreviousEpochAction": "ALLOW_EXISTING_V2_RUN_TO_DRAIN_WITHOUT_NEW_V2_WAKE_SIGNALS",
+      "newWakeSignalAction": "COLLAPSE_TO_SINGLE_V3_PENDING_OR_RUNNING_CHAIN",
+      "preserves": [
+        "CANCEL_IN_PROGRESS_FALSE",
+        "LANE_RESERVATION_CONTRACT",
+        "OPTIMISTIC_STATE_WRITES",
+        "QA_AND_RELEASE_GATES",
+        "OWNER_RULE_1_CONTINUITY"
+      ],
+      "authorityChange": "NONE",
+      "qualityGateWeakening": false,
+      "securityBoundaryChange": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -8329,7 +8364,7 @@
       "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
       "pressureObservationFailureAction": "DEFER_LEARNING_ONLY",
       "productionMayNotWaitForLearningReserve": true,
-      "schedulerEpoch": "vibe2-24h-cycle-singleton-v2"
+      "schedulerEpoch": "vibe2-24h-cycle-singleton-v3"
     },
     "releaseWait": {
       "taskClass": "RELEASE_WAIT",
