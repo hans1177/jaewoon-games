@@ -753,8 +753,8 @@ test('Studio MCP plan and actual play bypass saturated GitHub-hosted foundation 
   assert.match(studioPlanBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(studioPlanBlock,/shell: powershell/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=SELF_HOSTED_WINDOWS/);
-  assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
-  assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
+  assert.match(studioPlanBlock,/needs: runtime-foundation-qa/);
+  assert.match(studioPlanBlock,/if: always\(\) && needs\.runtime-foundation-qa\.result == 'success'/);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
   assert.match(workflow,/event_type = 'vibe2-fanin-refill'/);
   assert.match(workflow,/reason = 'roblox-official-studio-mcp-actual-play'/);
