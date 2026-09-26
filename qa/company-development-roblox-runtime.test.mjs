@@ -320,7 +320,10 @@ test('successful Roblox package flow auto-dispatches shared preflight then F0 wi
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
   assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
+  assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATION_IDS='));
   assert.ok(workflow.includes('ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT='));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_ACTIVE:'));
   assert.doesNotMatch(workflow,/\$package_pending" == '0'.*ROBLOX_POST_PACKAGE_CONTINUATION/s);
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
@@ -807,4 +810,14 @@ test('pending private candidate dispatch reuses only a candidate bound to the cu
   assert.match(workflow,/String\(candidate\.universeId\|\|''\)===String\(publicationTarget\.universeId\|\|''\)/);
   assert.match(workflow,/String\(candidate\.placeId\|\|''\)===String\(publicationTarget\.placeId\|\|''\)/);
   assert.match(workflow,/bootstrapState\|\|''\)\.toUpperCase\(\)==='CREATED_PRIVATE_UNPUBLISHED'/);
+});
+
+test('Roblox continuation dispatch is per-game and does not wait behind one global active continuation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/roblox-continuation-ready-ids/);
+  assert.match(workflow,/Roblox shared preflight · /);
+  assert.match(workflow,/company-development-roblox-runtime-continuation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.doesNotMatch(workflow,/&& "\$active_continuations" == '0'/);
+  assert.doesNotMatch(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE/);
 });

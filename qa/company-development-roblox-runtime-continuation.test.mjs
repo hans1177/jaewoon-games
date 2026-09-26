@@ -96,3 +96,14 @@ test('Roblox preflight persistence does not hold a global writer job lock and re
   assert.match(block,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
+
+test('shared preflight continuation is isolated per game while batch compatibility remains available',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.match(workflow,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/workflow_dispatch:[\s\S]*game_id:/);
+  assert.match(workflow,/group: company-development-roblox-runtime-continuation-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
+  assert.match(workflow,/if\(requested&&item\.gameId!==requested\)continue/);
+  assert.match(workflow,/if\(requested&&item\.gameId!==requested\)return false/);
+  assert.match(workflow,/company-development-roblox-headless-fast-mvp\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID"/);
+});

@@ -1,14 +1,20 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox Vibe Shared Preflight
+run-name: Roblox shared preflight · ${{ inputs.game_id || 'batch' }}
 
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty keeps batch-compatible manual execution.
+        required: false
+        type: string
 
 permissions:
   contents: write
   actions: write
 
 concurrency:
-  group: company-development-roblox-runtime-continuation
+  group: company-development-roblox-runtime-continuation-${{ inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
@@ -49,6 +55,8 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - name: Resolve exact-build preflight slice
         id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -57,11 +65,14 @@ jobs:
           import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_CONTINUATION_REQUESTED_GAME_ID_INVALID:'+requested);
           const canonicalRobloxValidationMode=String(roadmap.roblox?.validationMode||'').trim();
           if(canonicalRobloxValidationMode!=='HEADLESS_FAST_MVP')throw new Error('ROBLOX_CANONICAL_VALIDATION_MODE_INVALID:'+canonicalRobloxValidationMode);
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=256)break;
+            if(requested&&item.gameId!==requested)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
@@ -82,6 +93,7 @@ jobs:
             rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity,secondaryOwnerFocus});
           }
           const f0Ready=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
             const revision=String(item.robloxSourceCommit||'').trim();
@@ -98,6 +110,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`f0_ready_count=${f0Ready.length}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
+          console.log(`ROBLOX_CONTINUATION_REQUESTED_GAME_ID=${requested||'BATCH'}`);
           console.log(`ROBLOX_EXISTING_F0_READY_COUNT=${f0Ready.length}`);
           console.log(`ROBLOX_CANONICAL_VALIDATION_MODE=${canonicalRobloxValidationMode}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
@@ -307,7 +320,13 @@ jobs:
       - name: Dispatch exact-package F0 source preflight
         env:
           GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'
+          if [ -n "$REQUESTED_GAME_ID" ]; then
+            gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+            echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:$REQUESTED_GAME_ID"
+          else
+            gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:BATCH'
+          fi
