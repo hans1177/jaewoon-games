@@ -148,7 +148,7 @@ test('bound Roblox games re-enter reconciliation only when their own source tree
 });
 
 
-test('SOURCE_BIND routing preserves existing exact Roblox evidence when only unrelated repository files changed',()=>{
+test('SOURCE_BIND debt revalidates unchanged exact Roblox source even when only unrelated repository files changed',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-bind-unchanged-'));
   try{
     const root=path.join(tmp,'roblox-games',gameId);
@@ -177,7 +177,11 @@ test('SOURCE_BIND routing preserves existing exact Roblox evidence when only unr
       loadBaseline:()=>baseline,
     });
 
-    assert.equal(rows.length,0,'unchanged exact game path must preserve its bound source revision and downstream evidence');
+    assert.equal(rows.length,1,'SOURCE_BIND debt must be revalidated even when the exact game path did not change');
+    assert.equal(rows[0].pass,true,rows[0].blockers.join(','));
+    assert.equal(rows[0].sourceDrift,false);
+    assert.equal(rows[0].sourceRevision,currentRevision);
+    assert.match(rows[0].sourceTreeSha,/^[0-9a-f]{40}$/);
     assert.notEqual(boundRevision,currentRevision);
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
