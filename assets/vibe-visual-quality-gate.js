@@ -141,6 +141,16 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   const golden=auditVibeGoldenSceneEvidence(evidence);
   const highEndRequired=evidence.highEndVisualRequired===true||String(evidence.qualityProfile||'').trim().toUpperCase()==='HIGH_END_COMMERCIAL_NATIVE_PRESENTATION';
   const highEndFrames=highEndRequired?auditVibeHighEndTargetFrameEvidence(evidence):null;
+  const universalAssetFirstRequired=evidence.universalAssetFirstRequired===true;
+  const universalAssetFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const assetFamilyCoverage=evidence.assetFamilyCoverage&&typeof evidence.assetFamilyCoverage==='object'?evidence.assetFamilyCoverage:{};
+  const missingAssetFamilyAccounting=universalAssetFirstRequired?universalAssetFamilies.filter(family=>!['APPLIED','NOT_APPLICABLE'].includes(String(assetFamilyCoverage?.[family]?.status||assetFamilyCoverage?.[family]||'').toUpperCase())):[];
+  const invalidNotApplicable=universalAssetFirstRequired?universalAssetFamilies.filter(family=>{
+    const row=assetFamilyCoverage?.[family];
+    const status=String(row?.status||row||'').toUpperCase();
+    return status==='NOT_APPLICABLE'&&row&&typeof row==='object'&&row.systemPresent===true;
+  }):[];
+
   const primaryActors=Array.isArray(evidence.primaryActors)?evidence.primaryActors:[];
   const heroAssets=Array.isArray(evidence.heroAssets)?evidence.heroAssets:[];
   const visualDebt=Array.isArray(evidence.visualDebt)?evidence.visualDebt:[];
@@ -184,6 +194,10 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     ['camera',presentation.camera===true],
     ['lighting',presentation.lighting===true],
   ].filter(([,ok])=>!ok).map(([key])=>key):[];
+  if(universalAssetFirstRequired&&missingAssetFamilyAccounting.length)reasons.push('universal-asset-family-accounting-incomplete');
+  if(universalAssetFirstRequired&&invalidNotApplicable.length)reasons.push('asset-family-not-applicable-invalid');
+  if(universalAssetFirstRequired&&assetFamilyCoverage?.ENVIRONMENT?.status!=='APPLIED')reasons.push('environment-asset-binding-required');
+  if(universalAssetFirstRequired&&assetFamilyCoverage?.PROP?.status!=='APPLIED')reasons.push('prop-asset-binding-required');
   if(!golden.pass)reasons.push('golden-scene-runtime-evidence-incomplete');
   if(highEndRequired&&!highEndFrames?.pass)reasons.push('high-end-target-frame-runtime-evidence-incomplete');
   if(highEndRequired&&evidence.artBibleBound!==true)reasons.push('art-bible-not-bound');
@@ -212,6 +226,14 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     primaryActorCount:primaryActors.length,
     primitiveViolations:Object.freeze(primitiveViolations),
     openCriticalVisualDebt:Object.freeze(openCriticalDebt.map(row=>String(row?.id||row?.role||'visual-debt'))),
+    universalAssetFirst:Object.freeze({
+      required:universalAssetFirstRequired,
+      allFamilies:Object.freeze(universalAssetFamilies),
+      missingAccounting:Object.freeze(missingAssetFamilyAccounting),
+      invalidNotApplicable:Object.freeze(invalidNotApplicable),
+      environmentApplied:assetFamilyCoverage?.ENVIRONMENT?.status==='APPLIED',
+      propApplied:assetFamilyCoverage?.PROP?.status==='APPLIED'
+    }),
     highEnd:Object.freeze({
       required:highEndRequired,
       targetFrames:highEndFrames,
