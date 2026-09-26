@@ -365,10 +365,12 @@
         "workflow": ".github/workflows/vibe2-recovery-fast.yml",
         "safetyNetCron": "*/5 * * * *",
         "systemAiDispatchImmediate": true,
-        "gameWorkerDispatch": "DEFER_TO_GAME_PRIMARY_FANIN",
+        "gameWorkerDispatch": "GAME_PRIMARY_ATOMIC_REFILL_EVENT",
         "directGameWorkerDispatch": false,
         "speculativeVariantsAllowed": false,
-        "workerFanoutPerTask": 1
+        "workerFanoutPerTask": 1,
+        "gameRefillDispatchEvent": "vibe2-fanin-refill",
+        "gameRefillExecutionLane": "game-primary"
       },
       "CONTROL_FAST": {
         "consumesGamePrimarySlot": false,
@@ -412,7 +414,9 @@
       "gameAdaptiveControlMutationAllowed": false,
       "productionReleaseAllowed": false,
       "gameRefillDispatchAllowed": false,
-      "practiceDistillationAllowed": true
+      "practiceDistillationAllowed": true,
+      "recoveryFastCausalGameRefillAllowed": true,
+      "recoveryFastCausalGameRefillTarget": "GAME_PRIMARY"
     },
     "executionTopology": "ATOMIC_NEURON_STREAM",
     "perWorkerCompletionSignalEnabled": true,
@@ -466,7 +470,9 @@
       "liveRunnerQueuePressureCoalescing": true,
       "cohortFanInConsumesCoalescedResults": true,
       "coalescedCompletionIsNotFailure": true,
-      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true
+      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
+      "fanInRefillConcurrencyScope": "EXECUTION_LANE",
+      "globalFanInRefillSingletonForbidden": true
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
