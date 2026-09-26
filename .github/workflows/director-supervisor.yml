@@ -171,6 +171,14 @@ jobs:
 
             for(const stale of runs.filter(r=>
               r.path==='.github/workflows/vibe2-continuous-core.yml'
+              &&String(r.event||'')==='push'
+              &&queued.has(String(r.status||'').toLowerCase())
+              &&String(r.head_branch||'')==='main'
+              &&String(r.head_sha||'')!==currentMain
+            ))add(stale,'VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE');
+
+            for(const stale of runs.filter(r=>
+              r.path==='.github/workflows/vibe2-continuous-core.yml'
               &&String(r.display_title||'')==='vibe2-fanin-refill'
               &&queued.has(String(r.status||'').toLowerCase())
               &&String(r.head_branch||'')==='main'
