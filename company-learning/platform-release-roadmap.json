@@ -1,5 +1,5 @@
 {
-  "version": 398,
+  "version": 399,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7659,6 +7659,13 @@
       "id": "ROBLOX_HOMEPAGE_THUMBNAIL_SYNC_2026-09-26",
       "authority": "OWNER_DIRECTIVE_2026-09-26",
       "summary": "Bind one canonical marketing thumbnail asset to both Roblox experience thumbnails and homepage game-card rendering, using verified universe IDs and Open Cloud thumbnail scopes.",
+      "authorityChange": "NONE"
+    },
+    "robloxThumbnailCookieFallback20260926": {
+      "id": "ROBLOX_THUMBNAIL_COOKIE_CSRF_FALLBACK_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "reason": "EXISTING_OPEN_CLOUD_KEY_LACKS_UNIVERSE_THUMBNAIL_WRITE_SCOPE",
+      "summary": "Allow the already-authorized official Roblox cookie+CSRF path only when the thumbnail API key returns Scope not authorized; do not weaken target verification or expose secrets.",
       "authorityChange": "NONE"
     }
   },
@@ -23334,7 +23341,19 @@
       "existingSecret": "ROBLOX_OPEN_CLOUD_API_KEY",
       "failClosedWhenScopeMissing": true,
       "neverLogApiKey": true,
-      "verifiedUniverseOnly": true
+      "verifiedUniverseOnly": true,
+      "authenticationFallback": {
+        "enabled": true,
+        "mode": "OFFICIAL_ROBLOX_COOKIE_CSRF_ONLY_AFTER_API_KEY_SCOPE_NOT_AUTHORIZED",
+        "existingSecrets": [
+          "ROBLOX_ROBLOSECURITY",
+          "ROBLOX_SECURITY_COOKIE"
+        ],
+        "allowedTrigger": "HTTP_403_SCOPE_NOT_AUTHORIZED",
+        "arbitraryApiKeyFailureFallbackForbidden": true,
+        "cookieMayNotBeLogged": true,
+        "csrfMustBeNegotiatedPerOfficialRobloxSession": true
+      }
     },
     "compatibility": {
       "gameCatalogLegacyImageMaintainedForBackwardCompatibility": true,
