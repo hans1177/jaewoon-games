@@ -1,5 +1,5 @@
 {
-  "version": 418,
+  "version": 419,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -2307,15 +2307,19 @@
         "branchMayReturnVerifiedLessonsToCanonicalLearning": true
       },
       "lifecycleBinding": {
-        "webFirstExecutableBase": "UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT",
+        "webFirstExecutableBase": "UNITY_WEB_PARALLEL_DEVELOPMENT_LANE",
         "webBaselineGate": "WEB_QUALITY_CHECKPOINT_NON_ADMISSION",
-        "nativeContinuation": "ROBLOX_UNITY_NATIVE_SOURCE_BIND",
+        "nativeContinuation": "ROBLOX_UNITY_PARALLEL_SOURCE_BIND",
         "nativeRuntime": "TARGET_PLATFORM_RUNTIME",
         "robloxPostReleaseFocus": "POST_RELEASE_FOCUSED_DEVELOPMENT",
         "robloxProtectedRunnerSlots": 1,
-        "webBaseContinuesIntoNative": true,
+        "webBaseContinuesIntoNative": false,
         "validWebBaseRestartFromBlankForbidden": true,
-        "nativeEvidenceRequiredSeparately": true
+        "nativeEvidenceRequiredSeparately": true,
+        "parallelDevelopmentEntry": "MINIMUM_DESIGN_CONTRACT_READY",
+        "fanOut": "UNITY_WEB_ROBLOX_UNITY_BY_GAME_ID",
+        "sameCanonicalUnityProjectSharedAcrossWebAndUnityNative": true,
+        "crossLaneAdmissionDependencyForbidden": true
       },
       "learningContinuity": {
         "continuous24h": true,
@@ -2332,7 +2336,7 @@
         "LOAD_OWNER_INTENT_AND_CANONICAL_PROJECT_STATE",
         "LOAD_VERIFIED_LEARNING_AND_RECOMBINATION_MEMORY",
         "CREATE_OR_CONTINUE_ONE_PLAYABLE_PROJECT_WORLD",
-        "IMPLEMENT_WEB_BASE_OR_NATIVE_CONTINUATION",
+        "IMPLEMENT_PARALLEL_UNITY_WEB_ROBLOX_UNITY_LANES",
         "VERIFY_RUNTIME_QA_AND_REGRESSION",
         "PERSIST_NEW_VERIFIED_LESSONS",
         "CONTINUE_EXISTING_WORLD_OR_BRANCH_NEW_PROJECT_WORLD"
