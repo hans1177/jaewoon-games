@@ -1485,6 +1485,8 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-private-runtime-dispatch-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const valid=t=>/^[1-9][0-9]*$/.test(String(t?.universeId||''))&&/^[1-9][0-9]*$/.test(String(t?.placeId||''));
+          const batchRecoveryGraceMs=60_000;
+          const now=Date.now();
           let sharedFallbackUsed=false;
           let pendingCount=0;
           for(const x of q.items||[]){
@@ -1515,6 +1517,13 @@ jobs:
               &&!exactCurrentCandidate;
             if(!pending)continue;
             pendingCount++;
+            if(!requested){
+              const f0PassedAt=Date.parse(String(x.robloxFoundationF0PassedAt||''));
+              if(Number.isFinite(f0PassedAt)&&now-f0PassedAt<batchRecoveryGraceMs){
+                console.error('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED='+x.gameId);
+                continue;
+              }
+            }
             const exactTarget=((x.robloxPublicationTarget?.verified===true
                 ||(x.robloxPublicationTarget?.dedicated===true
                   &&x.robloxPublicationTarget?.shared!==true
