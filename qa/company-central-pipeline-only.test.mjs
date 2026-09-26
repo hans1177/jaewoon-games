@@ -246,12 +246,11 @@ test('central development planner keeps duplicate contract QA off the game dispa
   assert.match(development,/wait "\$roblox_scan_pid" "\$unity_scan_pid"/);
 });
 
-test('Unity Web floor dedupes only the same game before allocating a heavy runner',()=>{
+test('Unity Web floor serializes only the same game while independent games remain parallel',()=>{
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const workflow=read('.github/workflows/unity-web-first-stage-build.yml');
-  assert.match(workflow,/dedupe:[\s\S]*?runs-on: ubuntu-slim/);
-  assert.match(workflow,/UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=/);
-  assert.match(workflow,/\.display_title==\$title/);
-  assert.match(workflow,/\.status=="queued" or \.status=="pending" or \.status=="in_progress" or \.status=="requested"/);
-  assert.match(workflow,/build:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'\n\s+runs-on: ubuntu-latest/);
-  assert.doesNotMatch(workflow,/^concurrency:/m);
+  assert.match(development,/dispatch-unity-web-floor:[\s\S]*?group: unity-web-floor-call-\$\{\{ matrix\.game_id \}\}[\s\S]*?cancel-in-progress: false/);
+  assert.match(workflow,/build:\n\s+concurrency:\n\s+group: unity-web-floor-exec-\$\{\{ inputs\.game_id \|\| inputs\.request_file \|\| github\.run_id \}\}[\s\S]*?cancel-in-progress: false[\s\S]*?runs-on: ubuntu-latest/);
+  assert.doesNotMatch(workflow,/UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=/);
+  assert.doesNotMatch(development,/strategy:[\s\S]{0,160}?max-parallel:/);
 });
