@@ -2159,12 +2159,16 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
 
 function findSafeTasks(project,repoRoot,queue){
   const pilot=isAssetProductionPilot(project,repoRoot);
+  const studioTasks=findStudioContinuousImprovementTasks(project,repoRoot,queue);
+  const holisticBackfillTasks=studioTasks.filter(task=>task?.studioQualityEvolution?.existingHolisticBackfillRequired===true);
+  const normalStudioTasks=studioTasks.filter(task=>task?.studioQualityEvolution?.existingHolisticBackfillRequired!==true);
   if(project.engine==='roblox')return uniqueTaskCandidates([
     findRobloxInternalPlaytestTask(project,repoRoot,queue),
+    ...holisticBackfillTasks,
     findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
     findWeatherPresentationTask(project,repoRoot,queue),
     findPresentationQualityTask(project,repoRoot,queue),
-    ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
+    ...normalStudioTasks,
     scanExplicitMarkerTask(project,repoRoot,queue)
   ]);
   if(project.engine==='unity'){
@@ -2172,35 +2176,38 @@ function findSafeTasks(project,repoRoot,queue){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
       if(firstStage)return[firstStage];
       return uniqueTaskCandidates([
+        ...holisticBackfillTasks,
         findPresentationQualityTask(project,repoRoot,queue),
-        ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
+        ...normalStudioTasks,
         scanExplicitMarkerTask(project,repoRoot,queue)
       ]);
     }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
+      ...holisticBackfillTasks,
       findPresentationQualityTask(project,repoRoot,queue),
-      ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
+      ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
     return uniqueTaskCandidates([
+      ...holisticBackfillTasks,
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
       findUnityTask(project,repoRoot,queue),
-      ...findStudioContinuousImprovementTasks(project,repoRoot,queue),
+      ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
     ]);
   }
   if(project.engine==='web'){
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-      return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...findStudioContinuousImprovementTasks(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+      return uniqueTaskCandidates([...holisticBackfillTasks,findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
     }
-    // Preserve canonical Web responsibility order for bootstrap and exact repair.
+    // Preserve canonical Web bootstrap/exact-repair authority before quality backfill.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair)return[startupSpatialRepair];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),...findStudioContinuousImprovementTasks(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),...holisticBackfillTasks,findPresentationQualityTask(project,repoRoot,queue),...normalStudioTasks,findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
