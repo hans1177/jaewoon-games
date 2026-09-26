@@ -396,3 +396,19 @@ test('Unity Web reuses the existing per-game Unity Library cache pattern without
   assert.match(web,/Run Unity Web independent QA/);
   assert.match(web,/Run Unity Web regression/);
 });
+
+
+test('central planner dedupes active Unity Web floor and bootstrap runs without limiting other games',()=>{
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  assert.match(development,/unity-web-first-stage-build\.yml\/runs\?per_page=100&page=\$page/);
+  assert.match(development,/unity-web-floor-source-bootstrap\.yml\/runs\?per_page=100&page=\$page/);
+  assert.match(development,/activeUnityWebFloor=activeIds\('\/tmp\/active-unity-web-floor-runs\.json','Unity Web Floor '\)/);
+  assert.match(development,/activeUnityWebBootstrap=activeIds\('\/tmp\/active-unity-web-bootstrap-runs\.json','Unity Web Floor Bootstrap '\)/);
+  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_WEB_ACTIVE_RUN_SCAN_FLOOR_ROWS=/);
+  assert.match(development,/UNITY_WEB_ACTIVE_RUN_SCAN_BOOTSTRAP_ROWS=/);
+  assert.match(development,/UNITY_WEB_ACTIVE_RUN_SCAN_PAGES=3/);
+  assert.doesNotMatch(development,/dispatch-unity-web-floor:[\s\S]{0,260}?max-parallel:/);
+  assert.doesNotMatch(development,/dispatch-unity-web-bootstrap:[\s\S]{0,260}?max-parallel:/);
+});
