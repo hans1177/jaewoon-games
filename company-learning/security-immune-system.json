@@ -1,5 +1,5 @@
 {
-  "version": 58,
+  "version": 59,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -866,5 +866,18 @@
       "fanInReviewIsolationCannotBypassFullRegressionSecurityOrStateWriteFailure": true
     },
     "failureAction": "REPAIR_EXACT_EXISTING_RESPONSIBLE_SYSTEM_AT_CURRENT_DEPTH_WHILE_UNRELATED_SAFE_PILLARS_CONTINUE"
+  },
+  "vibeSourceGenerationFocusedTimeoutSecurity": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
+    "classification": "EXECUTION_BOTTLENECK_REPAIR_NO_TRUST_BOUNDARY_CHANGE",
+    "candidateBranchIsolationRequired": true,
+    "responsibleFileBoundaryUnchanged": true,
+    "paidExternalApiAuthorityUnchanged": true,
+    "directMainGameSourceWriteForbidden": true,
+    "securityGateWeakening": false,
+    "retryBudgetExpansion": false,
+    "workerAuthorityExpansion": false,
+    "sharedContextRevalidationRequiredOnFailurePath": true
   }
 }
