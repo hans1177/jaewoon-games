@@ -1036,7 +1036,7 @@ test('director supervisor runner drain remains structurally valid and jobs are u
   assert.equal((directorSupervisor.match(/\n  runner-drain:\n/g)||[]).length,1);
   assert.equal((directorSupervisor.match(/\n  game-primary-gate:\n/g)||[]).length,1);
   assert.equal((directorSupervisor.match(/\n  supervise:\n/g)||[]).length,1);
-  assert.match(directorSupervisor,/while IFS=\$'\\t' read -r run_id reason; do/);
+  assert.match(directorSupervisor,/while IFS='\\|' read -r run_id reason; do/);
   assert.doesNotMatch(directorSupervisor,/while IFS=\s+outputs:/);
 });
 
@@ -1048,4 +1048,21 @@ test('director runner drain uses targeted active-run queries instead of deep Act
   assert.match(directorSupervisor,/DIRECTOR_RUNNER_DRAIN_FETCH_RETRY=/);
   assert.doesNotMatch(directorSupervisor,/for page in \$\(seq 1 20\)/);
   assert.doesNotMatch(directorSupervisor,/page=\$\{page\}/);
+});
+
+test('administrative operational control workflows stay off game-primary ubuntu-latest capacity',()=>{
+  for(const workflowFile of [
+    '.github/workflows/company-status-sync.yml',
+    '.github/workflows/company-development-queue-reconcile.yml',
+    '.github/workflows/company-design-promotion-sync.yml',
+    '.github/workflows/company-platform-exposure-sync.yml',
+    '.github/workflows/vibe2-recovery-fast.yml',
+  ]){
+    const source=readText(workflowFile);
+    assert.match(source,/runs-on:\s*ubuntu-slim/,workflowFile);
+    assert.doesNotMatch(source,/runs-on:\s*ubuntu-latest/,workflowFile);
+  }
+  assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-24\.04-arm/);
+  assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(directorSupervisor,/supervise:[\s\S]*?runs-on:\s*ubuntu-slim/);
 });
