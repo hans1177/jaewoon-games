@@ -1595,7 +1595,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:36:54.977Z",
+      "updatedAt": "2026-09-26T16:38:31.256Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1603,7 +1603,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
       "robloxSourceCommit": "90c3829ea7cf76e6f093dd7e7d0a19a927e0033b",
       "robloxSourceBootstrapPassedAt": "2026-09-26T15:36:52.953Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-26T16:36:54.977Z",
+      "robloxSourceBootstrapFailedAt": "2026-09-26T16:38:31.256Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -4796,20 +4796,20 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:36:54.977Z",
+      "updatedAt": "2026-09-26T16:38:31.256Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceCommit": "2b04bacde3510b23b54de6872168b13e998fbac6",
-      "robloxSourceBootstrapPassedAt": "2026-09-26T16:31:27.729Z",
+      "robloxSourceCommit": "0bf093609021f24c5c488dd476dd624e7fa413db",
+      "robloxSourceBootstrapPassedAt": "2026-09-26T16:38:31.256Z",
       "robloxSourceBootstrapFailedAt": null,
-      "robloxSourceCandidateBranch": "development/roblox-monster-adventure-36251400751-1",
-      "robloxSourceCandidateReadyAt": "2026-09-26T16:36:54.977Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0272c39ef891fbd63832a03b619f5b23316e9484",
       "robloxBuildArtifactIdentity": "sha256:b9561e92843a02f6c0482096750686005cb50a4a8613a6d5dfc96cc912774e5d",
@@ -5044,7 +5044,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -8069,7 +8069,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-09-26T16:38:25.287Z",
+  "updatedAt": "2026-09-26T16:38:31.256Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
