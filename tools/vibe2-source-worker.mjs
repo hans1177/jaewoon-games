@@ -139,7 +139,7 @@ function normalizeModelPath(value,{target,responsibleFiles=[],sourceRootRelative
     normalized=responsibleFiles[0];
   }
   if(responsibleFiles.length){
-    const locator=normalized.match(/^(.*?)(?::\\d+(?::\\d+)?|#L\\d+(?:-L?\\d+)?)$/i);
+    const locator=normalized.match(/^(.*?)(?::\d+(?::\d+)?|#L\d+(?:-L?\d+)?)$/i);
     if(locator&&responsibleFiles.includes(locator[1]))normalized=locator[1];
   }
   normalized=assertRelativeSourcePath(normalized,target);
