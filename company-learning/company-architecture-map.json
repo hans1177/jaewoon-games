@@ -1,5 +1,5 @@
 {
-  "version": 226,
+  "version": 227,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5177,7 +5177,7 @@
     "runtimeFile": "vibe2-runtime.json"
   },
   "robloxDevelopmentParallelismProjection": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxGameWideWorkflowSerializationRemoval20260926",
     "workflow": ".github/workflows/company-development-roblox-runtime.yml",
     "taskIdentity": "GAME_ID_PLUS_RESPONSIBILITY_AND_EXACT_SOURCE_IDENTITY",
@@ -5202,6 +5202,10 @@
     "activeF0SameGameDispatchDedup": true,
     "activePrivateRuntimeSameGameDispatchDedup": true,
     "f0WorkerMatrixParallel": true,
-    "f0SharedStatePersistMode": "OPTIMISTIC_RETRY_NO_JOB_WIDE_LOCK"
+    "f0SharedStatePersistMode": "OPTIMISTIC_RETRY_NO_JOB_WIDE_LOCK",
+    "privateRuntimeWorkflowWideLock": false,
+    "privateRuntimeOldestActiveSameGameWins": true,
+    "pendingReplacementCancellationEliminated": true,
+    "duplicatePrivateRuntimeRunsSelfSkipBeforeHeavyWork": true
   }
 }

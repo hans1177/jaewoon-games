@@ -1,5 +1,5 @@
 {
-  "version": 416,
+  "version": 417,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8293,7 +8293,7 @@
       "gameIdStillCanonicalTaskIdentity": true,
       "maxParallelFieldRequired": false,
       "internalArtificialParallelCapAdded": false,
-      "implementationState": "RUNTIME_CONTINUATION_F0_AND_PRIVATE_DISPATCH_DEDUP_UPDATED_PENDING_QA_AND_LIVE",
+      "implementationState": "RUNTIME_CONTINUATION_F0_PRIVATE_DISPATCH_DEDUP_CODE_UPDATED_PENDING_QA_AND_LIVE",
       "codeBindings": [
         ".github/workflows/company-development-roblox-runtime.yml",
         "qa/company-development-roblox-runtime.test.mjs",
@@ -8302,7 +8302,9 @@
         ".github/workflows/company-development-roblox-runtime-continuation.yml",
         ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
         "qa/company-development-roblox-runtime-continuation.test.mjs",
-        "qa/company-development-roblox-headless-fast-mvp.test.mjs"
+        "qa/company-development-roblox-headless-fast-mvp.test.mjs",
+        ".github/workflows/company-development-roblox-release-promotion.yml",
+        "qa/company-development-roblox-release-promotion.test.mjs"
       ],
       "requiredVerification": [
         "ROBLOX_WORKFLOW_HAS_NO_TOP_LEVEL_GAME_WIDE_CONCURRENCY_GROUP",
@@ -8314,7 +8316,9 @@
         "ROBLOX_F0_HAS_NO_WORKFLOW_WIDE_LOCK",
         "ROBLOX_F0_DISPATCHES_EXACT_GAME_IDS",
         "ROBLOX_ACTIVE_F0_AND_PRIVATE_RUNTIME_DISPATCHES_DEDUP_SAME_GAME",
-        "ROBLOX_F0_PERSIST_USES_OPTIMISTIC_SHARED_STATE_RETRY"
+        "ROBLOX_F0_PERSIST_USES_OPTIMISTIC_SHARED_STATE_RETRY",
+        "ROBLOX_PRIVATE_RUNTIME_HAS_NO_WORKFLOW_CONCURRENCY_GROUP",
+        "ROBLOX_PRIVATE_RUNTIME_DUPLICATES_SELF_SKIP_BEFORE_HEAVY_WORK"
       ],
       "followup": {
         "scope": "ROBLOX_SHARED_PREFLIGHT_F0_PRIVATE_RUNTIME_DISPATCH",
@@ -8328,7 +8332,11 @@
         "activePrivateRuntimeSameGameDispatchDedup": true,
         "f0SharedStatePersistMode": "OPTIMISTIC_RETRY_NO_JOB_WIDE_LOCK",
         "heavyWorkSerializationAdded": false,
-        "qualityGateWeakening": false
+        "qualityGateWeakening": false,
+        "privateRuntimeWorkflowWideLock": false,
+        "privateRuntimeOldestActiveSameGameWins": true,
+        "pendingReplacementCancellationEliminated": true,
+        "duplicatePrivateRuntimeRunsSelfSkipBeforeHeavyWork": true
       }
     }
   },

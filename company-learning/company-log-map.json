@@ -1,5 +1,5 @@
 {
-  "version": 90,
+  "version": 91,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1691,7 +1691,7 @@
     "authorityChange": "NONE"
   },
   "robloxDevelopmentParallelismEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "policySource": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution",
     "workflows": [
@@ -1716,11 +1716,17 @@
       "ROBLOX_PRIVATE_RUNTIME_DISPATCH_COUNT",
       "ROBLOX_PRIVATE_RUNTIME_DEDUPED_COUNT",
       "ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT",
-      "ROBLOX_F0_PERSIST_CONFLICT_RETRY"
+      "ROBLOX_F0_PERSIST_CONFLICT_RETRY",
+      "ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER",
+      "ROBLOX_PRIVATE_RUNTIME_DEDUPE_CURRENT",
+      "ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED",
+      "ROBLOX_PRIVATE_RUNTIME_DEDUPE_PASS"
     ],
     "heavyWorkMaySerializeForSharedStateWrite": false,
     "sharedStateWriteMayRetryOptimistically": true,
     "sameGameDuplicateDispatchMustDedup": true,
-    "differentGamesMustRemainIndependent": true
+    "differentGamesMustRemainIndependent": true,
+    "privateRuntimeDedupeRule": "OLDEST_ACTIVE_SAME_GAME_RUN_EXECUTES_HEAVY_WORK_OTHERS_SELF_SKIP",
+    "workflowConcurrencyQueueReplacementForbidden": true
   }
 }
