@@ -227,7 +227,9 @@ jobs:
     if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
     concurrency:
       group: director-game-primary-gate-v1
-      cancel-in-progress: true
+      # Preserve the active fallback gate so workflow_run bursts cannot starve GAME_PRIMARY.
+      # GitHub keeps only the newest pending run in the same group while this one completes.
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
