@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -682,7 +682,10 @@
           "analysis-only",
           "learning-web-artifact"
         ],
-        "workerModelBehaviorChanged": false
+        "workerModelBehaviorChanged": false,
+        "globalPrewarmBarrier": false,
+        "workerStartsAfterReserveWithoutPrewarmWait": true,
+        "prewarmMissRunsNonBlocking": true
       }
     },
     "performance": {

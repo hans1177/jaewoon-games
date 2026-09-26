@@ -1,5 +1,5 @@
 {
-  "version": 415,
+  "version": 416,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3527,7 +3527,7 @@
               "result": "PASS"
             }
           },
-          "currentExecutionInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK",
+          "currentExecutionInfrastructureBottleneck": "GLOBAL_MODEL_CACHE_DEPENDENCY_BARRIER_REMOVED_CODE_PENDING_QA_AND_LIVE",
           "runnerPressureCallbackCoalescing": "IMPLEMENTATION_IN_PROGRESS",
           "runnerPressureCallbackCoalescingRule": "IF_RECENT_REPOSITORY_ACTIONS_HAVE_QUEUED_PENDING_OR_REQUESTED_RUNS, DO_NOT CREATE_ANOTHER_ATOMIC_NEURON_CALLBACK_WORKFLOW; KEEP_THE_IMMUTABLE_WORKER_RESULT_ARTIFACT_AND_LET_EXISTING_COHORT_FAN_IN_CONSUME_IT; WHEN_QUEUE_PRESSURE_CLEARS, RESUME_IMMEDIATE_CALLBACK",
           "runnerPressureCallbackCoalescingPreserves": [
@@ -3555,9 +3555,11 @@
           "modelCacheWarmupProbe": "RESERVE_LOOKUP_ONLY_ON_HIT",
           "modelCacheWarmupRunnerRelief": "LIVE_VERIFIED_SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT",
           "modelCacheHitRestoreLiveRun": 36208311596,
-          "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
+          "workerConditionalModelRestore": "CODE_UPDATED_PENDING_QA_AND_LIVE",
           "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_LIVE",
-          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING"
+          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING",
+          "workerModelCacheGlobalBarrierRemoval": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+          "workerModelCacheGlobalBarrierRule": "GAME_WORKERS_DEPEND_ON_RESERVE_ONLY; MODEL_CACHE_JOB_MAY_WARM_SHARED_CACHE_ON_MISS_BUT_MAY_NOT_BLOCK_WORKER_START; EACH_WORKER_DECIDES_LOCAL_MODEL_REQUIREMENT_AFTER_WORK_ORDER_AND_SOURCE_LOCK_AND_RESTORES_CACHE_ONLY_WHEN_REQUIRED"
         },
         "incidentHistory": [
           {
@@ -8307,6 +8309,31 @@
         "COMPANY_RUNTIME_PERSIST_CONFLICT_RETRY_REMAINS",
         "NO_QA_SECURITY_RELEASE_GATE_WEAKENING"
       ]
+    },
+    "workerModelCacheGlobalBarrierRemoval20260926": {
+      "id": "WORKER_MODEL_CACHE_GLOBAL_BARRIER_REMOVAL_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "reason": "WORKER_MATRIX_ALREADY_HAS_CONDITIONAL_PER_WORKER_MODEL_RESTORE_AFTER_WORK_ORDER_AND_SOURCE_LOCK_BUT_GLOBAL_NEEDS_RESERVE_MODEL_CACHE_FORCED_ALL_GAME_WORKERS_TO_WAIT_FOR_ONE_WARMUP_JOB",
+      "preserve": [
+        "RESERVE_CONTRACT_BINDING",
+        "WORKER_PREFLIGHT_SYNC",
+        "RESPONSIBLE_FILE_WORK_LOCK",
+        "PER_WORKER_CONDITIONAL_MODEL_RESTORE",
+        "FAN_IN_QA_REGRESSION_RELEASE_GATES",
+        "EXTERNAL_MATRIX_BATCH_MAX_256"
+      ],
+      "codeChange": {
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "workerNeedsBefore": "[reserve, model_cache]",
+        "workerNeedsAfter": "reserve",
+        "modelCacheJobRetained": true,
+        "modelCacheRoleAfter": "NONBLOCKING_BACKGROUND_WARMUP_ON_CACHE_MISS",
+        "workerRestoreDecisionPoint": "AFTER_WORK_ORDER_AND_SOURCE_LOCK"
+      },
+      "internalArtificialConcurrencyCapAdded": false,
+      "qualityGateWeakening": false,
+      "securityBoundaryChange": false,
+      "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE"
     }
   },
   "vibeExecutionLaneContract": {

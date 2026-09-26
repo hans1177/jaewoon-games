@@ -535,7 +535,7 @@ jobs:
           echo 'VIBE2_MODEL_PREWARM=PASS'
 
   worker:
-    needs: [reserve, model_cache]
+    needs: reserve
     if: always() && needs.reserve.outputs.worker_count != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 22
