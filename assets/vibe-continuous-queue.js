@@ -665,11 +665,14 @@ export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, res
   const queue = createVibeContinuousQueue(queueInput);
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
   if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
-  const ids = new Set(selection.selected.map((task) => task.id));
+  const selectedOrder = selection.selected.map((task) => task.id);
+  const ids = new Set(selectedOrder);
   const reservationMeta = reservationFields(reservation);
   const tasks = queue.tasks.map((task) => ids.has(task.id) ? freeze({ ...task, ...reservationMeta, status: 'running', blocker: null }) : task);
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
-  return freeze({ started: true, tasks: freeze(nextQueue.tasks.filter((task) => ids.has(task.id))), queue: nextQueue, selection });
+  const nextById = new Map(nextQueue.tasks.map((task) => [task.id, task]));
+  const selectedTasks = selectedOrder.map((id) => nextById.get(id)).filter(Boolean);
+  return freeze({ started: true, tasks: freeze(selectedTasks), queue: nextQueue, selection });
 }
 
 export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS', evidence = [], blocker = '', retryable = true } = {}) {
