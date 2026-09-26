@@ -1,5 +1,5 @@
 {
-  "version": 392,
+  "version": 393,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3180,7 +3180,7 @@
               "result": "PASS"
             }
           },
-          "currentExecutionInfrastructureBottleneck": "CROSS_LANE_RESERVE_STARVATION_PLUS_STALE_24H_SINGLETON_HOLDING_NEW_MAIN_CYCLE",
+          "currentExecutionInfrastructureBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE_AFTER_CROSS_LANE_STARVATION_RELIEF",
           "runnerPressureCallbackCoalescing": "IMPLEMENTATION_IN_PROGRESS",
           "runnerPressureCallbackCoalescingRule": "IF_RECENT_REPOSITORY_ACTIONS_HAVE_QUEUED_PENDING_OR_REQUESTED_RUNS, DO_NOT CREATE_ANOTHER_ATOMIC_NEURON_CALLBACK_WORKFLOW; KEEP_THE_IMMUTABLE_WORKER_RESULT_ARTIFACT_AND_LET_EXISTING_COHORT_FAN_IN_CONSUME_IT; WHEN_QUEUE_PRESSURE_CLEARS, RESUME_IMMEDIATE_CALLBACK",
           "runnerPressureCallbackCoalescingPreserves": [
@@ -3198,10 +3198,12 @@
           "workerExecutableCodeSource": "PINNED_MAIN_CONTRACT",
           "workerControlCheckoutGamePrimaryBoundary": 256,
           "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
-          "reserveConcurrencyRelief": "LANE_ISOLATED_PENDING_QA",
+          "reserveConcurrencyRelief": "LIVE_VERIFIED",
           "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
-          "learningIdleRunnerPressureDeferral": "IMPLEMENTED_PENDING_QA",
-          "gamePrimaryExternalBoundary": 256
+          "learningIdleRunnerPressureDeferral": "LIVE_VERIFIED",
+          "gamePrimaryExternalBoundary": 256,
+          "lastLanePressureLiveVerificationRun": 36204978877,
+          "lastLanePressureLiveVerificationResult": "PASS"
         },
         "incidentHistory": [
           {
@@ -7565,7 +7567,28 @@
         "vibe2-control-state-{execution_lane}",
         "vibe2-24h-cycle-singleton-v2"
       ],
-      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
+      "implementationState": "IMPLEMENTED_QA_AND_LIVE_VERIFIED",
+      "liveVerification": {
+        "verifiedAt": "2026-09-26",
+        "mergedPr": 3251,
+        "mergeSha": "94904f88146abc85927680447ed860c6f87cf469",
+        "exactHeadQaSha": "9ec3ed11709b788addd1339ca716efe45ba43aeb",
+        "liveRunId": 36204978877,
+        "stalePreV2RunId": 36204043933,
+        "stalePreV2State": "PENDING_WITH_GAME_PRIMARY_CONTINUOUS_RESERVE_BLOCKED",
+        "schedulerEpochEscape": "PASS_NEW_V2_RUN_ENTERED_IN_PROGRESS_WHILE_PRE_V2_RUN_REMAINED_PENDING",
+        "runnerPressureObservation": "PASS",
+        "runnerQueuePressureCount": 9,
+        "learningIdleDisposition": "DEFERRED_RUNNER_PRESSURE",
+        "freeGamePrimarySlots": 235,
+        "gamePrimaryQueued": 4,
+        "recoveryFastQueued": 3,
+        "gameRefillReady": "YES",
+        "recoveryFastReserve": "PASS",
+        "gamePrimaryReserve": "PASS",
+        "crossLaneStarvationRelieved": true,
+        "nextObservedBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE"
+      }
     }
   },
   "vibeExecutionLaneContract": {
@@ -7708,7 +7731,7 @@
       "OBSERVE_NATURAL_LIVE_LEARNING_IDLE_RUN_WHEN_GAME_PRIMARY_QUEUE_IS_EMPTY",
       "MEASURE_RECOVERY_FAST_EVENT_TO_REDISPATCH_LATENCY_IN_LIVE_RUNS",
       "MEASURE_CONTROL_FAST_LATENCY_AND_RUNNER_PRESSURE",
-      "VERIFY_POST_V2_LIVE_WAVE_STARTS_WITHOUT_PRE_V2_LEARNING_RESERVE_STARVATION"
+      "MEASURE_POST_RELIEF_RUNNER_AND_MODEL_CACHE_STARTUP_PRESSURE"
     ],
     "qaEvidence": {
       "latestVerifiedHead": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
