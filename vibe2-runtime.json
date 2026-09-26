@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 38,
+      "runtime": 39,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -327,7 +327,7 @@
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
       "baselineTarget": 256,
-      "adaptiveMinActiveWorkers": 4,
+      "adaptiveMinActiveWorkers": 30,
       "adaptiveMaxActiveWorkers": 256,
       "fixedWaveBarrier": false,
       "legacyCapacityEnvelopeOnly": true
@@ -355,7 +355,7 @@
         "adaptiveGameControlEligible": true,
         "capacityAwareFreeSlotRefill": true,
         "adaptiveBaselineTarget": 256,
-        "adaptiveMinActiveWorkers": 4,
+        "adaptiveMinActiveWorkers": 30,
         "adaptiveMaxActiveWorkers": 256
       },
       "RECOVERY_FAST": {
@@ -578,6 +578,7 @@
       8,
       16,
       20,
+      30,
       32,
       64,
       128,
@@ -608,7 +609,7 @@
     "ownerMinimumWaveAppliedTo": [
       "GAME_PRIMARY"
     ],
-    "minimumAdaptiveWave": 4,
+    "minimumAdaptiveWave": 30,
     "baselineAdaptiveWave": 256,
     "staleTelemetryResetTarget": 256
   },
@@ -807,6 +808,7 @@
       8,
       16,
       20,
+      30,
       32,
       64,
       128,
