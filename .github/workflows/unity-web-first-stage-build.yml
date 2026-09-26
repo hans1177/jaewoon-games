@@ -1,5 +1,5 @@
-name: Unity Web Development Floor
-run-name: Unity Web Floor ${{ inputs.game_id || inputs.request_file || github.event.head_commit.message }}
+name: Unity Web Parallel Development
+run-name: Unity Web Parallel ${{ inputs.game_id || inputs.request_file || github.event.head_commit.message }}
 
 on:
   push:
