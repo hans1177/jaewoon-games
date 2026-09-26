@@ -1845,7 +1845,7 @@ jobs:
           git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
           for runtime_design_path in design game-seed-state.json; do
             if git -C "$GITHUB_WORKSPACE" cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
-              rm -rf "/tmp/vibe2-main/$runtime_design_path"
+              rm -rf "$contract_root/$runtime_design_path"
               git -C "$GITHUB_WORKSPACE" archive "origin/company-runtime" "$runtime_design_path" | tar -x -C "$contract_root"
             fi
           done
