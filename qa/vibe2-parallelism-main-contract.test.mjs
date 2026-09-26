@@ -83,6 +83,18 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.match(runner,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
   assert.match(runner,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(runner,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=FAILED_FALLBACK_POST_PLAN/);
+  const regressionPreflight=runtime.continuous?.reserveContractRegressionPreflight||{};
+  const architectureRegressionPreflight=architecture.neuralWorkGraphTopology?.currentWaveExecution?.reserveContractRegressionPreflight||{};
+  assert.equal(regressionPreflight.enabled,true);
+  assert.equal(regressionPreflight.executionLane,'GAME_PRIMARY');
+  assert.equal(regressionPreflight.exactContractShaRequired,true);
+  assert.equal(regressionPreflight.reuseSuccessfulCoreQaForExactSha,true);
+  assert.equal(regressionPreflight.blocksReservationOnFailure,true);
+  assert.equal(architectureRegressionPreflight.contractIdentity,'EXACT_RESERVE_MAIN_SHA');
+  assert.equal(architectureRegressionPreflight.failureAction,'BLOCK_RESERVATION_BEFORE_GAME_WORKERS');
+  assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
+  assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
 });
 
 test('game control jobs stay on ARM while heavy execution stays on ubuntu-latest',()=>{

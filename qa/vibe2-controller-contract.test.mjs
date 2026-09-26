@@ -571,6 +571,15 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.scope,'GAME_PRIMARY_PRIMARY_VARIANT_WAVE_LEADER_ONLY');
   assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,1);
   assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.resultConsumption,false);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.enabled,true);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.executionLane,'GAME_PRIMARY');
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.reuseSuccessfulCoreQaForExactSha,true);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.fallback,'LOCAL_SAME_FAN_IN_CORE_REGRESSION');
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.blocksReservationOnFailure,true);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.neuronCompletionCallbackExcluded,true);
+  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'));
+  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'));
+  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
   assert.equal(runtime.continuous.atomicNeuronStream.liveRunnerQueuePressureCoalescing,true);
   assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,true);
   const pressurePolicy=roadmap.changeRecord.runnerPressureCallbackCoalescing20260926;

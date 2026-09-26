@@ -1416,7 +1416,7 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
 });
 
-test('continuous core keeps pending neuron callbacks out of heavy reserve and refills once after task micro fan-in',()=>{
+test('continuous core keeps pending neuron callbacks light and blocks broken contracts before reserve',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE/);
@@ -1428,7 +1428,12 @@ test('continuous core keeps pending neuron callbacks out of heavy reserve and re
   assert.match(workflow,/requested_contract_sha=.*client_payload\?\.contract_sha/);
   assert.ok(workflow.includes("fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\\n');"));
   assert.ok(!workflow.includes("fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\\\\n');"));
-  assert.match(workflow,/Fast scheduler preflight\n\s+if: github\.event_name != 'repository_dispatch' \|\| github\.event\.action != 'vibe2-neuron-complete'/);
+  assert.match(workflow,/Fast scheduler preflight\n\s+if: steps\.main_wake\.outputs\.proceed == 'true' && \(github\.event_name != 'repository_dispatch' \|\| github\.event\.action != 'vibe2-neuron-complete'\)/);
+  assert.match(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS/);
+  assert.match(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION/);
+  assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
+  assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
   assert.doesNotMatch(workflow,/VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS/);
   assert.doesNotMatch(workflow,/\[ "\$callback_kind" = 'fanin' \] \|\| \[ "\$callback_kind" = 'neuron' \]/);
 });

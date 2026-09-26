@@ -646,6 +646,19 @@
       },
       "immediateDispatchResumesWhenPressureClears": true
     },
+    "reserveContractRegressionPreflight": {
+      "enabled": true,
+      "executionLane": "GAME_PRIMARY",
+      "exactContractShaRequired": true,
+      "reuseSuccessfulCoreQaForExactSha": true,
+      "fallback": "LOCAL_SAME_FAN_IN_CORE_REGRESSION",
+      "observationFailureAction": "RUN_LOCAL_REGRESSION",
+      "blocksReservationOnFailure": true,
+      "gameWorkerStartBeforePass": false,
+      "neuronCompletionCallbackExcluded": true,
+      "newWorkflowCreated": false,
+      "newSchedulerCreated": false
+    },
     "cohortFanInPressureIngressEnabled": true,
     "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
     "reserveConcurrency": {

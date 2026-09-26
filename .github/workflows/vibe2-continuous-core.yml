@@ -151,6 +151,9 @@ jobs:
 
       - name: Fast scheduler preflight
         if: steps.main_wake.outputs.proceed == 'true' && (github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIBE2_PREFLIGHT_CONTRACT_SHA: ${{ steps.contract.outputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -201,6 +204,70 @@ jobs:
             --experience="$control_root/.vibe2/experience.json" \
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
+
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            core_qa_reuse=0
+            if curl --fail-with-body --silent --show-error \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${VIBE2_PREFLIGHT_CONTRACT_SHA}&per_page=100" \
+              --output /tmp/vibe2-reserve-core-qa-runs.json; then
+              core_qa_reuse="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-reserve-core-qa-runs.json','utf8'));
+          const sha=String(process.env.VIBE2_PREFLIGHT_CONTRACT_SHA||'');
+          const pass=(payload.workflow_runs||[]).some(row=>
+            String(row.name||'')==='Vibe2 Core QA' &&
+            String(row.head_sha||'')===sha &&
+            String(row.status||'')==='completed' &&
+            String(row.conclusion||'')==='success'
+          );
+          process.stdout.write(pass?'1':'0');
+          NODE
+              )"
+              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS'
+            else
+              core_qa_reuse=0
+              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
+            fi
+
+            if [ "$core_qa_reuse" = '1' ]; then
+              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
+            else
+              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'
+            (cd /tmp/vibe2-main && node --test --test-concurrency=4 \
+            qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-native-asset-production.test.mjs \
+            qa/vibe2-neural-diagnosis.test.mjs \
+            qa/vibe2-neural-feedback.test.mjs \
+            qa/vibe2-neural-critic.test.mjs \
+            qa/vibe2-neural-root-cause.test.mjs \
+            qa/vibe2-neural-event-router.test.mjs \
+            qa/vibe2-neural-shadow-audit.test.mjs \
+            qa/vibe2-neural-event-telemetry.test.mjs \
+            qa/vibe2-neural-phase2-readiness.test.mjs \
+            qa/vibe2-neural-fanin-root-cause.test.mjs \
+            qa/vibe2-core-engine-motion.test.mjs \
+            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-capability-distillation.test.mjs \
+            qa/vibe2-central-work-contract.test.mjs \
+            qa/vibe2-exploration-worker.test.mjs \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-work-package.test.mjs \
+            qa/vibe2-incremental-qa.test.mjs \
+            qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-adaptive-backpressure.test.mjs \
+            qa/vibe2-candidate-reconcile.test.mjs \
+            qa/vibe2-experience-control.test.mjs \
+            qa/vibe2-learning-closed-loop.test.mjs \
+            qa/vibe2-handoff.test.mjs \
+            qa/vibe2-practice-distillation.test.mjs)
+            fi
+            echo 'VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'
+          else
+            echo "VIBE2_RESERVE_CONTRACT_REGRESSION=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
+          fi
           echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
 
       - name: Reserve conflict-free DAG batch

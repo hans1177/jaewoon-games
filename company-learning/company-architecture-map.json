@@ -1208,6 +1208,18 @@
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
       "refillRule": "ACTIVE_WORKERS_LT_EFFECTIVE_MAX_AND_RUNNABLE_QUEUED_WORK",
+      "reserveContractRegressionPreflight": {
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "lane": "GAME_PRIMARY",
+        "contractIdentity": "EXACT_RESERVE_MAIN_SHA",
+        "reuseEvidence": "SUCCESSFUL_VIBE2_CORE_QA_SAME_SHA",
+        "fallback": "RUN_SAME_FAN_IN_CORE_REGRESSION_LOCALLY",
+        "failureAction": "BLOCK_RESERVATION_BEFORE_GAME_WORKERS",
+        "observationFailureAction": "RUN_LOCAL_REGRESSION",
+        "neuronCompletionCallbackExcluded": true,
+        "newWorkflowCreated": false,
+        "newSchedulerCreated": false
+      },
       "conflictSafety": "SOURCE_ROOT_FILE_AND_DEPENDENCY_LOCKS_REMAIN_ENFORCED",
       "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,

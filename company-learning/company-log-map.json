@@ -1291,6 +1291,20 @@
     "immediateDispatchMustResumeWhenQueuePressureClears": true,
     "workerDirectControlWriteForbidden": true
   },
+  "vibeReserveContractRegressionPreflight": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticRecovery.reserveContractRegressionPreflight",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "requiredMarkers": [
+      "VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=",
+      "VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=",
+      "VIBE2_RESERVE_CONTRACT_REGRESSION=PASS"
+    ],
+    "sameFanInRegressionSuiteRequiredOnFallback": true,
+    "exactContractShaRequired": true,
+    "brokenContractGameWorkerStartForbidden": true,
+    "observationFailureRunsLocalRegression": true
+  },
   "vibeWorkerControlCheckoutRelief": {
     "version": 1,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.controlBranchWorkerCheckoutRelief20260926",
