@@ -1,5 +1,5 @@
 {
-  "version": 41,
+  "version": 42,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -290,7 +290,8 @@
       "modelCache": "ubuntu-latest",
       "lightweightReserveSeparatedFromArmFanIn": true,
       "heavyGameExecutionUnchanged": true,
-      "queueReservationAndStateFanInOnly": true
+      "queueReservationAndStateFanInOnly": true,
+      "ingressControl": "ubuntu-slim"
     },
     "slotRefillTrigger": "vibe2-neuron-complete",
     "slotRefillBranchPrefix": "vibe2/refill/",
