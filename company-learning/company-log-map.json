@@ -1,5 +1,5 @@
 {
-  "version": 87,
+  "version": 88,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1633,7 +1633,7 @@
     }
   },
   "vibeSourceGenerationFocusedTimeoutAndContextSync": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
     "requiredRuntimeMarkers": [
       "VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=",
@@ -1657,6 +1657,24 @@
       "zeroOutputTimeoutsObserved": true,
       "sharedContextMissingFalseEvidenceObserved": true
     },
-    "authorityChange": "NONE"
+    "authorityChange": "NONE",
+    "implementationEvidence": {
+      "mergeCommit": "3e2fd85f784c35a925c1ea8581e4069e2c18115c",
+      "ci": {
+        "centralPolicyContract": {
+          "runId": 36233532116,
+          "result": "PASS"
+        },
+        "companyEvolutionQa": {
+          "runId": 36233532137,
+          "result": "PASS"
+        },
+        "vibe2CoreQa": {
+          "runId": 36233532221,
+          "result": "PASS"
+        }
+      },
+      "liveVerification": "PENDING_NEXT_PRODUCTION_WAVE"
+    }
   }
 }
