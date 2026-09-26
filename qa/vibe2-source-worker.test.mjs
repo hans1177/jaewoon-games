@@ -1148,6 +1148,40 @@ test('studio quality retries keep package breadth instead of collapsing to one m
 });
 
 
+
+test('studio no-op and blank invalid-path retries preserve connected package breadth and exact writable scope',()=>{
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: [STUDIO_QUALITY_EVOLUTION] cycle=2; phase=BUILD_UP; focus=USABILITY',
+    'Allowed edit paths: Assets/GameCore.cs',
+    '=== FILE Assets/GameCore.cs [EDITABLE] ===',
+    'private int inputState = 1;',
+    'private int hudState = 1;',
+    'private int feedbackState = 1;',
+    'void Tick() {}'
+  ].join('\n');
+
+  const noOp=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('후보가 실제 source 변경을 생성하지 않음'),
+    responsibleFiles:['Assets/GameCore.cs'],
+    attempt:2
+  });
+  assert.match(noOp,/Return 3-6 connected edits with at least 3 actual source deltas/i);
+  assert.doesNotMatch(noOp,/You MUST produce at least one edits\[\] entry/);
+
+  const invalidPath=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('잘못된 상대 경로:'),
+    responsibleFiles:['Assets/GameCore.cs'],
+    attempt:2
+  });
+  assert.match(invalidPath,/previous candidate used an invalid edit path/i);
+  assert.match(invalidPath,/Every edits\[\]\.path MUST be copied exactly from Allowed edit paths/i);
+  assert.match(invalidPath,/Never emit an empty path/i);
+});
+
 test('Unity text source produces isolated candidate without touching source', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
