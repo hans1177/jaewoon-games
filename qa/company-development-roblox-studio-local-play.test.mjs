@@ -16,6 +16,8 @@ import {
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 const helper=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
+const horrorServer=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server.luau','utf8');
+const cozyServer=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
@@ -615,7 +617,7 @@ test('Studio console parser accepts line-delimited structured console output',()
   ]);
 });
 
-test('Studio MCP CLI fails closed when runtime checkpoints are not verified and prints structured checkpoint diagnostics',()=>{
+test('Studio MCP CLI persists completed-session runtime failures without returning an infrastructure exit',()=>{
   assert.match(helper,/ROBLOX_STUDIO_MCP_CHECKPOINTS=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_ACTIONS=/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_VIEWPORT_BEFORE_FRAMES=/);
@@ -628,8 +630,11 @@ test('Studio MCP CLI fails closed when runtime checkpoints are not verified and 
   assert.doesNotMatch(helper,/const errorPatterns=\[[\s\S]{0,250}Stack Begin/);
   assert.match(helper,/for\(let offset=-2;offset<=4;offset\+\+\)/);
   assert.match(helper,/\.slice\(0,700\)/);
-  assert.match(helper,/ROBLOX_STUDIO_MCP_RUNTIME_NOT_VERIFIED:failed=/);
-  assert.match(helper,/if\(!result\.runtimeVerified\)/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_SESSION_COMPLETED=YES/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_RUNTIME_FAILURE_PERSIST_REQUIRED=YES/);
+  assert.match(helper,/ROBLOX_STUDIO_MCP_RUNTIME_FAILURE_SUMMARY:failed=/);
+  assert.match(helper,/if\(!result\.runtimeVerified\)\{/);
+  assert.doesNotMatch(helper,/ROBLOX_STUDIO_MCP_RUNTIME_NOT_VERIFIED:failed=/);
 });
 
 test('Studio MCP client negotiates Roblox protocol and waits for the official tool inventory to become ready',()=>{
@@ -722,6 +727,29 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/WaitForInputIdle\(30000\)/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_GUI_READY=YES/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES/);
+});
+
+test('Studio MCP retries only infrastructure failures and skips restart after a healthy session reports game runtime failure',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioMcpBlock,/\$sessionCompleted = \$false/);
+  assert.match(studioMcpBlock,/\$runtimeVerified = \$false/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_COMPLETED=YES:attempt=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RUNTIME_VERIFIED=\$runtimeState/);
+  assert.match(studioMcpBlock,/if \(-not \$sessionCompleted\) \{/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ACTUAL_PLAY=RUNTIME_FAIL/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RUNTIME_FAILURE_RETRY=SKIPPED_SESSION_HEALTHY/);
+  assert.doesNotMatch(studioMcpBlock,/\$success = \$false/);
+});
+
+test('local exact Studio boot does not abort before remotes when DataStore is unavailable',()=>{
+  for(const source of [horrorServer,cozyServer]){
+    assert.doesNotMatch(source,/local store=DSS:GetDataStore/);
+    assert.doesNotMatch(source,/local qaCaptureStore=DSS:GetDataStore/);
+    assert.doesNotMatch(source,/local foundationStore=DSS:GetDataStore/);
+    assert.match(source,/local store\s*\n\s*pcall\(function\(\)store=DSS:GetDataStore/);
+    assert.match(source,/local qaCaptureStore\s*\n\s*pcall\(function\(\)qaCaptureStore=DSS:GetDataStore/);
+    assert.match(source,/local foundationStore\s*\n\s*pcall\(function\(\)foundationStore=DSS:GetDataStore/);
+  }
 });
 
 test('Studio MCP opens the exact local Place as the single Studio before MCP and preserves exact-first retries',()=>{
