@@ -1207,7 +1207,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     }catch{}
   }
   const rows=[];
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|focus=PRESENTATION|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
   const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
   if(fullSource&&preferred.length){
     for(const symbol of preferred.slice(0,12)){
@@ -1286,7 +1286,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     :[];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   if(!exactResponsible.length)return null;
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|focus=PRESENTATION|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
   const robloxTask=/Engine:\s*roblox/i.test(raw);
   if(presentationTask&&robloxTask){
     const visualOwnerScore=value=>{
@@ -1333,7 +1333,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|focus=PRESENTATION|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
   const robloxAssetAdaptationTask=robloxPresentationTask&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(raw);
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
