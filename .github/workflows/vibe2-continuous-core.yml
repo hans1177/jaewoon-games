@@ -61,7 +61,7 @@ env:
 
 jobs:
   reserve:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 7
     # Reserve jobs may run concurrently. Only the existing optimistic shared-state
     # fetch/reset/replan/push retry section serializes on an actual write conflict.
