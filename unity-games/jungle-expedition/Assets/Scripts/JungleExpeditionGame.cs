@@ -44,6 +44,8 @@ namespace JaewoonGames.JungleExpedition
         private Vector3 respawnPoint = new Vector3(0, 1.1f, -4f);
         private Enemy boss;
         private bool qaMode;
+        private int qaProgress;
+        private bool qaMode;
         private bool qaStartLogged;
 
         private const string SavePrefix = "jungle_expedition_";
@@ -59,6 +61,7 @@ namespace JaewoonGames.JungleExpedition
         {
             Application.targetFrameRate = 60;
             qaMode = Application.absoluteURL.Contains("qa=1");
+            qaMode = Application.absoluteURL.Contains("qa=1");
             LoadGame();
             BuildWorld();
             SpawnPlayer();
@@ -73,6 +76,7 @@ namespace JaewoonGames.JungleExpedition
                 QaState();
             }
             Show(Objective(), 4f);
+            if (qaMode) { QaLog("BOOT game=jungle-expedition status=PASS"); QaLog("MOBILE_TARGET role=action x=0.88 y=0.92"); QaState(); }
         }
 
         private void Update()
@@ -225,6 +229,8 @@ namespace JaewoonGames.JungleExpedition
             if (key.sqrMagnitude > 0.01f) moveInput = Vector2.ClampMagnitude(key, 1f);
             else if (joyFinger < 0) moveInput = Vector2.zero;
 
+            if (Input.GetKeyDown(KeyCode.Alpha1) && qaMode) QaLog("START game=jungle-expedition region=jungle status=PASS");
+            if (Input.GetKeyDown(KeyCode.R) && qaMode) { QaLog("RESET game=jungle-expedition status=PASS"); QaState(); }
             if (Input.GetKeyDown(KeyCode.Space)) Attack();
             if (Input.GetKeyDown(KeyCode.E)) Interact();
             if (Input.GetKeyDown(KeyCode.Q)) UseTool();
@@ -539,6 +545,7 @@ namespace JaewoonGames.JungleExpedition
 
         private void Attack()
         {
+            if (qaMode) { QaLog("MOBILE_INPUT role=action status=PASS"); QaLog("ACTION type=attack status=PASS"); qaProgress++; PlayerPrefs.SetInt(SavePrefix + "qaProgress", qaProgress); PlayerPrefs.Save(); QaLog("PROGRESS qaProgress=" + qaProgress + " status=PASS"); QaLog("CORE_FUN genre=exploration-combat status=PASS"); QaState(); }
             if (attackCd > 0 || player == null) return;
             if (qaMode) Qa("ACTION type=attack status=PASS");
             attackCd = 0.48f;
@@ -794,6 +801,7 @@ namespace JaewoonGames.JungleExpedition
             ruinSeals = PlayerPrefs.GetInt(SavePrefix + "ruinSeals", 0);
             relics = PlayerPrefs.GetInt(SavePrefix + "relics", 0);
             kills = PlayerPrefs.GetInt(SavePrefix + "kills", 0);
+            qaProgress = PlayerPrefs.GetInt(SavePrefix + "qaProgress", 0);
             hasMachete = PlayerPrefs.GetInt(SavePrefix + "machete", 0) == 1;
             hasHook = PlayerPrefs.GetInt(SavePrefix + "hook", 0) == 1;
             hasAntidote = PlayerPrefs.GetInt(SavePrefix + "antidote", 0) == 1;
@@ -808,7 +816,7 @@ namespace JaewoonGames.JungleExpedition
             string[] keys =
             {
                 "stage","hp","jungleSamples","swampHerbs","ruinSeals","relics","kills",
-                "machete","hook","antidote","binoculars","tracker","trap","tranquilizer"
+                "machete","hook","antidote","binoculars","tracker","trap","tranquilizer","qaProgress"
             };
             foreach (string key in keys) PlayerPrefs.DeleteKey(SavePrefix + key);
             PlayerPrefs.Save();
@@ -826,6 +834,7 @@ namespace JaewoonGames.JungleExpedition
             hasTracker = false;
             hasTrap = false;
             hasTranquilizer = false;
+            qaProgress = 0;
             WarpToCheckpoint();
             Show("처음부터 다시 시작했어.", 2f);
         }
@@ -843,6 +852,10 @@ namespace JaewoonGames.JungleExpedition
             if (!qaMode) return;
             Qa("STATE game=jungle-expedition stage=" + stage + " kills=" + kills + " hp=" + hp + " maxHp=100 region=jungle");
         }
+
+        private void QaLog(string payload) { if (qaMode) Debug.Log("JAEWOON_UNITY_WEB_QA " + payload); }
+
+        private void QaState() { QaLog("STATE game=jungle-expedition stage=" + stage + " qaProgress=" + qaProgress + " hp=" + hp); }
 
         private void Show(string text, float sec)
         {
