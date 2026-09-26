@@ -42,10 +42,15 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(mainPushWake.executionLane,'GAME_PRIMARY');
   assert.equal(mainPushWake.usesExistingReservePath,true);
   assert.equal(mainPushWake.newSchedulerCreated,false);
+  assert.equal(mainPushWake.duplicateWakeSignalsCoalesced,true);
+  assert.equal(mainPushWake.concurrencyGroup,'vibe2-main-push-game-primary-wake');
+  assert.equal(mainPushWake.activeWakeCancellationForbidden,true);
   const architectureMainPushWake=architectureWave.mainPushGamePrimaryWake||{};
   assert.equal(architectureMainPushWake.enabled,true);
   assert.equal(architectureMainPushWake.singletonPlannerCompletionRequired,false);
   assert.equal(architectureMainPushWake.usesExistingCanonicalReserve,true);
+  assert.equal(architectureMainPushWake.duplicateWakeSignalsCoalesced,true);
+  assert.equal(architectureMainPushWake.activeWakeCancellationForbidden,true);
   assert.equal(architectureWave.gamePrimaryActiveExecutionCap,'ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT');
   assert.equal(architectureWave.externalSpareBeyond30,'AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP');
   assert.match(architectureWave.adaptiveControl,/PRESSURE_FLOOR_30/);
@@ -69,6 +74,8 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
   assert.match(core,/GAME_PRIMARY_MAIN_PUSH_WAKE/);
   assert.match(core,/push:\n\s*branches:\n\s*- main\n\s*- 'vibe2\/refill\/fanin\/\*\*'/);
+  assert.match(core,/vibe2-main-push-game-primary-wake/);
+  assert.match(core,/cancel-in-progress: false/);
   const fastDispatch=runner.indexOf('      - name: Dispatch queued GAME_PRIMARY work before full planning');
   const fullPlan=runner.indexOf('      - name: Plan from latest main and persist control queue');
   assert.ok(fastDispatch>=0&&fullPlan>fastDispatch);

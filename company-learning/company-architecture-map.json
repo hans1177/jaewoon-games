@@ -1163,6 +1163,9 @@
         "singletonPlannerCompletionRequired": false,
         "usesExistingCanonicalReserve": true,
         "newSchedulerCreated": false,
+        "duplicateWakeSignalsCoalesced": true,
+        "concurrencyGroup": "vibe2-main-push-game-primary-wake",
+        "activeWakeCancellationForbidden": true,
         "sharedStateSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
         "responsibleFileConflictProtectionPreserved": true
       },

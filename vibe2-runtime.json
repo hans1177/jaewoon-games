@@ -199,6 +199,9 @@
       "reason": "PREVENT_SINGLETON_PLANNER_PENDING_REPLACEMENT_FROM_STARVING_ALREADY_QUEUED_GAME_WORK",
       "usesExistingReservePath": true,
       "newSchedulerCreated": false,
+      "duplicateWakeSignalsCoalesced": true,
+      "concurrencyGroup": "vibe2-main-push-game-primary-wake",
+      "activeWakeCancellationForbidden": true,
       "sharedQueueWriteMode": "EXISTING_OPTIMISTIC_RESERVE_ONLY",
       "responsibleFileConflictProtectionPreserved": true,
       "qaAndReleaseAuthorityUnchanged": true
