@@ -1,5 +1,5 @@
 {
-  "version": 247,
+  "version": 248,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5547,6 +5547,10 @@
     ],
     "callbackIngressUnchanged": true,
     "activeGameWorkerCancellationForbidden": true,
-    "independentGameParallelismPreserved": true
+    "independentGameParallelismPreserved": true,
+    "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
+    "staleQueuedWakeMayCancel": true,
+    "inProgressWakeCancellationForbidden": true,
+    "staleDrainScope": "MAIN_PUSH_WAKE_HEAD_SHA_NOT_CURRENT_MAIN_ONLY"
   }
 }
