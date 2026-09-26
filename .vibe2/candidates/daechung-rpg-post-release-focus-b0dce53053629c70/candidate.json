@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "QACamera.install(C,gui,function()",
+      "replace": "QACamera.install(C,gui,function(anim) {\n    anim: anim;\n    gui: gui;\n    C: C;\n    return function(anim) {\n        // 추가적인 로직 또는 기존 로직의 수정\n        return anim;\n    };\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
