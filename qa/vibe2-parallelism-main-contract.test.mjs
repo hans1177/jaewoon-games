@@ -6,6 +6,7 @@ const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
 
