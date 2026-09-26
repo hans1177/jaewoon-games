@@ -311,6 +311,15 @@ test('candidate publication precreates the remote ref at the pinned base before 
   assert(workflow.includes('failure_class=CANDIDATE_BRANCH_PUBLISH'));
   assert(workflow.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/$candidate_branch"'));
   assert(!workflow.includes('workflow: write'));
+  const publication=runtime.workers.textSource.candidatePublication;
+  assert.equal(publication.localBranchBase,'RESERVE_TIME_PINNED_MAIN_SHA');
+  assert.equal(publication.remoteRefCreation,'PRECREATE_AT_PINNED_BASE_VIA_GIT_REFS_API');
+  assert.equal(publication.commitPushScope,'TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY');
+  assert.equal(publication.untouchedBaseWorkflowWriteAuthorityRequired,false);
+  assert.equal(publication.failureClass,'CANDIDATE_BRANCH_PUBLISH');
+  assert.equal(publication.telemetryStage,'CANDIDATE_PUBLICATION');
+  assert.equal(publication.excludedFromSourceGenerationFailureRate,true);
+  assert.equal(publication.remoteRefCleanupOnPushFailure,true);
 });
 
 test('reserve probes model cache lookup-only and skips the dedicated warmup runner on hit',()=>{
