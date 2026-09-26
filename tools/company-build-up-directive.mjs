@@ -503,6 +503,11 @@ export function directivePrompt(d={}){
     'VISUAL:',
     visual,
     `UX_INPUT: ${d.uxInputDirectives.join(' | ')}`,
+    d.robloxNativeExecution?`ROBLOX_NATIVE_RESPONSIBLE_FILES: ${(d.robloxNativeExecution.responsibleFiles||[]).join(' | ')||'CURRENT_ALLOWED_ROBLOX_FILES'}`:'',
+    d.robloxNativeExecution?`ROBLOX_NATIVE_SERVER_CLIENT: ${(d.robloxNativeExecution.serverClientResponsibility||[]).map(row=>row.file+':'+row.symbol+':'+row.role).join(' | ')}`:'',
+    d.robloxNativeExecution?`ROBLOX_NATIVE_FUNCTIONAL_ACCEPTANCE: ${d.robloxNativeExecution.observableAcceptanceScenario}`:'',
+    d.robloxNativeExecution?`ROBLOX_NATIVE_SOURCE_INSPECTION: ${(d.robloxNativeExecution.sourceInspectionChecklist||[]).join(',')}`:'',
+    d.robloxNativeExecution?`ROBLOX_NATIVE_CODE_QUALITY: ${(d.robloxNativeExecution.codeQualityChecks||[]).join(',')}`:'',
     `PRESERVE: ${d.preserveConstraints.join(' | ')}`,
     `ACCEPTANCE: ${d.acceptanceEvidence.join(' | ')}`,
     `NEXT_ESCALATION: ${d.nextEscalationCandidates.join(' | ')}`
@@ -569,6 +574,41 @@ export function buildGameSpecificBuildUpDirective({
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
     observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
   }));
+  const robloxNativeExecution=Object.freeze({
+    version:1,
+    required:true,
+    responsibleFiles:topFiles.filter(file=>/roblox-games\/|\.lua[u]?$/i.test(file)),
+    sourceSymbolsOrStateAnchors:sourceResponsibilities.map(row=>Object.freeze({
+      file:row.file,
+      line:row.line||null,
+      kind:row.kind||'SYMBOL',
+      symbol:row.symbol||'UNKNOWN',
+      currentBehavior:row.currentBehavior,
+      intendedBehavior:row.intendedBehavior,
+      observableAcceptance:row.observableAcceptance
+    })),
+    serverClientResponsibility:sourceResponsibilities.map(row=>Object.freeze({
+      file:row.file,
+      symbol:row.symbol||'UNKNOWN',
+      role:/(?:^|\/)server\/|\.server\.lua[u]?$/i.test(row.file)?'SERVER_AUTHORITY'
+        :/(?:^|\/)client\/|\.client\.lua[u]?$/i.test(row.file)?'CLIENT_INPUT_OR_PRESENTATION'
+        :'SHARED_MODULE_OR_STATE',
+      authorityRule:'damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable'
+    })),
+    expectedPlayerEffect:expectedEffect,
+    observableAcceptanceScenario:'input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback',
+    sourceInspectionChecklist:[
+      'SERVER_AUTHORITY','CLIENT_PRESENTATION','REMOTE_EVENTS_AND_FUNCTIONS','TOUCH_INPUT','CHARACTER_RESPAWN',
+      'DATASTORE_SAVE_LOAD','UI_STATE','CORE_STATE_MACHINE','MULTIPLAYER_SYNC'
+    ],
+    codeQualityChecks:[
+      'NO_UNBOUNDED_WHILE_LOOP','NO_LEAKED_CONNECTIONS','NO_DUPLICATE_REMOTE_PATH',
+      'NO_CLIENT_AUTHORITATIVE_GAMEPLAY_MUTATION','BOUNDED_DATASTORE_RETRY','REMOTE_INPUT_VALIDATION',
+      'NO_STALE_CHARACTER_REFERENCE_AFTER_RESPAWN'
+    ],
+    implementationRule:'read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally',
+    actualPlayRule:'after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair'
+  });
   const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus});
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
@@ -643,6 +683,7 @@ export function buildGameSpecificBuildUpDirective({
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
+    robloxNativeExecution,
     preserveConstraints:[
       '기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.',
       '승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.',
