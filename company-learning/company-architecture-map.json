@@ -1,5 +1,5 @@
 {
-  "version": 206,
+  "version": 207,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4779,5 +4779,23 @@
     "foundationPassEligibilityReadFromPersistedRuntimeState": true,
     "singleGameFoundationDelayCannotBlockOtherEligibleStudioPlay": true,
     "runtimeFoundationAndStudioPlanningMayRunParallel": true
+  },
+  "robloxHomepageThumbnailSyncTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
+    "flow": [
+      "canonical-marketing-thumbnail-asset",
+      "game-catalog-canonical-marketing-thumbnail",
+      "homepage-renderer",
+      "roblox-thumbnail-render-and-upload",
+      "roblox-thumbnail-status-verify",
+      "runtime-evidence-persist"
+    ],
+    "sameSourceAssetForHomepageAndRoblox": true,
+    "noNewWorker": true,
+    "noNewQueue": true,
+    "releasePromotionWorkflowExtendedOnly": true,
+    "verifiedUniverseIdRequired": true,
+    "gameCatalogBackwardCompatibilityPreserved": true
   }
 }
