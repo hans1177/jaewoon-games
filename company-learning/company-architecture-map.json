@@ -1230,6 +1230,10 @@
         "newSchedulerCreated": false
       },
       "conflictSafety": "SOURCE_ROOT_FILE_AND_DEPENDENCY_LOCKS_REMAIN_ENFORCED",
+      "workLockAcquireTiming": "AFTER_MODEL_PREPARATION_AND_READ_ONLY_EXPLORATION_IMMEDIATELY_BEFORE_SOURCE_WRITE",
+      "workLockPreLockReadOnlyPreparationAllowed": true,
+      "workLockMayNotCoverModelPreparation": true,
+      "workLockMayNotCoverReadOnlyExploration": true,
       "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,
       "gamePrimaryActiveExecutionCap": "ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT",
