@@ -699,6 +699,13 @@ test('source reconciliation failure clears older Roblox source candidate pointer
   assert.match(failureBlock,/robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND'/);
 });
 
+test('fresh Roblox source worker failure clears stale candidate pointers for canonical and owner-focus lanes',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok((workflow.match(/robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null/g)||[]).length>=2);
+  assert.match(workflow,/ownerFocusRobloxSourceCandidateBranch:null,[\s\S]*?ownerFocusRobloxSourceCandidateReadyAt:null/);
+  assert.match(workflow,/ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED'/);
+});
+
 test('pending private runtime candidates retry even when technical target count is zero',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
