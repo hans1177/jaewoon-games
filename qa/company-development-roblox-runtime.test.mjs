@@ -548,11 +548,14 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
   assert.equal(execution.gameLevelExecution,'PARALLEL_BY_DEFAULT');
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
+  assert.equal(execution.workflowLevelGameWideSerializationForbidden,true);
+  assert.equal(execution.workflowLevelConcurrencyGroupByGameIdForbidden,true);
+  assert.equal(execution.sameGameConflictSerializationScope,'RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
   assert.equal(execution.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
   assert.equal(execution.defaultRequestedGameWorkers,256);
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v5' \}\}/);
-  assert.doesNotMatch(workflow,/format\('batch-\{0\}', github\.run_id\)/);
-  assert.match(workflow,/cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/^concurrency:\s*$/m);
+  assert.doesNotMatch(workflow,/company-development-roblox-runtime-\$\{\{ inputs\.game_id/);
+  assert.doesNotMatch(workflow,/max-parallel:/);
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
     const header=`  ${job}:\n`;
     const start=workflow.indexOf(header);
@@ -633,8 +636,8 @@ test('Roblox source worker bases candidate on current main without leaking workf
 test('Roblox batch scheduler v5 uses slim control-plane capacity without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v5' \}\}/);
-  assert.match(workflow,/cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/^concurrency:\s*$/m);
+  assert.doesNotMatch(workflow,/company-development-roblox-runtime-\$\{\{ inputs\.game_id/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
   assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.matrixBatchMax,256);

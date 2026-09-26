@@ -42,10 +42,6 @@ permissions:
   pull-requests: write
   actions: write
 
-concurrency:
-  group: company-development-roblox-runtime-${{ inputs.game_id || 'batch-v5' }}
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
