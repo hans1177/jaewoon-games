@@ -888,3 +888,13 @@ test('private runtime deployment has one dispatch owner while batch work remains
   assert.doesNotMatch(f0,/gh workflow run company-development-roblox-release-promotion\.yml/);
   assert.match(f0,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
 });
+
+
+test('batch private-runtime recovery waits behind immediate F0 exact-game handoff',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/const batchRecoveryGraceMs=60_000/);
+  assert.match(workflow,/robloxFoundationF0PassedAt/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED=/);
+  assert.match(workflow,/if\(!requested\)/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME/);
+});
