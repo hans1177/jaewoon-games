@@ -1,5 +1,5 @@
 {
-  "version": 442,
+  "version": 443,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8794,12 +8794,11 @@
       "removedFromRuntimeCriticalPath": [
         "qa/company-shared-context.test.mjs",
         "qa/company-selected-platform-router.test.mjs",
-        "qa/company-development-unity-runtime.test.mjs"
-      ],
-      "retainedResponsibilityLocalTests": [
+        "qa/company-development-unity-runtime.test.mjs",
         "qa/company-upper-platform-admission.test.mjs",
         "qa/unity-package-fatal-logcat.test.mjs"
       ],
+      "retainedResponsibilityLocalTests": [],
       "staticSyntaxChecksPreserved": true,
       "sharedContextRuntimeCompilationPreserved": true,
       "canonicalQaMustStillRunOnRelevantMainChanges": true,
@@ -8807,6 +8806,30 @@
       "gameDispatchWaitsForDuplicateQa": false,
       "canonicalUnityStageOrderUnchanged": true,
       "qualitySecurityReleaseGatesUnchanged": true,
+      "independentGameParallelismPreserved": true,
+      "movedToCanonicalQa": [
+        "qa/company-upper-platform-admission.test.mjs",
+        "qa/unity-package-fatal-logcat.test.mjs"
+      ],
+      "canonicalQaPathTriggersIncludeMovedTests": true,
+      "runtimePrepareContractTestsRemaining": 0
+    },
+    "unityPrepareInputOverlap20260927": {
+      "id": "UNITY_PREPARE_INPUT_OVERLAP_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "OVERLAP_COMPANY_RUNTIME_QUEUE_FETCH_WITH_LOCAL_UNITY_PREPARE_CONTRACT_COMPILATION_BEFORE_QUEUE_SELECTION",
+      "workflow": ".github/workflows/company-development-unity-runtime.yml",
+      "runner": "ubuntu-24.04-arm",
+      "parallelInputs": [
+        "COMPANY_RUNTIME_DEVELOPMENT_QUEUE_FETCH",
+        "LOCAL_STATIC_CONTRACT_AND_SHARED_CONTEXT_VALIDATION"
+      ],
+      "bothMustPassBeforeQueueSelection": true,
+      "queueMaterializedAfterFetchPass": true,
+      "canonicalUnityStageOrderUnchanged": true,
+      "noGameEligibilityChange": true,
+      "noQualityGateWeakening": true,
       "independentGameParallelismPreserved": true
     }
   },
