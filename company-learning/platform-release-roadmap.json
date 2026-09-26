@@ -8454,6 +8454,21 @@
       "staleUnstartedFanInRefillMayCancel": true,
       "exactUnityChildQaDuplicateMayCancel": true
     },
+    "vibe2CoreQaActiveCompletion20260927": {
+      "id": "VIBE2_CORE_QA_ACTIVE_COMPLETION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "PRESERVE_ONE_ACTIVE_CORE_REGRESSION_DURING_HIGH_FREQUENCY_MAIN_CHURN_WHILE_COALESCING_SUPERSEDED_PENDING_VALIDATIONS",
+      "workflow": ".github/workflows/vibe2-core-qa.yml",
+      "runner": "ubuntu-slim",
+      "concurrencyGroup": "vibe2-core-qa-${{ github.ref }}",
+      "cancelActiveValidation": false,
+      "pendingPolicy": "KEEP_ONLY_LATEST_PENDING_SAME_REF",
+      "exactShaReuseByGamePrimaryReservePreserved": true,
+      "localExactShaFallbackPreserved": true,
+      "qualityGateWeakened": false,
+      "gamePrimaryRunnerCapacityConsumed": false
+    },
     "runnerQueueDrainV2_20260926": {
       "id": "RUNNER_QUEUE_DRAIN_V2_2026-09-26",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
