@@ -23,6 +23,10 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,256);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,30);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,256);
+  const architectureWave=architecture.neuralWorkGraphTopology.currentWaveExecution;
+  assert.equal(architectureWave.gamePrimaryActiveExecutionCap,'ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT');
+  assert.equal(architectureWave.externalSpareBeyond30,'AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP');
+  assert.match(architectureWave.adaptiveControl,/PRESSURE_FLOOR_30/);
   assert.equal(runtime.coordination.sourceRootExclusive,false);
   assert.equal(runtime.coordination.responsibleFileExclusive,true);
   assert.equal(runtime.coordination.sameFileParallelWrite,false);
@@ -67,7 +71,6 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
 });
 
 test('reserve scheduling isolates execution lanes and learning defers before production under runner pressure',()=>{
-  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const reserve=architecture.neuralWorkGraphTopology?.currentWaveExecution?.reserveConcurrency||{};
   const learning=runtime.continuous?.executionLanes?.LEARNING_IDLE||{};
 
