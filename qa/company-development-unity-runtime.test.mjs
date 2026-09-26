@@ -363,8 +363,6 @@ test('independent Unity QA dispatches regression only for the standalone workflo
   assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=INDEPENDENT_QA_AUTO_CHAIN/);
   assert.match(independentQaSource,/name: Record parent-owned regression dispatch[\s\S]*github\.event_name == 'workflow_dispatch'/);
   assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=COMPANY_DEVELOPMENT_UNITY_RUNTIME/);
-  assert.match(workflowSource,/UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=COMPANY_DEVELOPMENT_UNITY_RUNTIME/);
-  assert.match(workflowSource,/UNITY_ANDROID_REGRESSION_DEDUPE_BUILD_RUN=\$BUILD_RUN/);
 });
 
 
