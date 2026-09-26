@@ -75,19 +75,25 @@ export function speculativeExpansionPolicy(controlInput = {}) {
   const workerCount=Math.max(0,Math.floor(Number(telemetry.workerCount)||0));
   const effectiveMax=Math.max(0,Math.floor(Number(telemetry.effectiveMax)||0));
   const peakUtilization=Math.max(0,Number(telemetry.effectivePeakUtilizationPct)||0);
+  const pressureLevel=clean(telemetry.pressureLevel).toUpperCase();
+  const failureRatePct=Math.max(0,Number(telemetry.failureRatePct)||0);
   const explicitPressure=/(?:RUNNER_CAPACITY|RUNNER_QUEUE_WAIT|CHECKOUT_NETWORK)/.test(lastReason)
     || ['RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION','CHECKOUT_NETWORK'].includes(bottleneck);
   const loadedUnderutilization=workerCount>=4&&effectiveMax>=4&&peakUtilization>0&&peakUtilization<80;
-  if(explicitPressure||loadedUnderutilization){
+  const severeWorkPressure=['SEVERE','HIGH'].includes(pressureLevel);
+  if(explicitPressure||loadedUnderutilization||severeWorkPressure){
     const reasons=[];
     if(explicitPressure)reasons.push('ADAPTIVE_RUNNER_PRESSURE');
     if(loadedUnderutilization)reasons.push('LOW_EFFECTIVE_PEAK_UTILIZATION');
+    if(severeWorkPressure)reasons.push('ADAPTIVE_SEVERE_WORK_PRESSURE');
     return Object.freeze({
       allowed:false,
       reason:reasons.join('+'),
       primaryCoveragePreserved:true,
       lastReason:clean(control.lastReason)||null,
       bottleneck:bottleneck||null,
+      pressureLevel:pressureLevel||null,
+      failureRatePct,
       workerCount,
       effectiveMax,
       peakUtilizationPct:peakUtilization
@@ -99,6 +105,8 @@ export function speculativeExpansionPolicy(controlInput = {}) {
     primaryCoveragePreserved:true,
     lastReason:clean(control.lastReason)||null,
     bottleneck:bottleneck||null,
+    pressureLevel:pressureLevel||null,
+    failureRatePct,
     workerCount,
     effectiveMax,
     peakUtilizationPct:peakUtilization
