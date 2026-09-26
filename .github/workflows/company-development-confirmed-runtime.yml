@@ -8,21 +8,15 @@ on:
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-upper-platform-admission.mjs'
-      - 'qa/company-upper-platform-admission.test.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'company-learning/platform-release-roadmap.json'
-      - 'company-learning/company-architecture-map.json'
-      - 'qa/company-selected-platform-router.test.mjs'
-      - 'qa/company-minimum-design-contract.test.mjs'
       - '.github/workflows/unity-web-first-stage-build.yml'
       - '.github/workflows/unity-web-floor-source-bootstrap.yml'
       - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'tools/company-unity-web-gameplay-validation.mjs'
-      - 'qa/company-unity-web-gameplay-validation.test.mjs'
       - 'web-games/**/upper-platform-development-readiness.json'
       - 'company-asset-library.json'
       - 'tools/company-shared-context.mjs'
-      - 'company-learning/company-log-map.json'
   workflow_dispatch:
     inputs:
       game_id:
@@ -35,6 +29,10 @@ on:
         default: MANUAL_OR_NATIVE
         type: string
 
+concurrency:
+  group: company-development-confirmed-${{ inputs.game_id || (github.event_name == 'push' && 'main-push') || github.run_id }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
   actions: write
@@ -45,7 +43,7 @@ env:
 jobs:
   native-plan:
     name: Resolve direct native development
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
       eligible_count: ${{ steps.plan.outputs.eligible_count }}
