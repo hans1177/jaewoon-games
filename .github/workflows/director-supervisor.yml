@@ -34,6 +34,9 @@ permissions:
 jobs:
   runner-drain:
     name: drain superseded queued work
+    concurrency:
+      group: director-runner-drain-v1
+      cancel-in-progress: false
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     permissions:
@@ -190,6 +193,9 @@ jobs:
   game-primary-gate:
     needs: runner-drain
     if: always()
+    concurrency:
+      group: director-game-primary-gate-v1
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
