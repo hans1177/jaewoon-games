@@ -2607,7 +2607,8 @@ test('backlog gate binds queued existing game work to platform-lane-specific BUI
   assert.equal(rows[0].buildUpGeneration,1);
   assert.equal(rows[1].buildUpGeneration,1);
   assert.notDeepEqual(rows[0].buildUpDirective,rows[1].buildUpDirective);
-  assert.deepEqual(new Set(rows.map(row=>row.buildUpPlatformLane)),new Set(['roblox','unity-native']));
+  assert.deepEqual(new Set(rows.map(row=>row.buildUpDirective.platform)),new Set(['ROBLOX','UNITY']));
+  assert.deepEqual(new Set(rows.map(row=>row.buildUpDirective.sourceRoot)),new Set([`roblox-games/${gameId}`,`unity-games/${gameId}`]));
   assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
   assert.ok(rows.every(row=>row.buildUpDirective.version===2));
   assert.ok(rows.every(row=>row.buildUpStatus==='DIRECTIVE_BOUND'));
