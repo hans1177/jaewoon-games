@@ -23298,7 +23298,14 @@
       "duplicateAcrossDifferentGamesForbidden": true,
       "titleReadableOnMobile": true,
       "gameplayThemeMustMatchGame": true,
-      "essentialTextBottomSafeArea": true
+      "essentialTextBottomSafeArea": true,
+      "canonicalFormat": "SVG_OR_PNG",
+      "robloxUploadFormat": "PNG",
+      "robloxUploadWidth": 1920,
+      "robloxUploadHeight": 1080,
+      "svgRasterizer": "rsvg-convert",
+      "homepageUsesCanonicalVectorWithoutDerivative": true,
+      "robloxUsesDeterministicRasterDerivative": true
     },
     "robloxUpload": {
       "provider": "ROBLOX_OPEN_CLOUD",
@@ -23309,7 +23316,9 @@
       "uploadAfterExactPrivateRuntimeCandidatePublish": true,
       "exactUniverseBindingRequired": true,
       "verifyProcessingStatusRequired": true,
-      "moderationPendingIsNotPass": true
+      "moderationPendingIsNotPass": true,
+      "renderCanonicalSvgBeforeUpload": true,
+      "renderedPngMustRemainEphemeral": true
     },
     "homepageCompatibility": {
       "homepageMustUseSameMarketingImage": true,
@@ -23329,7 +23338,8 @@
       ".github/workflows/company-development-roblox-release-promotion.yml",
       "tools/homepage-manager.mjs",
       "qa/game-catalog-normalization.test.mjs",
-      "qa/company-development-roblox-release-promotion.test.mjs"
+      "qa/company-development-roblox-release-promotion.test.mjs",
+      "qa/company-roblox-thumbnail-sync.test.mjs"
     ],
     "authorityChange": "NONE"
   }
