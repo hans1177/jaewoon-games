@@ -296,22 +296,34 @@ test('controller pins each isolated candidate to the reserve-time main contract 
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
-test('model cache prewarm probes lookup-only on hit while isolated workers still restore the runtime cache',()=>{
-  const modelStart=workflow.indexOf('\n  model_cache:');
+test('reserve probes model cache lookup-only and skips the dedicated warmup runner on hit',()=>{
+  const reserveStart=workflow.indexOf('\n  reserve:');
+  const modelStart=workflow.indexOf('\n  model_cache:',reserveStart);
   const workerStart=workflow.indexOf('\n  worker:',modelStart);
   const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
-  assert.ok(modelStart>=0&&workerStart>modelStart&&fanInStart>workerStart);
+  assert.ok(reserveStart>=0&&modelStart>reserveStart&&workerStart>modelStart&&fanInStart>workerStart);
+  const reserveBlock=workflow.slice(reserveStart,modelStart);
   const modelBlock=workflow.slice(modelStart,workerStart);
   const workerBlock=workflow.slice(workerStart,fanInStart);
-  assert.match(modelBlock,/Probe or persist shared Ollama runtime cache/);
+  assert.match(reserveBlock,/model_cache_hit: \${{ steps\.ollama_cache_probe\.outputs\.cache-hit }}/);
+  assert.match(reserveBlock,/Probe shared Ollama cache from reserve runner/);
+  assert.match(reserveBlock,/uses: actions\/cache\/restore@v4/);
+  assert.match(reserveBlock,/lookup-only: true/);
+  assert.match(reserveBlock,/VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES/);
+  assert.match(reserveBlock,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT/);
+  assert.match(modelBlock,/if: needs\.reserve\.outputs\.worker_count != '0' && needs\.reserve\.outputs\.model_cache_hit != 'true'/);
+  assert.match(modelBlock,/Recheck or persist shared Ollama runtime cache/);
   assert.match(modelBlock,/lookup-only: true/);
-  assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES/);
-  assert.match(modelBlock,/if: steps\.ollama_cache\.outputs\.cache-hit != 'true'/);
+  assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
+  assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
+  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
   assert.match(workerBlock,/Restore shared Ollama runtime cache/);
   assert.match(workerBlock,/uses: actions\/cache\/restore@v4/);
-  assert.doesNotMatch(workerBlock,/lookup-only: true/);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.reserveCacheProbeLookupOnly,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmCacheProbeLookupOnlyOnHit,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmFullRestoreOnHitForbidden,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmJobSkippedOnReserveCacheHit,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmRunnerRequiredOnCacheHit,false);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRemainsRequiredPerIsolatedRunner,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerModelBehaviorChanged,false);
 });
