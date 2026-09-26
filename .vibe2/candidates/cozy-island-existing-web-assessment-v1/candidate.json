@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "  <script type=\"module\" src=\"./render-performance.js\"></script>",
+      "replace": "  <script type=\"module\" src=\"./render-performance.js\"></script>\n  <script type=\"module\" src=\"./soldier-animation-v16.js\"></script>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
