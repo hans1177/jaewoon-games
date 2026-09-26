@@ -168,9 +168,9 @@ test('steward migrates explicit legacy v3 parallelism state to v4',()=>{
 });
 
 test('system steward stale lease recovery stays synchronized with central architecture and log maps',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const architecture=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
+  const logMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-log-map.json',import.meta.url),'utf8'));
   const recovery=architecture?.autonomousBottleneckRecovery?.staleRunningReservationRecovery;
   const logRecovery=logMap?.orchestrationLogContract?.systemStewardRecovery;
   assert.equal(policy?.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticRecovery?.staleRunningReservation,'RELEASE_AND_REQUEUE_WITH_RECOVERY_EVIDENCE');
