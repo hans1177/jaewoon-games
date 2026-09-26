@@ -230,11 +230,25 @@ test('director runner drain advances latest scheduler without cancelling running
   assert.doesNotMatch(director,/VIBE2_STALE_UNSTARTED_SCHEDULER[\s\S]{0,400}in_progress/);
 });
 
-test('director coalesces disposable pre-supervision control jobs but preserves supervise completion',()=>{
+test('director coalesces pending pre-supervision wakes while preserving active completion',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const policy=roadmap.changeRecord?.directorPreSupervisionCoalescing20260927||{};
+  const topology=architecture.directorPreSupervisionCoalescing||{};
+  const evidence=logMap.directorPreSupervisionCoalescingEvidence||{};
   assert.match(director,/runner-drain:[\s\S]*?group: director-runner-drain-v1[\s\S]*?cancel-in-progress: false/);
   assert.match(director,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: false/);
   assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
+  assert.equal(policy.runnerDrainCancelInProgress,false);
+  assert.equal(policy.runnerDrainActiveCompletionPreserved,true);
+  assert.equal(policy.runnerDrainPendingLatestWins,true);
+  assert.equal(policy.gamePrimaryGateCancelInProgress,false);
+  assert.equal(topology.runnerDrain?.cancelInProgress,false);
+  assert.equal(topology.gamePrimaryGate?.cancelInProgress,false);
+  assert.equal(evidence.runnerDrainCancelInProgress,false);
+  assert.equal(evidence.gamePrimaryGateCancelInProgress,false);
 });
 
 
