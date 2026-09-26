@@ -72,12 +72,23 @@ function defaultDelay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function remoteWorkLockRetryDelayMs(identity, attempt) {
+  const key = `${clean(identity) || 'work-lock'}:${Math.max(1, Number(attempt) || 1)}`;
+  let hash = 2166136261;
+  for (let index = 0; index < key.length; index += 1) {
+    hash ^= key.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  const jitter = (hash >>> 0) % 1200;
+  return Math.min(2500, 200 + Math.max(1, Number(attempt) || 1) * 150 + jitter);
+}
+
 function operationOptions(options = {}) {
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   if (typeof fetchImpl !== 'function') throw new Error('fetch implementation required');
   const context = options.context || createRemoteWorkLockContext(options.contextOverrides || {});
   const delay = typeof options.delay === 'function' ? options.delay : defaultDelay;
-  const maxAttempts = Math.max(1, Math.min(5, Number(options.maxAttempts) || 3));
+  const maxAttempts = Math.max(1, Math.min(8, Number(options.maxAttempts) || 8));
   return { fetchImpl, context, delay, maxAttempts };
 }
 
@@ -115,7 +126,7 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
         conflicts: []
       };
     }
-    await delay(attempt * 500);
+    await delay(remoteWorkLockRetryDelayMs(request.taskId, attempt));
   }
   throw new Error('work-lock acquire unreachable');
 }
@@ -145,7 +156,7 @@ export async function releaseRemoteVibeWorkLock(args = {}, options = {}) {
         lockId
       };
     }
-    await delay(attempt * 500);
+    await delay(remoteWorkLockRetryDelayMs(lockId, attempt));
   }
   throw new Error('work-lock release unreachable');
 }
