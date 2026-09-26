@@ -83,14 +83,17 @@ test('stale published Roblox version preserves the exact failed stage and retrie
 });
 
 
-test('exact Roblox foundation QA keeps exact-game and scheduled isolation while deduping automatic push scans',()=>{
-  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'schedule' && 'scheduled-scan'\) \|\| \(github\.event_name == 'workflow_dispatch' && 'manual-scan'\) \|\| 'automatic-scan' \}\}/);
+test('exact Roblox foundation QA isolates exact games while collapsing duplicate scan work without workflow-wide locking',()=>{
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(workflow,/inputs\.game_id/);
-  assert.match(workflow,/scheduled-scan/);
-  assert.match(workflow,/manual-scan/);
-  assert.match(workflow,/'automatic-scan'/);
+  assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
+  assert.match(workflow,/process\.stdout\.write\(String\(game\?ids\[0\]:ids\[ids\.length-1\]\)\)/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   assert.match(workflow,/strategy:[\s\S]{0,180}fail-fast: false[\s\S]{0,180}matrix:/);
-  assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
   assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
