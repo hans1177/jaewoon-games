@@ -42,6 +42,22 @@ test('workbench permits existing web source maintenance', () => {
   assert.equal(brief.outputContract.sourceWriteAllowed, true);
 });
 
+test('existing-game preservation wording does not trigger new-game owner gate while real new-game intent remains gated', () => {
+  const existingRequest='기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존하며 UI와 조작을 개선해.';
+  const existingWorkbench=planVibeWorkbenchTask({request:existingRequest,target:'unity',gameId:'existing-holistic'});
+  const existingCore=planVibeCoreTask({request:existingRequest,target:'unity',gameId:'existing-holistic'});
+  assert.equal(existingWorkbench.companyDevelopment.required,false);
+  assert.equal(existingWorkbench.companyDevelopment.ownerGateRequired,false);
+  assert.equal(existingCore.executionGate.mayExecute,true);
+  assert.ok(!existingCore.executionGate.reasons.includes('company-owner-gate-required'));
+
+  const newGameCore=planVibeCoreTask({request:'새 게임 만들어. 모바일 생존 게임으로 제작해.',target:'unity',gameId:'brand-new'});
+  assert.equal(newGameCore.workbench.companyDevelopment.required,true);
+  assert.equal(newGameCore.workbench.companyDevelopment.ownerGateRequired,true);
+  assert.equal(newGameCore.executionGate.mayExecute,false);
+  assert.ok(newGameCore.executionGate.reasons.includes('company-owner-gate-required'));
+});
+
 test('core runtime composes verified Unreal learning and motion', () => {
   const seeded = addVibeExperience(createVibeExperienceMemory(), {
     gameId: 'old-game', engine: 'unreal', departments: ['development', 'qa'], taskType: 'motion',
