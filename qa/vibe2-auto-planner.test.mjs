@@ -2263,6 +2263,48 @@ test('existing holistic backfill is independent for Roblox Unity Web and Unity N
   assert.equal(nextUnityWeb.studioQualityEvolution.siblingPlatformPassCannotSubstitute,true);
 });
 
+test('existing game holistic backfill is planned before generic Roblox presentation polish',()=>{
+  const root=tempRepo();
+  const gameId='existing-holistic-priority';
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true,firstAdoption:{gameId:'other'}};
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2),'utf8');
+
+  const clientDir=path.join(root,'roblox-games',gameId,'client');
+  const serverDir=path.join(root,'roblox-games',gameId,'server');
+  const sharedDir=path.join(root,'roblox-games',gameId,'shared');
+  fs.mkdirSync(clientDir,{recursive:true});
+  fs.mkdirSync(serverDir,{recursive:true});
+  fs.mkdirSync(sharedDir,{recursive:true});
+  fs.writeFileSync(path.join(clientDir,'Game.client.luau'),'local camera = workspace.CurrentCamera\nlocal input = game:GetService("UserInputService")\n','utf8');
+  fs.writeFileSync(path.join(serverDir,'Combat.server.luau'),'local Combat = {}\nfunction Combat.resolveAttack(player, enemy) return player ~= nil and enemy ~= nil end\nreturn Combat\n','utf8');
+  fs.writeFileSync(path.join(sharedDir,'Save.luau'),'local Save = {}\nreturn Save\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'전투와 지역 선택을 연결하는 재미',progressionDirection:'보상과 장비로 새 지역 선택을 확장한다.'});
+
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Existing Holistic Priority',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`
+    }]},
+    queue:{maxConcurrentTasks:256,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:1,
+    queueMaxConcurrentTasks:256,
+    planningBacklogTarget:1,
+    planningBacklogMinimum:0
+  });
+
+  assert.equal(result.planned,true);
+  assert.equal(result.tasks.length,1);
+  const first=result.tasks[0];
+  assert.ok((first.evidence||[]).includes('existing-holistic-backfill:v1'));
+  assert.equal(first.studioQualityEvolution?.existingHolisticBackfillRequired,true);
+  assert.notEqual(first.id,`${gameId}-roblox-studio-asset-backfill-v1`);
+  assert.doesNotMatch(first.id,/presentation-asset-adaptation-v1$/);
+});
+
 test('existing games receive holistic backfill on all five quality pillars without grandfather exemption',()=>{
   const root=tempRepo();
   const gameId='existing-holistic';
