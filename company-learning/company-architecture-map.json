@@ -1,5 +1,5 @@
 {
-  "version": 220,
+  "version": 221,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5094,5 +5094,33 @@
       "actualBindingMustUseExistingResponsibleFiles": true,
       "markerOnlyBindingForbidden": true
     }
+  },
+  "vibeSourceGenerationFocusedRecoveryTopology": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
+    "sourceWorker": "tools/vibe2-source-worker.mjs",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "timeoutPath": {
+      "initialGeneration": "UNCHANGED",
+      "zeroOutputTimeout": "WORKER_PINNED_FOCUSED_REPLACE_ONLY",
+      "focusedTimeoutMs": 90000,
+      "focusedMaxPredict": 384,
+      "focusedContextWindow": 8192,
+      "fullGraphicsPackageRetryAfterZeroOutputTimeout": false
+    },
+    "sharedContextPath": {
+      "beforeWorkValidation": true,
+      "afterWorkValidation": true,
+      "afterWorkValidationBeforeFailureExit": true,
+      "resultEvidenceConsumesAfterWorkFile": true
+    },
+    "preserves": [
+      "EXISTING_GAME_SOURCE_AUTHORITY",
+      "EXISTING_QA_GATES",
+      "EXISTING_RETRY_COUNT",
+      "EXISTING_RESPONSIBLE_FILE_BOUNDARY",
+      "EXISTING_CANDIDATE_BRANCH_ISOLATION"
+    ],
+    "authorityExpanded": false
   }
 }
