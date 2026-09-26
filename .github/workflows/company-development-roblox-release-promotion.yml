@@ -23,10 +23,6 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-roblox-release-promotion-${{ inputs.game_id || github.run_id }}
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 

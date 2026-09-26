@@ -286,10 +286,10 @@ test('public release rejects static-only multiplayer evidence and requires the s
   assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));
 });
 
-test('private runtime candidate deployment serializes only duplicate work for the same game',()=>{
-  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(workflow,/group: company-development-roblox-release-promotion-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
-  assert.doesNotMatch(workflow,/group: company-development-roblox-release-promotion\s*$/m);
+test('private runtime candidate deployment does not serialize workflow runs',()=>{
+  const prefix=workflow.slice(0,workflow.indexOf('\njobs:'));
+  assert.doesNotMatch(prefix,/\nconcurrency:\n/);
+  assert.match(workflow,/inputs\.game_id/);
 });
 
 

@@ -16,10 +16,6 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-roblox-f0-source-preflight-${{ inputs.game_id || 'batch' }}
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 

@@ -66,6 +66,16 @@ test('already preflight-ready games wake F0 without requiring a new preflight pa
   assert.match(workflow,/needs\.preflight-persist\.outputs\.pass_count != '0'/);
 });
 
+
+test('continuation workflow does not serialize all runs globally',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  const prefix=workflow.slice(0,workflow.indexOf('\njobs:'));
+  assert.doesNotMatch(prefix,/\nconcurrency:\n/);
+  assert.match(workflow,/preflight-worker:[\s\S]*?matrix: \$\{\{ fromJSON\(needs\.preflight-plan\.outputs\.matrix\) \}\}/);
+  assert.doesNotMatch(workflow,/max-parallel:/);
+  assert.match(workflow,/persist Roblox shared-model preflight checkpoints[\s\S]*?concurrency:[\s\S]*?group: company-runtime-writer/);
+});
+
 test('shared Roblox preflight checkout fans out without an internal six-game cap',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   assert.doesNotMatch(workflow,/rows\.length>=6/);
