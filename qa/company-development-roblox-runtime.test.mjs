@@ -285,7 +285,8 @@ test('Roblox package completion follows F0 then private runtime candidate then e
   assert.ok(f0.includes('company-development-roblox-headless-fast-mvp.mjs'));
   assert.ok(f0.includes('HEADLESS_SOURCE_PREFLIGHT_F0')||f0.includes('robloxFoundationF0Passed'));
   assert.ok(f0.includes("item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'"));
-  assert.ok(f0.includes('Dispatch private runtime candidate deployment'));
+  assert.ok(f0.includes('Dispatch exact Roblox runtime private-candidate handoff'));
+  assert.ok(f0.includes('company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"'));
   assert.ok(candidate.includes('Private Runtime Candidate Deployment'));
   assert.ok(candidate.includes("item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'"));
   assert.ok(candidate.includes('company-development-roblox-post-runtime-qa.yml'));
@@ -790,11 +791,14 @@ test('pending private runtime candidates retry even when technical target count 
   assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
   assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
   assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateDeploymentParallel,true);
-  assert.match(workflow,/name: Dispatch pending private runtime candidates[\s\S]*?if: always\(\)/);
+  assert.match(workflow,/name: Route pending private runtime candidates through exact game dispatcher[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DEDUPED_COUNT=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=EXACT_RUNTIME:/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=DEDUPED_ACTIVE_RUNTIME:/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME/);
   assert.match(workflow,/actions\/workflows\/company-development-roblox-release-promotion\.yml\/runs\?per_page=100/);
   assert.match(workflow,/display_title/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT=/);
@@ -867,4 +871,20 @@ test('Roblox game-control jobs use ARM while heavy source and technical workers 
   }
   assert.match(workflow,/\n  source-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
   assert.match(workflow,/\n  technical-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+});
+
+
+test('private runtime deployment has one dispatch owner while batch work remains parallel',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const f0=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
+  const persistStart=runtime.indexOf('\n  technical-persist:\n');
+  const persistEnd=runtime.length;
+  const persist=runtime.slice(persistStart,persistEnd);
+  assert.ok(persistStart>=0);
+  assert.match(persist,/group: roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
+  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME/);
+  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=EXACT_RUNTIME:/);
+  assert.match(persist,/gh workflow run company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.doesNotMatch(f0,/gh workflow run company-development-roblox-release-promotion\.yml/);
+  assert.match(f0,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
 });
