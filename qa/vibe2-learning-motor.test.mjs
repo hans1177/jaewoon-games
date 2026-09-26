@@ -412,6 +412,11 @@ test('learning motor classifies concept world streaming persona relationship and
   assert.ok(narrativeDomains.includes('WORLD_NARRATIVE_BINDING'));
 });
 
+test('learning motor emits canonical Roblox native reuse log marker',()=>{
+  const source=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
+  assert.match(source,/ROBLOX_NATIVE_LEARNING_REUSE=PASS:positive=/);
+});
+
 test('learning motor exposes Roblox touch character and UI native domains',()=>{
   for(const domain of ['ROBLOX_TOUCH_INPUT','ROBLOX_CHARACTER_STATE','ROBLOX_UI_STATE'])assert.ok(MASTERY_DOMAINS.includes(domain));
   const classified=classifyLearningDomains({
