@@ -791,12 +791,15 @@ test('Studio MCP diagnostics expose installed version and available tool invento
 });
 
 
-test('automatic Roblox Studio MCP scans supersede stale pushes while preserving exact-game and scheduled isolation',()=>{
-  assert.match(workflow,/group: company-development-roblox-runtime-foundation-qa-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'schedule' && 'scheduled-scan'\) \|\| \(github\.event_name == 'workflow_dispatch' && 'manual-scan'\) \|\| 'automatic-scan' \}\}/);
-  assert.match(workflow,/cancel-in-progress: \${\{ github\.event_name == 'push' \}\}/);
-  assert.match(workflow,/scheduled-scan/);
-  assert.match(workflow,/manual-scan/);
-  assert.doesNotMatch(workflow,/company-development-roblox-runtime-foundation-qa-[^\n]*github\.run_id/);
+test('automatic Roblox Studio MCP scans collapse before heavy work while exact-game runs keep separate identities',()=>{
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
+  assert.match(workflow,/process\.stdout\.write\(String\(game\?ids\[0\]:ids\[ids\.length-1\]\)\)/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
 });
 
 
