@@ -1,5 +1,5 @@
 {
-  "version": 411,
+  "version": 412,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -906,9 +906,9 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 5,
+      "version": 6,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "MALFORMED_FAST_PATH_CI_VERIFIED_DIAGNOSTIC_REVALIDATION_PENDING",
+      "status": "HOLISTIC_NO_OP_INVALID_PATH_REPAIR_IMPLEMENTED_PENDING_QA",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -1135,6 +1135,60 @@
         },
         "authorityChange": "NONE",
         "nextGate": "CI_PASS_THEN_PRODUCTION_WAVE_VERIFY_PLACEHOLDER_FAILURE_DISAPPEARS_OR_RECLASSIFIES_WITH_REAL_CAUSAL_CLASS"
+      },
+      "holisticBackfillLiveFailureAudit": {
+        "runId": 36229097447,
+        "scope": "SAMPLED_EXISTING_GAME_HOLISTIC_UNITY_WEB_WORKERS",
+        "sampledJobs": [
+          {
+            "jobId": 108369130219,
+            "gameId": "bug-defense",
+            "finalFailureClass": "NO_OP"
+          },
+          {
+            "jobId": 108369130224,
+            "gameId": "amusement-tycoon",
+            "finalFailureClass": "NO_OP"
+          },
+          {
+            "jobId": 108369130225,
+            "gameId": "seed-casual-realm-weaver",
+            "finalFailureClass": "INVALID_PATH"
+          },
+          {
+            "jobId": 108369130229,
+            "gameId": "seed-idle-growth-rpg-crystal-bloom",
+            "finalFailureClass": "NO_OP"
+          }
+        ],
+        "sampledFailureCounts": {
+          "NO_OP": 3,
+          "INVALID_PATH": 1
+        },
+        "verifiedMessages": [
+          "후보가 실제 source 변경을 생성하지 않음",
+          "잘못된 상대 경로:"
+        ],
+        "responsibleSystem": "tools/vibe2-source-worker.mjs::buildGenerationRetryPrompt",
+        "rootCauses": [
+          "BLANK_RELATIVE_PATH_WAS_CLASSIFIED_AS_INVALID_PATH_BUT_NOT_RECOGNIZED_BY_THE_INVALID_PATH_RETRY_PROMPT_BRANCH",
+          "STUDIO_NO_OP_RETRY_MIXED_CONNECTED_3_TO_6_EDIT_REQUIREMENT_WITH_A_GENERIC_AT_LEAST_ONE_EDIT_INSTRUCTION"
+        ],
+        "correction": {
+          "blankRelativePathUsesInvalidPathRetryPrompt": true,
+          "studioNoOpKeepsConnectedEditPackage": true,
+          "studioInvalidPathKeepsConnectedEditPackage": true,
+          "minimumConnectedSourceDeltas": 3,
+          "exactWritablePathsRequired": true,
+          "exactDistinctFindAnchorsRequiredWhenAvailable": true,
+          "retryBudgetIncreased": false,
+          "timeoutIncreased": false,
+          "workerCountIncreased": false,
+          "writableScopeExpanded": false,
+          "qaBypassAllowed": false,
+          "authorityChange": "NONE"
+        },
+        "verificationState": "TARGETED_QA_REQUIRED_THEN_LIVE_WAVE_REVALIDATION"
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
