@@ -366,7 +366,9 @@
         "safetyNetCron": "*/5 * * * *",
         "systemAiDispatchImmediate": true,
         "gameWorkerDispatch": "DEFER_TO_GAME_PRIMARY_FANIN",
-        "directGameWorkerDispatch": false
+        "directGameWorkerDispatch": false,
+        "speculativeVariantsAllowed": false,
+        "workerFanoutPerTask": 1
       },
       "CONTROL_FAST": {
         "consumesGamePrimarySlot": false,
