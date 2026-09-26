@@ -1,5 +1,5 @@
 {
-  "version": 404,
+  "version": 405,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8043,6 +8043,12 @@
       ],
       "platformLaneUpgrade": "EXISTING_GAME_BACKFILL_IS_NOW_SCOPED_PER_WEB_ROBLOX_UNITY_WEB_UNITY_NATIVE_LANE_WITH_INDEPENDENT_EVIDENCE",
       "unityWebIncluded": true
+    },
+    "existingGameHolisticPriority20260926": {
+      "id": "EXISTING_GAME_HOLISTIC_PRIORITY_2026-09-26",
+      "summary": "Existing ACTIVE/REBUILD games now schedule holistic map/gameplay/progression/inventory/UI/usability/stability BUILD_UP ahead of generic asset/presentation polish after higher-severity security/runtime/progress repairs, preventing graphics-only queue monopolization.",
+      "directResponsibleFunction": "tools/vibe2-auto-planner.mjs#findSafeTasks",
+      "runningTaskMigration": "DO_NOT_CANCEL_ALREADY_RUNNING_SAFE_WORK; APPLY_PRIORITY_TO_NEWLY_PLANNED_WORK_AND_NEXT_GENERATIONS"
     }
   },
   "vibeExecutionLaneContract": {
@@ -23740,7 +23746,7 @@
         }
       },
       "existingGameHolisticBackfill": {
-        "version": 2,
+        "version": 3,
         "authority": "OWNER_DIRECTIVE_2026-09-26",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "objective": "RETROACTIVELY_APPLY_THE_CURRENT_HOLISTIC_BUILD_UP_STANDARD_TO_EVERY_EXISTING_ELIGIBLE_GAME_WITHOUT_RESETTING_OR_GRANDFATHERING_LOW_QUALITY_IMPLEMENTATION",
@@ -23870,6 +23876,26 @@
             "independentNativeStudioRuntimeEvidenceRequired": true,
             "unityOrUnityWebPassCannotSubstitute": true
           }
+        },
+        "schedulingPriority": {
+          "objective": "PREVENT_GENERIC_PRESENTATION_OR_ASSET_POLISH_FROM_MONOPOLIZING_EXISTING_GAME_EVOLUTION_BEFORE_CURRENT_HOLISTIC_BASELINE_IS_VERIFIED",
+          "order": [
+            "SECURITY_OR_RUNTIME_CRITICAL_REPAIR",
+            "PROGRESS_BLOCKER_OR_EXACT_CAUSAL_REPAIR",
+            "OWNER_EXPLICIT_P0_PLATFORM_WORK",
+            "EXISTING_GAME_HOLISTIC_BACKFILL",
+            "GENERIC_ASSET_PRESENTATION_WEATHER_OR_MICRO_POLISH",
+            "NORMAL_PERPETUAL_BUILD_UP_AFTER_HOLISTIC_BASELINE"
+          ],
+          "holisticBackfillOutranksGenericPresentationWhenNoHigherSeverityRepair": true,
+          "alreadyRunningWorkMayFinishWithoutDestructiveCancellation": true,
+          "newlyPlannedWorkUsesCurrentPriority": true,
+          "unrelatedNonConflictingWorkMayContinueInParallel": true,
+          "responsibleFileConflictSerializationOnly": true,
+          "securityAndProgressBlockersRemainHigherPriority": true,
+          "noNewQueueWorkerOrPipeline": true,
+          "ownerExplicitP0PlatformWorkMayPreemptHolisticBackfill": true,
+          "genericWeatherPresentationStillBelowHolisticBackfill": true
         }
       }
     }
