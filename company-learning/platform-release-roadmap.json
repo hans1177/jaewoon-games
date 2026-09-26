@@ -1,5 +1,5 @@
 {
-  "version": 434,
+  "version": 435,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8662,7 +8662,10 @@
         "activeRobloxAndUnityRunScansParallel": true,
         "gameDispatchWaitsForContractAudit": false,
         "activeLaneIdentityScanFailClosed": true,
-        "partialActiveLaneScanMayDispatch": false
+        "partialActiveLaneScanMayDispatch": false,
+        "runner": "ubuntu-24.04-arm",
+        "contractAuditRunner": "ubuntu-slim",
+        "gameControlAndAdministrativeAuditRunnerSeparated": true
       },
       "unityWebPerGameConcurrency": {
         "callerGroup": "unity-web-floor-call-<gameId>",
