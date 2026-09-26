@@ -1630,3 +1630,21 @@ test('studio quality normalization preserves unbounded max and verified design a
   assert.deepEqual(contract.approvedDesignElements.coreLoop,['read','act','advance']);
   assert.equal(contract.approvedDesignElements.signatureSystems[0].name,'combat');
 });
+
+
+test('recovery-fast never expands one system repair into speculative worker variants',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[
+    {id:'sys-risk-a',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
+      goal:'high risk structural repair a',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
+      systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/a.mjs']},
+    {id:'sys-risk-b',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
+      goal:'high risk structural repair b',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
+      systemSteward:true,sourceRoot:'.',responsibleFiles:['tools/b.mjs']}
+  ]});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:5,lane:'recovery-fast'});
+  assert.equal(reserved.tasks.length,2);
+  assert.ok(reserved.tasks.every(task=>task.executionLane==='RECOVERY_FAST'));
+  assert.ok(reserved.tasks.every(task=>task.neuronExpectedVariants===1));
+  assert.equal(reserved.matrix.length,2);
+  assert.ok(reserved.matrix.every(row=>row.speculativeVariants===1));
+});
