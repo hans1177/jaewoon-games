@@ -113,6 +113,12 @@ jobs:
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-native-runs-$page.json" &
             pids+=("$!")
             labels+=("UNITY:$page")
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/unity-web-first-stage-build.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-web-floor-runs-$page.json" &
+            pids+=("$!")
+            labels+=("UNITY_WEB_FLOOR:$page")
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/unity-web-floor-source-bootstrap.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-web-bootstrap-runs-$page.json" &
+            pids+=("$!")
+            labels+=("UNITY_WEB_BOOTSTRAP:$page")
           done
           queue_fetch_status=0
           wait "$queue_fetch_pid" || queue_fetch_status=$?
@@ -135,9 +141,14 @@ jobs:
           fi
           jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-roblox-native-runs-{1,2,3}.json > /tmp/active-roblox-native-runs.json
           jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-native-runs-{1,2,3}.json > /tmp/active-unity-native-runs.json
+          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-web-floor-runs-{1,2,3}.json > /tmp/active-unity-web-floor-runs.json
+          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-web-bootstrap-runs-{1,2,3}.json > /tmp/active-unity-web-bootstrap-runs.json
           echo "NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=$(jq '.workflow_runs|length' /tmp/active-roblox-native-runs.json)"
           echo "NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-native-runs.json)"
+          echo "UNITY_WEB_ACTIVE_RUN_SCAN_FLOOR_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-web-floor-runs.json)"
+          echo "UNITY_WEB_ACTIVE_RUN_SCAN_BOOTSTRAP_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-web-bootstrap-runs.json)"
           echo 'NATIVE_ACTIVE_RUN_SCAN_PAGES=3'
+          echo 'UNITY_WEB_ACTIVE_RUN_SCAN_PAGES=3'
           echo 'NATIVE_ACTIVE_RUN_SCAN=PASS'
 
       - name: Resolve Unity Web floor and upper-platform eligibility
@@ -178,6 +189,8 @@ jobs:
           };
           const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ');
           const activeUnity=activeIds('/tmp/active-unity-native-runs.json','Unity runtime · ');
+          const activeUnityWebFloor=activeIds('/tmp/active-unity-web-floor-runs.json','Unity Web Floor ');
+          const activeUnityWebBootstrap=activeIds('/tmp/active-unity-web-bootstrap-runs.json','Unity Web Floor Bootstrap ');
           const nativeIds=[],robloxIds=[],unityIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
             const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
@@ -191,13 +204,19 @@ jobs:
               continue;
             }
             if(decision.state==='UNITY_WEB_FLOOR'){
-              webIds.push(item.gameId);
-              console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+decision.reason+':'+decision.buildMethod);
+              if(activeUnityWebFloor.has(item.gameId))console.log('UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
+              else {
+                webIds.push(item.gameId);
+                console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+decision.reason+':'+decision.buildMethod);
+              }
               continue;
             }
             if(decision.state==='UNITY_WEB_BOOTSTRAP'){
-              bootstrapIds.push(item.gameId);
-              console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+decision.reason);
+              if(activeUnityWebBootstrap.has(item.gameId))console.log('UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
+              else {
+                bootstrapIds.push(item.gameId);
+                console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+decision.reason);
+              }
               continue;
             }
             blockedIds.push(item.gameId);
