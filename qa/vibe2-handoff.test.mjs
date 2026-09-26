@@ -95,6 +95,7 @@ test('repository handoff is generated entirely from machine state', () => {
   const snapshot = generateVibe2Handoff();
   const repositoryRuntime = JSON.parse(fs.readFileSync('vibe2-runtime.json', 'utf8'));
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
+  assert.equal(repositoryRuntime.documentation?.machineStateVersions?.runtime, repositoryRuntime.version);
   assert.equal(snapshot.generatedFrom.runtimeVersion, repositoryRuntime.version);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 4);
