@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-26",
@@ -48,7 +48,13 @@
     "robloxRootOnlyCharacterMotionForbidden": true,
     "robloxVerifiedMotionLibraryBeforeNewKeyframes": true,
     "robloxBlendAndSpeedSyncRequired": true,
-    "robloxIkAndProceduralContactCorrectionPreferred": true
+    "robloxIkAndProceduralContactCorrectionPreferred": true,
+    "vibeUpgradeUniversalAssetFirstRequired": true,
+    "allAssetFamiliesMustBeEvaluatedForEveryNativeUpgrade": true,
+    "applicableAssetFamiliesRequireActualSourceBinding": true,
+    "assetConfigMarkerOnlyCannotPass": true,
+    "primitiveOnlyVisualUpgradeForbidden": true,
+    "mapEnvironmentBuildingPropAssetCoverageRequired": true
   },
   "platformPacks": [
     {
@@ -3780,7 +3786,7 @@
     "maxGraduatePerFamilyPerCycle": 2
   },
   "robloxSelectionHandoff": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE",
     "plannerSelects": true,
     "plannerMutatesGameSource": false,
@@ -3798,7 +3804,10 @@
       "REGRESSION_SECURITY_FAN_IN",
       "PROMOTION_OR_REPAIR"
     ],
-    "runtimePassRequiredForVerifiedPromotion": true
+    "runtimePassRequiredForVerifiedPromotion": true,
+    "allTwelveFamiliesEvaluated": true,
+    "applicableFamilyActualBindingRequired": true,
+    "markerOnlyApplicationForbidden": true
   },
   "robloxCharacterMotionQuality": {
     "version": 1,
@@ -3847,5 +3856,46 @@
     "actualNativeAnimationClipRequiredForRuntimeVerification": true,
     "officialStudioRuntimeRequiredForVerifiedPromotion": true,
     "gameplayAuthority": false
+  },
+  "universalVibeUpgradeAssetContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+    "families": [
+      "CHARACTER",
+      "CREATURE",
+      "BUILDING",
+      "ENVIRONMENT",
+      "WEAPON",
+      "SKILL",
+      "MATERIAL",
+      "AUDIO",
+      "VFX",
+      "UI",
+      "MOTION",
+      "PROP"
+    ],
+    "selection": "ALL_FAMILIES_EVALUATED_EVERY_NATIVE_UPGRADE",
+    "application": "EVERY_EXISTING_APPLICABLE_GAME_SYSTEM_MUST_USE_SELECTED_OR_VERIFIED_COMPATIBLE_ASSET",
+    "notApplicable": "ONLY_WHEN_THE_GAME_HAS_NO_SUCH_EXISTING_SYSTEM_AND_EVIDENCE_IS_RECORDED",
+    "mapMinimum": [
+      "BACKGROUND",
+      "TERRAIN",
+      "BUILDING",
+      "LANDMARK",
+      "SET_DRESSING",
+      "PROP"
+    ],
+    "sourcePriority": [
+      "REUSE_VERIFIED_COMPANY_ASSET",
+      "REUSE_LICENSE_VERIFIED_REPOSITORY_ASSET",
+      "DERIVE_VERIFIED_ASSET_WITH_SAFE_STYLE_OR_MODULAR_VARIANT",
+      "ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET",
+      "PREPARE_SEMANTIC_ASSET_SEED",
+      "AUTHOR_NEW_PLATFORM_NATIVE_ASSET"
+    ],
+    "markerOnlyPassForbidden": true,
+    "primitiveOnlyPassForbidden": true,
+    "runtimeVerificationRequired": true
   }
 }
