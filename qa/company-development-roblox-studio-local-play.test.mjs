@@ -34,6 +34,8 @@ function roadmap(){
       undocumentedStudioCliAutomationForbidden:true,
       studioMcpTransport:'STDIO',
       historicalExactPublishedArtifactAllowedForLocalActualPlay:true,
+      runtimeFoundationPassedArtifactAllowedForLocalActualPlay:true,
+      earliestBehaviorFeedbackCheckpoint:'AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING',
       mcpUnavailableRecovery:{automaticResumeAfterPrerequisite:true}
     }},
     developmentLifecycleMachine:{robloxStudioUsage:{
@@ -145,6 +147,35 @@ test('planner selects exact internally released artifact during parallel foundat
   assert.equal(result.include[0].historicalExactPublishedArtifact,true);
 });
 
+test('planner selects exact runtime-foundation artifact before internal release',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=true;
+  candidate.robloxRuntimeFoundationEvidence={
+    runtimeFoundationPassed:true,
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    placeId:'456',
+    candidateVersionNumber:9
+  };
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].actualPlayEligibility,'RUNTIME_FOUNDATION_PASS');
+});
+
+test('Studio evidence maps observed failures into Roblox-native failure classes',()=>{
+  const candidate=item();
+  const broken=runtime();
+  broken.runtimeVerified=false;
+  broken.errors=[{type:'runtime-error',signature:'RemoteEvent OnServerEvent validation failed'}];
+  broken.checkpoints=broken.checkpoints.map(row=>row.id==='no-release-blocking-runtime-errors'?{...row,pass:false}:row);
+  const result=createLocalStudioPlayEvidence({item:candidate,runtime:broken,expected,workflowRunId:99,studioStepSucceeded:false});
+  assert.equal(result.pass,false);
+  assert.equal(result.evidence.robloxFailureClass,'ROBLOX_REMOTE_EVENT_OR_FUNCTION');
+  assert.ok(result.evidence.learningSignals.includes('ROBLOX_REMOTE_EVENT_OR_FUNCTION'));
+});
+
 test('planner excludes only explicit disabled games rather than using currentStep as the post-release play authority',()=>{
   const foundation=item();
   foundation.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
@@ -167,13 +198,15 @@ test('central contract makes actual play evidence-gated and parallel to foundati
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.equal(loop.actualVibePlayEligibility,'INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(loop.actualVibePlayEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,true);
   assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
   assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
   assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
   assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.actualPlayPlannerEligibility,'INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(arch.actualPlayPlannerEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(arch.actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass,true);
   assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
   assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
   assert.equal(arch.explicitDisabledGameEligible,false);
