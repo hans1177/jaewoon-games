@@ -553,6 +553,16 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v3' \}\}/);
   assert.doesNotMatch(workflow,/format\('batch-\{0\}', github\.run_id\)/);
   assert.match(workflow,/cancel-in-progress: false/);
+  for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
+    const start=workflow.indexOf(`  ${job}:\n`);
+    assert.ok(start>=0,job+' missing');
+    const next=workflow.indexOf('\n  ',start+3);
+    const block=workflow.slice(start,next<0?workflow.length:next);
+    assert.match(block,/runs-on: ubuntu-24\.04-arm/);
+  }
+  const technicalWorkerStart=workflow.indexOf('  technical-worker:\n');
+  const technicalWorkerEnd=workflow.indexOf('\n  technical-persist:',technicalWorkerStart);
+  assert.match(workflow.slice(technicalWorkerStart,technicalWorkerEnd),/runs-on: ubuntu-latest/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
   assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
@@ -600,10 +610,10 @@ test('Roblox source persistence rejects results when the source-plan control con
   assert.match(workflow,/staleReconciliationCount=Math\.max\(reconciliation\.length,expected\.length,1\)/);
 });
 
-test('Roblox batch scheduler v3 epoch dedupes pending runs without capping per-game matrix parallelism',()=>{
+test('Roblox batch scheduler v4 uses ARM control-plane capacity without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v2' \}\}/);
+  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v4' \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
