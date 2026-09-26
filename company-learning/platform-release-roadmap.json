@@ -1067,7 +1067,9 @@
         "assistantSettingsDiagnosticAdvisoryWhenMissingOrUnknown": true,
         "requiredToolHandshakeCanConfirmEnabledState": true,
         "explicitDisabledAction": "FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT"
-      }
+      },
+      "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
+      "earliestBehaviorFeedbackCheckpoint": "AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING"
     },
     "headlessValidation": {
       "version": 2,
@@ -4868,11 +4870,12 @@
         "studioMcpUnconfirmedSettingIsInfrastructureNotGameFailure": true,
         "studioMcpUnconfirmedSettingMayNotConsumePlayRetry": true,
         "studioMcpAutomaticSettingMutationForbidden": true,
-        "actualVibePlayEligibility": "INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+        "actualVibePlayEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
         "actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep": true,
         "foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease": true,
         "currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility": true,
-        "explicitDisabledGameRemainsIneligible": true
+        "explicitDisabledGameRemainsIneligible": true,
+        "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
