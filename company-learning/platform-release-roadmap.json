@@ -1139,30 +1139,6 @@
       "holisticBackfillLiveFailureAudit": {
         "runId": 36229097447,
         "scope": "CURRENT_QUEUE_EXISTING_HOLISTIC_TASKS_RESERVED_BY_RUN",
-        "verifiedMessages": [
-          "후보가 실제 source 변경을 생성하지 않음",
-          "잘못된 상대 경로:"
-        ],
-        "responsibleSystem": "tools/vibe2-source-worker.mjs::buildGenerationRetryPrompt",
-        "rootCauses": [
-          "BLANK_RELATIVE_PATH_WAS_CLASSIFIED_AS_INVALID_PATH_BUT_NOT_RECOGNIZED_BY_THE_INVALID_PATH_RETRY_PROMPT_BRANCH",
-          "STUDIO_NO_OP_RETRY_MIXED_CONNECTED_3_TO_6_EDIT_REQUIREMENT_WITH_A_GENERIC_AT_LEAST_ONE_EDIT_INSTRUCTION"
-        ],
-        "correction": {
-          "blankRelativePathUsesInvalidPathRetryPrompt": true,
-          "studioNoOpKeepsConnectedEditPackage": true,
-          "studioInvalidPathKeepsConnectedEditPackage": true,
-          "minimumConnectedSourceDeltas": 3,
-          "exactWritablePathsRequired": true,
-          "exactDistinctFindAnchorsRequiredWhenAvailable": true,
-          "retryBudgetIncreased": false,
-          "timeoutIncreased": false,
-          "workerCountIncreased": false,
-          "writableScopeExpanded": false,
-          "qaBypassAllowed": false,
-          "authorityChange": "NONE"
-        },
-        "verificationState": "TARGETED_QA_REQUIRED_THEN_LIVE_WAVE_REVALIDATION",
         "currentHolisticTaskCount": 15,
         "currentHolisticJobIds": [
           108369130219,
@@ -1189,10 +1165,34 @@
         },
         "repairTargetsObservedFailureCount": 12,
         "repairTargetsObservedPercent": 80,
+        "verifiedMessages": [
+          "후보가 실제 source 변경을 생성하지 않음",
+          "잘못된 상대 경로:"
+        ],
+        "responsibleSystem": "tools/vibe2-source-worker.mjs::buildGenerationRetryPrompt",
+        "rootCauses": [
+          "BLANK_RELATIVE_PATH_WAS_CLASSIFIED_AS_INVALID_PATH_BUT_NOT_RECOGNIZED_BY_THE_INVALID_PATH_RETRY_PROMPT_BRANCH",
+          "STUDIO_NO_OP_RETRY_MIXED_CONNECTED_3_TO_6_EDIT_REQUIREMENT_WITH_A_GENERIC_AT_LEAST_ONE_EDIT_INSTRUCTION"
+        ],
+        "correction": {
+          "blankRelativePathUsesInvalidPathRetryPrompt": true,
+          "studioNoOpKeepsConnectedEditPackage": true,
+          "studioInvalidPathKeepsConnectedEditPackage": true,
+          "minimumConnectedSourceDeltas": 3,
+          "exactWritablePathsRequired": true,
+          "exactDistinctFindAnchorsRequiredWhenAvailable": true,
+          "retryBudgetIncreased": false,
+          "timeoutIncreased": false,
+          "workerCountIncreased": false,
+          "writableScopeExpanded": false,
+          "qaBypassAllowed": false,
+          "authorityChange": "NONE"
+        },
         "nonTargetFailuresPreservedForSeparateCausalRepair": {
           "TIMEOUT": 2,
           "STUDIO_QUALITY_DELTA": 1
-        }
+        },
+        "verificationState": "TARGETED_QA_REQUIRED_THEN_LIVE_WAVE_REVALIDATION"
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
