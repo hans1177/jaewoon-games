@@ -13,6 +13,11 @@ on:
         description: Exact DEVELOPMENT_CONFIRMED Roblox gameId to publish as private/restricted internal release after canonical final review
         required: true
         type: string
+      thumbnail_only:
+        description: Sync canonical Roblox/homepage thumbnail only; do not republish the place
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -28,6 +33,7 @@ env:
 jobs:
   release:
     name: deploy exact F0-passed Roblox artifact as private runtime candidate
+    if: ${{ inputs.thumbnail_only != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
@@ -900,3 +906,103 @@ jobs:
           else
             echo 'ROBLOX_METADATA_SYNC=PASS_OR_NOT_REQUIRED'
           fi
+
+  thumbnail-sync:
+    name: sync canonical Roblox and homepage thumbnail
+    needs: release
+    if: ${{ always() && (inputs.thumbnail_only == true || needs.release.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout current canonical implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          filter: blob:none
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install deterministic SVG renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v rsvg-convert >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y librsvg2-bin
+          fi
+          rsvg-convert --version
+
+      - name: Verify thumbnail sync contract
+        working-directory: main
+        run: |
+          set -euo pipefail
+          node --test qa/company-roblox-thumbnail-sync.test.mjs qa/company-homepage-runtime-propagation.test.mjs
+
+      - name: Render upload and verify shared thumbnail
+        id: thumbnail
+        working-directory: main
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          GAME_ID: ${{ inputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          node tools/company-roblox-thumbnail-sync.mjs \
+            --game-id="$GAME_ID" \
+            --catalog=game-catalog.json \
+            --queue=../runtime/development-queue.json \
+            --output=.tmp/roblox-thumbnail-evidence.json
+          cat .tmp/roblox-thumbnail-evidence.json
+
+      - name: Persist verified thumbnail evidence to runtime
+        working-directory: main
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          RUNTIME_BRANCH: company-runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .tmp/roblox-thumbnail-evidence.json /tmp/roblox-thumbnail-evidence.json
+          for attempt in 1 2 3 4 5; do
+            git -C ../runtime fetch --no-tags origin "$RUNTIME_BRANCH"
+            git -C ../runtime reset --hard "origin/$RUNTIME_BRANCH"
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const queuePath='../runtime/development-queue.json';
+          const evidence=JSON.parse(fs.readFileSync('/tmp/roblox-thumbnail-evidence.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync(queuePath,'utf8').replace(/^\uFEFF/,''));
+          const item=(queue.items||[]).find(row=>String(row?.gameId||'')===String(process.env.GAME_ID||''));
+          if(!item)throw new Error('ROBLOX_THUMBNAIL_RUNTIME_ITEM_MISSING:'+process.env.GAME_ID);
+          item.robloxThumbnailEvidence=evidence;
+          item.updatedAt=evidence.uploadedAt;
+          queue.updatedAt=evidence.uploadedAt;
+          fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
+          NODE
+            git -C ../runtime config user.name "jaewoon-roblox-thumbnail-sync"
+            git -C ../runtime config user.email "roblox-thumbnail-sync@users.noreply.github.com"
+            git -C ../runtime add development-queue.json
+            if git -C ../runtime diff --cached --quiet; then
+              echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=NO_CHANGE'
+              exit 0
+            fi
+            git -C ../runtime commit -m "runtime: persist Roblox thumbnail evidence for $GAME_ID"
+            if git -C ../runtime push origin HEAD:"$RUNTIME_BRANCH"; then
+              echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS'
+              exit 0
+            fi
+            sleep $((attempt*2))
+          done
+          echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=FAILED'
+          exit 1
