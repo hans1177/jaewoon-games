@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>공룡섬 생존</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#132419;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:none}
+button{font:inherit;color:inherit}
+canvas{display:block;width:100%;height:100%}
+.hud{position:fixed;z-index:5;left:8px;top:8px;right:8px;pointer-events:none;display:flex;justify-content:space-between;gap:8px}
+.card{background:#0a130dcc;border:1px solid #ffffff1c;border-radius:12px;padding:8px 10px;backdrop-filter:blur(4px)}
+.stats{min-width:178px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar{width:126px;height:9px;border-radius:99px;background:#0008;overflow:hidden;border:1px solid #ffffff22}
+.bar>i{display:block;height:100%;width:100%;background:#6bc95f}
+.bar.food>i{background:#e1b952}
+.mini{font-size:11px;color:#d4e2d7}
+.daybox{text-align:right;min-width:120px}
+#message{position:fixed;z-index:8;left:50%;top:84px;transform:translateX(-50%);background:#0a130de8;border:1px solid #ffffff22;padding:8px 12px;border-radius:999px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;max-width:82vw;text-align:center}
+.joy{position:fixed;z-index:6;left:18px;bottom:24px;width:126px;height:126px;border-radius:50%;border:2px solid #ffffff5e;background:#0b160c66}
+.knob{position:absolute;left:38px;top:38px;width:50px;height:50px;border-radius:50%;background:#ffffffc9;box-shadow:0 2px 10px #0008}
+.actions{position:fixed;z-index:6;right:14px;bottom:18px;display:grid;grid-template-columns:66px 66px 66px;gap:7px}
+.actions button,.panel button{border:1px solid #ffffff24;background:#17361ddd;border-radius:13px;min-height:50px;font-weight:800}
+.actions button:active,.panel button:active{transform:scale(.97)}
+#attack{background:#6d2c27e8}
+#interact{background:#245f35e8}
+#craftBtn{background:#4b4a2fe8}
+.panel{position:fixed;z-index:9;right:8px;top:76px;width:min(300px,calc(100vw - 16px));max-height:66vh;overflow:auto;background:#0a130df2;border:1px solid #ffffff26;border-radius:14px;padding:12px;display:none;touch-action:pan-y}
+.panel h3{margin:0 0 8px;font-size:17px}
+.panel button{width:100%;margin:5px 0;padding:8px;text-align:left}
+.recipe{display:flex;justify-content:space-between;gap:8px}
+.recipe small{font-weight:500;color:#c9d5c9}
+.invitem{padding:8px 0;border-top:1px solid #ffffff17}
+.invitem button{margin-top:6px;text-align:center}
+#tips{position:fixed;z-index:4;left:50%;bottom:8px;transform:translateX(-50%);font-size:11px;color:#e9f0eacc;background:#0008;padding:4px 8px;border-radius:8px;pointer-events:none}
+@media(max-width:420px){.hud{font-size:12px}.stats{min-width:162px}.bar{width:104px}.actions{grid-template-columns:60px 60px 60px}.actions button{font-size:12px}.joy{width:116px;height:116px}.knob{left:35px;top:35px;width:46px;height:46px}}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div class="hud">
+  <div class="card stats">
+    <div class="row">HP <b id="hpText">100/100</b><div class="bar"><i id="hpBar"></i></div></div>
+    <div class="row">허기 <b id="foodText">100</b><div class="bar food"><i id="foodBar"></i></div></div>
+    <div class="mini">무기 <b id="weaponText">맨손</b> · 공격력 <b id="atkText">5</b></div>
+  </div>
+  <div class="card daybox">
+    <b id="dayText">1일차 낮</b><br>
+    <span class="mini" id="clockText">첫날 밤까지 준비해</span>
+  </div>
+</div>
+
+<div id="message"></div>
+
+<div id="joystick" class="joy"><div id="knob" class="knob"></div></div>
+
+<div class="actions">
+  <button id="attack" type="button">공격</button>
+  <button id="interact" type="button">채집</button>
+  <button id="craftBtn" type="button">제작</button>
+  <button id="invBtn" type="button">인벤</button>
+  <button id="buildBtn" type="button">건축</button>
+  <button id="eatBtn" type="button">먹기</button>
+</div>
+
+<div id="craftPanel" class="panel"><h3>제작</h3><div id="craftList"></div></div>
+<div id="invPanel" class="panel"><h3>인벤토리</h3><div id="invList"></div></div>
+<div id="buildPanel" class="panel"><h3>건축</h3><div class="mini">플레이어 근처에 설치돼.</div><div id="buildList"></div></div>
+<div id="tips">밤에는 육식공룡의 감지 범위와 이동속도가 증가해.</div>
+
+<script>
+// 파일명: dinosaur-survival/index.html
+// 메인: 공룡섬 생존 Web 플레이어블 기본판
+const Q=(s)=>document.querySelector(s);
+const canvas=Q('#game');
+const ctx=canvas.getContext('2d');
+const WORLD=3600;
+const DAY_MS=90000;
+const NIGHT_START=.62;
+const SAVE_KEY='dino_survival_v1';
+
+let now=performance.now();
+let last=now;
+let dayStart=Date.now();
+let gameTime=0;
+let move={x:0,y:0};
+let messageTimer=0;
+let attackCooldown=0;
+let playerHitCooldown=0;
+let bossSpawned=false;
+let bossDefeated=false;
+let lost=false;
+
+const player={
+  x:0,y:0,hp:100,maxHp:100,hunger:100,speed:190,
+  weapon:null,food:3,lastDir:{x:1,y:0}
+};
+
+const bag={wood:0,stone:0,fiber:0,meat:0,hide:0,claw:0,bone:0,egg:0};
+const owned={};
+
+const weaponData={
+  '나무창':{atk:14,range:82,cool:.55},
+  '돌창':{atk:24,range:92,cool:.52},
+  '활':{atk:20,range:250,cool:.7},
+  '돌도끼':{atk:16,range:72,cool:.62},
+  '횃불':{atk:8,range:70,cool:.55}
+};
+
+const recipes=[
+  {name:'돌도끼',cost:{wood:3,stone:4,fiber:2}},
+  {name:'나무창',cost:{wood:4,fiber:2}},
+  {name:'돌창',cost:{wood:4,stone:5,fiber:3}},
+  {name:'횃불',cost:{wood:2,fiber:2}},
+  {name:'활',cost:{wood:5,fiber:5,bone:2}}
+];
+
+const buildRecipes=[
+  {name:'모닥불',cost:{wood:5,stone:4}},
+  {name:'상자',cost:{wood:8,fiber:2}},
+  {name:'나무벽',cost:{wood:6,fiber:2}},
+  {name:'문',cost:{wood:7,fiber:3}},
+  {name:'침대',cost:{wood:6,fiber:6,hide:2}}
+];
+
+const resourceNames={wood:'나무',stone:'돌',fiber:'섬유',meat:'고기',hide:'가죽',claw:'발톱',bone:'뼈',egg:'공룡알'};
+
+const resources=[];
+const dinos=[];
+const builds=[];
+const particles=[];
+
+function rnd(a,b){return a+Math.random()*(b-a)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function norm(dx,dy){const l=Math.hypot(dx,dy)||1;return{x:dx/l,y:dy/l}}
+function isNight(){
+  const phase=((Date.now()-dayStart)%DAY_MS)/DAY_MS;
+  return phase>=NIGHT_START;
+}
+function dayNumber(){return Math.floor((Date.now()-dayStart)/DAY_MS)+1}
+function showMessage(text){
+  const el=Q('#message');
+  el.textContent=text;
+  el.style.opacity='1';
+  clearTimeout(messageTimer);
+  messageTimer=setTimeout(()=>el.style.opacity='0',1500);
+}
+
+function spawnResource(type,count){
+  for(let i=0;i<count;i++){
+    let x=rnd(-WORLD/2+100,WORLD/2-100);
+    let y=rnd(-WORLD/2+100,WORLD/2-100);
+    if(Math.hypot(x,y)<180){i--;continue}
+    resources.push({type,x,y,ready:true,respawnAt:0});
+  }
+}
+spawnResource('tree',72);
+spawnResource('rock',70);
+spawnResource('fiber',84);
+spawnResource('berry',34);
+
+function addDino(type,count){
+  const spec={
+    '콤프소그나투스':{hp:35,atk:6,speed:105,aggro:230,size:12,temper:'hostile'},
+    '파라사우롤로푸스':{hp:140,atk:12,speed:92,aggro:110,size:25,temper:'neutral'},
+    '트리케라톱스':{hp:320,atk:28,speed:78,aggro:100,size:31,temper:'neutral'},
+    '랩터':{hp:180,atk:22,speed:138,aggro:320,size:22,temper:'hostile'},
+    '카르노타우루스':{hp:520,atk:45,speed:112,aggro:370,size:31,temper:'hostile'},
+    '티라노사우루스':{hp:1800,atk:75,speed:100,aggro:520,size:44,temper:'hostile'}
+  }[type];
+  for(let i=0;i<count;i++){
+    const a=rnd(0,Math.PI*2);
+    const r=rnd(650,1650);
+    dinos.push({
+      type,x:Math.cos(a)*r,y:Math.sin(a)*r,
+      hp:spec.hp,maxHp:spec.hp,atk:spec.atk,speed:spec.speed,aggro:spec.aggro,
+      size:spec.size,temper:spec.temper,ang:rnd(0,6.28),targeted:false,
+      special:0,attackCd:rnd(0,.8),dead:false,respawnAt:0
+    });
+  }
+}
+addDino('콤프소그나투스',16);
+addDino('파라사우롤로푸스',9);
+addDino('트리케라톱스',7);
+addDino('랩터',9);
+addDino('카르노타우루스',3);
+
+function spawnBoss(){
+  if(bossSpawned||bossDefeated||dayNumber()<3)return;
+  bossSpawned=true;
+  const a=rnd(0,6.28);
+  const r=1450;
+  const b={
+    type:'티라노사우루스',x:Math.cos(a)*r,y:Math.sin(a)*r,hp:1800,maxHp:1800,
+    atk:75,speed:100,aggro:520,size:44,temper:'hostile',ang:a,targeted:false,
+    special:0,attackCd:0,dead:false,respawnAt:0
+  };
+  dinos.push(b);
+  showMessage('멀리서 거대한 포효가 들린다… 티라노사우루스 출현');
+}
+
+function canPay(cost){return Object.entries(cost).every(([k,v])=>(bag[k]||0)>=v)}
+function pay(cost){Object.entries(cost).forEach(([k,v])=>bag[k]-=v)}
+function costText(cost){return Object.entries(cost).map(([k,v])=>resourceNames[k]+' '+v).join(' · ')}
+
+function addOwned(name){
+  owned[name]=(owned[name]||0)+1;
+  renderInventory();
+}
+
+function craft(name){
+  const r=recipes.find(v=>v.name===name);
+  if(!r||!canPay(r.cost)){showMessage('재료가 부족해');return}
+  pay(r.cost);
+  addOwned(r.name);
+  showMessage(r.name+' 제작 완료');
+  renderCraft();
+  updateHud();
+}
+
+function build(name){
+  const r=buildRecipes.find(v=>v.name===name);
+  if(!r||!canPay(r.cost)){showMessage('재료가 부족해');return}
+  pay(r.cost);
+  const d=player.lastDir;
+  builds.push({name,x:player.x+d.x*75,y:player.y+d.y*75,hp:name==='나무벽'?180:120});
+  showMessage(name+' 설치 완료');
+  renderBuild();
+  updateHud();
+}
+
+function renderCraft(){
+  const box=Q('#craftList');
+  box.innerHTML='';
+  recipes.forEach(r=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.innerHTML='<div class="recipe"><b>'+r.name+'</b><small>'+costText(r.cost)+'</small></div>';
+    b.disabled=!canPay(r.cost);
+    b.addEventListener('click',()=>craft(r.name));
+    box.appendChild(b);
+  });
+}
+function renderBuild(){
+  const box=Q('#buildList');
+  box.innerHTML='';
+  buildRecipes.forEach(r=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.innerHTML='<div class="recipe"><b>'+r.name+'</b><small>'+costText(r.cost)+'</small></div>';
+    b.disabled=!canPay(r.cost);
+    b.addEventListener('click',()=>build(r.name));
+    box.appendChild(b);
+  });
+}
+function renderInventory(){
+  const box=Q('#invList');
+  box.innerHTML='<div class="mini">'+Object.entries(bag).map(([k,v])=>resourceNames[k]+' '+v).join(' · ')+'</div>';
+  Object.entries(owned).forEach(([name,count])=>{
+    if(count<=0)return;
+    const d=document.createElement('div');
+    d.className='invitem';
+    d.innerHTML='<b>'+name+'</b> x'+count;
+    if(weaponData[name]){
+      const b=document.createElement('button');
+      b.type='button';
+      b.textContent=player.weapon===name?'장착 해제':'장착';
+      b.addEventListener('click',()=>{
+        player.weapon=player.weapon===name?null:name;
+        updateHud();
+        renderInventory();
+      });
+      d.appendChild(b);
+    }
+    box.appendChild(d);
+  });
+}
+
+function nearestResource(){
+  let best=null,bd=80;
+  for(const r of resources){
+    if(!r.ready)continue;
+    const d=Math.hypot(player.x-r.x,player.y-r.y);
+    if(d<bd){bd=d;best=r}
+  }
+  return best;
+}
+function gather(){
+  const r=nearestResource();
+  if(!r){showMessage('가까운 자원이 없어');return}
+  if(r.type==='tree'&&player.weapon!=='돌도끼'){
+    bag.wood+=1;
+    showMessage('나뭇가지 1개를 주웠어');
+  }else if(r.type==='tree'){
+    bag.wood+=3;
+    showMessage('나무 3개');
+  }else if(r.type==='rock'){
+    bag.stone+=2;
+    showMessage('돌 2개');
+  }else if(r.type==='fiber'){
+    bag.fiber+=2;
+    showMessage('섬유 2개');
+  }else{
+    player.food+=1;
+    showMessage('열매 1개');
+  }
+  r.ready=false;
+  r.respawnAt=Date.now()+30000;
+  renderCraft();renderBuild();updateHud();
+}
+
+function attack(){
+  if(lost||attackCooldown>0)return;
+  const w=player.weapon?weaponData[player.weapon]:null;
+  const atk=w?w.atk:5;
+  const range=w?w.range:58;
+  attackCooldown=w?w.cool:.6;
+  let best=null,bd=range;
+  for(const d of dinos){
+    if(d.dead)continue;
+    const dd=dist(player,d);
+    if(dd<bd){best=d;bd=dd}
+  }
+  if(!best){showMessage('공격이 빗나갔어');return}
+  best.hp-=atk;
+  best.targeted=true;
+  best.temper='hostile';
+  hitFx(best.x,best.y);
+  if(best.hp<=0)killDino(best);
+}
+
+function killDino(d){
+  d.dead=true;
+  d.respawnAt=Date.now()+60000;
+  if(d.type==='티라노사우루스'){
+    bossDefeated=true;
+    bossSpawned=false;
+    bag.bone+=8;bag.meat+=12;bag.hide+=6;bag.claw+=4;
+    showMessage('티라노사우루스를 쓰러뜨렸어!');
+  }else{
+    bag.meat+=d.type==='카르노타우루스'?4:2;
+    if(d.type==='랩터'||d.type==='카르노타우루스'){bag.claw+=1;bag.hide+=1}
+    if(d.type==='트리케라톱스'||d.type==='파라사우롤로푸스')bag.hide+=2;
+    if(Math.random()<.12)bag.egg+=1;
+    if(Math.random()<.35)bag.bone+=1;
+    showMessage(d.type+' 처치');
+  }
+  renderCraft();renderBuild();updateHud();
+}
+
+function eat(){
+  if(player.food>0){
+    player.food--;player.hunger=clamp(player.hunger+32,0,100);player.hp=clamp(player.hp+10,0,player.maxHp);
+    showMessage('열매를 먹었어');
+  }else if(bag.meat>0){
+    bag.meat--;player.hunger=clamp(player.hunger+48,0,100);player.hp=clamp(player.hp+15,0,player.maxHp);
+    showMessage('고기를 먹었어');
+  }else showMessage('먹을 게 없어');
+  updateHud();
+}
+
+function hitPlayer(amount,msg){
+  if(playerHitCooldown>0||lost)return;
+  playerHitCooldown=.65;
+  player.hp-=amount;
+  showMessage(msg||('-'+amount+' HP'));
+  if(player.hp<=0){
+    player.hp=0;
+    lost=true;
+    showMessage('쓰러졌어. 화면을 눌러 다시 시작해');
+  }
+}
+
+function updateDino(d,dt){
+  if(d.dead){
+    if(d.type==='티라노사우루스')return;
+    if(Date.now()>=d.respawnAt){
+      d.dead=false;d.hp=d.maxHp;d.targeted=false;
+      d.temper=(d.type==='파라사우롤로푸스'||d.type==='트리케라톱스')?'neutral':'hostile';
+      const a=rnd(0,6.28),r=rnd(700,1600);d.x=Math.cos(a)*r;d.y=Math.sin(a)*r;
+    }
+    return;
+  }
+  d.attackCd=Math.max(0,d.attackCd-dt);
+  d.special=Math.max(0,d.special-dt);
+  const dd=dist(player,d);
+  const nightBoost=isNight()&&d.temper==='hostile'?1.28:1;
+  const aggro=d.aggro*(isNight()?1.3:1);
+
+  if(d.type==='파라사우롤로푸스'&&d.targeted&&dd<250){
+    const n=norm(d.x-player.x,d.y-player.y);
+    d.x+=n.x*d.speed*1.35*dt;d.y+=n.y*d.speed*1.35*dt;return;
+  }
+
+  if(d.temper==='hostile'&&(dd<aggro||d.targeted)){
+    const n=norm(player.x-d.x,player.y-d.y);
+    d.x+=n.x*d.speed*nightBoost*dt;d.y+=n.y*d.speed*nightBoost*dt;
+
+    if(d.type==='랩터'&&dd<150&&d.special<=0){
+      d.special=4;
+      d.x+=n.x*60;d.y+=n.y*60;
+      if(dist(player,d)<52)hitPlayer(35,'랩터 도약! -35 HP');
+    }else if(d.type==='카르노타우루스'&&dd<185&&d.special<=0){
+      d.special=5;
+      d.x+=n.x*90;d.y+=n.y*90;
+      if(dist(player,d)<58)hitPlayer(70,'카르노타우루스 돌진! -70 HP');
+    }else if(d.type==='티라노사우루스'&&dd<210&&d.special<=0){
+      d.special=6;
+      if(Math.random()<.5){
+        hitPlayer(110,'티라노 물어뜯기! -110 HP');
+      }else{
+        showMessage('티라노 포효! 이동속도 감소');
+        player.slowUntil=Date.now()+4000;
+      }
+    }else if(dd<d.size+22&&d.attackCd<=0){
+      d.attackCd=1.15;
+      hitPlayer(d.atk,d.type+' 공격! -'+d.atk+' HP');
+    }
+  }else{
+    d.ang+=rnd(-.6,.6)*dt;
+    d.x+=Math.cos(d.ang)*d.speed*.16*dt;
+    d.y+=Math.sin(d.ang)*d.speed*.16*dt;
+  }
+
+  if(d.type==='트리케라톱스'&&d.targeted&&dd<180&&d.special<=0){
+    d.special=4;
+    const n=norm(player.x-d.x,player.y-d.y);
+    d.x+=n.x*85;d.y+=n.y*85;
+    if(dist(player,d)<64)hitPlayer(45,'트리케라톱스 돌진! -45 HP');
+  }
+}
+
+function hitFx(x,y){
+  for(let i=0;i<7;i++)particles.push({x,y,vx:rnd(-70,70),vy:rnd(-70,70),life:.35});
+}
+
+function updateParticles(dt){
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(p.life<=0)particles.splice(i,1);
+  }
+}
+
+function update(dt){
+  if(lost)return;
+  gameTime+=dt;
+  attackCooldown=Math.max(0,attackCooldown-dt);
+  playerHitCooldown=Math.max(0,playerHitCooldown-dt);
+
+  let speed=player.speed;
+  if(player.slowUntil&&Date.now()<player.slowUntil)speed*=.7;
+  player.x=clamp(player.x+move.x*speed*dt,-WORLD/2,WORLD/2);
+  player.y=clamp(player.y+move.y*speed*dt,-WORLD/2,WORLD/2);
+  if(Math.hypot(move.x,move.y)>.1)player.lastDir={x:move.x,y:move.y};
+
+  player.hunger=clamp(player.hunger-dt*(isNight()?.11:.075),0,100);
+  if(player.hunger<=0)player.hp-=dt*3.2;
+
+  for(const r of resources)if(!r.ready&&Date.now()>=r.respawnAt)r.ready=true;
+  for(const d of dinos)updateDino(d,dt);
+  updateParticles(dt);
+  spawnBoss();
+
+  for(const b of builds){
+    if(b.name==='모닥불'&&Math.hypot(player.x-b.x,player.y-b.y)<120&&isNight()){
+      player.hp=clamp(player.hp+dt*.7,0,player.maxHp);
+    }
+    if(b.name==='침대'&&Math.hypot(player.x-b.x,player.y-b.y)<90&&player.hp<player.maxHp){
+      player.hp=clamp(player.hp+dt*1.2,0,player.maxHp);
+    }
+  }
+  if(player.hp<=0){player.hp=0;lost=true}
+  updateHud();
+}
+
+function drawGround(camX,camY){
+  ctx.fillStyle=isNight()?'#16351f':'#2d6938';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.save();
+  ctx.translate(canvas.width/2-camX,canvas.height/2-camY);
+  ctx.strokeStyle=isNight()?'#244a2a':'#3b7a45';
+  ctx.lineWidth=1;
+  for(let x=-WORLD/2;x<=WORLD/2;x+=120){ctx.beginPath();ctx.moveTo(x,-WORLD/2);ctx.lineTo(x,WORLD/2);ctx.stroke()}
+  for(let y=-WORLD/2;y<=WORLD/2;y+=120){ctx.beginPath();ctx.moveTo(-WORLD/2,y);ctx.lineTo(WORLD/2,y);ctx.stroke()}
+  ctx.strokeStyle='#8fb07766';ctx.lineWidth=6;ctx.strokeRect(-WORLD/2,-WORLD/2,WORLD,WORLD);
+  ctx.restore();
+}
+
+function drawResource(r,camX,camY){
+  if(!r.ready)return;
+  const sx=r.x-camX+canvas.width/2,sy=r.y-camY+canvas.height/2;
+  if(sx<-50||sy<-50||sx>canvas.width+50||sy>canvas.height+50)return;
+  if(r.type==='tree'){
+    ctx.fillStyle='#5f3b21';ctx.fillRect(sx-7,sy-8,14,32);
+    ctx.fillStyle='#24522b';ctx.beginPath();ctx.arc(sx,sy-18,25,0,7);ctx.fill();
+  }else if(r.type==='rock'){
+    ctx.fillStyle='#8b918b';ctx.beginPath();ctx.moveTo(sx-15,sy+10);ctx.lineTo(sx-9,sy-12);ctx.lineTo(sx+11,sy-14);ctx.lineTo(sx+16,sy+8);ctx.closePath();ctx.fill();
+  }else if(r.type==='fiber'){
+    ctx.strokeStyle='#9dcf62';ctx.lineWidth=4;
+    for(let i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(sx,sy+11);ctx.lineTo(sx+i*9,sy-13);ctx.stroke()}
+  }else{
+    ctx.fillStyle='#b93b4d';ctx.beginPath();ctx.arc(sx,sy,9,0,7);ctx.fill();
+    ctx.fillStyle='#2d682f';ctx.fillRect(sx-2,sy-13,4,7);
+  }
+}
+
+function dinoColor(type){
+  return {'콤프소그나투스':'#baa05b','파라사우롤로푸스':'#5a9b78','트리케라톱스':'#89725a','랩터':'#6f7c3e','카르노타우루스':'#8b4335','티라노사우루스':'#463c31'}[type]||'#777';
+}
+function drawDino(d,camX,camY){
+  if(d.dead)return;
+  const sx=d.x-camX+canvas.width/2,sy=d.y-camY+canvas.height/2;
+  if(sx<-100||sy<-100||sx>canvas.width+100||sy>canvas.height+100)return;
+  ctx.save();ctx.translate(sx,sy);
+  ctx.fillStyle=dinoColor(d.type);
+  ctx.beginPath();ctx.ellipse(0,0,d.size*1.15,d.size*.62,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(d.size*.9,-d.size*.18,d.size*.42,0,7);ctx.fill();
+  ctx.strokeStyle=dinoColor(d.type);ctx.lineWidth=Math.max(4,d.size*.2);
+  ctx.beginPath();ctx.moveTo(-d.size*.9,0);ctx.lineTo(-d.size*1.7,d.size*.28);ctx.stroke();
+  ctx.strokeStyle='#1c2018';ctx.lineWidth=Math.max(3,d.size*.12);
+  ctx.beginPath();ctx.moveTo(-d.size*.25,d.size*.45);ctx.lineTo(-d.size*.38,d.size*.95);ctx.moveTo(d.size*.25,d.size*.45);ctx.lineTo(d.size*.45,d.size*.95);ctx.stroke();
+  if(d.type==='트리케라톱스'){
+    ctx.strokeStyle='#ded7c2';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(d.size*1.15,-d.size*.35);ctx.lineTo(d.size*1.65,-d.size*.55);ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.textAlign='center';ctx.font='11px system-ui';ctx.fillStyle='#fff';ctx.fillText(d.type,sx,sy-d.size-12);
+  const bw=Math.max(44,d.size*1.7);
+  ctx.fillStyle='#300';ctx.fillRect(sx-bw/2,sy-d.size-7,bw,5);
+  ctx.fillStyle='#58c766';ctx.fillRect(sx-bw/2,sy-d.size-7,bw*clamp(d.hp/d.maxHp,0,1),5);
+}
+
+function drawBuild(b,camX,camY){
+  const x=b.x-camX+canvas.width/2,y=b.y-camY+canvas.height/2;
+  if(b.name==='모닥불'){
+    ctx.fillStyle='#5b3d29';ctx.fillRect(x-16,y+4,32,8);
+    ctx.fillStyle='#ff9e35';ctx.beginPath();ctx.arc(x,y,13,0,7);ctx.fill();
+  }else if(b.name==='상자'){
+    ctx.fillStyle='#7a4a27';ctx.fillRect(x-18,y-13,36,26);ctx.strokeStyle='#c08a4d';ctx.strokeRect(x-18,y-13,36,26);
+  }else if(b.name==='나무벽'||b.name==='문'){
+    ctx.fillStyle='#75502f';ctx.fillRect(x-26,y-20,52,40);ctx.strokeStyle='#a77b4c';ctx.strokeRect(x-26,y-20,52,40);
+    if(b.name==='문'){ctx.fillStyle='#111';ctx.fillRect(x+12,y,4,4)}
+  }else{
+    ctx.fillStyle='#7a5c3c';ctx.fillRect(x-27,y-12,54,24);ctx.fillStyle='#d8c7a2';ctx.fillRect(x-24,y-9,48,18);
+  }
+  ctx.textAlign='center';ctx.font='10px system-ui';ctx.fillStyle='#fff';ctx.fillText(b.name,x,y-27);
+}
+
+function drawPlayer(){
+  const x=canvas.width/2,y=canvas.height/2;
+  ctx.fillStyle=playerHitCooldown>0?'#ff8a7a':'#f1c67a';
+  ctx.beginPath();ctx.arc(x,y,15,0,7);ctx.fill();
+  ctx.strokeStyle='#3b2818';ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+player.lastDir.x*26,y+player.lastDir.y*26);ctx.stroke();
+  if(player.weapon){
+    ctx.strokeStyle='#d8d6c5';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(x+player.lastDir.x*18,y+player.lastDir.y*18);ctx.lineTo(x+player.lastDir.x*36,y+player.lastDir.y*36);ctx.stroke();
+  }
+}
+
+function draw(){
+  drawGround(player.x,player.y);
+  for(const r of resources)drawResource(r,player.x,player.y);
+  for(const b of builds)drawBuild(b,player.x,player.y);
+  for(const d of dinos)drawDino(d,player.x,player.y);
+  for(const p of particles){
+    const x=p.x-player.x+canvas.width/2,y=p.y-player.y+canvas.height/2;
+    ctx.globalAlpha=clamp(p.life/.35,0,1);ctx.fillStyle='#fff3bf';ctx.fillRect(x-2,y-2,4,4);ctx.globalAlpha=1;
+  }
+  drawPlayer();
+  if(isNight()){
+    ctx.fillStyle='#06132672';ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(const b of builds){
+      if(b.name!=='모닥불')continue;
+      const x=b.x-player.x+canvas.width/2,y=b.y-player.y+canvas.height/2;
+      const g=ctx.createRadialGradient(x,y,10,x,y,115);
+      g.addColorStop(0,'#ffb34d66');g.addColorStop(1,'#ffb34d00');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,115,0,7);ctx.fill();
+    }
+  }
+  if(lost){
+    ctx.fillStyle='#000b';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='700 28px system-ui';ctx.fillText('생존 실패',canvas.width/2,canvas.height/2-10);
+    ctx.font='15px system-ui';ctx.fillText('화면을 눌러 다시 시작',canvas.width/2,canvas.height/2+24);
+  }
+}
+
+function updateHud(){
+  Q('#hpText').textContent=Math.ceil(player.hp)+'/'+player.maxHp;
+  Q('#foodText').textContent=Math.ceil(player.hunger);
+  Q('#hpBar').style.width=(player.hp/player.maxHp*100)+'%';
+  Q('#foodBar').style.width=player.hunger+'%';
+  Q('#weaponText').textContent=player.weapon||'맨손';
+  Q('#atkText').textContent=player.weapon?weaponData[player.weapon].atk:5;
+  const phase=((Date.now()-dayStart)%DAY_MS)/DAY_MS;
+  const night=isNight();
+  Q('#dayText').textContent=dayNumber()+'일차 '+(night?'밤':'낮');
+  Q('#clockText').textContent=night?'육식공룡이 더 위험해':Math.max(0,Math.ceil((NIGHT_START-phase)*DAY_MS/1000))+'초 후 밤';
+}
+
+function saveGame(){
+  const data={player,bag,owned,builds,dayElapsed:Date.now()-dayStart,bossDefeated};
+  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+}
+function loadGame(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    if(d.player)Object.assign(player,d.player);
+    if(d.bag)Object.assign(bag,d.bag);
+    if(d.owned)Object.assign(owned,d.owned);
+    if(Array.isArray(d.builds))builds.push(...d.builds.slice(0,80));
+    if(Number.isFinite(d.dayElapsed))dayStart=Date.now()-Math.max(0,d.dayElapsed);
+    bossDefeated=!!d.bossDefeated;
+  }catch(e){}
+}
+loadGame();
+setInterval(saveGame,12000);
+addEventListener('pagehide',saveGame);
+
+function resetGame(){
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+}
+
+function resize(){
+  const dpr=Math.min(2,devicePixelRatio||1);
+  canvas.width=Math.floor(innerWidth*dpr);
+  canvas.height=Math.floor(innerHeight*dpr);
+  canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  canvas.width=innerWidth*dpr;canvas.height=innerHeight*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener('resize',resize);resize();
+
+const joy=Q('#joystick'),knob=Q('#knob');
+let joyId=null;
+function setJoy(e){
+  const r=joy.getBoundingClientRect();
+  let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+  const max=r.width*.34,l=Math.hypot(dx,dy)||1;
+  if(l>max){dx=dx/l*max;dy=dy/l*max}
+  move={x:dx/max,y:dy/max};
+  knob.style.transform='translate('+dx+'px,'+dy+'px)';
+}
+joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);setJoy(e)});
+joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)setJoy(e)});
+function clearJoy(e){if(joyId===null||e.pointerId===joyId){joyId=null;move={x:0,y:0};knob.style.transform=''}}
+joy.addEventListener('pointerup',clearJoy);joy.addEventListener('pointercancel',clearJoy);
+
+const panels=['#craftPanel','#invPanel','#buildPanel'];
+function togglePanel(id){
+  panels.forEach(p=>{if(p!==id)Q(p).style.display='none'});
+  const el=Q(id);el.style.display=el.style.display==='block'?'none':'block';
+}
+Q('#attack').addEventListener('click',attack);
+Q('#interact').addEventListener('click',gather);
+Q('#eatBtn').addEventListener('click',eat);
+Q('#craftBtn').addEventListener('click',()=>{renderCraft();togglePanel('#craftPanel')});
+Q('#invBtn').addEventListener('click',()=>{renderInventory();togglePanel('#invPanel')});
+Q('#buildBtn').addEventListener('click',()=>{renderBuild();togglePanel('#buildPanel')});
+canvas.addEventListener('pointerdown',()=>{if(lost)resetGame()});
+
+addEventListener('keydown',e=>{
+  if(e.key==='w'||e.key==='ArrowUp')move.y=-1;
+  if(e.key==='s'||e.key==='ArrowDown')move.y=1;
+  if(e.key==='a'||e.key==='ArrowLeft')move.x=-1;
+  if(e.key==='d'||e.key==='ArrowRight')move.x=1;
+  if(e.key===' ')attack();
+  if(e.key==='e')gather();
+});
+addEventListener('keyup',e=>{
+  if(['w','s','ArrowUp','ArrowDown'].includes(e.key))move.y=0;
+  if(['a','d','ArrowLeft','ArrowRight'].includes(e.key))move.x=0;
+});
+
+function frame(t){
+  const dt=Math.min(.033,(t-last)/1000||0);last=t;
+  update(dt);draw();requestAnimationFrame(frame);
+}
+renderCraft();renderBuild();renderInventory();updateHud();requestAnimationFrame(frame);
+</script>
+</body>
+</html>
