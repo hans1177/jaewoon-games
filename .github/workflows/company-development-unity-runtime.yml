@@ -50,6 +50,7 @@ jobs:
       run: ${{ steps.queue.outputs.run }}
       matrix: ${{ steps.queue.outputs.matrix }}
       canary: ${{ steps.queue.outputs.canary }}
+      canary_game_id: ${{ steps.queue.outputs.canary_game_id }}
       main_sha: ${{ steps.main.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
@@ -78,7 +79,7 @@ jobs:
         id: main
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Resolve Unity work from unbounded native queue with representative canary
+      - name: Resolve Unity work from unbounded parallel game-id wave with representative canary observation
         id: queue
         env:
           GH_TOKEN: ${{ github.token }}
@@ -142,17 +143,20 @@ jobs:
           const requestedRows=requestedIds.length?rows.filter(row=>requestedSet.has(row.gameId)):[];
           const canary=requestedRows.length?null:(canaryRequired?selectRepresentativeCanary(rows):null);
           const batchMax=Math.max(1,Math.min(256,Number(roadmap?.developmentSpeedExecution?.externalMatrixBatchMax||256)));
-          const selected=requestedRows.length?requestedRows.slice(0,batchMax):(canary?[canary]:rows.slice(0,batchMax));
+          const selected=requestedRows.length?requestedRows.slice(0,batchMax):rows.slice(0,batchMax);
           const parallel=Math.max(1,Math.min(batchMax,selected.length||1));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${selected.length?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(selected)}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`canary=${canary?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`canary_game_id=${canary?.gameId||''}\n`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`UNITY_TARGET_N=${rows.length}`);
           console.log(`UNITY_SELECTED_N=${selected.length}`);
           console.log(`UNITY_REQUESTED_GAME_IDS=${requestedIds.join(',')||'NONE'}`);
           console.log(`REPRESENTATIVE_CANARY=${canary?.gameId||'NONE'}`);
+          console.log('REPRESENTATIVE_CANARY_MODE=PARALLEL_OBSERVATION_ONLY');
+          console.log('CANARY_SERIALIZES_GAME_ID_WAVE=NO');
           console.log(`COMMON_FAILURE_DETECTED=${repeated?'YES':'NO'}`);
           console.log(`UNITY_EXECUTION_BATCH_CAPACITY=${batchMax}`);
           NODE
@@ -661,7 +665,7 @@ jobs:
           QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
           REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
           REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
-          IS_CANARY: ${{ needs.prepare.outputs.canary }}
+          IS_CANARY: ${{ matrix.item.gameId == needs.prepare.outputs.canary_game_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -826,7 +830,8 @@ jobs:
           echo 'UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT'
           echo 'CHANGE_DETECTION=ENABLED'
           echo 'CHEAP_PRECHECK=ENABLED'
-          echo 'REPRESENTATIVE_CANARY=ENABLED'
+          echo 'REPRESENTATIVE_CANARY=PARALLEL_OBSERVATION_ONLY'
+          echo 'CANARY_SERIALIZES_GAME_ID_WAVE=NO'
           echo 'BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED'
           echo 'IMMUTABLE_ARTIFACT_REUSE=ENABLED'
           echo 'RUNTIME_THEN_INDEPENDENT_QA_THEN_REGRESSION=ENABLED'
