@@ -295,3 +295,41 @@ test('central native active-run dedupe covers the full 256 game execution window
   assert.match(development,/NATIVE_QUEUE_AUTHORITY_FETCH=PASS/);
   assert.match(development,/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" &/);
 });
+
+
+test('Roblox runtime planners reuse central contract QA and keep responsibility-local tests only',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
+  const continuation=read('.github/workflows/company-development-roblox-runtime-continuation.yml');
+  const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
+  const change=roadmap.changeRecord?.robloxPlannerDuplicateContractQaRemoval20260927;
+
+  for(const testFile of [
+    'qa/company-shared-context.test.mjs',
+    'qa/company-development-roblox-runtime.test.mjs',
+    'qa/company-selected-platform-router.test.mjs',
+  ]){
+    assert.ok(centralQa.includes(testFile),testFile+' central QA authority');
+  }
+  assert.ok(centralQa.includes('qa/company-development-roblox-runtime-continuation.test.mjs'));
+  assert.doesNotMatch(roblox,/node --test qa\/company-shared-context\.test\.mjs/);
+  assert.doesNotMatch(roblox,/node --test[^\n]*company-development-roblox-runtime\.test\.mjs/);
+  assert.doesNotMatch(roblox,/node --test[^\n]*company-selected-platform-router\.test\.mjs/);
+  assert.doesNotMatch(continuation,/node --test qa\/company-development-roblox-runtime-continuation\.test\.mjs/);
+
+  for(const local of [
+    'qa/company-development-roblox-source-reconcile.test.mjs',
+    'qa/company-development-roblox-package.test.mjs',
+    'qa/company-development-roblox-independent-promotion.test.mjs',
+    'qa/company-upper-platform-admission.test.mjs',
+  ]) assert.ok(roblox.includes(local),local+' responsibility-local test retained');
+
+  assert.equal(change?.canonicalQaAuthority,'.github/workflows/company-central-policy-contract-qa.yml');
+  assert.equal(change?.duplicateValidationForbidden,true);
+  assert.equal(change?.gameDispatchWaitsForDuplicateQa,false);
+  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
+  assert.equal(architecture.robloxPlannerDuplicateContractQaRemoval?.runtimeCriticalPathWaitsForDuplicateQa,false);
+  assert.equal(logMap.robloxPlannerDuplicateContractQaRemovalEvidence?.duplicateRuntimeTestsPresent,false);
+});
