@@ -226,3 +226,32 @@ test('director coalesces disposable pre-supervision control jobs but preserves s
   assert.match(director,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: true/);
   assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
 });
+
+
+test('central development planner keeps duplicate contract QA off the game dispatch critical path',()=>{
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  const nativeStart=development.indexOf('\n  native-plan:\n');
+  const auditStart=development.indexOf('\n  contract-audit:\n');
+  const dispatchStart=development.indexOf('\n  dispatch-roblox:\n');
+  assert.ok(nativeStart>0&&auditStart>nativeStart&&dispatchStart>auditStart);
+  const nativePlan=development.slice(nativeStart,auditStart);
+  assert.match(nativePlan,/Validate direct-native admission contract/);
+  assert.doesNotMatch(nativePlan,/node --test qa\/company-selected-platform-router\.test\.mjs/);
+  assert.doesNotMatch(nativePlan,/node --test qa\/company-minimum-design-contract\.test\.mjs/);
+  assert.doesNotMatch(nativePlan,/node --test qa\/company-upper-platform-admission\.test\.mjs/);
+  assert.match(development,/contract-audit:[\s\S]*?runs-on: ubuntu-slim[\s\S]*?continue-on-error: true/);
+  assert.match(development,/Audit central development contracts without blocking game dispatch/);
+  assert.match(development,/active-roblox-native-runs\.json &/);
+  assert.match(development,/active-unity-native-runs\.json &/);
+  assert.match(development,/wait "\$roblox_scan_pid" "\$unity_scan_pid"/);
+});
+
+test('Unity Web floor dedupes only the same game before allocating a heavy runner',()=>{
+  const workflow=read('.github/workflows/unity-web-first-stage-build.yml');
+  assert.match(workflow,/dedupe:[\s\S]*?runs-on: ubuntu-slim/);
+  assert.match(workflow,/UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=/);
+  assert.match(workflow,/\.display_title==\$title/);
+  assert.match(workflow,/\.status=="queued" or \.status=="pending" or \.status=="in_progress" or \.status=="requested"/);
+  assert.match(workflow,/build:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'\n\s+runs-on: ubuntu-latest/);
+  assert.doesNotMatch(workflow,/^concurrency:/m);
+});
