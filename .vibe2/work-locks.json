@@ -3,115 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1rj5nti",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T14:48:50.646Z",
-      "expiresAt": "2026-09-26T15:33:50.646Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-154majb",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T14:49:52.830Z",
-      "expiresAt": "2026-09-26T15:34:52.830Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1wl0u1o",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T14:51:02.679Z",
-      "expiresAt": "2026-09-26T15:36:02.679Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-4d0mhs",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T14:53:36.676Z",
-      "expiresAt": "2026-09-26T15:38:36.676Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1f5pia5",
-      "worker": "vibe2",
-      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T14:54:22.936Z",
-      "expiresAt": "2026-09-26T15:39:22.936Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-8gqxao",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T14:55:35.630Z",
-      "expiresAt": "2026-09-26T15:40:35.630Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-10lhzy2",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
@@ -382,6 +273,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-arr78o",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
+      "acquiredAt": "2026-09-26T15:42:16.394Z",
+      "expiresAt": "2026-09-26T16:27:16.394Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
