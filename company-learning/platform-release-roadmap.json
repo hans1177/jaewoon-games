@@ -8408,7 +8408,6 @@
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
       "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
       "objective": "BREAK_STALE_X64_QUEUE_HOLD_BY_RUNNING_SUPERVISOR_DRAIN_ON_EXISTING_ARM_POOL_AND_EVICTING_ONLY_SUPERSEDED_OR_LEGACY_BATCH_RUNS",
-      "supervisorConcurrencyGroup": "director-central-company-supervisor-v3",
       "runner": "ubuntu-24.04-arm",
       "scanPagesMax": null,
       "staleThresholdMinutes": 15,
@@ -8434,7 +8433,12 @@
         "status=waiting&per_page=100"
       ],
       "apiRetryPerQuery": 3,
-      "stalePreviousSupervisorEpochMayDrain": true
+      "stalePreviousSupervisorEpochMayDrain": true,
+      "workflowLevelConcurrencyGroup": null,
+      "workflowLevelConcurrencyForbidden": true,
+      "runnerDrainConcurrencyGroup": null,
+      "runnerDrainMayRunInParallel": true,
+      "superviseJobConcurrencyGroup": "director-central-company-supervise-v3"
     },
     "controlPlaneGameRunnerEviction20260926": {
       "id": "CONTROL_PLANE_GAME_RUNNER_EVICTION_2026-09-26",
