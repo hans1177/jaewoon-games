@@ -1,5 +1,5 @@
 {
-  "version": 50,
+  "version": 51,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -508,7 +508,7 @@
     "authorityExpansion": false
   },
   "motionDirectorSecurity": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
     "purpose": "ALLOW_HIGH_END_MOTION_COMPOSITION_WITHOUT_MOVING_GAMEPLAY_AUTHORITY_OR_BYPASSING_ASSET_PROVENANCE_AND_RUNTIME_QA",
     "protections": {
@@ -525,7 +525,13 @@
       "platformNativeReauthoringAndRuntimeVerificationRequired": true,
       "rawPreparedMotionCannotSelfPromote": true,
       "deterministicContextSelectionEvidenceRequired": true,
-      "runtimeCaptureAndMobileQaRequired": true
+      "runtimeCaptureAndMobileQaRequired": true,
+      "articulatedActorMayNotPassMotionQaWithOnlyRootOrPrimaryPartTransform": true,
+      "weldConstraintOnlyBodyMayNotClaimVerifiedArticulatedCharacterMotion": true,
+      "verifiedCompatibleMotionLibraryMustBePreferredBeforeUnnecessaryNewKeyframeAuthoring": true,
+      "animatorAndRigBindingMustRemainPlatformNative": true,
+      "proceduralIkOrPoseCorrectionMayNotOwnGameplayMovementColliderOrHitAuthority": true,
+      "motionBlendOrPlaybackSpeedChangesMayNotAlterGameplayTimingAuthority": true
     },
     "failureAction": "QUARANTINE_AFFECTED_MOTION_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
@@ -546,7 +552,7 @@
     "failureAction": "ROUTE_AFFECTED_MOTION_GAP_TO_ASSET_REPAIR_REQUIRED"
   },
   "advancedMotionSecurity": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
     "protections": {
       "transitionDirectorMayNotOwnComboCancelOrMovementAuthority": true,
@@ -562,7 +568,11 @@
       "rawRuntimeTelemetryMayNotDirectlyTrainModel": true,
       "preparedSemanticMayNotIncreaseMastery": true,
       "onlyVerifiedRuntimePassMayTeachPositiveMastery": true,
-      "verifiedFailureCauseMayTeachAvoidPattern": true
+      "verifiedFailureCauseMayTeachAvoidPattern": true,
+      "mannequinHardFailureMayNotBeDowngradedToWarning": true,
+      "jointActivityEvidenceRequiredWhenArticulatedCharacterMotionAffected": true,
+      "rootMotionPresentationMayNotReplaceAuthoritativeMovementValidation": true,
+      "ikContactCorrectionMayNotMoveAuthoritativeGameplayCollider": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LEARNING_QUARANTINE_BY_SCOPE"
   },
@@ -750,7 +760,7 @@
     }
   },
   "robloxNativeCodingQualitySecurity": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxNativeCodingQualityContract",
     "serverAuthorityRequired": true,
     "remoteInputValidationRequired": true,
@@ -762,7 +772,12 @@
     "robloxPlayerAutomationForbidden": true,
     "externalGuiMacroForbidden": true,
     "actualPlayFeedbackMayNotBypassSecurityQaOrReleaseGates": true,
-    "verifiedLearningMayNotPromoteUnsafeRemoteOrSavePatterns": true
+    "verifiedLearningMayNotPromoteUnsafeRemoteOrSavePatterns": true,
+    "articulatedNpcAndCreatureMotionRequiresNativeAnimatorRigBinding": true,
+    "rootCFrameOnlyArticulatedMotionCannotClaimMotionPass": true,
+    "weldConstraintOnlyArticulatedCharacterCannotClaimVerifiedMotion": true,
+    "animationPresentationMayNotAuthorizeMovementDamageHitboxCooldownOrReward": true,
+    "mannequinFailureMustRouteToExactResponsibleSourceRepair": true
   },
   "robloxThumbnailOpenCloudSecurity": {
     "version": 1,
