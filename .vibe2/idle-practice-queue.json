@@ -1706,6 +1706,16 @@
       ]
     },
     {
+      "id": "gap-roblox_character_state-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_CHARACTER_STATE"
+      ]
+    },
+    {
       "id": "gap-roblox_datastore-l1",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1743,6 +1753,26 @@
       "countsAsProductionPass": false,
       "domains": [
         "ROBLOX_REPLICATION"
+      ]
+    },
+    {
+      "id": "gap-roblox_touch_input-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_TOUCH_INPUT"
+      ]
+    },
+    {
+      "id": "gap-roblox_ui_state-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_UI_STATE"
       ]
     },
     {

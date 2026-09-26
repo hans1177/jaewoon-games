@@ -382,6 +382,27 @@
       "verifiedFailureLessons": 0,
       "lastEvidence": null
     },
+    "ROBLOX_TOUCH_INPUT": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "ROBLOX_CHARACTER_STATE": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
+    "ROBLOX_UI_STATE": {
+      "xp": 0,
+      "level": 1,
+      "verifiedSuccesses": 0,
+      "verifiedFailureLessons": 0,
+      "lastEvidence": null
+    },
     "UNITY_RUNTIME": {
       "xp": 22,
       "level": 1,
@@ -12331,7 +12352,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-26T00:34:08.798Z",
+    "lastBuiltAt": "2026-09-26T00:45:23.017Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -13324,6 +13345,48 @@
         "level": 2,
         "lastEvidence": "knowledge_m8qcx6",
         "lastUpdatedAt": "2026-09-20T16:29:35.572Z"
+      },
+      "ROBLOX_TOUCH_INPUT": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "ROBLOX_CHARACTER_STATE": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
+      },
+      "ROBLOX_UI_STATE": {
+        "verifiedApplications": 0,
+        "verifiedFailures": 0,
+        "firstPasses": 0,
+        "failureSignatureClears": 0,
+        "regressionFailures": 0,
+        "primaryDomainMatches": 0,
+        "primaryDomainMismatches": 0,
+        "games": {},
+        "holdoutPasses": 0,
+        "level": 1,
+        "lastEvidence": null,
+        "lastUpdatedAt": null
       },
       "UNITY_RUNTIME": {
         "verifiedApplications": 16,
@@ -18160,5 +18223,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-26T00:34:08.798Z"
+  "updatedAt": "2026-09-26T00:45:23.017Z"
 }
