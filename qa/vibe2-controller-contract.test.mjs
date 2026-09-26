@@ -621,7 +621,7 @@ test('free-slot refill keeps game-study idle-gated while learning-idle yields fi
 });
 
 test('24H cycle preserves continuity without multiplying independent scheduler chains',()=>{
-  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v2'));
+  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v3'));
   assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton\n'));
   assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
   assert(safetyNetWorkflow.includes('cancel-in-progress: false'));
