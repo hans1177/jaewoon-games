@@ -1,5 +1,5 @@
 {
-  "version": 35,
+  "version": 36,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 35,
+      "runtime": 36,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -221,7 +221,12 @@
       "primaryCoverageBeforeSpeculation": true,
       "spareAdaptiveCapacityOnly": true,
       "totalWorkerMatrixMustNotExceedAdaptiveWave": true,
-      "measuredRunnerPressureMaySuppressSpeculation": true
+      "measuredRunnerPressureMaySuppressSpeculation": true,
+      "liveRunnerPressureBridgeImplemented": true,
+      "liveRunnerPressureSource": "VIBE2_24H_PLAN_OUTPUT",
+      "liveRunnerPressureSuppressesSpeculationOnly": true,
+      "primaryCoveragePreservedUnderLiveRunnerPressure": true,
+      "gamePrimaryExternalBoundaryUnchanged": 256
     },
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
