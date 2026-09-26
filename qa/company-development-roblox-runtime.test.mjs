@@ -559,6 +559,17 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
 });
 
 
+test('superseded Roblox batch scheduler exits before heavy work while exact game dispatch remains valid',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/name: Reject superseded batch scheduler/);
+  assert.match(workflow,/if \[ -n "\$REQUESTED_GAME_ID" \]; then/);
+  assert.match(workflow,/ROBLOX_BATCH_FRESHNESS=EXACT_GAME:/);
+  assert.match(workflow,/ROBLOX_BATCH_SUPERSEDED=/);
+  assert.match(workflow,/count: \$\{\{ steps\.targets\.outputs\.count \|\| '0' \}\}/);
+  assert.match(workflow,/matrix: \$\{\{ steps\.targets\.outputs\.matrix \|\| '\{"include":\[\]\}' \}\}/);
+  assert.ok((workflow.match(/if: steps\.freshness\.outputs\.run == 'true'/g)||[]).length>=4);
+});
+
 test('Roblox batch scheduler dedupes pending runs without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
