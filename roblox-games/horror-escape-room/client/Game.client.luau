@@ -531,6 +531,29 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
 end)
 
 QACamera.install(C,gui,function()
+  local arena=workspace:FindFirstChild("MidnightArena")
+  if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
+  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
+  if id=="HOSPITAL"then
+    return{
+      {label="horror-hospital-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),
+      {label="horror-hospital-emergency",position=Vector3.new(-155,25,-45),lookAt=Vector3.new(-118,4,-82)),
+      {label="horror-hospital-morgue",position=Vector3.new(-150,24,145),lookAt=Vector3.new(-118,4,108)),
+    }
+  elseif id=="THEME_PARK"then
+    return{
+      {label="horror-park-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),
+      {label="horror-park-arcade",position=Vector3.new(-154,24,-52),lookAt=Vector3.new(-118,4,-92)),
+      {label="horror-park-maintenance",position=Vector3.new(154,24,145),lookAt=Vector3.new(118,4,108)),
+    }
+  end
+  return{
+    {label="horror-school-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)),
+    {label="horror-school-library",position=Vector3.new(-154,24,-40),lookAt=Vector3.new(-118,4,-70)),
+    {label="horror-school-auditorium",position=Vector3.new(154,24,145),lookAt=Vector3.new(108,4,104)),
+  }
+}
+end)
  local arena=workspace:FindFirstChild("MidnightArena")
  if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
