@@ -1,5 +1,5 @@
 {
-  "version": 203,
+  "version": 204,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4752,6 +4752,11 @@
     "exactResponsibleFileConflictIsSerializationBoundary": true,
     "learningUsesExistingMotor": true,
     "policySemanticsRemainCentralOnly": true,
-    "earliestActualPlayCheckpoint": "RUNTIME_FOUNDATION_PASS_WITH_EXACT_SOURCE_ARTIFACT_BINDING"
+    "earliestActualPlayCheckpoint": "RUNTIME_FOUNDATION_PASS_WITH_EXACT_SOURCE_ARTIFACT_BINDING",
+    "studioPlannerDependsOnPortfolioFoundationJob": false,
+    "studioPlannerRunsIndependentlyOnAuthenticatedSelfHostedRunner": true,
+    "foundationPassEligibilityReadFromPersistedRuntimeState": true,
+    "singleGameFoundationDelayCannotBlockOtherEligibleStudioPlay": true,
+    "runtimeFoundationAndStudioPlanningMayRunParallel": true
   }
 }

@@ -748,13 +748,17 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
 
-test('Studio MCP plan and actual play bypass saturated GitHub-hosted foundation capacity on the authenticated self-hosted Windows runner',()=>{
+test('Studio MCP planner stays independent from hosted foundation capacity while accepting foundation-pass artifacts',()=>{
+  const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioPlanBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(studioPlanBlock,/shell: powershell/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=SELF_HOSTED_WINDOWS/);
-  assert.match(studioPlanBlock,/needs: runtime-foundation-qa/);
-  assert.match(studioPlanBlock,/if: always\(\) && needs\.runtime-foundation-qa\.result == 'success'/);
+  assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
+  assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
+  assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
+  assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerDependsOnPortfolioFoundationJob,false);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
   assert.match(workflow,/event_type = 'vibe2-fanin-refill'/);
   assert.match(workflow,/reason = 'roblox-official-studio-mcp-actual-play'/);
