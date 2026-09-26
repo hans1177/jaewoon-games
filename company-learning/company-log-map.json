@@ -1,5 +1,5 @@
 {
-  "version": 81,
+  "version": 82,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1504,7 +1504,7 @@
     ]
   },
   "existingGameHolisticBackfillEvidenceContract": {
-    "version": 4,
+    "version": 5,
     "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
     "requiredFor": "EVERY_ELIGIBLE_EXISTING_ACTIVE_OR_REBUILD_GAME_UNTIL_HOLISTIC_BASELINE_VERIFIED",
     "requiredCorrelationKeys": [
@@ -1571,7 +1571,10 @@
       "ownerExplicitP0MayPreempt": true,
       "gamePrimaryAdaptiveFloor": 30,
       "externalProviderBoundary": 256,
-      "minimumWorkloadExpansionEvidenceRequiredWhenApplied": true
+      "minimumWorkloadExpansionEvidenceRequiredWhenApplied": true,
+      "queuedGenericPolishDeferralMarker": "deferred-behind:EXISTING_GAME_HOLISTIC_BACKFILL",
+      "queuedGenericPolishPriorityAfterDeferral": "low",
+      "runningGenericPolishMayNotBeRewritten": true
     }
   }
 }
