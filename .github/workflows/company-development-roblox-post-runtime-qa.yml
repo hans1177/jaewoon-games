@@ -34,6 +34,9 @@ env:
 jobs:
   dedupe:
     name: collapse duplicate runtime foundation scans
+    concurrency:
+      group: roblox-runtime-foundation-qa-dedupe-${{ inputs.game_id || 'scan' }}
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 3
     outputs:
