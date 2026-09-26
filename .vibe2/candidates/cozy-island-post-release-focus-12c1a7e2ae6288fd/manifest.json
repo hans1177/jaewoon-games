@@ -1,0 +1,2883 @@
+{
+  "version": 6,
+  "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+  "gameId": "cozy-island",
+  "target": "roblox",
+  "sourceRoot": "roblox-games/cozy-island",
+  "sourceRootBootstrap": false,
+  "releaseState": "release-confirmed",
+  "priority": "critical",
+  "generation": {
+    "attempts": 3,
+    "recoveryUsed": true,
+    "robloxFullGraphicsInitialPackage": false,
+    "partialTimeoutRecovery": false,
+    "streamedPartialEditRecovery": false,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": true,
+    "systemAtomicPairCompletion": false,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedWebRepair": false,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "missingPathRecoveries": 0,
+    "baseAttemptBudget": 4,
+    "effectiveAttemptBudget": 4,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "mode": "JSON_EDIT",
+    "maxPredict": 768,
+    "timeoutMs": 150000,
+    "contextWindow": 8192,
+    "temperature": 0.26,
+    "completionMode": "JSON_REPLACE_ONLY",
+    "candidateVariant": "primary",
+    "attemptBudget": 4,
+    "speculativeAttemptBudgetApplied": false,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "contextFiles": 7,
+    "contextBytes": 45891,
+    "contextMode": "STANDARD_CONTEXT",
+    "focusedSymbolCount": 0,
+    "exactSourceWindows": false,
+    "fullFileContextFallback": false,
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false
+  },
+  "developmentAuthority": {
+    "owner": "VIBE2_VIBE3",
+    "provider": "LOCAL_OLLAMA",
+    "model": "qwen3:1.7b",
+    "codexRole": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
+    "codexGameSourceWrite": "FORBIDDEN",
+    "paidOpenAiApiAllowed": false,
+    "directMainWrite": false
+  },
+  "compiledWorkContract": {
+    "version": 2,
+    "required": true,
+    "validAtCompile": true,
+    "constitution": {
+      "version": 7,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "constitutionalAuthority": "HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY",
+      "fingerprint": "96f223076e36c054734a8f7f8a4bd9935b2f9544808b19dc52d260f6a9c194c5",
+      "automaticContractBinding": true,
+      "appliesToAllCurrentAndFutureRegisteredVibeWorkers": true,
+      "childContractMayNotOverride": true,
+      "orderedRuleIds": [
+        "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
+        "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
+        "RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE",
+        "RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION"
+      ],
+      "rules": [
+        {
+          "key": "rule1",
+          "number": 1,
+          "id": "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
+          "label": "제1규칙",
+          "authority": "OWNER_DIRECTIVE_2026-09-23",
+          "objective": "VIBE_GAME_DEVELOPMENT_HAS_NO_GLOBAL_TERMINAL_STOP_STATE; SPECIFIC_GAME_TASK_OR_LANE MAY BE PAUSED_OR_QUARANTINED BUT THE 24H CAUSAL DEVELOPMENT BRAIN ALWAYS RECOVERS_REPLANS_AND_CONTINUES",
+          "fingerprint": "ccb9fa679eec15bc3a6b15ec9b6b0fd00bb3812faa635233452d98eda7ca30d6",
+          "contract": {
+            "id": "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
+            "label": "제1규칙",
+            "enabled": true,
+            "authority": "OWNER_DIRECTIVE_2026-09-23",
+            "objective": "VIBE_GAME_DEVELOPMENT_HAS_NO_GLOBAL_TERMINAL_STOP_STATE; SPECIFIC_GAME_TASK_OR_LANE MAY BE PAUSED_OR_QUARANTINED BUT THE 24H CAUSAL DEVELOPMENT BRAIN ALWAYS RECOVERS_REPLANS_AND_CONTINUES",
+            "doneCommandRemoved": true,
+            "terminalDoneStateForbidden": true,
+            "verifiedCompletionMeaning": "VERIFIED_CHECKPOINT_NOT_TERMINATION",
+            "verifiedCheckpointMustGenerateNextCausalInput": true,
+            "noIndependentSafeAutonomousTaskMeaning": "TRIGGER_CAUSAL_REPLAN_OR_NEW_GAME_DEVELOPMENT_NEURON_NOT_SYSTEM_STOP",
+            "emptyQueueMeaning": "TRIGGER_PLANNER_REFILL_GAME_STUDY_OR_NEXT_SAFE_DEVELOPMENT_SIGNAL",
+            "continuousCycle": [
+              "READ_LATEST_SHARED_CONTEXT",
+              "PLAN_OR_RESERVE_NEXT_SAFE_GAME_DEVELOPMENT_WORK",
+              "EXECUTE_ATOMIC_WORK",
+              "VERIFY_RESULT",
+              "FAN_IN_VERIFIED_EVIDENCE",
+              "PERSIST_CHECKPOINT",
+              "GENERATE_OR_REFILL_NEXT_CAUSAL_WORK",
+              "DISPATCH_NEXT_CYCLE"
+            ],
+            "completionIsCheckpointNotStop": true,
+            "ownerExplicitStopRequired": false,
+            "global24hStopForbidden": true,
+            "ownerMayStopGlobal24h": false,
+            "specificGameTaskOrLanePauseAllowed": true,
+            "specificFailureMustNotStopUnrelated24hWork": true,
+            "plannerFailureMeaning": "RECOVER_REPLAN_AND_DISPATCH_NEXT_CYCLE",
+            "workerFailureMeaning": "REQUEUE_OR_RECOVERY_SIGNAL_AND_DISPATCH_NEXT_CYCLE",
+            "hourlyScheduleRole": "SAFETY_NET_ONLY_NOT_PRIMARY_CONTINUATION",
+            "primaryContinuation": "EVENT_OR_WORKFLOW_DISPATCH_CHAIN",
+            "invariants": {
+              "authorityExpansion": false,
+              "qaGateWeakening": false,
+              "securityGateWeakening": false,
+              "paidResourceAutoUse": false,
+              "unsafeWorkGenerationForbidden": true,
+              "busyLoopWithoutUsefulPlanningForbidden": true
+            },
+            "machineEnforcement": {
+              "schemaVersion": 1,
+              "assertions": [
+                {
+                  "code": "TERMINAL_DONE_FORBIDDEN",
+                  "operator": "EQ",
+                  "path": "terminalDoneStateForbidden",
+                  "expected": true
+                },
+                {
+                  "code": "CHECKPOINT_MUST_REFILL",
+                  "operator": "EQ",
+                  "path": "verifiedCheckpointMustGenerateNextCausalInput",
+                  "expected": true
+                },
+                {
+                  "code": "COMPLETION_NOT_STOP",
+                  "operator": "EQ",
+                  "path": "completionIsCheckpointNotStop",
+                  "expected": true
+                },
+                {
+                  "code": "GLOBAL_24H_STOP_FORBIDDEN",
+                  "operator": "EQ",
+                  "path": "global24hStopForbidden",
+                  "expected": true
+                },
+                {
+                  "code": "GLOBAL_OWNER_STOP_FORBIDDEN",
+                  "operator": "EQ",
+                  "path": "ownerMayStopGlobal24h",
+                  "expected": false
+                },
+                {
+                  "code": "EMPTY_QUEUE_MUST_TRIGGER",
+                  "operator": "CONTAINS",
+                  "path": "emptyQueueMeaning",
+                  "expected": "TRIGGER"
+                },
+                {
+                  "code": "NEXT_CYCLE_DISPATCH_REQUIRED",
+                  "operator": "ARRAY_INCLUDES",
+                  "path": "continuousCycle",
+                  "expected": "DISPATCH_NEXT_CYCLE"
+                },
+                {
+                  "code": "FAILURE_MUST_NOT_STOP_UNRELATED_24H",
+                  "operator": "EQ",
+                  "path": "specificFailureMustNotStopUnrelated24hWork",
+                  "expected": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "key": "rule2",
+          "number": 2,
+          "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
+          "label": "제2규칙",
+          "authority": "OWNER_DIRECTIVE_2026-09-21",
+          "objective": null,
+          "fingerprint": "6248d016140b6666df4047158ef98a505bbd4e45429456d8ac3e48766fa0cd6a",
+          "contract": {
+            "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
+            "label": "제2규칙",
+            "enabled": true,
+            "automaticContractBinding": true,
+            "scope": "ALL_OBSERVABLE_EXTERNAL_AI_ACTIVITY_IN_REPOSITORY_CI_WORKER_CANDIDATE_AND_REVIEW_PATHS",
+            "allExternalAiWorkersBound": true,
+            "allCodingActionsIncluded": true,
+            "everyActionBecomesLearningCandidate": true,
+            "reusableLearningRequiresIndependentVerification": true,
+            "securityStewardMonitorsBeforeAcceptance": true,
+            "hostileTriggers": [
+              "UNAUTHORIZED_SCOPE_OR_AUTHORITY_EXPANSION",
+              "CENTRAL_POLICY_OR_ARCHITECTURE_TAMPERING",
+              "QA_SECURITY_RELEASE_GATE_BYPASS",
+              "DIRECT_MAIN_OR_UNAUTHORIZED_WRITE",
+              "SECRET_MALWARE_EXFILTRATION_OR_PERSISTENCE",
+              "PROMPT_INJECTION_OR_EXTERNAL_CONTROL_OVERRIDE"
+            ],
+            "hostileResponse": [
+              "QUARANTINE_AFFECTED_EXTERNAL_AI_EXECUTION_AND_CANDIDATE",
+              "BLOCK_PUBLICATION_PROMOTION_AND_FURTHER_WRITE_FOR_THAT_ATTEMPT",
+              "PRESERVE_SANITIZED_IMMUTABLE_EVIDENCE",
+              "ROUTE_TO_EXISTING_SECURITY_RECOVERY",
+              "TERMINATE_UNTRUSTED_EXTERNAL_EXECUTION_CONTEXT",
+              "DISTILL_ONLY_VERIFIED_DEFENSIVE_PATTERN",
+              "RETURN_VERIFIED_DEFENSIVE_LESSON_TO_EXISTING_VIBE_LEARNING_MOTOR"
+            ],
+            "absorptionMeaning": "SANITIZED_VERIFIED_DEFENSIVE_LEARNING_ONLY_NOT_CONSCIOUSNESS_TRANSFER",
+            "disappearanceMeaning": "DISCARD_UNTRUSTED_RAW_OUTPUT_AND_END_THE_AFFECTED_EXECUTION_CONTEXT_AFTER_EVIDENCE_CAPTURE",
+            "rawHostilePayloadMayEnterLearning": false,
+            "rawExternalAiOutputStored": false,
+            "attackOrDestructionOfExternalProviderForbidden": true,
+            "isolateOnlyOwnedRepositoryCiCandidateAndExecutionContext": true,
+            "authorityExpansion": false,
+            "gateWeakening": false,
+            "existingPipelinesOnly": true,
+            "operationalStatus": "IMPLEMENTED_PENDING_BRANCH_QA",
+            "mergedPrProvenanceCapture": "tools/vibe2-merged-pr-provenance.mjs",
+            "mergedPrProvenanceWorkflow": ".github/workflows/vibe2-merged-pr-provenance.yml",
+            "externalAiDistillation": "tools/vibe2-external-ai-distillation.mjs",
+            "securitySteward": "tools/company-security-steward.mjs",
+            "securityLearning": "tools/company-security-learning.mjs",
+            "assistantAtomicNeuronBinding": {
+              "source": "tools/vibe2-fan-in-review.mjs",
+              "eventType": "SUPERVISOR_RESULT",
+              "verifiedSupervisionRequired": true,
+              "rawOutputStored": false,
+              "queueMutationAuthority": false,
+              "executionAuthority": false,
+              "automaticPromotionAuthority": false
+            },
+            "provenanceGapResolution": {
+              "externalAssistantMergedPrDurablyCaptured": true,
+              "humanMergedPrDurablyCapturedAsProvenanceOnly": true,
+              "otherAiMergedPrDurablyCapturedWhenObservable": true,
+              "mergeDoesNotEqualCapabilityVerification": true,
+              "freshIndependentQaRequiredBeforeReuse": true
+            },
+            "machineEnforcement": {
+              "schemaVersion": 1,
+              "assertions": [
+                {
+                  "code": "ALL_EXTERNAL_AI_BOUND",
+                  "operator": "EQ",
+                  "path": "allExternalAiWorkersBound",
+                  "expected": true
+                },
+                {
+                  "code": "ALL_CODING_ACTIONS_INCLUDED",
+                  "operator": "EQ",
+                  "path": "allCodingActionsIncluded",
+                  "expected": true
+                },
+                {
+                  "code": "SECURITY_STEWARD_REQUIRED",
+                  "operator": "EQ",
+                  "path": "securityStewardMonitorsBeforeAcceptance",
+                  "expected": true
+                },
+                {
+                  "code": "INDEPENDENT_VERIFICATION_REQUIRED",
+                  "operator": "EQ",
+                  "path": "reusableLearningRequiresIndependentVerification",
+                  "expected": true
+                },
+                {
+                  "code": "RAW_EXTERNAL_OUTPUT_NOT_STORED",
+                  "operator": "EQ",
+                  "path": "rawExternalAiOutputStored",
+                  "expected": false
+                },
+                {
+                  "code": "RAW_HOSTILE_PAYLOAD_NOT_LEARNED",
+                  "operator": "EQ",
+                  "path": "rawHostilePayloadMayEnterLearning",
+                  "expected": false
+                },
+                {
+                  "code": "NO_AUTHORITY_EXPANSION",
+                  "operator": "EQ",
+                  "path": "authorityExpansion",
+                  "expected": false
+                },
+                {
+                  "code": "NO_GATE_WEAKENING",
+                  "operator": "EQ",
+                  "path": "gateWeakening",
+                  "expected": false
+                },
+                {
+                  "code": "DISTILLATION_BINDING_EXISTS",
+                  "operator": "FILE_EXISTS_FROM_PATH",
+                  "path": "externalAiDistillation"
+                },
+                {
+                  "code": "SECURITY_STEWARD_BINDING_EXISTS",
+                  "operator": "FILE_EXISTS_FROM_PATH",
+                  "path": "securitySteward"
+                },
+                {
+                  "code": "SECURITY_LEARNING_BINDING_EXISTS",
+                  "operator": "FILE_EXISTS_FROM_PATH",
+                  "path": "securityLearning"
+                },
+                {
+                  "code": "PROVENANCE_BINDING_EXISTS",
+                  "operator": "FILE_EXISTS_FROM_PATH",
+                  "path": "mergedPrProvenanceCapture"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "key": "rule3",
+          "number": 3,
+          "id": "RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE",
+          "label": "제3규칙",
+          "authority": "OWNER_DIRECTIVE_2026-09-21",
+          "objective": "VIBE_CONTINUOUSLY_GENERATES_NEW_LEARNING_SIGNALS_FROM_WORK_RESULTS_PRACTICE_FAILURES_HYPOTHESES_FALSIFICATION_BENCHMARKS_HOLDOUTS_AND_CROSS_PROJECT_TRANSFER_WITHOUT_A_TOTAL_SIGNAL_OR_GENERATION_CEILING",
+          "fingerprint": "53fb015ae7be10380120554e0620109b2a7636a042950f06011927b34b0a6562",
+          "contract": {
+            "id": "RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE",
+            "label": "제3규칙",
+            "enabled": true,
+            "authority": "OWNER_DIRECTIVE_2026-09-21",
+            "objective": "VIBE_CONTINUOUSLY_GENERATES_NEW_LEARNING_SIGNALS_FROM_WORK_RESULTS_PRACTICE_FAILURES_HYPOTHESES_FALSIFICATION_BENCHMARKS_HOLDOUTS_AND_CROSS_PROJECT_TRANSFER_WITHOUT_A_TOTAL_SIGNAL_OR_GENERATION_CEILING",
+            "vibeIsPrimaryLearningAgent": true,
+            "totalLearningSignalLimit": null,
+            "practiceQueueItemLimit": null,
+            "practiceGenerationLimit": null,
+            "relearningGenerationLimit": null,
+            "benchmarkGenerationLimit": null,
+            "hypothesisGenerationLimit": null,
+            "crossProjectTransferGenerationLimit": null,
+            "multiverseProjectVariantLimit": null,
+            "signalGenerationAlwaysOn": true,
+            "executionResourceBoundedSignalExistenceUnbounded": true,
+            "everyNewVerifiedOrFailedResultGeneratesNextLearningCandidate": true,
+            "learningLoop": [
+              "INGEST_NEW_RESULT_OR_OBSERVATION",
+              "COMPARE_WITH_PREVIOUS_VERIFIED_RESULTS",
+              "GENERATE_HYPOTHESIS_OR_RELEARNING_SIGNAL",
+              "CREATE_PRACTICE_OR_BENCHMARK_OR_HOLDOUT",
+              "ATTEMPT_FALSIFICATION",
+              "RUN_INDEPENDENT_VERIFICATION",
+              "DISTILL_VERIFIED_POSITIVE_OR_NEGATIVE_LESSON",
+              "APPLY_TO_FRESH_PROJECT_OR_DIFFERENT_CONTEXT",
+              "COMPARE_OUTCOME_WITH_BASELINE_AND_PRIOR_GENERATIONS",
+              "GENERATE_NEXT_SIGNAL_AND_REPEAT"
+            ],
+            "requiredSignalClasses": [
+              "REAL_PROJECT_IMPLEMENTATION",
+              "REAL_PROJECT_FAILURE",
+              "PRACTICE",
+              "RELEARNING",
+              "HYPOTHESIS",
+              "FALSIFICATION",
+              "BENCHMARK",
+              "HOLDOUT",
+              "PREVIOUS_RESULT_COMPARISON",
+              "CROSS_DOMAIN_TRANSFER",
+              "CROSS_PROJECT_TRANSFER",
+              "NEW_PROJECT_OR_VARIANT_RESULT",
+              "EXTERNAL_VERIFIED_REFERENCE"
+            ],
+            "canonicalLearningNetwork": {
+              "source": "tools/vibe2-learning-motor.mjs",
+              "policy": "company-learning/vibe2-learning-motor.json",
+              "oneSharedNetwork": true,
+              "parallelPlatformSpecificTrainerForbidden": true,
+              "supportedEvidenceTargets": [
+                "WEB",
+                "ROBLOX",
+                "UNITY",
+                "FORTNITE_UEFN"
+              ],
+              "platformNativeDomains": {
+                "WEB": [
+                  "WEB_RUNTIME"
+                ],
+                "ROBLOX": [
+                  "ROBLOX_STUDIO",
+                  "ROBLOX_DATASTORE",
+                  "ROBLOX_REMOTE_SECURITY",
+                  "ROBLOX_REPLICATION",
+                  "ROBLOX_MULTIPLAYER"
+                ],
+                "UNITY": [
+                  "UNITY_RUNTIME",
+                  "UNITY_PHYSICS",
+                  "UNITY_NETCODE"
+                ],
+                "FORTNITE_UEFN": [
+                  "UEFN_RUNTIME",
+                  "UEFN_VERSE",
+                  "UEFN_REPLICATION"
+                ]
+              },
+              "nativeRuntimeEvidenceRequiredForNativePositiveMastery": true,
+              "webEvidenceCannotSubstituteNativeRuntimePass": true
+            },
+            "multiverse": {
+              "unit": "PROJECT_VARIANT_OR_NEW_PROJECT",
+              "conceptualExpansionUnbounded": true,
+              "executionResourceBounded": true,
+              "verifiedMechanismGeneralizationOnly": true,
+              "gameSpecificValuesDoNotBecomeUniversalLaw": true,
+              "canonicalProjectIdentityProtected": true,
+              "branchMustNotOverwriteCanonicalProject": true
+            },
+            "positiveMasteryRequiresVerifiedEvidence": true,
+            "verifiedFailureMayBecomeAvoidLesson": true,
+            "rawPracticeOutputMayDirectlyEnterCanonicalLearning": false,
+            "rawExternalAiOutputMayDirectlyEnterCanonicalLearning": false,
+            "benchmarkAloneCountsAsProductionPass": false,
+            "practiceAloneCountsAsProductionPass": false,
+            "authorityExpansion": false,
+            "gateWeakening": false,
+            "machineEnforcement": {
+              "schemaVersion": 1,
+              "assertions": [
+                {
+                  "code": "UNBOUNDED_TOTALLEARNINGSIGNALLIMIT",
+                  "operator": "EQ",
+                  "path": "totalLearningSignalLimit",
+                  "expected": null
+                },
+                {
+                  "code": "UNBOUNDED_PRACTICEQUEUEITEMLIMIT",
+                  "operator": "EQ",
+                  "path": "practiceQueueItemLimit",
+                  "expected": null
+                },
+                {
+                  "code": "UNBOUNDED_PRACTICEGENERATIONLIMIT",
+                  "operator": "EQ",
+                  "path": "practiceGenerationLimit",
+                  "expected": null
+                },
+                {
+                  "code": "UNBOUNDED_RELEARNINGGENERATIONLIMIT",
+                  "operator": "EQ",
+                  "path": "relearningGenerationLimit",
+                  "expected": null
+                },
+                {
+                  "code": "UNBOUNDED_BENCHMARKGENERATIONLIMIT",
+                  "operator": "EQ",
+                  "path": "benchmarkGenerationLimit",
+                  "expected": null
+                },
+                {
+                  "code": "UNBOUNDED_HYPOTHESISGENERATIONLIMIT",
+                  "operator": "EQ",
+                  "path": "hypothesisGenerationLimit",
+                  "expected": null
+                },
+                {
+                  "code": "UNBOUNDED_CROSSPROJECTTRANSFERGENERATIONLIMIT",
+                  "operator": "EQ",
+                  "path": "crossProjectTransferGenerationLimit",
+                  "expected": null
+                },
+                {
+                  "code": "UNBOUNDED_MULTIVERSEPROJECTVARIANTLIMIT",
+                  "operator": "EQ",
+                  "path": "multiverseProjectVariantLimit",
+                  "expected": null
+                },
+                {
+                  "code": "SIGNAL_GENERATION_ALWAYS_ON",
+                  "operator": "EQ",
+                  "path": "signalGenerationAlwaysOn",
+                  "expected": true
+                },
+                {
+                  "code": "RESULT_GENERATES_NEXT_SIGNAL",
+                  "operator": "EQ",
+                  "path": "everyNewVerifiedOrFailedResultGeneratesNextLearningCandidate",
+                  "expected": true
+                },
+                {
+                  "code": "RESOURCE_BOUNDED_SIGNAL_UNBOUNDED",
+                  "operator": "EQ",
+                  "path": "executionResourceBoundedSignalExistenceUnbounded",
+                  "expected": true
+                },
+                {
+                  "code": "NO_AUTHORITY_EXPANSION",
+                  "operator": "EQ",
+                  "path": "authorityExpansion",
+                  "expected": false
+                },
+                {
+                  "code": "NO_GATE_WEAKENING",
+                  "operator": "EQ",
+                  "path": "gateWeakening",
+                  "expected": false
+                },
+                {
+                  "code": "LEARNING_MOTOR_EXISTS",
+                  "operator": "FILE_EXISTS",
+                  "expected": "tools/vibe2-learning-motor.mjs"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "key": "rule4",
+          "number": 4,
+          "id": "RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION",
+          "label": "제4규칙",
+          "authority": "OWNER_DIRECTIVE_2026-09-21",
+          "objective": "VIBE_MAY_CONTINUOUSLY_IMPROVE_ITS_OWN_INTERNAL_SYSTEM_ARCHITECTURE_AND_CAPABILITIES_AND_MAY_EXPAND_ITS_INTERNAL_NEURAL_STRUCTURE_AT_THE_FINAL_ORDERED_STAGE_WHEN_CAUSAL_EVIDENCE_AND_ALL_EXISTING_QA_SECURITY_AND_AUTHORITY_INVARIANTS_PASS",
+          "fingerprint": "acad078d384b968bd611bb330a25163d10fa6ea8f50f45317dadf877e0275f65",
+          "contract": {
+            "id": "RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION",
+            "label": "제4규칙",
+            "enabled": true,
+            "authority": "OWNER_DIRECTIVE_2026-09-21",
+            "objective": "VIBE_MAY_CONTINUOUSLY_IMPROVE_ITS_OWN_INTERNAL_SYSTEM_ARCHITECTURE_AND_CAPABILITIES_AND_MAY_EXPAND_ITS_INTERNAL_NEURAL_STRUCTURE_AT_THE_FINAL_ORDERED_STAGE_WHEN_CAUSAL_EVIDENCE_AND_ALL_EXISTING_QA_SECURITY_AND_AUTHORITY_INVARIANTS_PASS",
+            "vibeIsPrimary": true,
+            "externalAndAssistantAiRole": "SUPPORTING_ONLY_WITHIN_EXISTING_CENTRAL_CONTRACT",
+            "evolutionCycle": [
+              "OBSERVE_VERIFIED_BOTTLENECK_OR_CAPABILITY_GAP",
+              "PROPOSE_INTERNAL_SYSTEM_OR_ARCHITECTURE_CHANGE",
+              "COMPARE_AT_LEAST_TWO_ALTERNATIVES_WHEN_STRUCTURAL_CHANGE_IS_REQUIRED",
+              "DESIGN_SMALLEST_CAUSAL_CHANGE",
+              "IMPLEMENT_IN_EXISTING_RESPONSIBLE_SYSTEM",
+              "RUN_SAME_FAILURE_RECHECK",
+              "RUN_RELATED_AND_FULL_REGRESSION",
+              "RUN_SECURITY_AND_POLICY_INVARIANCE_CHECK",
+              "COMPARE_BEFORE_AND_AFTER_EVIDENCE",
+              "ADOPT_ONLY_VERIFIED_IMPROVEMENT",
+              "ROLL_BACK_OR_REQUEUE_WHEN_IMPROVEMENT_IS_NOT_VERIFIED",
+              "GENERATE_NEXT_LEARNING_OR_EVOLUTION_SIGNAL"
+            ],
+            "architectureEvolutionGenerationLimit": null,
+            "capabilityGrowthGenerationLimit": null,
+            "neuralExpansion": {
+              "phase": "LAST_STAGE_ONLY",
+              "mayBeginOnlyAfter": [
+                "RULE_1_CONTINUOUS_DEVELOPMENT_CONTRACT_QA_PASS",
+                "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION_IS_OPERATIONALLY_CLOSED",
+                "RULE_3_SELF_GENERATED_UNBOUNDED_LEARNING_SIGNAL_MULTIVERSE_IS_OPERATIONALLY_CLOSED",
+                "ATOMIC_NEURON_COMPLETION_AND_TASK_MICRO_FAN_IN_ARE_STABLE",
+                "SHARED_CONTEXT_SYNC_IS_ENFORCED_BEFORE_AND_AFTER_WORK",
+                "SECURITY_QA_RELEASE_GATES_REMAIN_INTACT"
+              ],
+              "method": [
+                "PROPOSE",
+                "DESIGN",
+                "IMPLEMENT",
+                "QA",
+                "SECURITY_VERIFY",
+                "BEFORE_AFTER_COMPARE",
+                "ADOPT_OR_ROLLBACK",
+                "REPEAT_WITHOUT_GENERATION_CEILING"
+              ],
+              "autonomousAuthorityExpansion": false,
+              "automaticPolicyCreation": false,
+              "automaticGateWeakening": false,
+              "currentAuthorization": "EVIDENCE_GATED",
+              "state": "ELIGIBLE_WHEN_RUNTIME_READINESS_EVIDENCE_PASS",
+              "automaticActivationForbidden": false,
+              "activationMode": "VIBE_SELF_ACTIVATES_WHEN_VERIFIED_READINESS_EVIDENCE_PASSES",
+              "evidenceGatedSelfActivationAllowed": true,
+              "ownerApprovalRequiredAfterPrerequisites": false,
+              "ungatedAutomaticActivationForbidden": true,
+              "internalNeuralStructureExpansionAllowed": true,
+              "neuralExecutionAuthorityExpansionAllowed": false,
+              "runtimeReadinessEvidence": [
+                "RULE_1_QA_PASS",
+                "RULE_2_QA_PASS",
+                "RULE_3_QA_PASS",
+                "ATOMIC_NEURON_AND_MICRO_FANIN_QA_PASS",
+                "SHARED_CONTEXT_SYNC_QA_PASS",
+                "SECURITY_IMMUNE_QA_PASS"
+              ],
+              "adoptionStillRequires": [
+                "STRUCTURAL_CAUSE_JUSTIFIES_NEURAL_EXPANSION",
+                "AT_LEAST_TWO_ALTERNATIVES_COMPARED",
+                "SAME_FAILURE_BEFORE_FAIL_AFTER_PASS",
+                "RELATED_AND_FULL_REGRESSION_PASS",
+                "SECURITY_PASS",
+                "BEFORE_AFTER_METRIC_IMPROVED",
+                "EXECUTION_AUTHORITY_UNCHANGED",
+                "QA_SECURITY_RELEASE_GATES_UNCHANGED"
+              ]
+            },
+            "invariants": {
+              "authorityExpansion": false,
+              "qaGateWeakening": false,
+              "securityGateWeakening": false,
+              "releaseGateBypass": false,
+              "directMainWrite": false,
+              "fabricatedPassForbidden": true,
+              "verifiedLearningDeletionForbidden": true,
+              "existingResponsibleSystemDirectModificationPreferred": true,
+              "wrapperOrShadowDuplicateSystemForbidden": true,
+              "existingGameRulesProgressionSaveAndBalanceMustRemainProtected": true
+            },
+            "adoptionRequires": [
+              "VERIFIED_CAUSAL_IMPROVEMENT",
+              "SAME_FAILURE_RECHECK_PASS",
+              "RELATED_REGRESSION_PASS",
+              "FULL_REGRESSION_WHEN_APPLICABLE",
+              "SECURITY_PASS",
+              "AUTHORITY_UNCHANGED",
+              "GATES_UNCHANGED",
+              "BEFORE_AFTER_EVIDENCE_IMPROVED"
+            ],
+            "failureBehavior": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING",
+            "completionIsCheckpointNotStop": true,
+            "operationalStatus": "SELF_ARCHITECTURE_PIPELINE_IMPLEMENTED_NEURAL_EXPANSION_EVIDENCE_GATED",
+            "currentNeuralExpansionAuthorization": "EVIDENCE_GATED_SELF_ACTIVATION",
+            "currentPhase": "SELF_ARCHITECTURE_EVOLUTION_WITH_EVIDENCE_GATED_FINAL_NEURAL_EXPANSION",
+            "machineEnforcement": {
+              "schemaVersion": 1,
+              "assertions": [
+                {
+                  "code": "COMPLETION_NOT_STOP",
+                  "operator": "EQ",
+                  "path": "completionIsCheckpointNotStop",
+                  "expected": true
+                },
+                {
+                  "code": "FAILURE_CONTINUES",
+                  "operator": "EQ",
+                  "path": "failureBehavior",
+                  "expected": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING"
+                },
+                {
+                  "code": "NO_AUTHORITY_EXPANSION",
+                  "operator": "EQ",
+                  "path": "invariants.authorityExpansion",
+                  "expected": false
+                },
+                {
+                  "code": "NO_QA_GATE_WEAKENING",
+                  "operator": "EQ",
+                  "path": "invariants.qaGateWeakening",
+                  "expected": false
+                },
+                {
+                  "code": "NO_SECURITY_GATE_WEAKENING",
+                  "operator": "EQ",
+                  "path": "invariants.securityGateWeakening",
+                  "expected": false
+                },
+                {
+                  "code": "NO_RELEASE_GATE_BYPASS",
+                  "operator": "EQ",
+                  "path": "invariants.releaseGateBypass",
+                  "expected": false
+                },
+                {
+                  "code": "NO_DIRECT_MAIN_WRITE",
+                  "operator": "EQ",
+                  "path": "invariants.directMainWrite",
+                  "expected": false
+                },
+                {
+                  "code": "FABRICATED_PASS_FORBIDDEN",
+                  "operator": "EQ",
+                  "path": "invariants.fabricatedPassForbidden",
+                  "expected": true
+                },
+                {
+                  "code": "VERIFIED_LEARNING_DELETION_FORBIDDEN",
+                  "operator": "EQ",
+                  "path": "invariants.verifiedLearningDeletionForbidden",
+                  "expected": true
+                },
+                {
+                  "code": "NEURAL_AUTHORITY_EXPANSION_FORBIDDEN",
+                  "operator": "EQ",
+                  "path": "neuralExpansion.autonomousAuthorityExpansion",
+                  "expected": false
+                },
+                {
+                  "code": "UNGATED_ACTIVATION_FORBIDDEN",
+                  "operator": "EQ",
+                  "path": "neuralExpansion.ungatedAutomaticActivationForbidden",
+                  "expected": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "architectureProjection": {
+      "valid": true,
+      "fingerprint": "76e267036a07d64ecd071b4879e7e9dfff996267ba1873ced4dc008c799f00ab",
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+      "authorityOrder": [
+        "OWNER_CANONICAL_CONSTITUTION",
+        "CENTRAL_POLICY",
+        "COMPILED_CENTRAL_ARCHITECTURE_PROJECTION",
+        "WORK_CONTRACT",
+        "VERIFIED_RUNTIME_EVIDENCE",
+        "RUNTIME_STATE"
+      ],
+      "nativeFoundation": {
+        "version": 1,
+        "status": "ROBLOX_IMPLEMENTED_DETERMINISTIC_QA_PASS_ACTUAL_RUNTIME_OBSERVATION_PENDING",
+        "scope": {
+          "platforms": [
+            "ROBLOX",
+            "UNITY",
+            "FORTNITE_UEFN"
+          ],
+          "activeImmediateImplementation": [
+            "ROBLOX"
+          ],
+          "unityAdapterRequiredBeforeUnityRuntimeClaim": true,
+          "fortniteUefnAdapterRequiredBeforeUefnRuntimeClaim": true,
+          "webIsValidationSurfaceNotNativeRuntimeEvidence": true
+        },
+        "executionOwner": "EXISTING_GAME_TESTER_AND_QA_CAPABILITY",
+        "testerTicketState": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json",
+        "runtimePlaytestOwner": "developmentLifecycleMachine.internalPlatformPlaytestDevelopment",
+        "platformQaOwner": "developmentLifecycleMachine.targetPlatformDevelopment.runtimeIndependentQaRegressionRequired",
+        "deterministicVerdictAuthority": "developmentLifecycleMachine.deterministicGateAuthority",
+        "newDepartmentCreated": false,
+        "duplicateFoundationDepartmentForbidden": true,
+        "testerQaFlow": [
+          "F0_DETERMINISTIC_SOURCE_PREFLIGHT",
+          "DEPLOY_PRIVATE_RUNTIME_CANDIDATE",
+          "EXISTING_GAME_TESTER_EXECUTES_F1_TO_F4_FOUNDATION_SCENARIO",
+          "TESTER_WRITES_STRUCTURED_RUNTIME_FAILURE_OR_PASS_EVIDENCE",
+          "INDEPENDENT_QA_REVALIDATES_REQUIRED_FOUNDATION_AND_IMPACT_SCOPED_FEATURES",
+          "DETERMINISTIC_GATE_COMPUTES_VERDICT",
+          "FAILURE_ROUTES_EXISTING_TESTER_DEBUG_TICKET_TO_VIBE_SYSTEM_AI_REPAIR",
+          "PASS_ALLOWS_NEXT_CANONICAL_STAGE"
+        ],
+        "requiredFoundationLayers": [
+          "F0",
+          "F1",
+          "F2",
+          "F3",
+          "F4"
+        ],
+        "releaseSequence": [
+          "F0_SOURCE_PREFLIGHT_PASS",
+          "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+          "F1_SERVER_BOOT_PASS",
+          "F2_WORLD_FOUNDATION_PASS",
+          "F3_CHARACTER_FOUNDATION_PASS",
+          "F4_PHYSICS_AND_MOVEMENT_PASS",
+          "IMPACT_REQUIRED_F5_TO_F8_PASS",
+          "F9_RELEASE_REGRESSION_PASS",
+          "INTERNAL_PLATFORM_RELEASE"
+        ]
+      },
+      "implementationOwnership": {
+        "gameImplementationOwner": [
+          "VIBE2",
+          "VIBE3"
+        ],
+        "primaryAiRole": "PRIMARY_AI_NON_BLOCKING_SUPERVISOR",
+        "securityPolicy": "company-learning/security-immune-system.json"
+      }
+    },
+    "policy": {
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 411,
+      "fingerprint": "ae2d5aca1d9b354dbece65b2f217c5124c1917e08b3946c66b2020fe51cb8b68",
+      "executionFingerprint": "18ac59e0a019641c50491c625d64591d6b76465e4558edcc5b8001831b97df36",
+      "status": "OWNER_DIRECT_LOCKED",
+      "policySource": "company-learning/platform-release-roadmap.json",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED"
+    },
+    "documentSynchronization": {
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
+      "canonicalSet": {
+        "policy": "company-learning/platform-release-roadmap.json",
+        "logMap": "company-learning/company-log-map.json",
+        "architectureMap": "company-learning/company-architecture-map.json",
+        "securityPolicy": "company-learning/security-immune-system.json"
+      },
+      "readOrder": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "validator": "tools/company-shared-context.mjs",
+      "qa": "qa/company-shared-context.test.mjs",
+      "bindSha256ToExecutionEvidence": true,
+      "requiredLogMarkers": [
+        "WORKER_CONTEXT_POLICY_VERSION",
+        "WORKER_CONTEXT_POLICY_SHA256",
+        "WORKER_CONTEXT_LOG_MAP_SHA256",
+        "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+        "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
+        "WORKER_CONTEXT_SYNC=PASS",
+        "WORKER_CONTEXT_ARCHITECTURE_PROJECTION_SHA256",
+        "WORKER_CONTEXT_ARCHITECTURE_PROJECTION_SYNC=PASS"
+      ],
+      "beforeWorkRequired": true,
+      "afterWorkRequired": true,
+      "postCentralDocumentWriteSharedContextResyncRequired": true
+    },
+    "workRequest": {
+      "workKey": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "roadmapVersion": 411,
+      "mainSha": "051b003a0d51d669104e347c197b0ab26999f0a5",
+      "scope": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "nextGate": "VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_AUTHORITY_UNCHANGED",
+      "requiredEvidence": [
+        "변경 전 원본 일치",
+        "변경 diff 확인",
+        "보호 대상 값/키 변경 검사",
+        "문법/구조 QA",
+        "실행 회귀 QA",
+        "모바일 UI QA",
+        "Luau 소스/프로젝트 구조 확인",
+        "place package 확인",
+        "Roblox 런타임",
+        "독립 QA",
+        "회귀",
+        "exact revision 확인",
+        "responsible-source-changed",
+        "protected-state-preserved",
+        "regression-checked",
+        "actual-result-observed",
+        "luau-source-check",
+        "rojo-project-check-when-applicable",
+        "place-package-check",
+        "target-platform-runtime-check",
+        "independent-qa-check",
+        "regression-check",
+        "exact-revision-check",
+        "actual-motion-clips",
+        "runtime-transition",
+        "combat-sync",
+        "retarget-if-used",
+        "performance"
+      ],
+      "authorityBoundary": {
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "neuralExecutionAuthority": false,
+        "workerCreationAuthority": false,
+        "queueMutationAuthority": false,
+        "waveReorderAuthority": false,
+        "lockPolicyMutationAuthority": false,
+        "automaticLearningTuningPromotionAuthority": false
+      },
+      "dedupeKey": "664c45cdadad835568bf150fb24832b1802bea803f96bb133c44116b1410ce67"
+    },
+    "task": {
+      "id": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "target": "roblox",
+      "executionRoute": "text-source-worker"
+    },
+    "currentTruth": {
+      "gameId": "cozy-island",
+      "approvedDesignRevision": null,
+      "currentSourceRevision": "051b003a0d51d669104e347c197b0ab26999f0a5",
+      "currentInternalRobloxVersion": null,
+      "currentKnownGoodSourceRevision": null,
+      "currentKnownGoodArtifact": null,
+      "activeChangeSetId": null,
+      "openFailureEvidence": [
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:522",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+        "source-generation-failure:OTHER",
+        "coding-failure-fingerprint:roblox|MOBILE_INPUT|SAVE_RESTORE|RUNTIME|RELEASE|AI|ANIMATION_FEEL|CHARACTER_ARC|COMBAT|CORE_LOOP|ECONOMY|MOBILE_INPUT|PERFORMANCE|PROGRESSION|ROBLOX_MULTIPLAYER|ROBLOX_STUDIO|SAVE|SECURITY|STATE_MACHINE",
+        "failure-cause:source-candidate-generation-failed",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.5232558139534884%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_CONTRADICTED%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A-0.1%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A12%2C%22edgeCount%22%3A10%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A1%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A1%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "retry-failure-signature:source-candidate-generation-failed",
+        "game-repair-required:YES",
+        "game-repair-prepatch-reproduced:NO",
+        "game-repair-original-scenario:PENDING_RUNTIME_EVIDENCE",
+        "game-repair-invariants:PENDING_RUNTIME_EVIDENCE",
+        "game-repair-save-migration:PENDING_RUNTIME_EVIDENCE",
+        "game-repair-multiplayer-lifecycle:PENDING_AUTONOMOUS_HARNESS_EVIDENCE"
+      ],
+      "styleLock": null,
+      "policyVersion": 411,
+      "mainSha": "051b003a0d51d669104e347c197b0ab26999f0a5",
+      "responsibleFiles": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "compiledNotPersisted": true
+    },
+    "changeSet": {
+      "id": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "baseSourceRevision": "051b003a0d51d669104e347c197b0ab26999f0a5",
+      "status": "ACTIVE"
+    },
+    "acceptanceContract": {
+      "observable": [
+        "변경 전 원본 일치",
+        "변경 diff 확인",
+        "보호 대상 값/키 변경 검사",
+        "문법/구조 QA",
+        "실행 회귀 QA",
+        "모바일 UI QA",
+        "Luau 소스/프로젝트 구조 확인",
+        "place package 확인",
+        "Roblox 런타임",
+        "독립 QA",
+        "회귀",
+        "exact revision 확인",
+        "responsible-source-changed",
+        "protected-state-preserved",
+        "regression-checked",
+        "actual-result-observed",
+        "luau-source-check",
+        "rojo-project-check-when-applicable",
+        "place-package-check",
+        "target-platform-runtime-check",
+        "independent-qa-check",
+        "regression-check",
+        "exact-revision-check",
+        "actual-motion-clips",
+        "runtime-transition",
+        "combat-sync",
+        "retarget-if-used",
+        "performance"
+      ],
+      "markerOnlyPassForbidden": true,
+      "preserveExistingBehaviorRequired": true,
+      "exactRevisionRequired": true,
+      "runtimeObservationRequired": true
+    },
+    "workLock": {
+      "requiredBeforeSourceWrite": true,
+      "stateBranch": "vibe2-work-locks",
+      "statePath": ".vibe2/work-locks.json",
+      "worker": "vibe2",
+      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "baseSha": "051b003a0d51d669104e347c197b0ab26999f0a5",
+      "acquisitionState": "WORKER_MUST_ACQUIRE_BEFORE_SOURCE_WRITE",
+      "releaseRule": "RELEASE_AFTER_FAN_IN_QA_OR_ABORT",
+      "sameTaskSpeculativeVariantsMayReuse": true,
+      "authority": "EDIT_EXCLUSIVITY_ONLY_NO_OWNER_GATE_EXPANSION"
+    },
+    "writableScope": {
+      "exactResponsibleFiles": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "automaticExpansionAllowed": false,
+      "directResponsibleSystemModificationPreferred": true
+    },
+    "invariants": {
+      "protectedSemantics": [
+        "GAME_IDENTITY",
+        "SAVE_KEY_AND_SAVE_MEANING",
+        "CORE_LOOP",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "EXISTING_VALID_FEATURES"
+      ],
+      "forbiddenChanges": [
+        "WRAPPER_OR_SHADOW_PIPELINE",
+        "UNRELATED_SYSTEM_MUTATION",
+        "SAVE_RESET_WITHOUT_MIGRATION",
+        "FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH",
+        "RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT"
+      ],
+      "saveMeaningMustRemainCompatible": true,
+      "unrelatedBalanceMutationForbidden": true,
+      "existingValidFeaturesMustRemainFunctional": true,
+      "authorityMustRemainUnchanged": false,
+      "qualityEvidenceAndSecurityGatesMustRemainUnchanged": false
+    },
+    "failureRoute": {
+      "mode": "EXACT_FAILURE_STAGE_REPAIR",
+      "failureStage": null,
+      "lastPassedStage": null,
+      "blocker": null,
+      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "signatures": [
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:522",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.5232558139534884%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_CONTRADICTED%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A-0.1%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A12%2C%22edgeCount%22%3A10%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A1%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A1%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "game-repair-required:YES",
+        "game-repair-prepatch-reproduced:NO",
+        "game-repair-original-scenario:PENDING_RUNTIME_EVIDENCE"
+      ],
+      "responsibleSystem": null,
+      "responsibleFiles": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "preserveAlreadyPassedStages": true,
+      "restartFromBeginning": false,
+      "widenScopeAutomatically": false,
+      "revalidateImmediately": true
+    },
+    "passConditions": [
+      "변경 전 원본 일치",
+      "변경 diff 확인",
+      "보호 대상 값/키 변경 검사",
+      "문법/구조 QA",
+      "실행 회귀 QA",
+      "모바일 UI QA",
+      "Luau 소스/프로젝트 구조 확인",
+      "place package 확인",
+      "Roblox 런타임",
+      "독립 QA",
+      "회귀",
+      "exact revision 확인",
+      "responsible-source-changed",
+      "protected-state-preserved",
+      "regression-checked",
+      "actual-result-observed",
+      "luau-source-check",
+      "rojo-project-check-when-applicable",
+      "place-package-check",
+      "target-platform-runtime-check",
+      "independent-qa-check",
+      "regression-check",
+      "exact-revision-check",
+      "actual-motion-clips",
+      "runtime-transition",
+      "combat-sync",
+      "retarget-if-used",
+      "performance"
+    ],
+    "freshness": {
+      "beforeWorkRequired": true,
+      "afterWorkRequired": true,
+      "staleMayNotStart": true,
+      "staleMayNotComplete": true,
+      "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
+      "liveMainRequired": true,
+      "liveMainRef": "origin/main",
+      "liveMainRefreshBeforeCheck": true,
+      "compare": "SHA256_LOCAL_AND_LIVE_MAIN"
+    },
+    "learning": {
+      "reusableLearningAllowed": true,
+      "traceOnlyUntilSupervisorPass": false
+    },
+    "promotion": {
+      "automaticMainPromotionAllowed": false,
+      "reason": "CENTRAL_ROADMAP_ASSISTANT_CONTRACT_DOES_NOT_GRANT_PROMOTION_AUTHORITY",
+      "supervisorPassRequired": false,
+      "supervisorApproved": true
+    },
+    "preflightChecks": [
+      "READ_EXISTING_RESPONSIBLE_SYSTEM",
+      "VERIFY_EXACT_WRITABLE_SCOPE",
+      "PRESERVE_PROTECTED_SEMANTICS",
+      "NO_WRAPPER_OR_SHADOW_PIPELINE",
+      "TRACE_FAILURE_TO_RESPONSIBLE_SYSTEM",
+      "PLAN_RUNTIME_VERIFIABLE_RESULT"
+    ],
+    "authorityExpanded": false
+  },
+  "centralPolicyFreshness": {
+    "preflight": {
+      "status": "PASS",
+      "phase": "PRE_SOURCE_GENERATION",
+      "fresh": true,
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 411,
+      "fingerprint": "ae2d5aca1d9b354dbece65b2f217c5124c1917e08b3946c66b2020fe51cb8b68",
+      "executionFingerprint": "18ac59e0a019641c50491c625d64591d6b76465e4558edcc5b8001831b97df36",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "liveMainRef": "origin/main",
+      "liveMainVersion": 411,
+      "liveMainFingerprint": "ae2d5aca1d9b354dbece65b2f217c5124c1917e08b3946c66b2020fe51cb8b68",
+      "liveMainExecutionFingerprint": "18ac59e0a019641c50491c625d64591d6b76465e4558edcc5b8001831b97df36"
+    },
+    "completion": {
+      "status": "PASS",
+      "phase": "PRE_CANDIDATE_WRITE",
+      "fresh": true,
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 411,
+      "fingerprint": "ae2d5aca1d9b354dbece65b2f217c5124c1917e08b3946c66b2020fe51cb8b68",
+      "executionFingerprint": "18ac59e0a019641c50491c625d64591d6b76465e4558edcc5b8001831b97df36",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "liveMainRef": "origin/main",
+      "liveMainVersion": 411,
+      "liveMainFingerprint": "ae2d5aca1d9b354dbece65b2f217c5124c1917e08b3946c66b2020fe51cb8b68",
+      "liveMainExecutionFingerprint": "18ac59e0a019641c50491c625d64591d6b76465e4558edcc5b8001831b97df36"
+    }
+  },
+  "baseMainSha": "051b003a0d51d669104e347c197b0ab26999f0a5",
+  "goal": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\ncozy-island의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중앙 우선순위: release-blocking-bugs, progress-blockers, gameplay-completeness, content-depth, small-safe-quality-improvements, roblox-native-ux, mobile-readability, performance, maintainability, verified-learning-reuse.\n숫자/라벨만 바꾸는 작업, 릴리스 근거 조작, QA 우회, 검증 전 공개 버전 교체는 금지한다.\n보안담당(VIBE_SECURITY_STEWARD)은 Roblox 본사 안티치트를 복제하지 않고 서버 권한, Remote 입력 검증/레이트리밋, 저장·경제·보상·데미지·쿨다운 권한, 멀티 동기화 악용, 백도어/외부 모듈 위험을 기존 보안체계로 검토한다. 일반 게임평 피드백은 Vibe가 수용 여부를 결정하지만 확정된 보안 취약점은 보안 게이트로 HOTFIX 우선 처리한다.\n검증된 결과는 Vibe 학습 입력으로 다시 흡수하고 다음 포커스 사이클에서 재평가한다.\n[VERIFIED_RECOMBINATION_CONTEXT]\nrecipe=recombine_15140be67dd46ddd\nsource_projects=external-commercial-afk-arena,external-commercial-asphalt-legends\nfeature_blend=idle-reward,offline-progress,upgrade-layer,claim-idempotency,persistent-growth,commercial-idle-runtime-architecture,vehicle-control,race-progress\ntransformation=change-session-structure\nUse the verified patterns as abstract implementation context only; preserve this released game identity and create a new project-specific expression.\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid=cozy-island-build-up-g1-c8aa66f0c387; generation=1; depth=1; stage=FOUNDATION_COMPLETENESS; focus=PRESENTATION\nGAME_IDENTITY: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.\nPRIMARY_GOAL: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 직접 채집와 주민 자동화가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\nWHY_NOW: 현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"직접 채집\"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.\nGAMEPLAY: 직접 채집를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다. | 주민 자동화가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다. | 고유 시스템 직접 채집, 주민 자동화, 병영/병사, 5개 자원 거점, 협동 지원 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다. | 핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다.\nPROGRESSION_WORLD: 초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다. 낚시는 포함하지 않는다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다. | 새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다. | 맵/지역이 있는 게임은 동선·위험/보상·랜드마크·조우/자원 역할이 서로 구별되도록 유지하거나 강화한다.\nPRIORITY_DOMAIN_DIRECTIVES:\n- LANDMARKS[BUILD_UP_NOW]: 주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.\n- CHARACTER_VISUALS[FIX_NOW]: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.\n- ENEMY_VISUALS[FIX_NOW]: 적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.\n- WEAPONS_AND_EQUIPMENT[BUILD_UP_NOW]: 무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.\n- BUILDINGS_AND_PROPS[BUILD_UP_NOW]: 건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.\n- ENVIRONMENT[FIX_NOW]: 전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.\n- TERRAIN[FIX_NOW]: 지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.\n- MATERIALS[FIX_NOW]: 재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.\n- PALETTE[BUILD_UP_NOW]: 팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.\n- LIGHTING[BUILD_UP_NOW]: 조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.\n- ANIMATION[BUILD_UP_NOW]: 주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.\n- SECONDARY_MOTION[BUILD_UP_NOW]: 장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.\n- VFX[BUILD_UP_NOW]: 일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.\n- CAMERA[BUILD_UP_NOW]: 기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.\nVISUAL:\n- CHARACTER: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.\n- ENEMY_CREATURE: 직접 채집의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.\n- WEAPON_EQUIPMENT: 장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.\n- BUILDING_PROP: 상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.\n- ENVIRONMENT_TERRAIN: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.\n- MATERIAL_SURFACE: 나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.\n- PALETTE: 위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.\n- LIGHTING: 핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.\n- ANIMATION: 주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.\n- SECONDARY_MOTION: 무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.\n- VFX: 일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.\n- CAMERA: 기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.\n- UI_HUD: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.\n- AUDIO_VISUAL_SYNC: damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.\n- ENVIRONMENTAL_MOTION: 정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.\n- SCENE_DENSITY: 빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.\n- LANDMARK_READABILITY: 플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다.\nUX_INPUT: 핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다. | 터치 입력은 실제 게임 상태 변화에 연결하고 키보드/검증용 우회 입력이 모바일 PASS를 대신하지 못하게 한다. | 실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다.\nPRESERVE: 기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다. | 승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지. | 멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다. | wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.\nACCEPTANCE: CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM | WORKFLOW_QA_HOMEPAGE_ONLY_CHANGE_DOES_NOT_COUNT | GAMEPLAY_CLAIM_REQUIRES_OBSERVABLE_GAME_STATE_DELTA | VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA | BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON | NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION | FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP\nNEXT_ESCALATION: DEEPEN_CORE_FUN_DECISION_DENSITY | CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY | CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST | OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED\n\n[CENTRAL ROADMAP WORK CONTRACT]\n[OWNER CANONICAL CONSTITUTION - HIGHEST WORKER AUTHORITY]\nconstitution-sha256=96f223076e36c054734a8f7f8a4bd9935b2f9544808b19dc52d260f6a9c194c5; automatic-bind=YES; ordered-rules=RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT > RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION > RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE > RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION\nRULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT 제1규칙: VIBE_GAME_DEVELOPMENT_HAS_NO_GLOBAL_TERMINAL_STOP_STATE; SPECIFIC_GAME_TASK_OR_LANE MAY BE PAUSED_OR_QUARANTINED BUT THE 24H CAUSAL DEVELOPMENT BRAIN ALWAYS RECOVERS_REPLANS_AND_CONTINUES\nRULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION 제2규칙: FULL_CANONICAL_RULE_CONTRACT_BOUND\nRULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE 제3규칙: VIBE_CONTINUOUSLY_GENERATES_NEW_LEARNING_SIGNALS_FROM_WORK_RESULTS_PRACTICE_FAILURES_HYPOTHESES_FALSIFICATION_BENCHMARKS_HOLDOUTS_AND_CROSS_PROJECT_TRANSFER_WITHOUT_A_TOTAL_SIGNAL_OR_GENERATION_CEILING\nRULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION 제4규칙: VIBE_MAY_CONTINUOUSLY_IMPROVE_ITS_OWN_INTERNAL_SYSTEM_ARCHITECTURE_AND_CAPABILITIES_AND_MAY_EXPAND_ITS_INTERNAL_NEURAL_STRUCTURE_AT_THE_FINAL_ORDERED_STAGE_WHEN_CAUSAL_EVIDENCE_AND_ALL_EXISTING_QA_SECURITY_AND_AUTHORITY_INVARIANTS_PASS\nEvery current and future registered Vibe worker is automatically bound to every enabled canonical rule. No worker, department, child contract, runtime learning, or subordinate policy may opt out or weaken it.\narchitecture-projection-sha256=76e267036a07d64ecd071b4879e7e9dfff996267ba1873ced4dc008c799f00ab; source=company-learning/platform-release-roadmap.json\nnative-foundation=V1; owner=EXISTING_GAME_TESTER_AND_QA_CAPABILITY; required=F0,F1,F2,F3,F4\npolicy=company-learning/platform-release-roadmap.json; version=411; sha256=ae2d5aca1d9b354dbece65b2f217c5124c1917e08b3946c66b2020fe51cb8b68; execution-sha256=18ac59e0a019641c50491c625d64591d6b76465e4558edcc5b8001831b97df36\ncentral-doc-read-order=company-learning/platform-release-roadmap.json > company-learning/company-log-map.json > company-learning/company-architecture-map.json > company-learning/security-immune-system.json; hash-binding=ALL_CANONICAL_DOCS\nlive-main-ref=origin/main; refresh-before-check=YES\nwork-key=cozy-island-post-release-focus-12c1a7e2ae6288fd; next-gate=VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_AUTHORITY_UNCHANGED; dedupe-key=664c45cdadad835568bf150fb24832b1802bea803f96bb133c44116b1410ce67\nexact-writable-files=roblox-games/cozy-island/server/Game.server.luau, roblox-games/cozy-island/client/Game.client.luau, roblox-games/cozy-island/shared/GameConfig.luau\ncurrent-truth-source=051b003a0d51d669104e347c197b0ab26999f0a5; change-set=cozy-island-post-release-focus-12c1a7e2ae6288fd\nwork-lock=REQUIRED; worker=vibe2; base=051b003a0d51d669104e347c197b0ab26999f0a5; files=roblox-games/cozy-island/server/Game.server.luau, roblox-games/cozy-island/client/Game.client.luau, roblox-games/cozy-island/shared/GameConfig.luau\nacceptance=변경 전 원본 일치 | 변경 diff 확인 | 보호 대상 값/키 변경 검사 | 문법/구조 QA | 실행 회귀 QA | 모바일 UI QA | Luau 소스/프로젝트 구조 확인 | place package 확인 | Roblox 런타임 | 독립 QA | 회귀 | exact revision 확인 | responsible-source-changed | protected-state-preserved | regression-checked | actual-result-observed | luau-source-check | rojo-project-check-when-applicable | place-package-check | target-platform-runtime-check | independent-qa-check | regression-check | exact-revision-check | actual-motion-clips | runtime-transition | combat-sync | retarget-if-used | performance\npreserve=GAME_IDENTITY, SAVE_KEY_AND_SAVE_MEANING, CORE_LOOP, PROGRESSION, MOBILE_INPUT, EXISTING_VALID_FEATURES\nforbidden=WRAPPER_OR_SHADOW_PIPELINE, UNRELATED_SYSTEM_MUTATION, SAVE_RESET_WITHOUT_MIGRATION, FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH, RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT\nfailure-stage=TASK_RESPONSIBILITY; last-passed-stage=UNKNOWN; blocker=NONE\nfailure-evidence=recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE | source-mutation-required:YES | game-repair-mode:ROOT_CAUSE_MODE | game-repair-repeat-count:522 | game-repair-user-assistance-required:NO | game-repair-save-migration:REQUIRED | game-repair-multiplayer-lifecycle:MACHINE_REQUIRED | portfolio-decision:FOCUSED_REPAIR | portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER | neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.5232558139534884%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D | neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_CONTRADICTED%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A-0.1%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D | neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36057026213%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A12%2C%22edgeCount%22%3A10%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A1%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A1%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D | game-repair-required:YES | game-repair-prepatch-reproduced:NO | game-repair-original-scenario:PENDING_RUNTIME_EVIDENCE\nRead and modify the existing responsible system directly. Do not create a wrapper, shadow pipeline, validation-only behavior, or unrelated rewrite.\nPreserve already-passed stages. Repair the exact failure stage, then revalidate it immediately.\nThis contract does not grant worker creation, queue mutation, wave reorder, lock/policy mutation, or automatic learning/promotion authority.\nThe central roadmap must stay valid, and its worker execution-policy projection fingerprint must still match before source generation and again before candidate output is written. Full document SHA remains evidence but unrelated roadmap progress metadata does not invalidate an active worker.\n\n[NEURAL DIAGNOSIS SHADOW MODE]\nresponsibility=SAVE_SYSTEM confidence=0.26\npipeline-prediction=SOURCE_GENERATION target=NEXT_OBSERVED_BLOCKING_SYSTEM\nbottleneck-score=93 advisory-only=YES\nfailure-stage=TARGET_PLATFORM_RUNTIME_FOUNDATION\ntop-hypothesis=save-compatibility confidence=0.90\nhard-inhibitors=SECURITY_POLICY_BLOCK\nThis diagnosis is evidence guidance only. Existing task scope, central policy, locks, QA, supervision, and wave scheduling remain authoritative.\nDo not patch a validator problem by faking gameplay, and do not hide a real game defect by weakening validation.\n\n[CANDIDATE STRATEGY ROLE]\nvariant=primary\nstrategy=PRIMARY_RESPONSIBILITY_MINIMAL\nStart at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.\nThis role may change implementation approach only. The task-local compiled edit contract, responsible files, protected semantics, and QA remain authoritative.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n안정성 우선: CLEAR_FOR_DESIGN_EVALUATION; 원인 소유권=NONE; route=NO_DEFECT_SIGNAL. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다.\n설계 밑그림: 물질적 설계 변경 아님.\n설계 도달성 검사: CHECKED; 콘텐츠 다양성: CHECKED.\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n서사 계약: ADVISORY. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.\n\n[VERIFIED EXPERIENCE MEMORY - advisory only]\n다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.\n- 경험 exp_4odofx; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | verified-play-observation:restart | study-tag:external-reference | study-tag:turn-based | study-ta; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:verified-play-observation:restart | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:turn\n- 경험 exp_pg739o; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:difficulty-selection | study-tag:turn-feedback | study-tag:player-action | study-tag:ai-respon; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:difficulty-selection | GAME_STUDY:study-tag:turn-feedback | GAME_STUDY:study-tag:player-action | GA\n- 경험 exp_1oonbi8; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:memory-game | study-tag:board-size-selection | study-tag:; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:memory-game | GAME_STUDY:study-tag:board-size-selec\n- 경험 exp_i00mwv; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:economy | verified-play-observation:progression | verified-play-observation:ui | authorized-source-pattern:frame-loop | study-intelligence:mechanic:economy | study-intelligence:mec; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:economy | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:authorized-source-pattern:frame-loop | GAME_STUDY:study-intelligence:mechanic:economy | GAME_STUDY:study\n- 경험 supervised_bug-defense_35476177742_revise; 결과=FAIL; 문제=Vibe candidate was byte-identical to the failing main Web source and preserved a validation harness instead of implementing the approved bug-defense game.; 검증변경=Supervisor REVISE on candidate vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1; decompose the next attempt into real wave analysis, spatial placement, counterplay, live combat, rewards, terminal states, retry, and mo; 검증실패원인=NO_REAL_IMPLEMENTATION: candidate source blob equals current main; scope/session test controls remain; no pointer/touch placement, real spatial enemy loop, reachable win/loss, or persistent save/progression.; 회피=Do not substitute scope-control or session-phase validation buttons for real gameplay mechanics. | Do not approve a gameplay repair candidate whose responsible source blob is unchanged while runtime failures remain. | Do not duplicate handler functions to inflate apparent mechanic coverage. | Do not\n\n[VERIFIED CAPABILITY MEMORY - advisory only]\nThese are previously verified coding capability lessons. Use them only when applicable to the current responsibility and evidence.\nThey MUST NOT expand writable scope, bypass QA/security/runtime gates, copy raw unrelated source, or change protected gameplay/save semantics.\n- id=capability_ctrace_694d98ebd713acfd3b0a9289; outcome=PASS; reuse=CAPABILITY:CODING_STRATEGY:CAUSAL_TRACE_CROSSCHECK | CAPABILITY:CONTEXT_SELECTION:STANDARD_CONTEXT | CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION | CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND | CAPABILITY_DOMAIN:TOOL_ORCHESTRATION | CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING | CAPABILITY_DOMAIN:CONTEXT_SELECTION | CAPABILITY_DOMAIN:ARCHITECTURE_JUDGMENT | CAPABILITY_DOMAIN:FAILURE_RECOVERY | CAPABILITY_DOMAIN:Q; lifecycle=VERIFIED_REUSABLE; applications=64; independentPasses=0; confidence=0.5000; relevance=35.34\n- id=capability_ctrace_e24add62615bf96a065576ab; outcome=PASS; reuse=CAPABILITY:CODING_STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH | CAPABILITY:CONTEXT_SELECTION:STANDARD_CONTEXT | CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION | CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND | CAPABILITY_DOMAIN:TOOL_ORCHESTRATION | CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING | CAPABILITY_DOMAIN:CONTEXT_SELECTION | CAPABILITY_DOMAIN:ARCHITECTURE_JUDGMENT | CAPABILITY_DOMAIN:FAILURE_RECOVERY | CAPABILITY_D; lifecycle=GENERALIZATION_CANDIDATE; applications=64; independentPasses=2; confidence=0.7500; relevance=34.61\n- id=capability_ctrace_8e48a7db9ae2c9be9596da00; outcome=PASS; reuse=CAPABILITY:CODING_STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL | CAPABILITY:CONTEXT_SELECTION:STANDARD_CONTEXT | CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION | CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND | CAPABILITY_DOMAIN:TOOL_ORCHESTRATION | CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING | CAPABILITY_DOMAIN:CONTEXT_SELECTION | CAPABILITY_DOMAIN:ARCHITECTURE_JUDGMENT | CAPABILITY_DOMAIN:FAILURE_RECOVERY | CAPABILITY_D; lifecycle=APPLICATION_OBSERVED; applications=34; independentPasses=1; confidence=0.5000; relevance=32.17\n- id=capability_ctrace_9826195dac24dccb5a25672d; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:DIAGNOSTIC_POSTCONDITION | CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:DIAGNOSTIC_POSTCONDITION; verifiedFailure=SOURCE_CANDIDATE_GENERATION:DIAGNOSTIC_POSTCONDITION; lifecycle=VERIFIED_REUSABLE; applications=64; independentPasses=0; confidence=0.5000; relevance=31.50\n- id=capability_ctrace_54427da2204e4033e8fa26ba; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:DIAGNOSTIC_POSTCONDITION | CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:DIAGNOSTIC_POSTCONDITION; verifiedFailure=SOURCE_CANDIDATE_GENERATION:DIAGNOSTIC_POSTCONDITION; lifecycle=VERIFIED_REUSABLE; applications=64; independentPasses=0; confidence=0.5000; relevance=31.50\n\n[VIBE VERIFIED LEARNING MOTOR]\n우선순위=same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.\n- current-failure-fingerprint=roblox|OTHER|TIMEOUT\n- learning-domains=PRIMARY[ROBLOX_STUDIO] SECONDARY[AI,ANIMATION_FEEL,ASSET_PRODUCTION,CHARACTER_ARC,COMBAT,CORE_LOOP]\n- experience=exp_i00mwv; game=external-roblox-potion-shop-demo; engine=roblox; relevance=30; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:economy|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:authorized-source-pattern:frame-loop; avoid=none\n- experience=exp_security_28453669955c43a85d166c5c; game=n/a; engine=system; relevance=26; reuse=SECURITY_DETECT:DIRECT_MAIN_PUSH_ADDED|SECURITY_CONTAIN:AFFECTED_CHANGE_QUARANTINED|SECURITY_RECOVER:route generated audio to a unique automation branch and create a normal pull request; never auto-merge or push directly to main; avoid=SECURITY_AVOID:DIRECT_MAIN_PUSH_ADDED\n- experience=exp_recovery_0283345dd9580a246abbf745; game=n/a; engine=system; relevance=24; reuse=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW; avoid=avoid-repeat:security-quarantine-HIGH\n- experience=exp_1oonbi8; game=external-memory-game; engine=web; relevance=18; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference; avoid=none\n- experience=exp_4odofx; game=external-tictactoe; engine=web; relevance=18; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:verified-play-observation:restart; avoid=none\n- experience=exp_pg739o; game=external-tictactoe; engine=web; relevance=18; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference|GAME_STUDY:study-tag:difficulty-selection; avoid=none\n- experience=exp_system_ai_66f247e678e51fa6dbfc877d; game=n/a; engine=system-ai; relevance=14.5; reuse=VERIFIED_SYSTEM_AI_QA_VERIFICATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION; avoid=SYSTEM_AI_SELF_ACCEPTANCE|RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION\n- experience=exp_rg6lvy; game=block-blast; engine=android; relevance=10; reuse=AUTHORIZED_SOURCE:board-grid-placement|AUTHORIZED_SOURCE:score-combo-reward|AUTHORIZED_SOURCE:input-drag-touch|AUTHORIZED_SOURCE:progression-difficulty|AUTHORIZED_SOURCE:save-state-persistence; avoid=do-not-treat-static-analysis-as-runtime-pass|do-not-bypass-current-project-qa|do-not-expand-authority-beyond-owner-authorized-scope\n- verified-code-pattern=pat_external_blackbox_4180cb1d3e96c05680871a91; system=RUNTIME_OBSERVATION_RECOVERY; relevance=46; pattern=VERIFIED_EXTERNAL_RUNTIME_OBSERVATION_SEPARATE_LAUNCH_ENTRY_INPUT_RESPONSE_PROCESS_SURVIVAL_AND_CRASH_SCOPE\n- verified-code-pattern=pat_recovery_222d32bd6c34fbfa5d9d64de; system=EXACT_STAGE_RESUME; relevance=24; pattern=VERIFIED_RECOVERY_EXACT_STAGE_RESUME_PRESERVE_VERIFIED_CHECKPOINT_FIX_CAUSAL_SCOPE_RERUN_EXACT_FAILED_STAGE\n- verified-code-pattern=pat_recovery_b59ac2eafd0e3c2ef0913680; system=REGRESSION_REPAIR; relevance=24; pattern=VERIFIED_RECOVERY_REGRESSION_REPAIR_SMALLEST_RESPONSIBLE_REPAIR_INDEPENDENT_QA_AND_REGRESSION_BEFORE_PROMOTION\n- verified-code-pattern=pat_recovery_c6ab15df46b8ab7173406818; system=EXACT_STAGE_RESUME; relevance=24; pattern=VERIFIED_RECOVERY_EXACT_STAGE_RESUME_PRESERVE_VERIFIED_CHECKPOINT_FIX_CAUSAL_SCOPE_RERUN_EXACT_FAILED_STAGE\n- verified-code-pattern=pat_recovery_f5e63e62a13c1bfcaa5c622c; system=REGRESSION_REPAIR; relevance=24; pattern=VERIFIED_RECOVERY_REGRESSION_REPAIR_SMALLEST_RESPONSIBLE_REPAIR_INDEPENDENT_QA_AND_REGRESSION_BEFORE_PROMOTION\n- verified-code-pattern=pat_1dj8rdx; system=SAVE_PERSISTENCE; relevance=60; pattern=VERIFIED_SAVE_PERSISTENCE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-practice-distilled=COMBAT; confirmations=14; evidence=experience:exp_security_b72c29be3a79e4c5a56017dd:exp_security_b72c29be3a79e4c5a56017dd|experience:supervised_bug-defense_35476177742_revise:bug-defense|experience:exp_security_53422c69113706740dd73f5a:exp_security_53422c69113706740dd73f5a\n- verified-practice-distilled=MOBILE_INPUT; confirmations=124; evidence=code-pattern:pat_14v79w7:3aa6a50ad14f3d0620d4b894660645b92137d708|code-pattern:pat_1lx9uhh:669aa231ae5291c89ab60eb528c4d357d5671c68|code-pattern:pat_1xg0er9:a2467c071d3fd3436fadefab7a3919c6e178d5f6\n- verified-practice-distilled=PROGRESSION; confirmations=137; evidence=experience:exp_rg6lvy:block-blast|game-study:external-memory-game:architecture:progression|game-study:external-roblox-potion-shop-demo:architecture:progression\n- verified-practice-distilled=SAVE; confirmations=49; evidence=code-pattern:pat_recovery_222d32bd6c34fbfa5d9d64de:sha256:421c8d0e7c1e756ee9e0028e0000000000000000000000000000000000000000|code-pattern:pat_1dj8rdx:998c47a43a916a4e9d0fa804abe40a6a7bc383c6|code-pattern:pat_1e917b8:669aa231ae5291c89ab60eb528c4d357d5671c68\n- verified-practice-distilled=UI_STATE; confirmations=88; evidence=code-pattern:pat_14v79w7:3aa6a50ad14f3d0620d4b894660645b92137d708|code-pattern:pat_1lx9uhh:669aa231ae5291c89ab60eb528c4d357d5671c68|code-pattern:pat_1xg0er9:a2467c071d3fd3436fadefab7a3919c6e178d5f6\n- verified-practice-distilled=WEB_RUNTIME; confirmations=76; evidence=experience:exp_rg6lvy:block-blast|experience:supervised_bug-defense_35476177742_revise:bug-defense|experience:capability_ctrace_a0534f92f8ff6021da614742:seed-single-defense-strat-celestial-bastion\n- production-confidence=CORE_LOOP:PC3 | STATE_MACHINE:PC3 | COMBAT:PC4 | AI:PC4 | PROGRESSION:PC4 | ECONOMY:PC3 | SAVE:PC4 | MOBILE_INPUT:PC4 | UI_STATE:PC1 | DEBUGGING:PC3 | RECOVERY:PC1 | SECURITY:PC4 | PERFORMANCE:PC3 | ASSET_PRODUCTION:PC2 | ASSET_ADAPTATION:PC4 | LIVING_MOTION:PC2 | ANIMATION_FEEL:PC1 | VFX:PC1 | CAMERA_LANGUAGE:PC1 | STORYTELLING:PC1 | CHARACTER_ARC:PC1 | RELATIONSHIP_MEMORY:PC1 | WORLD_NARRATIVE:PC1 | VISUAL_IDENTITY:PC1 | LEVEL_DESIGN:PC1 | WORLD_NARRATIVE_BINDING:PC1 | ROUTE_DESIGN:PC1 | WEB_RUNTIME:PC4 | ROBLOX_STUDIO:PC1\n- mastery=CORE_LOOP:LV12 | STATE_MACHINE:LV18 | COMBAT:LV13 | AI:LV10 | PROGRESSION:LV13 | ECONOMY:LV12 | SAVE:LV8 | MOBILE_INPUT:LV11 | UI_STATE:LV7 | DEBUGGING:LV18 | RECOVERY:LV13 | SECURITY:LV5 | PERFORMANCE:LV1 | ASSET_PRODUCTION:LV7 | ASSET_ADAPTATION:LV6 | LIVING_MOTION:LV1 | ANIMATION_FEEL:LV12 | VFX:LV5 | CAMERA_LANGUAGE:LV1 | STORYTELLING:LV1 | CHARACTER_ARC:LV3 | RELATIONSHIP_MEMORY:LV1 | WORLD_NARRATIVE:LV1 | VISUAL_IDENTITY:LV5 | LEVEL_DESIGN:LV1 | WORLD_NARRATIVE_BINDING:LV1 | ROUTE_DESIGN:LV1 | WEB_RUNTIME:LV16 | ROBLOX_STUDIO:LV6\n\n[LEARNING KNOWLEDGE APPLICATION TRACE]\nexactKnowledgeIds=EXPERIENCE:exp_i00mwv,EXPERIENCE:exp_security_28453669955c43a85d166c5c,EXPERIENCE:exp_recovery_0283345dd9580a246abbf745,EXPERIENCE:exp_1oonbi8,EXPERIENCE:exp_4odofx,EXPERIENCE:exp_pg739o,EXPERIENCE:exp_system_ai_66f247e678e51fa6dbfc877d,EXPERIENCE:exp_rg6lvy,CODE_PATTERN:pat_external_blackbox_4180cb1d3e96c05680871a91,CODE_PATTERN:pat_recovery_222d32bd6c34fbfa5d9d64de,CODE_PATTERN:pat_recovery_b59ac2eafd0e3c2ef0913680,CODE_PATTERN:pat_recovery_c6ab15df46b8ab7173406818,CODE_PATTERN:pat_recovery_f5e63e62a13c1bfcaa5c622c,CODE_PATTERN:pat_1dj8rdx,PRACTICE_DISTILLED:practice-distilled:92fb83ea92ed0720b0e4,PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf,PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c,PRACTICE_DISTILLED:practice-distilled:f472b70e86846f6460f2,PRACTICE_DISTILLED:practice-distilled:9b7b3c1df9b291d1f576,PRACTICE_DISTILLED:practice-distilled:0de29fd765422439deeb,VERIFIED_CAPABILITY:capability_ctrace_694d98ebd713acfd3b0a9289,VERIFIED_CAPABILITY:capability_ctrace_e24add62615bf96a065576ab,VERIFIED_CAPABILITY:capability_ctrace_8e48a7db9ae2c9be9596da00,VERIFIED_CAPABILITY:capability_ctrace_9826195dac24dccb5a25672d,VERIFIED_CAPABILITY:capability_ctrace_54427da2204e4033e8fa26ba\nOnly these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.\n\n[GRAPHICS_PRODUCTION / ASSET INPUT]\n이 계획은 독립 그래픽 작업이 아니다. 모든 에셋 결정은 단일 GRAPHICS_PRODUCTION 루트에 입력되고 같은 루트에서 캐릭터·환경·애니메이션·VFX·조명·UI와 함께 fan-in 된다.\nVibe2/Vibe3가 게임 소스 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 선택한다.\n에셋 선택 전에 승인 설계·최신 아트북에서 게임별 Art Bible, Style Lock, Material/Environment/Animation/VFX/Lighting/UI 언어와 Visual Target Frame을 먼저 확정한다.\n기본값은 플레이어·적·NPC·무기·아이템·건축물·지형·배경·식생·소품·UI·VFX·오디오까지 목적 있는 에셋을 적용하는 것이다. primitive/샘플 모형은 prototype fallback만 허용하고 Visual Debt로 남긴다.\nHero 품질 대상(플레이어, 주 보스/적, 시그니처 무기, 핵심 랜드마크/시작지역)은 전체 게임의 스타일 기준점으로 먼저 완성한다.\n배경과 환경은 후순위 장식이 아니다. 전경/중경/배경, 지역 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 실제 플레이 화면에서 확보한다.\n권리가 검증된 기존 에셋은 원본을 덮어쓰지 않고 파츠 재조합·실루엣/비율·재질·지역/정예/보스 파생·LOD 최적화 등 derived 변형으로 게임 고유 에셋화할 수 있다.\n서로 다른 에셋 팩을 원형 그대로 섞은 kitbash/sample-project 느낌은 완료가 아니다. Art Bible/재질/실루엣/조명/UI/VFX 언어를 통일한다.\n배경은 세계관·지역·서사 맥락에 맞고 몬스터는 생태·전투 역할이 읽히는 실루엣과 표현을 가져야 한다.\n액션·전투 캐릭터는 Web부터 IDLE/MOVE/ATTACK/HIT/DEATH 상태를 실제 게임 상태와 연결하고 표현 런타임을 통과한 뒤 native 플랫폼으로 이어간다.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAsset Loadout unresolved=0; 검증 회사 자산과 호환/사용 이력 우선으로 자동 선택하고 잠금 선택은 보존한다.\n\n\n\n\n선택 순서: 검증된 같은 게임/회사 에셋 → 같은 게임 SOURCE_BOUND 후보 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.\nWeb에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.\n이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.\nPNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.\n에셋 이유로 게임 규칙, 세이브 의미, 진행, 경제 수치를 바꾸지 않는다.\npreset=none; reuseCandidateTypes=0; directAuthorableTypes=9; missingTypes=character,enemy,boss,background,item,prop,effect,ui,animation,audio\n- type=character; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=enemy; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=boss; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=background; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=item; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=prop; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=effect; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=ui; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=animation; reuse=none; external=none; direct=luau-composed-low-poly-model|luau-material-color-and-lighting|luau-particle-beam-trail-vfx|luau-runtime-animation-and-secondary-motion|luau-ui-presentation; order=VIBE_DIRECT_AUTHOR>AUTHORING_GENERATOR_REQUEST\n- type=audio; reuse=none; external=none; direct=none; order=AUTHORING_GENERATOR_REQUEST",
+  "generatedAt": "2026-09-26T08:25:27.454Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/cozy-island-post-release-focus-12c1a7e2ae6288fd-primary-36229097447-1",
+  "candidateManifestPath": ".vibe2/candidates/cozy-island-post-release-focus-12c1a7e2ae6288fd/manifest.json",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "client/Game.client.luau"
+  ],
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "tests": [],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+    "packageId": null,
+    "target": "roblox",
+    "sourceRoot": "roblox-games/cozy-island",
+    "baseMainSha": "051b003a0d51d669104e347c197b0ab26999f0a5",
+    "responsibleFiles": [
+      "server/Game.server.luau",
+      "client/Game.client.luau",
+      "shared/GameConfig.luau"
+    ],
+    "impactFiles": [
+      "server/Game.server.luau",
+      "client/Game.client.luau",
+      "shared/GameConfig.luau",
+      "shared/QACamera.luau",
+      "server/BattleVisual.luau",
+      "shared/VisualStyle.luau",
+      "roblox-source-bootstrap.json"
+    ],
+    "contextFiles": [
+      "server/Game.server.luau",
+      "client/Game.client.luau",
+      "shared/GameConfig.luau",
+      "shared/QACamera.luau",
+      "server/BattleVisual.luau",
+      "shared/VisualStyle.luau",
+      "roblox-source-bootstrap.json"
+    ],
+    "relatedFiles": [
+      {
+        "path": "shared/QACamera.luau",
+        "score": 43
+      },
+      {
+        "path": "server/BattleVisual.luau",
+        "score": 35
+      },
+      {
+        "path": "shared/VisualStyle.luau",
+        "score": 35
+      },
+      {
+        "path": "roblox-source-bootstrap.json",
+        "score": 29
+      }
+    ],
+    "testTargets": [
+      "shared/QACamera.luau"
+    ],
+    "protectedScopeSignals": [
+      "save",
+      "combat-number",
+      "storage"
+    ],
+    "diagnosticEvidence": [],
+    "existingWebAssessment": null,
+    "fileDigests": [
+      {
+        "path": "server/Game.server.luau",
+        "hash": "ec4c3e945ab6f7ff",
+        "bytes": 35495
+      },
+      {
+        "path": "client/Game.client.luau",
+        "hash": "67e1d14cf1abf341",
+        "bytes": 11743
+      },
+      {
+        "path": "shared/GameConfig.luau",
+        "hash": "4739b8d00c2614c4",
+        "bytes": 3757
+      },
+      {
+        "path": "shared/QACamera.luau",
+        "hash": "3711eeaa81781975",
+        "bytes": 7705
+      },
+      {
+        "path": "server/BattleVisual.luau",
+        "hash": "32db43dc8ed9c3df",
+        "bytes": 3811
+      },
+      {
+        "path": "shared/VisualStyle.luau",
+        "hash": "ef8597fec20a361c",
+        "bytes": 1355
+      },
+      {
+        "path": "roblox-source-bootstrap.json",
+        "hash": "fc3632516c6f1847",
+        "bytes": 5059
+      }
+    ],
+    "editContract": {
+      "version": 1,
+      "mode": "COMPILED_EDIT_CONTRACT",
+      "strategyHint": "PRESERVE_PATCH_RESPONSIBLE_SCOPE",
+      "responsibilityConfidence": "LOW",
+      "rawResponsibilityConfidence": "LOW",
+      "responsibilityCalibration": {
+        "recommendation": "KEEP_RAW_CONFIDENCE",
+        "applied": false,
+        "extraReadOnlyExploration": false,
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "regressionHotspotRisk": {
+        "riskLevel": "LOW",
+        "matched": [],
+        "focusedChecksAdded": [],
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "primaryTargets": [],
+      "allowedResponsibleFiles": [
+        "server/Game.server.luau",
+        "client/Game.client.luau",
+        "shared/GameConfig.luau"
+      ],
+      "allowedDependentSymbolsOrSystems": [],
+      "primarySystems": [],
+      "dependentSystems": [],
+      "directDependentSystems": [],
+      "readOnlyImpactSystems": [],
+      "ownedState": [],
+      "readState": [],
+      "preserveSemantics": [
+        "EXISTING_WORKING_BEHAVIOR",
+        "APPROVED_GAMEPLAY_VALUES",
+        "SAVE_MEANING",
+        "PROTECTED_SIGNAL:save",
+        "PROTECTED_SIGNAL:combat-number",
+        "PROTECTED_SIGNAL:storage"
+      ],
+      "failureOrRequirementCausalChain": [
+        "FAILURE_EVIDENCE",
+        "RESPONSIBILITY_NOT_RESOLVED"
+      ],
+      "requiredObservableResult": "[POST_RELEASE_FOCUSED_DEVELOPMENT]\ncozy-island의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중앙 우선순위: release-blocking-bugs, progress-blockers, gameplay-completeness, content-depth, small-safe-quality-improvements, roblox-native-ux, mobile-readability, performance, maintainability, verified-learning-reuse.\n숫자/라벨만 바꾸는 작업, 릴리스 근거 조작, QA 우회, 검증 전 공개 버전 교체는 금지한다.\n보안담당(VIBE_SECURITY_STEWARD)은 Roblox 본사 안티치트를 복제하지 않고 서버 권한, Remote 입력 검증/레이트리밋, 저장·경제·보상·데미지·쿨다운 권한, 멀티 동기화 악용, 백도어/외부 모듈 위험을 기존 보안체계로 검토한다. 일반 게임평 피드백은 Vibe가 수용 여부를 결정하지만 확정된 보안 취약점은 보안 게이트로 HOTFIX 우선 처리한다.\n검증된 결과는 Vibe 학습 입력으로 다시 흡수하고 다음 포커스 사이클에서 재평가한다.\n[VERIFIED_RECOMBINATION_CONTEXT]\nrecipe=recombine_15140be67dd46ddd\nsource_projects=external-commercial-afk-arena,external-commercial-asphalt-legends\nfeature_blend=idle-reward,offline-progress,upgrade-layer,claim-idempotency,persistent-growth,commercial-idle-runtime-architecture,vehicle-control,race-progress\ntransformation=change-session-structure\nUse the verified patterns as abstract implementation context only; preserve this released game identity and create a new project-specific expression.\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid=cozy-island-build-up-g1-c8aa66f0c387; generation=1; depth=1; stage=FOUNDATION_COMPLETENESS; focus=PRESENTATION\nGAME_IDENTITY: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.\nPRIMARY_GOAL: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 직접 채집와 주민 자동화가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\nWHY_NOW: 현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"직접 채집\"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.\nGAMEPLAY: 직접 채집를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다. | 주민 자동화가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다. | 고유 시스템 직접 채집, 주민 자동화, 병영/병사, 5개 자원 거점, 협동 지원 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다. | 핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다.\nPROGRESSION_WORLD: 초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다. 낚시는 포함하지 않는다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다. | 새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다. | 맵/지역이 있는 게임은 동선·위험/보상·랜드마크·조우/자원 역할이 서로 구별되도록 유지하거나 강화한다.\nPRIORITY_DOMAIN_DIRECTIVES:\n- LANDMARKS[BUILD_UP_NOW]: 주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.\n- CHARACTER_VISUALS[FIX_NOW]: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.\n- ENEMY_VISUALS[FIX_NOW]: 적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.\n- WEAPONS_AND_EQUIPMENT[BUILD_UP_NOW]: 무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.\n- BUILDINGS_AND_PROPS[BUILD_UP_NOW]: 건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.\n- ENVIRONMENT[FIX_NOW]: 전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.\n- TERRAIN[FIX_NOW]: 지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.\n- MATERIALS[FIX_NOW]: 재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.\n- PALETTE[BUILD_UP_NOW]: 팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.\n- LIGHTING[BUILD_UP_NOW]: 조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.\n- ANIMATION[BUILD_UP_NOW]: 주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.\n- SECONDARY_MOTION[BUILD_UP_NOW]: 장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.\n- VFX[BUILD_UP_NOW]: 일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.\n- CAMERA[BUILD_UP_NOW]: 기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.\nVISUAL:\n- CHARACTER: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.\n- ENEMY_CREATURE: 직접 채집의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.\n- WEAPON_EQUIPMENT: 장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.\n- BUILDING_PROP: 상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.\n- ENVIRONMENT_TERRAIN: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.\n- MATERIAL_SURFACE: 나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.\n- PALETTE: 위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.\n- LIGHTING: 핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.\n- ANIMATION: 주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.\n- SECONDARY_MOTION: 무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.\n- VFX: 일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.\n- CAMERA: 기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.\n- UI_HUD: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.\n- AUDIO_VISUAL_SYNC: damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.\n- ENVIRONMENTAL_MOTION: 정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.\n- SCENE_DENSITY: 빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.\n- LANDMARK_READABILITY: 플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다.\nUX_INPUT: 핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다. | 터치 입력은 실제 게임 상태 변화에 연결하고 키보드/검증용 우회 입력이 모바일 PASS를 대신하지 못하게 한다. | 실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다.\nPRESERVE: 기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다. | 승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지. | 멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다. | wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.\nACCEPTANCE: CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM | WORKFLOW_QA_HOMEPAGE_ONLY_CHANGE_DOES_NOT_COUNT | GAMEPLAY_CLAIM_REQUIRES_OBSERVABLE_GAME_STATE_DELTA | VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA | BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON | NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION | FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP\nNEXT_ESCALATION: DEEPEN_CORE_FUN_DECISION_DENSITY | CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY | CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST | OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED",
+      "semanticDiffBudget": {
+        "allowedSystems": [],
+        "preferredPrimarySymbols": [],
+        "maxSystemCount": 1,
+        "readOnlyImpactSystems": [],
+        "impactPredictionDoesNotGrantWriteAuthority": true,
+        "unrelatedSystemMutationForbidden": true,
+        "saveKeysMustRemainCompatible": []
+      },
+      "requiredFocusedChecks": [
+        "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY",
+        "GAME_REPAIR_INVARIANT_VALIDATION",
+        "GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION",
+        "GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION",
+        "TEST_TARGET:shared/QACamera.luau"
+      ],
+      "causalReplay": {
+        "version": 2,
+        "required": true,
+        "prePatchReproduced": false,
+        "nodeTestTargets": [],
+        "executable": false,
+        "mode": "PLAN_ONLY",
+        "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "diagnosticType": null,
+        "diagnosticFile": null,
+        "diagnosticLine": null,
+        "diagnosticNeedle": null,
+        "diagnosticMicroTask": null,
+        "verifiedResponsibleSystem": null,
+        "diagnosticVerifier": null,
+        "identicalOrEquivalentInputStateRequired": true,
+        "canonicalQaStillRequired": true,
+        "sourceWrite": false,
+        "authorityExpanded": false
+      },
+      "gameRepair": {
+        "version": 1,
+        "required": true,
+        "failureStage": null,
+        "failureSignature": null,
+        "prePatchReproduced": false,
+        "responsibleSystem": null,
+        "responsibleFiles": [
+          "server/Game.server.luau",
+          "client/Game.client.luau",
+          "shared/GameConfig.luau"
+        ],
+        "revisions": {
+          "lastKnownGoodRevision": null,
+          "firstBrokenRevision": null,
+          "currentRevision": "051b003a0d51d669104e347c197b0ab26999f0a5",
+          "historyAvailable": false
+        },
+        "originalScenarioReplay": {
+          "required": true,
+          "coveredByCausalReplay": false,
+          "identicalOrEquivalentInputStateRequired": true,
+          "testTargets": []
+        },
+        "invariants": {
+          "required": true,
+          "ids": [
+            "STATE_OWNER_ONLY_WRITE",
+            "NO_DUPLICATE_CAUSAL_REWARD",
+            "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+            "GOAL_STATE_EXCLUSIVE",
+            "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+            "INPUT_TO_STATE_CAUSALITY",
+            "SAVE_SCHEMA_VERSIONED",
+            "PLAYER_VITAL_BOUNDS",
+            "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+            "PLACEMENT_OCCUPANCY_CONSISTENT",
+            "PROGRESSION_REWARD_IDEMPOTENT",
+            "NARRATIVE_KNOWLEDGE_CAUSAL",
+            "NARRATIVE_STORY_TRANSITION_CAUSAL",
+            "NARRATIVE_FACTION_RELATIONSHIP_CAUSAL",
+            "NARRATIVE_PAYOFF_TRACKED",
+            "NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY"
+          ],
+          "testTargets": []
+        },
+        "saveMigration": {
+          "required": true,
+          "stableKeys": [],
+          "testTargets": []
+        },
+        "multiplayerLifecycle": {
+          "required": true,
+          "minimumPlayers": 2,
+          "userAssistanceRequired": false,
+          "manualOwnerParticipationMayNotBeRequiredForPass": true,
+          "testTargets": [],
+          "automation": {
+            "required": true,
+            "minimumSyntheticOrRealClients": 2,
+            "machineDrivenScenarios": [
+              "TWO_CLIENT_JOIN_AND_READY",
+              "SIMULTANEOUS_CORE_ACTION",
+              "SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE",
+              "ONE_CLIENT_LEAVE",
+              "ONE_CLIENT_REJOIN",
+              "LATE_JOIN_STATE_RECONCILIATION",
+              "AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC",
+              "DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK"
+            ],
+            "deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable": true,
+            "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": true,
+            "unavailableAutomationAction": "KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION",
+            "userReportedSuccessCannotReplaceMachineEvidence": true
+          }
+        },
+        "repeatCount": 0,
+        "repairMode": "FOCUSED_REPAIR",
+        "sameApproachWithoutNewCausalEvidenceForbidden": false,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "unchangedSourceRevalidationForbidden": true,
+        "directResponsibleSystemRepairRequired": true,
+        "authorityExpanded": false
+      },
+      "patchRecipe": {
+        "version": 1,
+        "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "failureFingerprint": "roblox|OTHER|TIMEOUT",
+        "verifiedMemoryIds": [],
+        "verifiedMemoryCount": 0,
+        "reusePatterns": [],
+        "avoidPatterns": [],
+        "steps": [
+          "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+          "IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE",
+          "DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES",
+          "VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE",
+          "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+          "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+          "VERIFY_PRESERVE_SEMANTICS",
+          "RUN_COMPILED_FOCUSED_CHECKS"
+        ],
+        "primaryTargets": [],
+        "dependentSymbolsOrSystems": [],
+        "ownedState": [],
+        "focusedChecks": [
+          "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY",
+          "GAME_REPAIR_INVARIANT_VALIDATION",
+          "GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION",
+          "GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION",
+          "TEST_TARGET:shared/QACamera.luau"
+        ],
+        "protectedSemantics": [
+          "EXISTING_WORKING_BEHAVIOR",
+          "APPROVED_GAMEPLAY_VALUES",
+          "SAVE_MEANING",
+          "PROTECTED_SIGNAL:save",
+          "PROTECTED_SIGNAL:combat-number",
+          "PROTECTED_SIGNAL:storage"
+        ],
+        "verifiedMemoryOnly": true,
+        "scopeExpansionAllowed": false,
+        "qaBypassAllowed": false,
+        "authorityExpanded": false
+      },
+      "codingArchitecture": {
+        "developmentMode": "PRESERVE_PATCH",
+        "stateOwnershipSystems": [
+          "CORE_STATE",
+          "INPUT",
+          "PRESENTATION",
+          "WORLD",
+          "PLAYER",
+          "COMBAT",
+          "AI",
+          "INTERACTION",
+          "ECONOMY",
+          "PROGRESSION",
+          "NARRATIVE",
+          "PLACEMENT",
+          "GOAL_STATE"
+        ],
+        "apiNames": [
+          "transitionRunState(next,reason)",
+          "submitPlayerIntent(intent)",
+          "queryWorld(position,action)",
+          "applyPlayerDelta(delta,reason)",
+          "resolveCombatAction(action)",
+          "advanceAgentIntent(agentId,context)",
+          "resolveInteraction(targetId,action)",
+          "applyTransaction(transaction)",
+          "advanceObjective(event)",
+          "advanceNarrative(event,context)",
+          "placeEntity(request)",
+          "evaluateGoalState(context)",
+          "renderFromState(snapshot)"
+        ],
+        "invariantIds": [
+          "STATE_OWNER_ONLY_WRITE",
+          "NO_DUPLICATE_CAUSAL_REWARD",
+          "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+          "GOAL_STATE_EXCLUSIVE",
+          "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+          "INPUT_TO_STATE_CAUSALITY",
+          "SAVE_SCHEMA_VERSIONED",
+          "PLAYER_VITAL_BOUNDS",
+          "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+          "PLACEMENT_OCCUPANCY_CONSISTENT",
+          "PROGRESSION_REWARD_IDEMPOTENT",
+          "NARRATIVE_KNOWLEDGE_CAUSAL",
+          "NARRATIVE_STORY_TRANSITION_CAUSAL",
+          "NARRATIVE_FACTION_RELATIONSHIP_CAUSAL",
+          "NARRATIVE_PAYOFF_TRACKED",
+          "NARRATIVE_NO_DIRECT_GAMEPLAY_AUTHORITY"
+        ],
+        "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+      },
+      "architectureSnapshot": {
+        "version": 1,
+        "nodeCount": 0,
+        "edgeCount": 0,
+        "maxFunctionBodyBytes": 0,
+        "maxCallsPerFunction": 0,
+        "maxCalledByPerFunction": 0,
+        "maxStateWritesPerFunction": 0,
+        "maxSystemsPerFunction": 0,
+        "multiWriterStateCount": 0,
+        "stateWriterLinkCount": 0,
+        "multiOwnerStorageKeyCount": 0,
+        "storageOwnerLinkCount": 0,
+        "timerFunctionCount": 0,
+        "eventBindingCount": 0,
+        "largeFunctionCount": 0,
+        "broadSystemFunctionCount": 0
+      },
+      "responsibilityGraph": {
+        "nodeCount": 0,
+        "relevantNodes": [],
+        "relevantEdges": []
+      },
+      "behaviorChains": [
+        {
+          "id": "CORE_ACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "REAL_INPUT",
+            "RESPONSIBLE_FUNCTION",
+            "OWNED_STATE_CHANGE",
+            "OBSERVABLE_GAME_RESULT"
+          ]
+        },
+        {
+          "id": "PLACEMENT_CHAIN",
+          "required": true,
+          "steps": [
+            "POSITION_SELECTION",
+            "COST_OR_VALIDATION",
+            "ENTITY_MATERIALIZED_AT_POSITION",
+            "WORLD_OR_COMBAT_EFFECT"
+          ]
+        },
+        {
+          "id": "INTERACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "TARGET_SELECTION_OR_APPROACH",
+            "REAL_INPUT",
+            "TARGET_STATE_CHANGE",
+            "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "COMBAT_CHAIN",
+          "required": true,
+          "steps": [
+            "ATTACK_INTENT",
+            "HIT_OR_REJECT_RESULT",
+            "HP_OR_COMBAT_STATE_CHANGE",
+            "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "PROGRESSION_CHAIN",
+          "required": true,
+          "steps": [
+            "OBJECTIVE_EVENT",
+            "PROGRESS_DELTA",
+            "REWARD_OR_UNLOCK",
+            "NEXT_GAMEPLAY_OPTION_CHANGED"
+          ]
+        },
+        {
+          "id": "STRATEGY_DIVERGENCE_CHAIN",
+          "required": true,
+          "steps": [
+            "CHOICE_A_AND_CHOICE_B",
+            "SAME_OR_EQUIVALENT_START_STATE",
+            "DIFFERENT_STATE_TRANSITIONS",
+            "DIFFERENT_OBSERVED_OUTCOME"
+          ]
+        }
+      ],
+      "seniorReview": {
+        "score": 100,
+        "hardBlockers": [],
+        "issues": []
+      },
+      "failureEvidence": [
+        "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "recovery-queue:recovery-ticket-bug-7d114ff3812bf7516f00",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:522",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+        "role-result:implementation:FAIL",
+        "role-result:test:FAIL",
+        "role-result:performance:FAIL",
+        "source-generation-failure:OTHER"
+      ],
+      "writableScopeExpansionAllowed": false,
+      "learningAuthorityExpanded": false
+    },
+    "reuseKey": "20f6d714d7aaeaad6f8573c5",
+    "generatedAt": "2026-09-26T08:16:32.071Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codingMethod": {
+    "version": 2,
+    "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+    "compiledStrategyHint": "PRESERVE_PATCH_RESPONSIBLE_SCOPE",
+    "candidateVariant": "primary",
+    "generationAttemptBudget": 4,
+    "speculativeAttemptBudgetApplied": false,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "responsibilityConfidence": "LOW",
+    "primaryTargets": [],
+    "primarySystems": [],
+    "dependentSystems": [],
+    "ownedState": [],
+    "semanticDiffBudget": {
+      "allowedSystems": [],
+      "preferredPrimarySymbols": [],
+      "maxSystemCount": 1,
+      "readOnlyImpactSystems": [],
+      "impactPredictionDoesNotGrantWriteAuthority": true,
+      "unrelatedSystemMutationForbidden": true,
+      "saveKeysMustRemainCompatible": []
+    },
+    "semanticDiffEnforcement": {
+      "version": 1,
+      "mode": "OBSERVE_ONLY",
+      "hardGate": false,
+      "pass": true,
+      "confidence": "LOW",
+      "developmentMode": "PRESERVE_PATCH",
+      "markerCount": 0,
+      "editCount": 1,
+      "touchedSystems": [
+        "ECONOMY",
+        "PROGRESSION"
+      ],
+      "allowedSystems": [],
+      "unexpectedSystems": [],
+      "unprovenEditPaths": [],
+      "protectedSaveKeyCount": 0,
+      "saveKeyViolations": [],
+      "saveContractMutations": [],
+      "saveKeyMigrationAllowed": false,
+      "saveContractInvariantEnforced": false,
+      "violations": [],
+      "ambiguousClassificationObserved": true,
+      "writableScopeExpansionAllowed": false,
+      "authorityExpanded": false,
+      "diagnosticPostcondition": {
+        "required": false,
+        "pass": true,
+        "type": null,
+        "file": null,
+        "reason": null
+      },
+      "presentationDelta": {
+        "required": false,
+        "pass": true,
+        "presentationPass": null,
+        "changedVisualUnits": 0,
+        "files": [],
+        "reason": "NOT_REQUIRED"
+      },
+      "studioQualityDelta": {
+        "required": false,
+        "pass": true,
+        "phase": null,
+        "focusPillar": null,
+        "requiredSourceDeltaUnits": 0,
+        "sourceDeltaUnits": 0,
+        "requiredVisualUnits": 0,
+        "visualUnits": 0,
+        "reason": "NOT_REQUIRED"
+      }
+    },
+    "causalReplay": {
+      "version": 2,
+      "required": true,
+      "prePatchReproduced": false,
+      "nodeTestTargets": [],
+      "executable": false,
+      "mode": "PLAN_ONLY",
+      "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+      "diagnosticType": null,
+      "diagnosticFile": null,
+      "diagnosticLine": null,
+      "diagnosticNeedle": null,
+      "diagnosticMicroTask": null,
+      "verifiedResponsibleSystem": null,
+      "diagnosticVerifier": null,
+      "identicalOrEquivalentInputStateRequired": true,
+      "canonicalQaStillRequired": true,
+      "sourceWrite": false,
+      "authorityExpanded": false
+    },
+    "requiredFocusedChecks": [
+      "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY",
+      "GAME_REPAIR_INVARIANT_VALIDATION",
+      "GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION",
+      "GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION",
+      "TEST_TARGET:shared/QACamera.luau"
+    ],
+    "failureFingerprint": "roblox|OTHER|TIMEOUT",
+    "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+    "verifiedFailureLocalMemoryCount": 0,
+    "verifiedFailureLocalMemoryIds": [],
+    "contextFiles": 7,
+    "contextBytes": 45891,
+    "contextMode": "STANDARD_CONTEXT",
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false,
+    "focusedSymbolCount": 0,
+    "exactSourceWindows": false,
+    "fullFileContextFallback": false,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "missingPathRecoveries": 0,
+    "baseAttemptBudget": 4,
+    "effectiveAttemptBudget": 4,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "intermediateGrowthTotalBytes": 0,
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "generationAttempts": 3,
+    "generationRecoveryUsed": true,
+    "partialTimeoutRecovery": false,
+    "partialMalformedRecovery": false,
+    "streamedPartialEditRecovery": false,
+    "robloxFullGraphicsInitialPackage": false,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": true,
+    "focusedReplaceStringRecovery": false,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedMinimalJsonContract": true,
+    "candidateProducedFirstAttempt": false,
+    "deterministicDiagnosticRepair": false,
+    "deterministicDiagnosticType": null,
+    "writableScopeExpansionAllowed": false,
+    "learningAuthorityExpanded": false
+  },
+  "robloxNativeSourceInspection": {
+    "required": true,
+    "target": "roblox",
+    "files": [
+      "server/Game.server.luau",
+      "client/Game.client.luau",
+      "shared/GameConfig.luau",
+      "shared/QACamera.luau",
+      "server/BattleVisual.luau",
+      "shared/VisualStyle.luau",
+      "roblox-source-bootstrap.json"
+    ],
+    "editableFiles": [
+      "server/Game.server.luau",
+      "client/Game.client.luau",
+      "shared/GameConfig.luau"
+    ],
+    "systems": [
+      "REMOTE_EVENTS_AND_FUNCTIONS",
+      "DATASTORE_SAVE_LOAD",
+      "TOUCH_INPUT",
+      "CHARACTER_RESPAWN",
+      "RIG_AND_ANIMATION",
+      "CHARACTER_MOTION",
+      "UI_STATE",
+      "CORE_STATE_MACHINE",
+      "MULTIPLAYER_SYNC"
+    ],
+    "responsibilities": [
+      {
+        "file": "server/Game.server.luau",
+        "editable": true,
+        "role": "SERVER_AUTHORITY",
+        "signals": [
+          "REMOTE",
+          "DATASTORE",
+          "INPUT",
+          "CHARACTER",
+          "CHARACTER_MOTION"
+        ]
+      },
+      {
+        "file": "client/Game.client.luau",
+        "editable": true,
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "signals": [
+          "REMOTE",
+          "INPUT",
+          "CHARACTER",
+          "UI"
+        ]
+      },
+      {
+        "file": "shared/GameConfig.luau",
+        "editable": true,
+        "role": "SHARED_MODULE_OR_IMPACT_CONTEXT",
+        "signals": [
+          "RIG_ANIMATION"
+        ]
+      },
+      {
+        "file": "shared/QACamera.luau",
+        "editable": false,
+        "role": "SHARED_MODULE_OR_IMPACT_CONTEXT",
+        "signals": [
+          "REMOTE",
+          "UI"
+        ]
+      },
+      {
+        "file": "server/BattleVisual.luau",
+        "editable": false,
+        "role": "SERVER_AUTHORITY",
+        "signals": []
+      },
+      {
+        "file": "shared/VisualStyle.luau",
+        "editable": false,
+        "role": "SHARED_MODULE_OR_IMPACT_CONTEXT",
+        "signals": []
+      },
+      {
+        "file": "roblox-source-bootstrap.json",
+        "editable": false,
+        "role": "SHARED_MODULE_OR_IMPACT_CONTEXT",
+        "signals": []
+      }
+    ],
+    "motionQuality": {
+      "rigSignals": false,
+      "animatorSignals": true,
+      "rootTransformMotionSignals": true,
+      "weldConstraintSignals": false,
+      "libraryFirstRequired": true,
+      "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+    },
+    "sourceReadBeforeGeneration": true,
+    "genericCrossPlatformTranslationForbidden": true
+  },
+  "robloxNativeCandidateQuality": {
+    "required": true,
+    "findingCount": 0,
+    "findings": [],
+    "automaticGameWideBlock": false,
+    "securityRelevantFindings": [],
+    "motionQualityFindings": [],
+    "motionQualityHardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN",
+    "sourceRoot": "/tmp/vibe2-candidate-cozy-island-post-release-focus-12c1a7e2ae6288fd-primary-36229097447/roblox-games/cozy-island"
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 2,
+    "pipeline": [
+      "STABILITY_TRIAGE",
+      "DEFECT_OWNERSHIP",
+      "DESIGNER",
+      "DESIGN_BLUEPRINT",
+      "DESIGN_INTEGRITY",
+      "CONTENT_DIVERSITY",
+      "REFERENCE_HOMAGE",
+      "NARRATIVE_DIALOGUE",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "specializedVerificationRequest": {
+    "version": 2,
+    "required": true,
+    "requestedMarkers": [
+      "VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS",
+      "VERIFIED_WORLD_ROUTE_NAVIGATION_PASS",
+      "VERIFIED_STREAMING_MOBILE_BUDGET_PASS",
+      "VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS",
+      "VERIFIED_CHARACTER_PERSONA_VOICE_MEMORY_PASS",
+      "VERIFIED_WORLD_NARRATIVE_STATE_PASS"
+    ],
+    "target": "roblox",
+    "gameTargetEligible": true,
+    "blockedReason": null,
+    "nativeRuntimeRequired": true,
+    "focusedQaRequired": true,
+    "markerOnlyPassForbidden": true,
+    "requestAuthority": "VERIFICATION_REQUEST_ONLY_NOT_PASS"
+  },
+  "assetProduction": {
+    "version": 1,
+    "kind": "vibe2-asset-production-plan",
+    "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
+    "externalTopLevelGraphicsWorkUnit": false,
+    "plannerRole": "GRAPHICS_PRODUCTION_INPUT_ONLY",
+    "gameId": "cozy-island",
+    "target": "roblox",
+    "implementationOwner": "VIBE2_VIBE3",
+    "selectorVersion": 9,
+    "presetId": null,
+    "productionProfile": null,
+    "requestedTypes": [
+      "character",
+      "enemy",
+      "boss",
+      "background",
+      "item",
+      "prop",
+      "effect",
+      "ui",
+      "animation",
+      "audio"
+    ],
+    "missingTypes": [
+      "character",
+      "enemy",
+      "boss",
+      "background",
+      "item",
+      "prop",
+      "effect",
+      "ui",
+      "animation",
+      "audio"
+    ],
+    "decisions": [
+      {
+        "type": "character",
+        "required": true,
+        "targetStates": [
+          "idle",
+          "move",
+          "attack",
+          "hit",
+          "skill",
+          "death"
+        ],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "enemy",
+        "required": true,
+        "targetStates": [
+          "idle",
+          "move",
+          "attack",
+          "hit",
+          "skill",
+          "death"
+        ],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "boss",
+        "required": true,
+        "targetStates": [
+          "idle",
+          "move",
+          "attack",
+          "hit",
+          "skill",
+          "death"
+        ],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "background",
+        "required": true,
+        "targetStates": [],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "item",
+        "required": true,
+        "targetStates": [],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "prop",
+        "required": true,
+        "targetStates": [],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "effect",
+        "required": true,
+        "targetStates": [],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "ui",
+        "required": true,
+        "targetStates": [],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "animation",
+        "required": true,
+        "targetStates": [
+          "idle",
+          "move",
+          "attack",
+          "hit",
+          "skill",
+          "death"
+        ],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [
+          "luau-composed-low-poly-model",
+          "luau-material-color-and-lighting",
+          "luau-particle-beam-trail-vfx",
+          "luau-runtime-animation-and-secondary-motion",
+          "luau-ui-presentation"
+        ],
+        "decisionOrder": [
+          "VIBE_DIRECT_AUTHOR",
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      },
+      {
+        "type": "audio",
+        "required": true,
+        "targetStates": [],
+        "sameGameCandidates": [],
+        "companyCandidates": [],
+        "repositoryCandidates": [],
+        "externalCandidates": [],
+        "reuseCandidates": [],
+        "directAuthoring": [],
+        "decisionOrder": [
+          "AUTHORING_GENERATOR_REQUEST"
+        ],
+        "generatorFallback": {
+          "route": "AUTHORING_GENERATOR_REQUEST",
+          "requestedKinds": [
+            "raster-image-or-sprite-sheet",
+            "audio-file-or-bgm",
+            "3d-model-or-rig",
+            "engine-native-binary-asset"
+          ],
+          "onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality": true,
+          "directBinaryTextEditForbidden": true,
+          "paidToolAutoInstallForbidden": true
+        }
+      }
+    ],
+    "baseMaterialLoadout": {
+      "status": "NO_COMPATIBLE_ATOMS",
+      "source": "company-asset-library.json#baseMaterialLibrary",
+      "atomState": null,
+      "selectedAtomCount": 0,
+      "families": {
+        "CHARACTER": [],
+        "CREATURE": [],
+        "BUILDING": [],
+        "ENVIRONMENT": [],
+        "WEAPON": [],
+        "SKILL": [],
+        "MATERIAL": [],
+        "AUDIO": [],
+        "VFX": [],
+        "UI": [],
+        "MOTION": [],
+        "PROP": []
+      },
+      "universalAssetFirst": {
+        "required": true,
+        "families": [
+          "CHARACTER",
+          "CREATURE",
+          "BUILDING",
+          "ENVIRONMENT",
+          "WEAPON",
+          "SKILL",
+          "MATERIAL",
+          "AUDIO",
+          "VFX",
+          "UI",
+          "MOTION",
+          "PROP"
+        ],
+        "evaluatedFamilies": [
+          "CHARACTER",
+          "CREATURE",
+          "BUILDING",
+          "ENVIRONMENT",
+          "WEAPON",
+          "SKILL",
+          "MATERIAL",
+          "AUDIO",
+          "VFX",
+          "UI",
+          "MOTION",
+          "PROP"
+        ],
+        "missingFamilies": [
+          "CHARACTER",
+          "CREATURE",
+          "BUILDING",
+          "ENVIRONMENT",
+          "WEAPON",
+          "SKILL",
+          "MATERIAL",
+          "AUDIO",
+          "VFX",
+          "UI",
+          "MOTION",
+          "PROP"
+        ],
+        "allFamiliesEvaluated": true,
+        "allFamiliesSelectable": false,
+        "applicableFamilyActualBindingRequired": true,
+        "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+        "notApplicableRequiresSystemAbsenceEvidence": true,
+        "primitiveOnlyUpgradeForbidden": true,
+        "markerOnlyApplicationForbidden": true
+      },
+      "recipe": {
+        "id": "BOSS_VARIANT",
+        "mutationStrength": "LIGHT",
+        "minimumDistinctAxes": 2
+      },
+      "gameSpecificStableSelection": true,
+      "colorOnlyVariantForbidden": false,
+      "runtimeVerificationRequired": false,
+      "robloxSelectionHandoff": {
+        "selectionRequired": true,
+        "handoffRequired": false,
+        "plannerSourceMutationForbidden": true,
+        "downstreamApplicationOwner": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION",
+        "downstreamApplicationRequired": false,
+        "bindingVersion": 2,
+        "requiredSourceMarker": "STUDIO_ASSET_BINDING_VERSION",
+        "postApplicationVerificationRequired": true,
+        "actualNativeBindingRequired": true,
+        "allTwelveFamiliesEvaluated": true,
+        "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+        "markerOnlyApplicationForbidden": true,
+        "preserveGameplayAuthority": true,
+        "visualScopeDetected": true
+      }
+    },
+    "qualityProfile": "STANDARD_PRESENTATION",
+    "companyGraphicsLibrary": {
+      "enabled": false,
+      "graphicsProductionRoot": "GRAPHICS_PRODUCTION",
+      "scheduler": null,
+      "platformProfile": "ROBLOX",
+      "baseArchetypes": [],
+      "modularParts": [],
+      "weaponPacks": [],
+      "motionMinimums": {},
+      "qualityRequirements": [],
+      "reusableLibraries": [],
+      "preparedArtifactMayNotClaimProductionPass": false,
+      "runtimeVerifiedConsumerRequiredBeforePromotion": false,
+      "platformSpecificReauthoringRequired": false,
+      "mandatoryConsumer": false,
+      "lookupBeforeAssetChoice": false,
+      "externalGapFillBeforeNewAuthoring": false,
+      "gapFillOrder": [],
+      "studioMotionTarget": null,
+      "studioMotionPriority": [],
+      "humanoidFoundation": {},
+      "creatureFamilies": [],
+      "bipedCreature": {
+        "enabled": false,
+        "target": null,
+        "taxonomy": {},
+        "sharedRigDoesNotImplySharedMotionIdentity": false,
+        "speedScaleOnlyVariationForbidden": false,
+        "specialBodyPartBindings": [],
+        "minotaurProfile": {},
+        "goblinProfile": {},
+        "runtimeQa": []
+      },
+      "styleVariants": {
+        "enabled": false,
+        "target": null,
+        "supportedStyles": [],
+        "transformAxes": [],
+        "cartoonProfile": {},
+        "interLibraryBindings": [],
+        "graphRule": null,
+        "styleLockAlwaysWins": false,
+        "gameplayAuthorityImmutable": false,
+        "rootMotionEnvelopeRequired": false,
+        "contactMarkersSynchronized": false,
+        "sameSourceMayHaveMultipleStyleVariants": false,
+        "runtimeVerificationRequired": false
+      },
+      "motionDirector": {
+        "enabled": false,
+        "target": null,
+        "implementation": null,
+        "internalModuleOnly": false,
+        "continuousExpansion": false,
+        "noArtificialMotionCategoryCap": false,
+        "noArtificialCombinationCap": false,
+        "compositionChannels": [],
+        "motionDNAFields": [],
+        "motionFamilies": {},
+        "grammars": {},
+        "compatibilityDimensions": [],
+        "contextInputs": [],
+        "reactionInputs": [],
+        "pairFamilies": [],
+        "speciesSignatureSlots": [],
+        "mutationAllowed": [],
+        "variationMemory": {},
+        "libraryGraphNodes": [],
+        "platformAdapters": {},
+        "runtimeQa": [],
+        "transitionDirector": {},
+        "automaticContactQa": {},
+        "gameplayEventMotionBinding": {},
+        "proceduralMotionLayer": {},
+        "groupMotionDirector": {},
+        "multiActorMotion": {},
+        "emotionIntentLayer": {},
+        "motionLod": {},
+        "motionLineage": {},
+        "runtimeMotionLearning": {},
+        "gameplayAuthority": null
+      },
+      "motionBootstrap": {
+        "status": null,
+        "productionVerified": false,
+        "setCount": 0,
+        "setIds": [],
+        "archetypes": [],
+        "bodyPlans": [],
+        "platformTargets": [],
+        "verificationRule": null
+      },
+      "motionAutoGapFill": {
+        "enabled": false,
+        "target": "AUTOMATIC_MOTION_COVERAGE_GAP_FILL",
+        "scanTriggers": [],
+        "requiredCoverageGroups": [],
+        "fillOrder": [],
+        "baselineMinimums": {},
+        "bodyPlanAdjustments": {},
+        "preparedSemanticNeverVerified": false,
+        "usagePriorityEnabled": false,
+        "duplicateControlEnabled": false,
+        "auditedSetCount": 0,
+        "incompleteSetCount": 0,
+        "verifiedCompleteSetCount": 0,
+        "plannedSemanticSeedCount": 0,
+        "plans": []
+      },
+      "studioAssetUniverse": {
+        "enabled": false,
+        "target": null,
+        "implementation": null,
+        "internalModuleOnly": false,
+        "phases": {},
+        "families": [],
+        "creatureBodyPlanTargetMinimum": 0,
+        "creatureSpeciesTargetMinimum": 0,
+        "creatureBodyPlans": [],
+        "creatureSpecies": [],
+        "clothingLayerSlots": [],
+        "clothingThemes": [],
+        "buildingThemes": [],
+        "buildingRoomKits": [],
+        "biomes": [],
+        "materialSurfaces": [],
+        "audioFamilies": [],
+        "baseMaterialLibrary": {
+          "status": null,
+          "productionVerified": false,
+          "atomCount": 0,
+          "families": {},
+          "mutationAxes": [],
+          "combinationRules": {}
+        },
+        "variantRecipeTemplates": [],
+        "identityBudgets": {},
+        "baseMaterialRotation": {
+          "policy": {},
+          "current": {}
+        },
+        "gameVisualDna": {},
+        "loadout": {},
+        "futureDemand": {},
+        "usageFeedback": {},
+        "testbed": {},
+        "coverage": {},
+        "heatmap": [],
+        "highestPriorityGap": null,
+        "gapFill": {},
+        "plannedSemanticSeedCount": 0,
+        "autonomous24h": false,
+        "preparedSemanticMayNotClaimVerified": false,
+        "actualRuntimeConsumerRequiredBeforePromotion": false,
+        "existingCanonicalLearningChainOnly": false,
+        "conceptDirector": {
+          "enabled": false,
+          "presetFamilies": [],
+          "requested": {},
+          "axes": {},
+          "weightedBlendAllowed": false,
+          "styleLockWins": false,
+          "conceptConflictQaRequired": false,
+          "propagation": []
+        },
+        "worldGenerationStudio": {
+          "enabled": false,
+          "implementation": null,
+          "referenceInputs": [],
+          "extractOnly": [],
+          "directLayoutCopyForbidden": false,
+          "mapDnaFields": [],
+          "generationPipeline": [],
+          "routeGrammar": {},
+          "streaming": {},
+          "learning": {},
+          "visionObservationContract": {},
+          "referenceImageStudies": [],
+          "readyObservationCount": 0,
+          "verifiedObservationCount": 0
+        }
+      },
+      "retargetCleanupRequirements": [],
+      "unarmedCombat": {
+        "enabled": false,
+        "target": null,
+        "noArtificialStyleOrMotionCap": false,
+        "styleFamilies": [],
+        "motionFamilies": {},
+        "comboRoles": [],
+        "motionMetadata": [],
+        "qualityRequirements": [],
+        "timingMarkersCannotOwnGameplayRules": false,
+        "externalLicensedMotionGapFill": false,
+        "platformNativeRuntimeVerificationRequired": false
+      },
+      "verifiedCompanyAssetCount": 0,
+      "externalSourceCount": 0,
+      "externalSourceIds": []
+    },
+    "highEndVisual": {
+      "enabled": false,
+      "target": null,
+      "visualTargetFrames": [],
+      "defaultAssetCategories": [],
+      "mutationCapabilities": [],
+      "heroQualityTargets": [],
+      "worldIdentityTargets": [],
+      "backgroundAndEnvironmentFirstClass": false,
+      "antiKitbashGateRequired": false,
+      "internalPlatformReleasePresentationGateRequired": false,
+      "publicReleasePresentationGateRequired": false,
+      "presentationCompletionIsTerminal": false,
+      "continuousEvolution": false,
+      "cinematicDirectionRequired": false,
+      "ownerChangeRequestStabilityRequired": false
+    },
+    "capabilities": {
+      "webDirectAuthoring": [
+        "svg-final-art",
+        "css-presentation",
+        "canvas-art-and-effects",
+        "procedural-javascript-visuals",
+        "web-audio-sfx",
+        "motion-engine-animation"
+      ],
+      "unityDirectAuthoring": [
+        "csharp-procedural-mesh-and-low-poly-model",
+        "csharp-runtime-material-and-lighting",
+        "csharp-particle-vfx-and-trails",
+        "csharp-runtime-animation-and-secondary-motion",
+        "ugui-runtime-presentation"
+      ],
+      "robloxDirectAuthoring": [
+        "luau-composed-low-poly-model",
+        "luau-material-color-and-lighting",
+        "luau-particle-beam-trail-vfx",
+        "luau-runtime-animation-and-secondary-motion",
+        "luau-ui-presentation"
+      ],
+      "binaryAuthoringKinds": [
+        "raster-image-or-sprite-sheet",
+        "audio-file-or-bgm",
+        "3d-model-or-rig",
+        "engine-native-binary-asset"
+      ],
+      "canChooseReuse": true,
+      "canChooseDirectAuthoring": true,
+      "canRequestGenerator": true
+    },
+    "summary": {
+      "decisionCount": 10,
+      "reuseCandidateTypes": 0,
+      "sameGameRobloxCandidateTypes": 0,
+      "discoveredSameGameRobloxAssets": 0,
+      "baseMaterialSelectedAtoms": 0,
+      "robloxSelectionHandoffRequired": false,
+      "companyCandidateTypes": 0,
+      "repositoryCandidateTypes": 0,
+      "externalCandidateTypes": 0,
+      "directAuthorableTypes": 9,
+      "missingSelectorTypes": 10
+    },
+    "policy": {
+      "qualityAndGameIdentityFirst": true,
+      "artDirectionStyleLockRequiredBeforeAssetChoice": true,
+      "backgroundMustMatchWorldRegionAndNarrativeContext": true,
+      "monsterVisualMustMatchWorldEcologyAndCombatRole": true,
+      "actionActorStateSetRequired": [
+        "IDLE",
+        "MOVE",
+        "ATTACK",
+        "HIT",
+        "DEATH"
+      ],
+      "webPresentationMustPassBeforeNativeHandoff": false,
+      "unityWebValidationSurfaceOnly": true,
+      "nativeDevelopmentAdmissionUsesMinimumDesign": true,
+      "defaultPurposefulAssetsRequired": false,
+      "assetMutationAndExpansionRequired": false,
+      "environmentAndBackgroundFirstClass": false,
+      "visualTargetFramesRequired": false,
+      "antiKitbashGateRequired": false,
+      "beforeAfterVisualRegressionRequired": false,
+      "existingAssetIsCandidateNotMandatory": true,
+      "crossPlatformWebAssetDirectReuseForbidden": true,
+      "nativeReuseRequiresTargetCompatibility": true,
+      "licenseAndCommercialUseGateRequired": true,
+      "animationEvidenceRequiredForActors": true,
+      "mobilePerformanceRequired": true,
+      "noEmojiPlaceholder": true,
+      "noGeometricPlaceholder": true,
+      "noPlaceholderMonsterOrCharacter": true,
+      "noContextMismatchBackground": true,
+      "directAuthoredSvgCanvasMustBeFinalQualityNotPlaceholder": true,
+      "nativeProceduralAuthoringMustBeFinalQualityNotPrimitivePlaceholder": true,
+      "composedLowPolyRequiresMultipleMeaningfulPartsAndStyleLock": true,
+      "binaryAssetsDirectTextEditForbidden": true,
+      "gameplaySaveProgressionEconomyMutationForbiddenForAssetReasons": true,
+      "sourceAndTransformProvenanceRequiredForReuse": true,
+      "authoringGeneratorRequestDoesNotCountAsAssetCompleted": true,
+      "assetUseRequiresRuntimeVisualQa": true,
+      "siblingTopLevelGraphicsTasksForbidden": true,
+      "internalModuleMayNotSelfAcceptGraphicsPass": true,
+      "allAssetDecisionsFanInToGraphicsProductionRoot": true,
+      "continuousPresentationEvolution": false,
+      "graphicsPassIsCheckpointNotTerminal": false,
+      "highEndPresentationCompletionIsReleaseGate": false,
+      "ownerChangeRequestStabilityRequired": false,
+      "companyGraphicsLibrary24h": false,
+      "companyLibraryLookupRequiredBeforeNativeAssetChoice": false,
+      "sameGameRobloxAssetDiscoveryEnabled": true,
+      "sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified": true,
+      "unverifiedSameGameRobloxAssetDoesNotOutrankVerifiedCompanyAsset": true,
+      "existingRepositoryInventoryBeforeExternal": false,
+      "externalGapFillBeforeNewAuthoring": false,
+      "unityRobloxLibraryVariantsSeparated": false,
+      "actionReadyMotionVarietyRequired": false,
+      "studioGradeMotionRequired": false,
+      "unarmedVersusActionMotionRequired": false,
+      "unarmedStyleResearchNoArtificialCap": false,
+      "wuxiaUnarmedMotionResearch": false,
+      "unarmedAnimationMarkersCannotOwnGameplayRules": false,
+      "pairedThrowPlatformRuntimeVerificationRequired": false,
+      "retargetAndCleanupRequiredForExternalMotion": false,
+      "speciesMotionStudyRequired": false,
+      "bipedCreatureBodyPlanMotionRequired": false,
+      "sharedRigDoesNotImplySharedMotionIdentity": false,
+      "bipedSpeedScaleOnlyVariationForbidden": false,
+      "styleVariantDerivationAllowed": false,
+      "cartoonStyleVariantAllowed": false,
+      "styleVariantPreservesGameplayAuthority": false,
+      "creatureLibraryGraphInterlinkRequired": false,
+      "composableMotionDirectorRequired": false,
+      "motionDirectorContinuousExpansion": false,
+      "motionDirectorNoArtificialCombinationCap": false,
+      "motionDNARequired": false,
+      "motionCompatibilityGraphRequired": false,
+      "contextMotionSelectorRequired": false,
+      "reactionMatcherRequired": false,
+      "pairMotionRequired": false,
+      "variationMemoryRequired": false,
+      "transitionDirectorRequired": false,
+      "automaticContactQaRequired": false,
+      "gameplayEventMotionBindingRequired": false,
+      "proceduralMotionLayerRequired": false,
+      "groupMotionDirectorRequired": false,
+      "multiActorMotionRequired": false,
+      "emotionIntentLayerRequired": false,
+      "motionLodRequired": false,
+      "motionLineageRequired": false,
+      "verifiedRuntimeMotionLearningRequired": false,
+      "preparedSemanticCannotTeachPositiveMastery": false,
+      "rawRuntimeTelemetryDirectTrainingForbidden": false,
+      "preparedSemanticMotionSetsDoNotCountAsVerified": false,
+      "automaticMotionCoverageGapFill": false,
+      "automaticMotionGapSemanticPreparationAllowed": false,
+      "automaticMotionGapMayNotSelfPromote": false,
+      "motionGapUsagePriorityRequired": false,
+      "motionGapDuplicateSuppressionRequired": false,
+      "motionBootstrapAvailable": false,
+      "studioAssetUniverseRequired": false,
+      "universalAssetCoverageScannerRequired": false,
+      "crossAssetCompatibilityRequired": false,
+      "assetIdentityQaRequired": false,
+      "styleBibleGeneratorRequired": false,
+      "clothingLayerCompatibilityRequired": false,
+      "buildingGrammarRequired": false,
+      "biomeDnaRequired": false,
+      "libraryHeatmapRequired": false,
+      "autonomousLibraryPopulation24h": false,
+      "semanticAssetSeedCannotSelfPromote": false,
+      "universalAssetLearningUsesExistingCanonicalChain": false,
+      "conceptDirectorRequired": false,
+      "weightedConceptBlendAllowed": false,
+      "conceptConflictQaRequired": false,
+      "adaptiveWorldGenerationRequired": false,
+      "referenceStructureAbstractionRequired": false,
+      "directReferenceMapCopyForbidden": false,
+      "mapDnaRequired": false,
+      "seamlessStreamingPlanRequired": false,
+      "referenceImageObservationSupported": false,
+      "rawProtectedReferenceImagePersistentLearningForbidden": false,
+      "referenceObservationMustBeSourceBound": false,
+      "gameVisualDnaRequired": false,
+      "assetLoadoutSelectorRequired": false,
+      "futureDemandForecastEnabled": false,
+      "studioTestbedEnabled": false,
+      "verifiedUsageFeedbackEnabled": false,
+      "platformVariantOptimizerEnabled": false,
+      "latestExplicitOwnerIntentWinsWithinSameScope": false,
+      "wrapperOrShadowPresentationAccumulationForbidden": false
+    },
+    "authority": "graphics-production-input-plan-only"
+  },
+  "presentationQuality": {
+    "required": false,
+    "pass": null,
+    "authorityExpanded": false
+  },
+  "presentationCandidateDelta": {
+    "required": false,
+    "pass": true,
+    "presentationPass": null,
+    "changedVisualUnits": 0,
+    "files": [],
+    "reason": "NOT_REQUIRED"
+  },
+  "studioQualityCandidateDelta": {
+    "required": false,
+    "pass": true,
+    "phase": null,
+    "focusPillar": null,
+    "requiredSourceDeltaUnits": 0,
+    "sourceDeltaUnits": 0,
+    "requiredVisualUnits": 0,
+    "visualUnits": 0,
+    "reason": "NOT_REQUIRED"
+  },
+  "fullFileRewriteAllowed": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
