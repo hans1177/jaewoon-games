@@ -1,5 +1,5 @@
 {
-  "version": 226,
+  "version": 227,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3483,7 +3483,14 @@
       "sameGameConcurrentStart": true,
       "distinctGamesConcurrent": true,
       "crossLaneAdmissionDependencyForbidden": true,
-      "oneLaneFailureDoesNotCancelOtherLanes": true
+      "oneLaneFailureDoesNotCancelOtherLanes": true,
+      "canaryMaySerializeGameIds": false
+    },
+    "representativeCanary": {
+      "mode": "PARALLEL_OBSERVATION_ONLY",
+      "mayReduceEligibleWaveToSingleGame": false,
+      "gameIdWaveRemainsParallel": true,
+      "externalMatrixBatchMax": 256
     }
   },
   "releaseExposureLifecycle": {
