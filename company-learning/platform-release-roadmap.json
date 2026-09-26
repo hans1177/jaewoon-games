@@ -1,5 +1,5 @@
 {
-  "version": 419,
+  "version": 420,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -1202,7 +1202,11 @@
     "sameGameIndependentNonOverlappingWorkMustRemainParallel": true,
     "sharedStateSerializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
     "sharedStateWriteMayNotHoldHeavyExecutionCapacity": true,
-    "externalProviderCapacityIsOnlyHeavyExecutionSerializationBoundary": true
+    "externalProviderCapacityIsOnlyHeavyExecutionSerializationBoundary": true,
+    "representativeCanaryRunsInsideParallelWave": true,
+    "representativeCanaryMayReduceEligibleWaveToSingleGame": false,
+    "canaryIsObservationNotAdmissionSerialization": true,
+    "gameIdParallelWaveMayNotBeCollapsedByCanary": true
   },
   "phases": [
     {
@@ -8321,7 +8325,8 @@
       "externalProviderCapacityOnlyHeavyExecutionBoundary": true,
       "qaSecurityReleaseGateWeakening": false,
       "implementationState": "CODE_UPDATED_PENDING_QA",
-      "activeContractCleanup": "ACTIVE_LIFECYCLE_PATHS_UPDATED_HISTORY_PRESERVED"
+      "activeContractCleanup": "ACTIVE_LIFECYCLE_PATHS_UPDATED_HISTORY_PRESERVED",
+      "canaryRule": "REPRESENTATIVE_CANARY_MAY_RUN_INSIDE_THE_PARALLEL_WAVE_BUT_MAY_NOT_COLLAPSE_ELIGIBLE_GAME_IDS_TO_ONE"
     }
   },
   "vibeExecutionLaneContract": {
@@ -22773,7 +22778,10 @@
       "internalLaneOrderForbidden": true,
       "crossLaneDevelopmentAdmissionDependencyForbidden": true,
       "oneLaneFailureDoesNotCancelOtherLanes": true,
-      "releaseStillRequiresLaneSpecificEvidence": true
+      "releaseStillRequiresLaneSpecificEvidence": true,
+      "gameIdWaveSelection": "ALL_ELIGIBLE_UP_TO_EXTERNAL_MATRIX_BATCH_MAX",
+      "representativeCanaryMode": "PARALLEL_OBSERVATION_ONLY",
+      "canaryMaySerializeGameIds": false
     }
   },
   "centralDocumentation": {
