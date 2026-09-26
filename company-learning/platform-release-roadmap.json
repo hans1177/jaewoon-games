@@ -1,5 +1,5 @@
 {
-  "version": 414,
+  "version": 415,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3524,7 +3524,7 @@
               "result": "PASS"
             }
           },
-          "currentExecutionInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK",
+          "currentExecutionInfrastructureBottleneck": "UNNECESSARY_CROSS_GAME_AND_WHOLE_WORKFLOW_SERIALIZATION",
           "runnerPressureCallbackCoalescing": "IMPLEMENTATION_IN_PROGRESS",
           "runnerPressureCallbackCoalescingRule": "IF_RECENT_REPOSITORY_ACTIONS_HAVE_QUEUED_PENDING_OR_REQUESTED_RUNS, DO_NOT CREATE_ANOTHER_ATOMIC_NEURON_CALLBACK_WORKFLOW; KEEP_THE_IMMUTABLE_WORKER_RESULT_ARTIFACT_AND_LET_EXISTING_COHORT_FAN_IN_CONSUME_IT; WHEN_QUEUE_PRESSURE_CLEARS, RESUME_IMMEDIATE_CALLBACK",
           "runnerPressureCallbackCoalescingPreserves": [
@@ -3554,7 +3554,13 @@
           "modelCacheHitRestoreLiveRun": 36208311596,
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
           "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_LIVE",
-          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING"
+          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING",
+          "gameIdParallelDevelopment": "DOCUMENTED_BEFORE_CODE",
+          "gameIdParallelDevelopmentRule": "DISTINCT_GAME_IDS_PARALLEL_BY_DEFAULT; SAME_GAME_NONOVERLAPPING_RESPONSIBILITIES_PARALLEL; SERIALIZE_ONLY_RESPONSIBLE_FILE_CONFLICT_OR_ATOMIC_SHARED_COMPANY_RUNTIME_WRITE",
+          "robloxContinuationDispatch": "PER_GAME_ID_PARALLEL_REQUIRED",
+          "unityWebBootstrapDispatch": "PER_GAME_ID_MATRIX_PARALLEL_REQUIRED",
+          "internalArtificialConcurrencyCaps": "FORBIDDEN",
+          "externalExecutionBatchBoundary": 256
         },
         "incidentHistory": [
           {
@@ -8263,6 +8269,91 @@
         "qa/vibe2-queue-control.test.mjs",
         "qa/vibe2-parallelism-main-contract.test.mjs"
       ]
+    },
+    "gameIdParallelDevelopmentFanout20260926": {
+      "id": "GAME_ID_PARALLEL_DEVELOPMENT_FANOUT_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+      "policyBasis": [
+        "developmentSpeedExecution.parallelismMode=UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_WAVES",
+        "developmentSpeedExecution.internalArtificialConcurrencyCapsForbidden=true",
+        "developmentSpeedExecution.distinctGamesMustRemainParallel=true",
+        "developmentSpeedExecution.sameGameIndependentNonOverlappingWorkMustRemainParallel=true",
+        "developmentSpeedExecution.sharedStateSerializationScope=ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
+        "developmentSpeedExecution.robloxEndToEndParallelExecution.gameLevelExecution=PARALLEL_BY_DEFAULT",
+        "developmentSpeedExecution.robloxEndToEndParallelExecution.internalGameConcurrencyCapsForbidden=true",
+        "developmentSpeedExecution.externalMatrixBatchMax=256"
+      ],
+      "observedSerializers": [
+        {
+          "file": ".github/workflows/company-development-roblox-runtime.yml",
+          "problem": "WORKFLOW_LEVEL_GAME_ID_CONCURRENCY_SERIALIZES_WHOLE_SAME_GAME_PIPELINE",
+          "repair": "REMOVE_WORKFLOW_LEVEL_CONCURRENCY; KEEP_ONLY_CONFLICTING_SHARED_STATE_WRITES_SERIAL"
+        },
+        {
+          "file": ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          "problem": "GLOBAL_CONTINUATION_CONCURRENCY_SERIALIZES_ALL_GAMES",
+          "repair": "USE_EXACT_GAME_ID_INPUT_AND_PER_GAME_DISPATCH; DIFFERENT_GAME_IDS_RUN_IN_PARALLEL"
+        },
+        {
+          "file": ".github/workflows/company-development-roblox-runtime.yml",
+          "problem": "ACTIVE_CONTINUATIONS_ZERO_GATE_BLOCKS_NEW_READY_GAMES_BEHIND_ANY_EXISTING_CONTINUATION",
+          "repair": "DISPATCH_EACH_READY_GAME_ID_WITHOUT_GLOBAL_ACTIVE_CONTINUATION_BARRIER"
+        },
+        {
+          "file": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+          "problem": "COMMA_SEPARATED_GAME_IDS_PROCESSED_IN_ONE_JOB_FOR_LOOP_UNDER_GLOBAL_CONCURRENCY",
+          "repair": "EXACT_GAME_ID_REUSABLE_WORKFLOW_WITH_PER_GAME_CONFLICT_GROUP"
+        },
+        {
+          "file": ".github/workflows/company-development-confirmed-runtime.yml",
+          "problem": "UNITY_WEB_BOOTSTRAP_IDS_SENT_AS_ONE_SERIAL_BATCH",
+          "repair": "MATRIX_FAN_OUT_BY_GAME_ID"
+        }
+      ],
+      "invariants": {
+        "exactGameIdRoutingRequired": true,
+        "crossGameParallelDefault": true,
+        "sameGameNonOverlappingParallel": true,
+        "responsibleFileConflictSerializationOnly": true,
+        "companyRuntimeAtomicWriterMaySerialize": true,
+        "representativeCanaryStillRequiredWhenCanonicalPolicyRequiresIt": true,
+        "qaSecurityReleaseGatesUnchanged": true,
+        "noNewPipeline": true,
+        "externalBatchBoundary": 256
+      },
+      "implementationState": "DOCUMENTED_BEFORE_CODE",
+      "requiredVerification": [
+        "ROBLOX_RUNTIME_HAS_NO_WHOLE_WORKFLOW_CONCURRENCY_GROUP",
+        "ROBLOX_CONTINUATION_ACCEPTS_GAME_ID_AND_DOES_NOT_USE_GLOBAL_CONTINUATION_LOCK",
+        "ROBLOX_READY_GAME_IDS_DISPATCH_CONTINUATIONS_INDEPENDENTLY",
+        "UNITY_WEB_BOOTSTRAP_PARENT_USES_GAME_ID_MATRIX",
+        "UNITY_WEB_BOOTSTRAP_CHILD_ACCEPTS_EXACT_GAME_ID_WITH_NO_MULTI_GAME_FOR_LOOP",
+        "COMPANY_RUNTIME_WRITER_SERIALIZATION_REMAINS",
+        "NO_MAX_PARALLEL_INTERNAL_CAP_ADDED",
+        "QA_SECURITY_RELEASE_GATES_UNCHANGED"
+      ]
+    },
+    "pullRequestDuplicateValidationCollapse20260926": {
+      "id": "PULL_REQUEST_DUPLICATE_VALIDATION_COLLAPSE_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "policyBasis": [
+        "duplicateValidationWithoutEvidenceInvalidationForbidden",
+        "duplicateReviewWithoutRelevantChangeForbidden",
+        "administrativeChecksMayNotConsumeGamePrimaryWorkerSlots",
+        "unrelatedSecurityReviewMayNotHoldDevelopmentSlots"
+      ],
+      "repair": "SAME_PR_OR_REF_VALIDATION_CONCURRENCY_KEEP_LATEST_HEAD_ONLY",
+      "workflows": [
+        ".github/workflows/vibe2-parallelism-contract-qa.yml",
+        ".github/workflows/company-security-immune.yml",
+        ".github/workflows/company-evolution-qa.yml"
+      ],
+      "currentHeadValidationRequired": true,
+      "currentSecurityScanRequired": true,
+      "qaThresholdUnchanged": true,
+      "securityBoundaryUnchanged": true,
+      "implementationState": "DOCUMENTED_BEFORE_CODE"
     }
   },
   "vibeExecutionLaneContract": {
