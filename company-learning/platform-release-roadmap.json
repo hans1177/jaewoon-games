@@ -1,5 +1,5 @@
 {
-  "version": 395,
+  "version": 396,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7626,6 +7626,27 @@
         "VIBE2_MODEL_CACHE_WARMUP_HIT="
       ],
       "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
+    },
+    "robloxNativeNonblockingStudioPlanner20260926": {
+      "id": "ROBLOX_NATIVE_NONBLOCKING_STUDIO_PLANNER_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "KEEP_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_ELIGIBLE_AT_RUNTIME_FOUNDATION_PASS_WITHOUT_MAKING_THE_SELF_HOSTED_STUDIO_PLANNER_WAIT_FOR_A_PORTFOLIO_WIDE_HOSTED_FOUNDATION_JOB",
+      "existingArchitectureOnly": true,
+      "newWorkflowCreated": false,
+      "newWorkerCreated": false,
+      "newQueueCreated": false,
+      "preserves": [
+        "OFFICIAL_STUDIO_MCP_ONLY",
+        "EXACT_SOURCE_ARTIFACT_BINDING",
+        "RUNTIME_FOUNDATION_ELIGIBILITY",
+        "INDEPENDENT_GAME_PROGRESS",
+        "SECURITY_AND_RELEASE_GATES"
+      ],
+      "implementationBindings": [
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        "qa/company-development-roblox-studio-local-play.test.mjs"
+      ],
+      "authorityChange": "NONE"
     }
   },
   "vibeExecutionLaneContract": {
@@ -23166,7 +23187,12 @@
       "staticQaPassAloneCannotProveRobloxBehavior": true,
       "observedFailureMustFeedNextRepairInput": true,
       "failureRepairMustTargetObservedResponsibleScriptFunctionEventOrStateWhenDiscoverable": true,
-      "replayAfterRepairRequired": true
+      "replayAfterRepairRequired": true,
+      "portfolioWideFoundationJobWaitForbidden": true,
+      "plannerScheduling": "INDEPENDENT_SELF_HOSTED_PLAN_READS_PERSISTED_EXACT_ELIGIBILITY",
+      "runtimeFoundationObservationMayRunParallel": true,
+      "singleGameFoundationDelayMayNotBlockOtherEligibleStudioPlay": true,
+      "eligibilitySource": "PERSISTED_EXACT_RUNTIME_FOUNDATION_OR_INTERNAL_RELEASE_EVIDENCE"
     },
     "functionalVerification": {
       "featurePresenceAloneInsufficient": true,
