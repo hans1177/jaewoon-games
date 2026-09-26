@@ -339,7 +339,7 @@ polarwolf:{id:'polarwolf',name:'북극늑대',mood:'neutral',hp:650,dmg:35,speed
 polarfox:{id:'polarfox',name:'북극여우',mood:'harmless',hp:100,dmg:0,speed:95,r:16,color:'#f6f8f3',detect:0,snow:true,huntable:true},
 froststalker:{id:'froststalker',name:'서리 추적자',mood:'aggressive',hp:220,dmg:24,speed:95,r:21,color:'#9fcbd7',detect:720,snow:true},
 icegolem:{id:'icegolem',name:'빙결 골렘',mood:'aggressive',hp:420,dmg:36,speed:50,r:31,color:'#b9dbe6',detect:680,snow:true},
-jungletiger:{id:'jungletiger',name:'밀림 호랑이',mood:'aggressive',hp:850,dmg:55,speed:110,r:29,color:'#c67a31',detect:680,jungle:true},
+jungletiger:{id:'jungletiger',name:'밀림 호랑이',mood:'aggressive',hp:850,dmg:55,speed:110,r:29,color:'#c67a31',detect:680,jungle:true,tigerTear:true},
 primitiveSpearman:{id:'primitiveSpearman',name:'창병 원시인',mood:'aggressive',hp:600,dmg:30,speed:68,r:24,color:'#8c6843',detect:900,area:'jungletemple-upper',templeSpearman:true},
 primitiveArcher:{id:'primitiveArcher',name:'원거리 원시인',mood:'aggressive',hp:400,dmg:50,speed:64,r:22,color:'#6e8150',detect:1050,area:'jungletemple-upper',templeArcher:true},
 jungleGuardian:{id:'jungleGuardian',name:'밀림 수호자',mood:'aggressive',hp:1300,dmg:70,speed:76,r:36,color:'#37654c',detect:950,area:'jungletemple-lower',templeGuardian:true},
@@ -2935,6 +2935,7 @@ function updateSnowSpecial(e,targetP,now,playerD){
 }
 function performEnemyBasicAttack(e,targetP,now){
  markEnemyAttack(e,now);
+ if(e.type.tigerTear&&Math.random()<.20){enemyDamageTarget(e,70,true);applyEnemyEffectTarget(e,targetP,'grab',2000);applyEnemyEffectTarget(e,targetP,'attackblock',2000);e.hp=Math.min(e.maxHp,e.hp+e.maxHp*.30);showNotice('밀림 호랑이 · 찢고 뜯기 · 70 피해 · 체력 30% 회복');return}
  if(e.type.id==='lakecroc'){
   if(e.area==='underwater'&&Math.random()<.75){e.crocState={kind:'deathroll',until:now+3000};applyEnemyEffectTarget(e,targetP,'grab',3000);showNotice('악어 · 데스롤 3초');return}
   enemyDamageTarget(e,e.type.dmg,false);return
@@ -2990,6 +2991,10 @@ function performMonsterVsMonsterAttack(e,target,now,damageMult=1){
   if(e.type.id==='anaconda'){
     if(Math.random()<.30){for(let i=0;i<4&&target.hp>0;i++)hit(15);stun(4000);return}
     hit(65);return
+  }
+  if(e.type.tigerTear){
+    if(Math.random()<.20){hit(70);stun(2000);e.hp=Math.min(e.maxHp,e.hp+e.maxHp*.30);return}
+    hit(e.type.dmg);return
   }
   if(e.type.id==='polarbear'){
     if(Math.random()<.30){hit(30);stun(2000);return}
