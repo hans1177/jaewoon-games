@@ -142,7 +142,10 @@ test('native development trigger ownership avoids duplicate central plus child p
 
 test('director drains superseded runner backlog before noncritical supervision',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
-  assert.match(director,/group: director-central-company-supervisor[\s\S]*cancel-in-progress: false/);
+  const jobsAt=director.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(director.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(director,/supervise:[\s\S]*?concurrency:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
   assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04-arm/);
   assert.match(director,/game-primary-gate:[\s\S]*needs: runner-drain[\s\S]*runs-on: ubuntu-slim/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/cancel/);
