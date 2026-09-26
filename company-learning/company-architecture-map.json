@@ -1,5 +1,5 @@
 {
-  "version": 260,
+  "version": 261,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5755,20 +5755,24 @@
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
     "ROBLOX": {
       "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "group": "roblox-native-exact-<gameId-or-runId>",
+      "group": "roblox-native-exact-<gameId-or-push-batch-or-runId>",
       "cancelInProgress": false
     },
     "UNITY": {
       "workflow": ".github/workflows/company-development-unity-runtime.yml",
-      "group": "unity-native-exact-<gameId-or-runId>",
+      "group": "unity-native-exact-<gameId-or-push-batch-or-runId>",
       "cancelInProgress": false
     },
     "exactGameScope": "INPUT_GAME_ID_ONLY",
-    "batchFallback": "RUN_ID",
+    "batchFallback": "PUSH_BATCH_ELSE_RUN_ID",
     "distinctGamesParallel": true,
     "batchGlobalSerialization": false,
     "centralActiveRunScanPreserved": true,
-    "qualityGateWeakening": false
+    "qualityGateWeakening": false,
+    "pushBatchFallback": "batch-push",
+    "nonPushEmptyBatchFallback": "RUN_ID",
+    "pushBatchCoalesced": true,
+    "manualEmptyBatchRunScoped": true
   },
   "lightweightGameIngressRunnerRelief": {
     "version": 1,
