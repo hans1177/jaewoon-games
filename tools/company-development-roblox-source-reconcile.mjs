@@ -120,24 +120,27 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     }
     const boundRevision=clean(item.robloxSourceCommit);
     if(sha40(boundRevision)&&sha40(currentRevision)){
-      if(boundRevision===currentRevision)continue;
-      try{
-        execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',sourcePath],{cwd:repoRoot,stdio:'ignore'});
-        continue;
-      }catch(error){
-        if(Number(error?.status)!==1){
-          results.push({
-            gameId:item.gameId,
-            pass:false,
-            sourcePath,
-            sourceRevision:currentRevision,
-            sourceTreeSha,
-            sourceDrift:true,
-            saveRequired:false,
-            blockers:['SOURCE_DRIFT_DETECTION_UNAVAILABLE'],
-            failure:'source-drift-detection-unavailable',
-          });
-          continue;
+      if(boundRevision===currentRevision){
+        if(!sourceBind)continue;
+      }else{
+        try{
+          execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',sourcePath],{cwd:repoRoot,stdio:'ignore'});
+          if(!sourceBind)continue;
+        }catch(error){
+          if(Number(error?.status)!==1){
+            results.push({
+              gameId:item.gameId,
+              pass:false,
+              sourcePath,
+              sourceRevision:currentRevision,
+              sourceTreeSha,
+              sourceDrift:true,
+              saveRequired:false,
+              blockers:['SOURCE_DRIFT_DETECTION_UNAVAILABLE'],
+              failure:'source-drift-detection-unavailable',
+            });
+            continue;
+          }
         }
       }
     }
