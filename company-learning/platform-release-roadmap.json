@@ -1,5 +1,5 @@
 {
-  "version": 408,
+  "version": 409,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8078,6 +8078,21 @@
       "runningTaskCancellationForbidden": true,
       "ownerExplicitOrExactRepairPreserved": true,
       "itemContentMutation": false
+    },
+    "holisticExistingGameOwnerGateFalsePositiveRepair20260926": {
+      "id": "HOLISTIC_EXISTING_GAME_OWNER_GATE_FALSE_POSITIVE_REPAIR_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Existing-game preservation text such as 'do not initialize it like a new game' must not be classified as a new-game creation request merely because it contains the words 'new game'. Real new-game requests and owner-reserved destructive, security, permission, spending, release, and save-breaking decisions remain gated.",
+      "liveFailureEvidence": [
+        "RUN_36225893107_EXECUTION_GATE_BLOCKED_COMPANY_OWNER_GATE_REQUIRED",
+        "HOLISTIC_WORKER_ORDER_RUN_FALSE"
+      ],
+      "directResponsibleFunction": "assets/vibe-workbench.js::isNewGameDevelopmentRequest",
+      "existingBackfillNegativePreservationPhraseIsNotNewGameIntent": true,
+      "realNewGameGatePreserved": true,
+      "ownerReservedDecisionCategoriesUnchanged": true,
+      "securityReleasePermissionAndSaveBreakingGatesUnchanged": true,
+      "authorityExpansion": false
     },
     "fanInPinnedContractOverlayRepair20260926": {
       "id": "VIBE2_FAN_IN_PINNED_CONTRACT_OVERLAY_REPAIR_2026-09-26",
