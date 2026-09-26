@@ -1499,14 +1499,14 @@ test('speculative focused repair gets one bounded retry after focused no-op at t
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/spec-focused-credit/files/Assets/Player.cs'),'utf8'),/return 2/);
 });
 
-test('focused replace recovery budget is not smaller than final retry budget',()=>{
+test('focused replace recovery budget matches the central fast-path contract',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
-  const finalPredict=Number(source.match(/const JSON_FINAL_RETRY_MAX_PREDICT=(\d+);/)?.[1]||0);
   const focusedPredict=Number(source.match(/const JSON_FOCUSED_REPLACE_MAX_PREDICT=(\d+);/)?.[1]||0);
-  const finalTimeout=Number(source.match(/const JSON_FINAL_RETRY_TIMEOUT_MS=(\d+);/)?.[1]||0);
   const focusedTimeout=Number(source.match(/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=(\d+);/)?.[1]||0);
-  assert.ok(finalPredict>0&&focusedPredict>=finalPredict);
-  assert.ok(finalTimeout>0&&focusedTimeout>=finalTimeout);
+  const focusedContext=Number(source.match(/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=(\d+);/)?.[1]||0);
+  assert.equal(focusedPredict,384);
+  assert.equal(focusedTimeout,90000);
+  assert.equal(focusedContext,8192);
 });
 
 test('focused Web repair malformed output fast-escalates to focused replace on the next attempt', async () => {
@@ -2016,8 +2016,8 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.timeoutMs,150000);
-  assert.equal(result.generation.maxPredict,768);
+  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.maxPredict,384);
   assert.equal(result.generation.temperature,0.26);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
@@ -2519,8 +2519,8 @@ test('first edit-match failure fast-escalates attempt two to exact replace-only 
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
-  assert.equal(result.generation.maxPredict,768);
-  assert.equal(result.generation.timeoutMs,150000);
+  assert.equal(result.generation.maxPredict,384);
+  assert.equal(result.generation.timeoutMs,90000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -3348,3 +3348,25 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/previousEffectiveness=/);
   assert.match(source,/nextVibeAction=/);
 });
+
+test('Roblox zero-output timeout uses focused recovery instead of repeating the full graphics package budget',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/const zeroOutputTimeoutRecovery=!allowFullRewrite[\s\S]*?priorFailureClass==='TIMEOUT'[\s\S]*?!clean\(lastRaw\)/);
+  assert.match(source,/ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES\.has\(priorFailureClass\)[\s\S]*?&&!zeroOutputTimeoutRecovery/);
+  assert.match(source,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
+  assert.match(source,/\(systemAtomicPairCompletion\|\|focusedReplaceOnly\)\?\(systemAtomicPairCompletion\?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS\)/);
+  assert.match(source,/\(systemAtomicPairCompletion\|\|focusedReplaceOnly\)\?\(systemAtomicPairCompletion\?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT\)/);
+});
+
+test('failed source generation still performs post-work shared-context validation before exiting the candidate step',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const after='node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json"';
+  const failureExit='if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi';
+  const afterAt=workflow.indexOf(after);
+  const exitAt=workflow.indexOf(failureExit);
+  assert.ok(afterAt>=0);
+  assert.ok(exitAt>=0);
+  assert.ok(afterAt<exitAt);
+  assert.equal(workflow.indexOf(after,afterAt+1),-1);
+});
+

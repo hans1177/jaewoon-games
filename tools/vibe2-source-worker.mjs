@@ -71,8 +71,8 @@ const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;
 const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=12288;
 const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
-const JSON_FOCUSED_REPLACE_MAX_PREDICT=768;
-const JSON_FOCUSED_REPLACE_TIMEOUT_MS=150000;
+const JSON_FOCUSED_REPLACE_MAX_PREDICT=384;
+const JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000;
 const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
@@ -1765,9 +1765,14 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       &&priorFailureClass==='MALFORMED_OUTPUT'
       &&attempt>=4;
     if(robloxAssetAdaptationTask&&(ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS.has(priorFailureClass)||robloxFullGraphicsLateMalformedTrigger))robloxFullGraphicsPackageActive=true;
+    const zeroOutputTimeoutRecovery=!allowFullRewrite
+      &&priorFailureClass==='TIMEOUT'
+      &&!clean(lastRaw);
+    if(zeroOutputTimeoutRecovery)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=${attempt}:${candidateVariant}`);
     const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask
       &&robloxFullGraphicsPackageActive
-      &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass);
+      &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass)
+      &&!zeroOutputTimeoutRecovery;
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
@@ -1796,15 +1801,15 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
     const timeoutMs=expansionMode
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
     const contextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);

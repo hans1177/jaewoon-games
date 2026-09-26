@@ -1,5 +1,5 @@
 {
-  "version": 86,
+  "version": 87,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1631,5 +1631,32 @@
         "unrelatedTasksMaySettle": true
       }
     }
+  },
+  "vibeSourceGenerationFocusedTimeoutAndContextSync": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
+    "requiredRuntimeMarkers": [
+      "VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=",
+      "WORKER_CONTEXT_SYNC=PASS",
+      "shared-context-sync:PASS"
+    ],
+    "failureEvidenceRules": {
+      "postWorkSharedContextMustRunBeforeFailedSourceWorkerExit": true,
+      "sharedContextMissingMayOnlyBeEmittedWhenValidatedContextFileIsActuallyAbsent": true,
+      "sourceGenerationFailureClassMustRemainCausal": true
+    },
+    "focusedRecoveryContract": {
+      "timeoutMs": 90000,
+      "maxPredict": 384,
+      "contextWindow": 8192,
+      "workerPinnedReplaceOnly": true
+    },
+    "liveBaseline": {
+      "runId": 36229097447,
+      "sourceGenerationFailures": 37,
+      "zeroOutputTimeoutsObserved": true,
+      "sharedContextMissingFalseEvidenceObserved": true
+    },
+    "authorityChange": "NONE"
   }
 }

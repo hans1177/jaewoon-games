@@ -945,6 +945,7 @@ jobs:
           failure_message="$(sed -n 's/^VIBE2_SOURCE_WORKER_FAILURE_MESSAGE=//p' "$source_worker_log" | tail -n1)"
           echo "failure_class=$failure_class" >> "$GITHUB_OUTPUT"
           echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
+          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi
           candidate_manifest_rel="$(sed -n 's/^VIBE2_CANDIDATE_MANIFEST=//p' "$source_worker_log" | tail -n1)"
           test -n "$candidate_manifest_rel"
@@ -952,7 +953,6 @@ jobs:
           test -f "$candidate_manifest"
           echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
-          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           git diff --check
           security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
           import fs from 'node:fs';
