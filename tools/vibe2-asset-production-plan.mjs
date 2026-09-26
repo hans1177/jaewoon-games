@@ -308,6 +308,10 @@ const BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE=Object.freeze({
   audio:['AUDIO'],
   animation:['MOTION']
 });
+const UNIVERSAL_ASSET_FAMILIES=Object.freeze([
+  'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL',
+  'MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
+]);
 function stableMaterialSeed(value=''){
   let hash=2166136261;
   for(const ch of clean(value)){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
@@ -335,7 +339,8 @@ function baseMaterialRecipeForRequest(request='',templates=[]){
 function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePlan=null,decisions=[],gameId='',target='',request=''}={}){
   const configured=companyRegistry?.baseMaterialLibrary?.families||{};
   const productionActive=studioUniversePlan?.baseMaterialRotation?.productionActive||configured;
-  const familySet=new Set();
+  const nativeTarget=['roblox','unity'].includes(clean(target).toLowerCase());
+  const familySet=new Set(nativeTarget?UNIVERSAL_ASSET_FAMILIES:[]);
   for(const row of decisions||[])for(const family of BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE[clean(row?.type).toLowerCase()]||[])familySet.add(family);
   const families={};
   for(const family of familySet){
@@ -345,32 +350,48 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
   const recipe=baseMaterialRecipeForRequest(request,companyRegistry?.variantRecipeTemplates||[]);
   const visualScope=/(?:PRESENTATION_PASS|GRAPHICS_PRODUCTION|ASSET_ADAPTATION|graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|vfx|effect|particle|ui|hud|그래픽|비주얼|연출|에셋|모델|환경|배경|지형|재질|조명|애니|모션|이펙트|효과|파티클|외형|실루엣|스타일)/i.test(clean(request));
   const selectedAtomCount=Object.values(families).reduce((n,rows)=>n+rows.length,0);
+  const missingFamilies=UNIVERSAL_ASSET_FAMILIES.filter(family=>nativeTarget&&!(families[family]||[]).length);
   return freeze({
-    status:selectedAtomCount?'READY':'NO_COMPATIBLE_ATOMS',
+    status:selectedAtomCount&&missingFamilies.length===0?'READY':selectedAtomCount?'PARTIAL_FAMILY_COVERAGE':'NO_COMPATIBLE_ATOMS',
     source:'company-asset-library.json#baseMaterialLibrary',
     atomState:clean(companyRegistry?.baseMaterialLibrary?.status)||null,
     selectedAtomCount,
     families:freeze(Object.fromEntries(Object.entries(families).map(([family,rows])=>[family,freezeList(rows)]))),
+    universalAssetFirst:freeze({
+      required:nativeTarget,
+      families:UNIVERSAL_ASSET_FAMILIES,
+      evaluatedFamilies:freezeList([...familySet]),
+      missingFamilies:freezeList(missingFamilies),
+      allFamiliesEvaluated:!nativeTarget||UNIVERSAL_ASSET_FAMILIES.every(family=>familySet.has(family)),
+      allFamiliesSelectable:missingFamilies.length===0,
+      applicableFamilyActualBindingRequired:nativeTarget,
+      familyResultRequired:'APPLIED_OR_EXPLICIT_NOT_APPLICABLE',
+      notApplicableRequiresSystemAbsenceEvidence:true,
+      primitiveOnlyUpgradeForbidden:true,
+      markerOnlyApplicationForbidden:true
+    }),
     recipe,
     gameSpecificStableSelection:true,
     colorOnlyVariantForbidden:companyRegistry?.baseMaterialLibrary?.combinationRules?.colorOnlyVariantDoesNotCount===true,
     runtimeVerificationRequired:companyRegistry?.baseMaterialLibrary?.combinationRules?.actualRuntimeQaRequiredBeforeVerifiedPromotion===true,
     robloxSelectionHandoff:freeze({
       selectionRequired:clean(target).toLowerCase()==='roblox',
-      handoffRequired:clean(target).toLowerCase()==='roblox'&&visualScope&&selectedAtomCount>0,
+      handoffRequired:clean(target).toLowerCase()==='roblox'&&selectedAtomCount>0,
       plannerSourceMutationForbidden:true,
       downstreamApplicationOwner:'VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION',
-      downstreamApplicationRequired:clean(target).toLowerCase()==='roblox'&&visualScope&&selectedAtomCount>0,
-      bindingVersion:1,
+      downstreamApplicationRequired:clean(target).toLowerCase()==='roblox'&&selectedAtomCount>0,
+      bindingVersion:2,
       requiredSourceMarker:'STUDIO_ASSET_BINDING_VERSION',
       postApplicationVerificationRequired:true,
       actualNativeBindingRequired:true,
+      allTwelveFamiliesEvaluated:true,
+      familyResultRequired:'APPLIED_OR_EXPLICIT_NOT_APPLICABLE',
       markerOnlyApplicationForbidden:true,
-      preserveGameplayAuthority:true
+      preserveGameplayAuthority:true,
+      visualScopeDetected:visualScope
     })
   });
 }
-
 function directAuthoringFor(target='',type=''){
   const resolvedTarget=clean(target).toLowerCase();
   const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
@@ -1003,7 +1024,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialLibrary?.atomCount?`Composable Base Materials=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.atomCount}; families=${Object.keys(plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.families||{}).join('|')}; mutationAxes=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.mutationAxes.join('|')}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.variantRecipeTemplates?.length?`Variant Recipes=${plan.companyGraphicsLibrary.studioAssetUniverse.variantRecipeTemplates.map(row=>row.id+':'+row.mutationStrength).join('|')}; 일반/지역/세력/정예/보스/히어로 변형은 색상 변경만으로 구분하지 말고 identity budget을 충족한다.`:'',
     plan.baseMaterialLoadout?.selectedAtomCount?`Game Base Material Loadout recipe=${plan.baseMaterialLoadout.recipe?.id||'NORMAL_VARIANT'}; atoms=${Object.entries(plan.baseMaterialLoadout.families||{}).map(([family,atoms])=>family+':'+atoms.join(',')).join('|')}`:'',
-    plan.target==='roblox'&&plan.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired?'[ROBLOX STUDIO ASSET SELECTION HANDOFF] 플래너는 소스를 수정하지 않는다. 위 Game Base Material Loadout과 검증 재사용 후보를 작업지시로 Vibe2/Vibe3에 전달한다. Vibe2/Vibe3가 기존 책임 Luau 소스의 실제 Instance/Material/Color3/MeshPart/Attachment/Particle/Trail/UI 표현에 적용한다. 적용 소스에는 local STUDIO_ASSET_BINDING_VERSION = 1과 local STUDIO_ASSET_SELECTION = {...}를 두고, STUDIO_ASSET_SELECTION에는 이번 Game Base Material Loadout의 선택 atom을 모두 문자열로 포함한다. 실제 적용 인스턴스에는 SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)와 SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))를 연결해 Roblox 런타임에서 관측 가능하게 한다. 그 뒤 incremental QA와 Roblox 네이티브 런타임 QA가 적용 결과를 검증한다. 마커/선택 목록/속성만 추가하고 실제 네이티브 표현을 바꾸지 않는 no-op은 금지하며 게임 규칙·데미지·쿨다운·저장·진행·네트워크 권한은 바꾸지 않는다.':'',
+    plan.target==='roblox'&&plan.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired?'[ROBLOX STUDIO ASSET SELECTION HANDOFF] 플래너는 소스를 수정하지 않는다. CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP 12개 계열을 모두 평가하고 선택 결과를 Vibe2/Vibe3에 전달한다. Vibe2/Vibe3는 현재 게임에 존재하는 각 시스템을 APPLIED 또는 근거가 있는 NOT_APPLICABLE로 판정하고 APPLIED 계열을 기존 책임 소스의 실제 네이티브 표현에 바인딩한다. 배경·지형·마을·집·학교·상점·건물·랜드마크·나무·바위·가구·표지판 등 맵 구성도 ENVIRONMENT/BUILDING/PROP 자산을 실제 사용한다. 마커/선택 목록만 추가하는 no-op, 단순 Part 반복, 색상 변경만으로 업그레이드 완료 처리하는 것은 금지한다. 게임에 없는 시스템은 에셋 조건 때문에 새로 만들지 말고 NOT_APPLICABLE 근거를 기록한다. 게임 규칙·데미지·쿨다운·저장·진행·네트워크 권한은 바꾸지 않는다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialRotation?.policy?.status==='ACTIVE_AUTOMATIC_ROTATION'?`Base Material Rotation=AUTO; retire=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.retireCount||0}; graduate=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.graduateCount||0}; refill=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.refillCount||0}; 중복/검증실패/반복 호환실패/장기 미사용 재료는 제작 활성 풀에서 제외하고, 마스터 재료는 제작 재사용은 유지한 채 학습·확장 풀에서 졸업시켜 기존 24H Gap Fill이 새 다양성 슬롯을 같은 사이클에 채운다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
