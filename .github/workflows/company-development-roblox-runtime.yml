@@ -21,10 +21,8 @@ on:
       - 'company-asset-library.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-selected-platform-router.test.mjs'
-      - 'qa/company-development-roblox-runtime.test.mjs'
       - 'qa/company-development-roblox-independent-promotion.test.mjs'
       - 'qa/company-development-roblox-package.test.mjs'
-      - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
   workflow_call:
     inputs:
