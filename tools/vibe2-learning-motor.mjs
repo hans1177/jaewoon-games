@@ -25,7 +25,7 @@ export const MASTERY_DOMAINS=freeze([
   'CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING',
   'VISUAL_IDENTITY','CONCEPT_DIRECTION','ENVIRONMENT_COMPOSITION','WORLD_GENERATION','LEVEL_DESIGN','NAVIGATION','ROUTE_DESIGN','STREAMING','STREAMING_OPTIMIZATION',
   'WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
-  'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER',
+  'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER','ROBLOX_TOUCH_INPUT','ROBLOX_CHARACTER_STATE','ROBLOX_UI_STATE',
   'UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE',
   'UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'
 ]);
@@ -84,7 +84,10 @@ const DOMAIN_PATTERNS=freeze({
   ROBLOX_DATASTORE:/datastore|ordered.?data.?store/i,
   ROBLOX_REMOTE_SECURITY:/remoteevent|remotefunction|remote.?security|server.?validate/i,
   ROBLOX_REPLICATION:/replication|replicated|server.?client|network.?ownership/i,
-  ROBLOX_MULTIPLAYER:/multiplayer|multi.?client|playeradded|players|matchmaking/i,
+  ROBLOX_MULTIPLAYER:/multiplayer|multi.?client|playeradded|playerremoving|late.?join|rejoin|matchmaking|authoritative.?sync/i,
+  ROBLOX_TOUCH_INPUT:/roblox.*touch|touch.*roblox|contextactionservice|userinputservice|touchstarted|touchended|virtual.?thumbstick|ROBLOX_TOUCH_INPUT/i,
+  ROBLOX_CHARACTER_STATE:/roblox.*character|characteradded|characterremoving|humanoidrootpart|loadcharacter|respawn|ROBLOX_CHARACTER_RESPAWN_STATE/i,
+  ROBLOX_UI_STATE:/roblox.*(?:ui|gui)|screengui|guibutton|textbutton|imagebutton|activated|ROBLOX_UI_STATE/i,
   UNITY_RUNTIME:/\bunity\b|unity.?runtime|gameobject|monobehaviour|scene.?manager|prefab|scriptable.?object/i,
   UNITY_PHYSICS:/unity.*physics|rigidbody|collider|character.?controller|fixedupdate/i,
   UNITY_NETCODE:/unity.*netcode|netcode.?for.?gameobjects|networkobject|networkbehaviour|clientrpc|serverrpc/i,
@@ -94,7 +97,7 @@ const DOMAIN_PATTERNS=freeze({
 });
 
 const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','CHARACTER_PERSONA','RELATIONSHIP_MEMORY','WORLD_NARRATIVE','VISUAL_IDENTITY','CONCEPT_DIRECTION','ENVIRONMENT_COMPOSITION','WORLD_GENERATION','LEVEL_DESIGN','NAVIGATION','STREAMING']);
-const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER']);
+const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER','ROBLOX_TOUCH_INPUT','ROBLOX_CHARACTER_STATE','ROBLOX_UI_STATE']);
 const UNITY_NATIVE_ONLY=new Set(['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE']);
 const UEFN_NATIVE_ONLY=new Set(['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION']);
 const XP_SUCCESS=12;
@@ -1090,6 +1093,15 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     else if(sameFailure){score+=90;reasons.push('same-failure');}
     if(sameGame){score+=40;reasons.push('same-game');}
     if(engine&&lower(record.engine)===engine){score+=20;reasons.push('same-engine');}
+    const robloxNativeVerified=Boolean(
+      engine==='roblox'
+      &&lower(record.engine)==='roblox'
+      &&(
+        clean(record.taskType)==='roblox-studio-local-internal-play'
+        ||(record.evidence||[]).some(value=>/roblox-native-(?:failure-class|actual-play-feedback)|roblox-studio-local-runtime/i.test(clean(value)))
+      )
+    );
+    if(robloxNativeVerified){score+=35;reasons.push('roblox-native-verified');}
     const rWords=words([record.problem,record.goal,record.change,record.failureCause,...(record.reusablePatterns||[]),...(record.avoidPatterns||[])].filter(Boolean).join(' '));
     const overlap=overlapScore(qWords,rWords);
     if(overlap){score+=Math.min(20,overlap*2);reasons.push('keyword-overlap:'+overlap);}
@@ -1118,7 +1130,8 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
       const lifecycle=knowledgeStateFor(mastery,'CODE_PATTERN',row?.id);
       score+=knowledgeEffectAdjustment(mastery,'CODE_PATTERN',row?.id);
       if(lifecycle==='DEMOTED')score-=8;
-      const retrievalTier=primaryMatches.length?3:secondaryMatches.length?2:(sameGame||overlap>0)?1:0;
+      const robloxNativePattern=Boolean(engine==='roblox'&&sameEngine&&knowledgeDomains.some(domain=>ROBLOX_NATIVE_ONLY.has(domain)));
+      const retrievalTier=robloxNativePattern?4:primaryMatches.length?3:secondaryMatches.length?2:(sameGame||overlap>0)?1:0;
       if(retrievalTier===0)score=0;
       return {...row,relevance:score,retrievalTier,knowledgeDomains,primaryDomainMatches:primaryMatches,secondaryDomainMatches:secondaryMatches,knowledgeLifecycle:lifecycle};
     })
@@ -1147,7 +1160,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     .sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
+    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
     failureFingerprint,
     domainClassification,
     failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
@@ -1169,7 +1182,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 
 export function learningGuidance(context={}){
   if(context?.kind!=='vibe2-unified-learning-context') return '';
-  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game+same-failure > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
+  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
   if(context.failureFingerprint)lines.push(`- current-failure-fingerprint=${context.failureFingerprint}`);
   if(context.domainClassification)lines.push(`- learning-domains=PRIMARY[${(context.domainClassification.primary||[]).join(',')||'none'}] SECONDARY[${(context.domainClassification.secondary||[]).join(',')||'none'}]`);
   for(const row of context.failureLocalMemory||[]) lines.push(`- verified-failure-local=${row.id}; relevance=${row.relevance}; cause=${clean(row.failureCause)||'none'}; reuse=${(row.reusablePatterns||[]).slice(0,4).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,4).join('|')||'none'}`);
@@ -2147,6 +2160,8 @@ function verifiedRobloxStudioReusablePatterns(binding={}){
   const semanticText=[
     'roblox studio local runtime virtual input actual play',
     ...(evidence?.learningSignals||[]),
+    clean(evidence?.robloxFailureClass),
+    ...(evidence?.scenarioCoverage||[]).filter(row=>row?.pass===true).map(row=>clean(row?.id)),
     ...(binding?.actions||[]).filter(row=>row?.ok===true).flatMap(row=>[row?.id,row?.type]),
     ...(binding?.checkpoints||[]).filter(row=>row?.pass===true).flatMap(row=>[row?.id,row?.name])
   ].map(clean).filter(Boolean).join(' ');
@@ -2164,7 +2179,7 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
     const patterns=verifiedRobloxStudioReusablePatterns(binding);
     const failedCheckpoints=binding.requiredCheckpoints.filter(row=>row?.pass!==true).map(row=>clean(row?.name||row?.id)).filter(Boolean);
     const errorTypes=(Array.isArray(evidence?.errors)?evidence.errors:[]).map(row=>clean(row?.type||row?.name||'runtime-error')).filter(Boolean);
-    const failureCause=uniq([...errorTypes,...failedCheckpoints]).join(' | ');
+    const failureCause=uniq([clean(evidence?.robloxFailureClass),...errorTypes,...failedCheckpoints]).join(' | ');
     if(binding.pass&&!patterns.length)continue;
     if(binding.verifiedFailure&&!failureCause)continue;
     const runIdentity=clean(evidence?.runId)||clean(evidence?.workflowRunId)||[
@@ -2186,6 +2201,8 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
       'artifact-id:'+binding.artifactIdentity,
       'artifact-run-id:'+String(binding.artifactRunId),
       'roblox-studio-local-outcome-id:'+outcomeId,
+      'roblox-native-actual-play-feedback:'+(binding.pass?'PASS':'FAIL'),
+      ...(clean(evidence?.robloxFailureClass)?['roblox-native-failure-class:'+clean(evidence.robloxFailureClass)]:[]),
       ...(clean(evidence?.workflowRunId)?['actions-run:'+clean(evidence.workflowRunId)]:[])
     ];
     records.push({
@@ -2383,6 +2400,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=${result.studioExperiencePersisted||0}`);
   console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_OUTCOMES_ADDED=${result.addedRobloxStudioVerifiedOutcomes||0}`);
   console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_FAILURES_PERSISTED=${result.studioExperiencePersistedNegative||0}`);
+  console.log(`ROBLOX_NATIVE_LEARNING_REUSE=PASS:positive=${result.studioExperiencePersistedPositive||0}:negative=${result.studioExperiencePersistedNegative||0}`);
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
