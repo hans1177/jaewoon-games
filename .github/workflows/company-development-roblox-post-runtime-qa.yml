@@ -1,4 +1,5 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA
+run-name: Roblox runtime foundation QA · ${{ inputs.game_id || 'scan' }}
 
 on:
   push:
@@ -31,7 +32,53 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
+  dedupe:
+    name: collapse duplicate runtime foundation scans
+    runs-on: ubuntu-slim
+    timeout-minutes: 3
+    outputs:
+      run: ${{ steps.guard.outputs.run }}
+    steps:
+      - name: Select exact-game oldest run or newest batch scan
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+          winner="$(printf '%s' "$payload" | GAME_ID="$GAME_ID" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s);
+              const states=new Set(['queued','pending','in_progress','requested']);
+              const game=String(process.env.GAME_ID||'').trim();
+              const title='Roblox runtime foundation QA · '+(game||'scan');
+              const ids=(j.workflow_runs||[])
+                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
+                .map(r=>Number(r.id))
+                .filter(Number.isFinite)
+                .sort((a,b)=>a-b);
+              if(!ids.length){process.stdout.write('');return;}
+              process.stdout.write(String(game?ids[0]:ids[ids.length-1]));
+            });
+          ")"
+          echo "ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=${winner:-NONE}"
+          if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            if [ -n "$GAME_ID" ]; then
+              echo "ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=$GAME_ID:$GITHUB_RUN_ID:$winner"
+            else
+              echo "ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=$GITHUB_RUN_ID:$winner"
+            fi
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_RUNTIME_FOUNDATION_QA_DEDUPE_PASS=${GAME_ID:-SCAN}:$GITHUB_RUN_ID"
+          fi
+
   runtime-foundation-qa:
+    needs: dedupe
+    if: needs.dedupe.outputs.run == 'true'
     name: existing game tester and QA validate exact Roblox runtime candidate
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -883,6 +930,8 @@ jobs:
           done < /tmp/roblox-f9-ids
 
   studio-local-plan:
+    needs: dedupe
+    if: needs.dedupe.outputs.run == 'true'
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 8
