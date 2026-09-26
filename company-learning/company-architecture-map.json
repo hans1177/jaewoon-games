@@ -5848,5 +5848,28 @@
     "exactGameParallelismPreserved": true,
     "activeGameWorkerCancellationForbidden": true,
     "qualitySecurityReleaseGatesUnchanged": true
+  },
+  "vibeCandidateBranchIsolationTopology": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "branchPattern": "vibe2/candidate/*",
+    "baseRevision": "PINNED_CONTRACT_SHA",
+    "remoteRefBootstrap": {
+      "required": true,
+      "transport": "GITHUB_REST_GIT_REFS",
+      "createAtPinnedBaseShaBeforeCandidateCommitPush": true,
+      "reason": "AVOID_FALSE_WORKFLOW_PERMISSION_REJECTION_FROM_BASE_HISTORY_ON_FIRST_BRANCH_PUSH"
+    },
+    "candidateCommit": {
+      "containsOnlyWorkerCandidateDelta": true,
+      "directMainWrite": false,
+      "writableScopeExpansion": false,
+      "qualityGateWeakening": false
+    },
+    "failureTelemetry": {
+      "branchPushFailureClass": "CANDIDATE_BRANCH_PUSH",
+      "genericOtherForbiddenWhenPushFailureIsKnown": true
+    }
   }
 }
