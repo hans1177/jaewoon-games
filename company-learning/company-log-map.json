@@ -1957,9 +1957,14 @@
     "version": 1,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "latestWinsJobs": [
-      "runner-drain",
-      "game-primary-gate"
+      "runner-drain"
     ],
+    "activeCompletionPreservedJobs": [
+      "game-primary-gate",
+      "supervise"
+    ],
+    "gamePrimaryGatePendingLatestWins": true,
+    "gamePrimaryGateCancelInProgress": false,
     "preservedCompletionJob": "supervise",
     "expectedSupersededConclusion": "cancelled",
     "independentGameCancellationForbidden": true
