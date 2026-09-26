@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1jslrpy",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:36:35.751Z",
-      "expiresAt": "2026-09-26T11:21:35.751Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1hlqne2",
       "worker": "vibe2",
       "taskId": "cozy-island-existing-web-assessment-v1",
@@ -606,6 +588,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-ygdnhz",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-studio-evolution-unity-web-usability-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "unity-games/village-dungeons/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "301c7b31195783b594327baee8c066ffafa9d1ed",
+      "acquiredAt": "2026-09-26T11:21:38.810Z",
+      "expiresAt": "2026-09-26T12:06:38.810Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
