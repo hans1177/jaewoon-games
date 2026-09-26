@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {
   acquireRemoteVibeWorkLock,
   createRemoteWorkLockContext,
-  releaseRemoteVibeWorkLock
+  releaseRemoteVibeWorkLock,
+  remoteWorkLockRetryDelayMs
 } from '../tools/vibe2-remote-work-lock.mjs';
 
 const context = createRemoteWorkLockContext({ repository: 'hans1177/jaewoon-games', token: 'test-token' });
@@ -60,6 +61,46 @@ test('remote acquire writes with the observed blob SHA and lock-state branch', a
   assert.equal(result.attempt, 1);
   assert.equal(result.commitSha, 'lock-commit-1');
   assert.equal(calls.length, 2);
+});
+
+test('default remote acquire disperses transient CAS races and continues beyond the old three-attempt herd', async () => {
+  let reads = 0;
+  let writes = 0;
+  const delays = [];
+  const fetchImpl = async (_url, options = {}) => {
+    if ((options.method || 'GET') === 'GET') {
+      reads += 1;
+      return jsonResponse(200, { sha: `state-sha-${reads}`, content: encodedState([]) });
+    }
+    writes += 1;
+    if (writes <= 3) return jsonResponse(409, {});
+    return jsonResponse(200, { commit: { sha: 'lock-commit-after-races' } });
+  };
+
+  const result = await acquireRemoteVibeWorkLock({
+    worker: 'vibe2',
+    task: 'parallel-lock-race-task',
+    game: 'demo',
+    files: 'unity-games/demo/Assets/Scripts/Player.cs',
+    'base-sha': 'main-a'
+  }, {
+    context,
+    fetchImpl,
+    delay: async (ms) => delays.push(ms)
+  });
+
+  assert.equal(result.acquired, true);
+  assert.equal(result.remoteUpdated, true);
+  assert.equal(result.attempt, 4);
+  assert.equal(result.commitSha, 'lock-commit-after-races');
+  assert.equal(reads, 4);
+  assert.equal(writes, 4);
+  assert.deepEqual(delays, [
+    remoteWorkLockRetryDelayMs('parallel-lock-race-task', 1),
+    remoteWorkLockRetryDelayMs('parallel-lock-race-task', 2),
+    remoteWorkLockRetryDelayMs('parallel-lock-race-task', 3)
+  ]);
+  assert.ok(new Set(delays).size > 1);
 });
 
 test('409 race rereads state and stops when ChatGPT acquired the same file first', async () => {
