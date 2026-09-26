@@ -1,5 +1,5 @@
 {
-  "version": 222,
+  "version": 223,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4959,7 +4959,7 @@
     }
   },
   "nonblockingCoordinationTelemetryTopology": {
-    "version": 1,
+    "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
     "workflows": [
       ".github/workflows/company-development-queue-reconcile.yml",
@@ -4976,7 +4976,12 @@
       "group": "company-development-queue-reconcile-runtime",
       "cancelInProgress": false,
       "stateWritesSerialized": true,
-      "triggerBurstBehavior": "QUEUE_NOT_CANCEL"
+      "triggerBurstBehavior": "RUNNING_WRITE_PRESERVED_WITH_CHANGE_DRIVEN_STATUS_FEEDBACK",
+      "pendingTriggerSemantics": "STALE_PENDING_RUN_MAY_BE_REPLACED_BY_NEWER_PENDING_TRIGGER",
+      "unconditionalQueueCompletionStatusSyncTrigger": false,
+      "queueMutationDispatchesStatusSync": true,
+      "statusSyncCompletionMayTriggerReconcile": true,
+      "stabilizationRule": "QUEUE_CHANGE_DISPATCH_STATUS_SYNC; STATUS_SYNC_MAY_RECONCILE; NO_QUEUE_CHANGE_STOPS_FEEDBACK"
     }
   },
   "robloxNativeCodingQualityTopology": {

@@ -241,15 +241,29 @@ test('queue reconcile treats Vibe queue telemetry as observational and never def
 });
 
 
-test('reconcile trigger bursts serialize instead of cancelling the running state writer',()=>{
+test('reconcile trigger bursts serialize and status feedback is change-driven',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  const statusWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
   assert.match(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: true/);
+  assert.match(workflow,/steps\.queue_state\.outputs\.changed == '1'/);
+  assert.match(workflow,/gh workflow run company-status-sync\.yml/);
+  assert.match(workflow,/COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED/);
+  assert.match(workflow,/workflow_run:[\s\S]*- Company Status Sync/);
+  const statusWorkflowRun=statusWorkflow.match(/workflow_run:\s*\n\s*workflows:\s*\n([\s\S]*?)\n\s*types:/)?.[1]||'';
+  assert.doesNotMatch(statusWorkflowRun,/Company Development Queue Reconcile/);
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const state=roadmap.minimumNecessaryProcedurePolicy?.execution?.stateReconciliation;
   assert.equal(state?.serializeStateWrites,true);
   assert.equal(state?.cancelRunningReconcileOnNewTrigger,false);
   assert.equal(state?.repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation,true);
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const topology=architecture.nonblockingCoordinationTelemetryTopology?.reconcileConcurrency;
+  assert.equal(topology?.stateWritesSerialized,true);
+  assert.equal(topology?.queueMutationDispatchesStatusSync,true);
+  assert.equal(topology?.unconditionalQueueCompletionStatusSyncTrigger,false);
+  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  assert.equal(logMap.reconcileCancellationChurnContract?.queueMutationStatusSyncMarker,'COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED');
 });
 
 
