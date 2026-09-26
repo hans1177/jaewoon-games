@@ -7,6 +7,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-roblox-release-promotion.yml'
+      - 'tools/company-roblox-thumbnail-sync.mjs'
+      - 'assets/roblox-thumbnails/**'
+      - 'game-catalog.json'
+      - 'company-learning/platform-release-roadmap.json'
   workflow_dispatch:
     inputs:
       game_id:
@@ -900,3 +904,56 @@ jobs:
           else
             echo 'ROBLOX_METADATA_SYNC=PASS_OR_NOT_REQUIRED'
           fi
+
+  thumbnail-sync:
+    name: sync canonical marketing art to Roblox homepage thumbnails
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout current canonical implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install deterministic SVG rasterizer
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq librsvg2-bin fonts-noto-cjk
+
+      - name: Verify thumbnail sync contract
+        working-directory: main
+        run: |
+          set -euo pipefail
+          node --test qa/company-roblox-thumbnail-sync.test.mjs qa/game-catalog-normalization.test.mjs
+
+      - name: Upload and verify canonical Roblox thumbnails
+        working-directory: main
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          node tools/company-roblox-thumbnail-sync.mjs \
+            --catalog=game-catalog.json \
+            --runtime=../runtime/development-queue.json \
+            --roadmap=company-learning/platform-release-roadmap.json \
+            --repo-root=.
