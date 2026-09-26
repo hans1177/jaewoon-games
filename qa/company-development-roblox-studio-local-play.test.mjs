@@ -905,6 +905,15 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.equal(recovery.guiToggleAutomationForbidden,true);
   assert.equal(recovery.finalFailureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
   assert.equal(recovery.infrastructureFailureMustNotBecomeGameFailure,true);
+  assert.deepEqual(recovery.sessionRestartEligibleFailureScope,[
+    'MCP_TOOL_READINESS',
+    'MCP_SERVER_ENABLEMENT',
+    'STUDIO_ATTACHMENT',
+    'MCP_TRANSPORT'
+  ]);
+  assert.equal(recovery.completedMcpSessionRuntimeFailureAction,'PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART');
+  assert.equal(recovery.runtimeFailureMustNotConsumeMcpRecoveryAttempts,true);
+  assert.equal(recovery.completedSessionExitContract,'MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS');
   assert.equal(recovery.settingEnablementEvidenceRequired,true);
   assert.equal(recovery.settingEnablementAuthority,'READ_ONLY_SETTING_DIAGNOSTIC_OR_SUCCESSFUL_OFFICIAL_REQUIRED_TOOL_HANDSHAKE');
   assert.equal(recovery.confirmedEnabledState,'YES');
@@ -930,6 +939,20 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.deepEqual(arch.unconfirmedSettingStates,['MISSING','UNKNOWN']);
   assert.equal(arch.unconfirmedSettingExecution,'PROBE_OFFICIAL_MCP_REQUIRED_TOOLS');
   assert.equal(arch.requiredToolHandshakeAuthority,true);
+  assert.deepEqual(arch.sessionRestartEligibleFailureScope,[
+    'MCP_TOOL_READINESS',
+    'MCP_SERVER_ENABLEMENT',
+    'STUDIO_ATTACHMENT',
+    'MCP_TRANSPORT'
+  ]);
+  assert.equal(arch.completedMcpSessionRuntimeFailureAction,'PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART');
+  assert.equal(arch.runtimeFailureMustNotConsumeMcpRecoveryAttempts,true);
+  const ingress=architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress||{};
+  assert.equal(ingress.version,3);
+  assert.equal(ingress.infrastructureRecovery,'RESTART_ONLY_WHEN_MCP_TOOL_READINESS_ENABLEMENT_ATTACHMENT_OR_TRANSPORT_FAILS');
+  assert.equal(ingress.completedSessionRuntimeFailure,'PERSIST_AS_GAME_RUNTIME_EVIDENCE_NO_MCP_RESTART');
+  assert.equal(ingress.runtimeFailureConsumesMcpRecoveryAttempt,false);
+  assert.equal(ingress.completedSessionExitContract,'MCP_PROCESS_EXIT_ZERO_RUNTIME_QA_RESULT_PERSISTED_SEPARATELY');
   assert.equal(arch.unconfirmedSettingState,'STUDIO_MCP_INFRASTRUCTURE_PENDING_IF_REQUIRED_TOOL_HANDSHAKE_FAILS');
   assert.equal(arch.automaticSettingMutation,false);
 });
