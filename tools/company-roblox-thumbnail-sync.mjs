@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {spawnSync} from 'node:child_process';
 
 const clean=v=>String(v??'').trim();
 const validId=v=>/^[1-9][0-9]*$/.test(clean(v));
@@ -48,6 +49,30 @@ export function inspectMarketingPng(file,{repoRoot=process.cwd(),maxBytes=3*1024
     sha256:crypto.createHash('sha256').update(data).digest('hex'),
     data
   });
+}
+
+export function renderMarketingSourceToPng(sourceFile,{
+  gameId='',
+  repoRoot=process.cwd(),
+  outputDir='.thumbnail-rendered',
+  spawnImpl=spawnSync
+}={}){
+  const source=inspectMarketingSource(sourceFile,{repoRoot});
+  if(source.extension==='.png'){
+    inspectMarketingPng(source.relative,{repoRoot});
+    return Object.freeze({path:source.relative,ephemeral:false,source});
+  }
+  const safeId=clean(gameId).replace(/[^a-zA-Z0-9_-]/g,'');
+  if(!safeId)throw new Error('ROBLOX_THUMBNAIL_GAME_ID_INVALID');
+  const outputRoot=path.resolve(fs.realpathSync(repoRoot),outputDir);
+  fs.mkdirSync(outputRoot,{recursive:true});
+  const output=path.join(outputRoot,safeId+'.png');
+  const run=spawnImpl('rsvg-convert',[
+    '--width','1920','--height','1080','--format','png','--output',output,source.absolute
+  ],{encoding:'utf8'});
+  if(run?.status!==0)throw new Error('ROBLOX_THUMBNAIL_RASTERIZE_FAILED:'+clean(run?.stderr||run?.stdout));
+  const rendered=inspectMarketingPng(path.relative(fs.realpathSync(repoRoot),output),{repoRoot});
+  return Object.freeze({path:rendered.relative,ephemeral:true,source,rendered});
 }
 
 export function resolveCanonicalRuntimeTarget(item={}){
@@ -160,13 +185,24 @@ export async function syncCanonicalRobloxThumbnails({
       throw new Error('HOMEPAGE_MARKETING_IMAGE_SYNC_MISMATCH:'+gameId);
     }
     const target=resolveCanonicalRuntimeTarget(item);
-    const inspected=inspectMarketingPng(imageFile,{repoRoot});
-    console.log('ROBLOX_MARKETING_IMAGE='+gameId+':'+imageFile+':sha256='+inspected.sha256);
+    const rendered=renderMarketingSourceToPng(imageFile,{gameId,repoRoot});
+    console.log('ROBLOX_MARKETING_IMAGE='+gameId+':'+imageFile+':sha256='+rendered.source.sha256);
     console.log('HOMEPAGE_MARKETING_IMAGE_SYNC='+gameId+':PASS');
-    const result=await uploadRobloxHomepageThumbnail({
-      universeId:target.universeId,imageFile,apiKey,repoRoot,fetchImpl,waitImpl,pollAttempts,pollDelayMs
-    });
-    results.push(Object.freeze({gameId,placeId:target.placeId,...result}));
+    try{
+      const result=await uploadRobloxHomepageThumbnail({
+        universeId:target.universeId,imageFile:rendered.path,apiKey,repoRoot,fetchImpl,waitImpl,pollAttempts,pollDelayMs
+      });
+      results.push(Object.freeze({
+        gameId,placeId:target.placeId,
+        canonicalMarketingImage:imageFile,
+        canonicalMarketingImageSha256:rendered.source.sha256,
+        ...result
+      }));
+    }finally{
+      if(rendered.ephemeral===true){
+        try{fs.rmSync(path.resolve(repoRoot,rendered.path),{force:true});}catch{}
+      }
+    }
   }
   return Object.freeze(results);
 }
