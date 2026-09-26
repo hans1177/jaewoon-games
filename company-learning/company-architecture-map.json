@@ -5444,6 +5444,18 @@
     ],
     "gameParallelismReduced": false
   },
+  "robloxRuntimeFoundationRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+    "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+    "runtimeFoundationQa": "ubuntu-slim",
+    "runtimeFoundationRole": "REMOTE_OPEN_CLOUD_PROBE_AND_DETERMINISTIC_NODE_QA",
+    "studioLocalPlan": "self-hosted:Windows:X64:roblox-studio-authenticated",
+    "studioMcpAutoPlay": "self-hosted:Windows:X64:roblox-studio-authenticated",
+    "localStudioExecutionMoved": false,
+    "gamePrimaryUbuntuLatestCapacityProtected": true,
+    "qualityGateWeakening": false
+  },
   "nativeChildDispatchDedupeTopology": {
     "version": 1,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeChildPreDispatchDedupe20260926",
