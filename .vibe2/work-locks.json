@@ -3,115 +3,21 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1s3lxan",
+      "id": "wl-1blwihw",
       "worker": "vibe2",
-      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "roblox-games/monster-adventure/client/Game.client.luau",
-        "roblox-games/monster-adventure/server/Game.server.luau",
-        "roblox-games/monster-adventure/shared/GameConfig.luau"
-      ],
-      "baseSha": "c497af1fd4d23549038ec34b462842cb1e503544",
-      "acquiredAt": "2026-09-26T21:32:06.160Z",
-      "expiresAt": "2026-09-26T22:17:06.160Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-16s9vi7",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
-      ],
-      "baseSha": "c497af1fd4d23549038ec34b462842cb1e503544",
-      "acquiredAt": "2026-09-26T21:34:01.293Z",
-      "expiresAt": "2026-09-26T22:19:01.293Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-uffyk6",
-      "worker": "vibe2",
-      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
+      "taskId": "bug-defense-unity-web-base-implementation-v1",
       "gameId": "bug-defense",
       "files": [
-        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
+        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
+        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
       ],
-      "baseSha": "c497af1fd4d23549038ec34b462842cb1e503544",
-      "acquiredAt": "2026-09-26T21:34:20.791Z",
-      "expiresAt": "2026-09-26T22:19:20.791Z",
+      "baseSha": "09b511947ea8694bfda94cba074b0c6d8ae76502",
+      "acquiredAt": "2026-09-26T22:38:43.979Z",
+      "expiresAt": "2026-09-26T23:23:43.979Z",
       "status": "active",
       "evidence": [
         "compiled-central-work-contract",
-        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-8sxpca",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
-      ],
-      "baseSha": "c497af1fd4d23549038ec34b462842cb1e503544",
-      "acquiredAt": "2026-09-26T21:35:39.638Z",
-      "expiresAt": "2026-09-26T22:20:39.638Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-mc4d0",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "c497af1fd4d23549038ec34b462842cb1e503544",
-      "acquiredAt": "2026-09-26T21:36:11.402Z",
-      "expiresAt": "2026-09-26T22:21:11.402Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-eo5gfq",
-      "worker": "vibe2",
-      "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "roblox-games/line-defense/client/Game.client.luau",
-        "roblox-games/line-defense/server/Game.server.luau",
-        "roblox-games/line-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "c497af1fd4d23549038ec34b462842cb1e503544",
-      "acquiredAt": "2026-09-26T21:36:36.096Z",
-      "expiresAt": "2026-09-26T22:21:36.096Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
+        "change-set:bug-defense-unity-web-base-implementation-v1"
       ]
     }
   ]
