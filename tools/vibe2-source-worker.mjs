@@ -959,6 +959,27 @@ function gatedRetryStrategyGuidance(order = {}) {
   ].join('\n');
 }
 
+function universalAssetWorkerGuidance(order={}) {
+  const target=clean(order?.target).toLowerCase();
+  if(!['roblox','unity'].includes(target))return'';
+  const loadout=order?.assetProduction?.baseMaterialLoadout||{};
+  const contract=loadout?.universalAssetFirst||{};
+  if(contract?.required!==true)return'';
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
+  return [
+    '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
+    'All 12 asset families MUST be evaluated: '+families.join(','),
+    'Selected loadout: '+(selected||'NONE'),
+    'For each family record exactly APPLIED or NOT_APPLICABLE. NOT_APPLICABLE is allowed only when the current game truly has no existing system for that family; never use it to skip an existing system.',
+    'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
+    'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
+    'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
+    target==='roblox'?'Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding.':'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.',
+    'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
+    'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
+  ].join('\n');
+}
 function weatherWorkerGuidance(order = {}) {
   const contract=order?.weatherPresentation||{};
   if(contract?.required!==true)return'';
@@ -993,6 +1014,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 `Department: ${order.department||'development'}`,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
+universalAssetWorkerGuidance(order),
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order),
 robloxNativeWorkerGuidance(order,context,responsibleFiles),
