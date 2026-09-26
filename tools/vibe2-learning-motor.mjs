@@ -2400,6 +2400,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=${result.studioExperiencePersisted||0}`);
   console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_OUTCOMES_ADDED=${result.addedRobloxStudioVerifiedOutcomes||0}`);
   console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_FAILURES_PERSISTED=${result.studioExperiencePersistedNegative||0}`);
+  console.log(`ROBLOX_NATIVE_LEARNING_REUSE=PASS:positive=${result.studioExperiencePersistedPositive||0}:negative=${result.studioExperiencePersistedNegative||0}`);
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
