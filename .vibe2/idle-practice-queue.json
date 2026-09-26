@@ -119,6 +119,35 @@
       "sourceFailure": "fail_17sa11i"
     },
     {
+      "id": "review-fail_3e38u6",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "COMBAT",
+        "RECOVERY",
+        "ANIMATION_FEEL",
+        "UI_STATE",
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VFX",
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION",
+        "ROBLOX_STUDIO",
+        "CHARACTER_ARC",
+        "UNITY_RUNTIME"
+      ],
+      "sourceFailure": "fail_3e38u6"
+    },
+    {
       "id": "review-fail_c9xvk3",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -145,26 +174,6 @@
         "CONCEPT_DIRECTION"
       ],
       "sourceFailure": "fail_c9xvk3"
-    },
-    {
-      "id": "review-fail_lhx93q",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CORE_LOOP",
-        "STATE_MACHINE",
-        "COMBAT",
-        "SAVE",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "WEB_RUNTIME",
-        "PROGRESSION",
-        "QUEST_DESIGN",
-        "ECONOMY"
-      ],
-      "sourceFailure": "fail_lhx93q"
     },
     {
       "id": "relearn-fail_wu3qnk",
@@ -1846,7 +1855,7 @@
       ]
     },
     {
-      "id": "gap-ui_state-l10",
+      "id": "gap-ui_state-l11",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
