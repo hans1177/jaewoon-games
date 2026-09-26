@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-7rdmph",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
-      "acquiredAt": "2026-09-26T16:05:13.680Z",
-      "expiresAt": "2026-09-26T16:50:13.680Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-bd7iek",
       "worker": "vibe2",
       "taskId": "ant-simulator-existing-web-assessment-v1",
@@ -459,6 +440,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:survival-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-gr65uy",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
+      "acquiredAt": "2026-09-26T16:50:14.511Z",
+      "expiresAt": "2026-09-26T17:35:14.511Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
       ]
     }
   ]
