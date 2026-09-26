@@ -1,5 +1,5 @@
 {
-  "version": 127,
+  "version": 128,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1956,13 +1956,14 @@
   "directorPreSupervisionCoalescingEvidence": {
     "version": 1,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "latestWinsJobs": [
-      "runner-drain"
-    ],
+    "latestWinsJobs": [],
     "activeCompletionPreservedJobs": [
+      "runner-drain",
       "game-primary-gate",
       "supervise"
     ],
+    "runnerDrainPendingLatestWins": true,
+    "runnerDrainCancelInProgress": false,
     "gamePrimaryGatePendingLatestWins": true,
     "gamePrimaryGateCancelInProgress": false,
     "preservedCompletionJob": "supervise",
