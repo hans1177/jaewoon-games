@@ -11,13 +11,16 @@ local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
 local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
 
-local store=DSS:GetDataStore("cozy-island-conquest-v3")
+local store
+pcall(function()store=DSS:GetDataStore("cozy-island-conquest-v3")end)
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
-local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
+local qaCaptureStore
+pcall(function()qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")end)
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
-local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")
+local foundationStore
+pcall(function()foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")end)
 local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
 foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
 
