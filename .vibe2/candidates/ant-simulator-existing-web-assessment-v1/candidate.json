@@ -1,0 +1,24 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function worldToScreen(x,y){return{x:x-state.camera.x,y:y-state.camera.y}}",
+      "replace": "function worldToScreen(x,y){return{x:x-state.camera.x,y:y-state.camera.y};// 추가된 코드로 인해 맵을 그려주는 부분 수정됨}"
+    },
+    {
+      "path": "index.html",
+      "find": "function loop(now){const dt=Math.min(.04,(now-state.last)/1000||0);state.last=now;update(dt,now);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);",
+      "replace": "function loop(now){const dt=Math.min(.04,(now-state.last)/1000||0);state.last=now;update(dt,now);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);// 추가된 코드로 인해 루프 로직 수정됨"
+    },
+    {
+      "path": "index.html",
+      "find": "function updateMultiStatus(extra=''){const count=Math.max(1,multi.presenceIds.size||1),role=isHost()?'호스트':'참가자';$('multiStatus').textContent=multi.connected?`방 ${multi.room} · ${count}명 · ${role}${extra?' · '+extra:''}`:'오프라인 · 방 번호 1~10'}",
+      "replace": "function updateMultiStatus(extra=''){const count=Math.max(1,multi.presenceIds.size||1),role=isHost()?'호스트':'참가자';$('multiStatus').textContent=multi.connected?`방 ${multi.room} · ${count}명 · ${role}${extra?' · '+extra:''}`:'오프라인 · 방 번호 1~10'}// 추가된 코드로 인해 상태 업데이트 로직 수정됨"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
