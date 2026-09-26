@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-26T03:51:14.080Z",
+  "updatedAt": "2026-09-26T03:54:52.797Z",
   "games": [
     {
       "gameId": "cozy-island",
@@ -1047,7 +1047,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -1064,6 +1064,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -1079,7 +1080,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-75e82e071db7d0d05520"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
