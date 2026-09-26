@@ -166,3 +166,21 @@ test('steward migrates explicit legacy v3 parallelism state to v4',()=>{
   assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V4_PARALLELISM_STATE_RESET_TO_256');
   assert.ok(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
 });
+
+test('system steward stale lease recovery stays synchronized with central architecture and log maps',()=>{
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  const recovery=architecture?.autonomousBottleneckRecovery?.staleRunningReservationRecovery;
+  const logRecovery=logMap?.orchestrationLogContract?.systemStewardRecovery;
+  assert.equal(recovery?.implementation,'tools/vibe2-system-steward.mjs::staleRunningIds');
+  assert.equal(recovery?.staleAfterMinutes,45);
+  assert.equal(recovery?.actionMarker,'RECOVER_STALE_RUNNING_RESERVATION');
+  assert.equal(recovery?.lastOutcomeMarker,'SYSTEM_STEWARD_STALE_LEASE_RECOVERED');
+  assert.equal(recovery?.evidenceMarker,'system-steward:stale-running-reservation-recovered');
+  assert.equal(logRecovery?.staleRunningReservationAction,'RECOVER_STALE_RUNNING_RESERVATION');
+  assert.equal(logRecovery?.queueOutcomeMarker,'SYSTEM_STEWARD_STALE_LEASE_RECOVERED');
+  assert.equal(logRecovery?.queueEvidenceMarker,'system-steward:stale-running-reservation-recovered');
+  assert.ok(logRecovery?.emittedMarkers?.includes('VIBE2_SYSTEM_STEWARD_ACTIONS'));
+  assert.ok(logRecovery?.emittedMarkers?.includes('VIBE2_SYSTEM_STEWARD_QUEUE_CHANGED'));
+});
+
