@@ -1962,13 +1962,279 @@ jobs:
           for(const id of ids)process.stdout.write(id+'\n');
           NODE
           released=0
+          already_released=0
           while IFS= read -r lock_id; do
             [ -n "$lock_id" ] || continue
-            node "$contract_root/tools/vibe2-remote-work-lock.mjs" release --worker=vibe2 --id="$lock_id" | tee "/tmp/vibe2-work-lock-release-$released.log"
-            grep -q '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$' "/tmp/vibe2-work-lock-release-$released.log"
-            released=$((released+1))
+            log_file="/tmp/vibe2-work-lock-release-${lock_id}.log"
+            node "$contract_root/tools/vibe2-remote-work-lock.mjs" release --worker=vibe2 --id="$lock_id" | tee "$log_file"
+            if grep -q '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES
+      - name: Dispatch reviewed winner candidates to release gate
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-package-review.json
+          node - <<'NODE' > /tmp/vibe2-release-candidates.tsv
+          const fs=require('fs');
+          const review=JSON.parse(fs.readFileSync('/tmp/vibe2-package-review.json','utf8'));
+          for(const row of review.releaseCandidates||[]){
+            const taskId=String(row?.taskId||'').trim();
+            const candidateBranch=String(row?.candidateBranch||'').trim();
+            if(taskId&&candidateBranch)process.stdout.write(taskId+'\t'+candidateBranch+'\n');
+          }
+          NODE
+          count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
+          echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
+          while IFS=$'\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
+          done < /tmp/vibe2-release-candidates.tsv
+
+      - name: Dispatch verified system architecture candidates
+        if: env.VIBE2_EXECUTION_LANE == 'recovery-fast'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/vibe2-system-release-candidates.tsv
+          const fs=require('fs');
+          const fan=JSON.parse(fs.readFileSync('/tmp/vibe2-fan-in.json','utf8'));
+          const tasks=new Map((fan.tasks||[]).map(t=>[String(t.id||''),t]));
+          for(const r of fan.results||[]){
+            const t=tasks.get(String(r.taskId||''));
+            if(!t||String(t.target||'').toLowerCase()!=='system'||String(t.department||'').toLowerCase()!=='system-architecture')continue;
+            if(String(r.outcome||'').toUpperCase()!=='PASS')continue;
+            const branch=String(r.candidateBranch||'').trim();
+            if(branch)process.stdout.write(String(r.taskId)+'\t'+branch+'\n');
+          }
+          NODE
+          while IFS=$'\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" --arg task "$task_id" '{ref:"main",inputs:{candidate_branch:$branch,task_id:$task}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-system-evolution-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_SYSTEM_EVOLUTION_RELEASE_DISPATCHED=$task_id:$candidate_branch"
+          done < /tmp/vibe2-system-release-candidates.tsv
+
+      - name: Upload generated machine handoff and role review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-after-fanin.json
+            /tmp/vibe2-handoff-after-fanin.log
+            /tmp/vibe2-package-review.json
+            /tmp/vibe2-package-review.log
+            /tmp/vibe2-practice-distillation-fanin.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Aggregate Vibe2 parallelism telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          REQUESTED_MAX: ${{ inputs.lane_max || '256' }}
+          EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
+          TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
+          FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-fan-in.json || exit 0
+          fan_end="$(date +%s%3N)"
+          fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
+          fallback_effective="$VIBE2_LANE_MAX"
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"; fi
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-$fallback_effective}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
+          const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
+          NODE2
+
+      - name: Upload Vibe2 parallelism telemetry
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-parallelism-telemetry-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-parallelism-telemetry.json
+            /tmp/vibe2-parallelism-telemetry.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Event-driven fan-in refill fallback
+        if: steps.persist.outputs.refill == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary'}}))")"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'
+ "$log_file"; then
+              released=$((released+1))
+            elif grep -q '^VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found
+      - name: Dispatch reviewed winner candidates to release gate
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-package-review.json
+          node - <<'NODE' > /tmp/vibe2-release-candidates.tsv
+          const fs=require('fs');
+          const review=JSON.parse(fs.readFileSync('/tmp/vibe2-package-review.json','utf8'));
+          for(const row of review.releaseCandidates||[]){
+            const taskId=String(row?.taskId||'').trim();
+            const candidateBranch=String(row?.candidateBranch||'').trim();
+            if(taskId&&candidateBranch)process.stdout.write(taskId+'\t'+candidateBranch+'\n');
+          }
+          NODE
+          count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
+          echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
+          while IFS=$'\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
+          done < /tmp/vibe2-release-candidates.tsv
+
+      - name: Dispatch verified system architecture candidates
+        if: env.VIBE2_EXECUTION_LANE == 'recovery-fast'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/vibe2-system-release-candidates.tsv
+          const fs=require('fs');
+          const fan=JSON.parse(fs.readFileSync('/tmp/vibe2-fan-in.json','utf8'));
+          const tasks=new Map((fan.tasks||[]).map(t=>[String(t.id||''),t]));
+          for(const r of fan.results||[]){
+            const t=tasks.get(String(r.taskId||''));
+            if(!t||String(t.target||'').toLowerCase()!=='system'||String(t.department||'').toLowerCase()!=='system-architecture')continue;
+            if(String(r.outcome||'').toUpperCase()!=='PASS')continue;
+            const branch=String(r.candidateBranch||'').trim();
+            if(branch)process.stdout.write(String(r.taskId)+'\t'+branch+'\n');
+          }
+          NODE
+          while IFS=$'\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" --arg task "$task_id" '{ref:"main",inputs:{candidate_branch:$branch,task_id:$task}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-system-evolution-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_SYSTEM_EVOLUTION_RELEASE_DISPATCHED=$task_id:$candidate_branch"
+          done < /tmp/vibe2-system-release-candidates.tsv
+
+      - name: Upload generated machine handoff and role review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-after-fanin.json
+            /tmp/vibe2-handoff-after-fanin.log
+            /tmp/vibe2-package-review.json
+            /tmp/vibe2-package-review.log
+            /tmp/vibe2-practice-distillation-fanin.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Aggregate Vibe2 parallelism telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          REQUESTED_MAX: ${{ inputs.lane_max || '256' }}
+          EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
+          TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
+          FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-fan-in.json || exit 0
+          fan_end="$(date +%s%3N)"
+          fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
+          fallback_effective="$VIBE2_LANE_MAX"
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"; fi
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-$fallback_effective}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
+          const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
+          NODE2
+
+      - name: Upload Vibe2 parallelism telemetry
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-parallelism-telemetry-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-parallelism-telemetry.json
+            /tmp/vibe2-parallelism-telemetry.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Event-driven fan-in refill fallback
+        if: steps.persist.outputs.refill == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary'}}))")"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'
+ "$log_file"; then
+              already_released=$((already_released+1))
+            else
+              exit 1
+            fi
           done < /tmp/vibe2-work-lock-release-ids.txt
           echo "VIBE2_SHARED_WORK_LOCK_RELEASED=$released"
+          echo "VIBE2_SHARED_WORK_LOCK_ALREADY_RELEASED=$already_released"
 
       - name: Dispatch reviewed winner candidates to release gate
         if: env.VIBE2_EXECUTION_LANE == 'game-primary'
