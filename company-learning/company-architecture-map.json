@@ -1,5 +1,5 @@
 {
-  "version": 199,
+  "version": 200,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4662,5 +4662,33 @@
       "stateWritesSerialized": true,
       "triggerBurstBehavior": "QUEUE_NOT_CANCEL"
     }
+  },
+  "robloxNativeCodingQualityTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxNativeCodingQualityContract",
+    "role": "STRUCTURAL_BINDING_ONLY",
+    "flow": [
+      "company-build-up-directive",
+      "vibe2-source-worker",
+      "impact-scoped-qa",
+      "official-studio-mcp-actual-play",
+      "causal-direct-repair",
+      "fan-in-regression",
+      "vibe2-learning-motor"
+    ],
+    "implementationBindings": [
+      "tools/company-build-up-directive.mjs",
+      "tools/vibe2-source-worker.mjs",
+      "tools/company-development-roblox-studio-local-play.mjs",
+      "tools/vibe2-learning-motor.mjs"
+    ],
+    "noNewWorker": true,
+    "noNewQueue": true,
+    "noShadowPipeline": true,
+    "sourceFirstRobloxInspection": true,
+    "studioMcpFeedbackUsesExistingRuntimeFoundationGate": true,
+    "exactResponsibleFileConflictIsSerializationBoundary": true,
+    "learningUsesExistingMotor": true,
+    "policySemanticsRemainCentralOnly": true
   }
 }
