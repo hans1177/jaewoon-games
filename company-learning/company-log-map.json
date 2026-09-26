@@ -1,5 +1,5 @@
 {
-  "version": 66,
+  "version": 67,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1251,5 +1251,42 @@
     "deterministicVerificationStillRequired": true,
     "failedStrategyMustFeedRetry": true,
     "rejectedHypothesesMustFeedRetry": true
+  },
+  "robloxNativeCodingQualityEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxNativeCodingQualityContract",
+    "correlationKeys": [
+      "TASK_ID",
+      "GAME_ID",
+      "SOURCE_REVISION",
+      "CANDIDATE_SHA",
+      "ROBLOX_RESPONSIBLE_FILE",
+      "ROBLOX_SOURCE_SYMBOL",
+      "ROBLOX_FAILURE_CLASS"
+    ],
+    "requiredMarkers": [
+      "ROBLOX_NATIVE_SOURCE_INSPECTION=",
+      "ROBLOX_NATIVE_BUILD_UP_BINDING=",
+      "ROBLOX_NATIVE_FUNCTIONAL_CHAIN=",
+      "ROBLOX_NATIVE_ACTUAL_PLAY_FEEDBACK=",
+      "ROBLOX_NATIVE_FAILURE_CLASS=",
+      "ROBLOX_NATIVE_LEARNING_REUSE="
+    ],
+    "failureClasses": [
+      "ROBLOX_SERVER_CLIENT_BOUNDARY",
+      "ROBLOX_REMOTE_EVENT_OR_FUNCTION",
+      "ROBLOX_TOUCH_INPUT",
+      "ROBLOX_DATASTORE_SAVE_LOAD",
+      "ROBLOX_CHARACTER_RESPAWN_STATE",
+      "ROBLOX_UI_STATE",
+      "ROBLOX_MULTIPLAYER_SYNC",
+      "ROBLOX_STUDIO_RUNTIME",
+      "ROBLOX_SOURCE_GENERATION"
+    ],
+    "observedStudioFailureMustReferenceExactScenario": true,
+    "exactScriptFunctionEventOrStatePreferred": true,
+    "repeatedFailureDedupeRequired": true,
+    "rawLogAloneCannotProvePass": true,
+    "verifiedLearningMustReferenceSourceAndOutcome": true
   }
 }
