@@ -1176,6 +1176,20 @@
         "staleWakeMayStartGameWorker": false,
         "runningOrCompletedGameWorkerCancellation": false
       },
+      "directorGamePrimaryFallbackWake": {
+        "enabled": true,
+        "workflow": ".github/workflows/director-supervisor.yml",
+        "trigger": "QUEUED_GAME_PRIMARY_AND_NO_ACTIVE_NON_PUSH_VIBE_CORE",
+        "completionWakeSource": "VIBE2_CONTINUOUS_CORE_WORKFLOW_RUN_COMPLETED",
+        "dispatchTarget": ".github/workflows/vibe2-continuous-core.yml",
+        "executionLane": "GAME_PRIMARY",
+        "existingQueuedTasksOnly": true,
+        "newSchedulerCreated": false,
+        "newQueueCreated": false,
+        "canonicalReservePathPreserved": true,
+        "activeNonPushCoreSuppressesFallbackDispatch": true,
+        "responsibleFileConflictProtectionPreserved": true
+      },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "vibeGameControlRunnerPool": {
         "source": "company-learning/platform-release-roadmap.json#changeRecord.gameControlRunnerPoolSeparation20260926",
