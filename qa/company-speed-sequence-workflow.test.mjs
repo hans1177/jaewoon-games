@@ -200,3 +200,11 @@ test('owner-focused concurrent native dispatch happens only after canonical sour
   assert.match(router,/adapterForPlatform\(concurrentPlatform\)\?\.existingExecutionPath/);
 });
 
+
+
+test('control-plane planning uses slim runners while heavy design work keeps the game runner pool',()=>{
+  assert.match(router,/\n  native-plan:\n[\s\S]{0,180}?runs-on: ubuntu-slim/);
+  assert.match(designRuntime,/\n  game-primary-gate:\n[\s\S]{0,180}?runs-on: ubuntu-slim/);
+  assert.match(designRuntime,/\n  resolve-seed-targets:\n[\s\S]{0,240}?runs-on: ubuntu-slim/);
+  assert.match(designRuntime,/\n  design-cycle:\n[\s\S]{0,500}?runs-on: ubuntu-latest/);
+});
