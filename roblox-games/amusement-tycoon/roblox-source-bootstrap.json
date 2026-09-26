@@ -13,25 +13,24 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": true,
-  "foundationRepairApplied": true,
+  "serverSourceChanged": false,
+  "foundationRepairApplied": false,
   "generatedFiles": [
-    "client/Game.client.luau",
-    "server/Game.server.luau"
+    "shared/GameConfig.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
   "vibe3LearningApplied": false,
   "recombinationRecipeId": null,
   "studioAssetBinding": {
-    "version": 1,
+    "version": 3,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 16,
+    "libraryVersion": 18,
     "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
-    "selectedAtomCount": 29,
+    "selectedAtomCount": 46,
     "families": {
       "UI": [
         "FRAME_PANEL",
@@ -60,10 +59,20 @@
         "STONE",
         "METAL"
       ],
+      "AUDIO": [
+        "ENV_WIND",
+        "ENV_WATER",
+        "UI_CONFIRM"
+      ],
       "VFX": [
         "IMPACT_FLASH",
         "TRAIL_SHORT",
         "SHAPE_BURST"
+      ],
+      "SKILL": [
+        "CAST_HAND",
+        "TELEGRAPH_CIRCLE",
+        "IMPACT_SMALL"
       ],
       "WEAPON": [
         "BLADE_LONG",
@@ -79,9 +88,74 @@
         "HEAD_CANINE",
         "JAW_LONG",
         "CLAW"
+      ],
+      "MOTION": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "HIT_FRONT",
+        "DEATH_FRONT"
       ]
     },
+    "universalAssetFirst": {
+      "required": true,
+      "allFamilies": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "allFamiliesEvaluated": true,
+      "missingFamilies": [],
+      "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+      "actualSourceBindingRequired": true,
+      "markerOnlyApplicationForbidden": true,
+      "mapEnvironmentBuildingPropRequired": true
+    },
     "recipeId": "NORMAL_VARIANT",
+    "motionQuality": {
+      "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      "motionAtoms": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "HIT_FRONT",
+        "DEATH_FRONT"
+      ],
+      "libraryFirst": true,
+      "semanticAtomsAreNotAnimationClips": true,
+      "nativeAnimationClipRuntimeVerificationRequired": true,
+      "actorClasses": [
+        "PLAYER",
+        "HUMANOID_NPC",
+        "CREATURE"
+      ],
+      "articulatedRigRequired": true,
+      "animatorRequired": true,
+      "blendAndSpeedSyncRequired": true,
+      "ikAndProceduralCorrectionPreferred": true,
+      "mannequinHardFailure": "CHARACTER_MOTION_MANNEQUIN"
+    },
     "productionVerified": false,
     "runtimeVerificationRequired": true,
     "verifiedPromotionAllowed": false,
@@ -92,9 +166,15 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
+  "buildUpDirectiveId": "amusement-tycoon-build-up-g1-71979e751ea0",
+  "buildUpGeneration": 1,
+  "buildUpGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "buildUpDirectiveFingerprint": "71979e751ea07d8e551955e64980598883b78f5cfa5cfd56057fa3c2b108c5f4",
+  "buildUpDirectiveConsumed": true,
+  "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-25T05:03:23.664Z"
+  "createdAt": "2026-09-26T03:48:00.863Z"
 }
