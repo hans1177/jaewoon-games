@@ -121,3 +121,12 @@ test('shared preflight continuation keeps exact game targeting without a workflo
   assert.match(workflow,/company-development-roblox-headless-fast-mvp\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE:/);
 });
+
+
+test('continuation planner job collapses duplicate same-game dispatches without workflow-wide locking',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow,/preflight-plan:[\s\S]{0,220}group: roblox-shared-preflight-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+});
