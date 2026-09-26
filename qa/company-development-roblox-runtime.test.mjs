@@ -518,6 +518,17 @@ test('Roblox runtime persist writers refetch and reapply instead of using a canc
 });
 
 
+test('dedicated Roblox QA-only changes do not launch the full runtime pipeline',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const pushBlock=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_call:'));
+  assert.doesNotMatch(pushBlock,/qa\/company-development-roblox-runtime\.test\.mjs/);
+  assert.doesNotMatch(pushBlock,/qa\/company-development-roblox-source-reconcile\.test\.mjs/);
+  const vibe3=fs.readFileSync(new URL('../.github/workflows/vibe3-engine-contract.yml',import.meta.url),'utf8');
+  const vibeQa=fs.readFileSync(new URL('../.github/workflows/vibe-qa.yml',import.meta.url),'utf8');
+  assert.match(vibe3,/qa\/company-development-roblox-runtime\.test\.mjs/);
+  assert.match(vibeQa,/qa\/company-development-roblox-source-reconcile\.test\.mjs/);
+});
+
 test('Roblox game source pushes route through exact changed-source sync instead of broad runtime batch',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const sync=fs.readFileSync(new URL('../.github/workflows/company-roblox-source-drift-sync.yml',import.meta.url),'utf8');
