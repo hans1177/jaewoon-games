@@ -1,5 +1,5 @@
 {
-  "version": 391,
+  "version": 392,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3180,7 +3180,7 @@
               "result": "PASS"
             }
           },
-          "currentExecutionInfrastructureBottleneck": "ATOMIC_NEURON_CALLBACK_WORKFLOW_BURST_WHILE_GITHUB_ACTIONS_RUNNER_QUEUE_IS_PRESSURED",
+          "currentExecutionInfrastructureBottleneck": "CROSS_LANE_RESERVE_STARVATION_PLUS_STALE_24H_SINGLETON_HOLDING_NEW_MAIN_CYCLE",
           "runnerPressureCallbackCoalescing": "IMPLEMENTATION_IN_PROGRESS",
           "runnerPressureCallbackCoalescingRule": "IF_RECENT_REPOSITORY_ACTIONS_HAVE_QUEUED_PENDING_OR_REQUESTED_RUNS, DO_NOT CREATE_ANOTHER_ATOMIC_NEURON_CALLBACK_WORKFLOW; KEEP_THE_IMMUTABLE_WORKER_RESULT_ARTIFACT_AND_LET_EXISTING_COHORT_FAN_IN_CONSUME_IT; WHEN_QUEUE_PRESSURE_CLEARS, RESUME_IMMEDIATE_CALLBACK",
           "runnerPressureCallbackCoalescingPreserves": [
@@ -3197,7 +3197,11 @@
           "workerControlCheckoutScope": "VIBE2_STATE_ONLY",
           "workerExecutableCodeSource": "PINNED_MAIN_CONTRACT",
           "workerControlCheckoutGamePrimaryBoundary": 256,
-          "workerControlCheckoutAdaptiveBehaviorUnchanged": true
+          "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
+          "reserveConcurrencyRelief": "LANE_ISOLATED_PENDING_QA",
+          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
+          "learningIdleRunnerPressureDeferral": "IMPLEMENTED_PENDING_QA",
+          "gamePrimaryExternalBoundary": 256
         },
         "incidentHistory": [
           {
@@ -7526,6 +7530,42 @@
         "qa/company-system-ai-worker.test.mjs",
         "qa/company-system-ai-supervision-loop.test.mjs"
       ]
+    },
+    "laneReserveAndLearningPressureRelief20260926": {
+      "id": "VIBE2_LANE_RESERVE_AND_LEARNING_PRESSURE_RELIEF_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "REMOVE_CROSS_LANE_RESERVE_STARVATION_AND_PREVENT_AUXILIARY_LEARNING_FROM_HOLDING_PRODUCTION_WHEN_RUNNER_QUEUE_PRESSURE_EXISTS",
+      "existingArchitectureOnly": true,
+      "shadowPipelineCreated": false,
+      "newSchedulerCreated": false,
+      "gamePrimaryExternalBoundary": 256,
+      "gamePrimaryBoundaryUnchanged": true,
+      "reserveConcurrency": "LANE_ISOLATED_WITH_EXISTING_OPTIMISTIC_SHARED_STATE_WRITE_RETRY",
+      "schedulerEpoch": "vibe2-24h-cycle-singleton-v2",
+      "schedulerEpochPurpose": "ONE_TIME_ESCAPE_FROM_STALE_PRE_LANE_ISOLATION_SINGLETON_WITHOUT_REMOVING_SINGLE_CHAIN_CONCURRENCY",
+      "learningIdlePolicy": "DEFER_FIRST_WHEN_RECENT_ACTIONS_RUNS_HAVE_QUEUED_PENDING_OR_REQUESTED_STATUS",
+      "pressureObservationFailurePolicy": "DEFER_LEARNING_ONLY_KEEP_PRODUCTION_AVAILABLE",
+      "productionPreemptsLearning": true,
+      "workerDirectControlWrite": false,
+      "qaSecurityReleaseAuthorityChanged": false,
+      "bindings": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-24h-runner.yml",
+        "vibe2-runtime.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/company-log-map.json",
+        "qa/vibe2-controller-contract.test.mjs",
+        "qa/vibe2-queue-control.test.mjs",
+        "qa/vibe2-parallelism-main-contract.test.mjs"
+      ],
+      "requiredEvidence": [
+        "VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=",
+        "VIBE2_24H_RUNNER_QUEUE_PRESSURE=",
+        "VIBE2_24H_LEARNING_IDLE_DEFERRED=",
+        "vibe2-control-state-{execution_lane}",
+        "vibe2-24h-cycle-singleton-v2"
+      ],
+      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
     }
   },
   "vibeExecutionLaneContract": {
@@ -7630,7 +7670,12 @@
       "productionReleaseAllowed": false,
       "sourceWriteAllowed": false,
       "fullGameRegressionAtAuxiliaryFanIn": false,
-      "practiceDistillationAllowed": true
+      "practiceDistillationAllowed": true,
+      "runnerPressureGateImplemented": true,
+      "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
+      "pressureObservationFailureAction": "DEFER_LEARNING_ONLY",
+      "productionMayNotWaitForLearningReserve": true,
+      "schedulerEpoch": "vibe2-24h-cycle-singleton-v2"
     },
     "releaseWait": {
       "taskClass": "RELEASE_WAIT",
@@ -7663,7 +7708,7 @@
       "OBSERVE_NATURAL_LIVE_LEARNING_IDLE_RUN_WHEN_GAME_PRIMARY_QUEUE_IS_EMPTY",
       "MEASURE_RECOVERY_FAST_EVENT_TO_REDISPATCH_LATENCY_IN_LIVE_RUNS",
       "MEASURE_CONTROL_FAST_LATENCY_AND_RUNNER_PRESSURE",
-      "KEEP_LEARNING_IDLE_FIRST_TO_DEFER_IF_RUNNER_PRESSURE_IS_OBSERVED"
+      "VERIFY_POST_V2_LIVE_WAVE_STARTS_WITHOUT_PRE_V2_LEARNING_RESERVE_STARVATION"
     ],
     "qaEvidence": {
       "latestVerifiedHead": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
