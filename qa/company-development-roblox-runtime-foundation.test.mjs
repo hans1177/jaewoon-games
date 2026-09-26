@@ -493,3 +493,16 @@ test('Roblox post-runtime QA and F9 do not serialize whole workflows by game id'
   assert.doesNotMatch(post.slice(0,postJobs),/\nconcurrency:/);
   assert.doesNotMatch(f9.slice(0,f9Jobs),/\nconcurrency:/);
 });
+
+
+test('F9 collapses duplicate exact-game and scan runs before deterministic review',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.match(workflow,/run-name: Roblox F9 · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow,/ROBLOX_F9_ACTIVE_WINNER=/);
+  assert.match(workflow,/ROBLOX_F9_EXACT_DEDUPED=/);
+  assert.match(workflow,/ROBLOX_F9_SCAN_DEDUPED_NEWER=/);
+  assert.match(workflow,/final-review:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
+});
