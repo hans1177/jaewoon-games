@@ -150,3 +150,34 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0' && needs\.plan\.outputs\.runner_pressure != 'YES'/);
 });
+
+
+test('stale main push wake exits before expensive reserve work without cancelling active game workers',()=>{
+  const wake=runtime.continuous.mainPushGamePrimaryWake||{};
+  const architectureWake=architecture.neuralWorkGraphTopology?.currentWaveExecution?.mainPushGamePrimaryWake||{};
+  const policyWake=roadmap.changeRecord?.mainPushWakeFreshnessGate20260927||{};
+  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  const evidence=logMap.mainPushWakeFreshnessEvidence||{};
+
+  assert.equal(wake.freshnessGateBeforeContractPreflight,true);
+  assert.equal(wake.staleWakeMayWriteControlState,false);
+  assert.equal(wake.staleWakeMayStartGameWorker,false);
+  assert.equal(wake.runningOrCompletedGameWorkerCancellation,false);
+  assert.equal(architectureWake.freshnessGateBeforeContractPreflight,true);
+  assert.equal(architectureWake.staleWakeMayWriteControlState,false);
+  assert.equal(architectureWake.staleWakeMayStartGameWorker,false);
+  assert.equal(policyWake.staleWakeMayMutateControlState,false);
+  assert.equal(policyWake.staleWakeMayStartGameWorker,false);
+  assert.equal(policyWake.runningOrCompletedGameWorkerCancellationForbidden,true);
+  assert.equal(evidence.staleWakeControlStateWriteForbidden,true);
+  assert.equal(evidence.staleWakeGameWorkerFanoutForbidden,true);
+
+  assert.match(core,/Drop stale main-push wake before reserve work/);
+  assert.match(core,/VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=/);
+  assert.match(core,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/main" --jq '\.sha'/);
+  assert.match(core,/Prepare latest main machine contract\n\s+id: contract\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
+  assert.match(core,/Fast scheduler preflight\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
+  assert.match(core,/Reserve conflict-free DAG batch\n\s+id: batch\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
+  assert.match(core,/vibe2-main-push-game-primary-wake/);
+  assert.match(core,/cancel-in-progress: false/);
+});
