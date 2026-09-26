@@ -560,7 +560,7 @@
       "immediateDispatchResumesWhenPressureClears": true
     },
     "cohortFanInPressureIngressEnabled": true,
-    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
     "reserveConcurrency": {
       "mode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
