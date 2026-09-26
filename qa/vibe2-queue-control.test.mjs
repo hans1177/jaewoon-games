@@ -708,6 +708,40 @@ test('runner pressure suppresses only optional speculative variants while preser
   assert.ok(reserved.tasks.every(task=>task.neuronExpectedVariants===1));
 });
 
+test('severe source-generation pressure suppresses optional speculation even when scale control says low load',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-spec-severe-low-load-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const batchFile=path.join(dir,'batch.json');
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[{
+    id:'holistic-primary',gameId:'holistic-primary',target:'web',department:'development',type:'implementation',
+    goal:'holistic BUILD_UP source completion',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
+    sourceRoot:'web-games/holistic-primary',responsibleFiles:['index.html']
+  }]},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({
+    version:4,currentMax:256,lastDecision:'HOLD',lastReason:'LOW_LOAD',
+    lastTelemetry:{
+      workerCount:1,effectiveMax:256,actualPeakConcurrency:1,effectivePeakUtilizationPct:0.39,
+      failureRatePct:100,pressureLevel:'SEVERE',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      firstCandidatePassRatePct:0,verifiedCandidatesPerMinute:0
+    }
+  },null,2));
+  const result=runQueueCommand({
+    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'30',
+    'reservation-id':'severe:1','reservation-run':'severe','reserved-at':'2026-09-26T08:15:30Z',output:batchFile
+  });
+  const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
+  assert.equal(result.speculativeExpansion.allowed,false);
+  assert.match(result.speculativeExpansion.reason,/ADAPTIVE_SEVERE_WORK_PRESSURE/);
+  assert.equal(result.primaryTaskCount,1);
+  assert.equal(result.workerCount,1);
+  assert.equal(result.matrix[0].speculativeVariants,1);
+  assert.equal(batch.scheduler.primaryTaskCount,1);
+  assert.equal(batch.scheduler.workerCount,1);
+  assert.equal(batch.scheduler.speculativeExpansionAllowed,false);
+  assert.match(batch.scheduler.speculativeExpansionReason,/ADAPTIVE_SEVERE_WORK_PRESSURE/);
+});
+
 test('reserve-batch reads adaptive runner pressure and restores speculation after pressure clears',()=>{
   const makeFiles=(name,control)=>{
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),name));
