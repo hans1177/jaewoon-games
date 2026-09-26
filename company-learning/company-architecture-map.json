@@ -1,5 +1,5 @@
 {
-  "version": 220,
+  "version": 221,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1120,7 +1120,31 @@
         "ambiguousOrUnmatchedPath": "INVALID_PATH_BOUNDED_RETRY",
         "writableScopeExpansionAllowed": false,
         "telemetry": "codingMethod.missingPathRecoveries",
-        "triggerRun": 36057026213
+        "triggerRun": 36057026213,
+        "holisticStudioNoOpRecovery": "CONNECTED_3_TO_6_EXACT_ANCHOR_PACKAGE_RETRY",
+        "blankRelativePathFailureClass": "INVALID_PATH",
+        "holisticInvalidPathRecovery": "CONNECTED_3_TO_6_EXACT_WRITABLE_PATH_PACKAGE_RETRY",
+        "minimumConnectedSourceDeltas": 3,
+        "singleEditCollapseForbiddenForBuildUp": true,
+        "retryBudgetIncreased": false,
+        "timeoutIncreased": false,
+        "liveEvidence": {
+          "runId": 36229097447,
+          "currentHolisticTaskCount": 15,
+          "finalFailureCounts": {
+            "NO_OP": 10,
+            "INVALID_PATH": 2,
+            "TIMEOUT": 2,
+            "STUDIO_QUALITY_DELTA": 1
+          },
+          "repairTargetsObservedFailureCount": 12,
+          "repairTargetsObservedPercent": 80,
+          "correctionScope": [
+            "NO_OP",
+            "INVALID_PATH"
+          ],
+          "timeoutAndStudioQualityDeltaRemainSeparateCausalRepairs": true
+        }
       }
     },
     "activation": {
@@ -4865,7 +4889,7 @@
       "existingGameHolisticBaselineRequiresFivePillarFanIn": true
     },
     "existingGameHolisticBackfill": {
-      "version": 5,
+      "version": 6,
       "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
       "noNewPipeline": true,
       "existingProjectCollection": "tools/vibe2-auto-planner.mjs::collectProjects",
@@ -4955,6 +4979,14 @@
           "fullRegressionFailureRemainsGlobal": true,
           "stateWriteFailureRemainsGlobal": true
         }
+      },
+      "sourceCandidateRecovery": {
+        "owner": "tools/vibe2-source-worker.mjs::buildGenerationRetryPrompt",
+        "noOp": "PRESERVE_CONNECTED_3_TO_6_EDIT_PACKAGE_AND_REQUIRE_AT_LEAST_3_REAL_SOURCE_DELTAS",
+        "invalidPath": "REUSE_ONLY_EXACT_ALLOWED_PATHS_AND_DISTINCT_EXACT_ANCHORS",
+        "singleEditFallbackForbidden": true,
+        "protectedSemanticsUnchanged": true,
+        "newWorkerQueueOrPipelineCreated": false
       }
     }
   },
