@@ -1,5 +1,5 @@
 {
-  "version": 402,
+  "version": 403,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8029,6 +8029,18 @@
       "summary": "Existing BUILD_UP directive now forces PASS/GAP/NOT_APPLICABLE classification and actionable design/implementation coverage for map expansion, world density/navigation, gameplay agency, content/session depth, inventory/equipment, UI/UX/convenience, system connections, save/reconnect, accessibility and performance budgets.",
       "existingPipelineOnly": true,
       "newWorkerQueueOrShadowPipeline": false
+    },
+    "existingGameHolisticBackfill20260926": {
+      "id": "EXISTING_GAME_HOLISTIC_BACKFILL_2026-09-26",
+      "authority": "OWNER_DIRECTIVE",
+      "summary": "Apply current holistic BUILD_UP quality rules retroactively to every eligible ACTIVE/REBUILD existing game through the existing five-pillar Studio quality evolution and shared BUILD_UP directive flow; no grandfather exemption and no destructive reset.",
+      "changed": [
+        "EXISTING_TITLES_USE_CURRENT_PASS_GAP_NOT_APPLICABLE_DOMAIN_STANDARD",
+        "FIRST_ELIGIBLE_BACKFILL_REQUIRES_CORE_FUN_PROGRESSION_PRESENTATION_USABILITY_STABILITY",
+        "MAP_GAMEPLAY_INVENTORY_UI_CONVENIENCE_SESSION_AND_DEPTH_DEBT_CANNOT_BE_SILENTLY_SKIPPED",
+        "EXISTING_FEATURE_SAVE_RULE_AND_AUTHORITY_PRESERVATION_REQUIRED",
+        "NO_NEW_WORKER_QUEUE_OR_SHADOW_PIPELINE"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
@@ -23110,7 +23122,10 @@
       "terminalCompletionStateForbidden": true,
       "nextVerifiedGapCycleRequired": true,
       "holisticGameEvolutionRequiredEveryVerifiedCycle": true,
-      "presentationOnlyCycleCannotSilentlyDeferApplicableGameplayWorldUiInventoryGaps": true
+      "presentationOnlyCycleCannotSilentlyDeferApplicableGameplayWorldUiInventoryGaps": true,
+      "existingGamesNotGrandfathered": true,
+      "firstEligibleExistingGameGenerationRequiresHolisticBackfill": true,
+      "existingGameBackfillUsesCurrentFiveParallelQualityPillars": true
     },
     "verification": {
       "realSourceDeltaRequired": true,
@@ -23120,7 +23135,10 @@
       "taskMustStateWhichApprovedDesignElementAdvanced": true,
       "runtimeOrDeterministicGameplayQaRequiredWhenBehaviorChanges": true,
       "beforeAfterOrBaselineComparisonRequired": true,
-      "saveAndGameplaySemanticRegressionForbidden": true
+      "saveAndGameplaySemanticRegressionForbidden": true,
+      "existingGameHolisticBaselineRequiresAllFivePillarsVerified": true,
+      "legacyPassCannotSubstituteCurrentHolisticEvidence": true,
+      "existingGameBackfillFailureKeepsDepthAndRequiresCausalRepair": true
     },
     "bindings": {
       "planner": "tools/vibe2-auto-planner.mjs",
@@ -23136,7 +23154,7 @@
       "directiveRoot": ".vibe2/build-up-directives/<gameId>/current.json"
     },
     "gameSpecificBuildUpDirective": {
-      "version": 3,
+      "version": 4,
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "authority": "OWNER_DIRECTIVE_2026-09-26",
       "objective": "AUTONOMOUSLY_GENERATE_A_GAME_SPECIFIC_LOOP_SPECIFIC_DETAILED_BUILD_UP_DIRECTIVE_FROM_VERIFIED_DESIGN_CURRENT_SOURCE_PREVIOUS_VERSION_AND_PLAY_RUNTIME_EVIDENCE_THEN_FEED_THE_SAME_COMMON_GOAL_TO_UNITY_WEB_ROBLOX_AND_UNITY_APP_WITH_PLATFORM_NATIVE_IMPLEMENTATION",
@@ -23717,6 +23735,95 @@
             "qa/vibe2-auto-planner.test.mjs"
           ],
           "newPipelineCreated": false
+        }
+      },
+      "existingGameHolisticBackfill": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-26",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "objective": "RETROACTIVELY_APPLY_THE_CURRENT_HOLISTIC_BUILD_UP_STANDARD_TO_EVERY_EXISTING_ELIGIBLE_GAME_WITHOUT_RESETTING_OR_GRANDFATHERING_LOW_QUALITY_IMPLEMENTATION",
+        "scope": {
+          "catalogLifecycle": [
+            "ACTIVE",
+            "REBUILD"
+          ],
+          "existingTitlesCreatedBeforeThisContractIncluded": true,
+          "developmentAuthorityStillRequired": true,
+          "eligibleProductionClasses": [
+            "DEVELOPMENT_CONFIRMED",
+            "RELEASE_CONFIRMED"
+          ],
+          "catalogMembershipAloneDoesNotExpandWriteAuthority": true,
+          "sourceMustExistForImplementation": true,
+          "dynamicCatalogScope": true
+        },
+        "noGrandfathering": {
+          "existingGameExemptionForbidden": true,
+          "oldVisualGameplayUiInventoryMapDebtMustBeReclassifiedUnderCurrentStandard": true,
+          "previousPassBeforeThisContractDoesNotWaiveHolisticGapReview": true,
+          "legacyImplementationMayBePreservedOnlyWhenItStillPassesCurrentRequirements": true
+        },
+        "firstEligibleBackfillGeneration": {
+          "required": true,
+          "reuseExistingStudioQualityEvolution": true,
+          "reuseExistingBuildUpDirective": true,
+          "requiredParallelPillars": [
+            "CORE_FUN",
+            "PROGRESSION",
+            "PRESENTATION",
+            "USABILITY",
+            "STABILITY"
+          ],
+          "sameSharedDirectiveGenerationRequired": true,
+          "allBuildUpDomainsUseTriState": [
+            "PASS",
+            "GAP",
+            "NOT_APPLICABLE"
+          ],
+          "focusSpecificTaskMustCloseRealGapOrProduceVerifiedPassEvidence": true,
+          "allFivePillarsMustVerifyBeforeHolisticBaselineClaim": true,
+          "oneFailedPillarKeepsCurrentDepthAndRoutesCausalRepair": true,
+          "missingRuntimeEvidenceCannotBePromotedToPass": true
+        },
+        "preservation": {
+          "preserveExistingWorkingFeatures": true,
+          "preserveSaveKeysAndSaveMeaning": true,
+          "preserveApprovedRulesAndCoreIdentity": true,
+          "preserveBalanceEconomyAndNetworkAuthorityUnlessExistingAuthorityAllowsChange": true,
+          "preserveExistingAssetsThatMeetCurrentQuality": true,
+          "fullResetOrRebuildForbiddenWithoutExistingEvidenceAndAuthority": true,
+          "wrapperShadowTemporaryOverrideForbidden": true
+        },
+        "weakExistingGameAction": {
+          "mapWorldInventoryUiConvenienceGameplayAndSessionDebtMustNotBeDeferredOnlyBecauseGameAlreadyExists": true,
+          "mapExpansionMustAddRolePathLandmarkContentDifferenceNotOnlyArea": true,
+          "inventoryEquipmentAndSystemConnectionsMustUseAuthoritativeState": true,
+          "uiUxMustIncludeMobileMenuFlowInformationPriorityFeedbackAndSettingsWhenApplicable": true,
+          "firstTenMinutesSessionFlowAndMidLateGameDepthMustBeReviewed": true,
+          "antiGrindPlayerAgencyContentDiscoveryAndPerformanceBudgetMustBeReviewed": true
+        },
+        "missingDesignOrAuthority": {
+          "missingVerifiedDesignAction": "USE_EXISTING_CANONICAL_MISSING_DESIGN_AUTO_CREATION_AND_RESUME_FLOW",
+          "safePresentationUsabilityStabilityMayContinueWhenAlreadyAuthorized": true,
+          "coreFunAndProgressionMutationWaitForVerifiedDesign": true,
+          "noNewDesignPipeline": true,
+          "noNewQueueOrWorker": true,
+          "resumeAutomaticallyWhenExistingCanonicalAuthorityBecomesEligible": true
+        },
+        "completion": {
+          "holisticBaselineMarker": "EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED",
+          "markerCannotBeEmittedUntilAllRequiredPillarsVerified": true,
+          "sourceAndRuntimeOrDeterministicEvidenceRequired": true,
+          "afterBaseline": "RETURN_TO_NORMAL_PERPETUAL_BUILD_UP_WITH_CURRENT_HOLISTIC_STANDARD",
+          "terminalDoneStateForbidden": true
+        },
+        "bindings": {
+          "projectCollection": "tools/vibe2-auto-planner.mjs::collectProjects",
+          "taskGeneration": "tools/vibe2-auto-planner.mjs::findStudioContinuousImprovementTasks",
+          "directiveGenerator": "tools/company-build-up-directive.mjs",
+          "qa": "tools/vibe2-incremental-qa.mjs",
+          "runtimeEvidence": "EXISTING_PLATFORM_NATIVE_QA_PATHS",
+          "queue": "assets/vibe-continuous-queue.js"
         }
       }
     }
