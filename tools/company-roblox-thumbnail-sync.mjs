@@ -28,6 +28,33 @@ const idsFrom=value=>{
   return found;
 };
 
+function resolveRepoFile(file,repoRoot=process.cwd()){
+  const root=fs.realpathSync(repoRoot);
+  const absolute=fs.realpathSync(path.resolve(root,clean(file)));
+  const relative=path.relative(root,absolute).replaceAll('\\\\','/');
+  if(!relative||relative.startsWith('../')||path.isAbsolute(relative))throw new Error('ROBLOX_THUMBNAIL_PATH_OUTSIDE_REPOSITORY');
+  return Object.freeze({root,absolute,relative});
+}
+
+export function inspectMarketingSource(file,{repoRoot=process.cwd(),maxBytes=3*1024*1024}={}){
+  const resolved=resolveRepoFile(file,repoRoot);
+  const stat=fs.statSync(resolved.absolute);
+  if(!stat.isFile())throw new Error('ROBLOX_MARKETING_IMAGE_NOT_FILE');
+  if(stat.size<=0||stat.size>maxBytes)throw new Error('ROBLOX_MARKETING_IMAGE_SIZE_INVALID:'+stat.size);
+  const data=fs.readFileSync(resolved.absolute);
+  const extension=path.extname(resolved.relative).toLowerCase();
+  if(extension==='.svg'){
+    const text=data.toString('utf8');
+    if(!/<svg\b/i.test(text))throw new Error('ROBLOX_MARKETING_SVG_INVALID');
+    if(/<script\b|<foreignObject\b|(?:href|xlink:href)\s*=\s*["']\s*(?:https?:|\/\/)/i.test(text))throw new Error('ROBLOX_MARKETING_SVG_UNSAFE');
+    const match=text.match(/viewBox\s*=\s*["']\s*0\s+0\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s*["']/i);
+    if(!match||Math.abs(Number(match[1])/Number(match[2])-16/9)>0.001)throw new Error('ROBLOX_MARKETING_SVG_ASPECT_INVALID');
+  }else if(extension!=='.png'){
+    throw new Error('ROBLOX_MARKETING_IMAGE_FORMAT_INVALID:'+extension);
+  }
+  return Object.freeze({...resolved,bytes:stat.size,extension,sha256:crypto.createHash('sha256').update(data).digest('hex'),data});
+}
+
 export function inspectMarketingPng(file,{repoRoot=process.cwd(),maxBytes=3*1024*1024}={}){
   const root=fs.realpathSync(repoRoot);
   const absolute=fs.realpathSync(path.resolve(root,clean(file)));
