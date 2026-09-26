@@ -1,6 +1,6 @@
 {
-  "version": 30,
-  "updatedAt": "2026-09-25",
+  "version": 31,
+  "updatedAt": "2026-09-26",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -58,7 +58,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -78,6 +78,10 @@
           ],
           "image": "assets/insect-main-v3.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/insect-main-v3.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -153,7 +157,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -175,7 +179,7 @@
         "탐험",
         "전투"
       ],
-      "image": "assets/fantasy-rpg-v2.webp",
+      "image": "assets/roblox-thumbnails/daechung-rpg.svg",
       "webPath": null,
       "hasWebArchive": true,
       "featured": true,
@@ -217,7 +221,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-09-26T01:26:33.400Z",
+        "updatedAt": "2026-09-26T01:41:33.737Z",
         "status": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -234,10 +238,14 @@
             "탐험",
             "전투"
           ],
-          "image": "assets/fantasy-rpg-v2.webp",
+          "image": "assets/roblox-thumbnails/daechung-rpg.svg",
           "aliases": [
             "대충 RPG"
           ]
+        },
+        "marketing": {
+          "thumbnail": "assets/roblox-thumbnails/daechung-rpg.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -312,7 +320,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-09-26T01:26:33.400Z",
+            "updatedAt": "2026-09-26T01:41:33.737Z",
             "status": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -338,7 +346,8 @@
       "internationalTitle": "Five Portal RPG: Dungeon Party",
       "aliases": [
         "대충 RPG"
-      ]
+      ],
+      "marketingThumbnail": "assets/roblox-thumbnails/daechung-rpg.svg"
     },
     {
       "id": "horror-escape-room",
@@ -349,7 +358,7 @@
         "몬스터",
         "비대칭 멀티"
       ],
-      "image": "assets/page-bg-v4.webp",
+      "image": "assets/roblox-thumbnails/horror-escape-room.svg",
       "webPath": null,
       "hasWebArchive": false,
       "featured": true,
@@ -429,8 +438,12 @@
             "몬스터",
             "비대칭 멀티"
           ],
-          "image": "assets/page-bg-v4.webp",
+          "image": "assets/roblox-thumbnails/horror-escape-room.svg",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -512,7 +525,8 @@
         }
       },
       "nameEnglish": "Midnight Infection [4v4]",
-      "internationalTitle": "Midnight Infection [4v4]"
+      "internationalTitle": "Midnight Infection [4v4]",
+      "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg"
     },
     {
       "id": "amusement-tycoon",
@@ -580,6 +594,10 @@
           ],
           "image": "assets/page-bg-v4.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v4.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -738,6 +756,10 @@
           "image": "assets/insect-war-v2.webp",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/insect-war-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -893,6 +915,10 @@
           "image": "assets/page-bg-v2.webp",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_DIRECT_GAME_BUILD",
@@ -994,7 +1020,7 @@
         "전투",
         "퀘스트"
       ],
-      "image": "assets/fantasy-rpg-v2.webp",
+      "image": "assets/roblox-thumbnails/village-dungeons.svg",
       "webPath": null,
       "hasWebArchive": true,
       "featured": true,
@@ -1048,8 +1074,12 @@
             "전투",
             "퀘스트"
           ],
-          "image": "assets/fantasy-rpg-v2.webp",
+          "image": "assets/roblox-thumbnails/village-dungeons.svg",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/roblox-thumbnails/village-dungeons.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -1141,7 +1171,8 @@
         "ROBLOX": "roblox-games/village-dungeons",
         "UNITY": "unity-games/village-dungeons"
       },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "marketingThumbnail": "assets/roblox-thumbnails/village-dungeons.svg"
     },
     {
       "id": "cozy-island",
@@ -1152,7 +1183,7 @@
         "생활",
         "낚시"
       ],
-      "image": "assets/title-cozy-island.svg",
+      "image": "assets/roblox-thumbnails/cozy-island.svg",
       "webPath": "/web-games/cozy-island/",
       "hasWebArchive": true,
       "featured": false,
@@ -1205,8 +1236,12 @@
             "생활",
             "낚시"
           ],
-          "image": "assets/title-cozy-island.svg",
+          "image": "assets/roblox-thumbnails/cozy-island.svg",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/roblox-thumbnails/cozy-island.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -1295,7 +1330,8 @@
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
-      ]
+      ],
+      "marketingThumbnail": "assets/roblox-thumbnails/cozy-island.svg"
     },
     {
       "id": "fantasy-survival",
@@ -1364,6 +1400,10 @@
           ],
           "image": "assets/pwa-icon-512.png",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -1523,6 +1563,10 @@
           "image": "assets/fantasy-rpg-v2.webp",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/fantasy-rpg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1678,6 +1722,10 @@
           "image": "assets/homepage-covers/lost-star.svg",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/lost-star.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1830,6 +1878,10 @@
           ],
           "image": "assets/homepage-covers/realm-weaver.svg",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/realm-weaver.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -1984,6 +2036,10 @@
           "image": "assets/card-rpg-v2.webp",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/card-rpg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2137,6 +2193,10 @@
           "image": "assets/homepage-covers/chromatic-cascade.svg",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/chromatic-cascade.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2289,6 +2349,10 @@
           ],
           "image": "assets/crystal-v2.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/crystal-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -2449,6 +2513,10 @@
           "image": "assets/homepage-covers/eldoria.svg",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/eldoria.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2601,6 +2669,10 @@
           "image": "assets/title-survival.svg",
           "aliases": []
         },
+        "marketing": {
+          "thumbnail": "assets/title-survival.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
         "lifecycle": {
           "state": "ACTIVE",
           "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2733,7 +2805,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -2751,6 +2823,10 @@
           ],
           "image": "assets/crystal-v2.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/crystal-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -2824,7 +2900,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -2888,7 +2964,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -2907,6 +2983,10 @@
           ],
           "image": "assets/insect-main-v3.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/insect-main-v3.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -2981,7 +3061,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3032,7 +3112,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3050,6 +3130,10 @@
           ],
           "image": "assets/mock.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/mock.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -3123,7 +3207,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3184,7 +3268,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3202,6 +3286,10 @@
           ],
           "image": "assets/portal.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/portal.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -3275,7 +3363,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3337,7 +3425,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3355,6 +3443,10 @@
           ],
           "image": "assets/card-rpg-v2.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/card-rpg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -3428,7 +3520,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3482,7 +3574,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3501,6 +3593,10 @@
           ],
           "image": "assets/page-bg-v3.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v3.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -3575,7 +3671,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3636,7 +3732,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3654,6 +3750,10 @@
           ],
           "image": "assets/page-bg-v3.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v3.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -3727,7 +3827,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3788,7 +3888,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-25",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3806,6 +3906,10 @@
           ],
           "image": "assets/page-bg-v2.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -3879,7 +3983,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-25",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3963,6 +4067,10 @@
           ],
           "image": "assets/page-bg-v4.webp",
           "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v4.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
         },
         "lifecycle": {
           "state": "ACTIVE",
