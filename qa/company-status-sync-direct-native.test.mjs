@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {
   synchronizeCompanyStatusPolicy,
@@ -163,4 +164,16 @@ test('catalog-only DEVELOPMENT_CONFIRMED game keeps canonical direct-native home
   assert.equal(game.productionTarget,'ROBLOX_UNITY');
   assert.deepEqual(game.concurrentTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(game.homepageStage,'개발확정 · Roblox + Unity 앱 동시개발');
+});
+
+test('company status sync does not cancel a running reconciliation on trigger bursts',()=>{
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-status-sync.yml',import.meta.url),'utf8');
+  const reconciliation=roadmap.minimumNecessaryProcedurePolicy.execution.stateReconciliation;
+
+  assert.equal(reconciliation.cancelRunningReconcileOnNewTrigger,false);
+  assert.equal(reconciliation.companyStatusSyncBinding.cancelInProgress,false);
+  assert.match(workflow,/group:\s*company-status-sync-runtime/);
+  assert.match(workflow,/cancel-in-progress:\s*false/);
+  assert.doesNotMatch(workflow,/cancel-in-progress:\s*true/);
 });

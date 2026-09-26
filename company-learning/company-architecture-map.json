@@ -1,5 +1,5 @@
 {
-  "version": 221,
+  "version": 222,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4959,11 +4959,12 @@
     }
   },
   "nonblockingCoordinationTelemetryTopology": {
-    "version": 1,
+    "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
     "workflows": [
       ".github/workflows/company-development-queue-reconcile.yml",
-      ".github/workflows/company-seed-design-runtime.yml"
+      ".github/workflows/company-seed-design-runtime.yml",
+      ".github/workflows/company-status-sync.yml"
     ],
     "telemetrySource": "main:.vibe2/queue.json",
     "telemetryRole": "OBSERVATIONAL_ONLY",
@@ -4977,6 +4978,13 @@
       "cancelInProgress": false,
       "stateWritesSerialized": true,
       "triggerBurstBehavior": "QUEUE_NOT_CANCEL"
+    },
+    "statusSyncConcurrency": {
+      "group": "company-status-sync-runtime",
+      "cancelInProgress": false,
+      "stateWritesSerialized": true,
+      "runningSyncCompletesBeforeReplacement": true,
+      "triggerBurstBehavior": "QUEUE_OR_COALESCE_PENDING_WITHOUT_CANCELLING_RUNNING"
     }
   },
   "robloxNativeCodingQualityTopology": {

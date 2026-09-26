@@ -1,5 +1,5 @@
 {
-  "version": 413,
+  "version": 414,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8220,6 +8220,28 @@
       "noAuthorityExpansion": true,
       "noQualityGateWeakening": true,
       "noRetryBudgetIncrease": true
+    },
+    "statusSyncCancellationChurn20260926": {
+      "id": "STATUS_SYNC_CANCELLATION_CHURN_ALIGNMENT_2026-09-26",
+      "documentedAt": "2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "reason": "ALIGN_COMPANY_STATUS_SYNC_WITH_EXISTING_NONCANCELLING_STATE_RECONCILIATION_CONTRACT",
+      "observedRuns": [
+        36232817674,
+        36232813678,
+        36232805019,
+        36232807549
+      ],
+      "affectedWorkflow": ".github/workflows/company-status-sync.yml",
+      "concurrencyGroup": "company-status-sync-runtime",
+      "previousCancelInProgress": true,
+      "requiredCancelInProgress": false,
+      "runningStateWriteCompletionRequired": true,
+      "pendingTriggerPolicy": "QUEUE_OR_COALESCE_WITHOUT_CANCELLING_RUNNING_SYNC",
+      "newWorkflowCreated": false,
+      "newSchedulerCreated": false,
+      "authorityExpanded": false,
+      "qualityGateWeakening": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -20742,7 +20764,14 @@
         "cancelRunningReconcileOnNewTrigger": false,
         "newestTriggerMayQueueBehindRunningReconcile": true,
         "runningReconcileMustReachPersistOrExplicitFailure": true,
-        "repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation": true
+        "repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation": true,
+        "companyStatusSyncBinding": {
+          "workflow": ".github/workflows/company-status-sync.yml",
+          "concurrencyGroup": "company-status-sync-runtime",
+          "cancelInProgress": false,
+          "runningSyncMustReachPersistOrExplicitFailure": true,
+          "newerTriggerMayQueueOrCoalesceWithoutCancellingRunningSync": true
+        }
       }
     },
     "forbiddenInterpretations": [
