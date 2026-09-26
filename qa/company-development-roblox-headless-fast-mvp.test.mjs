@@ -200,3 +200,11 @@ test('F0 hands exact game ids back to Roblox runtime instead of racing the priva
   assert.match(workflow,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-release-promotion\.yml/);
 });
+
+
+test('F0 exact-runtime handoff preserves the single shared fallback guard',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(workflow,/let sharedFallbackUsed=false/);
+  assert.match(workflow,/ROBLOX_F0_SHARED_FALLBACK_DEFERRED=/);
+  assert.match(workflow,/bootstrapState\|\|''\)\.toUpperCase\(\)==='CREATED_PRIVATE_UNPUBLISHED'/);
+});
