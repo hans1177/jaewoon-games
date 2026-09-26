@@ -466,7 +466,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T14:20:30.122Z",
+      "updatedAt": "2026-09-26T14:22:45.765Z",
       "robloxSourceCommit": "8816db394640fb0fc2c8ba4013bac7a810dcfcfa",
       "robloxSourceBootstrapPassedAt": "2026-09-26T12:54:53.288Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -674,14 +674,52 @@
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 2,
+        "gameId": "horror-escape-room",
+        "sourceRevision": "8816db394640fb0fc2c8ba4013bac7a810dcfcfa",
+        "artifactIdentity": "sha256:04acccc859af4332c3c7901c828fd9caaa07e6bbd0a091c0d4ebce31c173be2b",
+        "artifactRunId": 36238682627,
+        "universeId": "10767445796",
+        "placeId": "98222620265768",
+        "candidateVersionNumber": 22,
+        "expectedVersionNumber": 22,
+        "observedVersionNumber": 21,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": false,
+        "exactEngineVersion": true,
+        "engineExecuted": true,
+        "simulationRunning": false,
+        "serverBootObserved": false,
+        "blockers": [
+          "exactVersion",
+          "checkpointOrder",
+          "checkpoint:SERVER_BOOT",
+          "checkpoint:MODULE_GRAPH_READY",
+          "checkpoint:WORLD_READY",
+          "checkpoint:SPAWN_READY",
+          "checkpoint:CHARACTER_READY",
+          "checkpoint:GROUND_CONTACT",
+          "checkpoint:CAMERA_READY",
+          "checkpoint:INPUT_READY",
+          "checkpoint:MOVEMENT_CONFIRMED",
+          "checkpoint:REMOTE_ROUNDTRIP",
+          "checkpoint:CORE_LOOP_READY",
+          "checkpoint:SAVE_ROUNDTRIP",
+          "checkpoint:MULTIPLAYER_SYNC"
+        ],
+        "observedAt": "2026-09-26T14:22:45.765Z",
+        "workflowRunId": 36248178552,
+        "authority": "exact-engine-version-awaiting-real-server-boot"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -704,9 +742,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-runtime-foundation-awaiting-real-server-boot"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -970,7 +1008,8 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T14:22:45.765Z"
     },
     {
       "gameId": "amusement-tycoon",
@@ -7508,7 +7547,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z"
     }
   ],
-  "updatedAt": "2026-09-26T14:22:40.037Z",
+  "updatedAt": "2026-09-26T14:22:45.765Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
