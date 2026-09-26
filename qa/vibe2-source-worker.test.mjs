@@ -3478,6 +3478,47 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/nextVibeAction=/);
 });
 
+test('focused replace-only compacts build-up directive without losing exact goal evidence',()=>{
+  const noisyGameplay='gameplay='+Array.from({length:180},(_,i)=>`system-${i}=detail-${i}`).join(' | ');
+  const directive=[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=demo-g7 generation=7 developmentDepth=4 escalationStage=BUILD_UP primaryFocus=PRESENTATION',
+    'gameIdentity=정원 방어 전투',
+    'primaryGoal=벌 돌진 전조를 실제 렌더에서 더 분명하게 만든다.',
+    'sourceAnchors=Assets/Scripts/Player.cs:12 SYMBOL Render CURRENT=weak INTENDED=clear ACCEPT=visible',
+    'expectedPlayerEffect=공격 전조를 즉시 구분',
+    'nextVibeAction=CONTINUE_BUILD_UP_CURRENT_SYSTEM',
+    noisyGameplay,
+    'progressionWorld='+('world-detail '.repeat(220)),
+    'visual=ANIMATION=anticipation impact recovery',
+    'platform=Unity 네이티브 렌더 책임에서 구현',
+    'preserve=GAMEPLAY_BALANCE | SAVE_MEANING',
+    'acceptance=ACTUAL_RENDERED_CHANGE_REQUIRED',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].join('\n');
+  const prompt=[
+    'Engine: unity',
+    'Goal: improve visible attack anticipation',
+    directive,
+    'Allowed edit paths: Assets/Scripts/Player.cs',
+    '=== FILE Assets/Scripts/Player.cs [EDITABLE] ===',
+    'class Player { int Speed() { return 1; } }'
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('MODEL_TIMEOUT'),
+    responsibleFiles:['Assets/Scripts/Player.cs']
+  });
+  assert.ok(focused);
+  assert.match(focused.prompt,/directiveId=demo-g7/);
+  assert.match(focused.prompt,/primaryGoal=벌 돌진 전조/);
+  assert.match(focused.prompt,/sourceAnchors=Assets\/Scripts\/Player\.cs/);
+  assert.match(focused.prompt,/expectedPlayerEffect=공격 전조를 즉시 구분/);
+  assert.match(focused.prompt,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
+  assert.doesNotMatch(focused.prompt,/system-179=detail-179/);
+  assert.doesNotMatch(focused.prompt,/world-detail world-detail world-detail/);
+  assert.ok(Buffer.byteLength(focused.prompt,'utf8')<Buffer.byteLength(prompt,'utf8'));
+});
+
 test('Roblox zero-output timeout stays on focused recovery for the remaining existing attempt budget',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/let robloxZeroOutputTimeoutFocusedRecoveryActive=false/);
