@@ -4198,6 +4198,25 @@
         "candidatePublicationFailureClass": "CANDIDATE_BRANCH_PUBLISH",
         "candidatePublicationTelemetryStage": "CANDIDATE_PUBLICATION",
         "candidatePublicationExcludedFromSourceGenerationFailureRate": true,
+        "focusedRetryPromptCompaction": {
+          "enabled": true,
+          "preserveBuildUpKeys": [
+            "directiveId",
+            "gameIdentity",
+            "primaryGoal",
+            "sourceAnchors",
+            "expectedPlayerEffect",
+            "nextVibeAction",
+            "visual",
+            "platform",
+            "preserve",
+            "acceptance"
+          ],
+          "omitNonResponsibleBuildUpDetail": true,
+          "sourceContextRemainsExactAnchorBounded": true,
+          "telemetry": "VIBE2_FOCUSED_RETRY_PROMPT_BYTES",
+          "authorityExpanded": false
+        },
         "directMainWrite": false,
         "externalPaidApiRequired": false,
         "openAiPaidApiAllowed": false
