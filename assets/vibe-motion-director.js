@@ -8,6 +8,16 @@ const unique = values => [...new Set((values || []).map(text).filter(Boolean))];
 const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
 
 export const MOTION_DIRECTOR_TARGET='HIGH_END_COMPOSABLE_MOTION_DIRECTOR';
+export const ROBLOX_CHARACTER_MOTION_FAILURE='CHARACTER_MOTION_MANNEQUIN';
+export const ROBLOX_ACTOR_CLASSES=Object.freeze(['PLAYER','HUMANOID_NPC','CREATURE']);
+export const ROBLOX_MOTION_SOURCE_PRIORITY=Object.freeze([
+  'VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION',
+  'VERIFIED_COMPATIBLE_COMPANY_MOTION_LIBRARY',
+  'LICENSE_VERIFIED_REPOSITORY_MOTION',
+  'LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE',
+  'SAFE_RETARGET_AND_CLEANUP',
+  'NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP'
+]);
 
 export const MOTION_COMPOSITION_CHANNELS=Object.freeze([
   'ROOT','LOCOMOTION','LOWER_BODY','PELVIS_SPINE','UPPER_BODY','LEFT_ARM','RIGHT_ARM','HEAD_GAZE',
@@ -1054,6 +1064,181 @@ export function buildRuntimeMotionLearningCandidate({
   });
 }
 
+
+export function selectRobloxCharacterMotionSource({
+  candidates=[],
+  context={},
+  gameId='',
+  archetype='',
+  recentMotionIds=[]
+}={}){
+  const targetGame=text(gameId||context.gameId);
+  const targetArchetype=upper(archetype||context.speciesOrArchetype||context.archetype);
+  const rows=(candidates||[]).map(candidate=>{
+    const dna=candidate.dna||candidate;
+    const base=scoreMotionCandidate(candidate,{...context,platform:'ROBLOX'},recentMotionIds);
+    if(!base.valid)return Object.freeze({candidate,id:base.id,valid:false,score:-Infinity,sourceClass:'INCOMPATIBLE',rejectedBy:base.rejectedBy});
+    const verified=upper(dna.RUNTIME_VERIFICATION_STATE||candidate.runtimeVerificationState)==='VERIFIED_RUNTIME'||candidate.companyVerified===true;
+    const sameGame=targetGame&&text(candidate.gameId||candidate.GAME_ID)===targetGame;
+    const sameArchetype=targetArchetype&&upper(dna.SPECIES_OR_ARCHETYPE||candidate.archetype)===targetArchetype;
+    const provenance=upper(dna.SOURCE_PROVENANCE||candidate.sourceProvenance||candidate.sourceType);
+    const licensed=candidate.licenseVerified===true||/LICENSE_VERIFIED|CC0|PROJECT_ORIGINAL|ROBLOX_PLATFORM/.test(provenance);
+    let sourceClass='NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP',bonus=0;
+    if(verified&&sameGame&&sameArchetype){sourceClass='VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION';bonus=500;}
+    else if(verified&&candidate.companyVerified===true){sourceClass='VERIFIED_COMPATIBLE_COMPANY_MOTION_LIBRARY';bonus=400;}
+    else if(licensed&&/REPOSITORY|PROJECT_ORIGINAL|CC0/.test(provenance)){sourceClass='LICENSE_VERIFIED_REPOSITORY_MOTION';bonus=300;}
+    else if(licensed&&/EXTERNAL|ROBLOX_PLATFORM/.test(provenance)){sourceClass='LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE';bonus=200;}
+    else if(candidate.retargeted===true||/RETARGET/.test(provenance)){sourceClass='SAFE_RETARGET_AND_CLEANUP';bonus=100;}
+    return Object.freeze({candidate,id:base.id,valid:true,score:base.score+bonus,sourceClass,rejectedBy:null});
+  }).filter(row=>row.valid).sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id));
+  return Object.freeze({
+    selected:rows[0]?.candidate||null,
+    selectedId:rows[0]?.id||null,
+    sourceClass:rows[0]?.sourceClass||'NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP',
+    ranked:Object.freeze(rows.map(row=>Object.freeze({id:row.id,score:row.score,sourceClass:row.sourceClass}))),
+    priority:ROBLOX_MOTION_SOURCE_PRIORITY,
+    libraryFirst:true,
+    newKeyframeAuthoringLast:true,
+    gameplayAuthority:false
+  });
+}
+
+export function createRobloxMotionBlendProfile({
+  crossFadeSeconds=.16,
+  walkSpeed=8,
+  jogSpeed=12,
+  runSpeed=16,
+  sprintSpeed=22,
+  turnBlendSeconds=.14,
+  attackRecoveryBlendSeconds=.12,
+  speedSync=true,
+  upperLowerBodyLayering=true
+}={}){
+  return Object.freeze({
+    crossFadeSeconds:clamp(crossFadeSeconds,.08,.35),
+    speedThresholds:Object.freeze({
+      WALK:Math.max(0,Number(walkSpeed)||8),
+      JOG:Math.max(0,Number(jogSpeed)||12),
+      RUN:Math.max(0,Number(runSpeed)||16),
+      SPRINT:Math.max(0,Number(sprintSpeed)||22)
+    }),
+    turnBlendSeconds:clamp(turnBlendSeconds,.08,.35),
+    attackRecoveryBlendSeconds:clamp(attackRecoveryBlendSeconds,.08,.35),
+    animationTrackCrossFadeRequired:true,
+    adjustWeightPreferred:true,
+    playbackSpeedSyncRequired:speedSync!==false,
+    accelerationDecelerationContinuityRequired:true,
+    upperLowerBodyLayeringPreferred:upperLowerBodyLayering!==false,
+    hardStatePopForbidden:true,
+    gameplayTimingAuthority:false
+  });
+}
+
+export function createRobloxCharacterMotionPlan({
+  actorClass='HUMANOID_NPC',
+  bodyPlan='HUMANOID',
+  rigProfile='R15',
+  gameId='',
+  archetype='',
+  motionCandidates=[],
+  context={},
+  recentMotionIds=[],
+  blend={},
+  procedural={}
+}={}){
+  const actor=upper(actorClass);
+  const normalizedActor=ROBLOX_ACTOR_CLASSES.includes(actor)?actor:'HUMANOID_NPC';
+  const source=selectRobloxCharacterMotionSource({
+    candidates:motionCandidates,
+    context:{...context,bodyPlan,rigProfile,platform:'ROBLOX'},
+    gameId,
+    archetype,
+    recentMotionIds
+  });
+  const humanoid=normalizedActor!=='CREATURE'||/HUMANOID|BIPED|R15|R6/.test(upper(bodyPlan)+' '+upper(rigProfile));
+  const requiredStates=humanoid
+    ?['IDLE','WALK','JOG','RUN','START','STOP','TURN','ATTACK','HIT','DEATH']
+    :['IDLE_ACTING','BODY_PLAN_LOCOMOTION','TURN','ATTACK','HIT','DEATH'];
+  return Object.freeze({
+    actorClass:normalizedActor,
+    bodyPlan:upper(bodyPlan),
+    rigProfile:upper(rigProfile),
+    requiredRig:Object.freeze(humanoid
+      ?['MOTOR6D_OR_BONES','HUMANOID_OR_ANIMATION_CONTROLLER','ANIMATOR']
+      :['BODY_PLAN_SPECIFIC_ARTICULATED_JOINT_CHAIN','ANIMATOR']),
+    requiredStates:Object.freeze(requiredStates),
+    motionSource:source,
+    blend:createRobloxMotionBlendProfile(blend),
+    procedural:createProceduralMotionProfile({
+      footIk:procedural.footIk!==false,
+      groundNormal:procedural.groundNormal!==false,
+      pelvisHeight:procedural.pelvisHeight!==false,
+      spineLean:procedural.spineLean!==false,
+      headGaze:procedural.headGaze!==false,
+      aimOffset:procedural.aimOffset!==false,
+      slopeAdaptation:procedural.slopeAdaptation!==false,
+      platformBudget:procedural.platformBudget||'MOBILE'
+    }),
+    runtimeScenario:Object.freeze(['IDLE_5_SECONDS','WALK_10_SECONDS','TURN_LEFT_RIGHT','RUN_AND_STOP','ATTACK_THREE_TIMES_WHEN_COMBATANT','HIT_REACTION_WHEN_DAMAGEABLE','DEATH_WHEN_MORTAL','RESPAWN_WHEN_SUPPORTED']),
+    weldConstraintOnlyArticulatedActorForbidden:true,
+    rootTransformOnlyVisualLocomotionForbidden:true,
+    officialStudioRuntimeEvidenceRequired:true,
+    gameplayAuthority:false
+  });
+}
+
+export function auditRobloxCharacterMotionEvidence({
+  actorClass='HUMANOID_NPC',
+  articulatedExpected=true,
+  hasAnimator=false,
+  hasHumanoid=false,
+  hasAnimationController=false,
+  hasMotor6D=false,
+  hasBones=false,
+  visibleLocomotion=false,
+  rootTransformChanges=false,
+  jointTransformChanges=false,
+  weldConstraintOnly=false,
+  hardStatePop=false,
+  playbackSpeedSynced=true,
+  footSlideNormalized=0,
+  attackRecoverySnap=false,
+  officialStudioRuntimeObserved=false
+}={}){
+  const failures=[];
+  const articulated=hasMotor6D===true||hasBones===true;
+  const controller=hasHumanoid===true||hasAnimationController===true;
+  if(articulatedExpected===true&&!articulated)failures.push('RIG_ARTICULATION_MISSING');
+  if(articulatedExpected===true&&hasAnimator!==true)failures.push('ANIMATOR_MISSING');
+  if(articulatedExpected===true&&controller!==true)failures.push('ANIMATION_CONTROLLER_MISSING');
+  if(weldConstraintOnly===true&&articulatedExpected===true)failures.push('WELD_CONSTRAINT_ONLY_ARTICULATED_BODY');
+  if(visibleLocomotion===true&&rootTransformChanges===true&&jointTransformChanges!==true)failures.push('ROOT_ONLY_VISIBLE_LOCOMOTION');
+  if(visibleLocomotion===true&&jointTransformChanges!==true)failures.push('JOINT_ACTIVITY_MISSING');
+  if(hardStatePop===true)failures.push('HARD_MOTION_STATE_POP');
+  if(playbackSpeedSynced!==true)failures.push('LOCOMOTION_PLAYBACK_SPEED_DESYNC');
+  if(Number(footSlideNormalized||0)>.035)failures.push('FOOT_SLIDE_DISTANCE');
+  if(attackRecoverySnap===true)failures.push('ATTACK_RECOVERY_SNAP');
+  if(officialStudioRuntimeObserved!==true)failures.push('OFFICIAL_STUDIO_RUNTIME_EVIDENCE_MISSING');
+  const mannequin=failures.some(value=>[
+    'RIG_ARTICULATION_MISSING','ANIMATOR_MISSING','ANIMATION_CONTROLLER_MISSING',
+    'WELD_CONSTRAINT_ONLY_ARTICULATED_BODY','ROOT_ONLY_VISIBLE_LOCOMOTION','JOINT_ACTIVITY_MISSING'
+  ].includes(value));
+  return Object.freeze({
+    actorClass:upper(actorClass),
+    pass:failures.length===0,
+    mannequin,
+    failureCode:mannequin?ROBLOX_CHARACTER_MOTION_FAILURE:null,
+    failures:Object.freeze(failures),
+    articulated,
+    animatorBound:hasAnimator===true,
+    controllerBound:controller,
+    jointActivity:jointTransformChanges===true,
+    runtimeObserved:officialStudioRuntimeObserved===true,
+    blocksVerifiedPromotion:failures.length>0,
+    gameplayAuthority:false
+  });
+}
+
 export function createSpeciesSignature({archetype='',idle='',locomotion='',attack='',defense='',hit='',death='',specialBodyPart=''}={}){
   return Object.freeze({
     archetype:upper(archetype),
@@ -1074,7 +1259,7 @@ export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
   transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
-  emotion=null,lod=null,lineage=null,runtimeSignals=[]
+  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null
 }={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
@@ -1084,7 +1269,7 @@ export function createMotionDirectorPlan({
   const selectedDNA=selector.selected?.dna||selector.selected||{BODY_PLAN:bodyPlan,RIG_PROFILE:rigProfile,STYLE_FAMILY:styleFamily,PLATFORM_VARIANT:platform};
   const composition=composeMotionStack({layers,dna:selectedDNA,styleVariant:{style:upper(styleFamily)}});
   return Object.freeze({
-    version:1,
+    version:2,
     target:MOTION_DIRECTOR_TARGET,
     platform:upper(platform),
     motionDNA:createMotionDNA(selectedDNA),
@@ -1103,11 +1288,16 @@ export function createMotionDirectorPlan({
     motionLod:lod?selectMotionLod(lod):null,
     lineage:lineage?createMotionLineage(lineage):null,
     runtimeLearning:runtimeSignals?.length?buildRuntimeMotionLearningCandidate({platform,signals:aggregateRuntimeMotionSignals(runtimeSignals),samples:runtimeSignals}):null,
+    robloxCharacterMotion:upper(platform)==='ROBLOX'?createRobloxCharacterMotionPlan({
+      bodyPlan,rigProfile,motionCandidates,context,recentMotionIds,
+      ...(robloxCharacterMotion||{})
+    }):null,
     systems:Object.freeze([
       'MOTION_DNA','COMPATIBILITY_GRAPH','BODY_LAYER_COMPOSER','CONTEXT_SELECTOR','MOTION_GRAMMAR',
       'REACTION_MATCHER','PAIR_MOTION','SPECIES_SIGNATURE','STYLE_MODIFIER','MOTION_MUTATION','VARIATION_MEMORY',
       'TRANSITION_DIRECTOR','AUTOMATIC_CONTACT_QA','GAMEPLAY_EVENT_MOTION_BINDING','PROCEDURAL_MOTION_LAYER',
-      'GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING'
+      'GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING',
+      ...(upper(platform)==='ROBLOX'?['ROBLOX_SMOOTH_CHARACTER_MOTION']:[])
     ]),
     libraryGraphNodes:MOTION_LIBRARY_GRAPH_NODES,
     continuousExpansion:true,
