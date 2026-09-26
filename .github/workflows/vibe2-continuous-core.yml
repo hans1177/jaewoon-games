@@ -981,6 +981,7 @@ jobs:
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1112,8 +1113,36 @@ jobs:
           git config user.name 'jaewoon-vibe2-worker'
           git config user.email 'vibe2-worker@users.noreply.github.com'
           git commit -m "vibe2: candidate ${TASK_ID} ${VARIANT}"
-          git push origin "HEAD:$candidate_branch"
           candidate_sha="$(git rev-parse HEAD)"
+
+          # Create the remote candidate ref at the already-authorized pinned base first.
+          # The following push then contains only this task's approved source/candidate diff,
+          # so untouched workflow files in the base history do not require workflow-write authority.
+          candidate_ref_payload="$(jq -nc --arg ref "refs/heads/$candidate_branch" --arg sha "$base_sha" '{ref:$ref,sha:$sha}')"
+          if ! curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs" \
+            --data "$candidate_ref_payload"; then
+            echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
+            echo "failure_message=remote candidate ref creation failed at pinned base" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          if ! git push origin "HEAD:$candidate_branch"; then
+            echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
+            echo "failure_message=remote candidate commit push failed after ref creation" >> "$GITHUB_OUTPUT"
+            curl --fail-with-body --silent --show-error \
+              --request DELETE \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/$candidate_branch" >/dev/null 2>&1 || true
+            exit 1
+          fi
+
           echo "candidate_branch=$candidate_branch" >> "$GITHUB_OUTPUT"
           echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_BRANCH=$candidate_branch"
