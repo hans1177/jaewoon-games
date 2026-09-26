@@ -1,5 +1,5 @@
 {
-  "version": 437,
+  "version": 438,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8609,7 +8609,10 @@
       "independentGameRunMayCancel": false,
       "runningSchedulerMayCancel": false,
       "runningFanInMayCancel": false,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "staleUnstartedMainPushGamePrimaryWakeMayCancel": true,
+      "staleUnstartedMainPushGamePrimaryWakeMarker": "VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
+      "inProgressMainPushGamePrimaryWakeMayCancel": false
     },
     "directorPreSupervisionCoalescing20260927": {
       "id": "DIRECTOR_PRE_SUPERVISION_COALESCING_2026-09-27",
@@ -8708,7 +8711,12 @@
       "concurrencyScope": "MAIN_PUSH_WAKE_ONLY",
       "activeWakeCancellationForbidden": true,
       "pendingWakePolicy": "KEEP_ACTIVE_AND_ONLY_NEWEST_PENDING_WAKE",
-      "repositoryDispatchAndCallableRunsRemainRunScoped": true
+      "repositoryDispatchAndCallableRunsRemainRunScoped": true,
+      "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
+      "staleQueuedWakeMayCancel": true,
+      "inProgressWakeCancellationForbidden": true,
+      "staleQueuedWakeCancellationScope": "MAIN_PUSH_WAKE_ONLY",
+      "staleQueuedWakeCancellationRequiresHeadShaNotCurrentMain": true
     }
   },
   "vibeExecutionLaneContract": {
