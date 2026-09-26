@@ -501,3 +501,30 @@ test('Unity Web bottleneck optimizations are bound consistently across central p
   assert.equal(logMap.unityWebBootProofReuseEvidence?.separateBootBrowserLaunchExpected,false);
   assert.equal(logMap.unityWebBootProofReuseEvidence?.bootPassMustComeFromActualPlayEvidence,true);
 });
+
+
+test('exact-game native workflow concurrency closes dedupe races without global serialization',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
+  const unity=read('.github/workflows/company-development-unity-runtime.yml');
+  const central=read('.github/workflows/company-development-confirmed-runtime.yml');
+  const change=roadmap.changeRecord?.nativeExactGameWorkflowConcurrency20260927;
+
+  assert.match(roblox,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.match(unity,/concurrency:\n\s+group: unity-native-exact-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+
+  assert.equal(change?.exactGameIdentity,'inputs.game_id');
+  assert.equal(change?.batchAndPushFallbackIdentity,'github.run_id');
+  assert.equal(change?.cancelInProgress,false);
+  assert.equal(change?.distinctGamesParallel,true);
+  assert.equal(change?.batchRunsGloballySerialized,false);
+  assert.equal(change?.globalNativeSerializationForbidden,true);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.distinctGamesParallel,true);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.batchGlobalSerialization,false);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.exactGameOverlapForbidden,true);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.distinctGameParallelismRequired,true);
+});
