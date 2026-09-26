@@ -60,6 +60,10 @@ test('director fallback wake only re-dispatches existing queued GAME_PRIMARY wor
   assert.equal(fallback.newQueueCreated,false);
   assert.equal(fallback.newTaskCreated,false);
   assert.equal(fallback.canonicalReservePathPreserved,true);
+  assert.equal(fallback.gateIndependentFromRunnerDrain,true);
+  assert.equal(fallback.gateActiveCancellationForbidden,true);
+  assert.equal(fallback.staleQueuedNonPushCoreMaySuppressFallback,false);
+  assert.equal(fallback.superviseWaitsForRunnerDrainAndGamePrimaryGate,true);
   assert.equal(fallback.activeNonPushCoreSuppressesFallbackDispatch,true);
   assert.equal(fallback.cancelledWorkflowRunWakeSuppressed,true);
   assert.equal(fallback.qualitySecurityReleaseGatesUnchanged,true);
@@ -1108,5 +1112,9 @@ test('director uses job-local coalescing without workflow-wide serialization',()
   assert.doesNotMatch(directorSupervisor.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(directorSupervisor,/runner-drain:[\s\S]*?group:\s*director-runner-drain-v1/);
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?group:\s*director-game-primary-gate-v1/);
+  assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?cancel-in-progress:\s*false/);
+  assert.doesNotMatch(directorSupervisor,/game-primary-gate:\n\s+needs:\s+runner-drain/);
+  assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_CURRENT_MAIN=/);
+  assert.match(directorSupervisor,/supervise:\n\s+needs: \[runner-drain, game-primary-gate\]/);
   assert.match(directorSupervisor,/supervise:[\s\S]*?group:\s*director-central-company-supervise-v3/);
 });
