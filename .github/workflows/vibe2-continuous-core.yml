@@ -609,57 +609,6 @@ jobs:
           node --check tools/company-constitution-enforcer.mjs
           node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
 
-      - name: Restore shared Ollama runtime cache
-        id: worker_ollama_cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/vibe2-ollama/bin/ollama
-            ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v3-Linux-qwen3-1.7b
-
-      - name: Prepare cached Ollama runtime
-        id: worker_ollama_runtime
-        shell: bash
-        run: |
-          set -euo pipefail
-          prep_started="$(date +%s%3N)"
-          cached="$HOME/.cache/vibe2-ollama/bin/ollama"
-          cached_lib="$HOME/.cache/vibe2-ollama/lib/ollama"
-          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-            sudo mkdir -p /usr/local/lib/ollama
-            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE'
-            echo 'source=CACHE' >> "$GITHUB_OUTPUT"
-          else
-            installed=0
-            for attempt in 1 2 3; do
-              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-              sleep $((attempt * 4))
-            done
-            test "$installed" = 1
-            mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$cached_lib"
-            cp "$(command -v ollama)" "$cached"
-            chmod +x "$cached"
-            runtime_lib=""
-            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
-              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-                runtime_lib="$candidate"
-                break
-              fi
-            done
-            test -n "$runtime_lib"
-            cp -a "$runtime_lib/." "$cached_lib/"
-            find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'
-            echo 'source=FALLBACK_INSTALL' >> "$GITHUB_OUTPUT"
-          fi
-          prep_finished="$(date +%s%3N)"
-          echo "duration_ms=$((prep_finished-prep_started))" >> "$GITHUB_OUTPUT"
-
       - name: Build reserved task work order
         id: order
         env:
@@ -747,6 +696,92 @@ jobs:
           echo "reason=$reason" >> "$GITHUB_OUTPUT"
           echo "VIBE2_SHARED_WORK_LOCK_ACQUIRED=${acquired:-NO}"
           echo "VIBE2_SHARED_WORK_LOCK_REASON=${reason:-UNKNOWN}"
+
+      - name: Decide worker local model requirement
+        id: model_need
+        env:
+          ORDER_RUN: ${{ steps.order.outputs.run }}
+          ROUTE: ${{ steps.order.outputs.route }}
+          WORK_LOCK_ACQUIRED: ${{ steps.work_lock.outputs.acquired }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          required='false'
+          reason='ROUTE_NO_LOCAL_MODEL'
+          if [ "$ORDER_RUN" != 'true' ]; then
+            reason='WORK_ORDER_NOT_RUNNABLE'
+          elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
+            required='true'
+            reason='LEARNING_ROUTE'
+          elif [ "$ROUTE" = 'text-source-worker' ]; then
+            if [ "$WORK_LOCK_ACQUIRED" = 'true' ]; then
+              required='true'
+              reason='TEXT_SOURCE_LOCK_ACQUIRED'
+            else
+              reason='TEXT_SOURCE_LOCK_NOT_ACQUIRED'
+            fi
+          fi
+          echo "required=$required" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          if [ "$required" = 'true' ]; then
+            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES'
+          else
+            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO'
+          fi
+          echo "VIBE2_WORKER_MODEL_CACHE_REASON=$reason"
+
+      - name: Restore shared Ollama runtime cache
+        id: worker_ollama_cache
+        if: steps.model_need.outputs.required == 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v3-Linux-qwen3-1.7b
+
+      - name: Prepare cached Ollama runtime
+        id: worker_ollama_runtime
+        if: steps.model_need.outputs.required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          prep_started="$(date +%s%3N)"
+          cached="$HOME/.cache/vibe2-ollama/bin/ollama"
+          cached_lib="$HOME/.cache/vibe2-ollama/lib/ollama"
+          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+            sudo mkdir -p /usr/local/lib/ollama
+            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
+            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
+            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE'
+            echo 'source=CACHE' >> "$GITHUB_OUTPUT"
+          else
+            installed=0
+            for attempt in 1 2 3; do
+              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+              sleep $((attempt * 4))
+            done
+            test "$installed" = 1
+            mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$cached_lib"
+            cp "$(command -v ollama)" "$cached"
+            chmod +x "$cached"
+            runtime_lib=""
+            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
+              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+                runtime_lib="$candidate"
+                break
+              fi
+            done
+            test -n "$runtime_lib"
+            cp -a "$runtime_lib/." "$cached_lib/"
+            find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .
+            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
+            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'
+            echo 'source=FALLBACK_INSTALL' >> "$GITHUB_OUTPUT"
+          fi
+          prep_finished="$(date +%s%3N)"
+          echo "duration_ms=$((prep_finished-prep_started))" >> "$GITHUB_OUTPUT"
 
       - name: Run isolated learning practice
         id: practice
@@ -1271,6 +1306,8 @@ jobs:
           EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
           WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
           CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
+          MODEL_CACHE_REQUIRED: ${{ steps.model_need.outputs.required }}
+          MODEL_CACHE_REASON: ${{ steps.model_need.outputs.reason }}
           MODEL_PREP_MS: ${{ steps.worker_ollama_runtime.outputs.duration_ms }}
           OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
           OLLAMA_RUNTIME_SOURCE: ${{ steps.worker_ollama_runtime.outputs.source }}
@@ -1455,6 +1492,8 @@ jobs:
             Array.isArray(workOrder?.knowledgeApplicationContract?.secondaryDomains)&&workOrder.knowledgeApplicationContract.secondaryDomains.length>0&&`learning-secondary-domains:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.secondaryDomains.slice(0,12)))}`,
             Array.isArray(workOrder?.unifiedLearning?.externalAiDistilled)&&workOrder.unifiedLearning.externalAiDistilled.length>0&&`learning-external-ai-distilled-count:${workOrder.unifiedLearning.externalAiDistilled.length}`,
             `actions-run:${process.env.GITHUB_RUN_ID}`,
+            clean(process.env.MODEL_CACHE_REQUIRED)&&`model-cache-required:${clean(process.env.MODEL_CACHE_REQUIRED).toUpperCase()}`,
+            clean(process.env.MODEL_CACHE_REASON)&&`model-cache-reason:${clean(process.env.MODEL_CACHE_REASON)}`,
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
             ...(fs.existsSync(clean(process.env.SHARED_CONTEXT_FILE))?(()=>{
@@ -1487,6 +1526,7 @@ jobs:
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
+            modelCacheRequired:clean(process.env.MODEL_CACHE_REQUIRED).toLowerCase()==='true',modelCacheReason:clean(process.env.MODEL_CACHE_REASON)||null,
             ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
           };
           let practiceDistillation=null;
