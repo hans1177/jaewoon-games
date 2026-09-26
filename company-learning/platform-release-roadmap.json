@@ -1,5 +1,5 @@
 {
-  "version": 445,
+  "version": 446,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8883,6 +8883,33 @@
       "qualitySecurityReleaseGatesUnchanged": true,
       "independentGameParallelismPreserved": true,
       "canonicalQaTriggerIncludesActionAndContinuation": true
+    },
+    "unityWebActiveRunDedupe20260927": {
+      "id": "UNITY_WEB_ACTIVE_RUN_DEDUPE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "SUPPRESS_DUPLICATE_SAME_GAME_UNITY_WEB_FLOOR_AND_BOOTSTRAP_DISPATCH_WHILE_PRESERVING_DISTINCT_GAME_PARALLELISM",
+      "planner": ".github/workflows/company-development-confirmed-runtime.yml",
+      "trackedWorkflows": [
+        ".github/workflows/unity-web-first-stage-build.yml",
+        ".github/workflows/unity-web-floor-source-bootstrap.yml"
+      ],
+      "scanPagesPerWorkflow": 3,
+      "rowsPerPage": 100,
+      "activeStates": [
+        "queued",
+        "pending",
+        "in_progress",
+        "requested"
+      ],
+      "exactGameIdentityFromRunName": true,
+      "duplicateFloorDispatchSuppressed": true,
+      "duplicateBootstrapDispatchSuppressed": true,
+      "existingPerGameConcurrencyRetained": true,
+      "distinctGamesRemainParallel": true,
+      "globalUnityWebSerializationForbidden": true,
+      "matrixParallelismCapAdded": false,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
