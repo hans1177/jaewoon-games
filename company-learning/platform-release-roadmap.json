@@ -1,5 +1,5 @@
 {
-  "version": 446,
+  "version": 447,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8948,6 +8948,24 @@
       "distinctGamesRemainParallel": true,
       "globalUnityWebSerializationForbidden": true,
       "matrixParallelismCapAdded": false,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "unityWebBootProofReuse20260927": {
+      "id": "UNITY_WEB_BOOT_PROOF_REUSE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_DUPLICATE_BROWSER_BOOT_SMOKE_AND_BIND_BOOT_PASS_TO_ACTUAL_BROWSER_PLAY_EVIDENCE",
+      "workflow": ".github/workflows/unity-web-first-stage-build.yml",
+      "browserRuntimeInstallRetained": true,
+      "separateBootBrowserLaunchRemoved": true,
+      "actualPlayValidatorOwnsBootAssertion": true,
+      "buildEvidenceRequiresActualPlayBootPass": true,
+      "bootSmokeEvidenceSource": "unity-web-gameplay-validation.json#boot.pass",
+      "independentQaStillRequired": true,
+      "regressionStillRequired": true,
+      "mobileActualPlayStillRequired": true,
+      "releaseAuthorityUnchanged": true,
+      "duplicateValidationRemoved": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },
