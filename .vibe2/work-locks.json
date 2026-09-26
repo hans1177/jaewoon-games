@@ -3,44 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-10o6862",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-roblox-second-gate-rebuild-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/GameConfig.luau",
-        "roblox-games/daechung-rpg/server/Game.server.luau",
-        "roblox-games/daechung-rpg/client/Game.client.luau"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:15:24.898Z",
-      "expiresAt": "2026-09-26T11:00:24.898Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
-      "id": "wl-xnmgvn",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:15:26.300Z",
-      "expiresAt": "2026-09-26T11:00:26.300Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-11bdz4e",
       "worker": "vibe2",
       "taskId": "survival-roblox-presentation-asset-adaptation-v1",
@@ -896,6 +858,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-qcda35",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "be4c105308428533a9228de8eaa41ac11784fa05",
+      "acquiredAt": "2026-09-26T11:00:26.777Z",
+      "expiresAt": "2026-09-26T11:45:26.777Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
