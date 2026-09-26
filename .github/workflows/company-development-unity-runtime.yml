@@ -11,8 +11,6 @@ on:
       - 'unity-games/**'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
-      - 'tools/company-upper-platform-admission.mjs'
-      - 'qa/company-upper-platform-admission.test.mjs'
       - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/unity-package-fatal-logcat.py'
@@ -70,11 +68,9 @@ jobs:
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-plan.json
           node --check tools/company-selected-platform-router.mjs
           node --check tools/company-development-unity-platform.mjs
-          node --check tools/company-upper-platform-admission.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-development-unity-evidence.mjs
           node --test qa/company-selected-platform-router.test.mjs
-          node --test qa/company-upper-platform-admission.test.mjs
           node --test qa/company-development-unity-runtime.test.mjs
           node --test qa/unity-package-fatal-logcat.test.mjs
 
@@ -112,21 +108,15 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {DEVELOPMENT_GAME_WIP_MAX,platformDevelopmentEligible,selectRepresentativeCanary,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
-          import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=(q.items||[]).filter(item=>{
             if(!windowIds.has(item.gameId))return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
-            const admission=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
-            if(admission.state!=='UPPER_PLATFORM'){
-              console.log('UNITY_NATIVE_ADMISSION_BLOCKED='+item.gameId+':'+admission.state+':'+admission.reason);
-              return false;
-            }
+             console.log('UNITY_PARALLEL_ADMISSION='+item.gameId+':MINIMUM_DESIGN_READY');
             return platformDevelopmentEligible(item,'UNITY');
           }).map(item=>({
             gameId:item.gameId,gameName:item.gameName,designBaselineSource:item.designBaselineSource,
@@ -831,8 +821,8 @@ jobs:
         run: |
           echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
           echo 'DEVELOPMENT_GAME_ELIGIBILITY_SCOPE=UNBOUNDED_CAPACITY_BATCHED'
-          echo 'UNITY_WEB_PREDEVELOPMENT_FLOOR=UPPER_PLATFORM_DEVELOPMENT_READY_REQUIRED_FOR_NEW_NATIVE_ENTRY'
-          echo 'UNITY_WEB_FLOOR_OWNER=unity-web-first-stage-build.yml'
+          echo 'UNITY_WEB_PARALLEL_LANE=NATIVE_DEVELOPMENT_DOES_NOT_WAIT_FOR_WEB'
+          echo 'UNITY_WEB_PARALLEL_LANE_OWNER=unity-web-first-stage-build.yml'
           echo 'UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT'
           echo 'CHANGE_DETECTION=ENABLED'
           echo 'CHEAP_PRECHECK=ENABLED'
