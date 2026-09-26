@@ -250,7 +250,8 @@ assert.match(seedDesignRuntime,/if: needs\.game-primary-gate\.outputs\.defer != 
 assert.match(directorSupervisor,/game-primary-gate:/);
 assert.match(directorSupervisor,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
 assert.match(directorSupervisor,/needs: game-primary-gate/);
-assert.match(directorSupervisor,/if: needs\.game-primary-gate\.outputs\.defer != 'true'/);
+assert.match(directorSupervisor,/needs\.game-primary-gate\.outputs\.defer != 'true'/);
+assert.match(directorSupervisor,/github\.event\.workflow_run\.conclusion != 'cancelled'/);
 assert.match(seedDesignRuntime,/COMPANY_GEMINI_LEAD_MODELS: '[^']*gemini-3\.8-flash[^']*gemini-3\.7-flash[^']*'/);
 assert.match(seedDesignRuntime,/const authorizedLeadPool=uniq\(directive\?\.ai\?\.modelPool\|\|\[\]\);/);
 assert.match(seedDesignRuntime,/if\(primary\.some\(model=>!authorizedLeadPool\.includes\(model\)\)\)throw new Error\('GEMINI_QUOTA_GOVERNOR_UNAUTHORIZED_LEAD_MODEL'\);/);
