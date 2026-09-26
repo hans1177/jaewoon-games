@@ -807,6 +807,102 @@ function buildUpDirectiveBlockFromPrompt(prompt=''){
 }
 
 
+export function buildRobloxNativeSourceInspection({order={},context={},responsibleFiles=[]}={}) {
+  if(clean(order?.target).toLowerCase()!=='roblox')return Object.freeze({required:false,target:'non-roblox',files:[],systems:[],responsibilities:[]});
+  const files=(context?.files||[]).map(file=>({
+    path:clean(file?.path),
+    editable:file?.editable!==false,
+    content:String(file?.content||'')
+  })).filter(file=>file.path);
+  const combined=files.map(file=>file.content).join('\n');
+  const systems=[];
+  if(/RemoteEvent|RemoteFunction|OnServerEvent|OnServerInvoke|FireServer|InvokeServer/.test(combined))systems.push('REMOTE_EVENTS_AND_FUNCTIONS');
+  if(/DataStoreService|GetDataStore|UpdateAsync|SetAsync|GetAsync/.test(combined))systems.push('DATASTORE_SAVE_LOAD');
+  if(/UserInputService|ContextActionService|TouchTap|TouchPan|TouchStarted|TouchEnded/.test(combined))systems.push('TOUCH_INPUT');
+  if(/CharacterAdded|CharacterRemoving|Humanoid|HumanoidRootPart|LoadCharacter/.test(combined))systems.push('CHARACTER_RESPAWN');
+  if(/ScreenGui|GuiButton|TextButton|ImageButton|Activated|MouseButton1Click/.test(combined))systems.push('UI_STATE');
+  if(/RunService|Heartbeat|RenderStepped|Stepped|state|phase|mode/i.test(combined))systems.push('CORE_STATE_MACHINE');
+  if(/Players\.PlayerAdded|PlayerRemoving|GetPlayers\(|replic|network|server authority/i.test(combined))systems.push('MULTIPLAYER_SYNC');
+  const responsibilities=files.map(file=>({
+    file:file.path,
+    editable:file.editable,
+    role:/(?:^|\/)server\/|\.server\.lua[u]?$/i.test(file.path)?'SERVER_AUTHORITY'
+      :/(?:^|\/)client\/|\.client\.lua[u]?$/i.test(file.path)?'CLIENT_INPUT_OR_PRESENTATION'
+      :'SHARED_MODULE_OR_IMPACT_CONTEXT',
+    signals:[
+      /RemoteEvent|RemoteFunction|OnServerEvent|OnServerInvoke|FireServer|InvokeServer/.test(file.content)?'REMOTE':null,
+      /DataStoreService|GetDataStore|UpdateAsync|SetAsync|GetAsync/.test(file.content)?'DATASTORE':null,
+      /UserInputService|ContextActionService|Touch/.test(file.content)?'INPUT':null,
+      /CharacterAdded|Humanoid|HumanoidRootPart/.test(file.content)?'CHARACTER':null,
+      /ScreenGui|GuiButton|Activated|MouseButton1Click/.test(file.content)?'UI':null
+    ].filter(Boolean)
+  }));
+  return Object.freeze({
+    required:true,
+    target:'roblox',
+    files:Object.freeze(files.map(file=>file.path)),
+    editableFiles:Object.freeze(responsibleFiles.map(clean).filter(Boolean)),
+    systems:Object.freeze(unique(systems)),
+    responsibilities:Object.freeze(responsibilities.map(row=>Object.freeze(row))),
+    sourceReadBeforeGeneration:true,
+    genericCrossPlatformTranslationForbidden:true
+  });
+}
+
+function robloxNativeWorkerGuidance(order={},context={},responsibleFiles=[]) {
+  const inspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
+  if(inspection.required!==true)return'';
+  const directive=order?.selectedTask?.buildUpDirective?.robloxNativeExecution||order?.buildUpDirective?.robloxNativeExecution||{};
+  const mapped=inspection.responsibilities.map(row=>`${row.file}[${row.role};${row.editable?'EDITABLE':'READ_ONLY'};${(row.signals||[]).join('+')||'NO_SPECIAL_SIGNAL'}]`).join(' | ');
+  const directiveResponsibilities=(directive.serverClientResponsibility||[]).map(row=>`${clean(row.file)}::${clean(row.symbol)||'UNKNOWN'}=${clean(row.role)||'UNKNOWN'}`).join(' | ');
+  return[
+    '[ROBLOX NATIVE CODING CONTRACT]',
+    `SOURCE_INSPECTION=REQUIRED_AND_COMPLETED_BEFORE_GENERATION; observedSystems=${inspection.systems.join(',')||'NONE_DETECTED'}`,
+    `CURRENT_RESPONSIBILITY_MAP=${mapped||'NO_CONTEXT_FILES'}`,
+    directiveResponsibilities?`BUILD_UP_SERVER_CLIENT_BINDING=${directiveResponsibilities}`:'',
+    directive.observableAcceptanceScenario?`END_TO_END_ACCEPTANCE=${clean(directive.observableAcceptanceScenario)}`:'END_TO_END_ACCEPTANCE=input/touch -> local handler -> Remote when required -> server validation -> authoritative state change -> client feedback',
+    'Use Roblox-native Luau and the existing server/client/module responsibility. Do not translate Unity/Web implementation literally.',
+    'Read the existing RemoteEvent/RemoteFunction, touch input, character/respawn, DataStore/save, UI state, and multiplayer sync flow before changing behavior.',
+    'Server remains authoritative for damage, reward, currency, inventory, progression, save, and multiplayer state. Client requests intent and renders feedback; it does not decide authoritative results.',
+    'Remote handlers must validate sender, payload shape/range, ownership/state preconditions, and rate/duplicate behavior when applicable.',
+    'DataStore retries must be bounded/backed off and preserve existing keys and save meaning. Character references must survive respawn through CharacterAdded/current-character refresh.',
+    'Avoid unbounded while true loops, leaked event connections, duplicate remote paths, stale character references, and wrapper/override fixes.',
+    'Prefer a responsible-file behavior package such as combat, UI/input, save/load, enemy AI, character state, or multiplayer sync instead of an unscoped Roblox rewrite.',
+    'Feature existence is not acceptance. The changed action must reach the intended authoritative state change and visible client feedback.',
+    'Actual behavior is rechecked later through the existing official Studio MCP path as soon as runtime-foundation eligibility is satisfied.'
+  ].filter(Boolean).join('\n');
+}
+
+export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}={}) {
+  const rows=[
+    ...(candidate?.edits||[]).map(row=>({path:clean(row.path),text:String(row.replace||'')})),
+    ...(candidate?.newFiles||[]).map(row=>({path:clean(row.path),text:String(row.content||'')})),
+    ...(candidate?.replaceFiles||[]).map(row=>({path:clean(row.path),text:String(row.content||'')}))
+  ].filter(row=>row.path);
+  const findings=[];
+  for(const row of rows){
+    const client=/(?:^|\/)client\/|\.client\.lua[u]?$/i.test(row.path);
+    const server=/(?:^|\/)server\/|\.server\.lua[u]?$/i.test(row.path);
+    if(/while\s+true\s+do/i.test(row.text)&&!/task\.wait\s*\(|Heartbeat:Wait\s*\(|Stepped:Wait\s*\(/i.test(row.text))findings.push({file:row.path,class:'UNBOUNDED_WHILE_LOOP'});
+    if(client&&/DataStoreService|GetDataStore\s*\(/i.test(row.text))findings.push({file:row.path,class:'CLIENT_DATASTORE_AUTHORITY'});
+    if(client&&/(?:leaderstats|currency|gold|coins?|inventory|progress|reward)[\s\S]{0,120}(?:\.Value\s*=|SetAttribute\s*\()/i.test(row.text))findings.push({file:row.path,class:'CLIENT_AUTHORITATIVE_GAMEPLAY_MUTATION'});
+    if(server&&/OnServerEvent|OnServerInvoke/.test(row.text)&&!/typeof\s*\(|type\s*\(|IsA\s*\(|math\.clamp|tonumber\s*\(|assert\s*\(|if\s+not\s+/i.test(row.text))findings.push({file:row.path,class:'REMOTE_INPUT_VALIDATION_WEAK'});
+    if(/DataStoreService|GetDataStore/.test(row.text)&&/while\s+true\s+do/i.test(row.text))findings.push({file:row.path,class:'UNBOUNDED_DATASTORE_RETRY'});
+    if(/local\s+\w*character\w*\s*=\s*\w+\.Character\b/i.test(row.text)&&!/CharacterAdded|CharacterRemoving/i.test(row.text))findings.push({file:row.path,class:'STALE_CHARACTER_REFERENCE_RISK'});
+    const connects=(row.text.match(/\.Connect\s*\(/g)||[]).length;
+    const cleanup=(row.text.match(/:Disconnect\s*\(|Janitor|Maid|Trove|Destroying/g)||[]).length;
+    if(connects>=3&&cleanup===0)findings.push({file:row.path,class:'EVENT_CONNECTION_CLEANUP_RISK'});
+  }
+  return Object.freeze({
+    required:rows.length>0,
+    findingCount:findings.length,
+    findings:Object.freeze(findings.map(row=>Object.freeze(row))),
+    automaticGameWideBlock:false,
+    securityRelevantFindings:Object.freeze(findings.filter(row=>['CLIENT_DATASTORE_AUTHORITY','CLIENT_AUTHORITATIVE_GAMEPLAY_MUTATION','REMOTE_INPUT_VALIDATION_WEAK','UNBOUNDED_DATASTORE_RETRY'].includes(row.class))),
+    sourceRoot:clean(sourceRoot)||null
+  });
+}
+
 function gatedRetryStrategyGuidance(order = {}) {
   const evidence=(order?.selectedTask?.evidence||[]).map(clean).filter(Boolean);
   const marker=[...evidence].reverse().find(value=>value.startsWith('neural-gated-retry-strategy:'));
@@ -869,6 +965,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order),
+robloxNativeWorkerGuidance(order,context,responsibleFiles),
 gatedRetryStrategyGuidance(order),
 weatherWorkerGuidance(order),
 clean(order.target).toLowerCase()==='system'?systemArchitectureGuidance(order.selectedTask||{}):'',
@@ -2267,6 +2364,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
   const studioQualityCandidateDelta=semanticDiffEnforcement?.studioQualityDelta||evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null});
+  const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
+  const robloxNativeCandidateQuality=target==='roblox'?inspectRobloxNativeCandidateQuality({candidate,sourceRoot}):{required:false,findingCount:0,findings:[],securityRelevantFindings:[],automaticGameWideBlock:false};
+  if(target==='roblox'){
+    console.log('ROBLOX_NATIVE_SOURCE_INSPECTION=PASS:files='+robloxNativeSourceInspection.files.length+':systems='+(robloxNativeSourceInspection.systems.join(',')||'NONE'));
+    console.log('ROBLOX_NATIVE_BUILD_UP_BINDING='+(order?.selectedTask?.buildUpDirective?.robloxNativeExecution||order?.buildUpDirective?.robloxNativeExecution?'PASS':'BASELINE_OR_REPAIR'));
+    console.log('ROBLOX_NATIVE_CODE_QUALITY_FINDINGS='+robloxNativeCandidateQuality.findingCount);
+  }
   const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
   if(bootstrap&&target==='web'&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
@@ -2386,6 +2490,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     tests:candidate.tests,
     exploration,
     codingMethod,
+    robloxNativeSourceInspection,
+    robloxNativeCandidateQuality,
     roleResults:{exploration:'PASS',implementation:'PASS',test:'WAITING_INCREMENTAL_QA',performance:'WAITING_SANITY',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
