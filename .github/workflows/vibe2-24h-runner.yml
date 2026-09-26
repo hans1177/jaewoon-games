@@ -107,8 +107,8 @@ env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
-  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
-  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'
+  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '30'
+  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
@@ -639,8 +639,8 @@ jobs:
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
           const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
-          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||20));
-          const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||20));
+          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||30));
+          const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||30));
           const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));
           const effectiveMax=Math.max(adaptiveMin,Math.min(configuredMax,controlTarget));
           const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
