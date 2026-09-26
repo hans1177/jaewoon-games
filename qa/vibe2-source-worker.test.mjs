@@ -2470,6 +2470,14 @@ test('timeout partial recovery is persisted in coding method and immutable worke
   assert.match(workflowSource,/baseCodingMethod\?\.partialTimeoutRecovery===true\?'coding-timeout-partial-recovery:YES'/);
 });
 
+test('zero-output timeout keeps focused recovery enabled for studio build-up',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
+  assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery;/);
+  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\)/);
+  assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
+});
+
 test('focused retry derives exact unique find anchors from writable source',()=>{
   const base=[
     'You are the Vibe2 game source worker. Return JSON only.',
