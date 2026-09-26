@@ -1778,7 +1778,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
-    const focusedFinal=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||(speculativeVariant&&attempt>=2));
+    const focusedFinal=!allowFullRewrite&&(!studioExpansion||zeroOutputTimeoutRecovery)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})

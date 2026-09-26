@@ -1297,6 +1297,7 @@ jobs:
           OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
           OLLAMA_RUNTIME_SOURCE: ${{ steps.model_need.outputs.required == 'true' && 'SHARED_PREPARE_OLLAMA' || '' }}
           SHARED_CONTEXT_FILE: /tmp/vibe2-shared-context-${{ matrix.safeTask }}-${{ matrix.variant }}-after.json
+          SHARED_CONTEXT_BEFORE_FILE: /tmp/vibe2-shared-context-${{ matrix.safeTask }}-${{ matrix.variant }}-before.json
           CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
           QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
         shell: bash
@@ -1306,6 +1307,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),path=require('path');
           const clean=v=>String(v??'').trim();
+          const sharedContextPath=[clean(process.env.SHARED_CONTEXT_FILE),clean(process.env.SHARED_CONTEXT_BEFORE_FILE)].find(file=>file&&fs.existsSync(file))||'';
           const route=clean(process.env.ROUTE);
           const candidateOk=process.env.CANDIDATE_OUTCOME==='success';
           const testOk=process.env.IQA_OUTCOME==='success';
@@ -1481,8 +1483,8 @@ jobs:
             clean(process.env.MODEL_CACHE_REASON)&&`model-cache-reason:${clean(process.env.MODEL_CACHE_REASON)}`,
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
-            ...(fs.existsSync(clean(process.env.SHARED_CONTEXT_FILE))?(()=>{
-              const c=JSON.parse(fs.readFileSync(clean(process.env.SHARED_CONTEXT_FILE),'utf8'));
+            ...(sharedContextPath?(()=>{
+              const c=JSON.parse(fs.readFileSync(sharedContextPath,'utf8'));
               return[
                 `shared-context-policy:${clean(c?.hashes?.policySha256)}`,
                 `shared-context-log-map:${clean(c?.hashes?.logMapSha256)}`,
