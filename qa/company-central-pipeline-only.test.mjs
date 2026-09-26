@@ -343,7 +343,7 @@ test('Roblox runtime planners reuse central contract QA and keep responsibility-
 });
 
 
-test('Unity prepare reuses central contract QA and keeps Unity responsibility-local tests only',()=>{
+test('Unity prepare delegates all contract tests to canonical QA and keeps only runtime compilation on the critical path',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
@@ -355,20 +355,26 @@ test('Unity prepare reuses central contract QA and keeps Unity responsibility-lo
     'qa/company-shared-context.test.mjs',
     'qa/company-selected-platform-router.test.mjs',
     'qa/company-development-unity-runtime.test.mjs',
+    'qa/company-upper-platform-admission.test.mjs',
+    'qa/unity-package-fatal-logcat.test.mjs',
   ]){
-    assert.ok(centralQa.includes(testFile),testFile+' central QA authority');
+    assert.ok(centralQa.includes(testFile),testFile+' canonical QA authority');
   }
-  assert.doesNotMatch(unity,/node --test qa\/company-shared-context\.test\.mjs/);
-  assert.doesNotMatch(unity,/node --test qa\/company-selected-platform-router\.test\.mjs/);
-  assert.doesNotMatch(unity,/node --test qa\/company-development-unity-runtime\.test\.mjs/);
-  assert.match(unity,/node --test qa\/company-upper-platform-admission\.test\.mjs/);
-  assert.match(unity,/node --test qa\/unity-package-fatal-logcat\.test\.mjs/);
+  assert.doesNotMatch(unity,/node --test/);
+  assert.match(unity,/node --check tools\/company-upper-platform-admission\.mjs/);
+  assert.match(unity,/node --check tools\/company-development-unity-platform\.mjs/);
+  assert.match(unity,/UNITY_PREPARE_CONTRACT_VERIFY=PASS/);
+  assert.match(unity,/UNITY_PREPARE_INPUT_OVERLAP=PASS/);
 
   assert.equal(change?.canonicalQaAuthority,'.github/workflows/company-central-policy-contract-qa.yml');
   assert.equal(change?.duplicateValidationForbidden,true);
   assert.equal(change?.gameDispatchWaitsForDuplicateQa,false);
+  assert.equal(change?.runtimePrepareContractTestsRemaining,0);
+  assert.equal(change?.canonicalQaPathTriggersIncludeMovedTests,true);
   assert.equal(change?.canonicalUnityStageOrderUnchanged,true);
   assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
+  assert.deepEqual(architecture.unityPlannerDuplicateContractQaRemoval?.runtimeCriticalPathContractTests,[]);
   assert.equal(architecture.unityPlannerDuplicateContractQaRemoval?.runtimeCriticalPathWaitsForDuplicateQa,false);
+  assert.equal(logMap.unityPlannerDuplicateContractQaRemovalEvidence?.runtimeContractTestsRemaining,0);
   assert.equal(logMap.unityPlannerDuplicateContractQaRemovalEvidence?.duplicateRuntimeTestsPresent,false);
 });
