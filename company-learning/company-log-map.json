@@ -1,5 +1,5 @@
 {
-  "version": 71,
+  "version": 72,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1337,5 +1337,27 @@
     "modelCacheJobMustSkipOnReserveHit": true,
     "workerRestoreMustRemain": true,
     "gamePrimaryBoundaryMustRemain": 256
+  },
+  "robloxHomepageThumbnailSyncEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
+    "requiredMarkers": [
+      "ROBLOX_THUMBNAIL_SOURCE=",
+      "ROBLOX_THUMBNAIL_RENDER=PASS",
+      "ROBLOX_THUMBNAIL_UPLOAD=",
+      "ROBLOX_THUMBNAIL_VERIFY=",
+      "HOMEPAGE_MARKETING_IMAGE_SYNC=PASS"
+    ],
+    "correlationKeys": [
+      "GAME_ID",
+      "UNIVERSE_ID",
+      "SOURCE_REVISION",
+      "THUMBNAIL_SOURCE_PATH",
+      "THUMBNAIL_SOURCE_SHA256"
+    ],
+    "secretRedactionRequired": true,
+    "rawApiKeyForbidden": true,
+    "uploadPassRequiresHttpSuccessAndOperationEvidence": true,
+    "verifyPassRequiresProcessingOrListedThumbnailEvidence": true
   }
 }
