@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "                var x = column * frameWidth;",
+      "replace": "var frameCount = manifest.frames;\nvar columns = manifest.columns;\nvar frameWidth = manifest.frameWidth;\nvar frameHeight = manifest.frameHeight;\nvar rows = ((long)frameCount + columns - 1L) / columns;\nvar requiredWidth = (long)Mathf.Min(frameCount, columns) * frameWidth;\nvar requiredHeight = rows * frameHeight;\nif (requiredWidth > texture.width || requiredHeight > texture.height)\n{\n    Destroy(texture);\n    try { File.Delete(manifestPath); } catch { }\n    try { File.Delete(spritePath); } catch { }\n    _loadError = \"asset bounds \" + actorId + '/' + action;\n    yield break;\n}\n\nvar frames = new Sprite[frameCount];\n\nfor (var i = 0; i < frameCount; i++)\n{\n    var column = i % columns;\n    var row = i / columns;\n    var x = column * frameWidth;\n    var y = texture.height - ((row + 1) * frameHeight);\n    var rect = new Rect(x, y, frameWidth, frameHeight);\n    frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);\n    frames[i].name = \"\" + actorId + '-' + action + '-' + i:00;\n}\n\nactor.AddClip(action, frames, manifest.fps);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
