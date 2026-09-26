@@ -741,47 +741,32 @@ jobs:
             ~/.cache/vibe2-ollama/lib/ollama
           key: vibe2-ollama-v3-Linux-qwen3-1.7b
 
+      - name: Mark worker Ollama preparation start
+        id: worker_ollama_prepare_start
+        if: steps.model_need.outputs.required == 'true'
+        shell: bash
+        run: echo "ms=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
       - name: Prepare cached Ollama runtime
         id: worker_ollama_runtime
         if: steps.model_need.outputs.required == 'true'
+        uses: ./vibe2-contract/.github/actions/prepare-ollama
+        with:
+          model: ${{ env.VIBE2_LOCAL_MODEL }}
+          pull-model: 'true'
+
+      - name: Measure worker Ollama preparation
+        id: worker_ollama_metrics
+        if: steps.model_need.outputs.required == 'true'
+        env:
+          START_MS: ${{ steps.worker_ollama_prepare_start.outputs.ms }}
         shell: bash
         run: |
           set -euo pipefail
-          prep_started="$(date +%s%3N)"
-          cached="$HOME/.cache/vibe2-ollama/bin/ollama"
-          cached_lib="$HOME/.cache/vibe2-ollama/lib/ollama"
-          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-            sudo mkdir -p /usr/local/lib/ollama
-            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE'
-            echo 'source=CACHE' >> "$GITHUB_OUTPUT"
-          else
-            installed=0
-            for attempt in 1 2 3; do
-              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-              sleep $((attempt * 4))
-            done
-            test "$installed" = 1
-            mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$cached_lib"
-            cp "$(command -v ollama)" "$cached"
-            chmod +x "$cached"
-            runtime_lib=""
-            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
-              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-                runtime_lib="$candidate"
-                break
-              fi
-            done
-            test -n "$runtime_lib"
-            cp -a "$runtime_lib/." "$cached_lib/"
-            find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'
-            echo 'source=FALLBACK_INSTALL' >> "$GITHUB_OUTPUT"
-          fi
-          prep_finished="$(date +%s%3N)"
-          echo "duration_ms=$((prep_finished-prep_started))" >> "$GITHUB_OUTPUT"
+          finished="$(date +%s%3N)"
+          start="${START_MS:-$finished}"
+          echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
 
       - name: Run isolated learning practice
         id: practice
@@ -1308,9 +1293,9 @@ jobs:
           CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
           MODEL_CACHE_REQUIRED: ${{ steps.model_need.outputs.required }}
           MODEL_CACHE_REASON: ${{ steps.model_need.outputs.reason }}
-          MODEL_PREP_MS: ${{ steps.worker_ollama_runtime.outputs.duration_ms }}
+          MODEL_PREP_MS: ${{ steps.worker_ollama_metrics.outputs.duration_ms }}
           OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
-          OLLAMA_RUNTIME_SOURCE: ${{ steps.worker_ollama_runtime.outputs.source }}
+          OLLAMA_RUNTIME_SOURCE: ${{ steps.model_need.outputs.required == 'true' && 'SHARED_PREPARE_OLLAMA' || '' }}
           SHARED_CONTEXT_FILE: /tmp/vibe2-shared-context-${{ matrix.safeTask }}-${{ matrix.variant }}-after.json
           CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
           QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
