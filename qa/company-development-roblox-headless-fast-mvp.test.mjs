@@ -167,3 +167,13 @@ test('F0 persistence does not serialize the whole job and reapplies evidence aft
   assert.match(block,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
+
+
+test('F0 planner dedupes duplicate dispatches while validation matrix remains parallel',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow,/plan:[\s\S]{0,180}group: roblox-f0-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*[1-9][0-9]*/);
+});
