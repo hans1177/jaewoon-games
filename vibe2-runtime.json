@@ -664,6 +664,12 @@
       "executionLane": "GAME_PRIMARY",
       "exactContractShaRequired": true,
       "reuseSuccessfulCoreQaForExactSha": true,
+      "coreQaActiveCompletion": {
+        "concurrencyGroup": "vibe2-core-qa-${{ github.ref }}",
+        "cancelInProgress": false,
+        "pendingPolicy": "KEEP_ONLY_LATEST_PENDING_SAME_REF",
+        "runner": "ubuntu-slim"
+      },
       "fallback": "LOCAL_SAME_FAN_IN_CORE_REGRESSION",
       "observationFailureAction": "RUN_LOCAL_REGRESSION",
       "blocksReservationOnFailure": true,
