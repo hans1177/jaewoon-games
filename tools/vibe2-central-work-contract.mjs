@@ -13,6 +13,7 @@ export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadm
 const clean=value=>String(value??'').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const sha256=value=>crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex');
+const GIT_POLICY_SNAPSHOT_MAX_BUFFER=16*1024*1024;
 
 function workerExecutionPolicyProjection(policy={}){
   const constitution=compileOwnerCanonicalConstitution(policy);
@@ -239,7 +240,7 @@ export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),poli
       const branch=resolvedRef.slice(slash+1);
       execFileSync('git',['-C',gitRoot,'fetch','--quiet','--no-tags',remote,`+refs/heads/${branch}:refs/remotes/${remote}/${branch}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
     }
-    const raw=execFileSync('git',['-C',gitRoot,'show',`${resolvedRef}:${policyPath}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+    const raw=execFileSync('git',['-C',gitRoot,'show',`${resolvedRef}:${policyPath}`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:GIT_POLICY_SNAPSHOT_MAX_BUFFER});
     const document=JSON.parse(raw);
     const errors=policyValidationErrors(document);
     return{
