@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "gameId": "cozy-island",
+  "state": "FAIL",
+  "pass": false,
+  "validated": false,
+  "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
+  "checkedAt": "2026-09-26T21:14:54.371Z",
+  "sourceBinding": {
+    "upstreamBuildRunId": 36270848160,
+    "sourceCommit": "34bd3a9cf2f93f1bc32fbd87eb53471fe3fadcd4",
+    "sourceTreeSha": "d317a7d11f1ae24a1da37d6c58100cb4fa0908f6",
+    "apkSha256": "4a56519ac17a554d8855a576c6017f5c148d9628c75e9b7e8f70bbddc9bbe6f3",
+    "sameBinding": true
+  },
+  "realEvidence": {
+    "runtimeSmoke": true,
+    "independentQa": true,
+    "metricSamples": 0,
+    "actionObserved": false,
+    "saveObserved": true,
+    "pauseResumeObserved": true
+  },
+  "coverage": {
+    "ANDROID_FPS_FRAME_STABILITY": {
+      "state": "FAIL",
+      "sampleCount": 0,
+      "minFps": null,
+      "avgFps": null,
+      "scope": "ANDROID_16_EMULATOR_TECHNICAL_PROTOTYPE"
+    },
+    "MEMORY_HEAT_LOADING": {
+      "state": "FAIL",
+      "maxAllocatedMemoryBytes": null,
+      "loading": "PASS",
+      "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
+      "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
+    },
+    "PHYSICS_CAMERA_ANIMATION": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "Generated validation prototype uses deterministic UI/state animation and no physics/camera dependency."
+    },
+    "AI_NAVMESH_OBJECT_COUNT": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "No NavMesh or AI-agent dependency is used in the validation prototype."
+    },
+    "VFX_COST": {
+      "state": "PASS",
+      "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
+    },
+    "ASPECT_RATIO_TOUCH": {
+      "state": "FAIL",
+      "evidence": "Android emulator black-box taps/swipes plus in-app action log."
+    },
+    "SAVE_LOAD_UPDATE_COMPATIBILITY": {
+      "state": "PASS_WITH_LIMITATION",
+      "updateInstallPassed": true,
+      "saveSignalObserved": true,
+      "limitation": "Update installation and save writes are observed; cross-version migration schema is not exercised by this first technical prototype."
+    },
+    "APP_PAUSE_RESUME": {
+      "state": "PASS",
+      "evidence": "Independent Android QA background/resume plus app pause/focus signal."
+    },
+    "IMPLEMENTATION_COMPLEXITY": {
+      "state": "PASS",
+      "trackedProjectFiles": 5,
+      "reason": "One-game technical prototype is intentionally minimal and generated from locked design/Web evidence."
+    },
+    "ASSET_AND_QA_COST": {
+      "state": "PASS",
+      "externalRuntimeAssets": 0,
+      "reason": "No external art/audio package dependency in technical prototype; QA uses existing Android smoke and independent QA pipelines."
+    },
+    "FUTURE_EXPANSION_FEASIBILITY": {
+      "state": "REVIEW_REQUIRED_BY_DEPARTMENT_MEETING",
+      "reason": "Seed expansion decisions are preserved for Unity evidence meeting; technical prototype does not claim Steam/multiplayer production readiness."
+    }
+  },
+  "limitations": [
+    "This is DEVELOPMENT_CONFIRMED technical-validation evidence, not RELEASE_CONFIRMED approval.",
+    "Physical-device thermal behavior is not inferred from emulator evidence."
+  ],
+  "provenance": {
+    "buildInfo": "/tmp/unity-build/cozy-island-android-cloud-36270848160-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-36270848160/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-36270848160/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "projectPath": "unity-games/cozy-island"
+  }
+}
