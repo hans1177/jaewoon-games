@@ -1,5 +1,5 @@
 {
-  "version": 116,
+  "version": 117,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2019,12 +2019,16 @@
       "NATIVE_ACTIVE_RUN_SCAN_PAGE_FAIL",
       "NATIVE_ACTIVE_RUN_SCAN=PASS",
       "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
-      "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
+      "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE",
+      "NATIVE_QUEUE_AUTHORITY_FETCH=PASS",
+      "NATIVE_QUEUE_AUTHORITY_FETCH=FAIL"
     ],
     "minimumCoverageRowsPerWorkflow": 300,
     "externalExecutionWindowCovered": 256,
     "partialScanMayDispatch": false,
-    "independentGameParallelismRequired": true
+    "independentGameParallelismRequired": true,
+    "queueAuthorityFetchParallelWithRunScan": true,
+    "dispatchRequiresQueueAuthorityFetchPass": true
   },
   "robloxPlannerDuplicateContractQaRemovalEvidence": {
     "version": 1,
