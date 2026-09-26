@@ -493,6 +493,9 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(workflow.includes('vibe2-remote-work-lock.mjs" acquire'));
   assert(workflow.includes('Release shared Work Locks after fan-in or abort'));
   assert(workflow.includes('vibe2-remote-work-lock.mjs" release'));
+  assert(workflow.includes('already_released=0'));
+  assert(workflow.includes("VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found"));
+  assert(workflow.includes('VIBE2_SHARED_WORK_LOCK_ALREADY_RELEASED=$already_released'));
 });
 
 test('controller allows approved source root but enforces candidate boundary',()=>{
