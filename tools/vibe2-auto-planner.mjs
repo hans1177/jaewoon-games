@@ -1491,15 +1491,32 @@ function scanExplicitMarkerTask(project,repoRoot,queue){
 function expandTaskToMinimumWorkload(taskInput,project,policy){
   if(!taskInput)return null;
   const min=Math.max(2,Number(policy?.minWorkUnitsPerPackage||3));
+  const substantial=Math.max(2,Number(policy?.substantialSingleTaskWorkUnits||3));
+  const relatedMinimum=Math.max(2,Number(policy?.minRelatedImprovementsPerPackage||3));
   const current=estimateTaskWorkUnits(taskInput);
-  if(taskInput.ownerDirective===true||current>=min)return taskInput;
-  const scopes=project?.engine==='web'
-    ? ['bug-hardening','ux-mobile-readability','qa-regression','performance-sanity']
-    : ['bug-hardening','qa-regression','contract-safety'];
-  const scopeText=project?.engine==='web'
-    ? '1. 직접 관련 오류 처리/예외 경로 보강\n2. 모바일 입력·가독성·접근성 회귀 점검 및 발견 문제 수정\n3. 변경 영향 incremental QA 통과\n4. 같은 책임 범위의 기본 성능 퇴행 점검 및 발견 문제 수정'
-    : '1. 직접 관련 오류 처리·불변조건 보강\n2. 변경 영향 incremental QA 통과\n3. 기존 계약·세이브·게임 규칙 회귀 점검 및 발견 문제 수정';
-  const evidence=[...(taskInput.evidence||[]),'work-package-auto-expanded',...scopes.map(scope=>`work-package-scope:${scope}`)];
+  if(taskInput.ownerDirective===true)return taskInput;
+  const requiredByMinimum=Math.max(0,min-current);
+  const requiredByQuantity=current>=substantial?0:relatedMinimum;
+  const requiredScopeCount=Math.max(requiredByMinimum,requiredByQuantity);
+  if(requiredScopeCount<=0)return taskInput;
+  const catalog=[
+    ['bug-hardening','직접 관련 오류 처리·예외 경로와 실패 피드백을 보강한다.'],
+    ['system-connection','현재 책임 시스템과 인벤토리·진행·전투·상호작용 중 실제 연결된 경로의 상태 일치를 확인하고 발견 문제를 수정한다.'],
+    ['feedback-polish','성공·실패·상태 변화 피드백을 실제 판정 시점과 맞추고 누락된 피드백을 보강한다.'],
+    ['ux-mobile-readability','모바일 입력·가독성·메뉴 흐름을 점검하고 현재 책임 범위의 발견 문제를 수정한다.'],
+    ['qa-regression','변경 책임 범위와 직접 의존 경로의 incremental QA를 통과한다.'],
+    ['performance-sanity','같은 책임 범위에서 반복 업데이트·객체·이펙트·메모리의 기본 성능 퇴행을 점검하고 발견 문제를 수정한다.'],
+    ['contract-safety','기존 규칙·밸런스·세이브 키와 의미·네트워크 권한을 보존하고 회귀를 점검한다.']
+  ];
+  const selected=catalog.slice(0,Math.min(catalog.length,requiredScopeCount));
+  const scopes=selected.map(([scope])=>scope);
+  const scopeText=selected.map(([,description],index)=>`${index+1}. ${description}`).join('\n');
+  const evidence=[
+    ...(taskInput.evidence||[]),
+    'work-package-auto-expanded',
+    `work-package-expanded-to-minimum:${min}`,
+    ...scopes.map(scope=>`work-package-scope:${scope}`)
+  ];
   return{
     ...taskInput,
     goal:`${taskInput.goal}\n\n[WORK PACKAGE AUTO-EXPANSION]\n${scopeText}`,
