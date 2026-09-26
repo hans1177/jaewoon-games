@@ -355,12 +355,16 @@ test('Unity runtime has no retired validation-cycle dependency',()=>{
 });
 
 
-test('independent Unity QA dispatches exact artifact regression after PASS',()=>{
+test('independent Unity QA dispatches regression only for the standalone workflow-run chain',()=>{
   assert.match(independentQaSource,/permissions:[\s\S]*actions:\s*write/);
-  assert.match(independentQaSource,/name: Dispatch exact artifact regression/);
+  assert.match(independentQaSource,/name: Dispatch exact artifact regression[\s\S]*if: success\(\) && github\.event_name == 'workflow_run'/);
   assert.match(independentQaSource,/gh workflow run unity-android-regression\.yml/);
   assert.match(independentQaSource,/-f run_id="\$\{\{ steps\.upstream\.outputs\.run_id \}\}"/);
-  assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCHED=/);
+  assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=INDEPENDENT_QA_AUTO_CHAIN/);
+  assert.match(independentQaSource,/name: Record parent-owned regression dispatch[\s\S]*github\.event_name == 'workflow_dispatch'/);
+  assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=COMPANY_DEVELOPMENT_UNITY_RUNTIME/);
+  assert.match(workflowSource,/UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=COMPANY_DEVELOPMENT_UNITY_RUNTIME/);
+  assert.match(workflowSource,/UNITY_ANDROID_REGRESSION_DEDUPE_BUILD_RUN=\$BUILD_RUN/);
 });
 
 
