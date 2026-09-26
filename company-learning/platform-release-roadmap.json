@@ -1,5 +1,5 @@
 {
-  "version": 415,
+  "version": 416,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8307,6 +8307,87 @@
         "COMPANY_RUNTIME_PERSIST_CONFLICT_RETRY_REMAINS",
         "NO_QA_SECURITY_RELEASE_GATE_WEAKENING"
       ]
+    },
+    "robloxContinuationWorkflowSerializationRemoval20260926": {
+      "id": "ROBLOX_REMAINING_WORKFLOW_SERIALIZATION_REMOVAL_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution",
+      "status": "DOCUMENTED_EXPANDED_BEFORE_CODE",
+      "symptom": "ROBLOX_RUNTIME_MAIN_WORKFLOW_WAS_FIXED_BUT F0_SHARED_PREFLIGHT_FOUNDATION_QA_FINAL_REVIEW_AND_RELEASE_PROMOTION_STILL_USED_TOP_LEVEL_WORKFLOW_CONCURRENCY_GROUPS_THAT_SERIALIZED_HEAVY_GAME_EXECUTION_BEYOND_THE_EXISTING_ATOMIC_COMPANY_RUNTIME_WRITER",
+      "policyBasis": [
+        "sharedPreflightParallel",
+        "internalGameConcurrencyCapsForbidden",
+        "externalProviderCapacityIsOnlyHeavyExecutionBoundary",
+        "sharedStateWriteSerializationMayNotSerializeHeavyCheckoutBuildRuntimeOrQa",
+        "workflowLevelGameWideSerializationForbidden",
+        "responsibleFileConflictSerializationOnly"
+      ],
+      "repair": "REMOVE_TOP_LEVEL_WORKFLOW_CONCURRENCY_FROM ROBLOX_CONTINUATION F0 FOUNDATION_QA F9 AND PROMOTION; KEEP_PER_GAME_MATRIX_OR_EXACT_GAME_DISPATCH_PARALLEL; KEEP_ONLY_ATOMIC_SHARED_STATE_WRITER_OR_RESPONSIBLE_FILE_CONFLICT_SERIALIZATION",
+      "preserves": [
+        "GAME_ID_CANONICAL_TASK_IDENTITY",
+        "PER_GAME_PREFLIGHT_MATRIX",
+        "EXTERNAL_PROVIDER_BOUNDARY_256",
+        "COMPANY_RUNTIME_WRITER_CRITICAL_SECTION",
+        "QA_SECURITY_RELEASE_GATES",
+        "F0_CONTINUATION"
+      ],
+      "gameIdStillCanonicalTaskIdentity": true,
+      "sharedStateWriterSerializationPreserved": true,
+      "internalArtificialParallelCapAdded": false,
+      "implementationState": "DOCUMENTED_EXPANDED_BEFORE_CODE",
+      "codeBindings": [
+        ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+        ".github/workflows/company-development-roblox-release-promotion.yml",
+        "qa/company-development-roblox-runtime-continuation.test.mjs",
+        "qa/company-development-roblox-headless-fast-mvp.test.mjs",
+        "qa/company-development-roblox-post-runtime-qa.test.mjs",
+        "qa/company-development-roblox-final-review-revalidation.test.mjs",
+        "qa/company-development-roblox-release-promotion.test.mjs",
+        "company-learning/company-architecture-map.json"
+      ],
+      "requiredVerification": [
+        "ALL_AFFECTED_ROBLOX_WORKFLOWS_HAVE_NO_TOP_LEVEL_GLOBAL_OR_GAME_ID_CONCURRENCY_GROUP",
+        "PER_GAME_MATRIX_AND_EXACT_GAME_ID_DISPATCH_REMAIN",
+        "NO_INTERNAL_MAX_PARALLEL_CAP_ADDED",
+        "COMPANY_RUNTIME_WRITER_CONCURRENCY_REMAINS_WHERE_SHARED_STATE_IS_WRITTEN",
+        "NO_QA_SECURITY_RELEASE_GATE_WEAKENING"
+      ],
+      "codeHeadBindings": [
+        ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        "qa/company-development-roblox-runtime-continuation.test.mjs",
+        "company-learning/company-architecture-map.json"
+      ],
+      "affectedWorkflows": [
+        ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+        ".github/workflows/company-development-roblox-release-promotion.yml"
+      ],
+      "codeUpdatedAt": "2026-09-26"
+    },
+    "pullRequestValidationCoalescing20260926": {
+      "id": "PULL_REQUEST_VALIDATION_COALESCING_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "DOCUMENTED_BEFORE_CODE",
+      "symptom": "SAME_PR_OLDER_HEAD_COMPANY_EVOLUTION_AND_SECURITY_VALIDATIONS_ACCUMULATED_IN_GITHUB_ACTIONS_QUEUE_AND_DELAYED_GAME_PRIMARY_WORKER_START",
+      "policyBasis": [
+        "duplicateValidationWithoutEvidenceInvalidationForbidden",
+        "duplicateReviewWithoutRelevantChangeForbidden",
+        "administrativeChecksMayNotConsumeGamePrimaryWorkerSlots",
+        "unrelatedSecurityReviewMayNotHoldDevelopmentSlots"
+      ],
+      "repair": "COALESCE_ONLY_PULL_REQUEST_VALIDATIONS_BY_PR_NUMBER_WITH_CANCEL_IN_PROGRESS_TRUE; KEEP_MAIN_PUSH_SCHEDULE_AND_MANUAL_RUNS_SEPARATE",
+      "affectedWorkflows": [
+        ".github/workflows/company-evolution-qa.yml",
+        ".github/workflows/company-security-immune.yml"
+      ],
+      "currentHeadValidationRequired": true,
+      "securityGateUnchanged": true,
+      "mainPushValidationUnchanged": true,
+      "implementationState": "DOCUMENTED_BEFORE_CODE"
     }
   },
   "vibeExecutionLaneContract": {
