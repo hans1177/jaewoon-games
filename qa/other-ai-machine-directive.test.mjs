@@ -1,10 +1,18 @@
+// 파일명: qa/other-ai-machine-directive.test.mjs
+// 역할: 비권위 AI 실행 가이드가 최신 중앙정책/아키텍처 의미를 그대로 따르는지 검증한다.
+
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const directive=JSON.parse(fs.readFileSync('company-learning/other-ai-machine-directive.json','utf8'));
 const company=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+
 const lifecycle=roadmap.developmentLifecycleMachine||{};
+const dual=roadmap.directNativeDualPlatformDevelopment||{};
+const floor=dual.unityWebDevelopmentLane||{};
 
 assert.equal(directive.kind,'MACHINE_EXECUTION_DIRECTIVE');
 assert.equal(directive.audience,'OTHER_AI_AND_RUNNERS');
@@ -12,20 +20,80 @@ assert.equal(directive.humanDocumentRequired,false);
 assert.equal(directive.authority,'NON_AUTHORITATIVE_EXECUTION_GUIDE');
 assert.equal(directive.sourceOfTruth,'company-learning/platform-release-roadmap.json');
 assert.equal(directive.policyOverrideAllowed,false);
+assert.equal(directive.version,3);
 
 assert.equal(company.machineCompanions.otherAiExecutionDirective.path,'company-learning/other-ai-machine-directive.json');
 assert.equal(company.machineCompanions.otherAiExecutionDirective.mayOverrideCentralPolicy,false);
 assert.equal(company.machineCompanions.otherAiExecutionDirective.mustReadCentralPolicyFirst,true);
+
+const canonicalReads=[
+  'company-learning/platform-release-roadmap.json',
+  'company-learning/company-log-map.json',
+  'company-learning/company-architecture-map.json',
+  'company-learning/security-immune-system.json'
+];
+assert.deepEqual(architecture.sharedContextLoadOrder,canonicalReads);
+assert.deepEqual(directive.requiredReads.slice(0,4),canonicalReads);
+assert.deepEqual(directive.sharedContext.loadOrder,canonicalReads);
+assert.equal(directive.sharedContext.beforeWorkRequired,true);
+assert.equal(directive.sharedContext.afterWorkRequired,true);
+assert.equal(directive.sharedContext.runtimeMayNotCreatePolicy,true);
+assert.equal(directive.sharedContext.manualPolicyMirrorForbidden,true);
+assert.equal(directive.executionRules.canonicalSharedContextOrderRequired,true);
+assert.equal(directive.executionRules.runtimeStateCannotCreatePolicy,true);
+assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
+assert.equal(security.sourceOfTruth,'company-learning/platform-release-roadmap.json');
 
 assert.equal(directive.executionRules.gameplayImplementationOwner,'VIBE2_VIBE3');
 assert.equal(directive.executionRules.nonVibeGameSourceWriteAllowed,false);
 assert.equal(directive.executionRules.preserveExistingAutomation,true);
 assert.equal(directive.executionRules.preserveExistingSettings,true);
 
-assert.equal(directive.developmentLifecycle.webFirst.required,true);
-assert.equal(directive.developmentLifecycle.webFirst.disposablePrototype,false);
-assert.equal(directive.developmentLifecycle.nativeSecondStage.webBaseMustCarryForward,true);
-assert.equal(directive.developmentLifecycle.nativeSecondStage.nativeRuntimeEvidenceRequiredSeparately,true);
+assert.equal(roadmap.currentPhase,'UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_UPPER_PLATFORM_DEVELOPMENT');
+assert.equal(dual.unityWebRequired,true);
+assert.equal(dual.unityWebGateRequired,true);
+assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
+
+const webAlias=directive.developmentLifecycle.webFirst;
+assert.equal(webAlias.status,'DEPRECATED_COMPATIBILITY_ALIAS');
+assert.equal(webAlias.compatibilityAliasFor,'UNITY_WEB_DEVELOPMENT_FLOOR');
+assert.equal(webAlias.legacyIndependentWebGameplayMeaningRemoved,true);
+assert.equal(webAlias.canonicalSourceRoot,'unity-games/<gameId>/');
+assert.equal(webAlias.outputRoot,'web-games/<gameId>/');
+assert.equal(webAlias.sameCanonicalUnityProjectRequired,true);
+assert.equal(webAlias.separateWebGameplayCodebaseForbidden,true);
+assert.equal(webAlias.completionSignal,'UPPER_PLATFORM_DEVELOPMENT_READY');
+assert.equal(webAlias.passAction,'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT');
+assert.equal(webAlias.failureAction,'REPAIR_REQUIRED');
+assert.equal(webAlias.publicReleaseStage,false);
+
+const directiveFloor=directive.developmentLifecycle.unityWebDevelopmentFloor;
+assert.equal(directiveFloor.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+assert.equal(directiveFloor.canonicalSourceRoot,'unity-games/<gameId>/');
+assert.equal(directiveFloor.outputRoot,'web-games/<gameId>/');
+assert.equal(directiveFloor.sameCanonicalUnityProjectRequired,true);
+assert.equal(directiveFloor.separateWebGameplayCodebaseForbidden,true);
+assert.equal(directiveFloor.passSignal,'UPPER_PLATFORM_DEVELOPMENT_READY');
+assert.equal(directiveFloor.passAction,'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT');
+assert.equal(directiveFloor.failureAction,'REPAIR_REQUIRED');
+assert.equal(directiveFloor.releaseAuthority,false);
+assert.equal(floor.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+assert.equal(floor.canonicalSourceRoot,'unity-games/<gameId>/');
+assert.equal(floor.outputRoot,'web-games/<gameId>/');
+assert.equal(floor.sameCanonicalUnityProjectRequired,true);
+assert.equal(floor.separateWebGameplayCodebaseForbidden,true);
+
+const upper=directive.developmentLifecycle.nativeSecondStage;
+assert.equal(upper.canonicalMeaning,'ROBLOX_AND_UNITY_CONCURRENT_UPPER_PLATFORM_DEVELOPMENT');
+assert.equal(upper.trigger,'UPPER_PLATFORM_DEVELOPMENT_READY');
+assert.equal(upper.webBaseMustCarryForward,false);
+assert.equal(upper.unityUsesSameCanonicalProject,true);
+assert.equal(upper.robloxUsesSharedApprovedDesignAndGameplayMeaning,true);
+assert.deepEqual(upper.concurrentTargets,['ROBLOX','UNITY']);
+assert.equal(upper.bothPlatformsRequiredForSameGame,true);
+assert.equal(upper.eachPlatformRequiresOwnRuntimeQaRegression,true);
+assert.equal(upper.webEvidenceCannotSubstituteNativePass,true);
+
 assert.equal(directive.developmentLifecycle.robloxPostRelease.enabled,true);
 assert.equal(directive.developmentLifecycle.robloxPostRelease.protectedRunnerSlots,1);
 assert.equal(directive.developmentLifecycle.robloxPostRelease.continuousRefill,true);
@@ -44,35 +112,34 @@ assert.equal(directive.localExecution.initiateLocalModelTraining,false);
 assert.equal(directive.localExecution.doNotChangeCanonicalTrainingRoute,true);
 
 const workOrder=directive.workOrder;
-assert.equal(directive.version,2);
-assert.equal(workOrder.id,'WEB_TO_NATIVE_TO_POST_RELEASE_CONTINUOUS_DEVELOPMENT_V1');
 assert.equal(workOrder.authority,'EXECUTION_SEQUENCE_ONLY');
 assert.equal(workOrder.sourceOfTruth,'company-learning/platform-release-roadmap.json');
 assert.equal(workOrder.policyCreationAllowed,false);
 assert.equal(workOrder.implementationOwner,'VIBE2_VIBE3');
-assert.equal(workOrder.startCondition,'PRODUCTION_CLASS=DEVELOPMENT_CONFIRMED_AND_PLATFORM_AND_GENRE_LOCKED');
+assert.equal(workOrder.centralLifecycle,'UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT_UPPER_PLATFORM_DEVELOPMENT');
+assert.equal(workOrder.compatibilityStageNamesPreserved,true);
 assert.deepEqual(workOrder.steps.map(step=>step.order),[1,2,3,4,5,6,7,8,9]);
+
 const byStage=Object.fromEntries(workOrder.steps.map(step=>[step.stage,step]));
-assert.equal(byStage.WEB_BASE_IMPLEMENTATION.disposablePrototype,false);
-assert.ok(byStage.WEB_BASE_IMPLEMENTATION.requiredBaseSystems.includes('core-loop-runtime'));
-assert.ok(byStage.WEB_BASE_IMPLEMENTATION.requiredBaseSystems.includes('progression-model'));
-assert.equal(byStage.WEB_RUNTIME_VALIDATION.completionSignal,'WEB_DEVELOPMENT_BASELINE_READY');
-assert.equal(byStage.TARGET_PLATFORM_SOURCE_BIND.restartFromBlankWhenValidContinuationExists,false);
-assert.ok(byStage.TARGET_PLATFORM_SOURCE_BIND.carryForwardRequired.includes('verified-learning-context'));
-assert.equal(byStage.TARGET_PLATFORM_IMPLEMENTATION.selectedPlatformOwnsSecondImplementation,true);
+assert.equal(byStage.WEB_BASE_IMPLEMENTATION.canonicalStage,'UNITY_WEB_DEVELOPMENT_FLOOR');
+assert.equal(byStage.WEB_BASE_IMPLEMENTATION.canonicalSourceRoot,'unity-games/<gameId>/');
+assert.equal(byStage.WEB_BASE_IMPLEMENTATION.separateWebGameplayCodebaseForbidden,true);
+assert.equal(byStage.WEB_RUNTIME_VALIDATION.canonicalStage,'UNITY_WEB_RUNTIME_QA_READINESS');
+assert.equal(byStage.WEB_RUNTIME_VALIDATION.completionSignal,'UPPER_PLATFORM_DEVELOPMENT_READY');
+assert.equal(byStage.WEB_RUNTIME_VALIDATION.passAction,'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT');
+assert.equal(byStage.TARGET_PLATFORM_SOURCE_BIND.canonicalStage,'UPPER_PLATFORM_SOURCE_BIND');
+assert.deepEqual(byStage.TARGET_PLATFORM_SOURCE_BIND.concurrentTargets,['ROBLOX','UNITY']);
+assert.equal(byStage.TARGET_PLATFORM_IMPLEMENTATION.canonicalStage,'ROBLOX_AND_UNITY_CONCURRENT_IMPLEMENTATION');
+assert.equal(byStage.TARGET_PLATFORM_IMPLEMENTATION.selectedPlatformOwnsSecondImplementation,false);
+assert.deepEqual(byStage.TARGET_PLATFORM_IMPLEMENTATION.concurrentTargets,['ROBLOX','UNITY']);
 assert.equal(byStage.TARGET_PLATFORM_VERIFICATION.webEvidenceCannotSubstitute,true);
+assert.equal(byStage.TARGET_PLATFORM_VERIFICATION.perPlatformIndependentEvidenceRequired,true);
 assert.equal(byStage.RELEASE_PROMOTION.automaticPublicRepublish,false);
 assert.equal(byStage.ROBLOX_POST_RELEASE_FOCUSED_DEVELOPMENT.protectedRunnerSlots,1);
-assert.equal(byStage.ROBLOX_POST_RELEASE_FOCUSED_DEVELOPMENT.activeTaskMaxPerProject,1);
-assert.equal(byStage.ROBLOX_POST_RELEASE_FOCUSED_DEVELOPMENT.continuousRefill,true);
-assert.equal(byStage.ROBLOX_POST_RELEASE_FOCUSED_DEVELOPMENT.scheduler,'vibe2-24h-runner');
-assert.equal(byStage.ROBLOX_POST_RELEASE_FOCUSED_DEVELOPMENT.worker,'vibe2-continuous-core');
 assert.equal(byStage.LEARNING_PERSISTENCE.continuous24h,true);
-assert.equal(byStage.LEARNING_PERSISTENCE.catalogWrapStopsLearning,false);
-assert.equal(byStage.LEARNING_PERSISTENCE.waitingForVerifiedSamplesIsFailure,false);
-assert.equal(byStage.LEARNING_PERSISTENCE.localModelTrainingInitiatedByThisWorkOrder,false);
-assert.ok(workOrder.successSignals.includes('ROBLOX_RELEASE_GETS_ONE_PROTECTED_FOCUS_SLOT'));
-assert.ok(workOrder.successSignals.includes('VERIFIED_LEARNING_PERSISTS_CONTINUOUSLY'));
+assert.ok(workOrder.successSignals.includes('UNITY_WEB_FLOOR_RUNTIME_QA_REGRESSION_PASS'));
+assert.ok(workOrder.successSignals.includes('UPPER_PLATFORM_DEVELOPMENT_READY'));
+assert.ok(workOrder.successSignals.includes('ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT_STARTED'));
 assert.ok(workOrder.forbidden.includes('NON_VIBE_GAMEPLAY_SOURCE_WRITE'));
 assert.ok(workOrder.forbidden.includes('STOP_24H_LEARNING_AFTER_CATALOG_WRAP'));
 
@@ -96,10 +163,12 @@ assert.ok(homepageByStage.PUBLIC_REVERIFY.required.includes('PUBLIC_STATUS_MATCH
 assert.ok(homepageSync.successSignals.includes('PUBLIC_HOMEPAGE_CURRENT'));
 assert.ok(homepageSync.successSignals.includes('NO_SHADOW_PIPELINE_CREATED'));
 
-assert.equal(lifecycle.webToPlatformHandoff.required,true);
-assert.equal(lifecycle.webToPlatformHandoff.webIsDisposablePrototype,false);
+assert.equal(lifecycle.sharedWorkerContext.syncMode,'ROADMAP_FIRST_FAIL_CLOSED');
+assert.equal(lifecycle.sharedWorkerContext.beforeWorkRequired,true);
+assert.equal(lifecycle.sharedWorkerContext.afterWorkRequired,true);
+assert.equal(lifecycle.sharedWorkerContext.runtimeMayNotCreatePolicy,true);
+assert.equal(lifecycle.sharedWorkerContext.postCentralDocumentWriteSharedContextResyncRequired,true);
 assert.equal(lifecycle.postReleaseFocusedDevelopment.enabled,true);
-assert.equal(lifecycle.postReleaseFocusedDevelopment.globalProtectedRunnerSlots,1);
 assert.equal(lifecycle.intentAmplificationMultiverse.learningContinuity.continuous24h,true);
 
-console.log('PASS other AI machine directive is bound to canonical policy and current development-learning lifecycle');
+console.log('PASS other AI machine directive follows current central Vibe policy and architecture');
