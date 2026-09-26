@@ -482,6 +482,15 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
 });
 
+test('core QA preserves the active same-ref regression and coalesces only pending duplicates',()=>{
+  assert.match(coreQaWorkflow,/concurrency:\n\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress: false/);
+  const regression=runtime.continuous.reserveContractRegressionPreflight;
+  assert.equal(regression.coreQaActiveCompletion.concurrencyGroup,'vibe2-core-qa-${{ github.ref }}');
+  assert.equal(regression.coreQaActiveCompletion.cancelInProgress,false);
+  assert.equal(regression.coreQaActiveCompletion.pendingPolicy,'KEEP_ONLY_LATEST_PENDING_SAME_REF');
+  assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
+});
+
 test('reserve preflight uses the pinned main contract and blocks broken GAME_PRIMARY contracts before reservation',()=>{
   const start=workflow.indexOf('- name: Prepare latest main machine contract');
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
