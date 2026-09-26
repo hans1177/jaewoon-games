@@ -1,5 +1,5 @@
 {
-  "version": 400,
+  "version": 401,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -631,6 +631,132 @@
         "FOOT_CONTACT_AND_IK",
         "ATTACK_HIT_DEATH_CONTINUITY",
         "CHARACTER_SPECIFIC_STYLE_AND_SECONDARY_MOTION"
+      ]
+    },
+    "universalAssetFirstUpgradeContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "objective": "EVERY_VIBE_VISUAL_OR_PRESENTATION_UPGRADE_MUST_EVALUATE_THE_FULL_COMPANY_ASSET_UNIVERSE_AND_MUST_BIND_REAL_COMPATIBLE_ASSETS_TO_EVERY_APPLICABLE_EXISTING_GAME_SYSTEM_BEFORE_THE_UPGRADE_CAN_PASS",
+      "platforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "assetFamilies": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "enforcement": {
+        "everyUpgradeMustRunCompanyAssetLookup": true,
+        "allFamiliesMustBeEvaluated": true,
+        "applicableFamiliesRequireActualSourceBinding": true,
+        "semanticSelectionOrConfigMarkerAloneCannotPass": true,
+        "primitiveOnlyOrColorOnlyUpgradeCannotPass": true,
+        "placeholderAssetMayNotCountAsFinalUpgrade": true,
+        "existingVerifiedCompanyAssetFirst": true,
+        "existingRepositoryAssetSecond": true,
+        "licenseVerifiedExternalGapFillThird": true,
+        "newNativeAuthoringOnlyAfterVerifiedGap": true,
+        "gameStyleLockAndVisualDnaMustWin": true,
+        "originalAssetPreserved": true,
+        "nativePlatformVariantRequired": true,
+        "actualRuntimeQaRequired": true
+      },
+      "applicability": {
+        "everyFamilyMustReturn": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+        "notApplicableRequiresExistingGameSystemAbsenceEvidence": true,
+        "notApplicableMayNotBeUsedToSkipAnExistingSystem": true,
+        "assetRequirementMayNotInventNewGameplaySystem": true,
+        "protectedGameplaySemanticsImmutable": true
+      },
+      "mapAndWorld": {
+        "mandatoryDomains": [
+          "BACKGROUND",
+          "TERRAIN",
+          "BIOME",
+          "BUILDING",
+          "LANDMARK",
+          "SET_DRESSING",
+          "SMALL_PROP",
+          "VEGETATION",
+          "ROAD_OR_PATH",
+          "WATER_WHEN_PRESENT",
+          "SKY_OR_ATMOSPHERE",
+          "LIGHTING_LANGUAGE"
+        ],
+        "settlementDomains": [
+          "VILLAGE",
+          "HOUSE",
+          "SHOP",
+          "SCHOOL",
+          "TEMPLE",
+          "CASTLE",
+          "DUNGEON_ENTRANCE",
+          "INTERIOR_WHEN_PRESENT"
+        ],
+        "propExamples": [
+          "TREE",
+          "ROCK",
+          "BUSH",
+          "FLOWER",
+          "CHAIR",
+          "TABLE",
+          "BED",
+          "SHELF",
+          "BENCH",
+          "LAMP",
+          "LANTERN",
+          "CRATE",
+          "BARREL",
+          "CHEST",
+          "SIGNPOST",
+          "TORCH",
+          "BANNER",
+          "RUG",
+          "BOOK",
+          "WORKBENCH"
+        ],
+        "emptyFlatPlaneAsFinishedMapForbidden": true,
+        "repeatedSinglePrimitiveSetDressingForbidden": true,
+        "environmentAssetDensityMustMatchBiomeAndGameStyle": true,
+        "landmarkAndNavigationReadabilityRequired": true
+      },
+      "vibeUpgradeSequence": [
+        "READ_CURRENT_GAME_SOURCE_AND_STYLE_LOCK",
+        "SCAN_ALL_12_ASSET_FAMILIES",
+        "CLASSIFY_EACH_FAMILY_APPLIED_OR_NOT_APPLICABLE",
+        "SELECT_VERIFIED_COMPATIBLE_ASSETS",
+        "BIND_SELECTED_ASSETS_IN_EXISTING_RESPONSIBLE_SOURCE",
+        "VERIFY_ACTUAL_VISUAL_AUDIO_MOTION_USAGE_NOT_MARKER_ONLY",
+        "RUN_IMPACT_STATIC_QA",
+        "RUN_NATIVE_RUNTIME_QA",
+        "FAN_IN_REGRESSION_AND_LEARNING"
+      ],
+      "hardFailures": [
+        "UNIVERSAL_ASSET_LOOKUP_MISSING",
+        "APPLICABLE_ASSET_FAMILY_NOT_BOUND",
+        "ASSET_MARKER_ONLY_NO_VISIBLE_USE",
+        "PRIMITIVE_ONLY_VISUAL_UPGRADE",
+        "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
+      ],
+      "implementationBindings": [
+        "company-asset-library.json",
+        "assets/vibe-art-pipeline.js",
+        "tools/vibe2-asset-production-plan.mjs",
+        "tools/vibe2-source-worker.mjs",
+        "tools/vibe2-incremental-qa.mjs",
+        "tools/company-development-roblox-bootstrap.mjs",
+        "assets/vibe-visual-quality-gate.js"
       ]
     }
   },
@@ -8129,6 +8255,14 @@
       "gameDevelopmentSignalHasNoTerminalDoneState": true,
       "verifiedCheckpointFeedsNextPlanningCycle": true,
       "auxiliaryEvidenceReturnsToCausalGraph": true
+    },
+    "universalAssetFirstUpgradeBinding": {
+      "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+      "requiredForVibe2Vibe3Upgrade": true,
+      "allTwelveFamiliesEvaluated": true,
+      "applicableFamilyActualBindingRequired": true,
+      "noShadowAssetPipeline": true,
+      "protectedGameplayAuthorityUnchanged": true
     }
   },
   "vibeCodingMethodSelfImprovement": {
