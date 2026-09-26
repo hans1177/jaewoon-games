@@ -1,5 +1,5 @@
 {
-  "version": 412,
+  "version": 413,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8175,6 +8175,40 @@
         "qa/vibe2-system-steward.test.mjs"
       ],
       "nextGate": "TARGETED_QA_THEN_LIVE_WAVE_VERIFY_NO_LIVE_RESERVATION_IS_RECLAIMED_AS_STALE"
+    },
+    "studioConnectedPackageCompletion20260926": {
+      "id": "VIBE2_STUDIO_CONNECTED_PACKAGE_COMPLETION_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "KEEP_THE_EXISTING_BUILD_UP_QUALITY_GATE_AND_COMPLETE_PARTIAL_CONNECTED_SOURCE_PACKAGES_INCREMENTALLY_INSTEAD_OF_DISCARDING_VALID_EDITS_OR_REASKING_THE_SMALL_LOCAL_MODEL_FOR_THE_WHOLE_PACKAGE",
+      "liveEvidence": [
+        "RUN_36229097447_JOB_108369130229_TIMEOUT_TIMEOUT_NO_OP",
+        "RUN_36229097447_JOB_108369130316_TIMEOUT_NO_OP_STUDIO_QUALITY_DELTA_1_OF_3"
+      ],
+      "rootCause": "STUDIO_BUILD_UP_RETRY_REGENERATED_THE_FULL_3_TO_6_EDIT_PACKAGE_EACH_ATTEMPT_AND_DID_NOT_PRESERVE_A_VALID_PARTIAL_CANDIDATE_WHEN_THE_CONFIGURED_CONNECTED_DELTA_GATE_REJECTED_IT",
+      "correction": {
+        "initialConnectedPackageAttemptPreserved": true,
+        "timeoutNoOpMalformedOrEditMatchMaySeedOneExactAnchor": true,
+        "validPartialCandidatePreservedAcrossCompletion": true,
+        "completionUnit": "ONE_DISTINCT_EXACT_ANCHOR_REPLACEMENT_PER_MODEL_CALL",
+        "usedAnchorReuseForbidden": true,
+        "combinedCandidateRevalidatedByExistingSemanticAndStudioQualityGate": true,
+        "configuredConnectedImprovementMinimumUnchanged": true,
+        "presentationMinimumVisualDeltaUnchanged": true,
+        "completionCreditMaximum": 3,
+        "completionCreditOnlyWhenExistingGateStillReportsStudioQualityDelta": true,
+        "writableScopeExpansion": false,
+        "qualityGateWeakening": false,
+        "retryHistoryDeletion": false,
+        "gameRuleBalanceEconomyProgressionSaveNetworkAuthorityChanged": false,
+        "directMainAuthorityAdded": false
+      },
+      "bindings": [
+        "tools/vibe2-source-worker.mjs"
+      ],
+      "qa": [
+        "qa/vibe2-source-worker.test.mjs"
+      ],
+      "nextGate": "TARGETED_SOURCE_WORKER_QA_THEN_LIVE_HOLISTIC_BACKFILL_RETRY_VERIFY_TIMEOUT_NO_OP_AND_ONE_OF_THREE_FAILURE_CLASSES_DROP"
     }
   },
   "vibeExecutionLaneContract": {
