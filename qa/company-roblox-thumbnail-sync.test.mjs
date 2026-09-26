@@ -89,11 +89,16 @@ test('Open Cloud thumbnail upload uses files multipart and verifies Finished ope
   assert.equal(requests.length,2);
 });
 
-test('release promotion supports thumbnail-only sync without republishing place',()=>{
+test('release promotion auto-syncs thumbnails on main push without republishing place',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/thumbnail_only:/);
-  assert.match(workflow,/if: \$\{\{ inputs\.thumbnail_only != true \}\}/);
-  assert.match(workflow,/name: sync canonical Roblox and homepage thumbnail/);
+  assert.match(workflow,/if: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.thumbnail_only != true \}\}/);
+  assert.match(workflow,/name: sync canonical Roblox and homepage thumbnails/);
+  assert.match(workflow,/github\.event_name == 'push'/);
+  assert.match(workflow,/name: Resolve thumbnail sync games/);
+  assert.match(workflow,/internalReleaseReady===true/);
+  assert.match(workflow,/assets\/roblox-thumbnails\//);
+  assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS/);
   assert.match(workflow,/company-roblox-thumbnail-sync\.mjs/);
   assert.match(workflow,/librsvg2-bin/);
   assert.match(workflow,/ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS/);
