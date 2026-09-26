@@ -3,153 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1m268qm",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:50:00.968Z",
-      "expiresAt": "2026-09-26T17:35:00.968Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-gr65uy",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:50:14.511Z",
-      "expiresAt": "2026-09-26T17:35:14.511Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-two34x",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:50:21.360Z",
-      "expiresAt": "2026-09-26T17:35:21.360Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1hf716",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:50:24.972Z",
-      "expiresAt": "2026-09-26T17:35:24.972Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-19gmblp",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:50:52.655Z",
-      "expiresAt": "2026-09-26T17:35:52.655Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-6mypm0",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:51:53.469Z",
-      "expiresAt": "2026-09-26T17:36:53.469Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1m1fo15",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/server/Game.server.luau",
-        "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:52:19.290Z",
-      "expiresAt": "2026-09-26T17:37:19.290Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
-      ]
-    },
-    {
-      "id": "wl-1j0yp7h",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:52:32.095Z",
-      "expiresAt": "2026-09-26T17:37:32.095Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-z1cfno",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
@@ -840,6 +693,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:ant-simulator-existing-web-assessment-v1"
+      ]
+    },
+    {
+      "id": "wl-11f2k57",
+      "worker": "vibe2",
+      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
+      "acquiredAt": "2026-09-26T17:37:57.176Z",
+      "expiresAt": "2026-09-26T18:22:57.176Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
       ]
     }
   ]
