@@ -550,7 +550,7 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
   assert.equal(execution.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
   assert.equal(execution.defaultRequestedGameWorkers,256);
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v2' \}\}/);
   assert.doesNotMatch(workflow,/format\('batch-\{0\}', github\.run_id\)/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
@@ -591,10 +591,10 @@ test('Roblox source persistence rejects results when the source-plan control con
   assert.match(workflow,/staleReconciliationCount=Math\.max\(reconciliation\.length,expected\.length,1\)/);
 });
 
-test('Roblox batch scheduler dedupes pending runs without capping per-game matrix parallelism',()=>{
+test('Roblox batch scheduler v2 epoch dedupes pending runs without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v2' \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
