@@ -1,5 +1,5 @@
 {
-  "version": 407,
+  "version": 408,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8065,6 +8065,24 @@
         ".github/workflows/vibe2-24h-runner.yml",
         "vibe2-runtime.json"
       ]
+    },
+    "holisticBackfillReservationPriority20260926": {
+      "id": "HOLISTIC_BACKFILL_RESERVATION_PRIORITY_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Enforce the already documented holistic priority at GAME_PRIMARY reservation order so external runner scarcity starts exact repair and eligible holistic backfill before generic asset or presentation polish.",
+      "ordering": [
+        "OWNER_AND_SYSTEM_STEWARD",
+        "EXACT_CAUSAL_OR_PROGRESS_BLOCKER",
+        "EXISTING_GAME_HOLISTIC_BACKFILL",
+        "GENERIC_PRESENTATION_ASSET_WEATHER_POLISH",
+        "NORMAL_CONTINUOUS_EVOLUTION"
+      ],
+      "alreadyRunningSafeWorkCancelled": false,
+      "reservedCurrentWaveRewritten": false,
+      "newReservationOrderOnly": true,
+      "responsibleFileConflictPreserved": true,
+      "externalProviderBoundary": 256,
+      "directResponsibleFunction": "assets/vibe-continuous-queue.js#scoreTask"
     },
     "fanInPinnedContractOverlayRepair20260926": {
       "id": "VIBE2_FAN_IN_PINNED_CONTRACT_OVERLAY_REPAIR_2026-09-26",
@@ -23778,7 +23796,7 @@
         }
       },
       "existingGameHolisticBackfill": {
-        "version": 3,
+        "version": 4,
         "authority": "OWNER_DIRECTIVE_2026-09-26",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "objective": "RETROACTIVELY_APPLY_THE_CURRENT_HOLISTIC_BUILD_UP_STANDARD_TO_EVERY_EXISTING_ELIGIBLE_GAME_WITHOUT_RESETTING_OR_GRANDFATHERING_LOW_QUALITY_IMPLEMENTATION",
@@ -23930,7 +23948,10 @@
           "genericWeatherPresentationStillBelowHolisticBackfill": true,
           "holisticPackageMayAutoExpandToConfiguredMinimumWorkload": true,
           "minimumWorkloadExpansionMustRemainWithinExistingResponsibleSystem": true,
-          "minimumWorkloadExpansionMayNotChangeProtectedGameRules": true
+          "minimumWorkloadExpansionMayNotChangeProtectedGameRules": true,
+          "reservationPriorityAppliedAfterPlanning": true,
+          "externalRunnerScarcityMustNotStartGenericPresentationBeforeEligibleHolisticBackfillAtSameOrLowerSeverity": true,
+          "exactCausalRepairAndProgressBlockersRemainAboveHolisticBackfill": true
         }
       }
     }
