@@ -1130,16 +1130,20 @@
         "timeoutIncreased": false,
         "liveEvidence": {
           "runId": 36229097447,
-          "sampledJobs": [
-            108369130219,
-            108369130224,
-            108369130225,
-            108369130229
+          "currentHolisticTaskCount": 15,
+          "finalFailureCounts": {
+            "NO_OP": 10,
+            "INVALID_PATH": 2,
+            "TIMEOUT": 2,
+            "STUDIO_QUALITY_DELTA": 1
+          },
+          "repairTargetsObservedFailureCount": 12,
+          "repairTargetsObservedPercent": 80,
+          "correctionScope": [
+            "NO_OP",
+            "INVALID_PATH"
           ],
-          "sampledFailureClasses": {
-            "NO_OP": 3,
-            "INVALID_PATH": 1
-          }
+          "timeoutAndStudioQualityDeltaRemainSeparateCausalRepairs": true
         }
       }
     },
