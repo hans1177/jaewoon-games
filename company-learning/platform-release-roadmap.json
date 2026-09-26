@@ -8442,7 +8442,11 @@
       "runnerDrainCoalescesDuplicateWakeups": true,
       "runnerDrainMayRunInParallelWithOtherDirectorJobs": true,
       "gamePrimaryGateConcurrencyGroup": "director-game-primary-gate-v1",
-      "gamePrimaryGateCoalescesDuplicateWakeups": true
+      "gamePrimaryGateCoalescesDuplicateWakeups": true,
+      "cancelledWorkflowRunWakeSuppressed": true,
+      "cancelledWorkflowRunReason": "PREVENT_STALE_RUN_CANCELLATION_FROM_RECURSIVELY_CREATING_NEW_SUPERVISOR_DRAIN_WORK",
+      "successAndFailureWorkflowRunWakePreserved": true,
+      "independentGameParallelismPreserved": true
     },
     "controlPlaneGameRunnerEviction20260926": {
       "id": "CONTROL_PLANE_GAME_RUNNER_EVICTION_2026-09-26",
